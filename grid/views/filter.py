@@ -471,7 +471,7 @@ class FilterWidgetMixin:
             if not stored_filters:
                 stored_filters = {}
             if data.get('country', None):
-                filter_values['variable'] = 'target_country'
+                filter_values['variable'] = 'target_country' if self.doc_type == 'deal' else 'fk_country'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
                 try:
@@ -483,7 +483,7 @@ class FilterWidgetMixin:
                 filter_values['label'] = _('Target country')
                 data.pop('country')
             elif data.get('region', None):
-                filter_values['variable'] = 'target_region'
+                filter_values['variable'] = 'target_region' if self.doc_type == 'deal' else 'region'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
                 try:

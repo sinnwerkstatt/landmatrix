@@ -163,12 +163,11 @@
         {% block navutils %}
 
             {% block messages %}
-                    <p class="alert alert-danger">
-                        <strong>This is a beta version.</strong>
-                        Data is not representative and features are under active
-                        development. The correct figures can be found on
-                        <a href="https://landmatrix.org">www.landmatrix.org</a>.
+                {% for message in custom_messages %}
+                    <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
+                        {% if message.title %}<strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
                     </p>
+                {% endfor %}
                 {% for message in messages %}
                     <p class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}{% else %} alert-info{% endif %}">
                         {{ message|safe }}

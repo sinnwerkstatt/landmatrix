@@ -104,6 +104,7 @@ INSTALLED_APPS += (
     'file_resubmit',
 
 #   apps of the actual landmatrix project
+    'message',
     'landmatrix',
     'grid',
     'map',
@@ -166,6 +167,7 @@ TEMPLATES = [
                 'wagtailcms.context_processors.add_root_page',
                 'wagtailcms.context_processors.add_data_source_dir',
                 'wagtailcms.context_processors.add_countries_and_regions',
+                'message.context_processors.add_custom_messages'
             ],
         },
     },
