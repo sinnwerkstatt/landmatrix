@@ -32,6 +32,8 @@
                                     "mapSRID": "{{ field.value.srid }}"
                                   }'>{{ field.value.serialized }}</textarea>
                     </div>
+                {% elif fieldname != "phone" %}
+                    {{ field.value|safe }}
                 {% else %}
                     {{ field.value|safe|decimalgroupstring }}
                 {% endif %}
