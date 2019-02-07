@@ -726,9 +726,12 @@ class ElasticSearch(object):
                 'top_investors': investor.format_investors(top_investors),
                 'deal_count': investor.get_deal_count(),
                 'roles': investor.get_roles(),
-                'region': investor.fk_country.fk_region_id,
-                'region_display': str(investor.fk_country.fk_region),
             })
+            if investor.fk_country:
+                doc.update({
+                    'region': investor.fk_country.fk_region_id,
+                    'region_display': str(investor.fk_country.fk_region),
+                })
 
             # Append involvements for quicker queries
             ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)
