@@ -471,7 +471,12 @@ class FilterWidgetMixin:
             if not stored_filters:
                 stored_filters = {}
             if data.get('country', None):
-                filter_values['variable'] = 'target_country' if self.doc_type == 'deal' else 'fk_country'
+                if self.doc_type == 'deal':
+                    filter_values['variable'] = 'target_country'
+                    filter_values['label'] = _('Target country')
+                else:
+                    filter_values['variable'] = 'fk_country'
+                    filter_values['label'] = _('Country of registration/origin')
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
                 try:
@@ -480,10 +485,14 @@ class FilterWidgetMixin:
                 except:
                     pass
                 filter_values['name'] = 'country'
-                filter_values['label'] = _('Target country')
                 data.pop('country')
             elif data.get('region', None):
-                filter_values['variable'] = 'target_region' if self.doc_type == 'deal' else 'region'
+                if self.doc_type == 'deal':
+                    filter_values['variable'] = 'target_region'
+                    filter_values['label'] = str(_('Target region'))
+                else:
+                    filter_values['variable'] = 'region'
+                    filter_values['label'] = str(_('Region of registration/origin'))
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
                 try:
@@ -492,7 +501,6 @@ class FilterWidgetMixin:
                 except:
                     pass
                 filter_values['name'] = 'region'
-                filter_values['label'] = str(_('Target region'))
                 data.pop('region')
             # Remove existing target country/region filters
             filters = filter(lambda f: f.get('name') in ('country', 'region'), stored_filters.values())
