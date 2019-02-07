@@ -127,11 +127,6 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     CLASSIFICATION_CHOICES = (
         STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     )
-    PARENT_RELATION_CHOICES = (
-        ('Subsidiary', _("Subsidiary of parent company")),
-        ('Local branch', _("Local branch of parent company")),
-        ('Joint venture', _("Joint venture of parent companies")),
-    )
     ROLE_OPERATING_COMPANY = 'OP'
     ROLE_PARENT_COMPANY = 'ST'
     ROLE_TERTIARY_INVESTOR = 'IN'
@@ -153,11 +148,9 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     homepage = models.URLField(_("Investor homepage"), blank=True, null=True)
     opencorporates_link = models.URLField(
         _("Opencorporates link"), blank=True, null=True)
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
-    parent_relation = models.CharField(verbose_name=_('Parent relation'),
-        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
 
     objects = InvestorQuerySet.as_manager()
 
@@ -538,7 +531,6 @@ class HistoricalInvestor(InvestorBase):
             investor.name = hinv.name
             investor.fk_country_id = hinv.fk_country_id
             investor.classification = hinv.classification
-            investor.parent_relation = hinv.parent_relation
             investor.homepage = hinv.homepage
             investor.opencorporates_link = hinv.opencorporates_link
             investor.fk_status_id = hinv.fk_status_id
@@ -562,6 +554,7 @@ class HistoricalInvestor(InvestorBase):
                     loans_amount=hinvolvement.loans_amount,
                     loans_currency=hinvolvement.loans_currency,
                     loans_date=hinvolvement.loans_date,
+                    parent_relation=hinvolvement.parent_relation,
                     comment=hinvolvement.comment,
                     fk_status=hinvolvement.fk_status
                 )
@@ -662,6 +655,11 @@ class InvestorVentureInvolvementBase(models.Model):
         (EQUITY_INVESTMENT_TYPE, _('Shares/Equity')),
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
     )
+    PARENT_RELATION_CHOICES = (
+        ('Subsidiary', _("Subsidiary of parent company")),
+        ('Local branch', _("Local branch of parent company")),
+        ('Joint venture', _("Joint venture of parent companies")),
+    )
 
     role = models.CharField(verbose_name=_("Relation type"), max_length=2, choices=ROLE_CHOICES)
     investment_type = MultiSelectField(
@@ -674,7 +672,10 @@ class InvestorVentureInvolvementBase(models.Model):
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
     loans_date = models.CharField("Loan date", max_length=10, blank=True, null=True)
+    parent_relation = models.CharField(verbose_name=_('Parent relation'),
+        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
+
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
     objects = InvestorVentureQuerySet.as_manager()

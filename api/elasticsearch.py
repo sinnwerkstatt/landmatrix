@@ -743,7 +743,6 @@ class ElasticSearch(object):
                 elif ivi.role == HistoricalInvestorVentureInvolvement.INVESTOR_ROLE:
                     doc['tertiary_investor_of'].append(ivi.fk_venture_id)
 
-
             # Append involvements for quicker queries
             ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)
             doc['parent_company_of'] = []

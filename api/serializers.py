@@ -133,7 +133,6 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
         "name": "",
         "country": "",
         "classification": "",
-        "parent_relation": "",
         "homepage": "",
         "opencorporates_link": "",
         "comment": "",
@@ -171,7 +170,6 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
             "investor_identifier": obj.investor_identifier,
             "country": str(obj.fk_country),
             "classification": obj.get_classification_display(),
-            "parent_relation": obj.get_parent_relation_display(),
             "homepage": obj.homepage,
             "opencorporates_link": obj.opencorporates_link,
             "comment": obj.comment,
@@ -198,6 +196,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                     "loans_amount": involvement.loans_amount,
                     "loans_currency": str(involvement.loans_currency),
                     "loans_date": involvement.loans_date,
+                    "parent_relation": involvement.get_parent_relation_display(),
                     "comment": involvement.comment,
                 }
                 parents.append(parent)

@@ -148,7 +148,7 @@ class ParentInvestorForm(BaseInvestorForm):
         model = HistoricalInvestor
         exclude = (
             'fk_status', 'subinvestors', 'investor_identifier',
-            'parent_relation', 'history_date', 'history_user'
+            'history_date', 'history_user'
         )
 
 

@@ -75,7 +75,7 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
         model = HistoricalInvestorVentureInvolvement
         fields = [
             'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage',
-            'loans_amount', 'loans_date',
+            'loans_amount', 'loans_date', 'parent_relation',
             'comment',
         ]
 
