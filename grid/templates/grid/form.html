@@ -11,7 +11,7 @@
             <small>#{{ form_count }}</small>
             <a class="btn pull-right add-form">
                 <i class="fa fa-plus"></i>
-                {% trans "Add another" %}
+                {% trans "Add another" %} {{ field.field.initial|lower }}
             </a>
             <a class="btn pull-right remove-form">
                 <i class="fa fa-minus"></i>

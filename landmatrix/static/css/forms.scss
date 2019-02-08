@@ -189,19 +189,10 @@ a.remove-ybd {
   height: 42px;
   padding: 8px 12px;
   border-color: transparent;
-  visibility: collapse;
   margin-left: 20px;
   display: inline-block;
   color: #414141;
-  width: 120px;
   text-align: left;
-}
-
-a.add-form i,
-a.remove-form i,
-a.add-ybd i,
-a.remove-ybd i {
-  visibility: visible;
 }
 
 a.add-form:hover,
@@ -209,8 +200,22 @@ a.remove-form:hover,
 a.add-ybd:hover,
 a.remove-ybd:hover {
   border-color: $lm_orange;
-  visibility: visible;
   color: $lm_orange;
+}
+
+a.add-ybd,
+a.remove-ybd {
+  visibility: collapse;
+}
+
+a.add-ybd i,
+a.remove-ybd i {
+  visibility: visible;
+}
+
+a.add-ybd:hover,
+a.remove-ybd:hover {
+  visibility: visible;
 }
 
 .control-group .input-group {

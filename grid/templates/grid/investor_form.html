@@ -90,7 +90,7 @@
                         $(document).ready(function () {
                             // Init dynamic forms for stakeholder popup
                             $('.{{ parent_companies.form_title|slugify }}-form').formset({
-                                addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                                addText: '<i class="fa fa-plus"></i> {% trans "Add another parent company" %}',
                                 addCssClass: 'formset-add-form hidden',
                                 deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
                                 deleteCssClass: 'formset-remove-form hidden',
@@ -132,7 +132,7 @@
                         $(document).ready(function () {
                             // Init dynamic forms for stakeholder popup
                             $('.{{ parent_investors.form_title|slugify }}-form ').formset({
-                                addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                                addText: '<i class="fa fa-plus"></i> {% trans "Add another lender" %}',
                                 addCssClass: 'formset-add-form hidden',
                                 deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
                                 deleteCssClass: 'formset-remove-form hidden',
