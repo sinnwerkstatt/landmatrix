@@ -175,15 +175,15 @@
                                 <td class="action">
                                 {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_change_deal' id=item.id %}"
-                                       class="label label-default approve deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_deal' id=item.id %}"
-                                       class="label label-default reject deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
                                     <a href="{% url 'manage_approve_change_investor' id=item.id %}"
-                                       class="label label-default approve investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_investor' id=item.id %}"
-                                       class="label label-default reject investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}
                                 </td>
@@ -236,15 +236,15 @@
                                 <td class="action">
                                 {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_delete_deal' id=item.id %}"
-                                       class="label label-default approve deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_delete_deal' id=item.id %}"
-                                       class="label label-default reject deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
                                     <a href="{% url 'manage_approve_delete_investor' id=item.id %}"
-                                       class="label label-default approve investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_delete_investor' id=item.id %}"
-                                       class="label label-default reject investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}
                                     </a>
@@ -298,15 +298,15 @@
                                 <td class="action">
                                 {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_change_deal' id=item.id %}"
-                                       class="label label-default approve deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_deal' id=item.id %}"
-                                       class="label label-default reject deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
                                     <a href="{% url 'manage_approve_change_investor' id=item.id %}"
-                                       class="label label-default approve investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_investor' id=item.id %}"
-                                       class="label label-default reject investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}
                                 </td>
