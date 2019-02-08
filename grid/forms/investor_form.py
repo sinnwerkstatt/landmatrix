@@ -37,7 +37,7 @@ class BaseInvestorForm(BaseModelForm):
     comment = forms.CharField(
         required=False, label=_("Comment"), widget=CommentInput)
     action_comment = forms.CharField(
-        required=True, label=_('Action comment'), widget=CommentInput)
+        required=False, label=_('Action comment'), widget=CommentInput)
 
     class Meta:
         model = HistoricalInvestor

@@ -424,7 +424,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
 class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
-    action_comment = models.TextField(_('Comment'), blank=False, null=True)
+    action_comment = models.TextField(_('Comment'), blank=True, null=True)
 
     objects = HistoricalInvestorQuerySet.as_manager()
 

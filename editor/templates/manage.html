@@ -173,12 +173,19 @@
                                 <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
+                                {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_change_deal' id=item.id %}"
-                                       class="label label-default approve"><i
-                                            class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve"><i class="lm lm-thumbs-up deal"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_deal' id=item.id %}"
-                                       class="label label-default reject"><i
-                                            class="lm lm-thumbs-down"></i> {% trans "Reject" %}</a>
+                                       class="label label-default reject"><i class="lm lm-thumbs-down deal"></i> {% trans "Reject" %}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'manage_approve_change_investor' id=item.id %}"
+                                       class="label label-default approve"><i class="lm lm-thumbs-up investor"></i> {% trans "Approve" %}</a>
+                                    <a href="{% url 'manage_reject_change_investor' id=item.id %}"
+                                       class="label label-default reject"><i class="lm lm-thumbs-down investor"></i> {% trans "Reject" %}
+                                    </a>
+                                {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -227,10 +234,19 @@
                                 <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
+                                {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_delete_deal' id=item.id %}"
-                                       class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve"><i class="lm lm-thumbs-up deal"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_delete_deal' id=item.id %}"
-                                       class="label label-default reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject"><i class="lm lm-thumbs-down deal"></i> {% trans "Reject" %}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'manage_approve_delete_investor' id=item.id %}"
+                                       class="label label-default approve"><i class="lm lm-thumbs-up investor"></i> {% trans "Approve" %}</a>
+                                    <a href="{% url 'manage_reject_delete_investor' id=item.id %}"
+                                       class="label label-default reject"><i class="lm lm-thumbs-down investor"></i> {% trans "Reject" %}
+                                    </a>
+                                {% endif %}
                                     </a>
                                 </td>
                             </tr>
@@ -280,11 +296,19 @@
                                 <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
+                                {% if item.type == 'activity' %}
                                     <a href="{% url 'manage_approve_change_deal' id=item.id %}"
-                                       class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
+                                       class="label label-default approve"><i class="lm lm-thumbs-up deal"></i> {% trans "Approve" %}</a>
                                     <a href="{% url 'manage_reject_change_deal' id=item.id %}"
-                                       class="label label-default reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                       class="label label-default reject"><i class="lm lm-thumbs-down deal"></i> {% trans "Reject" %}
                                     </a>
+                                {% else %}
+                                    <a href="{% url 'manage_approve_change_investor' id=item.id %}"
+                                       class="label label-default approve"><i class="lm lm-thumbs-up investor"></i> {% trans "Approve" %}</a>
+                                    <a href="{% url 'manage_reject_change_investor' id=item.id %}"
+                                       class="label label-default reject"><i class="lm lm-thumbs-down investor"></i> {% trans "Reject" %}
+                                    </a>
+                                {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
