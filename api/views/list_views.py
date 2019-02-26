@@ -383,7 +383,7 @@ class ElasticSearchMixin(object):
             # Include only involvements for given investors
             if result['fk_venture'] not in investor_ids or result['fk_investor'] not in investor_ids:
                 continue
-            key = '%s-%s' % (result['fk_venture_display'], result['fk_investor_display'])
+            key = '%s-%s' % (result['fk_venture_name'], result['fk_investor_name'])
             result['id'] = raw_result['_id']
             result_list.append(result)
             # Save highest ID of duplicates
@@ -393,7 +393,7 @@ class ElasticSearchMixin(object):
         # Remove duplicates (only use highest ID e.g. if there are pending or older versions)
         for i in reversed(range(len(result_list))):
             result = result_list[i]
-            key = '%s-%s' % (result['fk_venture_display'], result['fk_investor_display'])
+            key = '%s-%s' % (result['fk_venture_name'], result['fk_investor_name'])
             if key in involvements and involvements[key] != result['id']:
                 del result_list[i]
 
