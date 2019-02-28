@@ -31,6 +31,22 @@
             // did not change (after changing displayed layer)
             var layerChanged = false;
 
+            // Mappings to allow grouping of intentions (required for Agriculture, Forestry)
+            var legendValueMappings = {
+                'intention': {
+                    'Biofuels': 'Agriculture',
+                    'Food crops': 'Agriculture',
+                    'Fodder': 'Agriculture',
+                    'Livestock': 'Agriculture',
+                    'Non-food agricultural commodities': 'Agriculture',
+                    'Agriculture unspecified': 'Agriculture',
+                    'Timber plantation (for wood and fibre)': 'Forestry',
+                    'Forest logging / management (for wood and fibre)': 'Forestry',
+                    'For carbon sequestration/REDD': 'Forestry',
+                    'Forestry unspecified': 'Forestry',
+                }
+            };
+
             // use this.setLegendKey() to switch currently active legend.
             mapInstance.legendKey = options.legendKey;
             mapInstance.dealsPerCountryLayer = null;
@@ -121,6 +137,32 @@
                     var countryInfoPoint = new ol.Feature(
                         new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
                     );
+
+                    // Relabel subcategories
+                    var propertyMappings,
+                        childCount,
+                        parentProp;
+                    for (var propertyKey in legendValueMappings) {
+                        propertyMappings = legendValueMappings[propertyKey];
+                        if (typeof propertyMappings === "undefined") {
+                            continue;
+                        }
+                        if (typeof properties[propertyKey] === "undefined") {
+                            properties[propertyKey] = {};
+                        }
+                        for (var childProp in propertyMappings) {
+                            childCount = properties[propertyKey][childProp];
+                            if (typeof childCount === "undefined") {
+                                continue;
+                            }
+                            parentProp = propertyMappings[childProp];
+                            if (typeof properties[propertyKey][parentProp] === "undefined") {
+                                properties[propertyKey][parentProp] = 0;
+                            }
+                            properties[propertyKey][parentProp] += childCount;
+                        }
+                    }
+
                     countryInfoPoint.setProperties(properties);
 
                     countryDealsSource.addFeature(countryInfoPoint);
@@ -147,8 +189,8 @@
 
                     for (var prop in properties) {
                         if (properties.hasOwnProperty(prop)) {
-                            var searchProp = $.grep(data, function(e) { return e.id == prop; });
-                            if (searchProp.length == 1) {
+                            var searchProp = $.grep(data, function(e) { return e.id === prop; });
+                            if (searchProp.length === 1) {
                                 searchProp[0].count += properties[prop];
                             }
                         }
