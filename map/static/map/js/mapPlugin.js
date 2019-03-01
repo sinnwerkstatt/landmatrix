@@ -40,8 +40,8 @@
                     'Livestock': 'Agriculture',
                     'Non-food agricultural commodities': 'Agriculture',
                     'Agriculture unspecified': 'Agriculture',
-                    'Timber plantation (for wood and fibre)': 'Forestry',
-                    'Forest logging / management (for wood and fibre)': 'Forestry',
+                    'Timber plantation': 'Forestry',
+                    'Forest logging / management': 'Forestry',
                     'For carbon sequestration/REDD': 'Forestry',
                     'Forestry unspecified': 'Forestry',
                 }
@@ -142,6 +142,7 @@
                     var propertyMappings,
                         childCount,
                         parentProp;
+                    debugger;
                     for (var propertyKey in legendValueMappings) {
                         propertyMappings = legendValueMappings[propertyKey];
                         if (typeof propertyMappings === "undefined") {
