@@ -13,10 +13,10 @@ class PropertyCounter(dict):
         'implementation': 'implementation_status',
         'level_of_accuracy': 'level_of_accuracy',
     }
+    activity_identifiers = set()
 
     def __init__(self):
         super().__init__()
-        self.counter = 0
         for prop in self.properties.keys():
             setattr(self, prop, collections.defaultdict(int))
 
@@ -32,7 +32,9 @@ class PropertyCounter(dict):
                     prop[val] += 1
             else:
                 prop[values] += 1
-        self.counter += 1
+        activity_identifier = data.get('activity_identifier')
+        if activity_identifier not in self.activity_identifiers:
+            self.activity_identifiers.add(activity_identifier)
 
     def get_properties(self):
         return {prop: getattr(self, prop) for prop in self.properties}

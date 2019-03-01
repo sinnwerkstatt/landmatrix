@@ -733,7 +733,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         for country in countries:
             properties = {
                 'name': country.name,
-                'deals': target_countries[str(country.id)].counter,
+                'deals': len(target_countries[str(country.id)].activity_identifiers),
                 'url': country.get_absolute_url(),
                 'centre_coordinates': [country.point_lon, country.point_lat],
             }
