@@ -138,32 +138,6 @@
                         new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
                     );
 
-                    // Relabel subcategories
-                    var propertyMappings,
-                        childCount,
-                        parentProp;
-                    debugger;
-                    for (var propertyKey in legendValueMappings) {
-                        propertyMappings = legendValueMappings[propertyKey];
-                        if (typeof propertyMappings === "undefined") {
-                            continue;
-                        }
-                        if (typeof properties[propertyKey] === "undefined") {
-                            properties[propertyKey] = {};
-                        }
-                        for (var childProp in propertyMappings) {
-                            childCount = properties[propertyKey][childProp];
-                            if (typeof childCount === "undefined") {
-                                continue;
-                            }
-                            parentProp = propertyMappings[childProp];
-                            if (typeof properties[propertyKey][parentProp] === "undefined") {
-                                properties[propertyKey][parentProp] = 0;
-                            }
-                            properties[propertyKey][parentProp] += childCount;
-                        }
-                    }
-
                     countryInfoPoint.setProperties(properties);
 
                     countryDealsSource.addFeature(countryInfoPoint);
@@ -216,13 +190,13 @@
 
                 // Update "count" of each value based on the feature's values.
                 $.each(features, function(index, feature) {
-                    var properties = feature.getProperties()[mapInstance.legendKey];
+                    var properties = feature.getProperties();
+                    properties = properties[mapInstance.legendKey];
                     if (!properties) return;
 
                     if (typeof properties === 'string') {
                         properties = [properties];
                     }
-
                     $.each(properties, function(i, prop) {
                         var searchProp = $.grep(data, function(e) { return e.id == prop; });
                         if (searchProp.length == 1) {

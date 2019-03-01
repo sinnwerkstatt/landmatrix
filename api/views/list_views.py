@@ -642,6 +642,29 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         response = Response(FeatureCollection(features))
         return response
 
+    def get_intentions(self, intentions):
+        """
+        Returns parent intention count for Agriculture/Forestry
+        :param intentions:
+        :return:
+        """
+        agriculture, forestry = False, False
+        for key, value in INTENTION_AGRICULTURE_MAP.items():
+            if key in intentions:
+                agriculture = True
+                break
+        if agriculture:
+            intentions.append('Agriculture')
+            intentions = list(filter(lambda i: i not in INTENTION_AGRICULTURE_MAP.keys(), intentions))
+        for key, value in INTENTION_FORESTRY_MAP.items():
+            if key in intentions:
+                forestry = True
+                break
+        if forestry:
+            intentions.append('Forestry')
+            intentions = list(filter(lambda i: i not in INTENTION_FORESTRY_MAP.keys(), intentions))
+        return intentions
+
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
 
@@ -655,7 +678,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         investor = investor and investor[0] # saved as an array currently?
 
         # Remove subcategories from intention
-        intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', ['Unknown']))
+        intention = self.get_intentions(result.get("intention", []))
 
         try:
             geometry = (float(result['point_lon']), float(result['point_lat']))
@@ -715,6 +738,7 @@ class CountryDealsView(GlobalDealsView, APIView):
                 'centre_coordinates': [country.point_lon, country.point_lat],
             }
             properties.update(target_countries[str(country.id)].get_properties())
+            properties['intention'] = self.get_intentions(properties.get('intention'))
             features.append({
                 'type': 'Feature',
                 'id': country.code_alpha3,
@@ -723,6 +747,25 @@ class CountryDealsView(GlobalDealsView, APIView):
             })
 
         return Response(FeatureCollection(features))
+
+    def get_intentions(self, intentions):
+        """
+        Returns parent intention count for Agriculture/Forestry
+        :param intentions:
+        :return:
+        """
+        if not intentions:
+            return {}
+        agriculture_count, forestry_count = 0, 0
+        for key, value in INTENTION_AGRICULTURE_MAP.items():
+            agriculture_count += intentions.pop(key, 0)
+        if agriculture_count > 0:
+            intentions['Agriculture'] = agriculture_count
+        for key, value in INTENTION_FORESTRY_MAP.items():
+            forestry_count += intentions.pop(key, 0)
+        if forestry_count > 0:
+            intentions['Forestry'] = forestry_count
+        return intentions
 
     def get_countries(self, *ids):
         """
