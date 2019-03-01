@@ -169,7 +169,3 @@ select:not([multiple])#mapVariableSelect {
   margin-left: -30px;
   margin-top: 10px;
   position: relative; }
-
-.button-layer-switch .disabled {
-  visibility: hidden;
-}
