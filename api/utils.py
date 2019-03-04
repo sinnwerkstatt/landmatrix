@@ -13,12 +13,12 @@ class PropertyCounter(dict):
         'implementation': 'implementation_status',
         'level_of_accuracy': 'level_of_accuracy',
     }
-    activity_identifiers = set()
 
     def __init__(self):
         super().__init__()
         for prop in self.properties.keys():
             setattr(self, prop, collections.defaultdict(int))
+        self.activity_identifiers = set()
 
     def increment(self, **data):
         """
