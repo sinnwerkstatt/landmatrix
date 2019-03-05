@@ -360,7 +360,7 @@ class BaseForm(FieldsDisplayFormMixin,
         data = MultiValueDict()
 
         # Create attributes dict
-        queryset = activity.attributes.order_by('id')
+        queryset = activity.attributes.order_by('-id')
         if group:
             queryset = queryset.filter(fk_group__name=group)
         attributes = OrderedDict()

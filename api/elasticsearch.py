@@ -615,6 +615,7 @@ class ElasticSearch(object):
             'point_lat': [],
             'point_lon': [],
             'target_country': [],
+
             'target_country_display': [],
             'target_region': [],
             'target_region_display': [],
