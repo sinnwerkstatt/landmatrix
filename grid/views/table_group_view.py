@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import urlize
 from wagtailcms.models import WagtailRootPage
 
 from grid.views.filter_widget_mixin import FilterWidgetMixin
@@ -11,6 +11,7 @@ from grid.views.browse_filter_conditions import get_field_label
 from grid.forms.choices import intention_choices, INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from landmatrix.models import Country, Region, Crop
 from api.views import ElasticSearchMixin
+
 
 
 INTENTION_MAP = {}
@@ -29,7 +30,7 @@ for choice, value in intention_choices:
         }
     INTENTION_MAP[choice] = {
         'value': value,
-        'slug': slugify(choice),
+        'slug': urlize(choice),
         'order_by': value,
         #'is_parent': choices and len(choices) > 0
     }
