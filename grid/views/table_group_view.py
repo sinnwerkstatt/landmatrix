@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
-from django.template.defaultfilters import urlize
+from django.template.defaultfilters import urlencode
 from wagtailcms.models import WagtailRootPage
 
 from grid.views.filter_widget_mixin import FilterWidgetMixin
@@ -30,7 +30,7 @@ for choice, value in intention_choices:
         }
     INTENTION_MAP[choice] = {
         'value': value,
-        'slug': urlize(choice),
+        'slug': urlencode(choice),
         'order_by': value,
         #'is_parent': choices and len(choices) > 0
     }
