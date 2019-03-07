@@ -502,7 +502,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             if value['value'] in INTENTION_MAP:
                 intention = INTENTION_MAP.get(value['value'])
                 return {
-                    'value': intention['value'],
+                    'value': intention['slug'],
                     'display': intention['value'],
                     'is_parent': False,
                 }
