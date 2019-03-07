@@ -68,7 +68,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-class  InvestorListView(ElasticSearchMixin,
+class InvestorListView(ElasticSearchMixin,
                        ListAPIView):
     """
     Get all Operating companies, Parent companies and Tertiary investors/lenders.
@@ -112,7 +112,13 @@ class  InvestorListView(ElasticSearchMixin,
             query = {
                 'bool': {
                     'must': [
-                        {'match_phrase': {'name': '%s' % term.lower()}},
+                        {'bool': {
+                            'should': [
+                                {'match_phrase': {'name': term.lower()}},
+                                {'wildcard': {'name': '*%s*' % term.lower()}},
+                            ],
+                            'minimum_should_match': 1
+                        }},
                         {'terms': {'fk_status': [1, 2, 3]}},
                     ]
                 }
