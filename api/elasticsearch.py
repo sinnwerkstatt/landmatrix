@@ -11,17 +11,18 @@ from collections import OrderedDict
 
 from django.conf import settings
 from django.db.models import ForeignKey, Q
-from django.forms import MultiValueField, ModelChoiceField, ChoiceField, BooleanField
+from django.forms import ModelChoiceField, ChoiceField, BooleanField
 from django.core.paginator import Paginator
 from django.utils.translation import ugettext_lazy as _
 
-from grid.views.change_deal_view import ChangeDealView
-from landmatrix.models.activity import HistoricalActivity, Activity
+from grid.fields import YearBasedField
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
-from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
 from grid.utils import get_spatial_properties
+from grid.views.change_deal_view import ChangeDealView
+from landmatrix.models.activity import HistoricalActivity, Activity
 from landmatrix.models.country import Country
+from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
 FIELD_TYPE_MAPPING = {
@@ -173,11 +174,11 @@ def get_elasticsearch_properties(doc_type=None):
                 field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
                 field_mappings = {}
                 field_mappings[name] = field_type
-                if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField,
+                if isinstance(field, (ChoiceField, ModelChoiceField, YearBasedField,
                                       BooleanField)):
                     field_mappings['%s_display' % name] = field_type
-                # Additionally save complete attribute (including value2, date, is_current) for all MultiValueFields
-                if isinstance(field, MultiValueField):
+                # Additionally save complete attribute (including value2, date, is_current) for all YearBasedField
+                if isinstance(field, YearBasedField):
                     field_mappings['%s_attr' % name] = {'type': 'nested'}
                 _landmatrix_mappings['deal']['properties'].update(field_mappings)
                 if formset_name:
@@ -189,7 +190,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type
-            if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
+            if isinstance(field, (ChoiceField, ModelChoiceField, YearBasedField, BooleanField)):
                 field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['deal']['properties'].update(field_mappings)
 
@@ -200,7 +201,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type
-            if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
+            if isinstance(field, (ChoiceField, ModelChoiceField, YearBasedField, BooleanField)):
                 field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['involvement']['properties'].update(field_mappings)
         # Doc type: investor
@@ -210,7 +211,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type
-            if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
+            if isinstance(field, (ChoiceField, ModelChoiceField, YearBasedField, BooleanField)):
                 field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['investor']['properties'].update(field_mappings)
 
