@@ -93,13 +93,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             else:
                 raise HistoricalActivity.DoesNotExist
             query = {
-                "constant_score" : {
-                    "bool": {
-                        "must": [
-                            {"term" : {"activity_identifier": deal_id}},
-                            {"terms": {"status": self.status_list}}
-                        ]
-                    }
+                "bool": {
+                    "must": [
+                        {"term" : {"activity_identifier": deal_id}},
+                        {"terms": {"status": self.status_list}}
+                    ]
                 }
             }
         else:
