@@ -2,6 +2,11 @@
 html,
 body {
     background-color: transparent !important;
+    width: 100%;
+    padding: 0 !important;
+}
+.wrap {
+    margin: 0 !important;
 }
 div#header-container,
 ul.subnav,
@@ -10,6 +15,10 @@ ul.actions {
 }
 div#container {
     padding-top: 0 !important;
+}
+.container {
+    width: 100% !important;
+    max-width: 100% !important;
 }
 h1,
 h2,

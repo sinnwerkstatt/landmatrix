@@ -859,7 +859,7 @@ class PolygonGeomView(GlobalDealsView, APIView):
         features = []
         for result in result_list:
             feature = result.get(polygon_field)
-            if feature is None:
+            if not feature:
                 continue
 
             # Again, case sensitive: multipolygon in ES needs to be MultiPolygon
