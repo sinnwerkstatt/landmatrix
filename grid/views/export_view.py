@@ -94,17 +94,16 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 raise HistoricalActivity.DoesNotExist
             query = {
                 "constant_score" : {
-                    "filter" : {
-                        "term" : {
-                            "activity_identifier": deal_id
-                        }
+                    "filter": {
+                        "term" : {"activity_identifier": deal_id},
+                        "terms": {"status": self.status_list}
                     }
                 }
             }
         else:
             query = self.create_query_from_filters()
             query = self.get_group_value_query(query)
-        sort = ['activity_identifier',]
+        sort = ['activity_identifier', ]
 
         results = {}
         # Search deals
