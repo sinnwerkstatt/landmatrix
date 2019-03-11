@@ -299,6 +299,13 @@
 
   .navbar-header {
     float: none; } }
+
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:focus,
+.nav-pills>li.active>a:hover {
+    background-color: #fc941f !important;
+}
+
 /* ==========================================================================
  *    FORMS
  * ========================================================================== */
