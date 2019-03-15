@@ -11,7 +11,8 @@ from django.conf import settings
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity_attribute_group import ActivityAttribute
-from landmatrix.models.investor import Investor, InvestorActivityInvolvement
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorBase, \
+    HistoricalInvestorVentureInvolvement
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
@@ -359,6 +360,22 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         if len(operating_companies) > 0:
             top_investors = operating_companies[0].get_top_investors()
         return top_investors
+
+    def get_parent_companies(self):
+        """
+        Get list of next parent companies
+        """
+        # Operating company
+        queryset = self.involvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
+                                                                           Investor.STATUS_OVERWRITTEN))
+        operating_companies = [i.fk_investor for i in queryset]
+        parent_companies = []
+        if len(operating_companies) > 0:
+            parent_companies = [ivi.fk_investor for ivi in operating_companies[0].venture_involvements.filter(
+                                    fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
+                                                                InvestorBase.STATUS_OVERWRITTEN),
+                                    role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)]
+        return parent_companies
 
     def get_investor_countries(self):
         countries = []
