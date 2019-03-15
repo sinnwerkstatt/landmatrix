@@ -737,7 +737,7 @@ class Activity(ActivityBase):
         # First name, then ID to be able to sort by name
         return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
                                    str(i.investor_identifier),
-                                   str(i.fk_country or '')])
+                                   (i.fk_country and i.fk_country.name or '')])
                          for i in investors])
 
     def get_availability(self):
