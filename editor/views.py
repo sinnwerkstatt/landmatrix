@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -85,14 +86,20 @@ class FilteredQuerySetMixin:
         if queryset is None:
             queryset = HistoricalInvestor.objects.all()
 
+        # Investor is not OC company
+        filters = Q(involvements__isnull=True)
+
         countries = self._get_countries()
         if countries:
-            queryset = queryset.filter(
+            # OR investor is OC company with newest deal version in one of the countries
+            latest_ids = HistoricalActivity.objects.latest_ids()
+            filters |= Q(
                 involvements__fk_activity__attributes__name='target_country',
-                involvements__fk_activity__attributes__value__in=countries
+                involvements__fk_activity__attributes__value__in=countries,
+                involvements__fk_activity_id__in=latest_ids
             )
 
-        return queryset
+        return queryset.filter(filters)
 
 
 class LatestQuerySetMixin(FilteredQuerySetMixin):
