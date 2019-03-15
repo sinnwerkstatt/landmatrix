@@ -246,7 +246,9 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return top_investors
 
     def format_investors(self, investors):
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
+        return '|'.join(['#'.join([str(i.investor_identifier),
+                                   i.name.replace('#', '').replace("\n", ''),
+                                   str(i.fk_country or '')])
                          for i in investors])
 
 
