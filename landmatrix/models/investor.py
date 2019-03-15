@@ -508,8 +508,9 @@ class HistoricalInvestor(InvestorBase):
 
         def update_investor(hinv, approve=True):
             versions = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier)
-            # Only approve if this is the first investor version
-            if approve and versions.count() == 1:
+            versions = versions.exclude(fk_status_id=hinv.STATUS_PENDING)
+            # Only approve if all existing versions are pending
+            if approve and versions.count() == 0:
                 # Update status of historical investor
                 if hinv.fk_status_id == hinv.STATUS_PENDING:
                     hinv.fk_status_id = hinv.STATUS_OVERWRITTEN
