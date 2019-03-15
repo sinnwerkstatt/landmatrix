@@ -409,6 +409,7 @@ class ElasticSearch(object):
             public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
             if public_activity:
                 top_investors = public_activity.get_top_investors()
+                parent_companies = public_activity.get_parent_companies()
                 investor_countries = public_activity.get_investor_countries()
                 deal_attrs.update({
                     'is_public': 'True' if public_activity.is_public_deal() else 'False',
@@ -420,6 +421,7 @@ class ElasticSearch(object):
                     'current_implementation_status': public_activity.get_implementation_status(),
                     'init_date': public_activity.get_init_date() or None,
                     'top_investors': public_activity.format_investors(top_investors),
+                    'parent_companies': public_activity.format_investors(parent_companies),
                     'investor_id': [i.investor_identifier for i in top_investors],
                     'investor_name': [i.name for i in top_investors],
                     'investor_country': [c.id for c in investor_countries],
