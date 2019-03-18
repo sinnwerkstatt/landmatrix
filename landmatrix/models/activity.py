@@ -355,7 +355,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         # Operating company
         queryset = self.involvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
                                                                            Investor.STATUS_OVERWRITTEN))
-        queryset = queryset.select_related('fk_investor__fk_country', 'fk_country').defer('fk_investor__fk_country__geom')
+        queryset = queryset.select_related('fk_investor', 'fk_investor__fk_country').defer('fk_investor__fk_country__geom')
         operating_companies = [i.fk_investor for i in queryset]
         top_investors = []
         if len(operating_companies) > 0:
@@ -369,7 +369,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         # Operating company
         queryset = self.involvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
                                                                            Investor.STATUS_OVERWRITTEN))
-        queryset = queryset.select_related('fk_investor__fk_country', 'fk_country').defer('fk_investor__fk_country__geom')
+        queryset = queryset.select_related('fk_investor', 'fk_investor__fk_country').defer('fk_investor__fk_country__geom')
         operating_companies = [i.fk_investor for i in queryset]
         parent_companies = []
         if len(operating_companies) > 0:
@@ -377,7 +377,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                                     fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
                                                                 InvestorBase.STATUS_OVERWRITTEN),
                                     role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
-            queryset = queryset.select_related('fk_investor__fk_country', 'fk_country').defer('fk_investor__fk_country__geom')
+            queryset = queryset.select_related('fk_investor', 'fk_investor__fk_country').defer('fk_investor__fk_country__geom')
             parent_companies = [ivi.fk_investor for ivi in queryset]
         return parent_companies
 
