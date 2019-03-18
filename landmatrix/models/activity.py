@@ -355,7 +355,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         # Operating company
         queryset = self.involvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
                                                                            Investor.STATUS_OVERWRITTEN))
-        queryset = queryset.select_related('fk_investor', 'fk_country').defer('fk_investor__fk_country__geom')
+        queryset = queryset.select_related('fk_investor__fk_country', 'fk_country').defer('fk_investor__fk_country__geom')
         operating_companies = [i.fk_investor for i in queryset]
         top_investors = []
         if len(operating_companies) > 0:
