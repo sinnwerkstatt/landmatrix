@@ -17,6 +17,7 @@ from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
 
+
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
         '''
@@ -315,8 +316,8 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             is_author = self.history_user_id == user.id
             # Only Editors and Administrators are allowed to edit pending deals
             if not is_editor:
-                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE)\
-                    or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
+                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
+                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
                     return False
         return True
 
