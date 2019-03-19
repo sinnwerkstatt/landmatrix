@@ -228,15 +228,23 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         Get list of highest parent companies (all right-hand side parent companies of the network
         visualisation)
         """
+        investors_processed = set()
+
         def get_parent_companies(investors):
             parents = []
             for investor in investors:
+                if investor.id in investors_processed:
+                    continue
+                else:
+                    investors_processed.add(investor.id)
                 # Check if there are parent companies for investor
-                parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
+                queryset = InvestorVentureInvolvement.objects.filter(
                     fk_venture=investor,
                     fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
                     fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
+                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)
+                queryset = queryset.select_related('fk_investor', 'fk_investor__fk_country').defer('fk_investor__fk_country__geom')
+                parent_companies = [ivi.fk_investor for ivi in queryset]
                 if parent_companies:
                     parents.extend(get_parent_companies(parent_companies))
                 elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
@@ -246,9 +254,10 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return top_investors
 
     def format_investors(self, investors):
-        return '|'.join(['#'.join([str(i.investor_identifier),
-                                   i.name.replace('#', '').replace("\n", ''),
-                                   str(i.fk_country or '')])
+        # First name, then ID to be able to sort by name
+        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
+                                   str(i.investor_identifier),
+                                   (i.fk_country and i.fk_country.name or '')])
                          for i in investors])
 
 
@@ -283,9 +292,15 @@ class HistoricalInvestor(InvestorBase):
         Get list of highest parent companies (all right-hand side parent companies of the network
         visualisation)
         """
+        investors_processed = set()
+
         def get_parent_companies(investors):
             parents = []
             for investor in investors:
+                if investor.id in investors_processed:
+                    continue
+                else:
+                    investors_processed.add(investor.id)
                 # Check if there are parent companies for investor
                 parent_companies = [ivi.fk_investor for ivi in
                                     HistoricalInvestorVentureInvolvement.objects.filter(
@@ -353,6 +368,7 @@ class HistoricalInvestor(InvestorBase):
                     loans_amount=hinvolvement.loans_amount,
                     loans_currency=hinvolvement.loans_currency,
                     loans_date=hinvolvement.loans_date,
+                    parent_relation=hinvolvement.parent_relation,
                     comment=hinvolvement.comment,
                     fk_status=hinvolvement.fk_status
                 )

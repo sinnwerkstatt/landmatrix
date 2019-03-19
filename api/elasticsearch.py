@@ -716,6 +716,8 @@ class ElasticSearch(object):
 
             # Append involvements for quicker queries
             ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)
+            ivis = ivis.select_related('fk_investor', 'fk_investor__fk_country', 'fk_venture', 'fk_venture__fk_country')
+            ivis = ivis.defer('fk_investor__fk_country__geom', 'fk_venture__fk_country__geom')
             doc['parent_company_of'] = []
             doc['tertiary_investor_of'] = []
             for ivi in ivis:
