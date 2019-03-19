@@ -84,6 +84,7 @@ class TableGroupView(FilterWidgetMixin,
         'availability': _('Availability'),
         'deal_size': _('Deal size'),
         'top_investors': _("Top investors"),
+        'parent_companies': _("Parent companies"),
         'current_negotiation_status': _('Negotiation status'),
         'current_implementation_status': _('Implementation status'),
         'target_region': _('Target region'),
@@ -527,6 +528,13 @@ class TableGroupView(FilterWidgetMixin,
             order_by = ORDER_MAP.get(order_by, order_by)
         order_by = {order_by: dir}
         return order_by
+
+    def clean_parent_companies(self, value, result):
+        investors = []
+        for investor in value.split('|'):
+            investor = investor.split('#')
+            investors.append({'id': investor[1], 'name': investor[0]})
+        return investors
 
     def clean_top_investors(self, value, result):
         investors = []

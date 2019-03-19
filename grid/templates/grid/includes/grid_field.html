@@ -42,6 +42,14 @@
             {% trans "Unknown" %}
         {% endfor %}
     </td>
+{% elif column == "parent_companies" %}
+    <td class="{{ column }}" style="width:183px">
+        {% for investor in item.parent_companies %}
+            {{ investor.name }}<br/>
+        {% empty %}
+            {% trans "Unknown" %}
+        {% endfor %}
+    </td>
 {% elif "investor_country" == column %}
     <td class="{{ column }} investor-country">
         {% for investor_country in item.investor_country %}
