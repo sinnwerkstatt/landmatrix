@@ -368,7 +368,7 @@ class HistoricalInvestor(InvestorBase):
                     loans_amount=hinvolvement.loans_amount,
                     loans_currency=hinvolvement.loans_currency,
                     loans_date=hinvolvement.loans_date,
-                    parent_relation=hinvolvement.parent_relation,
+                    #parent_relation=hinvolvement.parent_relation,
                     comment=hinvolvement.comment,
                     fk_status=hinvolvement.fk_status
                 )
