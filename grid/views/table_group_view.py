@@ -182,7 +182,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     investor = investor['_source']
                     investors[str(investor['investor_identifier'])] = {
                         'name': investor['name'],
-                        'fk_country_display': investor['fk_country_display'],
+                        'fk_country_display': investor.get('fk_country_display'),
                     }
                 self.group_values = investors
         else:
