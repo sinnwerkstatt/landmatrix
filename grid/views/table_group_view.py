@@ -30,7 +30,7 @@ for choice, value in intention_choices:
         }
     INTENTION_MAP[choice] = {
         'value': value,
-        'slug': urlencode(choice),
+        'slug': urlencode(choice).lower(),
         'order_by': value,
         #'is_parent': choices and len(choices) > 0
     }
