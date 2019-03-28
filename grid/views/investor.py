@@ -346,6 +346,7 @@ class InvestorListView(TableGroupView):
         'investor_count': _('Investors'),
         'deal_count': _('Deals'),
         'top_investors': _('Top investors'),
+        'parent_companies': _('Parent companies'),
         'roles': _('Role'),
     }
     variable_table = get_investor_variable_table()
