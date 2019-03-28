@@ -277,7 +277,10 @@ class ElasticSearch(object):
             docs = []
             # Collect documents
             self.stdout and self.stdout.write('Collect %ss for %i deals...' % (doc_type, len(activity_identifiers)))
-            for activity_identifier in activity_identifiers:
+            count = len(activity_identifiers)
+            for i, activity_identifier in enumerate(activity_identifiers):
+                self.stdout and self.stdout.write('%s %i/%i' % (doc_type, i, count), ending='\r')
+                self.stdout and self.stdout.flush()
                 for activity in self.get_activity_versions(activity_identifier):
                     docs.extend(self.get_activity_documents(activity, doc_type=doc_type))
             # Bulk index documents

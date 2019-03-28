@@ -302,12 +302,13 @@ class HistoricalInvestor(InvestorBase):
                 else:
                     investors_processed.add(investor.id)
                 # Check if there are parent companies for investor
-                parent_companies = [ivi.fk_investor for ivi in
-                                    HistoricalInvestorVentureInvolvement.objects.filter(
+                queryset = HistoricalInvestorVentureInvolvement.objects.filter(
                     fk_venture=investor,
                     fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
                     fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                    role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
+                    role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)
+                queryset = queryset.select_related('fk_investor', 'fk_investor__fk_country').defer('fk_investor__fk_country__geom')
+                parent_companies = [ivi.fk_investor for ivi in queryset]
                 if parent_companies:
                     parents.extend(get_parent_companies(parent_companies))
                 elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
