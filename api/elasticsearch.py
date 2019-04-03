@@ -862,13 +862,11 @@ class ElasticSearch(object):
                     for investor_id in investor_ids:
                         self.conn.delete_by_query(query={
                                 "bool": {
-                                    {
-                                        "should": {
-                                            {"term": {"fk_venture": investor_id}},
-                                            {"term": {"fk_investor": investor_id}},
-                                        },
-                                        "minimum_should_match": 1
-                                    }
+                                    "should": [
+                                        {"term": {"fk_venture": investor_id}},
+                                        {"term": {"fk_investor": investor_id}},
+                                    ],
+                                    "minimum_should_match": 1
                                 }
                             },
                             index=self.index_name,
