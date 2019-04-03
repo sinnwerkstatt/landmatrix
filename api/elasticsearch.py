@@ -409,7 +409,7 @@ class ElasticSearch(object):
             # TODO: Prevent extra Activity query
             # e.g. move these attributes to BaseActivity
             top_investors = activity.get_top_investors()
-            parent_companies = activity.get_parent_companies()
+            #parent_companies = activity.get_parent_companies()
             investor_countries = activity.get_investor_countries()
             deal_attrs.update({
                 'is_public': 'True' if activity.is_public_deal() else 'False',
@@ -421,7 +421,7 @@ class ElasticSearch(object):
                 'current_implementation_status': activity.get_implementation_status(),
                 'init_date': activity.get_init_date() or None,
                 'top_investors': activity.format_investors(top_investors),
-                'parent_companies': activity.format_investors(parent_companies),
+                #'parent_companies': activity.format_investors(parent_companies),
                 'investor_id': [i.investor_identifier for i in top_investors],
                 'investor_name': [i.name for i in top_investors],
                 'investor_country': [c.id for c in investor_countries],
