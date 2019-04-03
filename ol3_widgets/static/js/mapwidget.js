@@ -492,15 +492,21 @@ $(document).ready(function () {
                     });
                 }
 
-                if (extent) {
-                    this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
+                try {
+                    if (extent) {
+                        this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
+                    } else {
+                        this.map.getView().setCenter(this.defaultCenter());
+                    }
+                    // Save for next time
+                    this.savedCoordinates = this.map.getView().getCenter();
+                    this.savedZoom = this.map.getView().getZoom();
+                } catch (e) {
+                    var error = $('<p class="alert alert-warning">Invalid shapefile. Please fix and upload again.</p>'),
+                        container = $('#' + this.options.id).parent();
+                    container.find('.alert-warning').remove();
+                    container.prepend(error);
                 }
-                else {
-                    this.map.getView().setCenter(this.defaultCenter());
-                }
-                // Save for next time
-                this.savedCoordinates = this.map.getView().getCenter();
-                this.savedZoom = this.map.getView().getZoom();
             }
         };
 
