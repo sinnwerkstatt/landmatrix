@@ -6,9 +6,9 @@
             <p class="alert alert-warning">
                 <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %} class="pull-right">
                 {% if set_default_filters %}
-                    <strong>{% trans "Default filters are enabled" %}</strong>. {% trans "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data." %} <a href="/about-land-matrix/#filters">{% trans "Read more" %}</a>
+                    <strong>{% trans "Default filters are enabled" %}</strong>. {% trans "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data." %} <a href="/faq/#what-are-the-database-default-settings">{% trans "Read more" %}</a>
                 {% else %}
-                    <strong>{% trans "Default filters are disabled" %}</strong>. {% trans "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets." %} <a href="/about-land-matrix/#filters">{% trans "Read more" %}</a>
+                    <strong>{% trans "Default filters are disabled" %}</strong>. {% trans "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets." %} <a href="/faq/#what-are-the-database-default-settings">{% trans "Read more" %}</a>
                 {% endif %}
             </p>
         </form>
@@ -56,7 +56,7 @@
                         <li>
                             <h4>
                                 {{ group.name }}
-                                <a href="#" class="toggle-tooltip pull-right" title="{{ group.name }}">
+                                <a href="/faq/" class="toggle-tooltip pull-right" title="{{ group.name }}">
                                     <i class="fa fa-question-circle"> </i>
                                 </a>
                             </h4>

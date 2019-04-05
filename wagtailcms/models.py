@@ -333,7 +333,7 @@ class LatestNewsBlock(StructBlock):
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
-        queryset = BlogPage.objects.order_by('-date')
+        queryset = BlogPage.objects.live().public().order_by('-date')
         tag = None
         if context.get('country'):
             tag = context.get('country').slug

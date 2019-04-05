@@ -21,7 +21,7 @@
 
     <div class="text-center">
         <p><a class="btn"
-              href="{% if tag %}{% url "news:tag" tag=tag %}{% else %}/stay-informed/{% endif %}">
+              href="/stay-informed/{% if tag %}?tag={{ tag }}{% endif %}">
             {% trans "All News and Publications" %}{% if name %}: {{ name }}{% endif %}
         </a></p>
     </div>

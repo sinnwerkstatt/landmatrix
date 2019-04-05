@@ -13,9 +13,9 @@
                 {% elif field.name == 'file' %}
                     <a href="{{ MEDIA_URL }}{{ DATA_SOURCE_DIR }}/{{ field.value|safe }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
                 {% elif field.name == 'contract_area' or field.name == 'intended_area' or field.name == 'production_area' %}
-                    <div id="area-{{ forloop.counter }}-div-map" class="geometry-multipolygon">
-                        <div id="area-{{ forloop.counter }}-map" style="width: 600px; height: 400px;"></div>
-                        <textarea id="area-{{ forloop.counter }}"
+                    <div id="area-{{ form_count }}-{{ forloop.counter }}-div-map" class="geometry-multipolygon">
+                        <div id="area-{{ form_count }}-{{ forloop.counter }}-map" style="width: 600px; height: 400px;"></div>
+                        <textarea id="area-{{ form_count }}-{{ forloop.counter }}"
                                   class="map-serialized-data vSerializedField required"
                                   cols="150" rows="10"
                                   style="display:none"

@@ -1,4 +1,43 @@
 /*  Styling for PDF exports goes here */
+html,
+body {
+    background-color: transparent !important;
+    width: 100%;
+    padding: 0 !important;
+}
+.wrap {
+    margin: 0 !important;
+}
+div#header-container,
+ul.subnav,
+ul.actions {
+    display: none;
+}
+div#container {
+    padding-top: 0 !important;
+}
+.container {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul li,
+ol li,
+dt,
+dd,
+dl a,
+table th,
+table td,
+table a,
+label {
+    color: #000 !important;
+}
 .navbar-main,
 .navbar-subnav,
 .wrap > .container > .row:first-child,

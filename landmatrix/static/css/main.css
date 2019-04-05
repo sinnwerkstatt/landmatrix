@@ -299,6 +299,13 @@
 
   .navbar-header {
     float: none; } }
+
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:focus,
+.nav-pills>li.active>a:hover {
+    background-color: #fc941f !important;
+}
+
 /* ==========================================================================
  *    FORMS
  * ========================================================================== */
@@ -1696,6 +1703,9 @@ html, body {
   float: left;
   margin-top: 25px;
   max-width: 300px; }
+
+.rich-text ul li {
+  list-style: disc; }
 
 .geometry-point,
 .geometry-multipolygon {

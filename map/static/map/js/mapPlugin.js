@@ -215,13 +215,13 @@
 
                 // Update "count" of each value based on the feature's values.
                 $.each(features, function(index, feature) {
-                    var properties = feature.getProperties()[mapInstance.legendKey];
+                    var properties = feature.getProperties();
+                    properties = properties[mapInstance.legendKey];
                     if (!properties) return;
 
                     if (typeof properties === 'string') {
                         properties = [properties];
                     }
-
                     $.each(properties, function(i, prop) {
                         var searchProp = $.grep(data, function(e) { return e.id == prop; });
                         if (searchProp.length == 1) {

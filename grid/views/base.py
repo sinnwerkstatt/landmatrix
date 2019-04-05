@@ -13,6 +13,7 @@ from landmatrix.models import Country, Region, Crop
 from api.views import ElasticSearchMixin
 
 
+
 INTENTION_MAP = {}
 for choice, value in intention_choices:
     if choice in INTENTION_AGRICULTURE_MAP.keys():
@@ -202,7 +203,7 @@ class TableGroupView(FilterWidgetMixin,
                     investor = investor['_source']
                     investors[str(investor['investor_identifier'])] = {
                         'name': investor['name'],
-                        'fk_country_display': investor['fk_country_display'],
+                        'fk_country_display': investor.get('fk_country_display'),
                     }
                 self.group_values = investors
         else:
@@ -551,7 +552,7 @@ class TableGroupView(FilterWidgetMixin,
             if value['value'] in INTENTION_MAP:
                 intention = INTENTION_MAP.get(value['value'])
                 return {
-                    'value': intention['value'],
+                    'value': intention['slug'],
                     'display': intention['value'],
                     'is_parent': False,
                 }
