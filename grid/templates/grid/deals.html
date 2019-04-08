@@ -136,7 +136,7 @@
               {% elif column == "intention" %}
                   <td class="{{ column }}">
                     {% if item.intention %}
-                        <a href="{% url 'deal_list' group='by-intention' %}{{ item.intention.value|urlize }}/?{% add_or_update_param request.GET 'order_by' '' %}"
+                        <a href="{% url 'deal_list' group='by-intention' %}{{ item.intention.value }}/?{% add_or_update_param request.GET 'order_by' '' %}"
                            {% if not item.intention.is_parent %} style="padding-left: 20px;"{% endif %}>
                             <span>{{ item.intention.display }}</span></a>
                     {% else %}
