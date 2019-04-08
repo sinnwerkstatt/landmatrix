@@ -66,19 +66,11 @@
                     <tbody>
                     {% for item in items %}
                         <tr>
-                            {% if item.type == 'activity' %}
                             <td class="deal">
                                 <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
                                     {{ item.id }}
                                 </a>
                             </td>
-                            {% else %}
-                            <td class="investor">
-                                <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
-                                    {{ item.id }}
-                                </a>
-                            </td>
-                            {% endif %}
                             <td class="user">{{ item.from_user }}</td>
                             <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
                             <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
