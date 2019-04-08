@@ -259,8 +259,6 @@ class DashboardView(LatestQuerySetMixin,
         for act_or_inv in self.get_pending_deletes_queryset():
             pendings.append({'action': 'delete', 'act_inv': activity_or_investor_to_template(act_or_inv)})
         pendings.sort(key=lambda p: p['act_inv']['timestamp'], reverse=True)
-        for act in self.get_feedback_queryset():
-            pendings.append({'action': 'feedback', 'act_inv': activity_or_investor_to_template(act_or_inv)})
         feedback = self.get_feedback_queryset()
 
         context.update({
