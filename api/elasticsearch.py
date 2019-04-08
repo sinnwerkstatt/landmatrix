@@ -695,8 +695,8 @@ class ElasticSearch(object):
                                                        fk_status__in=(
                                                            HistoricalInvestor.STATUS_ACTIVE,
                                                            HistoricalInvestor.STATUS_OVERWRITTEN,
-                                                           HistoricalInvestor.STATUS_DELETED)).distinct().latest()
-            newest = newest.defer('fk_country__geom')
+                                                           HistoricalInvestor.STATUS_DELETED))
+            newest = newest.defer('fk_country__geom').distinct().latest()
             if newest:  # and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
                 versions.append(newest)
         except HistoricalInvestor.DoesNotExist:
