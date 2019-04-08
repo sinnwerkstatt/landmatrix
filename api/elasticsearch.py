@@ -333,7 +333,11 @@ class ElasticSearch(object):
             # Collect documents
             self.stdout and self.stdout.write('Collect %ss for %i investors...' % (
                 doc_type, len(investor_identifiers)))
-            for investor_identifier in investor_identifiers:
+
+            count = len(investor_identifiers)
+            for i, investor_identifier in enumerate(investor_identifiers):
+                self.stdout and self.stdout.write('%s %i/%i' % (doc_type, i, count), ending='\r')
+                self.stdout and self.stdout.flush()
                 for investor in self.get_investor_versions(investor_identifier):
                     docs.extend(self.get_investor_documents(investor, doc_type=doc_type))
             # Bulk index documents
@@ -734,7 +738,7 @@ class ElasticSearch(object):
                 'deal_count': investor.get_deal_count(),
                 'roles': investor.get_roles(),
             })
-            if investor.fk_country:
+            if investor.fk_country_id:
                 doc.update({
                     'region': investor.fk_country.fk_region_id,
                     'region_display': str(investor.fk_country.fk_region),
