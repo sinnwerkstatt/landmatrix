@@ -327,7 +327,7 @@ class ElasticSearch(object):
                     HistoricalInvestor.STATUS_ACTIVE, HistoricalInvestor.STATUS_PENDING,
                     HistoricalInvestor.STATUS_OVERWRITTEN, HistoricalInvestor.STATUS_DELETED
                 ))
-            queryset = queryset.defer('fk_country__geom')
+            queryset = queryset.select_related('fk_country', 'fk_country__fk_region').defer('fk_country__geom')
             queryset = queryset.values_list('investor_identifier', flat=True).distinct()
             investor_identifiers = investor_identifiers or set(queryset)
 
@@ -696,7 +696,7 @@ class ElasticSearch(object):
                                                            HistoricalInvestor.STATUS_ACTIVE,
                                                            HistoricalInvestor.STATUS_OVERWRITTEN,
                                                            HistoricalInvestor.STATUS_DELETED))
-            newest = newest.defer('fk_country__geom').distinct().latest()
+            newest = newest.select_related('fk_country', 'fk_country__fk_region').defer('fk_country__geom').distinct().latest()
             if newest:  # and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
                 versions.append(newest)
         except HistoricalInvestor.DoesNotExist:
@@ -705,7 +705,7 @@ class ElasticSearch(object):
         # get newer pendings
         pendings = HistoricalInvestor.objects.filter(investor_identifier=investor_identifier,
                                                      fk_status_id=HistoricalInvestor.STATUS_PENDING).distinct()
-        pendings = pendings.defer('fk_country__geom')
+        pendings = pendings.select_related('fk_country', 'fk_country__fk_region').defer('fk_country__geom')
         if newest:
             pendings.filter(history_date__gt=newest.history_date)
         versions.extend(pendings)
