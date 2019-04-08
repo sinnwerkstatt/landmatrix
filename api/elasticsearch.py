@@ -322,11 +322,14 @@ class ElasticSearch(object):
 
     def index_investor_documents(self, investor_identifiers=[], doc_types=DOC_TYPES_INVESTOR):
         if not investor_identifiers:
-            investor_identifiers = investor_identifiers or set(HistoricalInvestor.objects.filter(
+            queryset = HistoricalInvestor.objects.filter(
                 fk_status__in=(
                     HistoricalInvestor.STATUS_ACTIVE, HistoricalInvestor.STATUS_PENDING,
                     HistoricalInvestor.STATUS_OVERWRITTEN, HistoricalInvestor.STATUS_DELETED
-                )).values_list('investor_identifier', flat=True).distinct())
+                ))
+            queryset = queryset.defer('fk_country__geom')
+            queryset = queryset.values_list('investor_identifier', flat=True).distinct()
+            investor_identifiers = investor_identifiers or set(queryset)
 
         for doc_type in doc_types:
             docs = []
@@ -693,6 +696,7 @@ class ElasticSearch(object):
                                                            HistoricalInvestor.STATUS_ACTIVE,
                                                            HistoricalInvestor.STATUS_OVERWRITTEN,
                                                            HistoricalInvestor.STATUS_DELETED)).distinct().latest()
+            newest = newest.defer('fk_country__geom')
             if newest:  # and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
                 versions.append(newest)
         except HistoricalInvestor.DoesNotExist:
@@ -701,6 +705,7 @@ class ElasticSearch(object):
         # get newer pendings
         pendings = HistoricalInvestor.objects.filter(investor_identifier=investor_identifier,
                                                      fk_status_id=HistoricalInvestor.STATUS_PENDING).distinct()
+        pendings = pendings.defer('fk_country__geom')
         if newest:
             pendings.filter(history_date__gt=newest.history_date)
         versions.extend(pendings)
