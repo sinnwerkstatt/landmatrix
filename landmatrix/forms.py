@@ -61,6 +61,10 @@ class ActivityFilterForm(forms.ModelForm):
 
 class InvestorFilterForm(forms.ModelForm):
 
+    top_investors = forms.CharField(label=_("Top investors"))
+    deal_count = forms.IntegerField(label=_("Deals"))
+
     class Meta:
         model = Investor
         exclude = ('fk_status', 'subinvestors')
+
