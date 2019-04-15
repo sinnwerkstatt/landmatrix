@@ -321,7 +321,7 @@
                        id="involvements_parent_company">
                         <h5 class="panel-title">
                             {% trans "Involvements as Parent Company" %}
-                            <small>({{ investor.investors.parent_companies.count }})</small>
+                            <small>({{ investor.investors.parent_companies.latest_only.count }})</small>
                             <span id="collapsebtn_involvements_parent_company"
                                   class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -331,7 +331,7 @@
                 <div id="involvements_parent_company_body"
                      class="panel-collapse collapse">
                     <div class="panel-body">
-                        {% for involvement in investor.investors.parent_companies.all %}
+                        {% for involvement in investor.investors.parent_companies.latest_only %}
                             <h3>
                                 {% trans "Involvement" %}
                                 <small>#{{ forloop.counter }}</small>
@@ -408,7 +408,7 @@
                        id="involvements_tertiary_investors">
                         <h5 class="panel-title">
                             {% trans "Involvements as Tertiary investor/lender" %}
-                            <small>({{ investor.investors.tertiary_investors.count }})</small>
+                            <small>({{ investor.investors.tertiary_investors.latest_only.count }})</small>
                             <span id="collapsebtn_involvements_tertiary_investors"
                                   class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -418,7 +418,7 @@
                 <div id="involvements_tertiary_investors_body"
                      class="panel-collapse collapse">
                     <div class="panel-body">
-                        {% for involvement in investor.investors.tertiary_investors.all %}
+                        {% for involvement in investor.investors.tertiary_investors.latest_only %}
                             <h3>
                                 {% trans "Involvement" %}
                                 <small>#{{ forloop.counter }}</small>

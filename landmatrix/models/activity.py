@@ -813,8 +813,11 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         queryset = self.filter(activity_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
 
-    def latest_ids(self):
-        queryset = HistoricalActivity.objects.values('activity_identifier').annotate(
+    def latest_ids(self, status=None):
+        queryset = HistoricalActivity.objects
+        if status:
+            queryset = queryset.filter(fk_status_id__in=status)
+        queryset = queryset.values('activity_identifier').annotate(
             max_id=models.Max('id'),
         ).order_by().values_list('max_id', flat=True)
         return queryset

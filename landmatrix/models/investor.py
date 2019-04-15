@@ -414,8 +414,11 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
         queryset = self.filter(investor_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
 
-    def latest_ids(self):
-        queryset = HistoricalInvestor.objects.values('investor_identifier').annotate(
+    def latest_ids(self, status=None):
+        queryset = HistoricalInvestor.objects
+        if status:
+            queryset = queryset.filter(fk_status_id__in=status)
+        queryset = queryset.values('investor_identifier').annotate(
             max_id=models.Max('id'),
         ).order_by().values_list('max_id', flat=True)
         return queryset
@@ -610,6 +613,10 @@ class InvestorVentureQuerySet(models.QuerySet):
 
     def active(self):
         return self.filter(fk_status__name__in=self.ACTIVE_STATUS_NAMES)
+
+    def latest_only(self):
+        latest_ids = HistoricalInvestor.objects.latest_ids(status=HistoricalInvestor.PUBLIC_STATUSES)
+        return self.filter(fk_venture_id__in=latest_ids, fk_investor_id__in=latest_ids)
 
     # deprecated
     def stakeholders(self):
