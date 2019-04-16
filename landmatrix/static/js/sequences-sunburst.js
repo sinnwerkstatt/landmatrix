@@ -43,7 +43,6 @@ var arc = d3.svg.arc()
 d3.text("visit-sequences.csv", function(text) {
   var csv = d3.csv.parseRows(text);
   var json = buildHierarchy(csv);
-  debugger;
   createVisualization(json);
 });
 

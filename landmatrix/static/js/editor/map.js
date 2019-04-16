@@ -203,11 +203,9 @@ function initializeMap (mapId, lat, lon) {
     });
 
     map.on('zoomend', function(evt) {
-        debugger;
     });
 
     map.on('moveend', function(evt) {
-        debugger;
     });
 
     fields.lon.change(function() {

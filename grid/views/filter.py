@@ -529,8 +529,8 @@ class FilterWidgetMixin:
 
     def set_default_filters(self, data, disabled_presets=[], enabled_presets=[]):
         self.remove_default_filters()
-        # Don't set default filters?
-        if not self.request.session.get('%s:set_default_filters' % self.doc_type):
+        # Don't set default filters? Set them by default (required e.g. for statistics).
+        if not self.request.session.get('%s:set_default_filters' % self.doc_type, True):
             return
         if not disabled_presets:
             if hasattr(self, '%s:disabled_presets' % self.doc_type) and self.disabled_presets:

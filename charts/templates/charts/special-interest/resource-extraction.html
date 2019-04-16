@@ -64,7 +64,6 @@
 <script type="text/javascript">
 $(document).ready(function () {
   $.get('/api/resource-extraction.json{% if country %}?target_country={{ country.id }}{% elif region %}?target_region={{ region.id }}{% endif %}', function (data) {
-    debugger;
     var stats = $('#stats'),
         size = stats.find('.size'),
         deals = stats.find('.deals'),
