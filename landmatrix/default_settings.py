@@ -62,17 +62,17 @@ INSTALLED_APPS += (
     #'template_timings_panel',
 
     # wagtail and dependencies
-    'wagtail.wagtailforms',
-    'wagtail.wagtailredirects',
-    'wagtail.wagtailembeds',
-    'wagtail.wagtailsites',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailsnippets',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailimages',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtailcore',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
     'blog',
 
     'modelcluster',
@@ -98,7 +98,7 @@ INSTALLED_APPS += (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_gis',
-    'rest_framework_docs',
+    #'rest_framework_docs',
     'rest_framework_swagger',
     'django.contrib.syndication',
     'file_resubmit',
@@ -111,6 +111,8 @@ INSTALLED_APPS += (
     'charts',
     'editor',
     'wagtail_modeltranslation',
+    'wagtail_modeltranslation.makemigrations',
+    'wagtail_modeltranslation.migrate',
     'wagtailcms',
     'api',
     'notifications',
@@ -136,8 +138,8 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.locale.LocaleMiddleware',
 
     # wagtail and dependencies
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
 )
 
@@ -265,6 +267,8 @@ CACHES = {
 COMMENTS_APP = 'public_comments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
+
+MODELTRANSLATION_CUSTOM_FIELDS = ('NoWrapsStreamField', )
 
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520

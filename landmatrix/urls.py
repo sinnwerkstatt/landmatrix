@@ -18,11 +18,11 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
-from wagtail.wagtailcore import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.core import urls as wagtail_urls
 from feeds.views import ActivityChangesFeed
-from registration.backends.hmac.views import RegistrationView
+from django_registration.backends.activation.views import RegistrationView
 
 from grid.views.deal import *
 from grid.views.deal_comparison import *
@@ -48,13 +48,13 @@ urlpatterns = [
     url(r'^accounts/register/$', RegistrationView.as_view(
         form_class=CustomRegistrationForm
     ), name='registration_register'),
-    url(r'^accounts/', include('registration.backends.hmac.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/', include('django_registration.backends.activation.urls')),
+    url(r'^admin/', admin.site.urls),
     url(r'^impersonate/', include('impersonate.urls')),
 
     url(r'^language/(?P<language>[^/]+)/$', SwitchLanguageView.as_view(), name='switch_language'),
 
-    url(r'^api/docs/', include('rest_framework_docs.urls')),
+    #url(r'^api/docs/', include('rest_framework_docs.urls')),
     url(r'^api/', include(api_urls)),
 
     # Wagtail

@@ -223,7 +223,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     # FIXME: Availability should be moved to HistoricalActivity
     availability = models.FloatField(_("availability"), blank=True, null=True)
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1, on_delete=models.PROTECT)
 
     objects = ActivityQuerySet.as_manager()
     negotiation_status_objects = NegotiationStatusManager()
@@ -835,7 +835,7 @@ class HistoricalActivity(ActivityBase):
     public_version = models.OneToOneField(
         Activity, blank=True, null=True, related_name='historical_version', on_delete=models.SET_NULL)
     history_date = models.DateTimeField(default=timezone.now)
-    history_user = models.ForeignKey('auth.User', blank=True, null=True)
+    history_user = models.ForeignKey('auth.User', blank=True, null=True, on_delete=models.SET_NULL)
     comment = models.TextField(_('Comment'), blank=True, null=True)
     fully_updated = models.BooleanField(_("Fully updated"), default=False)
 

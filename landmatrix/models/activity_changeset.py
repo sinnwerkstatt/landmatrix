@@ -19,17 +19,17 @@ class ReviewDecision(models.Model):
 class ActivityChangeset(models.Model):
     fk_activity = models.ForeignKey(
         'landmatrix.HistoricalActivity', verbose_name=_("Activity"),
-        blank=True, null=True, related_name='changesets')
+        blank=True, null=True, related_name='changesets', on_delete=models.CASCADE)
     fk_country = models.ForeignKey(
-        'landmatrix.Country', verbose_name=_("Country"), blank=True, null=True)
+        'landmatrix.Country', verbose_name=_("Country"), blank=True, null=True, on_delete=models.SET_NULL)
 
     fk_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User"), blank=True,
-        null=True)
+        null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     fk_review_decision = models.ForeignKey(
         ReviewDecision, verbose_name=_("Review decision"), blank=True,
-        null=True)
+        null=True, on_delete=models.SET_NULL)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
     objects = ActivityChangesetManager()

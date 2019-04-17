@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 
-from registration.signals import user_registered
+from django_registration.signals import user_registered
 
 from editor.models import UserRegionalInfo
 

@@ -3,7 +3,7 @@ import collections
 from copy import deepcopy
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser

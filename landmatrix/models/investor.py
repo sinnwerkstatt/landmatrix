@@ -139,9 +139,8 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     investor_identifier = models.IntegerField(
         _("Investor ID"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
     name = models.CharField(_("Name"), max_length=1024)
-    fk_country = models.ForeignKey(
-        "Country", verbose_name=_("Country of registration/origin"),
-        blank=True, null=True)
+    fk_country = models.ForeignKey("Country", verbose_name=_("Country of registration/origin"),
+                                   blank=True, null=True, on_delete=models.SET_NULL)
     classification = models.CharField(verbose_name=_('Classification'),
         max_length=3, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
 
@@ -150,7 +149,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         _("Opencorporates link"), blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), on_delete=models.PROTECT)
 
     objects = InvestorQuerySet.as_manager()
 
@@ -429,7 +428,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
 
 class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
-    history_user = models.ForeignKey('auth.User', blank=True, null=True)
+    history_user = models.ForeignKey('auth.User', blank=True, null=True, on_delete=models.SET_NULL)
     action_comment = models.TextField(_('Comment'), blank=True, null=True)
 
     objects = HistoricalInvestorQuerySet.as_manager()
@@ -681,14 +680,14 @@ class InvestorVentureInvolvementBase(models.Model):
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
-    loans_currency = models.ForeignKey(
-        "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
+    loans_currency = models.ForeignKey("Currency", verbose_name=_("Loan currency"), blank=True, null=True,
+                                       on_delete=models.SET_NULL)
     loans_date = models.CharField("Loan date", max_length=10, blank=True, null=True)
     parent_relation = models.CharField(verbose_name=_('Parent relation'),
         max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1, on_delete=models.PROTECT)
 
     objects = InvestorVentureQuerySet.as_manager()
 
@@ -699,9 +698,9 @@ class InvestorVentureInvolvementBase(models.Model):
 class InvestorVentureInvolvement(InvestorVentureInvolvementBase):
     # FIXME: related names are named the wrong way here
     fk_venture = models.ForeignKey(Investor, verbose_name=_('Investor ID Downstream'), db_index=True,
-                                   related_name='venture_involvements')
+                                   related_name='venture_involvements', on_delete=models.CASCADE)
     fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True,
-                                    related_name='investors')
+                                    related_name='investors', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Investor Venture Involvement')
@@ -712,9 +711,9 @@ class InvestorVentureInvolvement(InvestorVentureInvolvementBase):
 class HistoricalInvestorVentureInvolvement(InvestorVentureInvolvementBase):
     # FIXME: related names are named the wrong way here
     fk_venture = models.ForeignKey(HistoricalInvestor, verbose_name=_('Investor ID Downstream'),
-                                   db_index=True, related_name='venture_involvements')
+                                   db_index=True, related_name='venture_involvements', on_delete=models.CASCADE)
     fk_investor = models.ForeignKey(HistoricalInvestor, verbose_name=_('Investor ID Upstream'),
-                                    db_index=True, related_name='investors')
+                                    db_index=True, related_name='investors', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Historical Investor Venture Involvement')
@@ -763,7 +762,7 @@ class InvestorActivityInvolvementBase(models.Model):
         STATUS_TO_DELETE, _('To delete'),
     )
 
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), on_delete=models.PROTECT)
 
     objects = InvestorActivityInvolvementManager()
 
@@ -778,10 +777,10 @@ class InvestorActivityInvolvementBase(models.Model):
 
 
 class InvestorActivityInvolvement(InvestorActivityInvolvementBase):
-    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"),
-                                    related_name='involvements', db_index=True)
-    fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"),
-                                    related_name='involvements', db_index=True)
+    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), related_name='involvements',
+                                    db_index=True, on_delete=models.CASCADE)
+    fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"), related_name='involvements',
+                                    db_index=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Investor Activity Involvement')
@@ -790,10 +789,10 @@ class InvestorActivityInvolvement(InvestorActivityInvolvementBase):
 
 
 class HistoricalInvestorActivityInvolvement(InvestorActivityInvolvementBase):
-    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"),
-                                    related_name='involvements', db_index=True)
-    fk_investor = models.ForeignKey("HistoricalInvestor", verbose_name=_("Investor"),
-                                    related_name='involvements', db_index=True)
+    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"), related_name='involvements',
+                                    db_index=True, on_delete=models.CASCADE)
+    fk_investor = models.ForeignKey("HistoricalInvestor", verbose_name=_("Investor"), related_name='involvements',
+                                    db_index=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Historical Investor Activity Involvement')
