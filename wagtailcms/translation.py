@@ -1,4 +1,4 @@
-from wagtail_modeltranslation.translation import TranslationOptions
+from modeltranslation.translator import TranslationOptions
 from modeltranslation.decorators import register
 
 from .models import *
