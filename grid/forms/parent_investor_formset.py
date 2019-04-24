@@ -129,7 +129,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         instances = super().save(commit=False)
 
         for instance in instances:
-            if not hasattr(instance, 'fk_investor'):
+            if not hasattr(instance, 'fk_investor') or not fk_venture:
                 continue
             instance.id = None
             instance.fk_venture = fk_venture
