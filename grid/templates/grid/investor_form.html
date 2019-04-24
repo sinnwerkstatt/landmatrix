@@ -57,7 +57,7 @@
                 </div>
 
                 <div id="general_info_body"
-                     class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} with-error{% endif %}">
+                     class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} in with-error{% endif %}">
                     <div class="panel-body">
                     {% include "grid/form.html" with exclude='action_comment' %}
                     </div>
@@ -174,7 +174,7 @@
                     </button>
                     {% endif %}
                     or <a href="{% url "investor_detail" investor_id=investor.id %}">{% trans 'Cancel' %}</a>
-                    {% if perms.landmatrix.review_activity or perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-investor" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this investor" %}</a>{% endif %}
+                    {% if investor %}{% if perms.landmatrix.review_activity or perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-investor" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this investor" %}</a>{% endif %}{% endif %}
                 {% endif %}
             </div>
         </div>

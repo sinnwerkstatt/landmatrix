@@ -418,13 +418,26 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
         queryset = HistoricalInvestor.objects
         if status:
             queryset = queryset.filter(fk_status_id__in=status)
-        queryset = queryset.values('investor_identifier').annotate(
-            max_id=models.Max('id'),
-        ).order_by().values_list('max_id', flat=True)
+        queryset = queryset.values('investor_identifier').annotate(max_id=models.Max('id'))
+        queryset = queryset.order_by().values_list('max_id', flat=True)
         return queryset
 
-    def latest_only(self):
-        return self.filter(id__in=self.latest_ids())
+    def latest_only(self, status=None):
+        return self.filter(id__in=self.latest_ids(status))
+
+    def latest_public_or_pending(self):
+        return self.filter(id__in=self.latest_ids(status=(HistoricalInvestor.STATUS_ACTIVE,
+                                                          HistoricalInvestor.STATUS_OVERWRITTEN,
+                                                          HistoricalInvestor.STATUS_PENDING)))
+
+    def latest_public_and_pending(self):
+        public_filter = models.Q(id__in=self.latest_ids(status=(HistoricalInvestor.STATUS_ACTIVE,
+                                                                HistoricalInvestor.STATUS_OVERWRITTEN)))
+        public_or_pending_filter = models.Q(id__in=self.latest_ids(status=(HistoricalInvestor.STATUS_ACTIVE,
+                                                                           HistoricalInvestor.STATUS_OVERWRITTEN,
+                                                                           HistoricalInvestor.STATUS_PENDING)))
+        return self.filter(public_filter | public_or_pending_filter)
+
 
 
 class HistoricalInvestor(InvestorBase):
