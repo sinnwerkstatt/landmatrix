@@ -8,7 +8,6 @@ import wagtail.core.blocks
 import wagtail.core.fields
 import wagtail.embeds.blocks
 import wagtail.images.blocks
-import wagtail_modeltranslation.models
 import wagtailcms.models
 
 
@@ -49,7 +48,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
         migrations.CreateModel(
             name='CountryPage',
@@ -79,7 +78,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
         migrations.CreateModel(
             name='RegionIndex',
@@ -108,7 +107,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
         migrations.CreateModel(
             name='RegionPage',
@@ -138,7 +137,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
         migrations.CreateModel(
             name='WagtailPage',
@@ -167,7 +166,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
         migrations.CreateModel(
             name='WagtailRootPage',
@@ -220,6 +219,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
+            bases=('wagtailcore.page',),
         ),
     ]

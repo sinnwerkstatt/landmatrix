@@ -42,4 +42,4 @@ django-hstore==1.4.*
 django-registration==3.0
 python-memcached
 gunicorn
-psycopg2
+psycopg2==2.7.*

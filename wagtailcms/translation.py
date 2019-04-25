@@ -1,3 +1,4 @@
+from blog.models import BlogIndexPage, BlogPage
 from modeltranslation.translator import TranslationOptions
 from modeltranslation.decorators import register
 
@@ -55,3 +56,13 @@ class CountryPageTR(TranslationOptions):
     fields = (
         'body',
     )
+
+
+@register(BlogIndexPage)
+class BlogIndexPageTR(TranslationOptions):
+    pass
+
+
+@register(BlogPage)
+class BlogPageTR(TranslationOptions):
+    pass
