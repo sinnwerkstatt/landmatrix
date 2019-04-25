@@ -26,7 +26,7 @@
             {% for i in item.intention %}
             {% if not i.parent %}
             <li>
-                <a href="{% url 'data' %}by-intention/{{ i.slug }}/" class="toggle-tooltip intention-icon {{ i.slug|lower }}" title="{{ i.value }}"><span>{{ i.value }}</span></a>
+                <a href="{% url 'data' %}by-intention/{{ i.slug }}/" class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"><span>{{ i.value }}</span></a>
             </li>
             {% endif %}
             {% empty %}
