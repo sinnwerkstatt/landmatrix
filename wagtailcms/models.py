@@ -350,11 +350,7 @@ class LatestNewsBlock(StructBlock):
             tag = context.get('region').slug
             context['name'] = context.get('region').name
         if tag:
-            filter_queryset = queryset.filter(tags__slug=tag)
-            if filter_queryset.count() > 0:
-                queryset = filter_queryset
-            else:
-                queryset = queryset.filter(tags__isnull=True)
+            queryset = queryset.filter(tags__slug=tag)
         limit = value.get('limit')
         context['tag'] = tag
         context['news'] = queryset[:int(limit)]
