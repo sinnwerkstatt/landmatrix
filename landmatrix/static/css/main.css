@@ -1330,13 +1330,13 @@ a.cc-icons:hover {
   background-position: 0 -32px; }
 
 .timber-plantation,
-.forest-logging-management,
+.forest-logging-management-for-wood-and-fibre,
 .for-carbon-sequestration-redd,
 .forestry-unspecified {
   background-position: -32px 0; }
 
 .timber-plantation:hover,
-.forest-logging-management:hover,
+.forest-logging-management-for-wood-and-fibre:hover,
 .for-carbon-sequestration-redd:hover,
 .forestry-unspecified:hover {
   background-position: -32px -32px; }
