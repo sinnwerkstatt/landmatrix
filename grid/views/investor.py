@@ -294,7 +294,7 @@ class InvestorDetailView(DetailView):
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             i = self._get_public_investor()
             if not i:
                 raise Http404('Investor %s is not public' % investor_id)

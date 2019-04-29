@@ -23,7 +23,7 @@ class ActivityQuerySet(models.QuerySet):
         '''
         Status public, not to be confused with is_public.
         '''
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=ActivityBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
         else:
@@ -33,7 +33,7 @@ class ActivityQuerySet(models.QuerySet):
         statuses = ActivityBase.PUBLIC_STATUSES + (
             ActivityBase.STATUS_DELETED,
         )
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=statuses) |
                         models.Q(history_user=user))
         else:
@@ -292,7 +292,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         Returns all deal versions
         """
         queryset = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).all()
-        if not (user and user.is_authenticated()):
+        if not (user and user.is_authenticated):
             queryset = queryset.filter(fk_status__in=(HistoricalActivity.STATUS_ACTIVE,
                                                       HistoricalActivity.STATUS_OVERWRITTEN))
         return queryset.order_by('-history_date')

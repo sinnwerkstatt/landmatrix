@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^accounts/register/$', RegistrationView.as_view(
         form_class=CustomRegistrationForm
     ), name='registration_register'),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^accounts/', include('django_registration.backends.activation.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^impersonate/', include('impersonate.urls')),

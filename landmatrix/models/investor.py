@@ -16,7 +16,7 @@ class InvestorQuerySet(models.QuerySet):
         '''
         Status public, not to be confused with is_public.
         '''
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=InvestorBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
         else:
@@ -26,7 +26,7 @@ class InvestorQuerySet(models.QuerySet):
         statuses = InvestorBase.PUBLIC_STATUSES + (
             InvestorBase.STATUS_DELETED,
         )
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=statuses) |
                         models.Q(history_user=user))
         else:
@@ -217,7 +217,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         Returns all deal versions
         """
         queryset = HistoricalInvestor.objects.filter(investor_identifier=self.investor_identifier)
-        if not (user and user.is_authenticated()):
+        if not (user and user.is_authenticated):
             queryset = queryset.filter(fk_status__in=(HistoricalInvestor.STATUS_ACTIVE,
                                                       HistoricalInvestor.STATUS_OVERWRITTEN))
         return queryset.order_by('-history_date')
@@ -722,6 +722,7 @@ class HistoricalInvestorVentureInvolvement(InvestorVentureInvolvementBase):
 
 
 class InvestorActivityInvolvementManager(models.Manager):
+
     def get_involvements_for_activity(self, activity_identifier):
         return InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity_identifier).\
             filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
@@ -731,7 +732,7 @@ class InvestorActivityInvolvementManager(models.Manager):
         Get involvements for newest versions of activities
         :return:
         """
-        activity_class = self.model._meta.get_field('fk_activity').rel.model
+        activity_class = self.model._meta.get_field('fk_activity').related_model
         current_activities = activity_class.objects.latest_ids()
         return self.filter(fk_activity_id__in=current_activities)
 

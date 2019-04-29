@@ -13,7 +13,7 @@ class DealDetailView(RetrieveAPIView):
     lookup_field = 'deal_id'
 
     def get_queryset(self):
-        if self.request.user.is_authenticated() and self.request.user.is_staff:
+        if self.request.user.is_authenticated and self.request.user.is_staff:
             queryset = Activity.objects.all()
         else:
             queryset = Activity.objects.public(self.request.user)

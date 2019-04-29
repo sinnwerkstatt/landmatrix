@@ -119,14 +119,14 @@ INSTALLED_APPS += (
     'public_comments',
     'feeds',
     'impersonate',
+    'celery',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -144,7 +144,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 if FRONTENDDEV:
-    MIDDLEWARE_CLASSES += 'livereload.middleware.LiveReloadScript',
+    MIDDLEWARE += 'livereload.middleware.LiveReloadScript',
 
 ROOT_URLCONF = 'landmatrix.urls'
 
@@ -160,10 +160,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.media',
-                'django.core.context_processors.static',
-                'django.core.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'wagtailcms.context_processors.add_root_page',
@@ -291,8 +291,11 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_REDIRECT_URL = '/editor/'
-IMPERSONATE_REQUIRE_SUPERUSER = True
-IMPERSONATE_ALLOW_SUPERUSER = True
+IMPERSONATE = {
+    "REDIRECT_URL": '/editor/',
+    "REQUIRE_SUPERUSER": True,
+    "ALLOW_SUPERUSER": True
+}
 
 TWITTER_TIMELINE = {
     'consumer_key': 'lDSsFwPuVqIvWNTVqYrkPgqVx',

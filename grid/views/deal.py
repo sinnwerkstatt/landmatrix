@@ -363,7 +363,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         deal_id = self.kwargs.get('deal_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             a = self._get_public_activity()
             if not a or not a.is_public:
                 raise Http404('Activity %s is not public' % deal_id)
@@ -451,7 +451,7 @@ def display_invalid_forms(forms):
 
 def get_forms(activity, user, prefix=None):
     forms = [get_form(activity, form, prefix) for form in PUBLIC_FORMS]
-    if user.is_authenticated():
+    if user.is_authenticated:
         forms.extend([get_form(activity, form, prefix) for form in USER_FORMS])
     if activity:
         for form_class in get_country_specific_form_classes(activity):

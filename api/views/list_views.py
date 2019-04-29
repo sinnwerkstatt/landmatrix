@@ -300,7 +300,7 @@ class ElasticSearchMixin:
 
     def add_public_logic(self, query):
         # Public user?
-        if not self.request or self.request.user.is_anonymous():
+        if not self.request or self.request.user.is_anonymous:
             query['filter'].append({
                 "bool": {
                     "filter": {

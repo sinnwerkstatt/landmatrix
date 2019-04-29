@@ -405,7 +405,7 @@ def format_filters_elasticsearch(filters, initial_query=None):
 def load_statuses_from_url(request):
     if 'status' in request.GET:
         statuses = []
-        if request.user.is_authenticated() and request.user.is_staff:
+        if request.user.is_authenticated and request.user.is_staff:
             # Staff can view all statuses
             allowed = set(map(
                 operator.itemgetter(0), Activity.STATUS_CHOICES))
