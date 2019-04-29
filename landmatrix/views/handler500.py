@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from django.template import RequestContext
 
 
 def handler500(request):
-    response = render('500.html', context=RequestContext(request))
+    response = render(request, template_name='500.html')
     response.status_code = 500
     return response
