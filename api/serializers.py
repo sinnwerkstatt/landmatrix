@@ -182,7 +182,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                 parent_involvements = involvements.investors()
             else:
                 parent_involvements = involvements.stakeholders()
-            if self.user and not self.user.is_authenticated():
+            if self.user and not self.user.is_authenticated:
                 parent_involvements = parent_involvements.filter(fk_investor__fk_status_id__in=(
                     InvestorBase.STATUS_ACTIVE,
                     InvestorBase.STATUS_OVERWRITTEN

@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class FilterPresetGroup(models.Model):
+
     name = models.CharField(_("Name"), max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -15,6 +16,7 @@ class FilterPresetGroup(models.Model):
 
 
 class FilterPreset(models.Model):
+
     RELATION_AND = 'and'
     RELATION_OR = 'or'
     RELATION_CHOICES = (
@@ -23,8 +25,7 @@ class FilterPreset(models.Model):
     )
 
     name = models.CharField(_("Name"), max_length=255)
-    group = models.ForeignKey(FilterPresetGroup, related_name='filter_presets',
-                              null=True)
+    group = models.ForeignKey(FilterPresetGroup, related_name='filter_presets', null=True, on_delete=models.SET_NULL)
     relation = models.CharField(max_length=3, choices=RELATION_CHOICES,
                                 default=RELATION_AND)
     is_default_country = models.BooleanField(_("Country"), default=False)

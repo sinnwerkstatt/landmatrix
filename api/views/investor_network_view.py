@@ -44,7 +44,7 @@ class InvestorNetworkView(APIView):
                 {'operational_stakeholder': _("An integer is required.")})
 
         investor = get_object_or_404(HistoricalInvestor, pk=investor_id)
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             if investor.fk_status_id not in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
                 raise Http404("Investor is not public")
         self.check_object_permissions(self.request, investor)

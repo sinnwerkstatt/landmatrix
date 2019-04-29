@@ -6,7 +6,7 @@ from collections import OrderedDict
 from django.utils.datastructures import MultiValueDict
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from grid.fields import (
     NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,

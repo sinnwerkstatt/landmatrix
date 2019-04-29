@@ -17,6 +17,7 @@ class BaseGeometryWidget(Widget):
     The base class for rich geometry widgets.
     Renders a map using the WKT of the geometry.
     """
+
     geom_type = 'GEOMETRY'
     map_srid = 4326
     map_width = 600
@@ -27,7 +28,8 @@ class BaseGeometryWidget(Widget):
     template_name = ''  # set on subclasses
 
     def __init__(self, attrs=None):
-        self.attrs = {}
+        super().__init__(attrs=attrs)
+
         defaults = (
             'geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw',
         )
@@ -67,14 +69,21 @@ class BaseGeometryWidget(Widget):
                         "Error transforming geometry from srid '%s' to srid "
                         "'%s' (%s)", value.srid, self.map_srid, err)
 
+        if not attrs:
+            attrs = {}
+        attrs.update({
+            "name": name,
+            "module": 'geodjango_%s' % name.replace('-', '_'),  # JS-safe
+            "serialized": self.serialize(value),
+            "geom_type": gdal.OGRGeomType(self.attrs['geom_type']),
+            "STATIC_URL": settings.STATIC_URL,
+            "LANGUAGE_BIDI": translation.get_language_bidi(),
+        })
+
+
         context = self.build_attrs(
-            attrs,
-            name=name,
-            module='geodjango_%s' % name.replace('-', '_'),  # JS-safe
-            serialized=self.serialize(value),
-            geom_type=gdal.OGRGeomType(self.attrs['geom_type']),
-            STATIC_URL=settings.STATIC_URL,
-            LANGUAGE_BIDI=translation.get_language_bidi(),
+            self.attrs or {},
+            attrs
         )
 
         # fallback if no id
@@ -83,13 +92,14 @@ class BaseGeometryWidget(Widget):
 
         return context
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         context = self.get_context(name, value, attrs=attrs)
 
         return loader.render_to_string(self.template_name, context)
 
 
 class OpenLayersWidget(BaseGeometryWidget):
+
     template_name = 'widgets/openlayers.html'
 
     class Media:
@@ -111,14 +121,17 @@ class OSMWidget(OpenLayersWidget):
     """
     An OpenLayers/OpenStreetMap-based widget.
     """
+
     template_name = 'widgets/openlayers_osm.html'
     initial_center_lon = 5
     initial_center_lat = 47
     initial_zoom = 8
 
     def __init__(self, attrs=None):
-        super(OSMWidget, self).__init__()
+        super().__init__(attrs=attrs)
+
         defaults = ('initial_center_lon', 'initial_center_lat', 'initial_zoom')
+
         for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
@@ -126,6 +139,7 @@ class OSMWidget(OpenLayersWidget):
 
 
 class SerializedMapWidget(OSMWidget):
+
     template_name = 'widgets/map.html'
     initial_center_lon = 0
     initial_center_lat = 0
@@ -161,29 +175,29 @@ class SerializedMapWidget(OSMWidget):
 
 
 class MapWidget(SerializedMapWidget):
-    '''
+    """
     MapWidgets are used where we just need a map, not anything serialized.
-    '''
+    """
     initial_layer = 'satellite'
 
     def deserialize(self, value):
-        '''
+        """
         MapWidget is not acutally serialized when used with location,
         so ignore any values.
-        '''
+        """
         return ''
 
     def serialize(self, value):
-        '''
+        """
         See deserialize.
-        '''
+        """
         return ''
 
 
 class LocationWidget(TextInput):
-    '''
+    """
     LocationWidget combines a map and a Google autocomplete location field.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         map_attrs = {}
@@ -193,11 +207,11 @@ class LocationWidget(TextInput):
         super().__init__(*args, **kwargs)
         self.map_attrs = map_attrs
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         map_widget = MapWidget(attrs=self.map_attrs)
         map_name = '{}-map'.format(name)
 
-        rendered_location = super().render(name, value, attrs=attrs)
+        rendered_location = super().render(name, value, attrs, renderer)
         rendered_map = map_widget.render(map_name, None)
         output = '<div>{}</div><div>{}</div>'.format(
             rendered_location, rendered_map)

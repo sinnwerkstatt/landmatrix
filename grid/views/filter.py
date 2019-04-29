@@ -622,6 +622,6 @@ class FilterWidgetMixin:
 
     @property
     def status(self):
-        if self.request.user.is_authenticated() and "status" in self.request.GET:
+        if self.request.user.is_authenticated and "status" in self.request.GET:
             return self.request.GET.getlist("status")
         return ['2', '3'] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN

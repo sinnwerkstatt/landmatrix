@@ -3,7 +3,7 @@ import time
 
 from django.conf import settings
 
-from landmatrix.celery import app
+from landmatrix.celery_app import app
 from api.elasticsearch import es_save
 
 

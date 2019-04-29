@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from django import template
 from django.forms.fields import MultiValueField, ChoiceField, BooleanField
-from django.template import Node, resolve_variable, Variable
+from django.template import Node, Variable
 from django.template.defaultfilters import slugify, title, stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
@@ -185,11 +185,11 @@ class AddGetParameter(Node):
         self.values = values
 
     def render(self, context):
-        req = resolve_variable('request',context)
+        req = context.get('request')
         params = req.GET.copy()
         for key, value in self.values.items():
             params[key] = Variable(value).resolve(context)
-        return '?%s' %  params.urlencode()
+        return '?%s' % params.urlencode()
 
 
 @register.tag
