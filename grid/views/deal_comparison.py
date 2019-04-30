@@ -3,17 +3,19 @@ from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
 from django.views.generic import TemplateView
 
-from grid.views.deal import DealDetailView, get_forms
-from grid.views.utils import render_to_response
+from grid.views.deal import get_forms
 from landmatrix.models.activity import HistoricalActivity
 from landmatrix.models.deal import Deal
-from landmatrix.models.deal_history import DealHistoryItem
-
 
 
 class DealComparisonView(TemplateView):
 
-    def dispatch(self, request, activity_1, activity_2=None):
+    template_name = 'grid/deal_comparison.html'
+
+    def dispatch(self, request, **kwargs):
+        activity_1 = kwargs.get('activity_1')
+        activity_2 = kwargs.get('activity_2')
+
         deal_1 = HistoricalActivity.objects.get(pk=activity_1)
         if activity_2:
             deal_2 = HistoricalActivity.objects.get(pk=activity_2)
@@ -23,7 +25,7 @@ class DealComparisonView(TemplateView):
         context = super().get_context_data()
         context['deals'] = [deal_1, deal_2]
         context['forms'] = get_comparison(deal_1, deal_2, user=request.user)
-        return render_to_response('grid/deal_comparison.html', context, RequestContext(request))
+        return self.render_to_response(context=context)
 
 
 def get_comparison(deal_1, deal_2, user):

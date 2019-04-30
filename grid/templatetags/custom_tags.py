@@ -56,7 +56,10 @@ def ensure_list(value):
 
 @register.filter(name='fields_display')
 def get_fields_display(form, user):
-    return form.get_fields_display(user=user)
+    if hasattr(form, 'get_fields_display'):
+        return form.get_fields_display(user=user)
+    else:
+        return ''
 
 
 @register.filter(name='display_values')

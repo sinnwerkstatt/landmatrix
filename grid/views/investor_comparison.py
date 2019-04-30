@@ -3,17 +3,21 @@ from dateutil.tz import tzlocal
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.formsets import BaseFormSet
-from django.template.context import RequestContext
 from django.views.generic.base import TemplateView
 
 from grid.forms.investor_form import BaseInvestorForm
 from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
-from grid.views.utils import render_to_response
 from landmatrix.models.investor import HistoricalInvestor
 
 
 class InvestorComparisonView(TemplateView):
-    def dispatch(self, request, investor_1, investor_2=None):
+
+    template_name = 'grid/investor_comparison.html'
+
+    def dispatch(self, request, **kwargs):
+        investor_1 = kwargs.get('investor_1')
+        investor_2 = kwargs.get('investor_2')
+
         hinvestor_1 = HistoricalInvestor.objects.get(pk=investor_1)
         if investor_2:
             hinvestor_2 = HistoricalInvestor.objects.get(pk=investor_2)
@@ -25,7 +29,7 @@ class InvestorComparisonView(TemplateView):
         context['investors'] = [hinvestor_1, hinvestor_2]
         context['forms'] = get_comparison(hinvestor_1, hinvestor_2)
 
-        return render_to_response('grid/investor_comparison.html', context, RequestContext(request))
+        return self.render_to_response(context=context)
 
 
 def get_comparison(investor_1, investor_2):

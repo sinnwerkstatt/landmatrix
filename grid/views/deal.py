@@ -9,7 +9,7 @@ from django.db.models import Max
 from django.forms import BaseFormSet
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import redirect
-from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -20,7 +20,7 @@ from grid.forms.deal_data_source_form import DealDataSourceForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.utils import has_perm_approve_reject
 from grid.views.base import TableGroupView
-from grid.views.utils import render_to_response, render_to_string, PUBLIC_FORMS, USER_FORMS, DEAL_FORMS
+from grid.views.utils import PUBLIC_FORMS, USER_FORMS, DEAL_FORMS
 from landmatrix.models import HistoricalActivity, Activity, Country, DealHistoryItem, ActivityAttributeGroup, \
     HistoricalActivityAttribute, HistoricalInvestorActivityInvolvement, ActivityFeedback, ActivityChangeset
 from landmatrix.pdfgen import PDFViewMixin
@@ -406,10 +406,12 @@ class DealDetailView(PDFViewMixin, TemplateView):
         return context
 
     def render_forms(self, request, context):
-        return render_to_response(self.template_name, context, RequestContext(request))
+        return self.render_to_response(context=context)
 
     def render_forms_to_string(self, request, context):
-        return render_to_string(self.template_name, context, RequestContext(request))
+        return render_to_string(template_name=self.template_name,
+                                context=context,
+                                request=request)
 
 
 def display_valid_forms(forms):
