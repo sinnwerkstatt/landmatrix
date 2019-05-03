@@ -58,7 +58,9 @@ FILTER_OPERATION_MAP = OrderedDict([
 ])
 
 def get_elasticsearch_match_operation(operator, variable_name, value):
-    """ Returns an elasticsearch-conform Match phrase for each SQL-operator """
+    """
+    Returns an elasticsearch-conform Match phrase for each SQL-operator
+    """
     if operator == 'is':
         return ('must', {'match_phrase': {variable_name: value}})
     if operator == 'in':
@@ -74,7 +76,10 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lt':
         return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains':
-        return ('must', {'match_phrase': {variable_name: value.lower()}})
+        return ('must', {'bool': {'should': [
+                    {'match_phrase': {'name': value.lower()}},
+                    {'wildcard': {variable_name: '*%s*' % value.lower()}},
+                ], 'minimum_should_match': 1}})
     if operator == 'not_contains':
         return ('must_not', {'match': {variable_name: value}})
     if operator == 'excludes':
