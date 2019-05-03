@@ -423,8 +423,7 @@ class ElasticSearchMixin:
         self.request.session['%s:disabled_set_default_filters' % self.doc_type] = self.request.session.get(
             '%s:set_default_filters' % self.doc_type, None)
         self.request.session['%s:filters' % self.doc_type] = {}
-        if '%s:set_default_filters' % self.doc_type in self.request.session:
-            del(self.request.session['%s:set_default_filters' % self.doc_type])
+        self.request.session['%s:set_default_filters' % self.doc_type] = True
         # FIXME: Move FilterWidgetMixin.set_default_filters to utils
         f = FilterWidgetMixin()
         f.request = self.request

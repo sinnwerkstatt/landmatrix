@@ -1,11 +1,12 @@
+import coreapi
+import coreschema
 from django.utils.translation import ugettext_lazy as _
+from django.utils.crypto import get_random_string
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework.schemas import ManualSchema
-import coreapi
-import coreschema
 
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from api.filters import Filter, PresetFilter
@@ -91,7 +92,7 @@ class FilterCreateView(FilterDocTypeMixin,
 
         name = request_data.get('name', None)
         if not name:
-            name = 'filter_%i' % (len(request.session.get('%s:filters' % self.doc_type, [])) + 1)
+            name = 'filter_%s' % get_random_string()
 
         if 'preset' in request_data:
             # Check for duplicates
@@ -116,6 +117,10 @@ class FilterCreateView(FilterDocTypeMixin,
                    stored_filter.get('operator', '') == operator and
                    stored_filter.get('value', '') == value):
                     return Response(stored_filters)
+            # Remove filters for same variable
+            if request_data.get('replace_variable', ''):
+                print("TEST: " + request_data.get('replace_variable', ''))
+                stored_filters = dict((k, v) for k, v in stored_filters.items() if v.get('variable') != variable)
             if self.doc_type == 'investor':
                 label = get_investor_field_label(variable)
             else:
@@ -123,7 +128,9 @@ class FilterCreateView(FilterDocTypeMixin,
             new_filter = Filter(
                 variable=variable, operator=operator, value=value,
                 label=label, name=name, display_value=display_value)
+        print(stored_filters)
         stored_filters[new_filter.name] = new_filter
+        print(stored_filters)
         # Convert default filters to custom filters
         stored_filters = dict((k.replace('default_', ''), v)
                               for k, v in stored_filters.items())
