@@ -9,6 +9,7 @@ from grid.fields import TitleField, ActorsField
 from grid.widgets import CommentInput, InvestorSelect
 
 
+# FIXME: Rename to OperatingCompanyForm
 class OperationalStakeholderForm(BaseForm):
     exclude_in_export = ('operational_stakeholder',)
 
