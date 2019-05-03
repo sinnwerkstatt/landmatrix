@@ -1329,15 +1329,15 @@ a.cc-icons:hover {
 .intention-icon:hover {
   background-position: 0 -32px; }
 
-.timber-plantation,
-.forest-logging-management,
-.for-carbon-sequestration-redd,
+.timber-plantation-for-wood-and-fibre,
+.forest-logging-management-for-wood-and-fibre,
+.for-carbon-sequestrationredd,
 .forestry-unspecified {
   background-position: -32px 0; }
 
-.timber-plantation:hover,
-.forest-logging-management:hover,
-.for-carbon-sequestration-redd:hover,
+.timber-plantation-for-wood-and-fibre:hover,
+.forest-logging-management-for-wood-and-fibre:hover,
+.for-carbon-sequestrationredd:hover,
 .forestry-unspecified:hover {
   background-position: -32px -32px; }
 
