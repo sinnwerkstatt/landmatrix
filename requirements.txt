@@ -43,3 +43,4 @@ django-registration==3.0
 python-memcached
 gunicorn
 psycopg2-binary==2.7.*
+redis==3.2.0
