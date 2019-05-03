@@ -3,13 +3,13 @@ from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.db.models import Max
 from django.forms import BaseFormSet
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import redirect
-from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -20,7 +20,7 @@ from grid.forms.deal_data_source_form import DealDataSourceForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.utils import has_perm_approve_reject
 from grid.views.base import TableGroupView
-from grid.views.utils import render_to_response, render_to_string, PUBLIC_FORMS, USER_FORMS, DEAL_FORMS
+from grid.views.utils import PUBLIC_FORMS, USER_FORMS, DEAL_FORMS
 from landmatrix.models import HistoricalActivity, Activity, Country, DealHistoryItem, ActivityAttributeGroup, \
     HistoricalActivityAttribute, HistoricalInvestorActivityInvolvement, ActivityFeedback, ActivityChangeset
 from landmatrix.pdfgen import PDFViewMixin
@@ -363,7 +363,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         deal_id = self.kwargs.get('deal_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             a = self._get_public_activity()
             if not a or not a.is_public:
                 raise Http404('Activity %s is not public' % deal_id)
@@ -406,10 +406,12 @@ class DealDetailView(PDFViewMixin, TemplateView):
         return context
 
     def render_forms(self, request, context):
-        return render_to_response(self.template_name, context, RequestContext(request))
+        return self.render_to_response(context=context)
 
     def render_forms_to_string(self, request, context):
-        return render_to_string(self.template_name, context, RequestContext(request))
+        return render_to_string(template_name=self.template_name,
+                                context=context,
+                                request=request)
 
 
 def display_valid_forms(forms):
@@ -451,7 +453,7 @@ def display_invalid_forms(forms):
 
 def get_forms(activity, user, prefix=None):
     forms = [get_form(activity, form, prefix) for form in PUBLIC_FORMS]
-    if user.is_authenticated():
+    if user.is_authenticated:
         forms.extend([get_form(activity, form, prefix) for form in USER_FORMS])
     if activity:
         for form_class in get_country_specific_form_classes(activity):

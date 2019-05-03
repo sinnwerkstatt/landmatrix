@@ -1,7 +1,7 @@
 import copy
 
 from django.views.generic.base import TemplateView
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template import RequestContext
 from django.views.generic.base import RedirectView
 

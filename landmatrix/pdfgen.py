@@ -12,7 +12,7 @@ import urllib.parse as urlparse
 from tempfile import TemporaryFile, NamedTemporaryFile
 from itertools import chain
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import FileResponse
 from django.conf import settings
 from wkhtmltopdf.utils import _options_to_args

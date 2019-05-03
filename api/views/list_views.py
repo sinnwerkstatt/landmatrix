@@ -3,7 +3,7 @@ import collections
 from copy import deepcopy
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
@@ -39,6 +39,15 @@ class ElasticSearchMixin:
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
 
+    def get_filter_doc_type(self):
+        """
+        Returns doc type for filtering
+        :return:
+        """
+        if self.doc_type == 'location':
+            return 'deal'
+        return self.doc_type
+
     def load_filters_from_url(self, exclude=[]):
         '''
         Read any querystring param filters. Preset filters not allowed.
@@ -61,7 +70,7 @@ class ElasticSearchMixin:
         filters = {}
         parent_company_filters, tertiary_investor_filters = {}, {}
         if self.request:
-            session_filters = self.request.session.get('%s:filters' % self.doc_type, {}) or {}
+            session_filters = self.request.session.get('%s:filters' % self.get_filter_doc_type(), {}) or {}
         else:
             session_filters = {}
 
@@ -300,7 +309,7 @@ class ElasticSearchMixin:
 
     def add_public_logic(self, query):
         # Public user?
-        if not self.request or self.request.user.is_anonymous():
+        if not self.request or self.request.user.is_anonymous:
             query['filter'].append({
                 "bool": {
                     "filter": {

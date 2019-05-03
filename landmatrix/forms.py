@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 
-from registration.forms import RegistrationForm
+from django_registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
 from grid.fields import UserModelChoiceField
 from .models.activity import Activity

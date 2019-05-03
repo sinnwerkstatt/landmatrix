@@ -4,7 +4,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 from django.utils.html import escape
@@ -294,7 +294,7 @@ class InvestorDetailView(DetailView):
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             i = self._get_public_investor()
             if not i:
                 raise Http404('Investor %s is not public' % investor_id)

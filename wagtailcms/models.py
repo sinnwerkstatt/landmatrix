@@ -1,26 +1,20 @@
 import json
 
-from wagtail.wagtailcore import blocks
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.fields import RichTextField, StreamField
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtailcore.blocks import StructBlock
-from wagtail.wagtailembeds.blocks import EmbedBlock
-from wagtail.wagtailcore.blocks import Block, RawHTMLBlock, StreamBlock
+from wagtail.core import blocks
+from wagtail.core.models import Page
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.core.blocks import StructBlock
+from wagtail.embeds.blocks import EmbedBlock
+from wagtail.core.blocks import Block, RawHTMLBlock, StreamBlock
 
-from django.utils.html import format_html, format_html_join, force_text
+from django.utils.html import format_html, format_html_join
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.http import Http404
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 
-from wagtail_modeltranslation.models import TranslationMixin
-from wagtail.wagtailcore import hooks
-from wagtail.wagtailcore.whitelist import attribute_rule
-from wagtail.wagtailadmin.edit_handlers import ObjectList
+from wagtail.core import hooks
+from wagtail.core.whitelist import attribute_rule
 from blog.models import BlogPage
 
 from landmatrix.models.region import Region as DataRegion
@@ -29,6 +23,7 @@ from wagtailcms.twitter import TwitterTimeline
 
 
 class LinkBlock(StructBlock):
+
     cls = blocks.ChoiceBlock(choices=[
         ('btn', 'Button'),
         ('btn btn-with-space', 'Button (with space)'),
@@ -50,6 +45,7 @@ class LinkBlock(StructBlock):
 
 
 class AnchorBlock(StructBlock):
+
     slug = blocks.CharBlock()
 
     class Meta:
@@ -63,12 +59,14 @@ class AnchorBlock(StructBlock):
 
 
 class FAQBlock(StructBlock):
+
     slug = blocks.CharBlock()
     question = blocks.CharBlock()
     answer = blocks.RichTextBlock()
 
 
 class FAQsBlock(StructBlock):
+
     faqs = blocks.ListBlock(FAQBlock())
 
     class Meta:
@@ -89,6 +87,7 @@ class FAQsBlock(StructBlock):
 
 
 class TwitterBlock(StructBlock):
+
     username = blocks.CharBlock(required=True)
     count = blocks.CharBlock(default=20)
 
@@ -110,6 +109,7 @@ class TwitterBlock(StructBlock):
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
+
     def render_basic(self, value, context=None):
         def get_class(block):
             if block.block_type != 'full_width_container':
@@ -127,6 +127,7 @@ class NoWrapsStreamBlock(StreamBlock):
 
 
 class NoWrapsStreamField(StreamField):
+
     def __init__(self, block_types, **kwargs):
         super().__init__(block_types, **kwargs)
         if isinstance(block_types, Block):
@@ -138,6 +139,7 @@ class NoWrapsStreamField(StreamField):
 
 
 class ImageBlock(ImageChooserBlock):
+
     url = blocks.URLBlock(required=False, label='URL')
 
     class Meta:
@@ -152,12 +154,14 @@ class ImageBlock(ImageChooserBlock):
 
 
 class SectionDivider(StructBlock):
+
     class Meta:
         icon = 'fa fa-minus'
         template = 'widgets/divider.html'
 
 
 class LinkedImageBlock(StructBlock):
+
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label='URL')
     caption = blocks.RichTextBlock(required=False)
@@ -176,6 +180,7 @@ class LinkedImageBlock(StructBlock):
 
 
 class SliderBlock(StructBlock):
+
     images = blocks.ListBlock(LinkedImageBlock())
 
     def get_context(self, value, parent_context=None):
@@ -205,6 +210,7 @@ class SliderBlock(StructBlock):
 
 
 class GalleryBlock(StructBlock):
+
     columns = blocks.ChoiceBlock(choices=[
         (1, '1 column'),
         (2, '2 columns'),
@@ -254,6 +260,7 @@ class TitleBlock(blocks.CharBlock):
 
 
 class TitleWithIconBlock(StructBlock):
+
     value = blocks.CharBlock(label='Title')
     fa_icon = blocks.CharBlock(required=False)
     url = blocks.URLBlock(label='URL', required=False)
@@ -323,6 +330,7 @@ def get_country_or_region_link(link, request=None, page=None):
 
 
 class LatestNewsBlock(StructBlock):
+
     limit = blocks.CharBlock()
 
     class Meta:
@@ -342,11 +350,7 @@ class LatestNewsBlock(StructBlock):
             tag = context.get('region').slug
             context['name'] = context.get('region').name
         if tag:
-            filter_queryset = queryset.filter(tags__slug=tag)
-            if filter_queryset.count() > 0:
-                queryset = filter_queryset
-            else:
-                queryset = queryset.filter(tags__isnull=True)
+            queryset = queryset.filter(tags__slug=tag)
         limit = value.get('limit')
         context['tag'] = tag
         context['news'] = queryset[:int(limit)]
@@ -354,6 +358,7 @@ class LatestNewsBlock(StructBlock):
 
 
 class StatisticsBlock(StructBlock):
+
     class Meta:
         icon = 'fa fa-list'
         label = 'Statistics'
@@ -365,6 +370,7 @@ class StatisticsBlock(StructBlock):
         return context
 
 class MapDataChartsBlock(StructBlock):
+
     class Meta:
         icon = 'fa fa-chain'
         label = 'Map / Grid / Charts'
@@ -376,6 +382,7 @@ class MapDataChartsBlock(StructBlock):
         return context
 
 class LinkMapBlock(StructBlock):
+
     '''
     Note that the map template used here is NOT the one from ol3_widgets.
     '''
@@ -400,6 +407,7 @@ class LinkMapBlock(StructBlock):
 
 
 class LatestDatabaseModificationsBlock(StructBlock):
+
     limit = blocks.CharBlock()
 
     class Meta:
@@ -415,6 +423,7 @@ class LatestDatabaseModificationsBlock(StructBlock):
 
 
 class RegionBlock(StructBlock):
+
     class Meta:
         icon = 'fa fa-map-marker'
         label = 'Region'
@@ -431,6 +440,7 @@ class RegionBlock(StructBlock):
 
 
 class CountriesBlock(StructBlock):
+
     class Meta:
         icon = 'fa fa-flag'
         label = 'Countries'
@@ -457,6 +467,7 @@ DATA_BLOCKS = [
 
 
 class Columns1To1Block(StructBlock):
+
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
@@ -475,6 +486,7 @@ class Columns1To1Block(StructBlock):
 
 
 class ThreeColumnsBlock(StructBlock):
+
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     middle_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
@@ -499,12 +511,14 @@ COLUMN_BLOCKS = [
 
 
 class TabBlock(StructBlock):
+
     title = blocks.CharBlock()
     fa_icon = blocks.CharBlock(required=False)
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
 
 class TabsBlock(StructBlock):
+
     tabs = blocks.ListBlock(TabBlock())
 
     class Meta:
@@ -527,6 +541,7 @@ CONTENT_BLOCKS += [
 
 
 class FullWidthContainerBlock(StructBlock):
+
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
         ('lightgrey', 'Light grey'),
@@ -549,7 +564,8 @@ CONTENT_BLOCKS += [
 ]
 
 
-class WagtailRootPage(TranslationMixin, Page):
+class WagtailRootPage(Page):
+
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     map_introduction = RichTextField(blank=True)
     data_introduction = RichTextField(blank=True)
@@ -571,12 +587,14 @@ class WagtailRootPage(TranslationMixin, Page):
     ]
 
 
-class WagtailPage(TranslationMixin, Page):
+class WagtailPage(Page):
+
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
 
-class RegionIndex(TranslationMixin, Page):
+class RegionIndex(Page):
+
     template = 'wagtailcms/region_page.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -591,7 +609,8 @@ class RegionIndex(TranslationMixin, Page):
         return context
 
 
-class RegionPage(TranslationMixin, Page):
+class RegionPage(Page):
+
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -604,7 +623,8 @@ class RegionPage(TranslationMixin, Page):
     parent_page_types = ['wagtailcms.RegionIndex']
 
 
-class CountryIndex(TranslationMixin, Page):
+class CountryIndex(Page):
+
     template = 'wagtailcms/country_page.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -619,7 +639,7 @@ class CountryIndex(TranslationMixin, Page):
         return context
 
 
-class CountryPage(TranslationMixin, Page):
+class CountryPage(Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),

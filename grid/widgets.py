@@ -26,7 +26,7 @@ class TitleWidget(forms.TextInput):
         self.initial = initial
         super().__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs={}):
+    def render(self, name, value, attrs=None, renderer=None):
         return "<h3>%s</h3>" % str(self.initial or "")
 
 
@@ -94,7 +94,7 @@ class YearBasedWidget(forms.MultiWidget):
             self.widgets.extend(widgets)
         return value
 
-    def render(self, name, value, attrs={}):
+    def render(self, name, value, attrs=None, renderer=None):
         # update widgets
         if value:
             self.widgets = []
@@ -130,7 +130,7 @@ class YearBasedWidget(forms.MultiWidget):
                 output.append(helptext)
             attrs = dict(final_attrs)
             attrs['class'] = ' '.join([final_attrs.get('class', ''), hasattr(widget, 'attrs') and widget.attrs.get('class', '') or ''])
-            output.append(widget.render(name + '_%s' % i, widget_value, attrs))
+            output.append(widget.render(name + '_%s' % i, widget_value, attrs, renderer))
             # Close reopen div every n element
             if ((i+1) % widgets_row_count) == 0:
                 # Add "Add more" button to first row
@@ -271,7 +271,7 @@ class MultiTextInput(YearBasedWidget):
 
 class SelectAllCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 
-    def render(self, name, value, attrs={}, choices=()):
+    def render(self, name, value, attrs=None, renderer=None):
         output = u"""
           <label for="select-all-%(id)s">
           <input type="checkbox" name="select-all-%(id)s" class="select" id="select-all-%(id)s">
@@ -293,14 +293,14 @@ class SelectAllCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         """ % {
             "id": attrs.get("id"),
         }
-        output += super(SelectAllCheckboxSelectMultiple, self).render(name, value, attrs)
+        output += super(SelectAllCheckboxSelectMultiple, self).render(name, value, attrs, renderer)
         return mark_safe(output)
 
 
 class PrimaryInvestorSelect(forms.Select):
 
-    def render(self, name, value, attrs={}, choices=()):
-        output = super(PrimaryInvestorSelect, self).render(name, value, attrs, choices)
+    def render(self, name, value, attrs=None, renderer=None):
+        output = super(PrimaryInvestorSelect, self).render(name, value, attrs, renderer)
         output += """
             <a class="btn change-investor" id="change_id_primary_investor" target="_blank" href='/browse/primary-investor/%(value)s/'><i class="icon-pencil"></i> Edit Primary-Investor</a>
             <a class="btn add-investor" id="add_id_primary_investor" target="_blank" href='/add/primary-investor/'><i class="icon-plus"></i> Add Primary-Investor</a>
@@ -334,12 +334,13 @@ class PrimaryInvestorSelect(forms.Select):
 
 
 class NumberInput(forms.TextInput):
-    def render(self, name, value, attrs={}):
+
+    def render(self, name, value, attrs=None, renderer=None):
         attrs.update({
             'type': 'number',
             'class': 'form-control'
         })
-        return super(NumberInput, self).render(name, value, attrs)
+        return super(NumberInput, self).render(name, value, attrs, renderer)
 
 
 class FileInputWithInitial(ResubmitFileWidget):
@@ -348,7 +349,7 @@ class FileInputWithInitial(ResubmitFileWidget):
                              'title="{label}" class="toggle-tooltip"><i class="fa fa-file-pdf-o"></i></a>'
     new_upload_template = "{}-new"
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None, **kwargs):
         if attrs is None:
             attrs = {}
 
@@ -373,7 +374,7 @@ class FileInputWithInitial(ResubmitFileWidget):
                                                          label=_('Current file'))
 
         file_input = super().render(self.new_upload_template.format(name),
-                                    None, attrs)
+                                    None, attrs, renderer, **kwargs)
         output += file_input
 
         return output
@@ -391,14 +392,14 @@ class FileInputWithInitial(ResubmitFileWidget):
 
 class NestedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 
-    def render(self, name, value, attrs={}, choices=()):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None: value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs, {name: name})
         output = [u'<ul>']
         # Normalize to strings
         str_values = set([force_text(v) for v in value])
-        for i, (option_value, option_label, option_choices) in enumerate(chain(self.choices, choices)):
+        for i, (option_value, option_label, option_choices) in enumerate(self.choices):
             # If an ID attribute was given, add a numeric index as a suffix,
             # so that the checkboxes don't all have the same ID attribute.
             if has_id:
@@ -434,15 +435,16 @@ class NestedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 
 
 class LivesearchSelectMultiple(forms.CheckboxSelectMultiple):
-    def render(self, name, value, attrs={}, choices=()):
+
+    def render(self, name, value, attrs=None, renderer=None):
         output = ['<input type="text" class="livesearch multiple"></input>']
         if value is None: value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs, {name: name})
         output.append(u'<ul>')
         # Normalize to strings
         str_values = set([force_text(v.id) for v in value])
-        for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
+        for i, (option_value, option_label) in enumerate(self.choices):
             option_value = force_text(option_value)
             option_label = conditional_escape(force_text(option_label))
             output.append(u'<li><a href="#%s" %s>%s</a>%s</li>' % (
@@ -457,17 +459,17 @@ class LivesearchSelectMultiple(forms.CheckboxSelectMultiple):
 
 class LivesearchSelect(forms.RadioSelect):
 
-    def render(self, name, value, attrs={}, choices=()):
+    def render(self, name, value, attrs=None, renderer=None):
         output = [
             '<a href="#" class="livesearch"><i class="lm lm-search"></i></a>',
             '<p class="livesearch-active"></p>',
             '<input type="hidden" name="%s" value="%s">' % (name, value)]
         if value is None: value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs, {name: name})
         output.append(u'<ul style="display:none">')
         value = force_text(value)
-        for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
+        for i, (option_value, option_label) in enumerate(self.choices):
             option_value = force_text(option_value)
             option_label = conditional_escape(force_text(option_label))
             output.append(u'<li><a href="#%s" %s>%s</a></li>' % (
@@ -480,13 +482,14 @@ class LivesearchSelect(forms.RadioSelect):
 
 
 class DecimalInput(forms.TextInput):
-    def render(self, name, value, attrs={}):
+
+    def render(self, name, value, attrs=None, renderer=None):
         attrs.update({
             'type': 'number',
             'step': 'any',
             'class': 'form-control'
         })
-        return super(DecimalInput, self).render(name, value, attrs)
+        return super(DecimalInput, self).render(name, value, attrs, renderer)
 
 
 class CountrySelect(forms.Select):
@@ -510,15 +513,16 @@ class CountrySelect(forms.Select):
 
 
 class CommentInput(forms.Textarea):
-    def render(self, name, value, attrs={}):
+
+    def render(self, name, value, attrs=None, renderer=None):
         attrs.update({'rows': '3', 'class': 'form-control'})
-        return super(CommentInput, self).render(name, value, attrs)
+        return super(CommentInput, self).render(name, value, attrs, renderer)
 
 
 class BrowseTextInput(forms.TextInput):
 
-    def render(self, name, value, attrs={}):
-        output = super(BrowseTextInput, self).render(name, value, attrs)
+    def render(self, name, value, attrs=None, renderer=None):
+        output = super(BrowseTextInput, self).render(name, value, attrs, renderer)
         output = '<div class="value-wrapper">%s</div>' % output
         output += '<input type="hidden" name="hidden_%s" value="%s"/>' % (name, ",".join(value))
         return mark_safe(output)
@@ -574,7 +578,7 @@ class AreaWidget(forms.MultiWidget):
         ]
         super().__init__(widgets, *args, **kwargs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         '''
         Overridden to pass name to format_output, so we can do js things
         with the map.
@@ -597,7 +601,7 @@ class AreaWidget(forms.MultiWidget):
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
             output.append(
-                widget.render(name + '_%s' % i, widget_value, final_attrs))
+                widget.render(name + '_%s' % i, widget_value, final_attrs, renderer))
         return mark_safe(self.format_output(name, output))
 
     def decompress(self, value):

@@ -21,7 +21,7 @@
     {% endif %}
 {% endif %}
 <br>
-<form class="form-horizontal" method="post" action="{% url 'auth_login' %}">{% csrf_token %}
+<form class="form-horizontal" method="post" action="{% url 'login' %}">{% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
 
     {% include "grid/form.html" with mandatory_label=" " %}
@@ -34,7 +34,7 @@
 </form>
 
 {# Assumes you setup the password_reset view in your URLconf #}
-<p>{% trans "Forgot password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a></p>
+<p>{% trans "Forgot password?" %} <a href="{% url 'password_reset' %}">{% trans "Reset it" %}</a></p>
 <p>{% trans "No registered user yet?" %} <a href="{% url 'registration_register' %}{% if next %}?next={{ next }}{% endif %}">{% trans "Register" %}</a></p>
 
 {% endblock %}

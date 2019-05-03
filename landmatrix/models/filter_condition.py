@@ -4,9 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from api.filters import Filter, FILTER_OPERATION_MAP
 
 
-
-
 class FilterCondition(models.Model):
+
     OPERATOR_CHOICES = ((key, key) for key in FILTER_OPERATION_MAP.keys())
     KEY_CHOICE_VALUE = 'value'
     KEY_CHOICE_VALUE2 = 'value2'
@@ -21,8 +20,7 @@ class FilterCondition(models.Model):
         (KEY_CHOICE_HIGH_INCOME, _('High income')),
     )
 
-    fk_rule = models.ForeignKey('landmatrix.FilterPreset',
-                                related_name='conditions')
+    fk_rule = models.ForeignKey('landmatrix.FilterPreset', related_name='conditions', on_delete=models.CASCADE)
     variable = models.CharField(_("Variable"), max_length=32)
     key = models.CharField(_("Key"), choices=KEY_CHOICES, max_length=32,
                             default=KEY_CHOICE_VALUE)

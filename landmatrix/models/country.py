@@ -1,9 +1,10 @@
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
 class CountryManager(models.Manager):
+
     def get_queryset(self):
         # Defer geom field since it slows down queries, especially within the django admin
         return super(CountryManager, self).get_queryset().defer('geom')
@@ -11,7 +12,7 @@ class CountryManager(models.Manager):
 
 class Country(models.Model):
 
-    fk_region = models.ForeignKey("Region", verbose_name=_("Region"))
+    fk_region = models.ForeignKey("Region", verbose_name=_("Region"), on_delete=models.PROTECT)
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
     name = models.CharField("Name", max_length=255)

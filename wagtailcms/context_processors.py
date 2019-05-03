@@ -20,7 +20,7 @@ def add_data_source_dir(request):
 def add_countries_and_regions(request):
     # Countries: Land Observatories
     countries = []
-    observatories = CountryPage.objects.filter(live=True).order_by('title')
+    observatories = CountryPage.objects.filter(live=True, country__isnull=False).order_by('title')
     countries.append({
         'text': _('Observatories'),
         'children': [[country.country.id if country.country else None, country.slug, country.title]
@@ -36,7 +36,7 @@ def add_countries_and_regions(request):
     })
 
     # Filter out pages without an assigned region, those just error
-    regions = RegionPage.objects.filter(region__isnull=False).order_by('title')
+    regions = RegionPage.objects.filter(live=True, region__isnull=False).order_by('title')
     regions = [[region.region.id, region.slug, region.title] for region in regions]
 
     return {

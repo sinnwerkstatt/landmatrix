@@ -48,6 +48,9 @@ INSTALLED_APPS += (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.postgres',
+    'wagtail_modeltranslation',
+    'wagtail_modeltranslation.makemigrations',
+    'wagtail_modeltranslation.migrate',
     'django.contrib.admin',
     'django.contrib.sites',
 
@@ -62,17 +65,17 @@ INSTALLED_APPS += (
     #'template_timings_panel',
 
     # wagtail and dependencies
-    'wagtail.wagtailforms',
-    'wagtail.wagtailredirects',
-    'wagtail.wagtailembeds',
-    'wagtail.wagtailsites',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailsnippets',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailimages',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtailcore',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
     'blog',
 
     'modelcluster',
@@ -98,7 +101,7 @@ INSTALLED_APPS += (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_gis',
-    'rest_framework_docs',
+    #'rest_framework_docs',
     'rest_framework_swagger',
     'django.contrib.syndication',
     'file_resubmit',
@@ -110,21 +113,20 @@ INSTALLED_APPS += (
     'map',
     'charts',
     'editor',
-    'wagtail_modeltranslation',
     'wagtailcms',
     'api',
     'notifications',
     'public_comments',
     'feeds',
     'impersonate',
+    'celery',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -136,13 +138,13 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.locale.LocaleMiddleware',
 
     # wagtail and dependencies
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
 )
 
 if FRONTENDDEV:
-    MIDDLEWARE_CLASSES += 'livereload.middleware.LiveReloadScript',
+    MIDDLEWARE += 'livereload.middleware.LiveReloadScript',
 
 ROOT_URLCONF = 'landmatrix.urls'
 
@@ -158,10 +160,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.media',
-                'django.core.context_processors.static',
-                'django.core.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'wagtailcms.context_processors.add_root_page',
@@ -266,6 +268,8 @@ COMMENTS_APP = 'public_comments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
 
+MODELTRANSLATION_CUSTOM_FIELDS = ('NoWrapsStreamField', )
+
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520
 DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
@@ -287,8 +291,11 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_REDIRECT_URL = '/editor/'
-IMPERSONATE_REQUIRE_SUPERUSER = True
-IMPERSONATE_ALLOW_SUPERUSER = True
+IMPERSONATE = {
+    "REDIRECT_URL": '/editor/',
+    "REQUIRE_SUPERUSER": True,
+    "ALLOW_SUPERUSER": True
+}
 
 TWITTER_TIMELINE = {
     'consumer_key': 'lDSsFwPuVqIvWNTVqYrkPgqVx',

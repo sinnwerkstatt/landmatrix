@@ -80,7 +80,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         if deal_id:
             # Check if activity exists
             queryset = HistoricalActivity.objects
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 queryset = queryset.public_deleted_or_pending()
             else:
                 queryset = queryset.public_or_deleted(self.request.user)
@@ -114,14 +114,14 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 for investor in investors:
                     # Check if there are parent companies for investor
                     parent_investors = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=investor)
-                    if not request.user.is_authenticated():
+                    if not request.user.is_authenticated:
                         parent_investors = parent_investors.filter(
                             fk_venture__fk_status__in=InvestorBase.PUBLIC_STATUSES,
                             fk_investor__fk_status__in=InvestorBase.PUBLIC_STATUSES)
                     parent_investors = [i.fk_investor for i in parent_investors]
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
-                    if request.user.is_authenticated():
+                    if request.user.is_authenticated:
                         parents.append(investor.id)
                     elif investor.fk_status_id in InvestorBase.PUBLIC_STATUSES:
                         parents.append(investor.id)
@@ -155,14 +155,14 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                     parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
                         fk_venture=involvement.fk_investor
                     )
-                    if not request.user.is_authenticated():
+                    if not request.user.is_authenticated:
                         parent_involvements = parent_involvements.filter(
                             fk_venture__fk_status__in=InvestorBase.PUBLIC_STATUSES,
                             fk_investor__fk_status__in=InvestorBase.PUBLIC_STATUSES
                         )
                     if parent_involvements:
                         parents.extend(get_involvements(parent_involvements))
-                    if request.user.is_authenticated():
+                    if request.user.is_authenticated:
                         parents.append(involvement.id)
                     elif involvement.fk_investor.fk_status_id in InvestorBase.PUBLIC_STATUSES:
                         parents.append(involvement.id)

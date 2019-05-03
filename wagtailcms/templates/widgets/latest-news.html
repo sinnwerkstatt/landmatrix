@@ -16,6 +16,10 @@
             </div>
           </div>
         </div>
+        {% empty %}
+            <div class="col-sm-12">
+                <p class="alert alert-default" style="margin: 0 auto 15px">{% blocktrans with t=tag|title %}No news or publications available for {{ t }}.{% endblocktrans %}</p>
+            </div>
         {% endfor %}
     </div>
 
