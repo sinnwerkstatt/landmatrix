@@ -113,6 +113,10 @@ def _construct_form(self, i, **kwargs):
         'auto_id': self.auto_id,
         'prefix': self.add_prefix(i),
         'error_class': self.error_class,
+        # Don't render the HTML 'required' attribute as it may cause
+        # incorrect validation for extra, optional, and deleted
+        # forms in the formset.
+        'use_required_attribute': False,
     }
     if self.is_bound:
         defaults['data'] = self.data
@@ -120,7 +124,6 @@ def _construct_form(self, i, **kwargs):
     if self.initial and 'initial' not in kwargs:
         try:
             defaults['initial'] = self.initial[i]
-        # this is the line that has been changed!
         except (IndexError, KeyError):
             pass
     # Allow extra forms to be empty, unless they're part of
