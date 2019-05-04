@@ -465,7 +465,7 @@ class ElasticSearch(object):
             #    )))
 
             # Order by ID desc to make sure the first attribute is used in case of duplicates (logic from BaseForm)
-            for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name', 'id'):
+            for a in activity.attributes.select_related('name').order_by('fk_group__name', 'id'):
                 # do not include the django object id
                 if a.name == 'id':
                     continue
