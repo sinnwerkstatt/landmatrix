@@ -46,7 +46,8 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = [
     #url(r'^accounts/register/$', RegistrationView.as_view(), name='registration_register'),
     url(r'^accounts/register/$', RegistrationView.as_view(
-        form_class=CustomRegistrationForm
+        form_class=CustomRegistrationForm,
+        template_name='registration/registration_form.html'
     ), name='registration_register'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^accounts/', include('django_registration.backends.activation.urls')),
