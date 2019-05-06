@@ -494,22 +494,15 @@ class DecimalInput(forms.TextInput):
 
 class CountrySelect(forms.Select):
 
-    def render_option(self, selected_choices, option_value, option_label):
-        option_value = force_text(option_value)
-        if option_value in selected_choices:
-            selected_html = u' selected="selected"'
-            if not self.allow_multiple_selected:
-                # Only allow for a single selection.
-                selected_choices.remove(option_value)
-        else:
-            selected_html = ''
-        if option_value:
-            code = Country.objects.defer('geom').get(pk=option_value).code_alpha2
-        else:
-            code = ""
-        return u'<option value="%s" title="%s" %s>%s</option>' % (
-            escape(option_value), code, selected_html,
-            conditional_escape(force_text(option_label)))
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        code = ""
+        if value:
+            code = Country.objects.defer('geom').get(pk=value).code_alpha2
+        option['attrs'].update({
+            'title': code
+        })
+        return option
 
 
 class CommentInput(forms.Textarea):
@@ -645,20 +638,10 @@ class InvestorSelect(forms.Select):
             self.data = data
         super(InvestorSelect, self).__init__(*args, **kwargs)
 
-    def render_option(self, selected_choices, option_value, option_label):
-        if option_value is None:
-            option_value = ''
-        option_value = force_text(option_value)
-        if option_value in selected_choices:
-            selected_html = mark_safe(' selected="selected"')
-            if not self.allow_multiple_selected:
-                # Only allow for a single selection.
-                selected_choices.remove(option_value)
-        else:
-            selected_html = ''
-        data_attributes = self.data.get(option_value, {})
-        return format_html('<option value="{}"{}{}>{}</option>',
-                           option_value,
-                           ' '.join('data-%s=%s' % d for d in data_attributes.items()),
-                           selected_html,
-                           force_text(option_label))
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        data_attributes = self.data.get(str(value), {})
+        option['attrs'].update(
+            dict(('data-%s' % d[0], d[1]) for d in data_attributes.items())
+        )
+        return option
