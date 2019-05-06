@@ -589,39 +589,39 @@ class ElasticSearch(object):
             # A) Operating company with no parent companies gets assigned complete deal size
             # B) All Parent companies with no parents get assigned the complete deal size each
             # Exception: Parent company multiple roles, assign deal size only once.
-            public_activity = Activity.objects.filter(
-                activity_identifier=activity.activity_identifier).order_by('-id').first()
-            if public_activity:
-                country = public_activity.target_country
-                deal_attrs = {
-                    '_parent': activity.id,
-                    'deal_id': activity.id,
-                    'activity_identifier': activity.id,
-                    'target_country': country.id if country else None,
-                    'target_country_display': country.name if country else None,
-                    'target_region': country.fk_region_id if country else None,
-                    'target_region_display': country.fk_region.name if country else None,
-                    'deal_size': public_activity.get_deal_size(),
-                    'deal_scope': public_activity.get_deal_scope(),
-                }
-                for investor in public_activity.get_top_investors():
-                    country = None
-                    if investor.fk_country_id:
-                        try:
-                            # Use defer, because direct access to ForeignKey is very slow sometimes
-                            country = Country.objects.defer('geom').get(id=investor.fk_country_id)
-                        except Country.DoesNotExist:
-                            pass
-                    doc = deal_attrs.copy()
-                    doc.update({
-                        'id': '%i-%i' % (activity.id, investor.id),
-                        'investor_id': investor.id,
-                        'investor_country': investor.fk_country_id,
-                        'investor_country_display': country.name if country else None,
-                        'investor_region': country.fk_region_id if country else None,
-                        'investor_region_display': country.fk_region.name if country else None,
-                    })
-                    docs.append(doc)
+            #public_activity = Activity.objects.filter(
+            #    activity_identifier=activity.activity_identifier).order_by('-id').first()
+            #if public_activity:
+            country = activity.target_country
+            deal_attrs = {
+                '_parent': activity.id,
+                'deal_id': activity.id,
+                'activity_identifier': activity.id,
+                'target_country': country.id if country else None,
+                'target_country_display': country.name if country else None,
+                'target_region': country.fk_region_id if country else None,
+                'target_region_display': country.fk_region.name if country else None,
+                'deal_size': activity.get_deal_size(),
+                'deal_scope': activity.get_deal_scope(),
+            }
+            for investor in activity.get_top_investors():
+                country = None
+                if investor.fk_country_id:
+                    try:
+                        # Use defer, because direct access to ForeignKey is very slow sometimes
+                        country = Country.objects.defer('geom').get(id=investor.fk_country_id)
+                    except Country.DoesNotExist:
+                        pass
+                doc = deal_attrs.copy()
+                doc.update({
+                    'id': '%i-%i' % (activity.id, investor.id),
+                    'investor_id': investor.id,
+                    'investor_country': investor.fk_country_id,
+                    'investor_country_display': country.name if country else None,
+                    'investor_region': country.fk_region_id if country else None,
+                    'investor_region_display': country.fk_region.name if country else None,
+                })
+                docs.append(doc)
 
         return docs
 
@@ -675,7 +675,7 @@ class ElasticSearch(object):
             current_implementation_status = doc.get('current_implementation_status')
             current_implementation_status = IMPLEMENTATION_STATUS_MAP.get(current_implementation_status)
             properties = {
-                'is_public_display': doc.get('is_public', False) and str(_('Yes')) or str(_('No')),
+                'is_public_display': doc.get('is_public', 'False') == 'True' and str(_('Yes')) or str(_('No')),
                 'current_negotiation_status_display': str(current_negotiation_status),
                 'current_implementation_status_display': str(current_implementation_status),
             }
