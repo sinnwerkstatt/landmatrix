@@ -485,50 +485,6 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         else:
             return list(agricultural_produce)
 
-
-class Activity(ActivityBase):
-    """
-    Just the most recent approved version of an activity
-    (for simple queries in the public interface).
-
-    There should only be one activity per activity_identifier.
-    """
-    is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
-    deal_scope = models.CharField(_('Deal scope'), max_length=16,
-                                  choices=ActivityBase.DEAL_SCOPE_CHOICES, blank=True,
-                                  null=True, db_index=True)
-    negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
-        choices=ActivityBase.NEGOTIATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
-    implementation_status = models.CharField(
-        verbose_name=_('Implementation status'), max_length=64,
-        choices=ActivityBase.IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
-    contract_size = models.IntegerField(verbose_name=_('Current size under contract'),
-                                        blank=True, null=True, db_index=True)
-    production_size = models.IntegerField(verbose_name=_('Current size in operation (production)'),
-                                          blank=True, null=True, db_index=True)
-    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
-    init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
-                                 blank=True, null=True, db_index=True)
-    fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
-    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
-    forest_concession = models.BooleanField(_('Forest concession'), default=False)
-
-    def refresh_cached_attributes(self):
-        self.implementation_status = self.get_implementation_status()
-        self.negotiation_status = self.get_negotiation_status()
-        self.contract_size = self.get_contract_size()
-        self.production_size = self.get_production_size()
-        self.deal_size = self.get_deal_size()
-        self.deal_scope = self.get_deal_scope()
-        self.init_date = self.get_init_date()
-        self.fully_updated_date = self.get_fully_updated_date()
-        self.is_public = self.is_public_deal()
-        top_investors = self.get_top_investors()
-        self.top_investors = self.format_investors(top_investors)
-        self.availability = self.get_availability()
-        self.forest_concession = self.get_forest_concession()
-        self.save()
-
     def is_public_deal(self):
         # 1. Flag „not public“ set?
         if self.has_flag_not_public():
@@ -707,6 +663,28 @@ class Activity(ActivityBase):
         else:
             return None
 
+    def format_investors(self, investors):
+        # First name, then ID to be able to sort by name
+        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
+                                   str(i.investor_identifier),
+                                   (i.fk_country and i.fk_country.name or '')])
+                         for i in investors])
+
+    def get_availability(self):
+        queryset = self.attributes
+        queryset = queryset.filter(models.Q(value__isnull=False) | models.Q(value2__isnull=False))
+        queryset = set(queryset.values_list('name', flat=True))
+        return len(queryset) / self.get_availability_total() * 100
+
+    def get_availability_total(self):
+        from django.apps import apps
+        return len(apps.get_app_config('grid').VARIABLES.keys())
+
+    def get_forest_concession(self):
+        nature_concession = self.attributes.filter(name='nature', value=NATURE_CONCESSION)
+        intention_logging = self.attributes.filter(name='intention', value=INTENTION_FOREST_LOGGING)
+        return nature_concession.count() > 0 and intention_logging.count() > 0
+
     def get_updated_date(self):
         try:
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
@@ -737,27 +715,49 @@ class Activity(ActivityBase):
         except:
             return None
 
-    def format_investors(self, investors):
-        # First name, then ID to be able to sort by name
-        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
-                                   str(i.investor_identifier),
-                                   (i.fk_country and i.fk_country.name or '')])
-                         for i in investors])
 
-    def get_availability(self):
-        queryset = self.attributes
-        queryset = queryset.filter(models.Q(value__isnull=False) | models.Q(value2__isnull=False))
-        queryset = set(queryset.values_list('name', flat=True))
-        return len(queryset) / self.get_availability_total() * 100
+class Activity(ActivityBase):
+    """
+    Just the most recent approved version of an activity
+    (for simple queries in the public interface).
 
-    def get_availability_total(self):
-        from django.apps import apps
-        return len(apps.get_app_config('grid').VARIABLES.keys())
+    There should only be one activity per activity_identifier.
+    """
+    is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
+    deal_scope = models.CharField(_('Deal scope'), max_length=16,
+                                  choices=ActivityBase.DEAL_SCOPE_CHOICES, blank=True,
+                                  null=True, db_index=True)
+    negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
+        choices=ActivityBase.NEGOTIATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
+    implementation_status = models.CharField(
+        verbose_name=_('Implementation status'), max_length=64,
+        choices=ActivityBase.IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
+    contract_size = models.IntegerField(verbose_name=_('Current size under contract'),
+                                        blank=True, null=True, db_index=True)
+    production_size = models.IntegerField(verbose_name=_('Current size in operation (production)'),
+                                          blank=True, null=True, db_index=True)
+    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
+    init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
+                                 blank=True, null=True, db_index=True)
+    fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
+    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
+    forest_concession = models.BooleanField(_('Forest concession'), default=False)
 
-    def get_forest_concession(self):
-        nature_concession = self.attributes.filter(name='nature', value=NATURE_CONCESSION)
-        intention_logging = self.attributes.filter(name='intention', value=INTENTION_FOREST_LOGGING)
-        return nature_concession.count() > 0 and intention_logging.count() > 0
+    def refresh_cached_attributes(self):
+        self.implementation_status = self.get_implementation_status()
+        self.negotiation_status = self.get_negotiation_status()
+        self.contract_size = self.get_contract_size()
+        self.production_size = self.get_production_size()
+        self.deal_size = self.get_deal_size()
+        self.deal_scope = self.get_deal_scope()
+        self.init_date = self.get_init_date()
+        self.fully_updated_date = self.get_fully_updated_date()
+        self.is_public = self.is_public_deal()
+        top_investors = self.get_top_investors()
+        self.top_investors = self.format_investors(top_investors)
+        self.availability = self.get_availability()
+        self.forest_concession = self.get_forest_concession()
+        self.save()
 
     class Meta:
         verbose_name = _('Activity')
