@@ -1,4 +1,4 @@
-Django==2.1.*
+Django>=2.1.6
 django-tastypie==0.14.*
 django-treebeard==4.2.*
 django-mptt==0.9.*
@@ -12,7 +12,7 @@ django-file-resubmit==0.5.*
 coverage==3.7
 openpyxl==2.4.*
 python-mimeparse==0.1.*
-requests==2.14.*
+requests>=2.20.0
 django-simple-history==2.6.*
 django-extensions==1.7.*
 django-crispy-forms==1.7.*
