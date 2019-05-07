@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMessage, EmailMultiAlternatives
-from django.template import loader, Context
+from django.template import loader
 from django.utils import timezone
 
 from .exceptions import NotificationError, AlreadySentError
@@ -87,7 +87,6 @@ class NotificationEmail(models.Model):
 
         text_template = loader.get_template('{}.txt'.format(template_name))
         html_template = loader.get_template('{}.html'.format(template_name))
-        context = Context(context)
 
         self.body_text = text_template.render(context)
         self.body_html = html_template.render(context)
