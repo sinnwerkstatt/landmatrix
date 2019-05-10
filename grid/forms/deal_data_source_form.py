@@ -68,7 +68,7 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Includes in-country-verified information")
     )
     open_land_contracts_id = forms.CharField(
-        required=False, label=_("OpenLandContracts ID")
+        required=False, label=_("Open Contracting ID")
     )
     tg_data_source_comment = forms.CharField(
         required=False, label=_("Comment on data source"), widget=CommentInput
