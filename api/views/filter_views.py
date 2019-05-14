@@ -3,7 +3,7 @@ import coreschema
 from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, GenericAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework.schemas import ManualSchema
@@ -25,7 +25,7 @@ class FilterDocTypeMixin:
 
 
 class FilterCreateView(FilterDocTypeMixin,
-                       GenericAPIView):
+                       APIView):
     """
     Add filter (or filter preset) to current session cookie.
     Used within the filter section of map, data and chart views.
@@ -142,7 +142,7 @@ class FilterCreateView(FilterDocTypeMixin,
 
 
 class FilterDeleteView(FilterDocTypeMixin,
-                       GenericAPIView):
+                       APIView):
     """
     Delete filter (or filter preset) from current session cookie.
     Used within the filter section of map, data and chart views.
@@ -247,7 +247,7 @@ class SetDefaultFiltersView(FilterDocTypeMixin,
 
 
 class FilterListView(FilterDocTypeMixin,
-                     GenericAPIView):
+                     APIView):
     """
     List filters in current session cookie.
     Used within the filter section of map, data and chart views.
@@ -266,7 +266,7 @@ class FilterListView(FilterDocTypeMixin,
 
 
 class FilterClearView(FilterDocTypeMixin,
-                      GenericAPIView):
+                      APIView):
 
     def get_object(self):
         return self.request.session.get('%s:filters' % self.doc_type, {})
