@@ -20,9 +20,9 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% block description %}
 <!--form action="./" method="GET">
     <select id="size" name="size">
-        <option value="size_in_operation"{% if size = "size_in_operation" %} selected{% endif %}>{% trans "Size in operation" %}</option>
-        <option value="size_under_contract"{% if size = "size_under_contract" %} selected{% endif %}>{% trans "Size under contract" %}</option>
-        <option value="intended_size"{% if size = "intended_size" %} selected{% endif %}>{% trans "Intended Size" %}</option>
+        <option value="size_in_operation"{% if size == "size_in_operation" %} selected{% endif %}>{% trans "Size in operation" %}</option>
+        <option value="size_under_contract"{% if size == "size_under_contract" %} selected{% endif %}>{% trans "Size under contract" %}</option>
+        <option value="intended_size"{% if size == "intended_size" %} selected{% endif %}>{% trans "Intended Size" %}</option>
     </select>
 </form-->
 {% endblock %}
