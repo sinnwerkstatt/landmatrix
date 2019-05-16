@@ -449,7 +449,7 @@ class UserListView(ListAPIView):
     """
     The users list view is used by the impersonate user feature of the editor.
     """
-    queryset = User.objects.all().order_by('first_name')
+    queryset = User.objects.filter(is_active=True).order_by('first_name')
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
 
