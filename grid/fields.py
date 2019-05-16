@@ -446,8 +446,6 @@ class FileFieldWithInitial(forms.FileField):
         This doesn't prevent DOS attacks (for that we'd need to limit the
         webserver) but it does let us give the user a nice error message.
         '''
-        import pdb
-        pdb.set_trace()
         if value and value.size > settings.DATA_SOURCE_MAX_UPLOAD_SIZE:
             raise ValidationError(_("Uploaded files must be less than 10MB."))
 
