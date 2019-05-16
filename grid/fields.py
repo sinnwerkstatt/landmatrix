@@ -237,11 +237,15 @@ class YearBasedModelMultipleChoiceField(YearBasedField):
 
 
 class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
-    placeholder = _('Size')
+
+    placeholder = _('ha')
+
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop("queryset")
         if 'placeholder' in kwargs:
-            attrs = {'placeholder': kwargs.pop("placeholder")}
+            self.placeholder = kwargs.pop("placeholder")
+        if self.placeholder:
+            attrs = {'placeholder': self.placeholder}
         else:
             attrs = {}
         kwargs["fields"] = [

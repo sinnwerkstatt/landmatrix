@@ -23,10 +23,10 @@ class DealProduceInfoForm(BaseForm):
         initial=_("Detailed crop, animal and mineral information"))
     crops = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Crops area"), queryset=Crop.objects.all(),
-        placeholder=_('Size'))
+        placeholder=_('ha'))
     crops_yield = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Crops yield"), queryset=Crop.objects.all(),
-        placeholder=_('Tons'))
+        placeholder=_('tons'))
     crops_export = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Crops export"), queryset=Crop.objects.all(),
         placeholder=_('%'))

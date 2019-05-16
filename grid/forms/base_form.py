@@ -124,7 +124,7 @@ class FieldsDisplayFormMixin(object):
                     if len(date_values) > 1:
                         value2 = ', '.join(filter(None, date_values[1:]))
                         if value2:
-                            value += _(' (%s ha)') % value2
+                            value += _(' (%s %s)') % (value2, field.placeholder or 'ha')
                 else:
                     value = ''
                 if value:

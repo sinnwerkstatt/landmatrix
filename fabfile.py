@@ -6,15 +6,15 @@ from fabric.operations import get
 
 def dev():
     env.name = 'staging'
-    env.hosts = ['landmatrix@beta.landmatrix.org']
-    env.path = '/home/landmatrix/landmatrix-dev'
-    env.activate = 'source /home/landmatrix/.virtualenvs/landmatrix-dev/bin/activate'
+    env.hosts = ['landmatrix@dev.landmatrix.org']
+    env.path = '/srv/http/landmatrix.org/htdocs'
+    env.activate = 'source /srv/http/landmatrix.org/venv/bin/activate'
     env.push_branch = 'dev'
     env.push_remote = 'origin'
     env.reload_cmd = 'sudo supervisorctl restart landmatrix-dev'
     env.db_name = 'landmatrix'
     env.db_username = 'landmatrix'
-    env.after_deploy_url = 'http://beta.landmatrix.org'
+    env.after_deploy_url = 'http://dev.landmatrix.org'
     
 def production():
     env.name = 'production'
