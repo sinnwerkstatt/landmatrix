@@ -369,6 +369,7 @@ class StatisticsBlock(StructBlock):
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         return context
 
+
 class MapDataChartsBlock(StructBlock):
 
     class Meta:
@@ -380,6 +381,7 @@ class MapDataChartsBlock(StructBlock):
         context = super().get_context(value, parent_context=parent_context)
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         return context
+
 
 class LinkMapBlock(StructBlock):
 

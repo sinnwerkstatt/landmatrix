@@ -5,7 +5,7 @@ django-mptt==0.9.*
 django-classy-tags==0.8.*
 django-bootstrap3-datetimepicker-2==2.8.*
 wagtail-blog==2.1.*
-wagtail==2.5
+wagtail==2.5.*
 wagtail-modeltranslation==0.10.*
 django-modeltranslation==0.13.*
 django-file-resubmit==0.5.*
