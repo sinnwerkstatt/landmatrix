@@ -362,7 +362,7 @@ class FileInputWithInitial(ResubmitFileWidget):
                 value_url = value.url
             else:
                 value_name = str(value)
-                value_url = data_source_storage.url(value)
+                value_url = data_source_storage.url(value_name)
 
             if len(value_name) > self.displayed_chars:
                 display_name = value_name[:self.displayed_chars] + '...'
