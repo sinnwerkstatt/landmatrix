@@ -20,9 +20,9 @@ class DealActionCommentForm(BaseForm):
         ('Land Observatory Import', _('Land Observatory Import')),
     )
 
-    form_title = _('Action Comment')
+    form_title = _('Meta info')
     tg_action = TitleField(
-        required=False, label="", initial=_("Action comment"))
+        required=False, label="", initial=_("Fully updated"))
     tg_action_comment = forms.CharField(
         required=True, label=_('Action comment'), widget=CommentInput)
     fully_updated = forms.BooleanField(

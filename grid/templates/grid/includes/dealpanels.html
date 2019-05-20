@@ -7,7 +7,7 @@
                href="#{{ form.form_title|slugify }}_body"
                id="{{ form.form_title|slugify }}">
                 <h5 class="panel-title">
-                    {{ form.form_title }}{% if form.meta.name == 'action_comment' or form.meta.name == 'location' %} <small>({% trans "mandatory" %})</small>{% endif %}
+                    {{ form.form_title }}{% if form.meta.name == 'location' %} <small>({% trans "mandatory" %})</small>{% endif %}
                     <span id="collapsebtn_{{ forloop.counter }}"
                           class="lm-chevron-circle-down pull-right mgrey1"></span>
                 </h5>
@@ -163,7 +163,7 @@
                     </script>
                 {% else %}
                     {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
-                    {% include "grid/form.html" with form=form %}
+                    {% include "grid/form.html" with form=form exclude="tg_action_comment" %}
                     {% if form.Meta.name == 'investor_info' %}
                         {% include "grid/includes/investor_network.html" %}
                     {% endif %}
