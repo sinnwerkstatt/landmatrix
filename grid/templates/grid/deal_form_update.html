@@ -48,7 +48,7 @@
         {% if perms.landmatrix.change_activity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-deal" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this deal" %}</a>{% endif %}
         {% else %}
         <p>
-            {{ action_comment_form.tg_action_comment.label_tag }}
+            {{ action_comment_form.tg_action_comment.label_tag }}<strong> ({% trans "mandatory" %})</strong>
             {{ action_comment_form.tg_action_comment }}
         </p>
         <p>
