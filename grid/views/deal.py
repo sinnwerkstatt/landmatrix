@@ -91,6 +91,7 @@ class DealBaseView(TemplateView):
         context = super().get_context_data(**self.kwargs)
         if self.request.method != 'POST':
             context['forms'] = self.get_forms()
+            context['action_comment_form'] = context['forms'][-1]
         context['kwargs'] = self.kwargs
         return context
 

@@ -29,6 +29,10 @@
     {% include "grid/includes/dealpanels.html" %}
         </div>
     <p>
+        {{ action_comment_form.tg_action_comment.label_tag }}<strong> ({% trans "mandatory" %})</strong>
+        {{ action_comment_form.tg_action_comment }}
+    </p>
+    <p>
         <input type="checkbox" required name="terms">
         {% blocktrans %}I've read and agree to the <a href="/data-policy" target="_blank">Data Policy</a>.{% endblocktrans %}
         <br><br>

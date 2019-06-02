@@ -41,6 +41,13 @@ class OperationalStakeholderForm(BaseForm):
             data['operational_stakeholder'] = str(queryset[0].fk_investor.id)
         return data
 
+    def clean_operational_stakeholder(self):
+        # Check if investor ID is newest version ID
+        # This is necessary e.g. if ES index is not up-to-date or investor changed during adding/editing deal
+        hinv = self.cleaned_data['operational_stakeholder']
+        data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
+        return data
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
