@@ -254,6 +254,8 @@ class BaseForm(FieldsDisplayFormMixin,
                 for v in list(value):
                     if v:
                         try:
+                            # Save display value
+                            # FIXME: We should save the value instead, now that we have _display fields
                             value = str(dict([i[:2] for i in f.choices])[v])
                         except (ValueError, TypeError, KeyError):
                             value = None
@@ -282,6 +284,8 @@ class BaseForm(FieldsDisplayFormMixin,
                     try:
                         if hasattr(f, 'queryset'):
                             value = int(value)
+                        # Save display value
+                            # FIXME: We should save the value instead, now that we have _display fields
                         value = str(dict(f.choices).get(value))
                         if value:
                             attributes[name] = {'value': value}
@@ -431,12 +435,18 @@ class BaseForm(FieldsDisplayFormMixin,
             for k, v in [i[:2] for i in choice[2] or []]:
                 if k == tag_value or (tag_value.isdigit() and k == int(tag_value)):
                     return str(k)
+                # FIXME: Save raw values to the database and remove this after
+                if v == tag_value or (tag_value.isdigit() and v == int(tag_value)):
+                    return str(k)
         return None
 
     @classmethod
     def get_choice_value(cls, field, tag_value):
         for k, v in [i[:2] for i in field.choices]:
             if k == tag_value or (tag_value.isdigit() and k == int(tag_value)):
+                return str(k)
+            # FIXME: Save raw values to the database and remove this after
+            if v == tag_value or (tag_value.isdigit() and v == int(tag_value)):
                 return str(k)
         return None
 
