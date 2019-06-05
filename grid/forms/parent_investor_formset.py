@@ -31,14 +31,18 @@ class InvestorVentureInvolvementForm(forms.ModelForm):
         # Check if investor ID is newest version ID
         # This is necessary e.g. if ES index is not up-to-date or investor changed during adding/editing deal
         hinv = self.cleaned_data['fk_venture']
-        data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
+        data = None
+        if hinv:
+            data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
         return data
 
     def clean_fk_investor(self):
         # Check if investor ID is newest version ID
         # This is necessary e.g. if ES index is not up-to-date or investor changed during adding/editing deal
         hinv = self.cleaned_data['fk_investor']
-        data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
+        data = None
+        if hinv:
+            data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
         return data
 
     class Meta:
