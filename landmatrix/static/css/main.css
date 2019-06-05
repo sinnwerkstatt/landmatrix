@@ -299,12 +299,10 @@
 
   .navbar-header {
     float: none; } }
-
-.nav-pills>li.active>a,
-.nav-pills>li.active>a:focus,
-.nav-pills>li.active>a:hover {
-    background-color: #fc941f !important;
-}
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+  background-color: #fc941f !important; }
 
 /* ==========================================================================
  *    FORMS
@@ -407,8 +405,8 @@ ul.form.empty {
 .form ul {
   margin: 0; }
 
-form ul li,
-.panel ul li {
+form > ul li,
+.panel > ul li {
   background: none;
   padding-left: 0;
   list-style: none; }
@@ -471,18 +469,15 @@ a.remove-ybd:hover {
 
 a.add-ybd,
 a.remove-ybd {
-  visibility: collapse;
-}
+  visibility: collapse; }
 
 a.add-ybd i,
 a.remove-ybd i {
-  visibility: visible;
-}
+  visibility: visible; }
 
 a.add-ybd:hover,
 a.remove-ybd:hover {
-  visibility: visible;
-}
+  visibility: visible; }
 
 .control-group .input-group {
   width: auto;
@@ -698,7 +693,7 @@ small input {
 #filters ul.variables li a {
   display: block;
   padding: 0px 15px 0px 30px;
- color: #4a4a4a; }
+  color: #4a4a4a; }
 
 #filters ul.presets.ul.variables > li > ul > li:hover > a,
 #filters ul.variables > li > ul > li:hover > a {
@@ -1122,8 +1117,7 @@ ul li a {
   vertical-align: bottom; }
 
 #footer-nav .rich-text a {
-  color: #4a4a4a;
-}
+  color: #4a4a4a; }
 
 .icon-none {
   width: 14px;
@@ -1825,7 +1819,6 @@ a.btn:hover {
   text-shadow: none !important; }
 
 .breadcrumb > li > a {
-  color: #4a4a4a;
   text-decoration: underline; }
 
 /* ==========================================================================

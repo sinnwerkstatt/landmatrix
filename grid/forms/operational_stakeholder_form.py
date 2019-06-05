@@ -45,7 +45,9 @@ class OperationalStakeholderForm(BaseForm):
         # Check if investor ID is newest version ID
         # This is necessary e.g. if ES index is not up-to-date or investor changed during adding/editing deal
         hinv = self.cleaned_data['operational_stakeholder']
-        data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
+        data = None
+        if hinv:
+            data = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier).latest()
         return data
 
     def __init__(self, *args, **kwargs):
