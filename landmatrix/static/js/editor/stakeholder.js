@@ -1,8 +1,3 @@
-var tree_margin = {top: 0, right: 320, bottom: 0, left: 0},
-    tree_width = 960 - tree_margin.left - tree_margin.right,
-    tree_height = 500 - tree_margin.top - tree_margin.bottom,
-    tree, tree_svg, tree_data;
-
 function initInvestorForm(form) {
     // Init buttons
     form.find('.add-form').click(function () {
@@ -91,182 +86,527 @@ $(document).ready(function () {
     });
 });
 
+var treeData = {};
 
-/* PEDIGREE */
+var crossLinksData = [];
+
+var updateReferences = function( data ) {
+
+    var uniqueNodes = {},
+        nodes = [ data ];
+
+    while (node = nodes.pop()) {
+        var children = {};
+        if (Object.keys(node.stakeholders || {}).length > 0) {
+            children = node.stakeholders;
+        } else if (Object.keys(node._stakeholders || {}).length > 0) {
+            children = node._stakeholders;
+        }
+        // Original?
+        if (Object.keys(children).length > 0) {
+            if (node.investor_identifier in uniqueNodes) {
+                uniqueNodes[node.investor_identifier].original = node;
+            } else {
+                uniqueNodes[node.investor_identifier] = {
+                    original: node,
+                    duplicates: []
+                };
+
+                for (var investor_identifier in children) {
+                  nodes.push(children[investor_identifier]);
+                }
+            }
+        } else {
+          // Duplicate
+          if (node.investor_identifier in uniqueNodes) {
+              uniqueNodes[node.investor_identifier].duplicates.push(node);
+          } else {
+            uniqueNodes[node.investor_identifier] = {
+                original: undefined,
+                duplicates: [node]
+            };
+          }
+        }
+    }
+
+    for (var investor_identifier in uniqueNodes) {
+        var node = uniqueNodes[investor_identifier],
+            duplicate;
+        if (!node.original) continue;
+        for (var i = 0; i < node.duplicates.length; i++) {
+            duplicate = node.duplicates[i];
+            duplicate.found = "1";
+            duplicate.stakeholders = node.original.stakeholders;
+            duplicate._stakeholders = node.original._stakeholders;
+        }
+    }
+
+    return data;
+};
+
+// Update children/links in tree
+var getLinkedTreeData = function( curRoot, curCrossLinks ) {
+
+    var nodesProcessed = {};
+
+    function getLink( node, childNode, type ) {
+        var found = false,
+            link;
+        // Find link
+        for (var i = 0; i < curCrossLinks.length; i++) {
+          link = curCrossLinks[i];
+          if (link.source.investor_identifier === node.investor_identifier &&
+              link.target.investor_identifier === childNode.investor_identifier) {
+            // Link already existing? Done.
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          // Link doesn't exist yet. Create link.
+          link = {
+            source: node,
+            target: childNode,
+            type: type
+          }
+        }
+        return link;
+    }
+
+    function getChild( investor_identifier, children ) {
+        if (!children) return;
+
+        // Find child
+        var child;
+        for (var i = 0; i < children.length; i++) {
+          child = children[i];
+          if (child.investor_identifier === investor_identifier) {
+            break;
+          }
+        }
+
+        return child;
+    }
+
+    function getChildrenAndLinks( currentNode, parentNode ) {
+
+        var node = {},
+            links = [];
+
+        // Node already processed?
+        if (currentNode.investor_identifier in nodesProcessed) {
+          links.push(getLink(parentNode, nodesProcessed[currentNode.investor_identifier], currentNode.type));
+          // New node
+        } else {
+          node = currentNode;
+          nodesProcessed[currentNode.investor_identifier] = node;
+          // Node has children
+          if (node.stakeholders && Object.keys(node.stakeholders).length > 0) {
+            var children = [],
+                childNode;
+
+            // First only check all direct children
+            for (var investor_identifier in node.stakeholders) {
+              if (!node.stakeholders.hasOwnProperty(investor_identifier)) continue;
+              childNode = node.stakeholders[investor_identifier];
+
+              var [childRoot, childCrossLinks] = getChildrenAndLinks(childNode, node);
+
+              if (Object.keys(childRoot).length > 0) {
+                children.push(childRoot);
+              }
+              if (childCrossLinks.length > 0) {
+                links.push.apply(links, childCrossLinks)
+              }
+            }
+            node.children = children;
+
+            // Node doesn't have children
+          } else {
+            // Remove all children
+            node.children = [];
+          }
+          // Also save disabled children, since relations are only saved within the first occurance
+          /*if (node._childrenAndLinks && Object.keys(node._childrenAndLinks).length > 0) {
+              for (var name in node._childrenAndLinks) {
+                  if (!(name in nodesProcessed)) {
+                  	nodesProcessed[name] = node._childrenAndLinks[name];
+                  }
+              }
+          }*/
+        }
+
+        return [node, links];
+    }
+
+    return getChildrenAndLinks( curRoot );
+};
+
+var showInvestorModal = function( d, i ) {
+    var modal = $('#stakeholder'),
+        data = d.data,
+        type = (data.type === 1 && "Parent company" || data.type === 2 && "Tertiary investor/lender" || "Operating company");
+    modal.find('.modal-header h4').text(data.name);
+  	var output = [
+  	  data.classification,
+  	  data.country,
+  	  data.homepage && '<a target="_blank" href="' + data.homepage + '">' + data.homepage + '</a>',
+  	  data.opencorporates_link && '<a target="_blank" href="' + data.opencorporates_link + '">' + data.opencorporates_link + '</a>',
+  	  data.comment,
+  	];
+    if (data.involvement) {
+    	var inv = data.involvement;
+      output.push.apply(output, [
+        '<h4>Involvement</h4>' + d.type,
+        (inv.percentage && inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") || ""),
+        inv.loans_amount && inv.loans_amount + " " + inv.loans_currency + (inv.loans_date && " (" + inv.loans_date + ")"),
+        inv.comment,
+        inv.parent_relation,
+      ]);
+    }
+    output = output.filter(function (val) {return val;}).join('<br>');
+    modal.find('.modal-body p').html(output);
+    modal.find('.modal-footer a.investor-link').attr('href', data.url);
+    modal.modal("show");
+};
+
+// This is a modified version of `d3.svg.diagonal` to draw edges that cross
+// tree branches. The edges are shifted so that they do not lie over the curves
+// drawn by the normal D3 diagonal. The shift is increased as the distance
+// between the nodes increases so that multiple cross edges connecting to the
+// same node diverge for clarity.
+//
+// See https://github.com/mbostock/d3/wiki/SVG-Shapes#diagonal
+var crossDiagonal = function() {
+    var projection = function( d ) { return [d.y, d.x]; };
+    var distance_factor = 10;
+    var shift_factor = 2;
+
+    function diagonal( p0, p3, path ) {
+        var l = ( p0.x + p3.x ) / 2;
+        var m = ( p0.x + p3.x ) / 2;
+        var x_shift = 0;
+        var y_shift = 0;
+
+        // Self reference
+        if ( p0.x === p3.x && p0.y === p3.y ) {
+        	return "M" + p0.y + "," + (p0.x+36) + "A24,24 -45,1,1 " + (p0.y+.1) + "," + (p0.x+36.1);
+        }
+        // Shorten path?
+        if (path) {
+          var pl = path.getTotalLength();
+          var r = 40;
+          var d = path.getPointAtLength(Math.round(pl - r));
+          p3.x = d.y;
+          p3.y = d.x;
+        }
+        var p = [
+            p0,
+            p3
+        ];
+        p = p.map( projection );
+        return 'M' + p[0] + 'L' + p[1];
+    }
+
+    diagonal.source = function( x ) {
+        if ( !arguments.length ) return source;
+        source = d3.functor( x );
+        return diagonal;
+    };
+
+    diagonal.target = function( x ) {
+        if ( !arguments.length ) return target;
+        target = d3.functor( x );
+        return diagonal;
+    };
+
+    diagonal.projection = function( x ) {
+        if ( !arguments.length ) return projection;
+        projection = x;
+        return diagonal;
+    };
+
+    return diagonal;
+};
+
+function diagonal(s, d) {
+    return  `M ${s.y} ${s.x} L ${d.y} ${d.x}`;
+};
+
+var findNode = function (investor_identifier) {
+   return d3.selectAll(".node").filter( function (d) {
+       return d && (d.data.investor_identifier === investor_identifier);
+   }).datum();
+};
+
+var shortenLink = function (node) {
+    var s = node;
+    var pl = this.getTotalLength();
+    var r = 40;
+    var d = this.getPointAtLength(Math.round(pl - r));
+    return `M ${s.y} ${s.x} L ${d.x} ${d.y}`;
+};
+
+// The chart builder function to build a tree with cross links.
+// Configuration is excluded for the simplicity of the example.
+var linkedTreeChartBuilder = function( parentElement ) {
+
+    var i = 0,
+	    duration = 750,
+      data;
+
+    // Set up the boundaries.
+    var margin = { top: 20, right: 30, bottom: 20, left: 30 };
+    var width = 960 - margin.left - margin.right;
+    var height = 600 - margin.top - margin.bottom;
+
+    // Assigns parent, children, height, depth
+    treeData.x0 = height / 2;
+    treeData.y0 = 0;
+
+    var classes = {
+    	0: 'operating',
+      1: 'parent',
+      2: 'tertiary'
+    }
+
+    // Create the chart SVG.
+    var svg = parentElement.append( 'svg' )
+    	  .attr( 'width', width + margin.left + margin.right )
+        .attr( 'height', height + margin.top + margin.bottom );
+
+    // Create arrow definitions
+    var defs = svg.append( 'defs' );
+    defs.append('marker')
+        .attr('id', 'arrowhead-parent')
+        .attr('viewBox', '-0 -5 10 10')
+        .attr('refX', 0)
+        .attr('refY', 0)
+        .attr('orient', 'auto')
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('xoverflow', 'visible')
+        .append('svg:path')
+        .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        .attr('fill', '#72B0FD')
+        .style('stroke', 'none');
+    defs.append('marker')
+       .attr('id', 'arrowhead-tertiary')
+       .attr('viewBox', '-0 -5 10 10')
+       .attr('refX', 0)
+       .attr('refY', 0)
+       .attr('orient', 'auto')
+       .attr('markerWidth', 6)
+       .attr('markerHeight', 6)
+       .attr('xoverflow', 'visible')
+       .append('svg:path')
+       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+       .attr('fill', '#F78E8F')
+       .style('stroke', 'none');
+
+    var chart = svg.append( 'g' )
+        .attr( 'class', 'chart' )
+        .attr( 'transform',
+        	  'translate(' + margin.left + ',' + margin.top + ')' );
+
+    // Create the helper functions
+    var crossLinkDiagonal = crossDiagonal();
+
+    // Assigns the x and y position for the nodes
+    var treemap = d3.tree().size( [height, width] );
+
+    // The chart update function that this builder returns.
+    var update = function( source ) {
+
+        var [curRoot, curCrossLinksData] = getLinkedTreeData( treeData, crossLinksData );
+        curRoot = d3.hierarchy(curRoot, function(d) { return d.children; });
+
+  			// Compute the new tree layout.
+        var curTreeData = treemap( curRoot ),
+            nodes = curTreeData.descendants(),
+  			    links = curTreeData.descendants().slice(1);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function(d){ d.y = d.depth * 180});
+
+        // ****************** Nodes section ***************************
+        // Update the nodes…
+        var node = chart.selectAll("g.node")
+          .data(nodes, function(d) { return d.data.investor_identifier; });
+
+        // Enter any new nodes at the parent's previous position.
+        var nodeEnter = node.enter().append("g")
+          .attr( 'class', function (d) {
+            return 'node ' + classes[d.data.type] + (d.data._stakeholders ? ' has-children' : '');
+          } )
+          .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+          .on("click", click)
+          .on("contextmenu", function (d, i) {
+            d3.event.preventDefault();
+            showInvestorModal(d, i);
+          });
+
+        $('svg .node').tooltip({
+          'container': 'body',
+          'placement': 'bottom',
+          'html': true,
+          'title': function() {
+            var data = d3.select(this).datum().data,
+                name = "<strong>" + data.name + '</strong>',
+                meta = [data.country, data.classification].join(", ");
+            return name + (meta ? '<br>' + meta : '');
+          }
+        });
+
+        nodeEnter.append("circle")
+          .attr("r", 1e-6);
+
+        nodeEnter.append("text")
+          .attr("x", 0)
+          .attr("dy", ".35em")
+          .text(function(d) { return '#' + d.data.investor_identifier; });
+
+        // UPDATE
+        var nodeUpdate = nodeEnter.merge(node);
+
+        // Transition nodes to their new position.
+        nodeUpdate//.transition()
+          //.duration(duration)
+          .attr( 'class', function (d) {
+            return 'node ' + classes[d.data.type] + (d.data._stakeholders ? ' has-children' : '');
+          } )
+          .attr("transform", function(d) {
+          	return "translate(" + d.y + "," + d.x + ")"
+          });
+
+        nodeUpdate.select("circle")
+          .attr("r", 28);
+
+        nodeUpdate.select("text")
+          .style("fill-opacity", 1);
+
+        // Transition exiting nodes to the parent's new position.
+        var nodeExit = node.exit()//.transition()
+          //.duration(duration)
+          .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+          .remove();
+
+        nodeExit.select("circle")
+          .attr("r", 1e-6);
+
+        nodeExit.select("text")
+          .style("fill-opacity", 1e-6);
+
+        // ****************** links section ***************************
+        // Update the links
+        var link = chart.selectAll("path.link")
+          .data(links, function(d) { return d.data.investor_identifier; });
+
+        // Enter any new links at the parent's previous position.
+        var linkEnter = link.enter().insert("path", "g")
+          .attr("d", function(d) {
+            var o = {x: source.x0, y: source.y0};
+            return diagonal(o, o);
+          });
+
+        // UPDATE
+        var linkUpdate = linkEnter.merge(link);
+
+        // Transition links to their new position.
+        linkUpdate//.transition()
+          //.duration(duration)
+          .attr('d', function(d){ return diagonal(d, d.parent) })
+          .attr('d', shortenLink)
+          .attr( 'class', function (d) {
+            return 'link ' + classes[d.data.type];
+          })
+          .attr('marker-end', function(d) {
+          	return 'url(#arrowhead-' + classes[d.data.type] + ')';
+          });
+
+        // Transition exiting nodes to the parent's new position.
+        var linkExit = link.exit()//.transition()
+          //.duration( duration )
+          .attr("d", function(d) {
+          	var o = {x: source.x, y: source.y};
+          	return diagonal(o, o);
+          })
+          .remove();
+
+        // *************** cross links section ************************
+        // The edge lines for the cross-links.
+        var crossLink = chart.selectAll( 'path.crosslink' )
+          .data( curCrossLinksData, function(d) { return d.target.investor_identifier; });
+
+        var crossLinkEnter = crossLink.enter().insert( "path", "g" )
+          .attr("d", function(d) {
+            var o = {x: source.x0, y: source.y0};
+            return crossLinkDiagonal(o, o);
+          });
+
+        // UPDATE
+        var crosslinkUpdate = crossLinkEnter.merge(crossLink);
+
+        // Transition cross links to their new position.
+        crosslinkUpdate//.transition()
+          //.duration( duration )
+          .attr( 'class', function (d) {
+            return 'crosslink ' + classes[d.type];
+          })
+          .attr('d', function(d){
+          	return crossLinkDiagonal(findNode(d.target.investor_identifier), findNode(d.source.investor_identifier));
+          })
+          .attr('d', function(d){
+          	return crossLinkDiagonal(findNode(d.target.investor_identifier), findNode(d.source.investor_identifier), this);
+          })
+          .attr('marker-end',function (d) { return 'url(#arrowhead-' + classes[d.type] + ')'; });
+
+			 	// Remove any exiting links
+        var crossLinkExit = crossLink.exit()//.transition()
+          //.duration( duration )
+          .attr("d", function(d) {
+          	var o = {x: source.x, y: source.y};
+          	return diagonal(o, o);
+          })
+          .remove();
+
+        // Stash the old positions for transition.
+        nodes.forEach(function(d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+
+        // Toggle children on click.
+        function click(d) {
+            if (d.data.stakeholders) {
+                d.data._stakeholders = d.data.stakeholders;
+                d.data.stakeholders = null;
+            } else {
+                d.data.stakeholders = d.data._stakeholders;
+                d.data._stakeholders = null;
+            }
+            update(d);
+        }
+    };
+
+    return update;
+};
+
 function loadInvestorNetwork(investorId) {
     if (investorId <= 0 || $("#investor-network").size() <= 0) {
         return;
     }
     d3.json("/api/investor_network.json?operational_stakeholder=" + investorId,
         function (data) {
-            tree_data = data;
-            createInvestorNetwork();
+            treeData = data;
+
+            // Build the chart.
+            var linkedTreeChart = linkedTreeChartBuilder( d3.select( '#investor-network' ) );
+
+            treeData = updateReferences( treeData );
+
+            // Build a tree and update the chart.
+            linkedTreeChart( treeData );
         }
     );
-}
-
-//function buildHierarchy(data) {
-//  // First level?
-//  if (typeof data.involvement === 'undefined') {
-//      parent = {"name": "root", "children": []};
-//  } else {
-//      parent = {"name": data.name, "children": []};
-//  }
-//  var items = data.parent_stakeholders,
-//      children = [];
-//  for (var i = 0; i < items.length; i++) {
-//    var item = items[i];
-//    children.push(buildHierarchy_sunburst(item));
-//  }
-//  parent.children = children;
-//  return parent;
-//};
-
-function createInvestorNetwork() {
-  tree = d3.layout.tree()
-      .separation(function(a, b) { return a.parent === b.parent ? 1 : .5; })
-      .children(function(d) { return d.stakeholders; })
-      .size([tree_height, tree_width]);
-  d3.select("#investor-network").select("svg").remove();
-  tree_svg = d3.select("#investor-network").append("svg")
-      .attr("width", tree_width + tree_margin.left + tree_margin.right)
-      .attr("height", tree_height + tree_margin.top + tree_margin.bottom)
-    .append("g")
-      .attr("transform", "translate(" + tree_margin.left + "," + tree_margin.top + ")");
-
-  var nodes = tree.nodes(tree_data);
-
-  var link = tree_svg.selectAll(".link")
-      .data(tree.links(nodes))
-    .enter().append("path")
-      .attr("class", function (d) {
-        return 'link ' + d.target.parent_type;
-      })
-      .attr("fill", "none")
-      .attr("stroke-width", "#000000")
-      .attr("stroke-opacity", "1")
-      .attr("stroke-width", "2px")
-      .attr("d", elbow);
-
-  var node = tree_svg.selectAll(".node")
-      .data(nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
-  //node.append("rect");
-  var text_width = tree_svg.selectAll(".link")[0][0] && tree_svg.selectAll(".link")[0][0].getBBox().width || "400",
-    text_padding = 10;
-  function wrap() {
-      var self = d3.select(this),
-          textLength = self.node().getComputedTextLength(),
-          text = self.text();
-      while (textLength > (text_width - 2 * text_padding) && text.length > 0) {
-          text = text.slice(0, -1);
-          self.text(text + '...');
-          textLength = self.node().getComputedTextLength();
-      }
-  }
-
-  node.append("text")
-      .attr("class", "name")
-      .attr("font-weight", "bold")
-      .attr("x", function (d) { if (d.involvement) { return 8; } else { return 16; } })
-      .attr("y", -6)
-      .text(function(d) { return d.name; })
-      .each(wrap);
-
-  node.append("text")
-      .attr("x", function (d) { if (d.involvement) { return 8; } else { return 16; } })
-      .attr("y", 8)
-      .attr("dy", ".71em")
-      .attr("class", "about type")
-      .attr("font-size", "80%")
-      .text(function(d) {
-        var text = "";
-        if (d.involvement) {
-          var inv = d.involvement;
-          text = (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company");
-          text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
-        } else {
-          text = "Operating company";
-        }
-        return text;
-      })
-      .each(wrap);
-
-  node.append("circle")
-    .attr("cx", function (d) { if (d.involvement) { return 0; } else { return 9; } })
-    .attr("cy", 0)
-    .attr("r", 8)
-    .attr("class", function (d) {
-      return 'circle ' + d.parent_type;
-    })
-    .on("click", function (d) {
-        var modal = $('#stakeholder');
-        modal.find('.modal-header h4').text(d.name);
-        if (d.involvement) {
-            var inv = d.involvement;
-            var data = [
-                '#' + d.investor_identifier,
-                (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company") +
-                (inv.percentage && " (" + inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") + ")" || ""),
-                d.classification,
-                d.country,
-                inv.loans_amount && inv.loans_amount + inv.loans_currency + (inv.loans_date && " (" + inv.loans_date + ")"),
-                inv.comment,
-                inv.parent_relation,
-                d.homepage && '<a target="_blank" href="' + d.homepage + '">' + d.homepage + '</a>',
-                d.opencorporates_link && '<a target="_blank" href="' + d.opencorporates_link + '">' + d.opencorporates_link + '</a>',
-                d.comment,
-            ];
-        } else {
-            data = [
-                '#' + d.investor_identifier,
-                d.classification,
-                d.country,
-                inv.parent_relation,
-                d.homepage && '<a target="_blank" href="' + d.homepage + '">' + d.homepage + '</a>',
-                d.opencorporates_link && '<a target="_blank" href="' + d.opencorporates_link + '">' + d.opencorporates_link + '</a>',
-                d.comment,
-            ]
-        }
-        data = data.filter(function (val) {return val;}).join('<br>');
-        modal.find('.modal-body p').html(data);
-        modal.modal("show");
-    });
-
-  node.append("text")
-      .attr("x", function (d) { if (d.involvement) { return 8; } else { return 16; } })
-      .attr("y", 8)
-      .attr("dy", "1.86em")
-      .attr("font-size", "80%")
-      .attr("class", "about involvement")
-      .text(function(d) {
-        if (d.involvement) {
-          var inv = d.involvement;
-          var text = d.classification && d.classification + ", " || '';
-          text += d.country;
-          return text
-        }
-      })
-      .each(wrap);
-//  node.selectAll("rect")
-////    .attr("width", function(d) {return this.parentNode.getBBox().width;})
-//    .attr("width", tree_width)
-//    .attr("height", "1.86em")
-//    .style("fill", "#ffffff")
-//    .style("fill-opacity", 1)
-    $("#investor-network .alert").remove();
-    if (tree_data.status == "pending") {
-        var alert = $("<p>", {class: "alert alert-danger"});
-        alert.text("This investor version is pending.");
-        alert.prependTo("#investor-network");
-    }
-
-}
-
-function elbow(d, i) {
-  return "M" + d.source.y + "," + d.source.x
-       + "H" + d.target.y + "V" + d.target.x
-       + (d.target.children ? "" : "h" + tree_margin.right);
 }

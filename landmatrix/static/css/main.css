@@ -299,12 +299,10 @@
 
   .navbar-header {
     float: none; } }
-
-.nav-pills>li.active>a,
-.nav-pills>li.active>a:focus,
-.nav-pills>li.active>a:hover {
-    background-color: #fc941f !important;
-}
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+  background-color: #fc941f !important; }
 
 /* ==========================================================================
  *    FORMS
@@ -407,8 +405,8 @@ ul.form.empty {
 .form ul {
   margin: 0; }
 
-form ul li,
-.panel ul li {
+form > ul li,
+.panel > ul li {
   background: none;
   padding-left: 0;
   list-style: none; }
@@ -471,18 +469,15 @@ a.remove-ybd:hover {
 
 a.add-ybd,
 a.remove-ybd {
-  visibility: collapse;
-}
+  visibility: collapse; }
 
 a.add-ybd i,
 a.remove-ybd i {
-  visibility: visible;
-}
+  visibility: visible; }
 
 a.add-ybd:hover,
 a.remove-ybd:hover {
-  visibility: visible;
-}
+  visibility: visible; }
 
 .control-group .input-group {
   width: auto;
@@ -698,7 +693,7 @@ small input {
 #filters ul.variables li a {
   display: block;
   padding: 0px 15px 0px 30px;
- color: #4a4a4a; }
+  color: #4a4a4a; }
 
 #filters ul.presets.ul.variables > li > ul > li:hover > a,
 #filters ul.variables > li > ul > li:hover > a {
@@ -1122,8 +1117,7 @@ ul li a {
   vertical-align: bottom; }
 
 #footer-nav .rich-text a {
-  color: #4a4a4a;
-}
+  color: #4a4a4a; }
 
 .icon-none {
   width: 14px;
@@ -1506,25 +1500,67 @@ table td.number {
 .node text {
   pointer-events: none; }
 
-#investor-network .link {
-  fill: none;
-  stroke: #44b7b6;
-  stroke-width: 2px; }
+div#investor-network {
+  overflow-x: scroll !important; }
+  div#investor-network .node {
+    text-align: center;
+    cursor: pointer; }
+  div#investor-network .node circle {
+    fill: #fff;
+    stroke: #44b7b6;
+    stroke-width: 2;
+    transition: all .2s ease-in-out; }
+  div#investor-network .node:hover circle {
+    fill: #44b7b6; }
+  div#investor-network .node text {
+    font: 12px sans-serif;
+    font-weight: bold;
+    transition: all .2s ease-in-out;
+    text-anchor: middle;
+    fill: #44b7b6; }
+  div#investor-network .node:hover text {
+    fill: #fff !important; }
+  div#investor-network .link,
+  div#investor-network .crosslink {
+    fill: none;
+    stroke: #333;
+    stroke-width: 2; }
+  div#investor-network .link {
+    fill: none;
+    stroke: #333; }
+  div#investor-network .link.parent,
+  div#investor-network .crosslink.parent {
+    stroke: #72B0FD; }
+  div#investor-network .link.tertiary,
+  div#investor-network .crosslink.tertiary {
+    stroke: #F78E8F; }
+  div#investor-network .node.has-children circle {
+    stroke-dasharray: 0.2em; }
 
-#investor-network .link.investor {
-  stroke: #fc941f; }
-
-#investor-network .circle {
-  fill: #44b7b6;
-  stroke: #ffffff;
-  stroke-width: 2px; }
-
-#investor-network .circle.investor {
-  fill: #fc941f; }
-
-#investor-network .circle:hover {
-  stroke: #000000;
-  stroke-width: 2px; }
+#investor-legend .legend-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  position: relative;
+  top: 0.15em; }
+#investor-legend .legend-icon.parent {
+  border-style: solid;
+  border-width: 0.5em 0.75em 0.5em 0;
+  border-color: transparent #72B0FD transparent transparent; }
+#investor-legend .legend-icon.tertiary {
+  border-style: solid;
+  border-width: 0.5em 0.75em 0.5em 0;
+  border-color: transparent #F78E8F transparent transparent; }
+#investor-legend .legend-icon.has-children {
+  border-width: 2px;
+  border-style: dotted;
+  border-color: #44b7b6;
+  border-radius: 50%; }
+#investor-legend .legend-icon.investor {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #44b7b6;
+  border-radius: 50%; }
 
 /* ==========================================================================
  *    STATS
@@ -1825,7 +1861,6 @@ a.btn:hover {
   text-shadow: none !important; }
 
 .breadcrumb > li > a {
-  color: #4a4a4a;
   text-decoration: underline; }
 
 /* ==========================================================================

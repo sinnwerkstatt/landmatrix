@@ -920,33 +920,100 @@ table td.number {
   pointer-events: none;
 }
 
-#investor-network .link {
-  fill: none;
-  stroke: #44b7b6;
-  stroke-width: 2px;
+
+div#investor-network {
+  overflow-x: scroll !important;
+
+  .node {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .node circle {
+    fill: #fff;
+    stroke: #44b7b6;
+    stroke-width: 2;
+    transition: all .2s ease-in-out;
+  }
+
+  .node:hover circle {
+    fill: #44b7b6;
+  }
+
+  .node text {
+    font: 12px sans-serif;
+    font-weight: bold;
+    transition: all .2s ease-in-out;
+    text-anchor: middle;
+    fill: #44b7b6;
+  }
+
+  .node:hover text {
+    fill: #fff !important;
+  }
+
+  .link,
+  .crosslink {
+    fill: none;
+    stroke: #333;
+    stroke-width: 2;
+  }
+
+  .link {
+    fill: none;
+    stroke: #333;
+  }
+
+  .link.parent,
+  .crosslink.parent {
+    stroke: #72B0FD;
+  }
+
+  .link.tertiary,
+  .crosslink.tertiary {
+    stroke: #F78E8F;
+  }
+
+  .node.has-children circle {
+    stroke-dasharray: 0.2em;
+  }
 }
 
-#investor-network .link.investor {
-  stroke: #fc941f;
+#investor-legend {
+  .legend-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    top: 0.15em;
+  }
+
+  .legend-icon.parent {
+    border-style: solid;
+    border-width: 0.5em 0.75em 0.5em 0;
+    border-color: transparent #72B0FD transparent transparent;
+  }
+
+  .legend-icon.tertiary {
+    border-style: solid;
+    border-width: 0.5em 0.75em 0.5em 0;
+    border-color: transparent #F78E8F transparent transparent;
+  }
+
+  .legend-icon.has-children {
+    border-width: 2px;
+    border-style: dotted;
+    border-color: #44b7b6;
+    border-radius: 50%;
+  }
+
+  .legend-icon.investor {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #44b7b6;
+    border-radius: 50%;
+  }
 }
-
-#investor-network .circle {
-  fill: #44b7b6;
-  stroke: #ffffff;
-  stroke-width: 2px;
-}
-
-#investor-network .circle.investor {
-  fill: #fc941f;
-}
-
-#investor-network .circle:hover {
-  stroke: #000000;
-  stroke-width: 2px;
-}
-
-
-
 
 /* ==========================================================================
  *    STATS
@@ -1193,3 +1260,4 @@ html,body {
 .geometry-multipolygon {
   margin-bottom: 20px;
 }
+

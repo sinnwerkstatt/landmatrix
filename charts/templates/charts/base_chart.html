@@ -6,6 +6,11 @@
 <link href="{% static 'vendor/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
 {% endblock %}
 
+{% block js %}
+{{ block.super }}
+<script src="{% static "vendor/d3/d3.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
 {% block page_title %}{% trans "Chart" %}{% endblock %}
 {% block title %}{% trans "Chart" %}{% endblock %}
 

@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
+from django.urls import reverse
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
@@ -173,6 +174,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
             "homepage": obj.homepage,
             "opencorporates_link": obj.opencorporates_link,
             "comment": obj.comment,
+            "url": reverse("investor_detail", kwargs={"investor_id": obj.investor_identifier}),
             "stakeholders": [],
         }
         involvements = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=obj)
@@ -189,7 +191,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                 ))
             for i, involvement in enumerate(parent_involvements):
                 parent = self.to_representation(involvement.fk_investor, parent_types)
-                parent["parent_type"] = parent_type == 'parent_investors' and 'investor' or 'stakeholder'
+                parent["type"] = parent_type == 'parent_investors' and 2 or 1
                 parent["involvement"] = {
                     "percentage": involvement.percentage,
                     "investment_type": involvement.get_investment_type_display(),
