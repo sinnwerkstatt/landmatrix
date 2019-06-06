@@ -17,11 +17,18 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		$('#accordion').on('show.bs.collapse', function (e) {
-		    if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
-	        	loadInvestorNetwork({{ form.initial.operational_stakeholder }});
-	        };
-		});
+	    // Deal detail/form?
+        if ($("#investor-info_body #investor-network").size() > 0) {
+            $('#accordion').on('show.bs.collapse', function (e) {
+                if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
+                    loadInvestorNetwork({{ investor_identifier }});
+                }
+                ;
+            });
+        // Investor detail/form
+        } else if ($("#general_info_body #investor-network").size() > 0) {
+            loadInvestorNetwork({{ investor_identifier }});
+        }
 	});
 </script>
 {% include "grid/modals/investor_modal.html" %}

@@ -44,7 +44,7 @@
 {% endfor %}
 
 {% if form.Meta.name == 'investor_info' %}
-    {% include "grid/includes/investor_network.html" %}
+    {% include "grid/includes/investor_network.html" with investor_identifier=form.initial.operational_stakeholder %}
 
 {% endif %}
 

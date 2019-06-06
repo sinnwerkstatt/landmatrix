@@ -61,6 +61,9 @@
                      class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} in with-error{% endif %}">
                     <div class="panel-body">
                     {% include "grid/form.html" with exclude='action_comment' %}
+                    {% if investor %}
+                        {% include "grid/includes/investor_network.html" with investor_identifier=investor.investor_identifier %}
+                    {% endif %}
                     </div>
                 </div>
             </div>

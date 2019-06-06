@@ -8,7 +8,10 @@ function initInvestorForm(form) {
     });
     initInvestorField(form.find(".investorfield"), function () {
         generateButtons($(this));
-        loadInvestorNetwork($(this).val());
+        // Deal detail/form?
+        if ($("#investor-info_body #investor-network").size() > 0) {
+            loadInvestorNetwork($(this).val());
+        }
     });
 }
 
@@ -257,7 +260,7 @@ var showInvestorModal = function( d, i ) {
     if (data.involvement) {
     	var inv = data.involvement;
       output.push.apply(output, [
-        '<h4>Involvement</h4>' + d.type,
+        '<h4>Involvement</h4>' + type,
         (inv.percentage && inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") || ""),
         inv.loans_amount && inv.loans_amount + " " + inv.loans_currency + (inv.loans_date && " (" + inv.loans_date + ")"),
         inv.comment,
@@ -358,19 +361,20 @@ var linkedTreeChartBuilder = function( parentElement ) {
     // Set up the boundaries.
     var margin = { top: 20, right: 30, bottom: 20, left: 30 };
     var width = 960 - margin.left - margin.right;
-    var height = 600 - margin.top - margin.bottom;
+    var height = 500 - margin.top - margin.bottom;
 
     // Assigns parent, children, height, depth
     treeData.x0 = height / 2;
     treeData.y0 = 0;
 
     var classes = {
-    	0: 'operating',
-      1: 'parent',
-      2: 'tertiary'
-    }
+        0: 'operating',
+        1: 'parent',
+        2: 'tertiary'
+    };
 
     // Create the chart SVG.
+    parentElement.html("");
     var svg = parentElement.append( 'svg' )
     	  .attr( 'width', width + margin.left + margin.right )
         .attr( 'height', height + margin.top + margin.bottom );
@@ -437,7 +441,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
           .attr( 'class', function (d) {
-            return 'node ' + classes[d.data.type] + (d.data._stakeholders ? ' has-children' : '');
+            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders).length > 0 ? ' has-children' : '');
           } )
           .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
           .on("click", click)
@@ -453,7 +457,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
           'title': function() {
             var data = d3.select(this).datum().data,
                 name = "<strong>" + data.name + '</strong>',
-                meta = [data.country, data.classification].join(", ");
+                meta = [data.country, data.classification].filter(function (val) {return val;}).join(", ");
             return name + (meta ? '<br>' + meta : '');
           }
         });
@@ -473,7 +477,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         nodeUpdate//.transition()
           //.duration(duration)
           .attr( 'class', function (d) {
-            return 'node ' + classes[d.data.type] + (d.data._stakeholders ? ' has-children' : '');
+            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders) > 0 ? ' has-children' : '');
           } )
           .attr("transform", function(d) {
           	return "translate(" + d.y + "," + d.x + ")"
