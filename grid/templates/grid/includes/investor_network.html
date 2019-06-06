@@ -21,13 +21,13 @@
         if ($("#investor-info_body #investor-network").size() > 0) {
             $('#accordion').on('show.bs.collapse', function (e) {
                 if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
-                    loadInvestorNetwork({{ investor_identifier }});
+                    loadInvestorNetwork({{ history_id }});
                 }
                 ;
             });
         // Investor detail/form
         } else if ($("#general_info_body #investor-network").size() > 0) {
-            loadInvestorNetwork({{ investor_identifier }});
+            loadInvestorNetwork(null, {{ investor_id }});
         }
 	});
 </script>

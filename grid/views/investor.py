@@ -305,7 +305,7 @@ class InvestorDetailView(DetailView):
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Activity %s does not exist (%s)' % (investor_id, str(e)))
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
         # Status: Deleted
         if investor.fk_status_id == HistoricalInvestor.STATUS_DELETED:
             # Only Administrators are allowed to edit (recover) deleted deals

@@ -405,8 +405,8 @@ ul.form.empty {
 .form ul {
   margin: 0; }
 
-form > ul li,
-.panel > ul li {
+form ul li,
+.panel ul li {
   background: none;
   padding-left: 0;
   list-style: none; }
@@ -1861,7 +1861,8 @@ a.btn:hover {
   text-shadow: none !important; }
 
 .breadcrumb > li > a {
-  text-decoration: underline; }
+  text-decoration: underline;
+  color: #4a4a4a; }
 
 /* ==========================================================================
  *    WIDGETS

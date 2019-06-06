@@ -596,16 +596,25 @@ var linkedTreeChartBuilder = function( parentElement ) {
     return update;
 };
 
-function loadInvestorNetwork(investorId) {
-    if (investorId <= 0 || $("#investor-network").size() <= 0) {
+function loadInvestorNetwork(historyId, investorId) {
+    var selector = "#investor-network";
+    if ($(selector).size() === 0) {
         return;
     }
-    d3.json("/api/investor_network.json?operational_stakeholder=" + investorId,
+    var url = "/api/investor_network.json";
+    if (historyId) {
+        url += "?history_id=" + historyId;
+    } else if (investorId) {
+        url += "?investor_id=" + investorId;
+    } else {
+        return;
+    }
+    d3.json(url,
         function (data) {
             treeData = data;
 
             // Build the chart.
-            var linkedTreeChart = linkedTreeChartBuilder( d3.select( '#investor-network' ) );
+            var linkedTreeChart = linkedTreeChartBuilder( d3.select( selector ) );
 
             treeData = updateReferences( treeData );
 
