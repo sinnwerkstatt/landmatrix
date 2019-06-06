@@ -79,6 +79,7 @@
 {% endblock %}
 
 {% block global_js %}
+    <script src="{% static "js/vendor/d3.v4.min.js" %}" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
     <script>unlockMaps()</script>
 {% endblock %}

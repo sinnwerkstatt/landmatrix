@@ -1,17 +1,34 @@
 {% load i18n %}
 <p>&nbsp;</p>
 <p class="alert alert-info">
-    <strong>{% trans "Network of parent companies and tertiary investors/lenders" %}.</strong> {% trans "Please click the node next to a company to get more details." %}
+    <strong>{% trans "Network of parent companies and tertiary investors/lenders" %}.</strong> {% trans "Please right-click the nodes to get more details." %}
 </p>
 <div id="investor-network">
 </div>
+<div id="investor-legend">
+    <h5>{% trans "Legend" %}</h5>
+    <ul class="list-unstyled">
+      <li><span class="legend-icon parent"></span> {% trans "Is Parent company of" %}</li>
+      <li><span class="legend-icon tertiary"></span> {% trans "Is Tertiary investor/lender of" %}</li>
+      <li><span class="legend-icon has-children"></span> {% trans "Left-click to reveal more related investors" %}</li>
+      <li><span class="legend-icon investor"></span> {% trans "Right-click on investors to get more information" %}</li>
+    </ul>
+</div>
+
 <script type="text/javascript">
 	$(document).ready(function () {
-		$('#accordion').on('show.bs.collapse', function (e) {
-		    if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
-	        	loadInvestorNetwork({{ form.initial.operational_stakeholder }});
-	        };
-		});
+	    // Deal detail/form?
+        if ($("#investor-info_body #investor-network").size() > 0) {
+            $('#accordion').on('show.bs.collapse', function (e) {
+                if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
+                    loadInvestorNetwork({{ history_id }});
+                }
+                ;
+            });
+        // Investor detail/form
+        } else if ($("#general_info_body #investor-network").size() > 0) {
+            loadInvestorNetwork(null, {{ investor_id }});
+        }
 	});
 </script>
 {% include "grid/modals/investor_modal.html" %}

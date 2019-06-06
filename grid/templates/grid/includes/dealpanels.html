@@ -165,7 +165,7 @@
                     {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
                     {% include "grid/form.html" with form=form exclude="tg_action_comment" %}
                     {% if form.Meta.name == 'investor_info' %}
-                        {% include "grid/includes/investor_network.html" %}
+                        {% include "grid/includes/investor_network.html" with history_id=form.initial.operational_stakeholder %}
                     {% endif %}
                 {% endif %}
             </div>

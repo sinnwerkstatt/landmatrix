@@ -4,6 +4,7 @@
 {% block head %}
 {{ block.super }}
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/vendor/d3.v4.min.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
@@ -60,6 +61,9 @@
                      class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} in with-error{% endif %}">
                     <div class="panel-body">
                     {% include "grid/form.html" with exclude='action_comment' %}
+                    {% if investor %}
+                        {% include "grid/includes/investor_network.html" with investor_id=investor.investor_identifier %}
+                    {% endif %}
                     </div>
                 </div>
             </div>

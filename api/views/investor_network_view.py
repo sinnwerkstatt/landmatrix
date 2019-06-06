@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -8,7 +9,7 @@ from rest_framework.schemas import ManualSchema
 import coreapi
 import coreschema
 
-from landmatrix.models.investor import HistoricalInvestor, InvestorBase
+from landmatrix.models.investor import HistoricalInvestor, InvestorBase, Investor
 from api.serializers import HistoricalInvestorNetworkSerializer
 
 
@@ -29,33 +30,39 @@ class InvestorNetworkView(APIView):
         ]
     )
 
-    def get_object(self):
-        '''
-        Returns an investor object.
-        '''
-        try:
-            investor_id = int(
-                self.request.query_params['operational_stakeholder'])
-        except KeyError:
-            raise serializers.ValidationError(
-                {'operational_stakeholder': _("This field is required.")})
-        except ValueError:
-            raise serializers.ValidationError(
-                {'operational_stakeholder': _("An integer is required.")})
+    def _get_public_investor(self):
+        # TODO: Cache result for user
+        return Investor.objects.filter(investor_identifier=self.kwargs.get('investor_id')).first()
 
-        investor = get_object_or_404(HistoricalInvestor, pk=investor_id)
+    def get_object(self):
+        """
+        Returns an investor object.
+        """
+        investor_id = self.request.GET.get('investor_id')
+        history_id = self.request.GET.get('history_id')
+        queryset = HistoricalInvestor.objects
         if not self.request.user.is_authenticated:
-            if investor.fk_status_id not in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
-                raise Http404("Investor is not public")
-        self.check_object_permissions(self.request, investor)
+            i = self._get_public_investor()
+            if not i:
+                raise Http404('Investor %s is not public' % investor_id)
+            queryset = queryset.public_or_deleted(self.request.user)
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+
+        #self.check_object_permissions(self.request, investor)
 
         return investor
 
     def get(self, request, format=None):
         # TODO: determine what operational_stakeholder_diagram does here -
         # it seems to just be passed back in the response.
-        operational_stakeholder = self.get_object()
-        serialized_response = HistoricalInvestorNetworkSerializer(operational_stakeholder, user=request.user)
+        investor = self.get_object()
+        serialized_response = HistoricalInvestorNetworkSerializer(investor, user=request.user)
         #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()
