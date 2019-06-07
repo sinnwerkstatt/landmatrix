@@ -30,27 +30,19 @@ class InvestorNetworkView(APIView):
         ]
     )
 
-    def _get_public_investor(self):
-        # TODO: Cache result for user
-        return Investor.objects.filter(investor_identifier=self.kwargs.get('investor_id')).first()
-
     def get_object(self):
         """
         Returns an investor object.
         """
         investor_id = self.request.GET.get('investor_id')
         history_id = self.request.GET.get('history_id')
+        if history_id and not investor_id:
+            investor_id = HistoricalInvestor.objects.get(id=history_id).investor_identifier
         queryset = HistoricalInvestor.objects
         if not self.request.user.is_authenticated:
-            i = self._get_public_investor()
-            if not i:
-                raise Http404('Investor %s is not public' % investor_id)
             queryset = queryset.public_or_deleted(self.request.user)
         try:
-            if history_id:
-                investor = queryset.get(id=history_id)
-            else:
-                investor = queryset.filter(investor_identifier=investor_id).latest()
+            investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
 
