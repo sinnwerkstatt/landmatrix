@@ -477,7 +477,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         nodeUpdate//.transition()
           //.duration(duration)
           .attr( 'class', function (d) {
-            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders) > 0 ? ' has-children' : '');
+            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders).length > 0 ? ' has-children' : '');
           } )
           .attr("transform", function(d) {
           	return "translate(" + d.y + "," + d.x + ")"
