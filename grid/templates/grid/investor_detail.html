@@ -4,7 +4,6 @@
 {% block head %}
 {{ block.super }}
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/vendor/d3.v4.min.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
@@ -137,7 +136,6 @@
                             </div>
                         </div>
                         {% endif %}
-                        {% include "grid/includes/investor_network.html" with investor_id=investor.investor_identifier %}
                     </div>
                 </div>
             </div>
