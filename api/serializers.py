@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
 from landmatrix.models import Activity, HistoricalInvestorVentureInvolvement, FilterPreset
-from landmatrix.models.investor import InvestorBase
+from landmatrix.models.investor import InvestorBase, HistoricalInvestor
 
 
 class PassThruSerializer(serializers.BaseSerializer):
@@ -190,7 +190,9 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                     InvestorBase.STATUS_OVERWRITTEN
                 ))
             for i, involvement in enumerate(parent_involvements):
-                parent = self.to_representation(involvement.fk_investor, parent_types)
+                # Always get latest version of parent investor
+                parent_investor = HistoricalInvestor.objects.filter(investor_identifier=involvement.fk_investor.investor_identifier).latest()
+                parent = self.to_representation(parent_investor, parent_types)
                 parent["type"] = parent_type == 'parent_investors' and 2 or 1
                 parent["involvement"] = {
                     "percentage": involvement.percentage,
