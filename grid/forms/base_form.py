@@ -321,8 +321,8 @@ class BaseForm(FieldsDisplayFormMixin,
                         # Value / Value2 (e.g. Actors field)
                         elif widget_count == 2:
                             value2 = self.data.get('%s_%i' % (prefix, i + 1))
-                        if widget_values or value2 or year:
-                            for value in widget_values:
+                        for value in widget_values:
+                            if value or value2 or year:
                                 values.append({
                                     'value': value,
                                     'value2': value2,
@@ -338,6 +338,13 @@ class BaseForm(FieldsDisplayFormMixin,
             elif isinstance(f, forms.DecimalField):
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
+                    attributes[name] = {'value': str(value)}
+            elif isinstance(f, forms.FloatField):
+                value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                if value:
+                    # Save integer if whole number
+                    if value.is_integer():
+                        value = int(value)
                     attributes[name] = {'value': str(value)}
             else:
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
