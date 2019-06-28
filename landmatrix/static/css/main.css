@@ -1557,7 +1557,8 @@ div#investor-network {
   position: absolute;
   top: 50%;
   left: 1em;
-  width: 0.5em; }
+  width: 0.5em;
+  margin-top: -2px; }
 #investor-legend .legend-icon.tertiary:after {
   border-top-color: #F78E8F; }
 #investor-legend .legend-icon.tertiary {
