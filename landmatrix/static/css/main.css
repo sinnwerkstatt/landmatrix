@@ -1542,15 +1542,30 @@ div#investor-network {
   width: 1em;
   height: 1em;
   position: relative;
-  top: 0.15em; }
+  top: 0.15em;
+  margin-right: 0.75em; }
 #investor-legend .legend-icon.parent {
   border-style: solid;
   border-width: 0.5em 0.75em 0.5em 0;
-  border-color: transparent #72B0FD transparent transparent; }
+  border-color: transparent #72B0FD transparent transparent;
+  margin-left: -0.25em;
+  margin-right: 1em; }
+#investor-legend .legend-icon.parent:after,
+#investor-legend .legend-icon.tertiary:after {
+  content: " ";
+  border-top: 2px solid #72B0FD;
+  position: absolute;
+  top: 50%;
+  left: 1em;
+  width: 0.5em; }
+#investor-legend .legend-icon.tertiary:after {
+  border-top-color: #F78E8F; }
 #investor-legend .legend-icon.tertiary {
   border-style: solid;
   border-width: 0.5em 0.75em 0.5em 0;
-  border-color: transparent #F78E8F transparent transparent; }
+  border-color: transparent #F78E8F transparent transparent;
+  margin-left: -0.25em;
+  margin-right: 1em; }
 #investor-legend .legend-icon.has-children {
   border-width: 2px;
   border-style: dotted;

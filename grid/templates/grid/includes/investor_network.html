@@ -8,10 +8,12 @@
 <div id="investor-legend">
     <h5>{% trans "Legend" %}</h5>
     <ul class="list-unstyled">
-      <li><span class="legend-icon parent"></span> {% trans "Is Parent company of" %}</li>
-      <li><span class="legend-icon tertiary"></span> {% trans "Is Tertiary investor/lender of" %}</li>
-      <li><span class="legend-icon has-children"></span> {% trans "Left-click to reveal more related investors" %}</li>
-      <li><span class="legend-icon investor"></span> {% trans "Right-click on investors to get more information" %}</li>
+      <li><span class="legend-icon parent"></span> {% trans "Is parent company of" %}</li>
+      <li><span class="legend-icon tertiary"></span> {% trans "Is tertiary investor/lender of" %}</li>
+      <li><span class="legend-icon has-children"></span> {% trans "Left-click to reveal related parent companies and tertiary investors/lenders." %}</li>
+      <li><span class="legend-icon investor"></span> {% trans "Right-click on investors to get more information." %}</li>
+      <li><span class="legend-icon none"></span> {% trans "Left-click to hide related parent companies and tertiary investors/lenders." %}</li>
+
     </ul>
 </div>
 

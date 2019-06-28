@@ -986,18 +986,37 @@ div#investor-network {
     height: 1em;
     position: relative;
     top: 0.15em;
+    margin-right: 0.75em;
   }
 
   .legend-icon.parent {
     border-style: solid;
     border-width: 0.5em 0.75em 0.5em 0;
     border-color: transparent #72B0FD transparent transparent;
+    margin-left: -0.25em;
+    margin-right: 1em;
+  }
+
+  .legend-icon.parent:after,
+  .legend-icon.tertiary:after {
+    content: " ";
+    border-top: 2px solid #72B0FD;
+    position: absolute;
+    top: 50%;
+    left: 1em;
+    width: 0.5em;
+  }
+
+  .legend-icon.tertiary:after {
+    border-top-color: #F78E8F;
   }
 
   .legend-icon.tertiary {
     border-style: solid;
     border-width: 0.5em 0.75em 0.5em 0;
     border-color: transparent #F78E8F transparent transparent;
+    margin-left: -0.25em;
+    margin-right: 1em;
   }
 
   .legend-icon.has-children {
