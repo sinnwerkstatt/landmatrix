@@ -10,15 +10,6 @@ from landmatrix.models import Activity, HistoricalInvestorVentureInvolvement, Fi
 from landmatrix.models.investor import InvestorBase, HistoricalInvestor
 
 
-class PassThruSerializer(serializers.BaseSerializer):
-    """
-    Read only serializer that does nothing, just passed the JSON object
-    we already have through.
-    """
-    def to_representation(self, obj):
-        return obj
-
-
 class FilterPresetSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPreset
@@ -178,20 +169,26 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
             "stakeholders": [],
         }
         involvements = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=obj)
+        if self.user and not self.user.is_authenticated:
+            involvements = involvements.filter(fk_investor__fk_status_id__in=(
+                InvestorBase.STATUS_ACTIVE,
+                InvestorBase.STATUS_OVERWRITTEN
+            ))
         for parent_type in parent_types:
             parents = []
             if parent_type == 'parent_investors':
                 parent_involvements = involvements.investors()
             else:
                 parent_involvements = involvements.stakeholders()
-            if self.user and not self.user.is_authenticated:
-                parent_involvements = parent_involvements.filter(fk_investor__fk_status_id__in=(
-                    InvestorBase.STATUS_ACTIVE,
-                    InvestorBase.STATUS_OVERWRITTEN
-                ))
             for i, involvement in enumerate(parent_involvements):
                 # Always get latest version of parent investor
-                parent_investor = HistoricalInvestor.objects.filter(investor_identifier=involvement.fk_investor.investor_identifier).latest()
+                parent_investor = HistoricalInvestor.objects.filter(investor_identifier=involvement.fk_investor.investor_identifier)
+                if self.user and not self.user.is_authenticated:
+                    parent_investor = parent_investor.filter(fk_status_id__in=(
+                        InvestorBase.STATUS_ACTIVE,
+                        InvestorBase.STATUS_OVERWRITTEN
+                    ))
+                parent_investor = parent_investor.latest()
                 parent = self.to_representation(parent_investor, parent_types)
                 parent["type"] = parent_type == 'parent_investors' and 2 or 1
                 parent["involvement"] = {
