@@ -15,6 +15,7 @@ from grid.widgets import (
     FileInputWithInitial, MultiTextInput, CountrySelect, TextChoiceInput,
     AreaWidget,
 )
+from ol3_widgets.widgets import OpenLayersWidget
 
 
 class YearMonthDateValidator(validators.RegexValidator):
@@ -531,7 +532,7 @@ class AreaField(forms.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         fields = (
-            MultiPolygonField(required=False),
+            MultiPolygonField(required=False, srid=4326, widget=OpenLayersWidget),
             forms.FileField(required=False)
         )
         kwargs.update({
