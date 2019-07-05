@@ -384,6 +384,7 @@ class AreaWidget(forms.MultiWidget):
     FILE_WIDGET_ATTRS = {
         'multiple': True,
     }
+    map_srid = 4326
 
     def __init__(self, *args, **kwargs):
         self.initially_hidden = kwargs.pop('initially_hidden', True)

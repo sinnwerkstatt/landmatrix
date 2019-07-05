@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from grid.fields import *
 from grid.forms.choices import actor_choices
+from landmatrix.models import HistoricalActivityAttribute
 
 
 class YearBasedFieldTestCaseMixin:
@@ -207,9 +208,28 @@ class ActorsFieldTestCase(YearBasedFieldTestCaseMixin,
 
 class AreaFieldTestCase(TestCase):
 
-    def test(self):
-        field = AreaField()
+    def setUp(self):
+        self.field = AreaField()
+
+    def test_compress(self):
         file = SimpleUploadedFile("file.pdf", b"", content_type="application/pdf")
-        self.assertEqual('test', field.compress(['test', None]))
-        self.assertEqual(file, field.compress(['test', file]))
-        self.assertEqual('', field.compress([]))
+        self.assertEqual('test', self.field.compress(['test', None]))
+        self.assertEqual(file, self.field.compress(['test', file]))
+        self.assertEqual('', self.field.compress([]))
+
+    def test_clean(self):
+        value = ['{"type":"MultiPolygon","coordinates":[[[[100.39024939321291,-84.99256181934545],[100.96173157476198,-84.99458605320528],[100.90757241033326,-85.02036131846661],[100.31534065984499,-85.02277461634935],[100.39024939321291,-84.99256181934545]]]]}']
+        cleaned = self.field.clean(value)
+        self.assertEqual(4326, cleaned.srid)
+        coords = (
+            (
+                (
+                    (100.39024939321291, -84.99256181934545),
+                    (100.96173157476198, -84.99458605320528),
+                    (100.90757241033326, -85.02036131846661),
+                    (100.31534065984499, -85.02277461634935),
+                    (100.39024939321291, -84.99256181934545),
+                ),
+            ),
+        )
+        self.assertEqual(coords, cleaned.coords)
