@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from multiselectfield import MultiSelectField
 
+from landmatrix.models import HistoricalActivity
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 
@@ -318,7 +319,8 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
                          for i in investors])
 
     def get_deal_count(self):
-        return self.involvements.filter(fk_activity__fk_status__in=(2, 3)).count()
+        latest_ids = HistoricalActivity.objects.latest_ids(status=HistoricalActivity.PUBLIC_STATUSES)
+        return self.involvements.filter(fk_activity_id__in=latest_ids).count()
 
     def get_roles(self):
         roles = []
