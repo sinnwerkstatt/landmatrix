@@ -33,19 +33,25 @@ class DealProduceInfoForm(BaseForm):
     tg_crops_comment = forms.CharField(
         required=False, label=_("Comment on crops"), widget=CommentInput)
     animals = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Livestock area"), queryset=Animal.objects.all())
+        required=False, label=_("Livestock area"), queryset=Animal.objects.all(),
+        placeholder=_('ha'))
     animals_yield = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Livestock yield"), queryset=Animal.objects.all())
+        required=False, label=_("Livestock yield"), queryset=Animal.objects.all(),
+        placeholder=_('tons'))
     animals_export = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Livestock export"), queryset=Animal.objects.all())
+        required=False, label=_("Livestock export"), queryset=Animal.objects.all(),
+        placeholder=_('%'))
     tg_animals_comment = forms.CharField(
         required=False, label=_("Comment on livestock"), widget=CommentInput)
     minerals = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Resources area"), queryset=Mineral.objects.all())
+        required=False, label=_("Resources area"), queryset=Mineral.objects.all(),
+        placeholder=_('ha'))
     minerals_yield = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Resources yield"), queryset=Mineral.objects.all())
+        required=False, label=_("Resources yield"), queryset=Mineral.objects.all(),
+        placeholder=_('tons'))
     minerals_export = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Resources export"), queryset=Mineral.objects.all())
+        required=False, label=_("Resources export"), queryset=Mineral.objects.all(),
+        placeholder=_('%'))
     tg_minerals_comment = forms.CharField(
         required=False, label=_("Comment on resources"), widget=CommentInput)
 
