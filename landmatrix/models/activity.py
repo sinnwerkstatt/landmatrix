@@ -20,9 +20,9 @@ from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
 
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
-        '''
+        """
         Status public, not to be confused with is_public.
-        '''
+        """
         if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=ActivityBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
@@ -85,9 +85,9 @@ class ActivityQuerySet(models.QuerySet):
 
 
 class NegotiationStatusManager(models.Manager):
-    '''
+    """
     Manager for Negotiation status grouped query. (used by API call)
-    '''
+    """
 
     def get_queryset(self):
         deals_count = Coalesce(
@@ -232,13 +232,13 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        '''
+        """
         If there's no identifier, set it to a default, and update it to the id
         post save.
 
         This is pretty much just for import, which keeps trying to get the
         next id and getting it wrong.
-        '''
+        """
         if self.activity_identifier is None:
             self.activity_identifier = self.ACTIVITY_IDENTIFIER_DEFAULT
 
@@ -338,9 +338,9 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @property
     def attributes_as_dict(self):
-        '''
+        """
         Returns all attributes, *grouped* as a nested dict.
-        '''
+        """
         attrs = defaultdict(dict)
         for attr in self.attributes.select_related('fk_group'):
             attrs[attr.fk_group.name][attr.name] = attr.value
@@ -780,13 +780,13 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return self.filter(activity_identifier__in=qs).filter(id__in=self.latest_ids())
 
     def _single_revision_identifiers(self):
-        '''
+        """
         Get all activity identifiers (as values) that only have a single
         revision.
 
         This query looks a bit strange, but the order of operations is required
         in order to construct the group by correctly.
-        '''
+        """
         queryset = HistoricalActivity.objects.values('activity_identifier') # don't use 'self' here
         queryset = queryset.annotate(
             revisions_count=models.Count('activity_identifier'),
@@ -798,17 +798,17 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return queryset
 
     def with_multiple_revisions(self):
-        '''
+        """
         Get only new activities (without any other historical instances).
-        '''
+        """
         subquery = self._single_revision_identifiers()
         queryset = self.exclude(activity_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
 
     def without_multiple_revisions(self):
-        '''
+        """
         Get only new activities (without any other historical instances).
-        '''
+        """
         subquery = self._single_revision_identifiers()
         queryset = self.filter(activity_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
@@ -1026,14 +1026,14 @@ class HistoricalActivity(ActivityBase):
 
     @property
     def changeset_comment(self):
-        '''
+        """
         Previously in changeset protocol there was some voodoo around getting
         a changeset with the same datetime as history_date. That doesn't work,
         because history_date is set when the activity is revised, and the
         changeset is timestamped when it is reviewed.
 
         So, just grab the most recent one.
-        '''
+        """
 
         changeset = self.changesets.first()
         comment = changeset.comment if changeset else ''

@@ -1,9 +1,9 @@
-'''
+"""
 Handle filtering of activities by various datapoints.
 
 Filtering is pretty complex and extends into api, grid, charts, and map views.
 We try to collect it here in api where possible....
-'''
+"""
 from collections import OrderedDict
 from copy import deepcopy
 import operator
@@ -57,6 +57,7 @@ FILTER_OPERATION_MAP = OrderedDict([
     )),
 ])
 
+
 def get_elasticsearch_match_operation(operator, variable_name, value):
     """
     Returns an elasticsearch-conform Match phrase for each SQL-operator
@@ -91,6 +92,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
         else:
             # Check for empty strings
             return ('must', {'match_phrase': {variable_name: ''}})
+
 
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
@@ -142,10 +144,10 @@ class Filter(BaseFilter):
 
     @classmethod
     def from_session(cls, filter_dict):
-        '''
+        """
         Because filters inherit from dict, they are stored in the session
         as dicts.
-        '''
+        """
         return cls(
             filter_dict['variable'], filter_dict['operator'],
             filter_dict['value'], name=filter_dict.get('name'),
@@ -159,7 +161,7 @@ class Filter(BaseFilter):
         """
         key = self['key'] or 'value'
         # TODO: hopefully _parse_value is no longer required
-        value = _parse_value(self['value'], variable=self['variable'], key=key)
+        value = self.parse_value(self['value'], variable=self['variable'], key=key)
         
         if 'in' in self['operator'] and not isinstance(value, list):
             value = [value]
@@ -170,6 +172,36 @@ class Filter(BaseFilter):
         }
 
         return formatted_filter
+
+    def parse_value(self, filter_value, variable=None, key=None):
+        """
+        Necessary due to the different ways single values and lists are stored
+        in DB and session.
+        """
+        if isinstance(filter_value, (list, tuple)):
+            if len(filter_value) > 1:
+                return filter_value
+            if len(filter_value) > 0:
+                value = filter_value[0]
+            else:
+                value = ''
+        else:
+            value = filter_value
+        if '[' in value:
+            value = [str(v) for v in json.loads(value)]
+
+        if variable is not None and key is not None:
+            # Is this still required? Why not just always store ids?
+            is_country_string = (
+                    'country' in variable and
+                    key == 'value' and
+                    not value.isnumeric()
+            )
+            if is_country_string:
+                country = Country.objects.defer('geom').get(name__iexact=value.replace('-', ' '))
+                value = str(country.pk)
+
+        return value
     
     def to_elasticsearch_match(self):
         """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool
@@ -187,7 +219,7 @@ class Filter(BaseFilter):
                   which needs to be removed. """
             
         key = self['key'] or 'value'
-        value = _parse_value(self['value'], variable=self['variable'], key=key)
+        value = self.parse_value(self['value'], variable=self['variable'], key=key)
         definition_key = '__'.join((self['variable'], key, self['operator']))
         
         # only the starting operator of this match or query-match is important for the logical operation,
@@ -244,73 +276,16 @@ class PresetFilter(BaseFilter):
 
     @classmethod
     def from_session(cls, filter_dict):
-        '''
+        """
         Because filters inherit from dict, they are stored in the session
         as dicts.
-        '''
+        """
         return cls(
             filter_dict['preset_id'], name=filter_dict.get('name'),
             label=filter_dict.get('label'), hidden=filter_dict.get('hidden', False))
 
 
-def format_filters(filters):
-    '''
-    Format filters as expected by FilterToSQL and ActivityQueryset.
-
-    We use OrderedDicts here because FilterToSQL code seems to have been
-    written on the assumption that dicts are ordered.
-    '''
-    # TODO: cleanup and move to FilterToSQL
-    formatted_filters = {
-        'activity': {'tags': OrderedDict()},
-        'investor': {'tags': OrderedDict()},
-    }
-
-    def _update_filters(filter_dict, filter, group=None):
-        name = filter[1].type
-        definition = filter[1].to_sql_format()
-        definition_key = list(definition.keys())[0]
-        if group:
-            if group not in filter_dict[name]['tags']:
-                filter_dict[name]['tags'][group] = OrderedDict()
-            tags = filter_dict[name]['tags'][group]
-        else:
-            tags = filter_dict[name]['tags']
-
-        if tags.get(definition_key):
-            if isinstance(tags[definition_key], list):
-                tags[definition_key].extend(definition[definition_key])
-            else:
-                # This should no happen, filter will be ignored
-                #raise NotImplementedError
-                pass
-        else:
-            tags.update(definition)
-
-    for i, item in enumerate(filters.items()):
-        filter_name, filter_obj = item
-
-        if isinstance(filter_obj, PresetFilter):
-            conditions = filter_obj.filter.conditions.all()
-            for j, condition in enumerate(conditions):
-                if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
-                    group = filter_obj.filter.name
-                else:
-                    group = '{}_{}'.format(filter_obj.filter.name, i)
-                _update_filters(
-                    formatted_filters,
-                    ('{}_{}'.format(filter_obj.name, j), condition.to_filter()),
-                    group=group
-                )
-        else:
-            _update_filters(
-                formatted_filters,
-                (filter_name, filter_obj),
-                group='{}_{}'.format(filter_name, i)
-            )
-    return formatted_filters
-
-# Deprecated
+# Deprecated?
 def format_filters_elasticsearch(filters, initial_query=None):
     """
         Generates an elasticsearch-conform `bool` query from session filters.
@@ -321,14 +296,12 @@ def format_filters_elasticsearch(filters, initial_query=None):
         @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}"
             wrapper
     """
-    from api.elasticsearch import get_elasticsearch_properties
-        
     proto_filters = {
         '_filter_name': None,
-        'must' : [], # AND
-        'filter': [], # EXCLUDE ALL OTHERS
-        'must_not': [], # AND NOT
-        'should': [], # OR
+        'must' : [],  # AND
+        'filter': [],  # EXCLUDE ALL OTHERS
+        'must_not': [],  # AND NOT
+        'should': [],  # OR
     }
     query = initial_query or deepcopy(proto_filters)
     
@@ -442,37 +415,6 @@ def clean_filter_query_string(request):
     return whitelist
 
 
-def _parse_value(filter_value, variable=None, key=None):
-    """
-    Necessary due to the different ways single values and lists are stored
-    in DB and session.
-    """
-    if isinstance(filter_value, (list, tuple)):
-        if len(filter_value) > 1:
-            return filter_value
-        if len(filter_value) > 0:
-            value = filter_value[0]
-        else:
-            value = ''
-    else:
-        value = filter_value
-    if '[' in value:
-        value = [str(v) for v in json.loads(value)]
-
-    if variable is not None and key is not None:
-        # Is this still required? Why not just always store ids?
-        is_country_string = (
-            'country' in variable and
-            key == 'value' and
-            not value.isnumeric()
-        )
-        if is_country_string:
-            country = Country.objects.defer('geom').get(name__iexact=value.replace('-', ' '))
-            value = str(country.pk)
-
-    return value
-
-
 def get_list_element_by_key(the_list, key, value):
     """
     Returns the *first* dictionary in a list whose value of a key matches the given value,
@@ -483,6 +425,7 @@ def get_list_element_by_key(the_list, key, value):
             if dict_element.get(key, None) == value:
                 return dict_element, i
     return None, None
+
 
 def remove_all_dict_keys_from_mixed_dict(maybe_dict, key_name):
     """

@@ -143,7 +143,7 @@ class PendingChangesMixin(FilteredQuerySetMixin):
         else:
             #queryset = queryset.filter(Q(history_user__groups__name__in=('Reporters', 'Editors')) |
             #    Q(changesets__fk_user__groups__name__in=('Reporters', 'Editors')))
-            pass # No filter required for admins
+            pass  # No filter required for admins
 
         return queryset
 
@@ -197,10 +197,10 @@ class PendingChangesMixin(FilteredQuerySetMixin):
     def get_pending_deletes_queryset(self, limit=None):
         activities = self.get_filtered_activity_queryset(queryset=self.get_permitted_activities())
         activities = activities.to_delete()
-        items = list(activities.filter(id__in=activities.latest_ids())[:limit])
+        items = list(activities.filter(id__in=activities.latest_ids()).distinct()[:limit])
         investors = self.get_filtered_investor_queryset(queryset=self.get_permitted_investors())
         investors = investors.to_delete()
-        items += list(investors.filter(id__in=investors.latest_ids())[:limit])
+        items += list(investors.filter(id__in=investors.latest_ids()).distinct()[:limit])
         items.sort(key=lambda i: i.history_date, reverse=True)
         return items[:limit]
 
@@ -213,11 +213,11 @@ class PendingChangesMixin(FilteredQuerySetMixin):
         activities = self.get_filtered_activity_queryset()
         activities = activities.rejected()
         activities = activities.filter(changesets__fk_user=self.request.user)
-        items = list(activities.filter(id__in=activities.latest_ids())[:limit])
+        items = list(activities.filter(id__in=activities.latest_ids()).distinct()[:limit])
         investors = self.get_filtered_investor_queryset()
         investors = investors.rejected()
         #investors = investors.filter(changesets__fk_user=self.request.user)
-        items += list(investors.filter(id__in=investors.latest_ids())[:limit])
+        items += list(investors.filter(id__in=investors.latest_ids()).distinct()[:limit])
         items.sort(key=lambda i: i.history_date, reverse=True)
         return items[:limit]
 
@@ -268,12 +268,12 @@ class DashboardView(LatestQuerySetMixin,
             #    'not_public_deal_count': private_count,
             #},
             'view': 'dashboard',
-            'latest_added': map(activity_or_investor_to_template, latest_added),
-            'latest_modified': map(activity_or_investor_to_template, latest_modified),
-            'latest_deleted': map(activity_or_investor_to_template, latest_deleted),
+            'latest_added': list(map(activity_or_investor_to_template, latest_added)),
+            'latest_modified': list(map(activity_or_investor_to_template, latest_modified)),
+            'latest_deleted': tuple(map(activity_or_investor_to_template, latest_deleted)),
             'manage': pendings[:self.paginate_by],
             'feedbacks': {
-                'feeds': map(feedback_to_template, feedback[:self.paginate_by])
+                'feeds': list(map(feedback_to_template, feedback[:self.paginate_by]))
             },
             'filters': {
                 'country_ids': self.request.GET.getlist('country'),
@@ -297,7 +297,7 @@ class BaseLogView(LatestQuerySetMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        mapped_activities = map(activity_or_investor_to_template, context['items'])
+        mapped_activities = list(map(activity_or_investor_to_template, context['items']))
         context.update({
             'view': 'log',
             'action': self.action,
@@ -355,7 +355,7 @@ class BaseManageView(PendingChangesMixin, ListView):
         return super().dispatch(*args, **kwargs)
 
     def process_objects_for_template(self, object_list):
-        return map(activity_or_investor_to_template, object_list)
+        return list(map(activity_or_investor_to_template, object_list))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -387,7 +387,7 @@ class ManageFeedbackView(BaseManageView):
         return super().dispatch(*args, **kwargs)
 
     def process_objects_for_template(self, object_list):
-        return map(feedback_to_template, object_list)
+        return list(map(feedback_to_template, object_list))
 
     def get_queryset(self):
         return self.get_feedback_queryset()
@@ -559,8 +559,8 @@ class ApproveInvestorChangeView(BaseManageInvestorView):
     action = 'approve'
 
     def form_valid(self, form):
-        activity = self.get_object()
-        activity.approve_change(
+        investor = self.get_object()
+        investor.approve_change(
             user=self.request.user,
             comment=form.cleaned_data['tg_action_comment'])
 
@@ -574,8 +574,8 @@ class RejectInvestorChangeView(BaseManageInvestorView):
     action = 'reject'
 
     def form_valid(self, form):
-        activity = self.get_object()
-        activity.reject_change(
+        investor = self.get_object()
+        investor.reject_change(
             user=self.request.user,
             comment=form.cleaned_data['tg_action_comment'])
 

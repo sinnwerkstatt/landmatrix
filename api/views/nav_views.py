@@ -90,7 +90,7 @@ class InvestorListView(ElasticSearchMixin,
         return None
 
     def get_queryset(self):
-        results = []
+        results = {}
 
         term = self.request.GET.get('q', '')
         if term:

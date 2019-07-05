@@ -10,19 +10,10 @@ from landmatrix.models import Activity, HistoricalInvestorVentureInvolvement, Fi
 from landmatrix.models.investor import InvestorBase, HistoricalInvestor
 
 
-class PassThruSerializer(serializers.BaseSerializer):
-    """
-    Read only serializer that does nothing, just passed the JSON object
-    we already have through.
-    """
-    def to_representation(self, obj):
-        return obj
-
-
 class FilterPresetSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPreset
-        exclude = ('is_default', 'overrides_default')
+        exclude = ('is_default_country', 'is_default_global')
 
 
 class UserSerializer(serializers.ModelSerializer):

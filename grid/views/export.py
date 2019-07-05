@@ -195,7 +195,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         wb = Workbook()
 
         # Deals tab
-        ws_deals = wb.get_sheet_by_name('Sheet')
+        ws_deals = wb['Sheet']
         ws_deals.title = 'Deals'
         ws_deals.append(data['deals']['headers'])
         for item in data['deals']['items']:
@@ -486,66 +486,3 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             else:
                 value = value[0] if len(value) > 0 else ''
         return value
-
-
-class AllDealsExportView(DealListView, ExportView):
-    def dispatch(self, request, *args, **kwargs):
-        format = kwargs.pop('format')
-        kwargs['group'] = 'all'
-        context = super().get_context_data(*args, **kwargs)
-        return self.export(
-            context['data']['items'],
-            context['columns'],
-            format,
-            filename=kwargs['group'])
-
-    def _limit_query(self):
-        return False
-
-
-class TableGroupExportView(DealListView, ExportView):
-    def dispatch(self, request, *args, **kwargs):
-        format = kwargs.pop('format')
-        context = super().get_context_data(*args, **kwargs)
-        return self.export(
-            context['data']['items'],
-            context['columns'],
-            format,
-            filename=kwargs['group'])
-
-    def _limit_query(self):
-        return False
-
-
-class DealDetailExportView(DealDetailView, ExportView):
-    def dispatch(self, request, *args, **kwargs):
-        format = kwargs.pop('format')
-        context = super(DealDetailExportView, self).get_context_data(*args, **kwargs)
-        attributes = []
-        for form in context['forms']:
-            if hasattr(form, 'forms'):
-                for i, subform in enumerate(form.forms):
-                    for field in subform.get_fields_display(user=request.user):
-                        if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
-                            continue
-                        label = '%s %i %s' % (
-                            subform.form_title,
-                            i + 1,
-                            field['label']
-                        )
-                        attributes.append({
-                            'field': label,
-                            'value': field['value']
-                        })
-            else:
-                for field in form.get_fields_display(user=request.user):
-                    if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
-                        continue
-                    attributes.append({
-                        'field': field['label'],
-                        'value': field['value']
-                    })
-        headers = OrderedDict()
-        headers['field'] = {'label': _('Field')}
-        headers['value'] = {'label': _('Value')}
-        return self.export(attributes, headers, format, filename=kwargs['deal_id'])

@@ -13,9 +13,9 @@ from landmatrix.models.default_string_representation import \
 class InvestorQuerySet(models.QuerySet):
 
     def public(self, user=None):
-        '''
+        """
         Status public, not to be confused with is_public.
-        '''
+        """
         if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=InvestorBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
@@ -168,7 +168,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return (queryset['investor_identifier__max'] or 0) + 1
 
     def save(self, *args, **kwargs):
-        '''
+        """
         investor_identifier needs to be set to the PK, which we don't yet have
         for new records. So, set it to a default and then update.
 
@@ -177,7 +177,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         query timing, but it should be good enough for our purposes.
 
         Same thing goes for the name.
-        '''
+        """
         update_fields = []
 
         if self.investor_identifier is None:
@@ -197,9 +197,9 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             super().save(update_fields=update_fields)
 
     def _get_default_name(self):
-        '''
+        """
         If we have an unknown (blank) name, get the correct generic text.
-        '''
+        """
         if self.is_operating_company:
             name = _("Unknown operating company (#%s)") % (self.pk,)
         elif self.is_parent_company:
@@ -228,20 +228,20 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
 
     @property
     def is_operating_company(self):
-        '''
+        """
         Moved this logic from the view. Not sure though if we should
         determine this using classification in future.
-        '''
+        """
         return (
             hasattr(self, 'involvements') and
             self.involvements.exists())
 
     @property
     def is_parent_company(self):
-        '''
+        """
         Right now, this is determined based on if any relations exist.
         It probably makes more sense to have this as a flag on the model.
-        '''
+        """
         if hasattr(self, 'venture_involvements'):
             queryset = self.venture_involvements.all()
             queryset = queryset.filter(
@@ -644,12 +644,12 @@ class InvestorVentureQuerySet(models.QuerySet):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
 
 class InvestorVentureInvolvementBase(models.Model):
-    '''
+    """
     InvestorVentureInvolvement links investors to each other.
     Generally fk_venture links to the Operating company, and fk_investor
     links to investors or parent stakeholders in that company (depending
     on the role).
-    '''
+    """
     # FIXME: Replace fk_status with Choice Field
     STATUS_PENDING = 1
     STATUS_ACTIVE = 2
@@ -750,7 +750,7 @@ class InvestorActivityInvolvementManager(models.Manager):
 
 
 class InvestorActivityInvolvementBase(models.Model):
-    '''
+    """
     InvestorActivityInvolvments link Operational Companies (Investor model)
     to activities.
 
@@ -758,7 +758,7 @@ class InvestorActivityInvolvementBase(models.Model):
     although this is not enforced by the model currently. Other investors
     are then linked to the Operating company through
     InvestorVentureInvolvement.
-    '''
+    """
     # FIXME: Replace fk_status with Choice Field
     STATUS_PENDING = 1
     STATUS_ACTIVE = 2

@@ -2,9 +2,9 @@ from landmatrix.models import HistoricalActivity
 
 
 class ActivityChangesList:
-    '''
+    """
     An iterator to go over activity history.
-    '''
+    """
 
     def __init__(self, activity_identifier, max_items=100):
         self.activity_identifier = activity_identifier
@@ -28,9 +28,9 @@ class ActivityChangesList:
         return self
 
     def compare_deals(self):
-        '''
+        """
         Returns a list of (group_id, key, later_value, earlier_value) tuples.
-        '''
+        """
         if not self.later_activity:
             changes = []
         else:

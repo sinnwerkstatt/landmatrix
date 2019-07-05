@@ -9,11 +9,11 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def filter_query_params(context):
-    '''
+    """
     Returns a urlencoded sequence of get params that are allowed filters.
 
     Appended to URL tags for filterable views.
-    '''
+    """
     request = context['request']
     clean_query_string = clean_filter_query_string(request)
 

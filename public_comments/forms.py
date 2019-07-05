@@ -20,9 +20,9 @@ class PublicCommentForm(ThreadedCommentForm):
         del self.fields['honeypot']
 
     def security_errors(self):
-        '''
+        """
         Include the reCAPTCHA field in security errors.
-        '''
+        """
         errors = ErrorDict()
         for field_name in ['spam_protection', 'timestamp', 'security_hash']:
             if field_name in self.errors:
@@ -33,10 +33,10 @@ class PublicCommentForm(ThreadedCommentForm):
 class EditCommentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        '''
+        """
         Display a couple fields as readonly (easier than customizing the
         template).
-        '''
+        """
         super().__init__(*args, **kwargs)
         for readonly_field in EditCommentForm.Meta.readonly_fields:
             self.fields[readonly_field].widget.attrs['readonly'] = True

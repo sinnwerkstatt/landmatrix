@@ -7,9 +7,9 @@ from .base_form import BaseForm
 
 
 class DealVGGTForm(BaseForm):
-    '''
+    """
     Voluntary Guidelines on the Responsible Governance of Tenure Form.
-    '''
+    """
     form_title = _('Guidelines & Principles')
     APPLIED_CHOICES = (
         ("Yes", _("Yes")),

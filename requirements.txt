@@ -9,7 +9,7 @@ wagtail==2.5.*
 wagtail-modeltranslation==0.10.*
 django-modeltranslation==0.13.*
 django-file-resubmit==0.5.*
-coverage==3.7
+coverage==4.5.*
 openpyxl==2.4.*
 python-mimeparse==0.1.*
 requests>=2.20.0

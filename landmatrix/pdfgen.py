@@ -1,9 +1,9 @@
-'''
+"""
 django-wkhtmltopdf almost works, however when piping a file to it, it has
 trouble finding all assets.
 
 Instead, just pass the URL and let wkhtmltopdf (the script) work its magic.
-'''
+"""
 import os
 import copy
 import subprocess
@@ -124,7 +124,7 @@ class PDFResponse(FileResponse):
 
 
 class PDFViewMixin:
-    '''
+    """
     PDFViewMixin allows regular views to be rendered as a PDF.
 
     It works by making another request to the server, to render an HTML page
@@ -145,7 +145,7 @@ class PDFViewMixin:
 
     Additionally, a `pdf_filename` class attribute (or get_pdf_filename) method
     are required to set the response filename.
-    '''
+    """
     pdf_filename = None
     pdf_export_url = None
     pdf_render_url = None
@@ -182,7 +182,7 @@ class PDFViewMixin:
         return reverse(self.pdf_export_url, args=args, kwargs=kwargs)
 
     def get_pdf_render_url(self, request, *args, **kwargs):
-        '''Strip out the format arg, and reverse the URL'''
+        """Strip out the format arg, and reverse the URL"""
         kwargs_copy = copy.copy(kwargs)
         if 'format' in kwargs_copy:
             del kwargs_copy['format']

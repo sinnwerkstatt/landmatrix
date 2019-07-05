@@ -6,72 +6,30 @@ from django.contrib.gis.forms import MultiPolygonField
 from django.conf import settings
 from django.core import validators
 
-
 from landmatrix.models import Country
-from grid.widgets import (
-    YearBasedSelect, YearBasedTextInput, YearBasedSelectMultiple,
-    YearBasedSelectMultipleNumber, YearBasedCheckboxInput,
-    NestedCheckboxSelectMultiple, TitleWidget, PrimaryInvestorSelect,
-    FileInputWithInitial, MultiTextInput, CountrySelect, TextChoiceInput,
-    AreaWidget,
-)
+from grid.widgets import *
 
 
 class YearMonthDateValidator(validators.RegexValidator):
     # Allow YYYY or YYYY-MM or YYYY-MM-DD
     regex = '^([0-9]{4}|[0-9]{4}-[0-9]{2}|[0-9]{4}-[0-9]{2}-[0-9]{2})$'
 
+
 class YearMonthDateField(forms.CharField):
     default_validators = [
         YearMonthDateValidator()
     ]
 
+
 class YearBasedField(forms.MultiValueField):
-    '''
+    """
     Base class for year based fields, since there are some isinstance
     checks to handle them.
     TODO: remove those, use duck typing.
     TODO: probably, some logic is shared among the year based fields.
     move that here.
-    '''
+    """
     pass
-
-
-class YearBasedBooleanField(YearBasedField):
-    def __init__(self, *args, **kwargs):
-        kwargs["fields"] = [forms.BooleanField(required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedCheckboxInput(help_text=kwargs.pop("help_text", ""))
-        super(YearBasedBooleanField, self).__init__(*args, **kwargs)
-
-    def clean(self, value):
-        # update fields
-        if value:
-            self.fields = []
-            for i in range(len(value)//3):
-                self.fields.extend([
-                    forms.BooleanField(required=False),
-                    YearMonthDateField(required=False),
-                    forms.BooleanField(required=False)
-                ])
-        return super(YearBasedBooleanField, self).clean(value)
-
-    def compress(self, data_list):
-        if data_list:
-            yb_data = []
-            for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
-                    ))
-            return "#".join(yb_data)
-        else:
-            self.fields = [
-                forms.IntegerField(required=False),
-                forms.CharField(required=False),
-                forms.BooleanField(required=False)
-            ]
 
 
 class YearBasedIntegerField(YearBasedField):
@@ -106,15 +64,17 @@ class YearBasedIntegerField(YearBasedField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
+                j = i * 3
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or ''),
+                        str(data_list[j+2] or '')
                     ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
+            return ""
 
 
 class YearBasedFloatField(YearBasedField):
@@ -149,15 +109,17 @@ class YearBasedFloatField(YearBasedField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
+                j = i * 3
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or ''),
+                        str(data_list[j+2] or '')
                     ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.FloatField(required=False, localize=True), YearMonthDateField(required=False)]
+            return ""
 
 
 class YearBasedChoiceField(YearBasedField):
@@ -183,11 +145,12 @@ class YearBasedChoiceField(YearBasedField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
+                j = i * 3
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or ''),
+                        str(data_list[j+2] or '')
                     ))
             return "#".join(yb_data)
         else:
@@ -196,44 +159,7 @@ class YearBasedChoiceField(YearBasedField):
                 YearMonthDateField(required=False),
                 forms.BooleanField(required=False)
             ]
-
-
-class YearBasedModelMultipleChoiceField(YearBasedField):
-    def __init__(self, *args, **kwargs):
-        self.queryset = kwargs.pop("queryset")
-        kwargs["fields"] = [forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), YearMonthDateField(required=False)]
-        kwargs["widget"] = YearBasedSelectMultiple(choices=kwargs['fields'][0].choices, help_text=kwargs.pop("help_text", ""),attrs={})
-        super(YearBasedModelMultipleChoiceField, self).__init__(*args, **kwargs)
-
-    def clean(self, value):
-        # update fields
-        if value:
-            self.fields = []
-            for i in range(len(value)//3):
-                self.fields.extend([
-                    forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
-                    YearMonthDateField(required=False),
-                    forms.BooleanField(required=False)
-                ])
-        return super(YearBasedModelMultipleChoiceField, self).clean(value)
-
-    def compress(self, data_list):
-        if data_list:
-            yb_data = []
-            for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
-                    ))
-            return "#".join(yb_data)
-        else:
-            self.fields = [
-                forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
-                YearMonthDateField(required=False),
-                forms.BooleanField(required=False)
-            ]
+            return ""
 
 
 class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
@@ -278,12 +204,13 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//4):
-                if data_list[i] or data_list[i+1]:
+                j = i * 4
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or ''),
-                        str(data_list[i+3] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or ''),
+                        str(data_list[j+2] or ''),
+                        str(data_list[j+3] or '')
                     ))
             return "#".join(yb_data)
         else:
@@ -293,6 +220,7 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
                 YearMonthDateField(required=False),
                 forms.BooleanField(required=False),
             ]
+            return ""
 
 
 class YearBasedMultipleChoiceIntegerField(YearBasedField):
@@ -328,12 +256,13 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//4):
-                if data_list[i] or data_list[i+1]:
+                j = i * 4
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s:%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or ''),
-                        str(data_list[i+2] or ''),
-                        str(data_list[i+3] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or ''),
+                        str(data_list[j+2] or ''),
+                        str(data_list[j+3] or '')
                     ))
             return "#".join(yb_data)
         else:
@@ -343,6 +272,7 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
                 YearMonthDateField(required=False),
                 forms.BooleanField(required=False),
             ]
+            return ""
 
 
 class MultiCharField(forms.MultiValueField):
@@ -368,6 +298,7 @@ class MultiCharField(forms.MultiValueField):
             return "#".join(data)
         else:
             self.fields = [forms.CharField(required=False)]
+            return ""
 
 
 class UserModelChoiceField(forms.ModelChoiceField):
@@ -382,28 +313,15 @@ class UserModelChoiceField(forms.ModelChoiceField):
 
 
 class TitleField(forms.CharField):
-    '''
+    """
     TODO: default to required=False and label="" (repeated everywhere)
-    '''
+    """
     widget = TitleWidget
     is_title = True
 
     def __init__(self, *args, **kwargs):
         self.widget = TitleWidget(initial=kwargs.get("initial"))
         super().__init__(*args, **kwargs)
-
-
-class PrimaryInvestorField(forms.ChoiceField):
-    widget = PrimaryInvestorSelect
-    # TODO: fix
-    queryset = lambda x: []
-
-    def __init__(self, *args, **kwargs):
-        kwargs["choices"] = self.get_choices()
-        super(PrimaryInvestorField, self).__init__(*args, **kwargs)
-
-    def get_choices(self):
-        return self.queryset()
 
 
 class NestedMultipleChoiceField(forms.MultipleChoiceField):
@@ -425,18 +343,12 @@ class NestedMultipleChoiceField(forms.MultipleChoiceField):
 
     def get_value(self, key):
         for k, v, c in self.choices:
-            if isinstance(v, (list, tuple)):
-                # This is an optgroup, so look inside the group for options
-                for k2, v2 in v:
+            if key == smart_text(k):
+                return v
+            elif c:
+                for k2, v2 in c:
                     if key == smart_text(k2):
                         return v2
-            else:
-                if key == smart_text(k):
-                    return v
-                elif c:
-                    for k2, v2 in c:
-                        if k == smart_text(k2):
-                            return v2
 
 
 class FileFieldWithInitial(forms.FileField):
@@ -444,19 +356,19 @@ class FileFieldWithInitial(forms.FileField):
     show_hidden_initial = True
 
     def validate(self, value):
-        '''
+        """
         For new uploads only, check that size is less than our max.
 
         This doesn't prevent DOS attacks (for that we'd need to limit the
         webserver) but it does let us give the user a nice error message.
-        '''
+        """
         if value and value.size > settings.DATA_SOURCE_MAX_UPLOAD_SIZE:
             raise ValidationError(_("Uploaded files must be less than 10MB."))
 
 
 class CountryField(forms.ModelChoiceField):
 
-    widget = CountrySelect(attrs={"readonly":"readonly", "class": "countryfield"})
+    widget = CountrySelect(attrs={"readonly": "readonly", "class": "countryfield"})
 
     def __init__(self, *args, **kwargs):
         queryset = Country.objects.defer('geom').filter(is_target_country=True).order_by("name")
@@ -484,50 +396,26 @@ class ActorsField(forms.MultiValueField):
         if data_list:
             yb_data = []
             for i in range(len(data_list)//2):
-                if data_list[i] or data_list[i+1]:
+                j = i * 2
+                if data_list[j] or data_list[j+1]:
                     yb_data.append("%s:%s" % (
-                        str(data_list[i] or ''),
-                        str(data_list[i+1] or '')
+                        str(data_list[j] or ''),
+                        str(data_list[j+1] or '')
                     ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.CharField(required=False), forms.ChoiceField(choices=self.choices, required=False)]
-
-
-class MultiFileField(forms.FileField):
-    '''
-    Prevent upload error for multiple files
-    '''
-    def to_python(self, data):
-        for file in data:
-            if file in self.empty_values:
-                return None
-
-            # UploadedFile objects should have name and size attributes.
-            try:
-                file_name = file.name
-                file_size = file.size
-            except AttributeError:
-                raise ValidationError(self.error_messages['invalid'], code='invalid')
-
-            if self.max_length is not None and len(file_name) > self.max_length:
-                params = {'max': self.max_length, 'length': len(file_name)}
-                raise ValidationError(self.error_messages['max_length'], code='max_length', params=params)
-            if not file_name:
-                raise ValidationError(self.error_messages['invalid'], code='invalid')
-            if not self.allow_empty_file and not file_size:
-                raise ValidationError(self.error_messages['empty'], code='empty')
-        return data
+            return ""
 
 
 class AreaField(forms.MultiValueField):
-    '''
+    """
     MultiValueField for area map with optional shapefile upload.
 
     Note because of Django's handling of multiple files, compress here
     doesn't do anything with shapefiles, it just returns one (of the several
     required) if there was one.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         fields = (
@@ -546,7 +434,6 @@ class AreaField(forms.MultiValueField):
             # Second value (file field) takes precedence
             value = data_list[1] or data_list[0]
         else:
-            value = None
+            value = ""
 
         return value
-

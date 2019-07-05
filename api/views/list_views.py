@@ -2,6 +2,7 @@ import json
 import collections
 from copy import deepcopy
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.http import Http404
@@ -49,9 +50,9 @@ class ElasticSearchMixin:
         return self.doc_type
 
     def load_filters_from_url(self, exclude=[]):
-        '''
+        """
         Read any querystring param filters. Preset filters not allowed.
-        '''
+        """
         if self.request:
             variables = self.request.GET.getlist('variable')
             operators = self.request.GET.getlist('operator')
@@ -85,8 +86,8 @@ class ElasticSearchMixin:
             if 'variable' in filter and filter['variable'].startswith('parent_stakeholder_'):
                 filter['variable'] = filter['variable'].replace('parent_stakeholder_', '')
                 parent_company_filters[filter_name] = filter
-                filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
             elif 'variable' in filter and filter['variable'].startswith('tertiary_investor_'):
+                filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
                 tertiary_investor_filters[filter_name] = filter
             else:
                 filters[filter_name] = filter
@@ -100,8 +101,8 @@ class ElasticSearchMixin:
                 operational_companies.extend([str(id) for id in ids])
             filters['parent_company'] = self.get_investor_filter(operational_companies)
         if tertiary_investor_filters:
-            query = self.format_filters(tertiary_investor_filters.values())
-            raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
+            query = {'bool': self.format_filters(tertiary_investor_filters.values())}
+            raw_result_list = self.execute_elasticsearch_query(query, 'investor')
             operational_companies = []
             for result in raw_result_list:
                 ids = result['_source']['tertiary_investor_of']
@@ -322,16 +323,16 @@ class ElasticSearchMixin:
         return query
 
     def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[], aggs={}):
-        from api.elasticsearch import es_search as es
-        es.refresh_index()
+        from api.elasticsearch import es_search
 
+        es_search.refresh_index()
         #print('Elasticsearch query executed:\n')
         #from pprint import pprint
         #pprint(query)
         #pprint(aggs)
 
         try:
-            results = es.search(query, doc_type=doc_type, sort=sort, aggs=aggs)
+            results = es_search.search(query, doc_type=doc_type, sort=sort, aggs=aggs)
         except Exception as e:
             raise
         return results
@@ -650,8 +651,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         # filter results
         result_list = self.filter_deals(raw_result_list)
         # parse results
-        features = filter(None,
-                          [self.create_feature_from_result(result) for result in result_list])
+        features = list(filter(None, [self.create_feature_from_result(result) for result in result_list]))
         response = Response(FeatureCollection(features))
         return response
 

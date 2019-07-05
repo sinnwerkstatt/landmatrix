@@ -17,7 +17,7 @@ class NotificationEmailManager(models.Manager):
 
 
 class NotificationEmail(models.Model):
-    '''
+    """
     Notifications are saved to the database for debugging/forensics purposes.
 
     They can probably be deleted after not too long.
@@ -38,7 +38,7 @@ class NotificationEmail(models.Model):
         -   body_html: optional HTML body string
 
     Exceptions are saved in the database and not raised.
-    '''
+    """
     STATUS_NEW = 1
     STATUS_SENT = 2
     STATUS_ERROR = 3

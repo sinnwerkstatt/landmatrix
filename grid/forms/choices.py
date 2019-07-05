@@ -1,7 +1,7 @@
-'''
+"""
 TODO: these are used in many DB queries! Move those to models and build
 choices from them.
-'''
+"""
 from django.utils.translation import ugettext_lazy as _
 
 # Agriculture

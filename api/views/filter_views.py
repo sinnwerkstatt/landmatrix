@@ -2,6 +2,7 @@ import coreapi
 import coreschema
 from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
+from django.views import View
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -14,7 +15,7 @@ from api.serializers import FilterPresetSerializer
 from grid.views.browse_filter_conditions import get_activity_field_label, get_investor_field_label
 
 
-class FilterDocTypeMixin:
+class FilterDocTypeMixin(View):
 
     doc_type = ''
 

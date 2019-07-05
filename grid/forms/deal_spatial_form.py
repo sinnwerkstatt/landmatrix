@@ -60,9 +60,9 @@ class DealSpatialForm(BaseForm):
         name = 'location'
 
     def __init__(self, *args, **kwargs):
-        '''
+        """
         Pass the values we need through to map widgets
-        '''
+        """
         super().__init__(*args, **kwargs)
 
         lat_lon_attrs = self.get_default_lat_lon_attrs()

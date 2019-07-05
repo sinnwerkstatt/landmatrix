@@ -80,7 +80,6 @@ class BaseGeometryWidget(Widget):
             "LANGUAGE_BIDI": translation.get_language_bidi(),
         })
 
-
         context = self.build_attrs(
             self.attrs or {},
             attrs

@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from grid.fields import YearBasedField
 from grid.views.deal import DealUpdateView
-from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from grid.utils import get_spatial_properties
@@ -63,7 +62,7 @@ FIELD_TYPE_MAPPING = {
 FIELD_TYPE_FALLBACK = {'type': 'text'}
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract', 'involvement_size')
-DOC_TYPES_INVESTOR = ('investor', 'involvement', 'top_investor')
+DOC_TYPES_INVESTOR = ('investor', 'involvement')
 
 _landmatrix_mappings = None
 
@@ -171,9 +170,9 @@ def get_elasticsearch_properties(doc_type=None):
                     continue
                 if formset_name:
                     if name in _landmatrix_mappings[formset_name]['properties']:
-                        continue
+                        continue  # pragma: no cover
                 elif name in _landmatrix_mappings['deal']['properties']:
-                    continue
+                    continue  # pragma: no cover
                 field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
                 field_mappings = {}
                 field_mappings[name] = field_type
@@ -229,7 +228,6 @@ def get_elasticsearch_properties(doc_type=None):
 class ElasticSearch(object):
     conn = None
     url = settings.ELASTICSEARCH_URL
-    index_name = settings.ELASTICSEARCH_INDEX_NAME
     stdout = None
     stderr = None
 
@@ -241,6 +239,17 @@ class ElasticSearch(object):
             self.stdout = stdout
         if stderr:
             self.stderr = stderr
+
+    @property
+    def index_name(self):
+        if hasattr(self, '_index_name'):
+            return self._index_name
+        else:
+            return settings.ELASTICSEARCH_INDEX_NAME
+
+    @index_name.setter
+    def index_name(self, index_name):
+        self._index_name = index_name
 
     def create_index(self, delete=True):
         if delete:
@@ -298,6 +307,7 @@ class ElasticSearch(object):
                                         for doc in paginator.page(page)),
                             index=self.index_name,
                             doc_type=doc_type)
+                    # pragma: no cover
                     except BulkError as e:
                         for error in e.errors:
                             msg = '%s: %s on ID %s' % (
@@ -315,7 +325,7 @@ class ElasticSearch(object):
 
     def index_investor(self, investor_identifier=None, investor_id=None, investor=None):
         if investor_id:
-            investor_identifier = HistoricalActivity.objects.get(pk=investor_id).investor_identifier
+            investor_identifier = HistoricalInvestor.objects.get(pk=investor_id).investor_identifier
         if investor:
             investor_identifier = investor.investor_identifier
         return self.index_investor_documents(investor_identifiers=[investor_identifier, ])
@@ -350,6 +360,7 @@ class ElasticSearch(object):
                     self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
                         index=self.index_name,
                         doc_type=doc_type)
+                # pragma: no cover
                 except BulkError as e:
                     for error in e.errors:
                         msg = '%s: %s on ID %s' % (
@@ -562,7 +573,7 @@ class ElasticSearch(object):
 
             if doc_type in ('deal', 'location'):
                 deal_attrs.update(self.get_display_properties(deal_attrs, doc_type=doc_type))
-                deal_attrs.update(self.get_spatial_properties(deal_attrs, doc_type=doc_type))
+                deal_attrs.update(self.get_spatial_properties(deal_attrs))
                 if doc_type == 'location':
                     # Create single document for each location
                     spatial_names = list(get_spatial_properties()) + ['target_region', 'geo_point']
@@ -625,7 +636,7 @@ class ElasticSearch(object):
 
         return docs
 
-    def get_spatial_properties(self, doc, doc_type='deal'):
+    def get_spatial_properties(self, doc):
         properties = {
             'geo_point': [],
             'point_lat': [],
@@ -830,23 +841,6 @@ class ElasticSearch(object):
             
         return results
 
-    def aggregate(self, aggregations, query=None, doc_type='deal'):
-        """
-        Executes aggregation queries
-        @return: The full list of hits.
-        """
-
-        es_query = {
-            'aggregations': aggregations,
-            'query': query,
-            'size': 0,
-        }
-        raw_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
-        result = {}
-        for key in aggregations.keys():
-            result[key] = raw_result['aggregations'][key]['buckets']
-        return result
-
     def delete_activity(self, activity_identifier):
         query = {
             "term": {
@@ -875,15 +869,6 @@ class ElasticSearch(object):
                             doc_type=doc_type)
             except ElasticHttpNotFoundError as e:
                 pass
-
-    def get_deals_by_activity_identifier(self, activity_identifier, doc_type='deal'):
-        return self.search({"constant_score": {
-            "filter": {
-                "term": {
-                    "activity_identifier": activity_identifier
-                }
-            }
-        }})
 
     def delete_investor(self, investor_identifier):
         query = {
@@ -919,6 +904,7 @@ class ElasticSearch(object):
                 # FIXME: Recreate top_investors?
             except ElasticHttpNotFoundError as e:
                 pass
+
 
 # Init two connections
 es_search = ElasticSearch()

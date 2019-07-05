@@ -111,9 +111,9 @@ class PerspectiveChartView(ChartView):
 #    pdf_javascript_delay = 10000
 #
 #    def get_pdf_export_url(self, request, *args, **kwargs):
-#        '''
+#        """
 #        Special handling for the 'variable' switch
-#        '''
+#        """
 #        url = super().get_pdf_export_url(request, *args, **kwargs)
 #        if 'variable' in request.GET:
 #            url += '?variable={}'.format(request.GET['variable'])
@@ -121,9 +121,9 @@ class PerspectiveChartView(ChartView):
 #        return url
 #
 #    def get_pdf_render_url(self, request, *args, **kwargs):
-#        '''
+#        """
 #        Special handling for the 'variable' switch
-#        '''
+#        """
 #        url = super().get_pdf_render_url(request, *args, **kwargs)
 #        if 'variable' in request.GET:
 #            url += '?variable={}'.format(request.GET['variable'])

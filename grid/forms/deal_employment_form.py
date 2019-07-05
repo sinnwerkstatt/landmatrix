@@ -95,9 +95,9 @@ class DealEmploymentForm(BaseForm):
 
 
 class DealEmploymentPublicForm(DealEmploymentForm):
-    '''
+    """
     TODO: this doesn't seem to actually be used anywhere. Confirm and remove.
-    '''
+    """
     class Meta:
         fields = (
             "tg_foreign_jobs_created", "foreign_jobs_created",

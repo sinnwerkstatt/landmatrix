@@ -281,13 +281,13 @@ class FilterWidgetAjaxView(APIView):
 
 
 def get_activity_variable_table():
-    '''
+    """
     Create an OrderedDict of group name keys with lists of dicts for each
     variable in the group (each dict contains 'name' and 'label' keys).
 
     This whole thing is static, and maybe should just be written out, but
     for now generate it dynamcially on app load.
-    '''
+    """
     # for formsets, we want form.form
     deal_forms = [
         form.form if hasattr(form, 'form') else form
@@ -362,13 +362,13 @@ def get_activity_variable_table():
 
 
 def get_investor_variable_table():
-    '''
+    """
     Create an OrderedDict of group name keys with lists of dicts for each
     variable in the group (each dict contains 'name' and 'label' keys).
 
     This whole thing is static, and maybe should just be written out, but
     for now generate it dynamcially on app load.
-    '''
+    """
     variable_table = OrderedDict()
     group_items = []
     group_title = ''

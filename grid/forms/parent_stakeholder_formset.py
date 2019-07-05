@@ -62,10 +62,10 @@ class ParentInvestorForm(ParentStakeholderForm):
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
     def save(self, fk_venture, commit=True):
-        '''
+        """
         We are sort of emulating an inline formset here. Save will update
         everything with the relevant associated venture.
-        '''
+        """
         instances = super().save(commit=False)
 
         for instance in instances:

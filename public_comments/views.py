@@ -9,7 +9,7 @@ from .forms import EditCommentForm
 
 
 class EditCommentView(UpdateView):
-    '''
+    """
     Edits a comment. Form GET, action on POST. Requires "can moderate comments"
     permission.
 
@@ -19,7 +19,7 @@ class EditCommentView(UpdateView):
             the flagged `comments.comment` object
         comment_form
             the edit form
-    '''
+    """
     form_class = EditCommentForm
     template_name = 'comments/landmatrix/edit.html'
     model = ThreadedComment

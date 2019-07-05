@@ -4,13 +4,6 @@ from django.conf import settings
 from django.utils import timezone
 
 
-
-class ActivityChangesetManager(models.Manager):
-
-    def get_by_state(self, status):
-        return self.filter(fk_activity__fk_status_id=status)
-
-
 class ReviewDecision(models.Model):
     name = models.CharField(_("Name"), max_length=255)
     description = models.TextField(_("Description"), blank=True, null=True)
@@ -31,8 +24,6 @@ class ActivityChangeset(models.Model):
         ReviewDecision, verbose_name=_("Review decision"), blank=True,
         null=True, on_delete=models.SET_NULL)
     comment = models.TextField(_("Comment"), blank=True, null=True)
-
-    objects = ActivityChangesetManager()
 
     class Meta:
         ordering = ('-timestamp',)

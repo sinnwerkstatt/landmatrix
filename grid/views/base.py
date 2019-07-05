@@ -149,7 +149,7 @@ class TableGroupView(FilterWidgetMixin,
         context = super(TableGroupView, self).get_context_data()
 
         root = WagtailRootPage.objects.first()
-        if root.data_introduction:
+        if root and root.data_introduction:
             context['introduction'] = root.data_introduction
 
         items = self.get_records()

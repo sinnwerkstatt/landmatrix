@@ -83,7 +83,6 @@ def has_changed(form_1, form_2):
     # catches the KeyError here.
     construct_form = BaseFormSet._construct_form
     BaseFormSet._construct_form = _construct_form
-
     if isinstance(form_1, BaseFormSet):
         if len(form_1) != len(form_2):
             return False

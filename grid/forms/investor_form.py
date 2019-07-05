@@ -34,10 +34,8 @@ class BaseInvestorForm(BaseModelForm):
         required=False, label=_("Country of registration/origin"),
         queryset=Country.objects.none(),
         widget=forms.Select(attrs={'class': 'form-control countryfield'}))
-    comment = forms.CharField(
-        required=False, label=_("Comment"), widget=CommentInput)
-    action_comment = forms.CharField(
-        required=False, label=_('Action comment'), widget=CommentInput)
+    comment = forms.CharField(required=False, label=_("Comment"), widget=CommentInput)
+    action_comment = forms.CharField(required=False, label=_('Action comment'), widget=CommentInput)
 
     class Meta:
         model = HistoricalInvestor
@@ -53,9 +51,9 @@ class BaseInvestorForm(BaseModelForm):
             self.fields['fk_country'].queryset = Country.objects.filter(pk=valid_choice)
 
     def save(self, commit=True, user=None):
-        '''
+        """
         Force status to pending on update.
-        '''
+        """
         hinvestor = super().save(commit=False)
         hinvestor.fk_status_id = HistoricalInvestor.STATUS_PENDING
         # Create new historical investor

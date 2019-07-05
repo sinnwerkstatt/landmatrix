@@ -7,7 +7,7 @@ from django.contrib.gis.gdal.geomtype import OGRGeomType
 
 
 def parse_shapefile(files):
-    '''
+    """
     Takes shapefiles (in memory or temp) and returns MultiPolygon
     suitable for saving to the DB.
 
@@ -15,7 +15,7 @@ def parse_shapefile(files):
 
     We don't check for unknown extensions as there are quite a few optional
     ones.
-    '''
+    """
     required_extensions = ('shp', 'shx', 'dbf', 'prj')
     extensions = [file_obj.name[-3:].lower() for file_obj in files]
     if set(required_extensions).difference(set(extensions)):
@@ -51,10 +51,10 @@ def parse_shapefile(files):
 
 
 def extract_polygons(shapefile_path):
-    '''
+    """
     Given an (existing, saved to disk) shapefile, retrieve all polygons as
     one MultiPolygon.
-    '''
+    """
     polygons = GDALMultiPolygon(OGRGeomType('MultiPolygon'))  # empty GDAL geom
 
     try:

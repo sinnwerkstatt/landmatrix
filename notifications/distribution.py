@@ -25,6 +25,7 @@ def get_recipients_for_comment_on_activity(comment, activity):
             recipients.append(comment.parent.user_email)
     return set(filter(None, recipients))
 
+
 def send_notifications_for_comment_on_activity(comment, request, activity):
     context = {
         'comment': comment,

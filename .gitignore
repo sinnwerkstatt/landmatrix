@@ -31,7 +31,6 @@ db.sqlite3
 
 # temporary files only used during development
 old_models.py
-from_v1/*.sql
 landmatrix_2.*sql
 
 # Byte-compiled / optimized / DLL files
