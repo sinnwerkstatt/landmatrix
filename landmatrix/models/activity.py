@@ -74,35 +74,6 @@ class ActivityQuerySet(models.QuerySet):
     def rejected(self):
         return self.filter(fk_status_id=ActivityBase.STATUS_REJECTED)
 
-    def activity_identifier_count(self):
-        return self.order_by('-id').values('activity_identifier').distinct().count()
-
-    def overall_activity_count(self):
-        return self.public().activity_identifier_count()
-
-    def public_activity_count(self):
-        return self.public().filter(is_public=False).activity_identifier_count()
-
-
-class NegotiationStatusManager(models.Manager):
-    """
-    Manager for Negotiation status grouped query. (used by API call)
-    """
-
-    def get_queryset(self):
-        deals_count = Coalesce(
-            models.Count('activity_identifier'), models.Value(0))
-        hectares_sum = Coalesce(models.Sum('deal_size'), models.Value(0))
-
-        queryset = ActivityQuerySet(self.model, using=self._db)
-        queryset = queryset.exclude(negotiation_status__isnull=True)
-        queryset = queryset.values('negotiation_status')
-        queryset = queryset.annotate(
-            deals_count=deals_count, hectares_sum=hectares_sum)
-        queryset = queryset.distinct()
-
-        return queryset
-
 
 class ActivityBase(DefaultStringRepresentation, models.Model):
     ACTIVITY_IDENTIFIER_DEFAULT = 2147483647  # Max safe int
@@ -226,7 +197,6 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1, on_delete=models.PROTECT)
 
     objects = ActivityQuerySet.as_manager()
-    negotiation_status_objects = NegotiationStatusManager()
 
     class Meta:
         abstract = True
@@ -305,21 +275,26 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         return queryset.latest()
 
     def is_editable(self, user=None):
-        if self.get_latest(user) != self:
-            # Only superuser are allowed to edit old versions
-            if user and user.is_superuser:
-                return True
-            return False
-        if user:
-            # Status: Pending
-            is_editor = user.has_perm('landmatrix.review_activity')
-            is_author = self.history_user_id == user.id
-            # Only Editors and Administrators are allowed to edit pending deals
-            if not is_editor:
-                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
-                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
-                    return False
-        return True
+        if user and user.is_authenticated:
+            if self.get_latest(user) != self:
+                # Only superuser are allowed to edit old versions
+                if user and user.is_superuser:
+                    return True
+                return False
+            else:
+                is_editor = user.has_perm('landmatrix.review_activity')
+                # Only Editors and Administrators are allowed to edit pending deals
+                if is_editor:
+                    return True
+                else:
+                    is_author = self.history_user_id == user.id
+                    if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE):
+                        return False
+                    elif self.fk_status_id == self.STATUS_REJECTED and not is_author:
+                        return False
+                    else:
+                        return True
+        return False
 
     @property
     def target_country(self):
@@ -594,12 +569,11 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     #    size_too_small = int(intended_size) < MIN_DEAL_SIZE and int(contract_size) < MIN_DEAL_SIZE and int(production_size) < MIN_DEAL_SIZE
     #    return no_size_set or size_too_small
 
-
     def has_flag_not_public(self):
         # Filter B1 (flag is unreliable not set):
         not_public = self.attributes.filter(name="not_public")
         not_public = len(not_public) > 0 and not_public[0].value or None
-        return not_public and not_public in ("True", "on")
+        return not_public and not_public in ("True", "on") or False
 
     def get_init_date(self):
         init_dates = []
@@ -863,26 +837,29 @@ class HistoricalActivity(ActivityBase):
             except IndexError:
                 pass
             else:
-                investor.approve()
+                investor.approve_change(user=user, comment=comment)
 
             self.update_public_activity()
 
-        self.changesets.create(fk_user=user, comment=comment)
+            self.changesets.create(fk_user=user, comment=comment)
 
     def reject_change(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
-        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
-        self.save(update_fields=['fk_status'])
-        #self.update_public_activity() - don't update public activity
 
-        try:
-            investor = self.involvements.all()[0].fk_investor
-        except IndexError:
-            pass
-        else:
-            investor.reject()
+        # Only rejections of administrators should go public
+        if user.has_perm('landmatrix.change_activity'):
+            self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+            self.save(update_fields=['fk_status'])
+            #self.update_public_activity() - don't update public activity
 
-        self.changesets.create(fk_user=user, comment=comment)
+            try:
+                investor = self.involvements.all()[0].fk_investor
+            except IndexError:
+                pass
+            else:
+                investor.reject_change(user=user, comment=comment)
+
+            self.changesets.create(fk_user=user, comment=comment)
 
     def approve_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
@@ -893,21 +870,24 @@ class HistoricalActivity(ActivityBase):
             self.save(update_fields=['fk_status'])
             self.update_public_activity()
 
-        self.changesets.create(fk_user=user, comment=comment)
+            self.changesets.create(fk_user=user, comment=comment)
 
     def reject_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
-        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
-        self.save(update_fields=['fk_status'])
 
-        try:
-            investor = self.involvements.all()[0].fk_investor
-        except IndexError:
-            pass
-        else:
-            investor.reject()
+        # Only approvals of administrators should be deleted
+        if user.has_perm('landmatrix.delete_activity'):
+            self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+            self.save(update_fields=['fk_status'])
 
-        self.changesets.create(fk_user=user, comment=comment)
+            try:
+                investor = self.involvements.all()[0].fk_investor
+            except IndexError:
+                pass
+            else:
+                investor.reject_change(user=user, comment=comment)
+
+            self.changesets.create(fk_user=user, comment=comment)
 
     def compare_attributes_to(self, version):
         changed_attrs = []  # (group_id, key, current_val, other_val)
@@ -963,13 +943,13 @@ class HistoricalActivity(ActivityBase):
         if self.fk_status_id == self.STATUS_DELETED:
             if activity:
                 activity.delete()
-            return True
+            return
         elif self.fk_status_id == self.STATUS_REJECTED:
             # Activity add has been rejected?
             activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
             if len(activities) == 1:
                 activity.delete()
-                return True
+                return
 
         if not activity:
             activity = Activity.objects.create(

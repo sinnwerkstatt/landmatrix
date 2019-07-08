@@ -13,7 +13,6 @@ from landmatrix.models import Country, Region, Crop
 from api.views import ElasticSearchMixin
 
 
-
 INTENTION_MAP = {}
 for choice, value in intention_choices:
     if choice in INTENTION_AGRICULTURE_MAP.keys():
@@ -322,8 +321,8 @@ class TableGroupView(FilterWidgetMixin,
         :return:
         """
         load_more = int(self.request.GET.get("more", 50))
-        if not self._filter_set(self.request.GET) and self.group == "database":
-            load_more = None
+        # if not self._filter_set(self.request.GET) and self.group == "database":
+        #     load_more = None
         if not self.limit_query():
             load_more = None
         return load_more
@@ -403,23 +402,23 @@ class TableGroupView(FilterWidgetMixin,
         """Get default column information for template"""
         return self.get_columns_dict(default=True)
 
-    @property
-    def filters(self):
-        data = self.request.GET.copy()
-        return self.get_filter_context(
-            self.current_formset_conditions,
-            self.order_by,
-            self.group,
-            self.group_value,
-            data.get("starts_with")
-        )
-
-    @property
-    def current_formset_conditions(self):
-        data = self.request.GET.copy()
-        return self.get_formset_conditions(
-            self._filter_set(data), data, self.group
-        )
+    # @property
+    # def filters(self):
+    #     data = self.request.GET.copy()
+    #     return self.get_filter_context(
+    #         self.current_formset_conditions,
+    #         self.order_by,
+    #         self.group,
+    #         self.group_value,
+    #         data.get("starts_with")
+    #     )
+    #
+    # @property
+    # def current_formset_conditions(self):
+    #     data = self.request.GET.copy()
+    #     return self.get_formset_conditions(
+    #         self._filter_set(data), data, self.group
+    #     )
 
     def get_items(self, results):
         if self.group and self.group != 'all' and not self.group_value:

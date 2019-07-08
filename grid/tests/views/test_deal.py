@@ -44,7 +44,7 @@ class DealListViewTestCase(TestCase):
         self.assertEqual(3, len(items))
         self.assertEqual([1], items[0].get('activity_identifier'))
         self.assertEqual(['Myanmar'], items[0].get('target_country'))
-        self.assertEqual([{'id': '1', 'name': 'Test Investor 1'}], items[0].get('top_investors', []))
+        self.assertEqual([{'id': '6', 'name': 'Test Investor 6'}], items[0].get('top_investors', []))
         self.assertEqual(3, len(items[0].get('intention', [None])[0]))
         self.assertEqual([1000], items[0].get('deal_size'))
 
@@ -72,7 +72,7 @@ class DealListViewTestCase(TestCase):
         self.assertEqual(3, len(items))
         self.assertEqual([1], items[0].get('activity_identifier'))
         self.assertEqual(['Myanmar'], items[0].get('target_country'))
-        self.assertEqual([{'id': '1', 'name': 'Test Investor 1'}], items[0].get('top_investors', []))
+        self.assertEqual([{'id': '6', 'name': 'Test Investor 6'}], items[0].get('top_investors', []))
         self.assertEqual(3, len(items[0].get('intention', [None])[0]))
         self.assertEqual([1000], items[0].get('deal_size'))
 

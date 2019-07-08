@@ -4,10 +4,14 @@
   {"pk": 30, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 10, "fk_venture": 70, "role": "ST"}},
   {"pk": 40, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 10, "fk_venture": 70, "role": "ST"}},
   {"pk": 50, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 20, "fk_venture": 70, "role": "IN"}},
+  {"pk": 60, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 20, "fk_venture": 10, "role": "ST"}},
 
   {"pk": 10, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 50, "fk_venture": 20, "role": "ST"}},
   {"pk": 20, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 60, "fk_venture": 30, "role": "ST"}},
   {"pk": 30, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 61, "fk_venture": 31, "role": "ST"}},
   {"pk": 40, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 10, "fk_venture": 70, "role": "ST"}},
-  {"pk": 50, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 20, "fk_venture": 70, "role": "IN"}}
+  {"pk": 50, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 20, "fk_venture": 70, "role": "IN"}},
+  {"pk": 60, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 20, "fk_venture": 10, "role": "ST"}},
+  {"pk": 70, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 30, "fk_venture": 10, "role": "ST"}},
+  {"pk": 80, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 101, "fk_venture": 10, "role": "IN"}}
 ]

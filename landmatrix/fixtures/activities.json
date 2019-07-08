@@ -2,6 +2,7 @@
   {"model": "landmatrix.activity", "pk": 10, "fields": {"activity_identifier": 1, "fk_status": 2, "is_public": true}},
   {"model": "landmatrix.activity", "pk": 20, "fields": {"activity_identifier": 2, "fk_status": 3, "is_public": true}},
   {"model": "landmatrix.activity", "pk": 30, "fields": {"activity_identifier": 3, "fk_status": 3, "is_public": true}},
+  {"model": "landmatrix.activity", "pk": 60, "fields": {"activity_identifier": 6, "fk_status": 2, "is_public": true}},
 
   {"model": "landmatrix.activityattribute", "pk": 101, "fields": {"fk_activity_id": 10, "name": "target_country", "value": "104", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 102, "fields": {"fk_activity_id": 10, "name": "type", "value": "Media report", "fk_group": 20}},
@@ -35,13 +36,14 @@
   {"model": "landmatrix.activityattribute", "pk": 305, "fields": {"fk_activity_id": 30, "name": "contract_number", "value": 123, "fk_group": 30}},
   {"model": "landmatrix.activityattribute", "pk": 306, "fields": {"fk_activity_id": 30, "name": "nature", "value": "Pure contract farming", "fk_group": 30}},
 
-  {"model": "landmatrix.historicalactivity", "pk": 10, "fields": {"activity_identifier": 1, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z"}},
-  {"model": "landmatrix.historicalactivity", "pk": 20, "fields": {"activity_identifier": 2, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z"}},
+  {"model": "landmatrix.historicalactivity", "pk": 10, "fields": {"activity_identifier": 1, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z", "history_user": 2, "fully_updated": true}},
+  {"model": "landmatrix.historicalactivity", "pk": 20, "fields": {"activity_identifier": 2, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 21, "fields": {"activity_identifier": 2, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 1}},
-  {"model": "landmatrix.historicalactivity", "pk": 30, "fields": {"activity_identifier": 3, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z"}},
-  {"model": "landmatrix.historicalactivity", "pk": 40, "fields": {"activity_identifier": 4, "fk_status": 4, "history_date": "2000-01-01T00:00:00Z"}},
-  {"model": "landmatrix.historicalactivity", "pk": 50, "fields": {"activity_identifier": 5, "fk_status": 5, "history_date": "2000-01-01T00:00:00Z"}},
-  {"model": "landmatrix.historicalactivity", "pk": 60, "fields": {"activity_identifier": 6, "fk_status": 6, "history_date": "2000-01-01T00:00:00Z", "history_user": 1}},
+  {"model": "landmatrix.historicalactivity", "pk": 30, "fields": {"activity_identifier": 3, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 40, "fields": {"activity_identifier": 4, "fk_status": 4, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 50, "fields": {"activity_identifier": 5, "fk_status": 5, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 60, "fields": {"activity_identifier": 6, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 61, "fields": {"activity_identifier": 6, "fk_status": 6, "history_date": "2000-01-01T00:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 70, "fields": {"activity_identifier": 7, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 80, "fields": {"activity_identifier": 8, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 2}},
 
@@ -70,6 +72,20 @@
   {"model": "landmatrix.historicalactivityattribute", "pk": 211, "fields": {"fk_activity_id": 20, "name": "implementation_status", "value": "Startup phase (no production)", "value2": "", "fk_group": 30}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 212, "fields": {"fk_activity_id": 20, "name": "intention", "value": "Mining", "fk_group": 30}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 213, "fields": {"fk_activity_id": 20, "name": "nature", "value": "Concession", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 251, "fields": {"fk_activity_id": 21, "name": "target_country", "value": "104", "fk_group": 10}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 252, "fields": {"fk_activity_id": 21, "name": "type", "value": "Media report", "fk_group": 20}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 253, "fields": {"fk_activity_id": 21, "name": "contract_size", "value": 1000, "fk_group":  1}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 254, "fields": {"fk_activity_id": 21, "name": "negotiation_status", "value": "Contract signed", "date": 2000, "fk_group":  1}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 255, "fields": {"fk_activity_id": 21, "name": "contract_number", "value": 123, "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 256, "fields": {"fk_activity_id": 21, "name": "crops", "value": "1", "value2": "1000", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 257, "fields": {"fk_activity_id": 21, "name": "crops", "value": "2", "value2": "1000", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 258, "fields": {"fk_activity_id": 21, "name": "animals", "value": "3", "value2": "1000", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 259, "fields": {"fk_activity_id": 21, "name": "minerals", "value": "2", "value2": "1000", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 260, "fields": {"fk_activity_id": 21, "name": "nature", "value": "Pure contract farming", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 261, "fields": {"fk_activity_id": 21, "name": "implementation_status", "value": "Startup phase (no production)", "value2": "", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 262, "fields": {"fk_activity_id": 21, "name": "intention", "value": "Mining", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 263, "fields": {"fk_activity_id": 21, "name": "nature", "value": "Concession", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 264, "fields": {"fk_activity_id": 21, "name": "production_size", "value": 2000, "fk_group":  1}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 301, "fields": {"fk_activity_id": 30, "name": "target_country", "value": "104", "fk_group": 10}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 302, "fields": {"fk_activity_id": 30, "name": "type", "value": "Media report", "fk_group": 20}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 303, "fields": {"fk_activity_id": 30, "name": "contract_size", "value": 1000, "fk_group":  1}},
@@ -89,5 +105,5 @@
 
   {"model": "landmatrix.activityfeedback", "pk": 10, "fields":  {"fk_activity_id": 10, "fk_user_assigned": 2, "fk_user_created": 1, "comment": "Test feedback", "timestamp": "2000-01-01T00:00:00Z"}},
 
-  {"model": "landmatrix.activitychangeset", "pk": 10, "fields": {"fk_activity_id": 50, "fk_user": 2, "timestamp": "2000-01-01T00:00:00Z"}}
+  {"model": "landmatrix.activitychangeset", "pk": 10, "fields": {"fk_activity_id": 50, "fk_user": 2, "timestamp": "2000-01-01T00:00:00Z", "comment": "Test changeset"}}
 ]

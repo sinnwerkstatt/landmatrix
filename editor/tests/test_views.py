@@ -418,16 +418,16 @@ class RejectActivityChangeViewTestCase(ManageItemTestCaseMixin,
 class ApproveActivityDeleteViewTestCase(ManageItemTestCaseMixin,
                                         BaseDealTestCase):
 
-    url = reverse('manage_approve_delete_deal', kwargs={'id': 60})
-    object_id = 60
+    url = reverse('manage_approve_delete_deal', kwargs={'id': 61})
+    object_id = 61
     object_status = 4
 
 
 class RejectActivityDeleteViewTestCase(ManageItemTestCaseMixin,
                                        BaseDealTestCase):
 
-    url = reverse('manage_reject_delete_deal', kwargs={'id': 60})
-    object_id = 60
+    url = reverse('manage_reject_delete_deal', kwargs={'id': 61})
+    object_id = 61
     object_status = 5
 
 
@@ -452,16 +452,16 @@ class RejectInvestorChangeViewTestCase(ManageItemTestCaseMixin,
 class ApproveInvestorDeleteViewTestCase(ManageItemTestCaseMixin,
                                         BaseInvestorTestCase):
 
-    url = reverse('manage_approve_delete_investor', kwargs={'id': 90})
+    url = reverse('manage_approve_delete_investor', kwargs={'id': 91})
     object_class = HistoricalInvestor
-    object_id = 90
+    object_id = 91
     object_status = 4
 
 
 class RejectInvestorDeleteViewTestCase(ManageItemTestCaseMixin,
                                        BaseInvestorTestCase):
 
-    url = reverse('manage_reject_delete_investor', kwargs={'id': 90})
+    url = reverse('manage_reject_delete_investor', kwargs={'id': 91})
     object_class = HistoricalInvestor
-    object_id = 90
+    object_id = 91
     object_status = 5

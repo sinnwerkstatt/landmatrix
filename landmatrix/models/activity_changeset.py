@@ -27,3 +27,4 @@ class ActivityChangeset(models.Model):
 
     class Meta:
         ordering = ('-timestamp',)
+        get_latest_by = 'timestamp'

@@ -11,11 +11,9 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.translation import ugettext_lazy as _, ugettext as _
 
 from api.filters import Filter, PresetFilter
-from grid.forms.browse_condition_form import ConditionFormset
 
 from grid.forms.investor_form import OperationalCompanyForm, ParentStakeholderForm, ParentInvestorForm
-from grid.views.browse_filter_conditions import get_activity_field_by_key, get_investor_field_by_key, \
-    BrowseFilterConditions
+from grid.views.browse_filter_conditions import get_activity_field_by_key, get_investor_field_by_key
 from grid.fields import YearMonthDateField, TitleField
 from grid.views.utils import DEAL_FORMS
 from landmatrix.forms import ActivityFilterForm, InvestorFilterForm
@@ -156,6 +154,8 @@ class FilterWidgetAjaxView(APIView):
                     # Get first field instead
                     field = field.fields[0]
                 self._field = field
+            else:
+                return None
         return self._field
 
     @property
@@ -414,54 +414,55 @@ class FilterWidgetMixin:
     doc_type = 'deal'
     variable_table = get_activity_variable_table()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.rules = []
-
-    @property
-    def filters(self):
-        return self.get_filter_context(self.current_formset_conditions)
-
-    @property
-    def current_formset_conditions(self):
-        data = self.request.GET.copy()
-        filter_set = self._filter_set(data)
-        conditions_formset = self.get_formset_conditions(filter_set, data)
-
-        return conditions_formset
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.rules = []
+    #
+    # @property
+    # def filters(self):
+    #     return self.get_filter_context(self.current_formset_conditions)
+    #
+    # @property
+    # def current_formset_conditions(self):
+    #     data = self.request.GET.copy()
+    #     filter_set = self._filter_set(data)
+    #     conditions_formset = self.get_formset_conditions(filter_set, data)
+    #
+    #     return conditions_formset
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        if hasattr(super(), 'get_context_data'):
+            context = super().get_context_data(**kwargs)
+        else:
+            context = {}
 
-        set_default_filters = True
-        if not self.request.session.get('%s:set_default_filters' % self.doc_type):
-            # Disable and remove all default filters (including hidden)
-            set_default_filters = False
-            self.remove_default_filters()
+        data = self.request.GET.copy()
+        self.set_country_region_filter(data)
+        self.set_default_filters(data)
+
         context.update({
-            'filters': self.filters,
-            'empty_form_conditions': self.current_formset_conditions,
-            'rules': self.rules,
+        #     'filters': self.filters,
+        #     'empty_form_conditions': self.current_formset_conditions,
+        #     'rules': self.rules,
             'variables': self.variable_table,
             'presets': FilterPresetGroup.objects.all(),
-            'set_default_filters': set_default_filters,
+            'set_default_filters': self.request.session.get('%s:set_default_filters' % self.doc_type),
             'status': self.status,
         })
 
         return context
 
-    def get_filter_context(
-            self, formset_conditions, order_by=None, group_by=None,
-            group_value=None, starts_with=None):
-        filters = BrowseFilterConditions(formset_conditions, [], 0).parse()
-
-        filters['order_by'] = order_by # required for table group view
-        filters['group_by'] = group_by
-        filters['group_value'] = group_value
-
-        filters['starts_with'] = starts_with
-
-        return filters
+    # def get_filter_context(self, formset_conditions, order_by=None, group_by=None,
+    #                        group_value=None, starts_with=None):
+    #     filters = BrowseFilterConditions(formset_conditions, [], 0).parse()
+    #
+    #     filters['order_by'] = order_by # required for table group view
+    #     filters['group_by'] = group_by
+    #     filters['group_value'] = group_value
+    #
+    #     filters['starts_with'] = starts_with
+    #
+    #     return filters
 
     def set_country_region_filter(self, data):
         filter_values = {}
@@ -585,43 +586,43 @@ class FilterWidgetMixin:
             stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
         self.request.session['%s:filters' % self.doc_type] = stored_filters
 
-    def get_formset_conditions(self, filter_set, data, group_by=None):
-        self.set_country_region_filter(data)
-        self.set_default_filters(data)
-
-        if filter_set:
-            # set given filters
-            result = ConditionFormset(data, prefix="conditions_empty")
-        else:
-            if group_by == "database":
-                result = None
-            else:
-                result = ConditionFormset(self._get_filter_dict(self.rules), prefix="conditions_empty")
-        return result
-
-    def _filter_set(self, data):
-        return data and data.get("filtered") and not data.get("reset", None)
-
-    def _get_filter_dict(self, browse_rules):
-        filter_dict = MultiValueDict()
-        for record, c in enumerate(browse_rules):
-            rule_dict = MultiValueDict({
-                "conditions_empty-%i-variable" % record: [c.variable],
-                "conditions_empty-%i-operator" % record: [c.operator]
-            })
-            # pass comma separated list as multiple values for operators in/not in
-            if c.operator in ("in", "not_in"):
-                rule_dict.setlist("conditions_empty-%i-value" % record, c.value.split(","))
-            else:
-                rule_dict["conditions_empty-%i-value" % record] = c.value
-            filter_dict.update(rule_dict)
-        filter_dict["conditions_empty-INITIAL_FORMS"] = len(browse_rules)
-        filter_dict["conditions_empty-TOTAL_FORMS"] = len(browse_rules)
-        filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
-        return filter_dict
+    # def get_formset_conditions(self, filter_set, data, group_by=None):
+    #     self.set_country_region_filter(data)
+    #     self.set_default_filters(data)
+    #
+    #     if filter_set:
+    #         # set given filters
+    #         result = ConditionFormset(data, prefix="conditions_empty")
+    #     else:
+    #         if group_by == "database":
+    #             result = None
+    #         else:
+    #             result = ConditionFormset(self._get_filter_dict(self.rules), prefix="conditions_empty")
+    #     return result
+    #
+    # def _filter_set(self, data):
+    #     return data and data.get("filtered") and not data.get("reset", None)
+    #
+    # def _get_filter_dict(self, browse_rules):
+    #     filter_dict = MultiValueDict()
+    #     for record, c in enumerate(browse_rules):
+    #         rule_dict = MultiValueDict({
+    #             "conditions_empty-%i-variable" % record: [c.variable],
+    #             "conditions_empty-%i-operator" % record: [c.operator]
+    #         })
+    #         # pass comma separated list as multiple values for operators in/not in
+    #         if c.operator in ("in", "not_in"):
+    #             rule_dict.setlist("conditions_empty-%i-value" % record, c.value.split(","))
+    #         else:
+    #             rule_dict["conditions_empty-%i-value" % record] = c.value
+    #         filter_dict.update(rule_dict)
+    #     filter_dict["conditions_empty-INITIAL_FORMS"] = len(browse_rules)
+    #     filter_dict["conditions_empty-TOTAL_FORMS"] = len(browse_rules)
+    #     filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
+    #     return filter_dict
 
     @property
     def status(self):
         if self.request.user.is_authenticated and "status" in self.request.GET:
             return self.request.GET.getlist("status")
-        return ['2', '3'] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN
+        return ['2', '3']  # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN

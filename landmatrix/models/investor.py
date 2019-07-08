@@ -67,22 +67,6 @@ class InvestorQuerySet(models.QuerySet):
     def rejected(self):
         return self.filter(fk_status_id=InvestorBase.STATUS_REJECTED)
 
-    def investor_identifier_count(self):
-        return self.order_by('-id').values('investor_identifier').distinct().count()
-
-    def overall_investor_count(self):
-        return self.public().investor_identifier_count()
-
-    def public_investor_count(self):
-        return self.public().filter(is_public=False).investor_identifier_count()
-
-    def existing_operational_stakeholders(self):
-        # TODO: not sure we should be filtering on this instead of
-        # something else
-        stakeholder_ids = InvestorActivityInvolvement.objects.values(
-            'fk_investor_id').distinct()
-        return self.filter(pk__in=stakeholder_ids)
-
 
 class InvestorBase(DefaultStringRepresentation, models.Model):
     # FIXME: Replace fk_status with Choice Field
@@ -201,14 +185,14 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         If we have an unknown (blank) name, get the correct generic text.
         """
         if self.is_operating_company:
-            name = _("Unknown operating company (#%s)") % (self.pk,)
+            name = _("Unknown operating company (#%s)") % (self.investor_identifier,)
         elif self.is_parent_company:
-            name = _("Unknown parent company (#%s)") % (self.pk,)
+            name = _("Unknown parent company (#%s)") % (self.investor_identifier,)
         elif self.is_parent_investor:
-            name = _("Unknown tertiary investor/lender (#%s)") % (self.pk,)
+            name = _("Unknown tertiary investor/lender (#%s)") % (self.investor_identifier,)
         else:
             # Just stick with unknown if no relations
-            name = _("Unknown (#%s)") % (self.pk,)
+            name = _("Unknown (#%s)") % (self.investor_identifier,)
 
         return name
 
@@ -221,10 +205,6 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             queryset = queryset.filter(fk_status__in=(HistoricalInvestor.STATUS_ACTIVE,
                                                       HistoricalInvestor.STATUS_OVERWRITTEN))
         return queryset.order_by('-history_date')
-
-    @property
-    def is_deleted(self):
-        return self.fk_status_id == self.STATUS_DELETED
 
     @property
     def is_operating_company(self):
@@ -269,11 +249,6 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return cls.objects.filter(investor_identifier=investor_identifier).\
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
 
-    def approve(self):
-        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:
-            return
-        self.update_public_investor()
-
     def reject(self):
         if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:
             return
@@ -307,7 +282,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
                 elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
                     parents.append(investor)
             return parents
-        top_investors = list(set(get_parent_companies([self,])))
+        top_investors = list(set(get_parent_companies([self, ])))
         return top_investors
 
     def format_investors(self, investors):
@@ -341,21 +316,26 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return queryset.latest()
 
     def is_editable(self, user=None):
-        if self.get_latest(user) != self:
-            # Only superuser are allowed to edit old versions
-            if user and user.is_superuser:
-                return True
-            return False
-        if user:
+        if user and user.is_authenticated:
+            if self.get_latest(user) != self:
+                # Only superuser are allowed to edit old versions
+                if user and user.is_superuser:
+                    return True
+                return False
             # Status: Pending
             is_editor = user.has_perm('landmatrix.review_activity')
             is_author = self.history_user_id == user.id
             # Only Editors and Administrators are allowed to edit pending deals
-            if not is_editor:
-                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
-                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
+            if is_editor:
+                return True
+            else:
+                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE):
                     return False
-        return True
+                elif self.fk_status_id == self.STATUS_REJECTED and not is_author:
+                    return False
+                else:
+                    return True
+        return False
 
 
 class Investor(InvestorBase):
@@ -511,7 +491,7 @@ class HistoricalInvestor(InvestorBase):
                 elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
                     parents.append(investor)
             return parents
-        top_investors = list(set(get_parent_companies([self,])))
+        top_investors = list(set(get_parent_companies([self, ])))
         return top_investors
 
     def update_public_investor(self, approve=True):
@@ -535,16 +515,29 @@ class HistoricalInvestor(InvestorBase):
                     hinv.fk_status_id = hinv.STATUS_DELETED
                 hinv.save()
 
+            if hinv.investor_identifier in investor_identifiers:
+                return
+            else:
+                investor_identifiers.append(hinv.investor_identifier)
+
             # Update public investor (leaving involvements)
-            investor = Investor.objects.filter(investor_identifier=hinv.investor_identifier)
-            if investor.count() > 0:
-                investor = investor[0]
-            else:
+            investor = Investor.objects.filter(investor_identifier=hinv.investor_identifier).first()
+
+            # Investor has been deleted?
+            if self.fk_status_id == self.STATUS_DELETED:
+                if investor:
+                    investor.delete()
+                return
+            elif self.fk_status_id == self.STATUS_REJECTED:
+                # Investor add has been rejected?
+                investors = HistoricalInvestor.objects.filter(investor_identifier=self.investor_identifier)
+                if len(investors) == 1:
+                    investor.delete()
+                    return
+
+            if not investor:
                 investor = Investor(investor_identifier=hinv.investor_identifier)
-            if investor.investor_identifier in investor_identifiers:
-                return investor
-            else:
-                investor_identifiers.append(investor.investor_identifier)
+
             #investor.id = hinv.id
             investor.investor_identifier = hinv.investor_identifier
             investor.name = hinv.name
@@ -583,7 +576,9 @@ class HistoricalInvestor(InvestorBase):
             return investor
 
         investor = update_investor(self, approve=approve)
-        self.update_current_involvements(investor)
+        if investor:
+            self.update_current_involvements(investor)
+
         return investor
 
     def update_current_involvements(self, investor):
@@ -642,6 +637,7 @@ class InvestorVentureQuerySet(models.QuerySet):
 
     def tertiary_investors(self):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+
 
 class InvestorVentureInvolvementBase(models.Model):
     """
