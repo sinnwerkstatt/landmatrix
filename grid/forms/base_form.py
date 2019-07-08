@@ -343,7 +343,7 @@ class BaseForm(FieldsDisplayFormMixin,
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
                     # Save integer if whole number
-                    if value.isdigit():
+                    if str(value).isdigit():
                         value = int(value)
                     attributes[name] = {'value': str(value)}
             else:
