@@ -54,9 +54,9 @@ class FieldsDisplayFormMixin(object):
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
-                value = self.get_display_value_file_field(field_name)
+                value = self.get_display_value_file_field(field, field_name)
             elif isinstance(field, forms.BooleanField):
-                value = self.get_display_value_boolean_field(field_name)
+                value = self.get_display_value_boolean_field(field, field_name)
             else:
                 value = self.initial.get(field_name, '')
 
@@ -77,7 +77,7 @@ class FieldsDisplayFormMixin(object):
             output.extend(tg_items)
         return output
 
-    def get_display_value_boolean_field(self, field_name):
+    def get_display_value_boolean_field(self, field, field_name):
         data = self.initial.get(field_name,
                                 '')  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
         if data == 'True':
@@ -86,7 +86,7 @@ class FieldsDisplayFormMixin(object):
             return _('No')
         return ''
 
-    def get_display_value_file_field(self, field_name):
+    def get_display_value_file_field(self, field, field_name):
         value = self.initial.get(field_name, '')
         return value
 
@@ -197,11 +197,11 @@ class FieldsDisplayFormMixin(object):
                     'investor_id': object.investor_identifier,
                     #'history_id': object.id,
                 })
-                return '<a href="%s">%s</a>' % (url, str(object))
+                value = '<a href="%s">%s</a>' % (url, str(object))
             else:
-                return str(object)
+                value = str(object)
         else:
-            return ''
+            value = ''
 
         return value
 
@@ -232,7 +232,7 @@ class FieldsDisplayFormMixin(object):
 
 class BaseForm(FieldsDisplayFormMixin,
                forms.Form):
-    DEBUG = False
+
     error_css_class = "error"
 
     def get_attributes(self, request=None):
@@ -281,16 +281,11 @@ class BaseForm(FieldsDisplayFormMixin,
             elif isinstance(f, forms.ChoiceField):
                 value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
-                    try:
-                        if hasattr(f, 'queryset'):
-                            value = int(value)
-                        # Save display value
-                            # FIXME: We should save the value instead, now that we have _display fields
-                        value = str(dict(f.choices).get(value))
-                        if value:
-                            attributes[name] = {'value': value}
-                    except (ValueError, TypeError):
-                        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+                    # Save display value
+                    # FIXME: We should save the value instead, now that we have _display fields
+                    value = str(dict(f.choices).get(value))
+                    if value:
+                        attributes[name] = {'value': value}
             # Year based data (or Actors field)?
             elif isinstance(f, (YearBasedField, ActorsField)):
                 # Grab last item and enumerate, since there can be gaps
@@ -332,7 +327,7 @@ class BaseForm(FieldsDisplayFormMixin,
                 if values:
                     attributes[name] = values
             elif isinstance(f, forms.FileField):
-                value = self.get_display_value_file_field(n)
+                value = self.get_display_value_file_field(f, n)
                 if value:
                     attributes[name] = {'value': value}
             elif isinstance(f, forms.DecimalField):
@@ -343,7 +338,7 @@ class BaseForm(FieldsDisplayFormMixin,
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
                     # Save integer if whole number
-                    if value.is_integer():
+                    if str(value).isdigit():
                         value = int(value)
                     attributes[name] = {'value': str(value)}
             else:
@@ -406,15 +401,6 @@ class BaseForm(FieldsDisplayFormMixin,
                     if v == value:
                         value = str(k)
                         break
-            # Date field?
-            elif isinstance(field, forms.DateField):
-                # reformat date values
-                try:
-                    value = datetime.datetime.strptime(
-                        value, "%Y-%m-%d").strftime("%d:%m:%Y")
-                except ValueError:
-                    # catch invalid date formats from import
-                    pass
                 
             if value:
                 data[name] = value
@@ -482,12 +468,12 @@ class BaseForm(FieldsDisplayFormMixin,
                           for d, a in attributes_by_date.items()]
             else:
                 values = [':'.join([a[1], d or '', a[0]])
-                          for d, a in attributes_by_date.items()]
+                          for d, a in attributes_by_date.items()]  # pragma: no cover
         else:
             for attribute in attributes:
                 is_current = attribute.is_current and '1' or ''
                 # Value:Value2:Date:Is current
-                if values_count > 2:
+                if values_count > 2:  # pragma: no cover
                     values.append(':'.join([attribute.value, attribute.value2, attribute.date or '', is_current]))
                 # Value:Date:Is current
                 elif values_count > 1:
@@ -496,15 +482,6 @@ class BaseForm(FieldsDisplayFormMixin,
                 else:
                     values.append(':'.join([attribute.value, attribute.value2 or '']))
         return '#'.join(values)
-
-    @classmethod
-    def fill_comment_field(cls, comments, data, field_name, pn):
-        if comments and field_name[3:] in comments:
-            data[pn] = comments[field_name[3:]]
-
-    @classmethod
-    def get_comments_from_groups(cls, groups):
-        return dict([(k, v) for group in [g for g in groups if g] for (k, v) in group.attributes.items() if '_comment' in k])
 
     @property
     def meta(self):
@@ -520,8 +497,6 @@ class BaseForm(FieldsDisplayFormMixin,
     def __init__(self, *args, **kwargs):
         super(BaseForm, self).__init__(*args, **kwargs)
 
-        if self.DEBUG:
-            print(self.__class__.__name__, args)
         if hasattr(self.Meta, "exclude"):
             for field in self.Meta.exclude:
                 del self.fields[field]

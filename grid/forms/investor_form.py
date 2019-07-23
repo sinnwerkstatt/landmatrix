@@ -14,13 +14,6 @@ STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor
 ALL_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor.CLASSIFICATION_CHOICES)
 
 
-# TODO: move to fields.
-# TODO: Change this to a livesearch widget
-class InvestorField(forms.ChoiceField):
-    def widget_attrs(self, widget):
-        return {'class': 'investorfield'}
-
-
 class BaseInvestorForm(BaseModelForm):
     form_title = _('Investor')
 
@@ -113,7 +106,7 @@ class ExportInvestorForm(BaseInvestorForm):
                 output[key] = []
                 continue
             if not isinstance(values, (list, tuple)):
-                values = [values,]
+                values = [values, ]
             # Remove # in name
             if field_name == '%sname' % prefix:
                 values = [v.replace('#', '') for v in values]

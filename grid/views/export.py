@@ -1,6 +1,6 @@
 try:
     import xml.etree.cElementTree as ET
-except ImportError:
+except ImportError:  # pragma: no cover
     import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
 import unicodecsv as csv
@@ -8,13 +8,13 @@ import zipfile
 from io import BytesIO
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
-from collections import OrderedDict
+#from collections import OrderedDict
 
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 
-from grid.views.deal import DealListView, DealUpdateView, DealDetailView
+from grid.views.deal import DealUpdateView
 from grid.views.filter import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
@@ -30,7 +30,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
 
     def dispatch(self, request, *args, **kwargs):
         data = request.GET.copy()
-        if request.GET:
+        if request.GET:  # pragma: no cover
             self.set_country_region_filter(data)
         else:
             self.remove_country_region_filter()
@@ -44,9 +44,9 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         if not (group and group_value):
             return query
 
-        if not 'bool' in query:
+        if not 'bool' in query:  # pragma: no cover
             query['bool'] = {}
-        if not 'filter' in query['bool']:
+        if not 'filter' in query['bool']:  # pragma: no cover
             query['bool']['filter'] = []
         # Deslugify model choices
         if 'country' in group:
@@ -87,7 +87,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             queryset = queryset.filter(activity_identifier=deal_id).order_by('-id')
             if queryset.count() > 0:
                 activity = queryset[0]
-            else:
+            else:  # pragma: no cover
                 raise HistoricalActivity.DoesNotExist
             query = {
                 "bool": {
@@ -201,7 +201,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         for item in data['deals']['items']:
             try:
                 ws_deals.append(item)
-            except IllegalCharacterError:
+            except IllegalCharacterError:  # pragma: no cover
                 ws_deals.append([str(i).encode('unicode_escape').decode('utf-8') for i in item])
 
         # Involvements tab
@@ -251,7 +251,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         xml = ET.tostring(root)
         try:
             xml = parseString(xml).toprettyxml()
-        except:
+        except:  # pragma: no cover
             pass
         response = HttpResponse(xml, content_type='text/xml')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename

@@ -17,7 +17,7 @@ class FilterWidgetAjaxViewTestCase(TestCase):
     def get_result_dict(self, params, doc_type='deal'):
         request = self.factory.get(reverse('ajax_widget', kwargs={'doc_type': doc_type}))
         request.GET = QueryDict(params)
-        response = FilterWidgetAjaxView.as_view()(request)
+        response = FilterWidgetAjaxView.as_view()(request, doc_type=doc_type)
         response = response.render()
         return json.loads(response.content)
 
@@ -25,6 +25,29 @@ class FilterWidgetAjaxViewTestCase(TestCase):
         result = self.get_result_dict('key_id=activity_identifier&name=value&operation=is&value=1')
         self.assertEqual(['lt', 'gt', 'gte', 'lte', 'is', 'is_empty'], result.get('allowed_operations'))
         widget = '<input type="number" name="value" value="1" id="id_value" class="valuefield form-control">'
+        self.assertEqual(widget, result.get('widget'))
+
+    def test_with_deal_count(self):
+        result = self.get_result_dict('key_id=deal_count&name=value&operation=is&value=1', doc_type='investor')
+        self.assertEqual(['lt', 'gt', 'gte', 'lte', 'is', 'is_empty'], result.get('allowed_operations'))
+        widget = '<input type="number" name="value" value="1" id="id_value" class="valuefield form-control">'
+        self.assertEqual(widget, result.get('widget'))
+
+    def test_with_multi_value_field(self):
+        result = self.get_result_dict('key_id=intention&name=value&operation=is&value=1')
+        self.assertEqual(['is', 'not_in', 'in', 'is_empty'], result.get('allowed_operations'))
+        self.assertIn('<select name="value" id="id_value" class="valuefield form-control">', result.get('widget'))
+
+    def test_with_date_field(self):
+        result = self.get_result_dict('key_id=updated_date&name=value&operation=gte&value=2000-01-01')
+        self.assertEqual(['lt', 'gt', 'gte', 'lte', 'is', 'is_empty'], result.get('allowed_operations'))
+        widget = '<input class="form-control" id="id_value" name="value" type="text" value="2000-01-01"/>'
+        self.assertIn(widget, result.get('widget'))
+
+    def test_without_field(self):
+        result = self.get_result_dict('key_id=&name=value&operation=is&value=1')
+        self.assertEqual(['contains', 'is', 'is_empty'], result.get('allowed_operations'))
+        widget = '<input type="text" name="value" value="1" id="id_value">'
         self.assertEqual(widget, result.get('widget'))
 
 

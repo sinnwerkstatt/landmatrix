@@ -139,6 +139,8 @@ class ParentInvestorForm(ParentCompanyForm):
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
+    ROLE = HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
+
     def save(self, fk_venture, commit=True):
         """
         We are sort of emulating an inline formset here. Save will update
@@ -147,7 +149,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         instances = super().save(commit=False)
 
         for instance in instances:
-            if not hasattr(instance, 'fk_investor') or not fk_venture:
+            if not hasattr(instance, 'fk_investor') or not fk_venture:  # pragma: no cover
                 continue
             instance.id = None
             instance.fk_venture = fk_venture

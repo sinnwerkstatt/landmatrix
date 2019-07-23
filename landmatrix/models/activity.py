@@ -218,7 +218,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             kwargs['update_fields'] = ['activity_identifier']
             self.activity_identifier = self.__class__.get_next_activity_identifier()
             # re-save
-            super().save(*args, **kwargs)
+            super().save()
 
     @classmethod
     def get_next_activity_identifier(cls):

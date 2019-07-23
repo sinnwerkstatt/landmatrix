@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from collections import OrderedDict
 
 from django import forms
@@ -124,7 +124,7 @@ class FilterWidgetAjaxView(APIView):
     operation = ''
     doc_type = 'deal'
 
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """ render form to enter values for the requested field in the filter widget for the grid view
             form to select operations is updated by the javascript function update_widget() in /media/js/main.js
         """
@@ -143,7 +143,7 @@ class FilterWidgetAjaxView(APIView):
         if not hasattr(self, '_field'):
             if self.field_name:
                 # Deprecated?
-                if "inv_" in self.field_name:
+                if "inv_" in self.field_name:  # pragma: no cover
                     field = get_activity_field_by_key(self.field_name[4:])
                 elif self.doc_type == 'investor':
                     field = get_investor_field_by_key(self.field_name)
@@ -202,7 +202,7 @@ class FilterWidgetAjaxView(APIView):
         attrs = {
             'id': 'id_{}'.format(self.name),
         }
-        if not self.field or not hasattr(self.field.widget, 'attrs'):
+        if not self.field or not hasattr(self.field.widget, 'attrs'):  # pragma: no cover
             return attrs
         if not self.type == self.TYPE_LIST_MULTIPLE and \
            not (self.type == self.TYPE_LIST and self.operation in ('in', 'not_in')):

@@ -135,7 +135,7 @@ class DealBaseView(TemplateView):
             form = self.get_form_by_type(forms, DealActionCommentForm)
             if form:
                 hactivity.fully_updated = self.get_fully_updated(form)
-            else:
+            else:  # pragma: no cover
                 hactivity.fully_updated = False
             hactivity.save(update_elasticsearch=False)
             self.create_involvement(hactivity, investor_form)
@@ -229,9 +229,7 @@ class DealBaseView(TemplateView):
 
     def get_form_by_type(self, forms, type):
         form = list(filter(lambda f: isinstance(f, type), forms))
-        if len(form) == 0:
-            return
-        else:
+        if len(form) > 0:
             return form[0]
 
     def create_activity_feedback(self, activity, form):
@@ -319,14 +317,6 @@ class DealDetailView(PDFViewMixin, TemplateView):
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 
         return context
-
-    def render_forms(self, request, context):
-        return self.render_to_response(context=context)
-
-    def render_forms_to_string(self, request, context):
-        return render_to_string(template_name=self.template_name,
-                                context=context,
-                                request=request)
 
 
 class DealCreateView(DealBaseView):
@@ -607,7 +597,7 @@ def get_forms(activity, user, prefix=None):
 
 
 def get_form(activity, form_class, prefix=None):
-    if hasattr(form_class[1], 'prefix') and form_class[1].prefix:
+    if hasattr(form_class[1], 'prefix') and form_class[1].prefix:  # pragma: no cover
         prefix = prefix + form_class[1].prefix
     data = form_class[1].get_data(activity, prefix=prefix)
     return form_class[1](initial=data, prefix=prefix)

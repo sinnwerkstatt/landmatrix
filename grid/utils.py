@@ -27,7 +27,7 @@ def get_display_value(field, values, attributes=None, formset=None):
                 if len(choice) > 2 and choice[2]:
                     choices.update(dict((i[:2] for i in choice[2])))
         output = [value and choices.get(str(value), '') or '' for value in values]
-    elif 'AreaField' in str(type(field)): # Area is a MultiValueField too
+    elif 'AreaField' in str(type(field)):  # pragma: no cover
         pass
     elif isinstance(field, forms.MultiValueField) and attributes:
         delimiter = '|'
@@ -55,7 +55,7 @@ def get_display_value(field, values, attributes=None, formset=None):
         if multiple[0]:
             for attribute in attributes:
                 key = '%s:%s' % (attribute['date'] or '', values_count > 2 and attribute['value2'] or '')
-                if key in attributes_by_date:
+                if key in attributes_by_date:  # pragma: no cover
                     if attribute['value']:
                         attributes_by_date[key][1] += ', ' + attribute['value']
                 else:
@@ -68,7 +68,7 @@ def get_display_value(field, values, attributes=None, formset=None):
                     d.split(':')[1],
                     a[1],
                 ]) for d, a in attributes_by_date.items()]
-            else:
+            else:  # pragma: no cover
                 output = [delimiters[1].join([
                     d or '',
                     a[0],
@@ -78,7 +78,7 @@ def get_display_value(field, values, attributes=None, formset=None):
             for attribute in attributes:
                 is_current = attribute['is_current'] and 'current' or ''
                 # Value:Value2:Date:Is current
-                if values_count > 2:
+                if values_count > 2:  # pragma: no cover
                     output.append(delimiters[1].join([
                         attribute['date'] or '',
                         is_current,

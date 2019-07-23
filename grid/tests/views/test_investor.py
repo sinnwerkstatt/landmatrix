@@ -73,6 +73,16 @@ class InvestorListViewTestCase(TestCase):
         self.assertEqual(['Cambodia'], items[0].get('fk_country'))
         self.assertEqual(['Private company'], items[0].get('classification'))
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_with_admin(self):
+        self.client.login(username='administrator', password='test')
+        response = self.client.get(reverse('investor_list'))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('all', response.context.get('group'))
+        items = response.context.get('data', {}).get('items')
+        self.assertGreater(len(items), 0)
+
 
 class InvestorCreateViewTestCase(BaseInvestorTestCase):
 

@@ -10,6 +10,7 @@ from landmatrix.models import HistoricalActivityAttribute
 class YearBasedFieldTestCaseMixin:
 
     field_class = YearBasedIntegerField
+    field = None
     data_list = ['value1', '2000', '1', 'value2', '2001', '']
     data_cleaned = 'value1:2000:True#value2:2001:False'
     data_compressed = 'value1:2000:1#value2:2001:False'
@@ -98,6 +99,14 @@ class YearBasedModelMultipleChoiceIntegerFieldTestCase(YearBasedFieldTestCaseMix
             'required': False
         }
 
+    def test_init_with_placeholder(self):
+        field = self.field_class(**self.get_field_kwargs(), placeholder='placeholder')
+        self.assertEqual('placeholder', field.placeholder)
+
+    def test_init_with_empty_placeholder(self):
+        field = self.field_class(**self.get_field_kwargs(), placeholder='')
+        self.assertEqual('', field.placeholder)
+
 
 class YearBasedMultipleChoiceIntegerFieldTestCase(YearBasedFieldTestCaseMixin,
                                                   TestCase):
@@ -178,8 +187,9 @@ class FileFieldWithInitialTestCase(TestCase):
     def test_validate(self):
         file = SimpleUploadedFile("file.pdf", b"", content_type="application/pdf")
         field = FileFieldWithInitial()
-        file.size = 11000
-        self.assertRaises(ValidationError, field.validate(file))
+        file.size = 20000000
+        with self.assertRaises(ValidationError):
+            field.validate(file)
 
 
 class CountryFieldTestCase(TestCase):

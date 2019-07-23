@@ -57,16 +57,15 @@ class TableGroupView(FilterWidgetMixin,
         "target_region": ["target_region_display", "intention"],
         "investor_name": ["investor_id", "investor_name", "investor_country_display", "intention"],
         "investor_country": ["investor_country_display", "intention"],
-        "investor_region": ["investor_region_display",],
-        "intention": ["intention",],
-        "crop": ["crops",],
+        "investor_region": ["investor_region_display"],
+        "intention": ["intention"],
+        "crop": ["crops"],
         "year": ["year", "intention"],
         "data_source_type": ["type", "intention"],
         "all": ["activity_identifier", "target_country_display", "top_investors",
-                #"operating_company_fk_country_display",
                 "intention", "current_negotiation_status_display",
                 "current_implementation_status_display",
-                "deal_size"] #"intended_size", "contract_size", ]
+                "deal_size"]
     }
     AGGREGATE_COLUMNS = {
         "investor_name": "investor_name.raw",
@@ -298,6 +297,10 @@ class TableGroupView(FilterWidgetMixin,
             }
         # Exclude empty
         if self.group != 'investor_name':
+            if not 'bool' in query:
+                query['bool'] = {}
+            if not 'must_not' in query['bool']:
+                query['bool']['must_not'] = []
             query['bool']['must_not'].append({
                 'term': {
                     fields[0]: ""
@@ -320,7 +323,7 @@ class TableGroupView(FilterWidgetMixin,
 
         :return:
         """
-        load_more = int(self.request.GET.get("more", 50))
+        load_more = int(self.request.GET.get("more", self.LOAD_MORE_AMOUNT))
         # if not self._filter_set(self.request.GET) and self.group == "database":
         #     load_more = None
         if not self.limit_query():
@@ -346,7 +349,7 @@ class TableGroupView(FilterWidgetMixin,
         columns = []
         if not default and self.request.GET.get('columns'):
             columns = self.request.GET.getlist('columns')
-            if self.ID_FIELD not in columns:
+            if self.ID_FIELD not in columns:  # pragma: no cover
                 columns = [self.ID_FIELD] + columns
         elif self.group_value:
             columns = self.GROUP_COLUMNS_LIST
@@ -355,7 +358,7 @@ class TableGroupView(FilterWidgetMixin,
                 columns = self.COLUMN_GROUPS[self.group]
                 if self.group != 'all':
                     columns += self.GROUP_COLUMNS
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 raise Http404(
                     _("Unknown group '%(group)s'.") % {'group': self.group})
         return columns
@@ -402,61 +405,9 @@ class TableGroupView(FilterWidgetMixin,
         """Get default column information for template"""
         return self.get_columns_dict(default=True)
 
-    # @property
-    # def filters(self):
-    #     data = self.request.GET.copy()
-    #     return self.get_filter_context(
-    #         self.current_formset_conditions,
-    #         self.order_by,
-    #         self.group,
-    #         self.group_value,
-    #         data.get("starts_with")
-    #     )
-    #
-    # @property
-    # def current_formset_conditions(self):
-    #     data = self.request.GET.copy()
-    #     return self.get_formset_conditions(
-    #         self._filter_set(data), data, self.group
-    #     )
-
     def get_items(self, results):
         if self.group and self.group != 'all' and not self.group_value:
             items = [self.get_group_item(item) for item in results]
-            # Reorder required for intention (because subcategories have been renamed in _process_intention)
-            #if self.group == 'intention' and not self.group_value:
-            #    items_by_intention = dict((len(i['intention']) > 0 and str(i['intention'][
-            # 'value'] or ''), i) for i in items)
-            #    # Add extra lines for groups (agriculture and forestry)
-            #    items = []
-            #    for group_name, choices in grouped_intention_choices:
-            #        group = OrderedDict()
-            #        group['intention'] = [{'value': group_name, 'slug':slugify(group_name)},]
-            #        group['deal_count'] = 0
-            #        group['availability'] = 0
-            #        group['availability_count'] = 0
-            #        group_items = []
-            #        for choice_value, choice_label in choices:
-            #            if choice_label in items_by_intention.keys():
-            #                item = items_by_intention[choice_label]
-            #                item['intention']['parent'] = group
-            #                group_items.append(item)
-            #                group['deal_count'] += item['deal_count'][0]
-            #                group['availability'] += item['availability'][0] or 0
-            #                group['availability_count'] += 1
-            #            else:
-            #                item = OrderedDict()
-            #                item['intention'] = [{'value': choice_label, 'slug':slugify(
-            # choice_label), 'parent': group},]
-            #                item['deal_count'] = 0
-            #                item['availability'] = 0
-            #                group_items.append(item)
-            #        if group['availability']:
-            #            group['availability'] = int(round(group['availability'] / group[
-            # 'availability_count']))
-            #            del group['availability_count']
-            #        items.append(group)
-            #        items.extend(group_items)
         else:
             items = [self.get_deal_item(item) for item in results]
         return items
@@ -465,7 +416,7 @@ class TableGroupView(FilterWidgetMixin,
         item = OrderedDict()
         for column in self.get_columns():
             if column in ('target_country', 'current_negotiation_status',
-                          'current_implementation_status'):
+                          'current_implementation_status'):  # pragma: no cover
                 column += '_display'
             value = result.get(column, None)
             if value and hasattr(self, 'clean_{}'.format(column)):
@@ -488,7 +439,7 @@ class TableGroupView(FilterWidgetMixin,
                 column = column.replace('_display', '')
                 if '_display' in columns[i]:
                     value['value'] = result[column]['buckets'][0]['key']
-                if value and hasattr(self, 'clean_{}'.format(column)):
+                if value and hasattr(self, 'clean_{}'.format(column)):  # pragma: no cover
                     value = getattr(self, 'clean_{}'.format(column))(value, result)
                 item[column] = value
             else:
@@ -590,64 +541,3 @@ class TableGroupView(FilterWidgetMixin,
                 return ''
         else:
             return value
-
-    #def clean_target_country_display(self, value, result):
-    #    values = list(zip(result.get('target_country', []), value))
-    #    return values
-
-    #def clean_target_region_display(self, value, result):
-    #    values = list(zip(result.get('target_region', []), value))
-    #    return values
-
-    #def clean_investor_country_display(self, value, result):
-    #    values = list(zip(result.get('investor_country', []), value))
-    #    return values
-
-    #def clean_investor_region_display(self, value, result):
-    #    values = list(zip(result.get('investor_region', []), value))
-    #    return values
-
-    # def _process_investor_name(self, value):
-    #     if not isinstance(value, list):
-    #         value = [value]
-    #     result = [
-    #         {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-    #         for inv in value
-    #     ]
-    #     return result
-    #
-    # def _process_investor_classification(self, values):
-    #     if not isinstance(values, list):
-    #         values = [values]
-    #
-    #     processed = []
-    #
-    #     for value in values:
-    #         processed_value = None
-    #
-    #         for choice in Investor.CLASSIFICATION_CHOICES:
-    #             code, label = choice
-    #             if str(code) == str(value):
-    #                 processed_value = label
-    #                 break
-    #
-    #         processed.append(processed_value or _('Unknown'))
-    #
-    #     return processed
-    #
-    # def _process_stitched_together_field(self, value):
-    #     if not isinstance(value, list):
-    #         value = [value]
-    #     return [field and field.split("#!#")[0] or "" for field in value]
-    #
-    # def _process_year_based(self, value):
-    #     split_values = [
-    #         {
-    #             "name": n.split("#!#")[0],
-    #             "year": n.split("#!#")[1],
-    #             "current": n.split("#!#")[2],
-    #         } for n in value
-    #     ]
-    #
-    #     # Sort values by year (last one is usually displayed)
-    #     return sorted(split_values, key=lambda v: v['year'])

@@ -14,8 +14,10 @@
   {"model": "landmatrix.activityattribute", "pk": 108, "fields": {"fk_activity_id": 10, "name": "minerals", "value": "1", "value2": "1000", "fk_group": 30}},
   {"model": "landmatrix.activityattribute", "pk": 109, "fields": {"fk_activity_id": 10, "name": "implementation_status", "value": "In operation (production)", "value2": "", "fk_group": 30}},
   {"model": "landmatrix.activityattribute", "pk": 110, "fields": {"fk_activity_id": 10, "name": "intention", "value": "Forest logging / management", "fk_group": 30}},
-  {"model": "landmatrix.activityattribute", "pk": 111, "fields": {"fk_activity_id": 10, "name": "nature", "value": "Outright Purchase", "fk_group": 30}},
-  {"model": "landmatrix.activityattribute", "pk": 112, "fields": {"fk_activity_id": 10, "name": "contract_area", "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40", "fk_group": 30}},
+  {"model": "landmatrix.activityattribute", "pk": 111, "fields": {"fk_activity_id": 10, "name": "intention", "value": "Mining", "fk_group": 30}},
+  {"model": "landmatrix.activityattribute", "pk": 112, "fields": {"fk_activity_id": 10, "name": "nature", "value": "Outright Purchase", "fk_group": 30}},
+  {"model": "landmatrix.activityattribute", "pk": 113, "fields": {"fk_activity_id": 10, "name": "contract_area", "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40", "fk_group": 10}},
+  {"model": "landmatrix.activityattribute", "pk": 114, "fields": {"fk_activity_id": 10, "name": "level_of_accuracy", "value": "Country", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 201, "fields": {"fk_activity_id": 20, "name": "target_country", "value": "104", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 202, "fields": {"fk_activity_id": 20, "name": "type", "value": "Media report", "fk_group": 20}},
   {"model": "landmatrix.activityattribute", "pk": 203, "fields": {"fk_activity_id": 20, "name": "contract_size", "value": 1000, "fk_group":  1}},
@@ -41,7 +43,7 @@
   {"model": "landmatrix.historicalactivity", "pk": 21, "fields": {"activity_identifier": 2, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 30, "fields": {"activity_identifier": 3, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 40, "fields": {"activity_identifier": 4, "fk_status": 4, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
-  {"model": "landmatrix.historicalactivity", "pk": 50, "fields": {"activity_identifier": 5, "fk_status": 5, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 50, "fields": {"activity_identifier": 5, "fk_status": 5, "history_date": "2000-01-01T00:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 60, "fields": {"activity_identifier": 6, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 61, "fields": {"activity_identifier": 6, "fk_status": 6, "history_date": "2000-01-01T00:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 70, "fields": {"activity_identifier": 7, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 1}},
@@ -57,8 +59,10 @@
   {"model": "landmatrix.historicalactivityattribute", "pk": 108, "fields": {"fk_activity_id": 10, "name": "minerals", "value": "1", "value2": "1000", "fk_group": 30}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 109, "fields": {"fk_activity_id": 10, "name": "implementation_status", "value": "In operation (production)", "value2": "", "fk_group": 30}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 110, "fields": {"fk_activity_id": 10, "name": "intention", "value": "Forest logging / management", "fk_group": 30}},
-  {"model": "landmatrix.historicalactivityattribute", "pk": 111, "fields": {"fk_activity_id": 10, "name": "nature", "value": "Outright Purchase", "fk_group": 30}},
-  {"model": "landmatrix.historicalactivityattribute", "pk": 112, "fields": {"fk_activity_id": 10, "name": "contract_area", "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 111, "fields": {"fk_activity_id": 10, "name": "intention", "value": "Mining", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 112, "fields": {"fk_activity_id": 10, "name": "nature", "value": "Outright Purchase", "fk_group": 30}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 113, "fields": {"fk_activity_id": 10, "name": "contract_area", "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40", "fk_group": 10}},
+  {"model": "landmatrix.historicalactivityattribute", "pk": 115, "fields": {"fk_activity_id": 10, "name": "level_of_accuracy", "value": "Country", "fk_group": 10}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 201, "fields": {"fk_activity_id": 20, "name": "target_country", "value": "104", "fk_group": 10}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 202, "fields": {"fk_activity_id": 20, "name": "type", "value": "Media report", "fk_group": 20}},
   {"model": "landmatrix.historicalactivityattribute", "pk": 203, "fields": {"fk_activity_id": 20, "name": "contract_size", "value": 1000, "fk_group":  1}},
@@ -105,5 +109,6 @@
 
   {"model": "landmatrix.activityfeedback", "pk": 10, "fields":  {"fk_activity_id": 10, "fk_user_assigned": 2, "fk_user_created": 1, "comment": "Test feedback", "timestamp": "2000-01-01T00:00:00Z"}},
 
-  {"model": "landmatrix.activitychangeset", "pk": 10, "fields": {"fk_activity_id": 50, "fk_user": 2, "timestamp": "2000-01-01T00:00:00Z", "comment": "Test changeset"}}
+  {"model": "landmatrix.activitychangeset", "pk": 10, "fields": {"fk_activity_id": 50, "fk_user": 2, "timestamp": "2000-01-01T00:00:00Z", "comment": "Test changeset"}},
+  {"model": "landmatrix.activitychangeset", "pk": 20, "fields": {"fk_activity_id": 70, "fk_user": 3, "timestamp": "2000-01-01T00:00:00Z", "comment": "Test changeset"}}
 ]

@@ -31,6 +31,7 @@ class CustomTagsTestCase(TestCase):
             {'name': 'target_country', 'label': 'Target country', 'value': 'Cambodia'}
         ]
         self.assertEqual(expected, get_fields_display(form, user))
+        self.assertEqual('', get_fields_display(None, user))
 
     def test_get_display_values(self):
         value = [
@@ -51,8 +52,12 @@ class CustomTagsTestCase(TestCase):
         self.assertEqual('1:2010:', get_display_value_by_field(field, '1:2010:'))
 
     def test_get_display_value_by_field_with_choice_field(self):
-        field = YearBasedIntegerField()
-        self.assertEqual('1:2010:', get_display_value_by_field(field, '1:2010:'))
+        choices = (
+            ('value1', 'label1'),
+            ('value2', 'label2'),
+        )
+        field = ChoiceField(choices=choices)
+        self.assertEqual('value1', get_display_value_by_field(field, 'value1'))
 
     def test_get_display_value_by_field_with_multiple_choice_field(self):
         choices = (
@@ -72,10 +77,12 @@ class CustomTagsTestCase(TestCase):
     def test_get_value_from_choices_dict(self):
         self.assertEqual('One', get_value_from_choices_dict({1: 'One', 2: 'Two'}, '1'))
         self.assertEqual('value1', get_value_from_choices_dict({'value1': 'label1', 'value2': 'label2'}, 'value1'))
+        self.assertEqual(None, get_value_from_choices_dict({'value1': 'label1', 'value2': 'label2'}, 'value3'))
 
     def test_naturaltime_from_string(self):
         value = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.assertRegexpMatches(naturaltime_from_string(value), r'(now|seconds ago)$')
+        self.assertEqual('', naturaltime_from_string(None))
 
     def test_add_or_update_param(self):
         params = QueryDict('key1=value1')
@@ -83,7 +90,7 @@ class CustomTagsTestCase(TestCase):
 
     def test_add_class_with_choice_field(self):
         form = DealSpatialForm(initial={'location': 'value'})
-        field = ChoiceField(choices=(('value', 'label'),), widget=CheckboxInput)
+        field = ChoiceField(choices=(('value', 'label'),), widget=CheckboxInput(attrs={'class': 'test'}))
         bound_field = BoundField(form, field, 'location')
         self.assertNotIn('testclass', add_class(bound_field, 'testclass'))
 
@@ -95,6 +102,7 @@ class CustomTagsTestCase(TestCase):
 
     def test_decimalgroupstring(self):
         self.assertEqual('1,000 test', decimalgroupstring('1000 test'))
+        self.assertEqual('test test', decimalgroupstring('test test'))
 
     def test_random_id(self):
         form = DealSpatialForm(initial={'location': 'test'})
@@ -102,9 +110,13 @@ class CustomTagsTestCase(TestCase):
         bound_field = BoundField(form, field, 'location')
         self.assertRegexpMatches(random_id(bound_field), r'id=\"id_location_\d+\"')
 
-    def test_get_user_role(self):
+    def test_get_user_role_with_country_editor(self):
         user = get_user_model().objects.get(username='editor-myanmar')
         self.assertEqual('Editor for Myanmar', get_user_role(user))
+
+    def test_get_user_role_without_role(self):
+        user = get_user_model().objects.get(username='superuser')
+        self.assertEqual('No role', get_user_role(user))
 
     def test_history(self):
         item = HistoricalActivity.objects.get(id=10)

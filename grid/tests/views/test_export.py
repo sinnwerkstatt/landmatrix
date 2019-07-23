@@ -68,8 +68,57 @@ class ExportViewTestCase(TestCase):
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_xls_with_group_value(self):
         response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'group': 'intention',
+                                                             'group_value': 'Mining'}))
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_group_value_country(self):
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
                                                              'group': 'target_country',
                                                              'group_value': 'myanmar'}))
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_group_value_region(self):
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'group': 'target_region',
+                                                             'group_value': 'asia'}))
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_group_value_crop(self):
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'group': 'crops',
+                                                             'group_value': 'accacia'}))
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_deal_as_anonymous(self):
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'deal_id': '1'}))
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_deal_as_reporter(self):
+        self.client.login(username='reporter', password='test')
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'deal_id': '1'}))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+        self.assert_xls_content(response)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_xls_with_deal_as_reporter(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('export', kwargs={'format': 'xls',
+                                                             'deal_id': '1'}))
+        self.client.logout()
         self.assertEqual(200, response.status_code)
         self.assert_xls_content(response)
 

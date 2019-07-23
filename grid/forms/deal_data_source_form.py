@@ -88,11 +88,11 @@ class DealDataSourceForm(BaseForm):
         if file and isinstance(file, File):
             n = file.name.split(".")
             # cleanup special charachters in filename
-            file.name = "%s.%s" % (slugify(n[0]), n[1]) if len(n)>1 else slugify(n[0])
+            file.name = "%s.%s" % (slugify(n[0]), n[1]) if len(n) > 1 else slugify(n[0])
         return file
 
     def get_availability_total(self):
-        return 4
+        return 4  # pragma: no cover
 
     def get_fields_display(self, user=None):
         if not (user and user.is_authenticated and user.has_perm('landmatrix.review_activity')):
@@ -146,10 +146,10 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             form_attributes = form.get_attributes(request)
 
             # FIXME: Move this to DealDataSourceForm.get_attributes
-            uploaded = get_file_from_upload(request.FILES, count)
+            uploaded = self.get_file_from_upload(request.FILES, count)
             if uploaded:
                 if 'file' in form_attributes:
-                    form_attributes['file']['value'] = uploaded
+                    form_attributes['file']['value'] = uploaded  # pragma: no cover
                 else:
                     form_attributes['file'] = {'value': uploaded}
 
@@ -167,6 +167,13 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             if form_data:
                 data.append(form_data)
         return data
+
+    def get_file_from_upload(self, files, form_index):
+        key = 'data_source-{}-file-new'.format(form_index)
+        file = files.get(key)
+        if file:
+            return data_source_storage.save(file.name, file)
+        return None
 
     class Meta:
         name = 'data_source'
@@ -192,11 +199,3 @@ class PublicViewDealDataSourceFormSet(
     formset_factory(PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0)
 ):
     form_title = _('Data sources')
-
-
-def get_file_from_upload(files, form_index):
-    key = 'data_source-{}-file-new'.format(form_index)
-    file = files.get(key)
-    if file:
-        return data_source_storage.save(file.name, file)
-    return None

@@ -57,7 +57,7 @@ class DealListViewTestCase(TestCase):
         self.assertEqual(1, len(items))
         self.assertEqual('Myanmar', items[0].get('target_country', {}).get('display'))
         self.assertEqual(['Asia'], items[0].get('target_region'))
-        self.assertEqual(2, len(items[0].get('intention', [])))
+        self.assertGreater(len(items[0].get('intention', [])), 0)
         self.assertEqual([3], items[0].get('deal_count'))
         self.assertEqual([3000], items[0].get('deal_size'))
 
@@ -78,6 +78,25 @@ class DealListViewTestCase(TestCase):
 
 
 class DealCreateViewTestCase(BaseDealTestCase):
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_get(self):
+        self.client.login(username='reporter', password='test')
+        response = self.client.get(reverse('add_deal'))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_invalid(self):
+        data = self.DEAL_DATA.copy()
+        self.client.login(username='reporter', password='test')
+        response = self.client.post(reverse('add_deal'), data)
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+
+        messages = list(response.context.get('messages'))
+        self.assertGreater(len(messages), 0)
+        self.assertEqual('Please correct the error below.', messages[-1].message)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_reporter(self):
@@ -141,6 +160,13 @@ class DealUpdateViewTestCase(BaseDealTestCase):
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_get(self):
+        self.client.login(username='reporter', password='test')
+        response = self.client.get(reverse('change_deal', kwargs={'deal_id': 1}))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_reporter(self):
         data = self.DEAL_DATA.copy()
         data.update({
@@ -171,6 +197,22 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         self.assertEqual(HistoricalActivity.STATUS_PENDING, activity.fk_status_id)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_editor_reject(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test change deal",
+            "reject_btn": "on",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('change_deal', kwargs={'deal_id': 2, 'history_id': 21}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code, msg='Change deal does not redirect')
+        activity = HistoricalActivity.objects.latest_only().rejected().latest()
+        self.assertEqual(2, activity.activity_identifier)
+        self.assertEqual('Test change deal', activity.comment)
+        self.assertEqual(HistoricalActivity.STATUS_REJECTED, activity.fk_status_id)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_administrator(self):
         data = self.DEAL_DATA.copy()
         data.update({
@@ -187,6 +229,73 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         self.assertEqual('Test change deal', activity.comment)
         self.assertEqual(HistoricalActivity.STATUS_OVERWRITTEN, activity.fk_status_id)
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_editor_feedback(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test change deal",
+            "assign_to_user": "3",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('change_deal', kwargs={'deal_id': 1}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code, msg='Change deal does not redirect')
+        activity = HistoricalActivity.objects.latest_only().pending().latest()
+        self.assertGreater(activity.activitychangeset_set.count())
+        changeset = activity.activitychangeset_set.first()
+        self.assertEqual(3, changeset.fk_user_assigned)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_invalid(self):
+        data = self.DEAL_DATA.copy()
+        self.client.login(username='reporter', password='test')
+        response = self.client.post(reverse('change_deal', kwargs={'deal_id': 1}), data)
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+
+        messages = list(response.context.get('messages'))
+        self.assertGreater(len(messages), 0)
+        self.assertEqual('Please correct the error below.', messages[-1].message)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_reporter_pending(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test change deal",
+        })
+        self.client.login(username='reporter', password='test')
+        response = self.client.post(reverse('change_deal', kwargs={'deal_id': 2, 'history_id': 21}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code)
+        self.assertEqual('/deal/2/21/', response.url)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_does_not_exist(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('change_deal', kwargs={'deal_id': 123}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    def test_with_history_id(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test change deal",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('change_deal', kwargs={'deal_id': 1, 'history_id': 10}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code, msg='Change deal does not redirect')
+        activity = HistoricalActivity.objects.latest_only().pending().latest()
+        self.assertEqual(1, activity.activity_identifier)
+        self.assertEqual('Test change deal', activity.comment)
+        self.assertEqual(HistoricalActivity.STATUS_PENDING, activity.fk_status_id)
+
+    def test_not_editable(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('change_deal', kwargs={'deal_id': 2, 'history_id': 20}))
+        self.client.logout()
+        self.assertEqual(302, response.status_code)
+
 
 class DealDetailViewTestCase(BaseDealTestCase):
 
@@ -201,12 +310,39 @@ class DealDetailViewTestCase(BaseDealTestCase):
         'venture_involvements',
     ]
 
-    def test_reporter(self):
+    def test_with_reporter(self):
         self.client.login(usernamer='reporter', password='test')
         response = self.client.get(reverse('deal_detail', kwargs={'deal_id': 1}))
         self.client.logout()
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.context.get('activity').activity_identifier)
+
+    def test_with_reporter_deleted(self):
+        self.client.login(usernamer='reporter', password='test')
+        response = self.client.get(reverse('deal_detail', kwargs={'deal_id': 4}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    def test_with_pdf(self):
+        self.client.login(usernamer='reporter', password='test')
+        response = self.client.get(reverse('deal_detail', kwargs={'deal_id': 1, 'format': 'pdf'}))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.context.get('activity').activity_identifier)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_does_not_exist(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('deal_detail', kwargs={'deal_id': 123}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    def test_with_history_id(self):
+        self.client.login(usernamer='editor', password='test')
+        response = self.client.get(reverse('deal_detail', kwargs={'deal_id': 2, 'history_id': 21}))
+        self.client.logout()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(2, response.context.get('activity').activity_identifier)
 
 
 class DealDeleteViewTestCase(BaseDealTestCase):
@@ -267,6 +403,39 @@ class DealDeleteViewTestCase(BaseDealTestCase):
         #self.assertEqual('Test delete deal', activity.comment)
         self.assertEqual(HistoricalActivity.STATUS_DELETED, activity.fk_status_id)
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_does_not_exist(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('delete_deal', kwargs={'deal_id': 123}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_already_deleted(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test delete deal",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('delete_deal', kwargs={'deal_id': 4}), data)
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_with_history_id(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test delete deal",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('delete_deal', kwargs={'deal_id': 1, 'history_id': 10}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code, msg='Delete deal does not redirect')
+        activity = HistoricalActivity.objects.latest_only().to_delete().latest()
+        self.assertEqual(1, activity.activity_identifier)
+        #self.assertEqual('Test delete deal', activity.comment)
+        self.assertEqual(HistoricalActivity.STATUS_TO_DELETE, activity.fk_status_id)
+
 
 class DealRecoverViewTestCase(BaseDealTestCase):
 
@@ -279,6 +448,13 @@ class DealRecoverViewTestCase(BaseDealTestCase):
         'activity_involvements',
         'venture_involvements',
     ]
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_get(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('recover_deal', kwargs={'deal_id': 4}))
+        self.client.logout()
+        self.assertEqual(302, response.status_code)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_editor(self):
@@ -308,6 +484,32 @@ class DealRecoverViewTestCase(BaseDealTestCase):
         #self.assertEqual('Test recover deal', activity.comment)
         self.assertEqual(HistoricalActivity.STATUS_OVERWRITTEN, activity.fk_status_id)
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_does_not_exist(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('recover_deal', kwargs={'deal_id': 123}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_not_deleted(self):
+        self.client.login(username='editor', password='test')
+        response = self.client.get(reverse('recover_deal', kwargs={'deal_id': 1}))
+        self.client.logout()
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_with_history_id(self):
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "tg_action_comment": "Test recover deal",
+        })
+        self.client.login(username='editor', password='test')
+        response = self.client.post(reverse('recover_deal', kwargs={'deal_id': 4, 'history_id': 40}), data)
+        self.client.logout()
+        self.assertEqual(302, response.status_code, msg='Recover deal does not redirect')
+        self.assertEqual(0, HistoricalActivity.objects.filter(comment="Test recover deal").count())
+
 
 class DealTestCase(TestCase):
 
@@ -323,12 +525,15 @@ class DealTestCase(TestCase):
 
     def test_get_forms(self):
         activity = HistoricalActivity.objects.latest_only().public().latest()
+        # Overwrite target country with Mongolia
+        activity.attributes.filter(name='target_country').update(value='496')
         user = get_user_model().objects.get(username='reporter')
         forms = get_forms(activity, user)
         self.assertEqual(14, len(forms))
 
     def test_get_form(self):
         activity = HistoricalActivity.objects.latest_only().public().latest()
+        activity.attributes.create(name='fully_updated', value='True')
         form_tuple = (DealActionCommentForm.Meta.name, DealActionCommentForm)
         form = get_form(activity, form_tuple)
         self.assertIsInstance(form, DealActionCommentForm)

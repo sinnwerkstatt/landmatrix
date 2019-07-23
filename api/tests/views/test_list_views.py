@@ -420,7 +420,7 @@ class ListViewsTestCase(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('FeatureCollection', response.data.get('type'))
         features = [
-            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 1, "implementation": ["In operation (production)"], "intended_size": None, "intention": ["Forestry"], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/1/"}, "type": "Feature"},
+            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 1, "implementation": ["In operation (production)"], "intended_size": None, "intention": ["Mining"], "investor": None, "level_of_accuracy": "Country", "production_size": None, "url": "/deal/1/"}, "type": "Feature"},
             {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 3, "implementation": "Unknown", "intended_size": None, "intention": [], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/3/"}, "type": "Feature"},
             {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 2, "implementation": ["Startup phase (no production)"], "intended_size": None, "intention": ["Mining"], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/2/"}, "type": "Feature"}
         ]
@@ -447,8 +447,7 @@ class ListViewsTestCase(TestCase):
                 ],
                 'intention': {
                     'Unknown': 1,
-                    'Mining': 1,
-                    'Forestry': 1
+                    'Mining': 2
                 },
                 'implementation': {
                     'In operation (production)': 1,
@@ -456,7 +455,8 @@ class ListViewsTestCase(TestCase):
                     'Startup phase (no production)': 1
                 },
                 'level_of_accuracy': {
-                    'Unknown': 3
+                    'Country': 1,
+                    'Unknown': 2
                 }
             }
         }

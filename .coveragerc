@@ -16,7 +16,7 @@ source = .
 [report]
 show_missing = True
 skip_covered = True
-sort = Miss
+#sort = Miss
 exclude_lines =
     pragma: no cover
 

@@ -129,7 +129,6 @@ def add_class(field, new_cls):
         else:
             attrs['class'] = new_cls
         return mark_safe(field.as_widget())
-        #return mark_safe(field.as_widget(attrs={"class":new_cls}))
 
 
 @register.filter

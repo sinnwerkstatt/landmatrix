@@ -5,6 +5,7 @@ import re
 from itertools import chain
 
 from django import forms
+from django.forms import ClearableFileInput
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
@@ -395,7 +396,8 @@ class AreaWidget(forms.MultiWidget):
 
         widgets = [
             SerializedMapWidget(attrs=map_attrs),
-            ResubmitFileWidget(attrs=file_attrs),
+            # ResubmitFileWidget(attrs=file_attrs),  - doesn't yet seem to support multiple
+            ClearableFileInput(attrs=file_attrs),
         ]
         super().__init__(widgets, *args, **kwargs)
 

@@ -33,7 +33,7 @@ class MongoliaForm(BaseForm):
         required=False, label=_("Test integer"), widget=NumberInput)
 
     class Meta:
-        name = 'germany specific info'
+        name = 'mongolia specific info'
 
 
 COUNTRY_SPECIFIC_FORMS = {

@@ -1,11 +1,8 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.forms.formsets import BaseFormSet
-from django.template.context import RequestContext
 from django.views.generic import TemplateView
 
 from grid.views.deal import get_forms
 from landmatrix.models.activity import HistoricalActivity
-from landmatrix.models.deal import Deal
 
 
 class DealComparisonView(TemplateView):
@@ -31,46 +28,20 @@ class DealComparisonView(TemplateView):
 def get_comparison(deal_1, deal_2, user):
     forms_1 = get_forms(deal_1, user=user)
     forms_2 = get_forms(deal_2, user=user)
-    if len(forms_1) != len(forms_2):
+    if len(forms_1) != len(forms_2):  # pragma: no cover
         raise IndexError(
                 "Compared deals have different number of forms. Deal id(s): %i, %i. History IDs: %i, %i" %
                 (deal_1.id, deal_2.id, deal_1.activity.history_id, deal_2.activity.history_id)
         )
     comparison_forms = []
     for i in range(len(forms_1)):
-        comparison_forms.append((forms_1[i], forms_2[i], has_changed(forms_1[i], forms_2[i])))
+        comparison_forms.append((forms_1[i], forms_2[i], is_equal(forms_1[i], forms_2[i])))
 
     return comparison_forms
 
 
-def deal_from_activity_id(history_id):
-    return Deal.from_activity(HistoricalActivity.objects.get(id=history_id))
-
-
-#def deal_from_activity_id_and_timestamp(id_and_timestamp):
-#    from datetime import datetime
-#    from dateutil.tz import tzlocal
-#    if '_' in id_and_timestamp:
-#        activity_identifier, timestamp = id_and_timestamp.split('_')
-#
-#        activity = Activity.objects.filter(activity_identifier=activity_identifier).order_by('id').last()
-#        if activity is None:
-#            raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
-#
-#        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())).\
-#            filter(fk_status_id__in=(2, 3)).last()
-#        if history is None:
-#            raise ObjectDoesNotExist('Public deal with activity_identifier %s as of timestamp %s' % (activity_identifier, timestamp))
-#
-#        return DealHistoryItem.from_activity_with_date(history, datetime.fromtimestamp(float(timestamp), tz=tzlocal()))
-#
-#    raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
-
-def has_changed(form_1, form_2):
+def is_equal(form_1, form_2):
     ignore_fields = ('id',)
-
-    #if not isinstance(form_1, form_2.__class__):
-    #    return False
 
     if form_1.is_valid() != form_2.is_valid():
         return False
@@ -104,7 +75,7 @@ def has_changed(form_1, form_2):
 
 
 # Hacked version of BaseFormSet._construct_form
-def _construct_form(self, i, **kwargs):
+def _construct_form(self, i, **kwargs):  # pragma: no cover
     """
     Instantiates and returns the i-th form instance in a formset.
     """
