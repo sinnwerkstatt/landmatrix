@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.core.management import call_command
+from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -49,7 +50,7 @@ class ChartViewsTestCase(TestCase):
         self.assertEqual(200, response.status_code)
         response_dict = dict((d['name'], d) for d in response.data)
         self.assertGreater(response_dict.get('Contract signed', {}).get('deals'), 0)
-        self.assertEqual(2000, response_dict.get('Contract signed', {}).get('hectares'))
+        self.assertEqual(1000, response_dict.get('Contract signed', {}).get('hectares'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_logging_view(self):
@@ -57,15 +58,15 @@ class ChartViewsTestCase(TestCase):
         self.assertEqual(200, response.status_code)
         response_dict = dict((d['name'], d) for d in response.data)
         self.assertGreater(response_dict.get('Contract signed', {}).get('deals'), 0)
-        self.assertEqual(1000, response_dict.get('Contract signed', {}).get('hectares'))
+        self.assertEqual(2000, response_dict.get('Contract signed', {}).get('hectares'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_contract_farming_view(self):
         response = self.client.get(reverse('contract_farming_api'))
         self.assertEqual(200, response.status_code)
         response_dict = dict((d['name'], d) for d in response.data)
-        self.assertEqual(1, response_dict.get('Contract signed', {}).get('deals'))
-        self.assertEqual(1000, response_dict.get('Contract signed', {}).get('hectares'))
+        self.assertGreater(response_dict.get('Contract signed', {}).get('deals'), 0)
+        self.assertEqual(2000, response_dict.get('Contract signed', {}).get('hectares'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_implementation_status_list_view(self):
@@ -85,11 +86,31 @@ class ChartViewsTestCase(TestCase):
         #self.assertGreater(response_dict.get('Forest logging / management', {}).get('deals'), 0)
         #self.assertEqual(1000, response_dict.get('Forest logging / management', {}).get('hectares'))
         #self.assertEqual('Forestry', response_dict.get('Forest logging / management', {}).get('parent'))
-        self.assertGreater(response_dict.get('Mining', {}).get('deals'), 0)
-        self.assertEqual(2000, response_dict.get('Mining', {}).get('hectares'))
-        self.assertEqual('Other', response_dict.get('Mining', {}).get('parent'))
-        self.assertEqual(0, response_dict.get('Multiple intentions', {}).get('deals'))
-        self.assertEqual(0, response_dict.get('Multiple intentions', {}).get('hectares'))
+        self.assertGreater(response_dict.get('Forest logging / management', {}).get('deals'), 0)
+        self.assertEqual(1000, response_dict.get('Forest logging / management', {}).get('hectares'))
+        self.assertEqual('Forestry', response_dict.get('Forest logging / management', {}).get('parent'))
+        self.assertEqual(1, response_dict.get('Multiple intentions', {}).get('deals'))
+        self.assertEqual(1000, response_dict.get('Multiple intentions', {}).get('hectares'))
+        self.assertEqual('Other', response_dict.get('Multiple intentions', {}).get('parent'))
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_investment_intention_list_view_with_agriculture(self):
+        data = QueryDict('intention=agriculture')
+        response = self.client.get(reverse('intention'), data)
+        self.assertEqual(200, response.status_code)
+        response_dict = dict((d['name'], d) for d in response.data)
+        self.assertEqual(1, response_dict.get('Multiple intentions', {}).get('deals'))
+        self.assertEqual(1000, response_dict.get('Multiple intentions', {}).get('hectares'))
+        self.assertEqual('Other', response_dict.get('Multiple intentions', {}).get('parent'))
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_investment_intention_list_view_with_forestry(self):
+        data = QueryDict('intention=forestry')
+        response = self.client.get(reverse('intention'), data)
+        self.assertEqual(200, response.status_code)
+        response_dict = dict((d['name'], d) for d in response.data)
+        self.assertEqual(1, response_dict.get('Multiple intentions', {}).get('deals'))
+        self.assertEqual(1000, response_dict.get('Multiple intentions', {}).get('hectares'))
         self.assertEqual('Other', response_dict.get('Multiple intentions', {}).get('parent'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
@@ -100,7 +121,7 @@ class ChartViewsTestCase(TestCase):
             {'country': 'Cambodia',
              'country_id': '116',
              'country_slug': 'cambodia',
-             'deals': 3,
+             'deals': 4,
              'domestic': 0,
              'lat': Decimal('12.565679000000'),
              'lat_max': Decimal('14.705078125000'),
@@ -111,20 +132,21 @@ class ChartViewsTestCase(TestCase):
              'name': 'Cambodia',
              'region': 'Asia',
              'region_slug': 'asia',
-             'transnational': 3,
+             'transnational': 4,
              'url': '/data/by-investor-country/cambodia/'}
         ]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_investor_countries_for_target_country_view(self):
-        response = self.client.get(reverse('investor_countries_for_target_country_api'))
+        data = QueryDict('country_id=104')
+        response = self.client.get(reverse('investor_countries_for_target_country_api'), data)
         self.assertEqual(200, response.status_code)
         expected = [
             {'country': 'Cambodia',
              'country_id': '116',
              'country_slug': 'cambodia',
-             'deals': 3,
+             'deals': 4,
              'domestic': 0,
              'lat': Decimal('12.565679000000'),
              'lat_max': Decimal('14.705078125000'),
@@ -135,7 +157,7 @@ class ChartViewsTestCase(TestCase):
              'name': 'Cambodia',
              'region': 'Asia',
              'region_slug': 'asia',
-             'transnational': 3,
+             'transnational': 4,
              'url': '/data/by-investor-country/cambodia/'}
         ]
         self.assertEqual(expected, response.data)
@@ -148,7 +170,7 @@ class ChartViewsTestCase(TestCase):
             {'country': 'Myanmar',
              'country_id': '104',
              'country_slug': 'myanmar',
-             'deals': 3,
+             'deals': 4,
              'domestic': 0,
              'lat': Decimal('21.913965000000'),
              'lat_max': Decimal('28.517041015600'),
@@ -159,20 +181,21 @@ class ChartViewsTestCase(TestCase):
              'name': 'Myanmar',
              'region': 'Asia',
              'region_slug': 'asia',
-             'transnational': 3,
+             'transnational': 4,
              'url': '/data/by-target-country/myanmar/'}
         ]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
-    def test_target_countries_for_investor_country_view(self):
-        response = self.client.get(reverse('target_countries_for_investor_country_api'))
+    def test_target_countries_for_investor_country_view_with_country(self):
+        data = QueryDict('country=116')
+        response = self.client.get(reverse('target_countries_for_investor_country_api'), data)
         self.assertEqual(200, response.status_code)
         expected = [
             {'country': 'Myanmar',
              'country_id': '104',
              'country_slug': 'myanmar',
-             'deals': 3,
+             'deals': 4,
              'domestic': 0,
              'lat': Decimal('21.913965000000'),
              'lat_max': Decimal('28.517041015600'),
@@ -183,7 +206,32 @@ class ChartViewsTestCase(TestCase):
              'name': 'Myanmar',
              'region': 'Asia',
              'region_slug': 'asia',
-             'transnational': 3,
+             'transnational': 4,
+             'url': '/data/by-target-country/myanmar/'}
+        ]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_target_countries_for_investor_country_view_with_region(self):
+        data = QueryDict('region=142')
+        response = self.client.get(reverse('target_countries_for_investor_country_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [
+            {'country': 'Myanmar',
+             'country_id': '104',
+             'country_slug': 'myanmar',
+             'deals': 4,
+             'domestic': 0,
+             'lat': Decimal('21.913965000000'),
+             'lat_max': Decimal('28.517041015600'),
+             'lat_min': Decimal('9.875390625000'),
+             'lon': Decimal('95.956223000000'),
+             'lon_max': Decimal('101.147265625000'),
+             'lon_min': Decimal('92.179589843800'),
+             'name': 'Myanmar',
+             'region': 'Asia',
+             'region_slug': 'asia',
+             'transnational': 4,
              'url': '/data/by-target-country/myanmar/'}
         ]
         self.assertEqual(expected, response.data)
@@ -193,11 +241,11 @@ class ChartViewsTestCase(TestCase):
         response = self.client.get(reverse('top_10_countries_api'))
         self.assertEqual(200, response.status_code)
         investor_country = [
-            {'id': '116', 'name': 'Cambodia', 'hectares': 3000.0, 'slug': 'cambodia', 'deals': 3}
+            {'id': '116', 'name': 'Cambodia', 'hectares': 3000.0, 'slug': 'cambodia', 'deals': 4}
         ]
         self.assertEqual(investor_country, response.data.get('investor_country'))
         target_country = [
-            {'id': '104', 'name': 'Myanmar', 'hectares': 3000.0, 'slug': 'myanmar', 'deals': 3}
+            {'id': '104', 'name': 'Myanmar', 'hectares': 3000.0, 'slug': 'myanmar', 'deals': 4}
         ]
         self.assertEqual(target_country, response.data.get('target_country'))
 
@@ -223,11 +271,33 @@ class ChartViewsTestCase(TestCase):
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_transnational_deal_list_view_with_region(self):
+        data = QueryDict('region=142')
+        response = self.client.get(reverse('transnational_deals_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [
+            {
+                'id': '104',
+                'imports': ['-1.Cambodia'],
+                'name': '-1.Myanmar',
+                'size': 1,
+                'slug': 'myanmar'
+            },
+            {
+                 'id': '116',
+                 'imports': [],
+                 'name': '-1.Cambodia',
+                 'size': 1,
+                 'slug': 'cambodia'}
+        ]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_transnational_deals_by_country_view_with_target_country(self):
         response = self.client.get(reverse('transnational_deals_by_country_api'), data={'country': 104})
         self.assertEqual(200, response.status_code)
         target_country = [
-            {'region_id': '142', 'slug': 'asia', 'region': 'Asia', 'hectares': 3000.0, 'deals': 3}
+            {'region_id': '142', 'slug': 'asia', 'region': 'Asia', 'hectares': 3000.0, 'deals': 4}
         ]
         self.assertEqual(target_country, response.data.get('target_country'))
         self.assertEqual([], response.data.get('investor_country'))
@@ -237,16 +307,21 @@ class ChartViewsTestCase(TestCase):
         response = self.client.get(reverse('transnational_deals_by_country_api'), data={'country': 116})
         self.assertEqual(200, response.status_code)
         investor_country = [
-            {'region_id': '142', 'slug': 'asia', 'region': 'Asia', 'hectares': 3000.0, 'deals': 3}
+            {'region_id': '142', 'slug': 'asia', 'region': 'Asia', 'hectares': 3000.0, 'deals': 4}
         ]
         self.assertEqual(investor_country, response.data.get('investor_country'))
         self.assertEqual([], response.data.get('target_country'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_transnational_deals_by_country_view_without_country(self):
+        response = self.client.get(reverse('transnational_deals_by_country_api'))
+        self.assertEqual(400, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_hectares_view(self):
         response = self.client.get(reverse('hectares_api'))
         self.assertEqual(200, response.status_code)
-        expected = {'deals': 3, 'hectares': 3000}
+        expected = {'deals': 4, 'hectares': 3000}
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
@@ -271,7 +346,7 @@ class ChartViewsTestCase(TestCase):
         response = self.client.get(reverse('produce_info_api'))
         self.assertEqual(200, response.status_code)
         crops = [
-            {'name': 'Accacia', 'size': 1000},
+            {'name': 'Accacia', 'size': 2000},
             {'name': 'Alfalfa', 'size': 1000}
         ]
         self.assertEqual(crops, response.data.get('crops'))

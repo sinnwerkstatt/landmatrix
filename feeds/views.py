@@ -6,6 +6,7 @@ from .activity_changes import ActivityChangesList
 
 
 class ActivityChangesFeed(Feed):
+
     ttl = 0  # TTL value for client side caching
     title_template = 'deal-change-title.html'
     description_template = 'deal-change-description.html'
@@ -27,7 +28,6 @@ class ActivityChangesFeed(Feed):
 
     def items(self, obj):
         changes = ActivityChangesList(obj, max_items=self.max_items)
-
         return changes
 
     def title(self, obj):
@@ -65,7 +65,7 @@ class ActivityChangesFeed(Feed):
     def item_author_name(self, item):
         timestamp, activity, changes = item
         try:
-            name = activity.history_user.name
+            name = activity.history_user.get_full_name()
         except AttributeError:
             name = None
 
@@ -75,7 +75,7 @@ class ActivityChangesFeed(Feed):
         timestamp, activity, changes = item
         try:
             email = activity.history_user.email
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             email = None
 
         return email

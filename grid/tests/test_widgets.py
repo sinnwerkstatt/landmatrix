@@ -3,6 +3,8 @@ from django.contrib.gis.gdal.geometries import MultiPolygon
 from django.contrib.gis.gdal.geomtype import OGRGeomType
 from django.forms import Select, SelectMultiple, CheckboxInput, TextInput
 from django.test import TestCase
+from django.utils.crypto import get_random_string
+from django.utils.datastructures import MultiValueDict
 
 from grid.widgets import *
 
@@ -20,6 +22,7 @@ class YearBasedWidgetTestCase(TestCase):
     def setUp(self):
         self.widget = YearBasedWidget(help_text='help_text',
                                       attrs={'attr_key': 'attr_value'})
+        self.widget.is_localized = True
 
     def test_get_widgets(self):
         widgets = self.widget.get_widgets()
@@ -45,13 +48,30 @@ class YearBasedWidgetTestCase(TestCase):
         self.assertEqual({False}, set(self.widget.get_multiple()))
 
     def test_value_from_datadict(self):
-        data = {
+        data = MultiValueDict({
             'name_0': 'value1',
             'name_1': '2000',
             'name_2': '1',
             'name_3': 'value2',
             'name_4': '2001'
-        }
+        })
+        value = self.widget.value_from_datadict(data, {}, 'name')
+        self.assertEqual(6, len(value))
+        self.assertEqual(6, len(self.widget.widgets))
+
+    def test_value_from_datadict_with_multiple(self):
+        choices = (
+            ('value1', 'label1'),
+            ('value2', 'label2'),
+        )
+        self.widget.widget = SelectMultiple(choices=choices)
+        data = MultiValueDict({
+            'name_0': 'value1',
+            'name_1': '2000',
+            'name_2': '1',
+            'name_3': 'value2',
+            'name_4': '2001'
+        })
         value = self.widget.value_from_datadict(data, {}, 'name')
         self.assertEqual(6, len(value))
         self.assertEqual(6, len(self.widget.widgets))
@@ -140,11 +160,26 @@ class FileInputWithInitialTestCase(TestCase):
 
     def setUp(self):
         self.widget = FileInputWithInitial()
-        self.file = SimpleUploadedFile("file.pdf", b"", content_type="application/pdf")
+        self.file_name = 'file.pdf'
+        self.file = SimpleUploadedFile(self.file_name, b'', content_type='application/pdf')
 
     def test_render(self):
         output = self.widget.render('name', self.file, attrs={})
-        self.assertIn('href="/media/uploads/file.pdf"', output)
+        self.assertIn('href="/media/uploads/%s"' % self.file_name, output)
+        self.assertIn('<input type="file" name="name-new">', output)
+
+    def test_render_with_long_file_name(self):
+        file_name = "%s.pdf" % get_random_string(length=50)
+        file = SimpleUploadedFile(file_name, b"", content_type="application/pdf")
+        output = self.widget.render('name', file, attrs={})
+        self.assertIn('href="/media/uploads/%s"' % file_name, output)
+        self.assertIn('<input type="file" name="name-new">', output)
+
+    def test_render_with_initial(self):
+        # Fake URL to set initial file
+        self.file.url = '/media/uploads/%s' % self.file_name
+        output = self.widget.render('name', self.file, attrs={})
+        self.assertIn('href="/media/uploads/%s"' % self.file_name, output)
         self.assertIn('<input type="file" name="name-new">', output)
 
     def test_value_from_datadict(self):
@@ -205,6 +240,7 @@ class AreaWidgetTestCase(TestCase):
 
     def setUp(self):
         self.widget = AreaWidget(initially_hidden=True)
+        self.widget.is_localized = True
         self.data = MultiPolygon(OGRGeomType('MultiPolygon'))
         # '{"type":"MultiPolygon","coordinates":[[[[105.4458627008179,-77.06121616327937],[105.42558520066531,-77.15539340276317],[105.94018309342653,-77.15175800165704],[105.94533293473512,-77.03865854985577],[105.4458627008179,-77.06121616327937]]]]}"'
         file_names = ["shapefile.cpg", "shapefile.dbf", "shapefile.prj", "shapefile.qpj", "shapefile.shp", "shapefile.shx"]
@@ -228,6 +264,13 @@ class AreaWidgetTestCase(TestCase):
 
     def test_format_output(self):
         output = self.widget.format_output('name', ['1', '2'])
+        self.assertIn('id="name-container"', output)
+        self.assertIn('1', output)
+        self.assertIn('2', output)
+
+    def test_format_output_without_initially_hidden(self):
+        widget = AreaWidget(initially_hidden=False)
+        output = widget.format_output('name', ['1', '2'])
         self.assertIn('id="name-container"', output)
         self.assertIn('1', output)
         self.assertIn('2', output)

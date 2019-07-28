@@ -6,9 +6,6 @@ from django.utils import timezone
 
 from multiselectfield import MultiSelectField
 
-from landmatrix.models.default_string_representation import \
-    DefaultStringRepresentation
-
 
 class InvestorQuerySet(models.QuerySet):
 
@@ -68,7 +65,7 @@ class InvestorQuerySet(models.QuerySet):
         return self.filter(fk_status_id=InvestorBase.STATUS_REJECTED)
 
 
-class InvestorBase(DefaultStringRepresentation, models.Model):
+class InvestorBase(models.Model):
     # FIXME: Replace fk_status with Choice Field
     STATUS_PENDING = 1
     STATUS_ACTIVE = 2
@@ -117,7 +114,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     ROLE_CHOICES = (
         (ROLE_OPERATING_COMPANY, _('Operating company')),
         (ROLE_PARENT_COMPANY, _('Parent company')),
-        (ROLE_TERTIARY_INVESTOR, _('Tertiary investor/lendor')),
+        (ROLE_TERTIARY_INVESTOR, _('Tertiary investor/lender')),
     )
 
     investor_identifier = models.IntegerField(
@@ -173,7 +170,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             self.investor_identifier = self.__class__.get_next_investor_identifier()
             update_fields.append('investor_identifier')
 
-        if not self.name or self.name == 'Unknown (#{})'.format(self.pk):
+        if not self.name or self.name == 'Unknown (#{})'.format(self.investor_identifier):
             self.name = self._get_default_name()
             update_fields.append('name')
 
@@ -212,9 +209,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         Moved this logic from the view. Not sure though if we should
         determine this using classification in future.
         """
-        return (
-            hasattr(self, 'involvements') and
-            self.involvements.exists())
+        return (hasattr(self, 'involvements') and self.involvements.exists())
 
     @property
     def is_parent_company(self):
@@ -224,20 +219,18 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         """
         if hasattr(self, 'venture_involvements'):
             queryset = self.venture_involvements.all()
-            queryset = queryset.filter(
-                role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+            queryset = queryset.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
             return queryset.exists()
-        else:
+        else:  # pragma: no cover
             return False
 
     @property
     def is_parent_investor(self):
         if hasattr(self, 'venture_involvements'):
             queryset = self.venture_involvements.all()
-            queryset = queryset.filter(
-                role=InvestorVentureInvolvement.INVESTOR_ROLE)
+            queryset = queryset.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
             return queryset.exists()
-        else:
+        else:  # pragma: no cover
             return False
 
     @classmethod
@@ -248,12 +241,6 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     def get_latest_active_investor(cls, investor_identifier):
         return cls.objects.filter(investor_identifier=investor_identifier).\
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
-
-    def reject(self):
-        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:
-            return
-        self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
-        self.save(update_fields=['fk_status'])
 
     def get_top_investors(self):
         """
@@ -266,6 +253,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             parents = []
             for investor in investors:
                 if investor.id in investors_processed:
+                    parents.append(investor)
                     continue
                 else:
                     investors_processed.add(investor.id)
@@ -426,7 +414,8 @@ class HistoricalInvestor(InvestorBase):
     objects = HistoricalInvestorQuerySet.as_manager()
 
     def approve_change(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalInvestor.STATUS_PENDING
+        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:  # pragma: no cover
+            return
 
         # Only approvals of administrators should go public
         if user.has_perm('landmatrix.change_activity'):
@@ -445,14 +434,15 @@ class HistoricalInvestor(InvestorBase):
             self.update_public_investor()
 
     def reject_change(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalInvestor.STATUS_PENDING
+        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:  # pragma: no cover
+            return
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
         #self.update_public_investor() - don't update public investor
 
     def approve_delete(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalInvestor.STATUS_TO_DELETE
-
+        if self.fk_status_id != HistoricalInvestor.STATUS_TO_DELETE:  # pragma: no cover
+            return
         # Only approvals of administrators should be deleted
         if user.has_perm('landmatrix.delete_activity'):
             self.fk_status_id = HistoricalInvestor.STATUS_DELETED
@@ -460,7 +450,8 @@ class HistoricalInvestor(InvestorBase):
             self.update_public_investor()
 
     def reject_delete(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalInvestor.STATUS_TO_DELETE
+        if self.fk_status_id != HistoricalInvestor.STATUS_TO_DELETE:  # pragma: no cover
+            return
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
@@ -475,6 +466,7 @@ class HistoricalInvestor(InvestorBase):
             parents = []
             for investor in investors:
                 if investor.id in investors_processed:
+                    parents.append(investor)
                     continue
                 else:
                     investors_processed.add(investor.id)
@@ -505,7 +497,7 @@ class HistoricalInvestor(InvestorBase):
 
         def update_investor(hinv, approve=True):
             versions = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier)
-            versions = versions.exclude(fk_status_id=hinv.STATUS_PENDING)
+            versions = versions.exclude(fk_status_id__in=(hinv.STATUS_PENDING, hinv.STATUS_TO_DELETE))
             # Only approve if all existing versions are pending
             if approve and versions.count() == 0:
                 # Update status of historical investor
@@ -556,20 +548,21 @@ class HistoricalInvestor(InvestorBase):
                 hinvolvement.fk_status_id = hinv.STATUS_OVERWRITTEN
                 hinvolvement.save()
                 subinvestor = Investor.objects.filter(
-                    investor_identifier=hinvolvement.fk_investor.investor_identifier)[0]
-                # Replace InvestorVentureInvolvement
-                investor.venture_involvements.create(
-                    fk_investor=subinvestor,
-                    role=hinvolvement.role,
-                    investment_type=hinvolvement.investment_type,
-                    percentage=hinvolvement.percentage,
-                    loans_amount=hinvolvement.loans_amount,
-                    loans_currency=hinvolvement.loans_currency,
-                    loans_date=hinvolvement.loans_date,
-                    parent_relation=hinvolvement.parent_relation,
-                    comment=hinvolvement.comment,
-                    fk_status=hinvolvement.fk_status
-                )
+                    investor_identifier=hinvolvement.fk_investor.investor_identifier).first()
+                if subinvestor:
+                    # Replace InvestorVentureInvolvement
+                    investor.venture_involvements.create(
+                        fk_investor=subinvestor,
+                        role=hinvolvement.role,
+                        investment_type=hinvolvement.investment_type,
+                        percentage=hinvolvement.percentage,
+                        loans_amount=hinvolvement.loans_amount,
+                        loans_currency=hinvolvement.loans_currency,
+                        loans_date=hinvolvement.loans_date,
+                        parent_relation=hinvolvement.parent_relation,
+                        comment=hinvolvement.comment,
+                        fk_status=hinvolvement.fk_status
+                    )
                 # Update investor
                 update_investor(hinvolvement.fk_investor, approve=approve)
 
@@ -590,10 +583,10 @@ class HistoricalInvestor(InvestorBase):
             involvement.fk_investor_id = self.id
             involvement.save()
 
-        queryset = InvestorActivityInvolvement.objects.all()
+        queryset = InvestorActivityInvolvement.objects
         queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier)
         queryset = queryset.exclude(fk_investor_id=investor.id)
-        for involvement in queryset:
+        for involvement in queryset:  # pragma: no cover
             involvement.fk_investor_id = investor.id
             involvement.save()
 
@@ -666,7 +659,7 @@ class InvestorVentureInvolvementBase(models.Model):
     INVESTOR_ROLE = 'IN'
     ROLE_CHOICES = (
         (STAKEHOLDER_ROLE, _('Parent company')),
-        (INVESTOR_ROLE, _('Tertiary investor/lendor')),
+        (INVESTOR_ROLE, _('Tertiary investor/lender')),
     )
     EQUITY_INVESTMENT_TYPE = 10
     DEBT_FINANCING_INVESTMENT_TYPE = 20

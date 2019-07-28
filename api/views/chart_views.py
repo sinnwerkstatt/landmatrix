@@ -231,7 +231,7 @@ class InvestmentIntentionListView(BaseChartView):
               choices.intention_other_choices
 
     def get_parent_intention(self, intention):
-        if intention in ('Agriculture', 'Forestry'):
+        if intention in ('Agriculture', 'Forestry'):  # pragma: no cover
             return ''
         elif intention in INTENTION_AGRICULTURE_MAP.keys():
             return _('Agriculture')
@@ -257,7 +257,7 @@ class InvestmentIntentionListView(BaseChartView):
 
     def get_result(self, raw_result, choice_value):
         if raw_result:
-            if raw_result['key'] in ('Agriculture', 'Forestry'):
+            if raw_result['key'] in ('Agriculture', 'Forestry'):  # pragma: no cover
                 return {}
             else:
                 return {
@@ -544,58 +544,6 @@ class TargetCountrySummaryView(BaseChartView):
         }
 
 
-class TargetCountriesForInvestorCountryView(TargetCountrySummaryView):
-    """
-    Get deal aggregations grouped for Target country/region.
-    """
-    schema = ManualSchema(
-        fields=[
-            coreapi.Field(
-                "country_id",
-                required=False,
-                location="data",
-                description="Country ID",
-                schema=coreschema.Integer(),
-            ),
-            coreapi.Field(
-                "region_id",
-                required=False,
-                location="data",
-                description="Region ID",
-                schema=coreschema.Integer(),
-            ),
-        ]
-    )
-
-    def get_query(self):
-        query = super().get_query()
-        investor_country = self.request.GET.get('country_id', '')
-        if investor_country:
-            query['bool']['filter'].append({
-                'has_child': {
-                    'type': 'investment_size',
-                    'query': {
-                        'term': {
-                            'investor_country': investor_country
-                        }
-                    }
-                }
-            })
-        investor_region = self.request.GET.get('region_id', '')
-        if investor_region:
-            query['bool']['filter'].append({
-                'has_child': {
-                    'type': 'investment_size',
-                    'query': {
-                        'term': {
-                            'investor_region': investor_region
-                        }
-                    }
-                }
-            })
-        return query
-
-
 class Top10CountriesView(BaseChartView):
     """
     Get top 10 Investor or Target countries.
@@ -743,8 +691,7 @@ class TransnationalDealListView(BaseChartView):
                 'deal_scope': 'transnational',
             }
         })
-        regions = self.request.GET.getlist("region", [])
-        if regions:
+        if self.regions:
             query['bool']['filter'].append({
                 'terms': {
                     'target_region': self.regions
@@ -754,7 +701,7 @@ class TransnationalDealListView(BaseChartView):
 
     def get_country_name(self, country):
         region_id = str(country.fk_region_id)
-        if region_id in self.request.GET.getlist("region", []):
+        if region_id in self.regions:
             region_id = -1
         country_name = LONG_COUNTRIES.get(country.name, country.name)
         forbidden_chars = [',', '.']
@@ -766,6 +713,7 @@ class TransnationalDealListView(BaseChartView):
         )
 
     def get(self, request):
+        self.regions = self.request.GET.getlist("region", [])
         response = self.execute_elasticsearch_query(self.get_query(),
                                                     aggs=self.get_aggregations(),
                                                     doc_type='deal',
@@ -1006,19 +954,10 @@ class AgriculturalProduceListView(BaseChartView):
         }
 
     def slugify(self, ap):
-        if ap:
-            ap = ap.lower().replace('-', '_').replace(' ', '_')
-            if ap == 'multi_crop':
-                return 'multiple_use'
-            else:
-                return ap
-        else:
-            return None
+        return ap.lower().replace('-', '_').replace(' ', '_') if ap else None
 
     def get(self, request):
-
         # TODO: Availability
-
         response = self.execute_elasticsearch_query(self.get_query(),
                                                     aggs=self.get_aggregations(),
                                                     doc_type='deal',
@@ -1057,7 +996,7 @@ class AgriculturalProduceListView(BaseChartView):
                 ap_slug = self.slugify(ap['key'])
                 if ap_slug:
                     available_sum += float(ap['deal_size_sum']['value'])
-                else:
+                else:  # pragma: no cover
                     not_available_sum = float(ap['deal_size_sum']['value'])
 
             # Then set data and ratios

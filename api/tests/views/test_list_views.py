@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -11,11 +10,15 @@ from django.urls import reverse
 from api.elasticsearch import es_save
 from api.filters import Filter, PresetFilter
 from api.views import ElasticSearchMixin
+from grid.tests.views.base import PermissionsTestCaseMixin
 from landmatrix.models.activity import ActivityBase
 from landmatrix.models.investor import InvestorBase
 
 
-class ElasticSearchMixinTestCase(TestCase):
+class ElasticSearchMixinTestCase(PermissionsTestCaseMixin,
+                                 TestCase):
+
+    fixtures = []
 
     @classmethod
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
@@ -44,6 +47,7 @@ class ElasticSearchMixinTestCase(TestCase):
         es_save.refresh_index()
 
     def setUp(self):
+        super().setUp()
         self.mixin = ElasticSearchMixin()
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
@@ -71,7 +75,7 @@ class ElasticSearchMixinTestCase(TestCase):
         self.assertEqual({}, filters)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
-    def test_load_filters_with_session_filter(self):
+    def test_load_filters_with_session_filters(self):
         custom_filter = {'name': 'custom_filter',
                          'variable': 'activity_identifier',
                          'operator': 'is',
@@ -79,8 +83,16 @@ class ElasticSearchMixinTestCase(TestCase):
                          'label': 'Deal ID',
                          'key': None,
                          'display_value': '1'}
+        excluded_filter = {'name': 'excluded_filter',
+                           'variable': 'intention',
+                           'operator': 'is',
+                           'value': 'Mining',
+                           'label': 'Intention is Mining',
+                           'key': None,
+                           'display_value': 'Mining'}
         session = self.client.session
-        session['deal:filters'] = {'custom_filter': custom_filter}
+        session['deal:filters'] = {'custom_filter': custom_filter,
+                                   'excluded_filter': excluded_filter}
         session.save()
 
         request = RequestFactory()
@@ -88,7 +100,7 @@ class ElasticSearchMixinTestCase(TestCase):
         request.session = session
         self.mixin.request = request
 
-        formatted_filters = self.mixin.load_filters()
+        formatted_filters = self.mixin.load_filters(exclude=['intention'])
         self.assertEqual([{'match_phrase': {'activity_identifier': '1'}}], formatted_filters.get('must'))
         self.assertEqual([], formatted_filters.get('filter'))
         self.assertEqual([], formatted_filters.get('must_not'))
@@ -110,7 +122,8 @@ class ElasticSearchMixinTestCase(TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        self.assertEqual([{'match_phrase': {'operating_company_id': '70'}}], formatted_filters.get('must'))
+        expected = [{'match_phrase': {'operating_company_id': '70'}}]
+        self.assertEqual(expected, formatted_filters.get('must'))
         self.assertEqual([], formatted_filters.get('filter'))
         self.assertEqual([], formatted_filters.get('must_not'))
         self.assertEqual([], formatted_filters.get('should'))
@@ -131,7 +144,8 @@ class ElasticSearchMixinTestCase(TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        self.assertEqual([{'match_phrase': {'operating_company_id': '70'}}], formatted_filters.get('must'))
+        expected = [{'match_phrase': {'operating_company_id': '70'}}]
+        self.assertEqual(expected, formatted_filters.get('must'))
         self.assertEqual([], formatted_filters.get('filter'))
         self.assertEqual([], formatted_filters.get('must_not'))
         self.assertEqual([], formatted_filters.get('should'))
@@ -193,9 +207,7 @@ class ElasticSearchMixinTestCase(TestCase):
                 }
             ],
             'filter': [],
-            'must_not': [
-                {'match': {'intention': 'Mining'}}
-            ],
+            'must_not': [{'match': {'intention': 'Mining'}}],
             'should': []
         }
         self.assertEqual(expected, query)
@@ -245,18 +257,24 @@ class ElasticSearchMixinTestCase(TestCase):
         self.assertEqual(expected, elasticsearch_query.get('filter')[0])
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
-    def test_add_status_logic(self):
+    def test_add_request_filters_to_elasticsearch_query_without_request(self):
+        query = {'must': [], 'filter': [], 'must_not': [], 'should': []}
+        elasticsearch_query = self.mixin.add_request_filters_to_elasticsearch_query(query)
+        self.assertEqual({'terms': {'status': (2, 3)}}, elasticsearch_query.get('filter')[0])
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_add_status_logic_with_administrator(self):
         request = RequestFactory()
-        request.GET = QueryDict('status=1')
+        request.GET = QueryDict('status=1&status=2&status=3')
         request.user = get_user_model().objects.get(username='administrator')
         self.mixin.request = request
         query = {'must': [], 'filter': [], 'must_not': [], 'should': []}
         status_query = self.mixin.add_status_logic(query)
-        expected = [{'terms': {'status': (2, 3)}}]
+        expected = [{'terms': {'status': [1, 2, 3]}}]
         self.assertEqual(expected, status_query.get('filter'))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
-    def test_add_public_logic(self):
+    def test_add_public_logic_with_anonymous(self):
         request = RequestFactory()
         request.user = AnonymousUser()
         self.mixin.request = request
@@ -404,10 +422,61 @@ class ListViewsTestCase(TestCase):
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_statistics_view_with_country(self):
+        data = QueryDict('country=104')
+        response = self.client.get(reverse('statistics_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [['Contract signed', 3, 3000]]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_statistics_view_with_region(self):
+        data = QueryDict('region=142')
+        response = self.client.get(reverse('statistics_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [['Contract signed', 3, 3000]]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_statistics_view_with_disable_filters(self):
+        data = QueryDict('disable_filters=1')
+        response = self.client.get(reverse('statistics_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [['Contract signed', 3, 3000]]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_latest_changes_view(self):
         response = self.client.get(reverse('latest_changes_api'))
         self.assertEqual(200, response.status_code)
         expected = [
+            {'action': 'add', 'deal_id': 11, 'change_date': '2000-01-01T01:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'add', 'deal_id': 1, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'change', 'deal_id': 3, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'change', 'deal_id': 2, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'}
+        ]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_latest_changes_view_with_country(self):
+        data = QueryDict('target_country=104')
+        response = self.client.get(reverse('latest_changes_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [
+            {'action': 'add', 'deal_id': 11, 'change_date': '2000-01-01T01:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'add', 'deal_id': 1, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'change', 'deal_id': 3, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
+            {'action': 'change', 'deal_id': 2, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'}
+        ]
+        self.assertEqual(expected, response.data)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_latest_changes_view_with_region(self):
+        data = QueryDict('target_region=142')
+        response = self.client.get(reverse('latest_changes_api'), data)
+        self.assertEqual(200, response.status_code)
+        expected = [
+            {'action': 'add', 'deal_id': 11, 'change_date': '2000-01-01T01:00:00+00:00', 'target_country': 'Myanmar'},
             {'action': 'add', 'deal_id': 1, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
             {'action': 'change', 'deal_id': 3, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'},
             {'action': 'change', 'deal_id': 2, 'change_date': '2000-01-01T00:00:00+00:00', 'target_country': 'Myanmar'}
@@ -420,9 +489,10 @@ class ListViewsTestCase(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('FeatureCollection', response.data.get('type'))
         features = [
-            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 1, "implementation": ["In operation (production)"], "intended_size": None, "intention": ["Mining"], "investor": None, "level_of_accuracy": "Country", "production_size": None, "url": "/deal/1/"}, "type": "Feature"},
-            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 3, "implementation": "Unknown", "intended_size": None, "intention": [], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/3/"}, "type": "Feature"},
-            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 2, "implementation": ["Startup phase (no production)"], "intended_size": None, "intention": ["Mining"], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/2/"}, "type": "Feature"}
+            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": None, "identifier": 11, "implementation": "Unknown", "intended_size": None, "intention": ["Mining"], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/11/"}, "type": "Feature"},
+            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 1, "implementation": ["In operation (production)"], "intended_size": None, "intention": ["Mining", "Agriculture", "Forestry"], "investor": None, "level_of_accuracy": "Country", "production_size": None, "url": "/deal/1/"}, "type": "Feature"},
+            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 3, "implementation": "Unknown", "intended_size": None, "intention": ['Agriculture'], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/3/"}, "type": "Feature"},
+            {"geometry": {"coordinates": [0.0, 0.0], "type": "Point"}, "properties": {"contract_size": "1000", "identifier": 2, "implementation": ["Startup phase (no production)"], "intended_size": "1000", "intention": ["Forestry"], "investor": None, "level_of_accuracy": "Unknown", "production_size": None, "url": "/deal/2/"}, "type": "Feature"}
         ]
         for i, feature in enumerate(response.data.get('features')):
             self.assertEqual('Feature', feature.get('type'))
@@ -439,24 +509,25 @@ class ListViewsTestCase(TestCase):
             'id': 'MMR',
             'properties': {
                 'name': 'Myanmar',
-                'deals': 3,
+                'deals': 4,
                 'url': '/country/myanmar/',
                 'centre_coordinates': [
                     Decimal('95.956223000000'),
                     Decimal('21.913965000000')
                 ],
                 'intention': {
-                    'Unknown': 1,
-                    'Mining': 2
+                    'Mining': 2,
+                    'Agriculture': 2,
+                    'Forestry': 2
                 },
                 'implementation': {
                     'In operation (production)': 1,
-                    'Unknown': 1,
+                    'Unknown': 2,
                     'Startup phase (no production)': 1
                 },
                 'level_of_accuracy': {
                     'Country': 1,
-                    'Unknown': 2
+                    'Unknown': 3
                 }
             }
         }
@@ -490,6 +561,11 @@ class ListViewsTestCase(TestCase):
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_country_geom_view_with_invalid_country(self):
+        response = self.client.get(reverse('countries_geom_api'), data={'country_id': 9999})
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_polygon_geom_view(self):
         response = self.client.get(reverse('polygon_geom_api', kwargs={'polygon_field': 'contract_area'}))
         self.assertEqual(200, response.status_code)
@@ -514,3 +590,8 @@ class ListViewsTestCase(TestCase):
         ]
         self.assertEqual('MultiPolygon', response.data.get('features')[0].get('type'))
         self.assertEqual(coordinates, response.data.get('features')[0].get('coordinates'))
+
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
+    def test_polygon_geom_view_with_invalid_field(self):
+        response = self.client.get(reverse('polygon_geom_api', kwargs={'polygon_field': 'invalid_area'}))
+        self.assertEqual(404, response.status_code)

@@ -264,7 +264,7 @@ class FileInputWithInitial(ResubmitFileWidget):
     new_upload_template = "{}-new"
 
     def render(self, name, value, attrs=None, renderer=None, **kwargs):
-        if attrs is None:
+        if attrs is None:  # pragma: no cover
             attrs = {}
 
         output = ""
@@ -419,7 +419,7 @@ class AreaWidget(forms.MultiWidget):
         for i, widget in enumerate(self.widgets):
             try:
                 widget_value = value[i]
-            except IndexError:
+            except IndexError:  # pragma: no cover
                 widget_value = None
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))

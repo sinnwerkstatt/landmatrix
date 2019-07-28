@@ -34,7 +34,7 @@ class FilteredQuerySetMixin:
             try:
                 country_ids = filter(
                     None, [str(country_id) for country_id in country_ids])
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 country_ids = []
         elif user_regional_info:
             country_ids = [str(id) for id in user_regional_info.country.values_list('id', flat=True)]
@@ -46,7 +46,7 @@ class FilteredQuerySetMixin:
             try:
                 region_ids = filter(
                     None, [str(region_id) for region_id in region_ids])
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 region_ids = []
         elif user_regional_info:
             region_ids = [str(id) for id in user_regional_info.region.values_list('id', flat=True)]
@@ -453,7 +453,7 @@ class BaseManageDealView(FormView, DetailView):
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        if not hasattr(self, 'object'):
+        if not hasattr(self, 'object'):  # pragma: no cover
             self.object = self.get_object()
 
         context = super().get_context_data(**kwargs)

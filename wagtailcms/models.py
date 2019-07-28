@@ -231,7 +231,7 @@ class GalleryBlock(StructBlock):
         images = []
         if images_data:
             for image in images_data:
-                if not image.get('image'):
+                if not image.get('image'):  # pragma: no cover
                     continue
                 rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
@@ -436,8 +436,6 @@ class RegionBlock(StructBlock):
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         if context.get('country'):
             context['region'] = context['country'].fk_region
-        else:
-            context['region'] = None
         return context
 
 
@@ -453,8 +451,6 @@ class CountriesBlock(StructBlock):
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         if context.get('region'):
             context['countries'] = DataCountry.objects.filter(fk_region=context.get('region'))
-        else:
-            context['countries'] = DataCountry.objects.all()
         return context
 
 DATA_BLOCKS = [

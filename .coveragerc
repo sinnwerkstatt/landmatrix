@@ -3,6 +3,7 @@ omit =
     integration/*
     */tests/*
     */migrations/*
+    */management/commands/*
     */urls.py
     */settings/*
     */default_settings.py
@@ -32,6 +33,7 @@ omit =
     integration/*
     */tests/*
     */migrations/*
+    */management/commands/*
     */urls.py
     */settings/*
     */default_settings.py

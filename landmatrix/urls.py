@@ -45,9 +45,8 @@ CACHE_TIMEOUT = 24*3600
 
 urlpatterns = [
     #url(r'^accounts/register/$', RegistrationView.as_view(), name='registration_register'),
-    url(r'^accounts/register/$', RegistrationView.as_view(
-        form_class=CustomRegistrationForm
-    ), name='registration_register'),
+    url(r'^accounts/register/$', RegistrationView.as_view(form_class=CustomRegistrationForm),
+        name='registration_register'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^accounts/', include('django_registration.backends.activation.urls')),
     url(r'^admin/', admin.site.urls),
@@ -62,9 +61,6 @@ urlpatterns = [
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
-
-
-    #url(r'^global/', GlobalView.as_view(), name='global'),
 
     url(r'^data/', include(grid_urls)),
     url(r'^map/', include(map_urls)),
@@ -105,7 +101,7 @@ urlpatterns = [
     url(r'^investor/recover/(?P<investor_id>\d+)/$', RecoverInvestorView.as_view(), name='investor_recover'),
     url(r'^investor/edit/(?P<investor_id>\d+)/$', InvestorUpdateView.as_view(), name='investor_update'),
     url(r'^investor/edit/(?P<investor_id>\d*)/(?P<history_id>\d+)/$', InvestorUpdateView.as_view(), name='investor_update'),
-    url(r'^investors/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
+    url(r'^investors/compare/(?P<investor_1>\d+)/(?P<investor_2>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
     url(r'^investors/compare/(?P<investor_1>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
     url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<doc_type>deal|investor)/', FilterWidgetAjaxView.as_view(),name='ajax_widget'),

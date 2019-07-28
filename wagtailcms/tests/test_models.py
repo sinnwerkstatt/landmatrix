@@ -228,21 +228,28 @@ class LatestNewsBlockTestCase(TestCase):
         'countries_and_regions'
     ]
 
+    def setUp(self):
+        self.block = LatestNewsBlock()
+        self.request = RequestFactory()
+        self.page = BlogPage.objects.create(title='Blog Page', path='/', depth=0, live=True)
+
     def test_get_context_with_country(self):
-        block = LatestNewsBlock()
-        request = RequestFactory()
-        page = BlogPage.objects.create(title='Blog Page', path='/', depth=0, live=True)
-        page.tags.add('myanmar')
-        page.save()
-        request.resolver_match = AttrDict(kwargs={'country_slug': 'myanmar'})
-        context = block.get_context({
-            'limit': '3',
-        }, {
-            'request': request
-        })
+        self.page.tags.add('myanmar')
+        self.page.save()
+        self.request.resolver_match = AttrDict(kwargs={'country_slug': 'myanmar'})
+        context = self.block.get_context({'limit': '3'}, {'request': self.request})
         self.assertEqual(104, context.get('country').id)
         self.assertEqual('Myanmar', context.get('name'))
-        self.assertEqual(1, len(context.get('news')))
+        self.assertGreater(len(context.get('news')), 0)
+
+    def test_get_context_with_region(self):
+        self.page.tags.add('asia')
+        self.page.save()
+        self.request.resolver_match = AttrDict(kwargs={'region_slug': 'asia'})
+        context = self.block.get_context({'limit': '3'}, {'request': self.request})
+        self.assertEqual(142, context.get('region').id)
+        self.assertEqual('Asia', context.get('name'))
+        self.assertGreater(len(context.get('news')), 0)
 
 
 class StatisticsBlockTestCase(TestCase):
@@ -462,11 +469,17 @@ class WagtailCMSModelsTestCase(TestCase):
         result = get_country_or_region(request)
         self.assertEqual(142, result.get('region').id)
 
-    def test_get_country_or_region_link(self):
+    def test_get_country_or_region_link_with_country(self):
         request = RequestFactory()
         request.resolver_match = AttrDict(kwargs={'country_slug': 'myanmar'})
         link = get_country_or_region_link('url', request=request)
         self.assertEqual('url?country=104', link)
+
+    def test_get_country_or_region_link_with_region(self):
+        request = RequestFactory()
+        request.resolver_match = AttrDict(kwargs={'region_slug': 'asia'})
+        link = get_country_or_region_link('url', request=request)
+        self.assertEqual('url?region=142', link)
 
     def test_editor_js(self):
         self.assertGreater(len(editor_js()), 0)

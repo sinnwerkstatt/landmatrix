@@ -26,18 +26,6 @@ class FiltersTestCase(TestCase):
             self.assertIn(match_op[0], ('must', 'must_not', 'should'))
             self.assertIsInstance(match_op[1], dict)
 
-    def test_format_filters_elasticsearch(self):
-        filters = (
-            (PresetFilter(1), {'must_not': [{'match': {'intention': 'Mining'}}]}),
-            (Filter('key', 'is', 'value', name='key', label='Key',
-                    key='key', display_value='key is value'),
-             {'must': [{'match_phrase': {'key': 'value'}}]})
-        )
-        for filter_list in filters:
-            formatted_filters = format_filters_elasticsearch((filter_list[0],))
-            for key, value in formatted_filters.items():
-                self.assertEqual(formatted_filters.get(key), value)
-
     def test_load_statuses_from_url(self):
         status_tests = (
             (
@@ -56,8 +44,15 @@ class FiltersTestCase(TestCase):
             request.user = status_test[0]
             request.GET = QueryDict('status=1&status=2&status=3&status=4&status=5&status=6')
             statuses = load_statuses_from_url(request)
-            self.assertEqual(set(statuses), set(status_test[1]),
+            self.assertEqual(set(status_test[1]), set(statuses),
                              msg=f"Wrong statuses for user {status_test[0]}")
+
+    def test_load_statuses_without_get_param(self):
+        request = RequestFactory()
+        request.user = User.objects.get(username='reporter'),
+        request.GET = QueryDict('')
+        statuses = load_statuses_from_url(request)
+        self.assertEqual({2, 3}, set(statuses))
 
     def test_clean_filter_query_string(self):
         request = RequestFactory()
@@ -106,15 +101,11 @@ class BaseFilterTestCase(TestCase):
         self.assertEqual(base_filter.type, BaseFilter.INVESTOR_TYPE)
 
     def test_type_with_parent_stakeholder_name(self):
-        base_filter = BaseFilter(variable='operating_company_name', name='test')
+        base_filter = BaseFilter(variable='parent_stakeholder_name', name='test')
         self.assertEqual(base_filter.type, BaseFilter.INVESTOR_TYPE)
 
     def test_type_with_parent_investor_name(self):
-        base_filter = BaseFilter(variable='operating_company_name', name='test')
-        self.assertEqual(base_filter.type, BaseFilter.INVESTOR_TYPE)
-
-    def test_type_with_investor(self):
-        base_filter = BaseFilter(variable='operating_company_name', name='test')
+        base_filter = BaseFilter(variable='parent_investor_name', name='test')
         self.assertEqual(base_filter.type, BaseFilter.INVESTOR_TYPE)
 
     def test_type_with_activity(self):

@@ -5,7 +5,7 @@ from django_registration.signals import user_registered
 from editor.models import UserRegionalInfo
 
 
-def create_userregionalinfo(sender, user, request, **kwarg):
+def create_userregionalinfo(sender, user, request, **kwargs):
     group, created = Group.objects.get_or_create(name='Reporters')
     user.groups.add(group)
     UserRegionalInfo.objects.create(
@@ -13,5 +13,7 @@ def create_userregionalinfo(sender, user, request, **kwarg):
         phone=request.POST.get('phone', ''),
         information=request.POST.get('information', ''),
     )
+
+
 user_registered.connect(create_userregionalinfo)
 

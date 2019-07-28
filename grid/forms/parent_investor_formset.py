@@ -77,8 +77,7 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
         valid_choice = self.data.get('%s-fk_investor' % self.prefix,
                                      self.initial.get('fk_investor', None))
         if valid_choice:
-            field = self.fields['fk_investor']
-            field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
+            field = self.fields['fk_investor'];field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
 
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:

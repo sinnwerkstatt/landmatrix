@@ -26,8 +26,7 @@ class FilterPreset(models.Model):
 
     name = models.CharField(_("Name"), max_length=255)
     group = models.ForeignKey(FilterPresetGroup, related_name='filter_presets', null=True, on_delete=models.SET_NULL)
-    relation = models.CharField(max_length=3, choices=RELATION_CHOICES,
-                                default=RELATION_AND)
+    relation = models.CharField(max_length=3, choices=RELATION_CHOICES, default=RELATION_AND)
     is_default_country = models.BooleanField(_("Country"), default=False)
     is_default_global = models.BooleanField(_("Global/Region"), default=False)
     is_hidden = models.BooleanField(_("Is hidden"), default=False)

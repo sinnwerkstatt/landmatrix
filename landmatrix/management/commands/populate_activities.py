@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-import os
-import sys
 from django.core.management import BaseCommand
 
 from landmatrix.models.activity import Activity

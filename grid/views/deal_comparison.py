@@ -60,7 +60,7 @@ def is_equal(form_1, form_2):
         for i, subform_1 in enumerate(form_1.forms):
             subform_2 = form_2.forms[i]
             for j, field in enumerate(list(subform_1)):
-                if field.name in ignore_fields:
+                if field.name in ignore_fields:  # pragma: no cover
                     continue
                 if str(field) != str(list(subform_2)[j]):
                     return False

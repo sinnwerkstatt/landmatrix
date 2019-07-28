@@ -3,8 +3,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from editor.models import UserRegionalInfo
-from landmatrix.models.country import Country
-from landmatrix.models.region import Region
 from .models import NotificationEmail
 
 
@@ -15,7 +13,7 @@ comment_notification_subject = _("Land Matrix: New comment")
 def get_recipients_for_comment_on_activity(comment, activity):
     # Add users assigned to target country or region
     recipients = UserRegionalInfo.objects.filter(Q(country=activity.target_country) | \
-        Q(region=activity.target_country.fk_region))
+                                                 Q(region=activity.target_country.fk_region))
     recipients = [u.user.email for u in recipients]
     # Add author of original comment (if reply)
     if comment.parent:
@@ -34,6 +32,6 @@ def send_notifications_for_comment_on_activity(comment, request, activity):
     recipients = get_recipients_for_comment_on_activity(comment, activity)
     for recipient in recipients:
         NotificationEmail.objects.send(template_name='comment_posted',
-            context=context,
-            subject=comment_notification_subject,
-            to=recipient)
+                                       context=context,
+                                       subject=comment_notification_subject,
+                                       to=recipient)

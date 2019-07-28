@@ -44,6 +44,13 @@ class FilterWidgetAjaxViewTestCase(TestCase):
         widget = '<input class="form-control" id="id_value" name="value" type="text" value="2000-01-01"/>'
         self.assertIn(widget, result.get('widget'))
 
+    def test_without_boolean_field(self):
+        result = self.get_result_dict('key_id=file_not_public&name=value&operation=is&value=')
+        self.assertEqual(['is', 'is_empty'], result.get('allowed_operations'))
+        widget = '<select name="value" id="id_value" class="valuefield form-control">\n  ' \
+                 '<option value="True" selected>Yes</option>\n\n  <option value="False">No</option>\n\n</select>'
+        self.assertEqual(widget, result.get('widget'))
+
     def test_without_field(self):
         result = self.get_result_dict('key_id=&name=value&operation=is&value=1')
         self.assertEqual(['contains', 'is', 'is_empty'], result.get('allowed_operations'))
@@ -77,13 +84,26 @@ class FilterWidgetMixinTestCase(TestCase):
         expected = {'variables', 'presets', 'set_default_filters', 'status'}
         self.assertEqual(expected, set(context.keys()))
 
-    def test_set_country_region_filter_with_country(self):
+    def test_set_country_region_filter_with_deal_and_country(self):
+        # Test with filter already set
+        self.mixin.request.session['deal:filters'] = {
+            'country': {
+                'name': 'country',
+                'variable': 'country',
+                'operator': 'is',
+                'value': '104',
+                'label': 'Country',
+                'key': None,
+                'display_value': 'Myanmar'
+            }
+        }
         self.mixin.set_country_region_filter({'country': 104})
         expected = {
             'country': {
                 'name': 'country',
                 'variable': 'target_country',
-                'operator': 'is', 'value': 104,
+                'operator': 'is',
+                'value': 104,
                 'label': 'Target country',
                 'key': None,
                 'display_value': 'Myanmar'
@@ -91,7 +111,7 @@ class FilterWidgetMixinTestCase(TestCase):
         }
         self.assertEqual(expected, self.mixin.request.session.get('deal:filters'))
 
-    def test_set_country_region_filter_with_region(self):
+    def test_set_country_region_filter_with_deal_and_region(self):
         self.mixin.set_country_region_filter({'region': 142})
         expected = {
             'region': {
@@ -104,6 +124,49 @@ class FilterWidgetMixinTestCase(TestCase):
             }
         }
         self.assertEqual(expected, self.mixin.request.session.get('deal:filters'))
+
+    def test_set_country_region_filter_with_investor_and_country(self):
+        self.mixin.doc_type = 'investor'
+        # Test with filter already set
+        self.mixin.request.session['investor:filters'] = {
+            'country': {
+                'name': 'country',
+                'variable': 'fk_country',
+                'operator': 'is',
+                'value': '104',
+                'label': 'Country of registration/origin',
+                'key': None,
+                'display_value': 'Myanmar'
+            }
+        }
+        self.mixin.set_country_region_filter({'country': 104})
+        expected = {
+            'country': {
+                'name': 'country',
+                'variable': 'fk_country',
+                'operator': 'is',
+                'value': 104,
+                'label': 'Country of registration/origin',
+                'key': None,
+                'display_value': 'Myanmar'
+            }
+        }
+        self.assertEqual(expected, self.mixin.request.session.get('investor:filters'))
+
+    def test_set_country_region_filter_with_investor_and_region(self):
+        self.mixin.doc_type = 'investor'
+        self.mixin.set_country_region_filter({'region': 142})
+        expected = {
+            'region': {
+                'name': 'region',
+                'variable': 'region',
+                'operator': 'is', 'value': 142,
+                'label': 'Region of registration/origin',
+                'key': None,
+                'display_value': 'Asia'
+            }
+        }
+        self.assertEqual(expected, self.mixin.request.session.get('investor:filters'))
 
     def test_remove_country_region_filter(self):
         self.mixin.request.session['deal:filters'] = {
@@ -138,11 +201,48 @@ class FilterWidgetMixinTestCase(TestCase):
         self.mixin.remove_country_region_filter()
         self.assertEqual({'custom_filter'}, set(self.mixin.request.session.get('deal:filters').keys()))
 
-    def test_set_default_filters(self):
+    def test_set_default_filters_global(self):
         self.mixin.request.session['deal:set_default_filters'] = True
-        self.mixin.set_default_filters({})
-        expected = {'default_preset_1', 'default_preset_2', 'default_preset_10', 'default_preset_11',
+        # Test with some presets already set
+        self.mixin.request.session['deal:filters'] = {
+            'default_preset_1': {
+                'name': 'default_preset_1',
+                'preset_id': 1,
+                'label': 'Exclude Mining',
+                'hidden': False,
+            },
+        }
+        # Test with conflicting presets, enable one of the default filters
+        self.mixin.set_default_filters({}, disabled_presets=[10, 4], enabled_presets=[1, 3, 4])
+        expected = {'default_preset_1', 'default_preset_2', 'default_preset_3', 'default_preset_11',
                     'default_preset_12', 'default_preset_15', 'default_preset_16', 'default_preset_19'}
+        self.assertEqual(expected, set(self.mixin.request.session.get('deal:filters').keys()))
+
+    def test_set_default_filters_country(self):
+        self.mixin.request.session['deal:set_default_filters'] = True
+        # Test with some presets already set
+        self.mixin.request.session['deal:filters'] = {
+            'default_preset_1': {
+                'name': 'default_preset_1',
+                'preset_id': 1,
+                'label': 'Exclude Mining',
+                'hidden': False,
+            },
+            'country': {
+                'name': 'country',
+                'variable': 'country',
+                'operator': 'is',
+                'value': '104',
+                'label': 'Country',
+                'key': None,
+                'display_value': 'Myanmar'
+            },
+        }
+        self.mixin.disabled_presets = [10]
+        # Enable one of the default filters
+        self.mixin.enabled_presets = [2, 3]
+        self.mixin.set_default_filters({})
+        expected = {'country', 'default_preset_2', 'default_preset_3'}
         self.assertEqual(expected, set(self.mixin.request.session.get('deal:filters').keys()))
 
     def test_remove_default_filters(self):

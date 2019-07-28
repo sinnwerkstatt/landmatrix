@@ -1,28 +1,49 @@
 from django.test import TestCase
 
-
-class ThreadedCommentFormTestCase(TestCase):
-
-    def setUp(self):
-        pass
-
-    def test(self):
-        pass
+from landmatrix.models import Activity
+from public_comments.forms import PublicCommentForm, EditCommentForm
 
 
 class PublicCommentFormTestCase(TestCase):
 
-    def setUp(self):
-        pass
+    fixtures = [
+        'countries_and_regions',
+        'users_and_groups',
+        'status',
+        'activities',
+    ]
 
-    def test(self):
-        pass
+    def setUp(self):
+        self.activity = Activity.objects.get(id=10)
+        self.form = PublicCommentForm(self.activity)
+
+    def test_init(self):
+        self.assertNotIn('honeypot', self.form.fields.keys())
+
+    def test_security_errors(self):
+        self.form._errors = {
+            'spam_protection': 'spam_protection error',
+            'timestamp': 'timestamp error',
+            'security_hash': 'security_hash error',
+            'comment': 'comment error'
+        }
+        self.assertNotIn('other', self.form.security_errors().keys())
 
 
 class EditCommentFormTestCase(TestCase):
 
-    def setUp(self):
-        pass
+    fixtures = [
+        'countries_and_regions',
+        'users_and_groups',
+        'status',
+        'activities',
+    ]
 
-    def test(self):
-        pass
+    def setUp(self):
+        self.activity = Activity.objects.get(id=10)
+        self.form = EditCommentForm(self.activity)
+
+    def test_init(self):
+        self.assertEqual(True, self.form.fields['user_name'].widget.attrs['readonly'])
+        self.assertEqual(True, self.form.fields['user_email'].widget.attrs['readonly'])
+        self.assertEqual(True, self.form.fields['ip_address'].widget.attrs['readonly'])

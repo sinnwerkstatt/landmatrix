@@ -110,7 +110,7 @@ class InvestorListView(TableGroupView):
         if value:
             value['display'] = dict(InvestorBase.ROLE_CHOICES).get(value['value'])
             return value
-        else:
+        else:  # pragma: no cover
             return value
 
     def get_field_label(self, column):
@@ -174,18 +174,16 @@ class InvestorFormsMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if 'form' not in context:
+        if 'form' not in context:  # pragma: no cover
             context['form'] = self.get_form(form_class=self.get_form_class())
 
         if 'parent_companies' not in context:
             stakeholders_kwargs = self.get_stakeholders_formset_kwargs()
-            context['parent_companies'] = ParentCompanyFormSet(
-                **stakeholders_kwargs)
+            context['parent_companies'] = ParentCompanyFormSet(**stakeholders_kwargs)
 
         if 'parent_investors' not in context:
             investors_kwargs = self.get_investors_formset_kwargs()
-            context['parent_investors'] = ParentInvestorFormSet(
-                **investors_kwargs)
+            context['parent_investors'] = ParentInvestorFormSet(**investors_kwargs)
 
         role = self.request.GET.get('role', None)
         if not role:
@@ -205,9 +203,11 @@ class InvestorFormsMixin:
 
     def form_invalid(self, investor_form, stakeholders_formset,
                      investors_formset):
-        context = self.get_context_data(
-            form=investor_form, parent_companies=stakeholders_formset,
-            parent_investors=investors_formset)
+        messages.error(self.request, _('Please correct the error below.'))
+
+        context = self.get_context_data(form=investor_form,
+                                        parent_companies=stakeholders_formset,
+                                        parent_investors=investors_formset)
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -215,7 +215,6 @@ class InvestorFormsMixin:
         Override standard post behaviour to check all three forms.
         """
         self.object = self.get_object()
-
         stakeholders_formset_kwargs = self.get_stakeholders_formset_kwargs()
         investors_formset_kwargs = self.get_investors_formset_kwargs()
 
@@ -350,8 +349,15 @@ class InvestorUpdateView(InvestorFormsMixin,
     success_message_admin = _('Your changes to the investor have been saved successfully.')
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        investor = self.get_object()
+        if not investor.is_editable(request.user):
+            # Redirect to investor detail
+            args = {'investor_id': investor.investor_identifier}
+            if 'history_id' in kwargs:
+                args['history_id'] = kwargs['history_id']
+            return HttpResponseRedirect(reverse('investor_detail', kwargs=args))
+        return super(InvestorUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self):
         # TODO: Cache result for user
@@ -378,8 +384,8 @@ class InvestorUpdateView(InvestorFormsMixin,
         is_editor = self.request.user.has_perm('landmatrix.review_investor')
 
         if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
-            # Only editors and administrators are allowed to edit pending versions
-            if not is_editor and not is_admin:
+            # Only editors and administrators are allowed to edit pending versions - already handled by get_object()
+            if not is_editor and not is_admin:  # pragma: no cover
                 return HttpResponseForbidden('Investor version is pending')
 
         # Don't create new version if rejected
@@ -419,7 +425,7 @@ class InvestorUpdateView(InvestorFormsMixin,
 
 
 class DeleteInvestorView(InvestorUpdateView):
-    
+
     success_message = _('The investor #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The investor #{} has been deleted successfully.')
 
@@ -431,7 +437,7 @@ class DeleteInvestorView(InvestorUpdateView):
         if not self.request.user.has_perm('landmatrix.review_investor'):
             queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 investor = queryset.get(id=history_id)
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()
@@ -441,6 +447,10 @@ class DeleteInvestorView(InvestorUpdateView):
             if investor.fk_status_id == investor.STATUS_DELETED:
                 raise Http404('Investor %s has already been deleted' % investor_id)
         return investor
+
+    def get(self, request, *args, **kwargs):
+        hinvestor = self.get_object()
+        return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
@@ -494,10 +504,8 @@ class RecoverInvestorView(InvestorUpdateView):
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.has_perm('landmatrix.review_investor'):
-            queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 investor = queryset.get(id=history_id)
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()

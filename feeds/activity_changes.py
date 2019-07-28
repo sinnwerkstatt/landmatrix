@@ -8,8 +8,7 @@ class ActivityChangesList:
 
     def __init__(self, activity_identifier, max_items=100):
         self.activity_identifier = activity_identifier
-        queryset = HistoricalActivity.objects.filter(
-            activity_identifier=self.activity_identifier)
+        queryset = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
         queryset = queryset.order_by('-history_date')[:max_items]
         self.history = list(queryset)
 
@@ -34,8 +33,7 @@ class ActivityChangesList:
         if not self.later_activity:
             changes = []
         else:
-            changes = self.later_activity.compare_attributes_to(
-                self.earlier_activity)
+            changes = self.later_activity.compare_attributes_to(self.earlier_activity)
 
             if self.earlier_activity:
                 stakeholder = self.earlier_activity.operational_stakeholder

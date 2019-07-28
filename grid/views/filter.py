@@ -44,7 +44,6 @@ class FilterWidgetAjaxView(APIView):
         'fully_updated': TYPE_DATE,
         'fully_updated_date': TYPE_DATE,
         'updated_date': TYPE_DATE,
-        'fully_updated_by': TYPE_LIST,
         'operational_stakeholder': TYPE_AUTOCOMPLETE,
         'target_country': TYPE_AUTOCOMPLETE,
     }
@@ -208,7 +207,7 @@ class FilterWidgetAjaxView(APIView):
            not (self.type == self.TYPE_LIST and self.operation in ('in', 'not_in')):
             attrs['class'] = 'valuefield form-control'
         field_attrs = self.field.widget.attrs
-        for key, value in field_attrs.items():
+        for key, value in field_attrs.items():  # pragma: no cover
             if key in ('readonly',):
                 continue
             if key in attrs and key == 'class':
@@ -227,12 +226,7 @@ class FilterWidgetAjaxView(APIView):
             ]
         # Get list choices
         if self.type in (self.TYPE_LIST, self.TYPE_LIST_MULTIPLE):
-            if self.field_name == 'fully_updated_by':
-                users = User.objects.filter(groups__name__in=("Research admins",
-                                            "Research assistants")).order_by("username")
-                kwargs['choices'] = [(u.id, u.get_full_name() or u.username) for u in users]
-            else:
-                kwargs['choices'] = self.field.choices
+            kwargs['choices'] = self.field.choices
         # Get date options
         if self.type == self.TYPE_DATE:
             kwargs['options'] = {
@@ -300,7 +294,7 @@ def get_activity_variable_table():
     # Add Activity attributes
     variable_table[str(_('Deal'))] = []
     for field_name, field in ActivityFilterForm.base_fields.items():
-        if field_name == 'id':
+        if field_name == 'id':  # pragma: no cover
             continue
         variable_table[str(_('Deal'))].append({
             'name': field_name,
@@ -328,7 +322,7 @@ def get_activity_variable_table():
         variable_table[group_title] = group_items
 
     # Add operating company attributes
-    if _('Operating company') not in variable_table:
+    if _('Operating company') not in variable_table:  # pragma: no cover
         variable_table[str(_('Operating company'))] = []
     for field_name, field in OperationalCompanyForm.base_fields.items():
         if field_name == 'id':
@@ -376,7 +370,7 @@ def get_investor_variable_table():
     # Add investor attributes
     investor_variables = []
     for field_name, field in InvestorFilterForm.base_fields.items():
-        if field_name == 'id':
+        if field_name == 'id':  # pragma: no cover
             continue
         investor_variables.append({
             'name': field_name,
@@ -483,7 +477,7 @@ class FilterWidgetMixin:
                 try:
                     country = Country.objects.defer('geom').get(pk=data.get('country'))
                     filter_values['display_value'] = country.name
-                except:
+                except:  # pragma: no cover
                     pass
                 filter_values['name'] = 'country'
                 data.pop('country')
@@ -499,7 +493,7 @@ class FilterWidgetMixin:
                 try:
                     region = Region.objects.get(pk=data.get('region'))
                     filter_values['display_value'] = region.name
-                except:
+                except:  # pragma: no cover
                     pass
                 filter_values['name'] = 'region'
                 data.pop('region')
@@ -534,10 +528,10 @@ class FilterWidgetMixin:
         if not self.request.session.get('%s:set_default_filters' % self.doc_type, False):
             return
         if not disabled_presets:
-            if hasattr(self, '%s:disabled_presets' % self.doc_type) and self.disabled_presets:
+            if hasattr(self, 'disabled_presets') and self.disabled_presets:
                 disabled_presets = self.disabled_presets
         if not enabled_presets:
-            if hasattr(self, '%s:enabled_presets' % self.doc_type) and self.enabled_presets:
+            if hasattr(self, 'enabled_presets') and self.enabled_presets:
                 enabled_presets = self.enabled_presets
         stored_filters = self.request.session.get('%s:filters' % self.doc_type, {})
         if not stored_filters:
@@ -545,33 +539,31 @@ class FilterWidgetMixin:
         # Target country or region set?
         filter_names = [v.get('name', '') for k, v in stored_filters.items()]
         preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
-        if ('country' in filter_names):
+        if 'country' in filter_names:
             # Use national presets
             for preset in FilterPreset.objects.filter(is_default_country=True):
-                if preset.id in preset_ids.keys():
+                if preset.id in preset_ids.keys():  # pragma: no cover
                     del stored_filters[preset_ids[preset.id]]
-                if preset.id in disabled_presets:
+                if preset.id in disabled_presets:  # pragma: no cover
                     continue
-                if preset.id in enabled_presets:
+                if preset.id in enabled_presets:  # pragma: no cover
                     del enabled_presets[enabled_presets.index(preset.id)]
                 filter_name = 'default_preset_%i' % preset.id
-                stored_filters[filter_name] = PresetFilter(
-                    preset, name=filter_name, hidden=preset.is_hidden)
+                stored_filters[filter_name] = PresetFilter(preset, name=filter_name, hidden=preset.is_hidden)
         else:
             # Use global presets
             for preset in FilterPreset.objects.filter(is_default_global=True):
-                if preset.id in preset_ids.keys():
+                if preset.id in preset_ids.keys():  # pragma: no cover
                     del stored_filters[preset_ids[preset.id]]
-                if preset.id in disabled_presets:
+                if preset.id in disabled_presets:  # pragma: no cover
                     continue
                 filter_name = 'default_preset_%i' % preset.id
-                stored_filters[filter_name] = PresetFilter(
-                    preset, name=filter_name, hidden=preset.is_hidden)
+                stored_filters[filter_name] = PresetFilter(preset, name=filter_name, hidden=preset.is_hidden)
         # Add enabled filters (if not already set)
         for preset_id in enabled_presets:
             if 'default_preset_%i' % preset_id not in stored_filters.keys():
                 preset = FilterPreset.objects.get(pk=preset_id)
-                if preset.id in preset_ids.keys():
+                if preset.id in preset_ids.keys():  # pragma: no cover
                     del stored_filters[preset_ids[preset.id]]
                 if preset.id in disabled_presets:
                     continue

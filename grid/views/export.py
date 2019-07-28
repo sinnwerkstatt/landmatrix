@@ -134,9 +134,9 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             }
         else:
             investor_status_list = [InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN]
-            if InvestorBase.STATUS_PENDING in self.status_list:
+            if InvestorBase.STATUS_PENDING in self.status_list:  # pragma: no cover
                 investor_status_list += [InvestorBase.STATUS_PENDING]
-            if InvestorBase.STATUS_DELETED in self.status_list:
+            if InvestorBase.STATUS_DELETED in self.status_list:  # pragma: no cover
                 investor_status_list += [InvestorBase.STATUS_DELETED]
             query = {
                 "terms": {"fk_status": investor_status_list}
@@ -180,7 +180,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         involvements = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False, sort=sort)
         results['involvements'] = self.filter_involvements(involvements, investors=investors)
 
-        if format not in self.FORMATS:
+        if format not in self.FORMATS:  # pragma: no cover
             raise RuntimeError('Download format not recognized: ' + format)
 
         filename = 'export'

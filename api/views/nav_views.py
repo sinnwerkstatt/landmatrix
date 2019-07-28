@@ -86,8 +86,8 @@ class InvestorListView(ElasticSearchMixin,
     )
     pagination_class = StandardResultsSetPagination
 
-    def get_serializer(self, page, many=False):
-        return None
+    # def get_serializer(self, page, many=False):
+    #     return None
 
     def get_queryset(self):
         results = {}
@@ -133,7 +133,7 @@ class InvestorListView(ElasticSearchMixin,
                 id = result["investor_identifier"]
                 if id in results:
                     # Always prefer pending version
-                    if results[id]["fk_status"] == 1:
+                    if results[id]["fk_status"] == 1:  # pragma: no cover
                         continue
                 results[id] = {
                     "id": raw_result["_id"],
@@ -149,7 +149,4 @@ class InvestorListView(ElasticSearchMixin,
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            return self.get_paginated_response(page)
-        return Response(queryset)
-
+        return self.get_paginated_response(page) if page else Response(queryset)

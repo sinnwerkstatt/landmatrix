@@ -42,6 +42,14 @@ class InvestorQuerySetTestCase(TestCase):
         for status in set(qs.values_list('fk_status_id', flat=True)):
             self.assertIn(status, statuses)
 
+    def test_public_or_deleted(self):
+        user = get_user_model().objects.get(username='reporter-2')
+        qs = self.qs.public_or_deleted(user=user)
+        self.assertGreater(qs.count(), 0)
+        statuses = InvestorBase.PUBLIC_STATUSES + (InvestorBase.STATUS_DELETED, )
+        for status in set(qs.values_list('fk_status_id', flat=True)):
+            self.assertIn(status, statuses)
+
     def test_public_or_pending(self):
         qs = self.qs.public_or_pending()
         self.assertGreater(qs.count(), 0)
@@ -114,11 +122,35 @@ class InvestorBaseTestCase(BaseDealTestCase):
         self.assertNotEqual(investor_identifier, InvestorBase.INVESTOR_IDENTIFIER_DEFAULT)
 
     def test_save(self):
-        investor = Investor(fk_status_id=Investor.STATUS_ACTIVE)
+        investor = Investor(fk_status_id=Investor.STATUS_ACTIVE, investor_identifier=None)
         investor.save()
         self.assertIsNotNone(investor.investor_identifier)
         self.assertNotEqual(investor.investor_identifier, InvestorBase.INVESTOR_IDENTIFIER_DEFAULT)
         self.assertEqual(f'Unknown (#{investor.investor_identifier})', investor.name)
+
+    def test_save_with_operating_company(self):
+        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
+        investor.involvements.create(fk_activity_id=10, fk_status_id=InvestorActivityInvolvement.STATUS_ACTIVE)
+        investor.save()
+        self.assertIsNotNone(investor.investor_identifier)
+        self.assertNotEqual(investor.investor_identifier, InvestorBase.INVESTOR_IDENTIFIER_DEFAULT)
+        self.assertEqual(f'Unknown operating company (#{investor.investor_identifier})', investor.name)
+
+    def test_save_with_parent_company(self):
+        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
+        investor.venture_involvements.create(fk_investor_id=10, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+        investor.save()
+        self.assertIsNotNone(investor.investor_identifier)
+        self.assertNotEqual(investor.investor_identifier, InvestorBase.INVESTOR_IDENTIFIER_DEFAULT)
+        self.assertEqual(f'Unknown parent company (#{investor.investor_identifier})', investor.name)
+
+    def test_save_with_tertiary_investor_lender(self):
+        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
+        investor.venture_involvements.create(fk_investor_id=10, role=InvestorVentureInvolvement.INVESTOR_ROLE)
+        investor.save()
+        self.assertIsNotNone(investor.investor_identifier)
+        self.assertNotEqual(investor.investor_identifier, InvestorBase.INVESTOR_IDENTIFIER_DEFAULT)
+        self.assertEqual(f'Unknown tertiary investor/lender (#{investor.investor_identifier})', investor.name)
 
     def test_get_history(self):
         investor = HistoricalInvestor.objects.get(id=31)
@@ -133,9 +165,19 @@ class InvestorBaseTestCase(BaseDealTestCase):
         investor = HistoricalInvestor.objects.get(id=20)
         self.assertEqual(True, investor.is_parent_company)
 
+    def test_is_parent_company_without_involvements(self):
+        investor = HistoricalInvestor.objects.get(id=20)
+        investor.venture_involvements.all().delete()
+        self.assertEqual(False, investor.is_parent_company)
+
     def test_is_parent_investor(self):
         investor = HistoricalInvestor.objects.get(id=70)
         self.assertEqual(True, investor.is_parent_investor)
+
+    def test_is_parent_investor_without_involvements(self):
+        investor = HistoricalInvestor.objects.get(id=70)
+        investor.venture_involvements.all().delete()
+        self.assertEqual(False, investor.is_parent_investor)
 
     def test_get_latest_investor(self):
         investor = HistoricalInvestor.get_latest_investor(investor_identifier=3)
@@ -146,9 +188,13 @@ class InvestorBaseTestCase(BaseDealTestCase):
         self.assertEqual(30, investor.id)
 
     def test_get_top_investors(self):
-        investor = HistoricalInvestor.objects.get(id=10)
-        top_investor = HistoricalInvestor.objects.get(id=60)
+        investor = Investor.objects.get(id=10)
+        top_investor = Investor.objects.get(id=60)
         self.assertEqual({top_investor}, set(investor.get_top_investors()))
+
+    def test_get_top_investors_with_self_reference(self):
+        investor = Investor.objects.get(id=140)
+        self.assertEqual({investor}, set(investor.get_top_investors()))
 
     def test_format_investors(self):
         investor = HistoricalInvestor.objects.get(id=10)
@@ -156,7 +202,7 @@ class InvestorBaseTestCase(BaseDealTestCase):
 
     def test_get_deal_count(self):
         investor = HistoricalInvestor.objects.get(id=10)
-        self.assertEqual(3, investor.get_deal_count())
+        self.assertGreater(investor.get_deal_count(), 0)
 
     def test_get_roles(self):
         investor = HistoricalInvestor.objects.get(id=10)
@@ -187,6 +233,13 @@ class InvestorBaseTestCase(BaseDealTestCase):
     def test_is_editable_new_version_with_author(self):
         investor = HistoricalInvestor.objects.get(id=31)
         user = get_user_model().objects.get(username='reporter')
+        self.assertEqual(False, investor.is_editable(user=user))
+
+    def test_is_editable_new_version_with_rejected(self):
+        investor = HistoricalInvestor.objects.get(id=31)
+        investor.fk_status_id = HistoricalInvestor.STATUS_REJECTED
+        investor.save()
+        user = get_user_model().objects.get(username='reporter-2')
         self.assertEqual(False, investor.is_editable(user=user))
 
     def test_is_editable_new_version_with_editor(self):
@@ -297,7 +350,11 @@ class HistoricalInvestorTestCase(BaseDealTestCase):
         top_investor = HistoricalInvestor.objects.get(id=60)
         self.assertEqual({top_investor}, set(investor.get_top_investors()))
 
-    def test_update_public_investor(self):
+    def test_get_top_investors_with_self_reference(self):
+        investor = HistoricalInvestor.objects.get(id=140)
+        self.assertEqual({investor}, set(investor.get_top_investors()))
+
+    def test_update_public_investor_with_pending(self):
         investor = HistoricalInvestor.objects.get(id=31)
         investor.update_public_investor()
         #self.assertEqual(HistoricalInvestor.STATUS_OVERWRITTEN, investor.fk_status_id)
@@ -305,6 +362,22 @@ class HistoricalInvestorTestCase(BaseDealTestCase):
         public_investor = Investor.objects.filter(investor_identifier=3)
         self.assertEqual(1, public_investor.count())
         self.assertEqual('20', public_investor.first().classification)
+
+    def test_update_public_investor_with_to_delete(self):
+        investor = HistoricalInvestor.objects.get(id=170)
+        investor.update_public_investor()
+        self.assertEqual(HistoricalInvestor.STATUS_DELETED, investor.fk_status_id)
+
+        public_investor = Investor.objects.filter(investor_identifier=17)
+        self.assertEqual(0, public_investor.count())
+
+    def test_update_public_investor_with_rejected(self):
+        investor = HistoricalInvestor.objects.get(id=110)
+        investor.update_public_investor()
+        self.assertEqual(HistoricalInvestor.STATUS_REJECTED, investor.fk_status_id)
+
+        public_investor = Investor.objects.filter(investor_identifier=11)
+        self.assertEqual(0, public_investor.count())
 
     def test_update_current_involvements(self):
         hinvestor = HistoricalInvestor.objects.get(id=31)

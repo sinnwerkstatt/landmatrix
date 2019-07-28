@@ -8,7 +8,6 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import landmatrix.models.default_string_representation
 import multiselectfield.db.fields
 
 
@@ -40,7 +39,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Activity',
                 'verbose_name_plural': 'Activities',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='ActivityAttribute',
@@ -58,7 +57,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Activity attribute',
                 'verbose_name_plural': 'Activity attributes',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='ActivityAttributeGroup',
@@ -236,7 +235,7 @@ class Migration(migrations.Migration):
                 'ordering': ('-history_date',),
                 'verbose_name_plural': 'Historical activities',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='HistoricalActivityAttribute',
@@ -256,7 +255,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Historical activity attribute',
                 'verbose_name_plural': 'Historical activity attributes',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='HistoricalInvestor',
@@ -279,7 +278,7 @@ class Migration(migrations.Migration):
                 'ordering': ['-history_date'],
                 'verbose_name_plural': 'Historical investors',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='Investor',
@@ -300,7 +299,7 @@ class Migration(migrations.Migration):
                 'ordering': ('name',),
                 'verbose_name_plural': 'Investors',
             },
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='InvestorActivityInvolvement',
@@ -345,7 +344,7 @@ class Migration(migrations.Migration):
                 ('local_name', models.CharField(max_length=255, verbose_name='Local name')),
                 ('locale', models.CharField(max_length=31, verbose_name='Locale')),
             ],
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='Mineral',
@@ -366,7 +365,7 @@ class Migration(migrations.Migration):
                 ('point_lat_max', models.DecimalField(blank=True, decimal_places=12, max_digits=18, null=True, verbose_name='Latitude of southernmost point')),
                 ('point_lon_max', models.DecimalField(blank=True, decimal_places=12, max_digits=18, null=True, verbose_name='Longitude of easternmost point')),
             ],
-            bases=(models.Model, landmatrix.models.default_string_representation.DefaultStringRepresentation),
+            bases=(models.Model, ),
         ),
         migrations.CreateModel(
             name='ReviewDecision',
@@ -383,7 +382,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_index=True, max_length=255, verbose_name='Name')),
                 ('description', models.TextField(blank=True, null=True, verbose_name='Description')),
             ],
-            bases=(landmatrix.models.default_string_representation.DefaultStringRepresentation, models.Model),
+            bases=(models.Model, ),
         ),
         migrations.AddField(
             model_name='investorventureinvolvement',

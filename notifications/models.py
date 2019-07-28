@@ -82,7 +82,7 @@ class NotificationEmail(models.Model):
             self.render_template(template_name, context)
 
     def render_template(self, template_name, context):
-        if not self.is_new:
+        if not self.is_new:  # pragma: no cover
             raise NotificationError("Can't modify an existing email record.")
 
         text_template = loader.get_template('{}.txt'.format(template_name))
@@ -93,11 +93,11 @@ class NotificationEmail(models.Model):
 
     @property
     def is_sent(self):
-        return self.sent_on and self.sent_status == self.STATUS_SENT
+        return self.sent_on and self.sent_status == self.STATUS_SENT or False
 
     @property
     def is_new(self):
-        return (not self.sent_on) and self.sent_status == self.STATUS_NEW
+        return (not self.sent_on) and self.sent_status == self.STATUS_NEW or False
 
     def send(self):
         if self.is_sent:
@@ -124,7 +124,7 @@ class NotificationEmail(models.Model):
 
         try:
             message.send()
-        except Exception as err:  # ugh
+        except Exception as err:  # pragma: no cover
             self.sent_status = self.STATUS_ERROR
             self.sent_exception = str(err)
         else:

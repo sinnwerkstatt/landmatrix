@@ -37,7 +37,7 @@ def get_comparison(investor_1, investor_2):
     forms_2 = get_forms(investor_2)
     comparison_forms = []
     for i in range(len(forms_1)):
-        comparison_forms.append((forms_1[i], forms_2[i], has_changed(forms_1[i], forms_2[i])))
+        comparison_forms.append((forms_1[i], forms_2[i], is_equal(forms_1[i], forms_2[i])))
 
     return comparison_forms
 
@@ -50,7 +50,7 @@ def get_forms(hinvestor):
     ]
 
 
-def has_changed(form_1, form_2):
+def is_equal(form_1, form_2):
     ignore_fields = ('id',)
 
     if form_1.is_valid() != form_2.is_valid():
@@ -71,7 +71,7 @@ def has_changed(form_1, form_2):
         for i, subform_1 in enumerate(form_1.forms):
             subform_2 = form_2.forms[i]
             for j, field in enumerate(list(subform_1)):
-                if field.name in ignore_fields:
+                if field.name in ignore_fields:  # pragma: no cover
                     continue
                 if str(field) != str(list(subform_2)[j]):
                     return False
@@ -85,38 +85,8 @@ def has_changed(form_1, form_2):
     return True
 
 
-def investor_from_id(investor_id):
-    try:
-        if '_' in investor_id:
-            return _investor_from_id_and_timestamp(investor_id)
-        else:
-            return HistoricalInvestor.objects.get(pk=investor_id)
-    except ObjectDoesNotExist:
-        return None
-
-
-def _investor_from_id_and_timestamp(id_and_timestamp):
-    if '_' not in id_and_timestamp:
-        message = 'should contain _ separating investor id and timestamp: {}'.format(id_and_timestamp)
-        raise ValueError(message)
-
-    investor_id, timestamp = id_and_timestamp.split('_')
-
-    investor = HistoricalInvestor.objects.get(pk=investor_id)
-
-    history_date = datetime.datetime.fromtimestamp(
-        float(timestamp), tz=tzlocal())
-    old_version = investor.history.filter(
-        history_date__lte=history_date).last()
-    if old_version is None:
-        raise ObjectDoesNotExist('Historical Investor %s as of timestamp %s' % (investor_id,
-                                                                                timestamp))
-
-    return old_version
-
-
 # Hacked version of BaseFormSet._construct_form
-def _construct_form(self, i, **kwargs):
+def _construct_form(self, i, **kwargs):  # pragma: no cover
     """
     Instantiates and returns the i-th form instance in a formset.
     """

@@ -30,6 +30,7 @@ class PublicCommentForm(ThreadedCommentForm):
 
         return errors
 
+
 class EditCommentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):

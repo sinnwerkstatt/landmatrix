@@ -1,4 +1,6 @@
-from django.conf import settings
+import os
+
+from django.core.management.base import OutputWrapper
 from django.test import TestCase
 
 from api.elasticsearch import *
@@ -39,9 +41,9 @@ class APIElasticsearchTestCase(TestCase):
     }
 
     def setUp(self):
-        self.elasticsearch = ElasticSearch()
+        stdnull = OutputWrapper(open(os.devnull, 'w'))
+        self.elasticsearch = ElasticSearch(index_name='landmatrix_test', stdout=stdnull, stderr=stdnull)
         # Recreate index before every test
-        self.elasticsearch.index_name = 'landmatrix_test'
         self.elasticsearch.create_index()
 
     def test_get_elasticsearch_properties(self):

@@ -3,6 +3,8 @@ from unittest import mock
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth.models import User, Group, Permission
+from django.utils.datastructures import MultiValueDict
+
 from grid.templatetags.custom_tags import get_user_role
 from django.test import TestCase, override_settings
 
@@ -11,49 +13,12 @@ from landmatrix.models.investor import InvestorBase
 from integration.mixins import MockRequestMixin
 
 
-class BaseDealTestCase(MockRequestMixin, TestCase):
+class PermissionsTestCaseMixin:
 
     fixtures = [
-        'languages',
         'countries_and_regions',
         'users_and_groups',
-        'status',
-        'investors',
-        'venture_involvements',
     ]
-
-    DEAL_DATA = {
-        # Location
-        "location-TOTAL_FORMS": 1,
-        "location-INITIAL_FORMS": 0,
-        "location-MIN_NUM_FORMS": 1,
-        "location-MAX_NUM_FORMS": 1,
-        "location-0-level_of_accuracy": "Exact location",
-        "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
-        "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
-        "location-0-point_lat": 19.810093,
-        "location-0-point_lon": 93.98784269999999,
-        "location-0-target_country": 104,
-        # General info
-        "id_negotiation_status_0": "Contract signed",
-        "id_negotiation_status_1": None,
-        "id_negotiation_status_2": None,
-        # Contract
-        "contract-TOTAL_FORMS": 0,
-        "contract-INITIAL_FORMS": 0,
-        "contract-MIN_NUM_FORMS": 0,
-        "contract-MAX_NUM_FORMS": 0,
-        # Data source
-        "data_source-TOTAL_FORMS": 1,
-        "data_source-INITIAL_FORMS": 0,
-        "data_source-MIN_NUM_FORMS": 1,
-        "data_source-MAX_NUM_FORMS": 1,
-        "data_source-0-type": "Media report",
-        # Investor
-        "operational_stakeholder": 10,
-    }
-    INVESTOR_CREATED = 20
-    INVESTOR_UPDATED = 31
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def setUp(self):
@@ -94,7 +59,52 @@ class BaseDealTestCase(MockRequestMixin, TestCase):
         self.groups['administrator'].permissions.add(perm_change_investor)
         self.groups['administrator'].permissions.add(perm_delete_investor)
 
-        es_search.create_index()
+
+class BaseDealTestCase(PermissionsTestCaseMixin,
+                       MockRequestMixin,
+                       TestCase):
+
+    fixtures = [
+        'languages',
+        'countries_and_regions',
+        'users_and_groups',
+        'status',
+        'investors',
+        'venture_involvements',
+    ]
+
+    DEAL_DATA = MultiValueDict({
+        # Location
+        "location-TOTAL_FORMS": ["1"],
+        "location-INITIAL_FORMS": ["0"],
+        "location-MIN_NUM_FORMS": ["1"],
+        "location-MAX_NUM_FORMS": ["1"],
+        "location-0-level_of_accuracy": ["Exact location"],
+        "location-0-location": ["Rakhaing-Staat, Myanmar (Birma)"],
+        "location-0-location-map": ["Rakhaing-Staat, Myanmar (Birma)"],
+        "location-0-point_lat": ["19.810093"],
+        "location-0-point_lon": ["93.98784269999999"],
+        "location-0-target_country": ["104"],
+        # General info
+        "id_negotiation_status_0": ["Contract signed"],
+        "id_negotiation_status_1": [],
+        "id_negotiation_status_2": [],
+        # Contract
+        "contract-TOTAL_FORMS": ["0"],
+        "contract-INITIAL_FORMS": ["0"],
+        "contract-MIN_NUM_FORMS": ["0"],
+        "contract-MAX_NUM_FORMS": ["0"],
+        # Data source
+        "data_source-TOTAL_FORMS": ["1"],
+        "data_source-INITIAL_FORMS": ["0"],
+        "data_source-MIN_NUM_FORMS": ["1"],
+        "data_source-MAX_NUM_FORMS": ["1"],
+        "data_source-0-type": ["Media report"],
+        # Investor
+        "operational_stakeholder": ["10"],
+    })
+    INVESTOR_CREATED = 20
+    INVESTOR_UPDATED = 31
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def get_username_and_role(self, user):
@@ -185,39 +195,39 @@ class BaseDealTestCase(MockRequestMixin, TestCase):
 
 class BaseInvestorTestCase(BaseDealTestCase):
 
-    INVESTOR_DATA = {
+    INVESTOR_DATA = MultiValueDict({
         # Investor
-        "name": "Testinvestor",
-        "fk_country": "104",
-        "classification": "10",
-        "homepage": "https://www.example.com",
-        #"opencorporates_link": None,
-        "comment": "Test comment",
+        "name": ["Testinvestor"],
+        "fk_country": ["104"],
+        "classification": ["10"],
+        "homepage": ["https://www.example.com"],
+        #"opencorporates_link": [],
+        "comment": ["Test comment"],
         # Parent companies
-        "parent-company-form-TOTAL_FORMS": 1,
-        "parent-company-form-INITIAL_FORMS": 0,
-        "parent-company-form-MIN_NUM_FORMS": 0,
-        "parent-company-form-MAX_NUM_FORMS": 1,
-        "parent-company-form-0-fk_investor": "10",
-        "parent-company-form-0-percentage": 100,
-        "parent-company-form-0-loans_amount": 0,
-        "parent-company-form-0-loans_date": None,
-        "parent-company-form-0-comment": "Test comment",
-        "parent-company-form-0-id": "",
-        "parent-company-form-0-DELETE": None,
+        "parent-company-form-TOTAL_FORMS": ["1"],
+        "parent-company-form-INITIAL_FORMS": ["0"],
+        "parent-company-form-MIN_NUM_FORMS": ["0"],
+        "parent-company-form-MAX_NUM_FORMS": ["1"],
+        "parent-company-form-0-fk_investor": ["10"],
+        "parent-company-form-0-percentage": ["100"],
+        "parent-company-form-0-loans_amount": ["0"],
+        "parent-company-form-0-loans_date": [],
+        "parent-company-form-0-comment": ["Test comment"],
+        "parent-company-form-0-id": [],
+        "parent-company-form-0-DELETE": [],
         # Tertiary investors/lenders
-        "parent-investor-form-TOTAL_FORMS": 0,
-        "parent-investor-form-INITIAL_FORMS": 0,
-        "parent-investor-form-MIN_NUM_FORMS": 0,
-        "parent-investor-form-MAX_NUM_FORMS": 1,
-        "parent-investor-form-0-fk_investor": None,
-        "parent-investor-form-0-percentage": None,
-        "parent-investor-form-0-loans_amount": None,
-        "parent-investor-form-0-loans_date": None,
-        "parent-investor-form-0-comment": None,
-        "parent-investor-form-0-id": None,
-        "parent-investor-form-0-DELETE": None,
-    }
+        "parent-investor-form-TOTAL_FORMS": ["0"],
+        "parent-investor-form-INITIAL_FORMS": ["0"],
+        "parent-investor-form-MIN_NUM_FORMS": ["0"],
+        "parent-investor-form-MAX_NUM_FORMS": ["1"],
+        "parent-investor-form-0-fk_investor": [],
+        "parent-investor-form-0-percentage": [],
+        "parent-investor-form-0-loans_amount": [],
+        "parent-investor-form-0-loans_date": [],
+        "parent-investor-form-0-comment": [],
+        "parent-investor-form-0-id": [],
+        "parent-investor-form-0-DELETE": [],
+    })
 
     def assert_investor_in_list(self, response, investor, role=None):
         items = list(filter(lambda i: i['history_id'] == investor.id, response.context_data['items']))

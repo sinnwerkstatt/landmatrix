@@ -5,6 +5,7 @@ from django.test import RequestFactory
 class MockRequestMixin:
 
     def setUp(self):
+        super().setUp()
         self.factory = RequestFactory()
 
     def mock_request(self, method, url, user, data=None):

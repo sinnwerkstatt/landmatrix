@@ -9,19 +9,17 @@ from django.db.models import Max
 from django.forms import BaseFormSet
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import redirect
-from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from grid.forms.country_specific_forms import get_country_specific_form_classes
 from grid.forms.deal_action_comment_form import DealActionCommentForm
-from grid.forms.deal_data_source_form import DealDataSourceForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.utils import has_perm_approve_reject
 from grid.views.base import TableGroupView
 from grid.views.utils import PUBLIC_FORMS, USER_FORMS, DEAL_FORMS
-from landmatrix.models import HistoricalActivity, Activity, Country, DealHistoryItem, ActivityAttributeGroup, \
+from landmatrix.models import HistoricalActivity, Activity, ActivityAttributeGroup, \
     HistoricalActivityAttribute, HistoricalInvestorActivityInvolvement, ActivityFeedback, ActivityChangeset
 from landmatrix.pdfgen import PDFViewMixin
 
@@ -115,8 +113,8 @@ class DealBaseView(TemplateView):
         is_editor = self.request.user.has_perm('landmatrix.review_activity')
 
         if old_hactivity.fk_status_id == HistoricalActivity.STATUS_PENDING:
-            # Only editors and administrators are allowed to edit pending versions
-            if not is_editor and not is_admin:
+            # Only editors and administrators are allowed to edit pending versions - already handled by get_object()
+            if not is_editor and not is_admin:  # pragma: no cover
                 return HttpResponseForbidden('Deal version is pending')
 
         # Don't create new version if rejected
@@ -350,7 +348,7 @@ class DealCreateView(DealBaseView):
         form = self.get_form_by_type(forms, DealActionCommentForm)
         if form:
             hactivity.fully_updated = self.get_fully_updated(form)
-        else:
+        else:  # pragma: no cover
             hactivity.fully_updated = False
         hactivity.save(update_elasticsearch=False)
         self.create_involvement(hactivity, investor_form)
@@ -440,7 +438,8 @@ class DealUpdateView(DealBaseView):
         for form_class in self.FORMS:
             forms.append(self.get_form(form_class, data=data, files=files))
         # Add country specific forms
-        for form_class in get_country_specific_form_classes(self.get_object()):
+        country_forms = get_country_specific_form_classes(self.get_object())
+        for form_class in country_forms:
             forms.append(self.get_form(form_class, data=data, files=files))
         return forms
 
@@ -471,6 +470,10 @@ class DealDeleteView(DealBaseView):
     success_message = _('The deal #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The deal #{} has been deleted successfully.')
 
+    def get(self, request, *args, **kwargs):
+        hactivity = self.get_object()
+        return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
+
     def get_object(self):
         # TODO: Cache result for user
         deal_id = self.kwargs.get('deal_id')
@@ -479,7 +482,7 @@ class DealDeleteView(DealBaseView):
         if not self.request.user.has_perm('landmatrix.review_activity'):
             queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 activity = queryset.get(id=history_id)
             else:
                 activity = queryset.filter(activity_identifier=deal_id).latest()
@@ -537,10 +540,8 @@ class DealRecoverView(DealBaseView):
         deal_id = self.kwargs.get('deal_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
-        if not self.request.user.has_perm('landmatrix.review_activity'):
-            queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 activity = queryset.get(id=history_id)
             else:
                 activity = queryset.filter(activity_identifier=deal_id).latest()

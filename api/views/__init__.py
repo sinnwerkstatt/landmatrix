@@ -16,7 +16,6 @@ __all__ = (
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
     'UserListView', 'GlobalDealsView', 'CountryDealsView', 'CountryGeomView',
     'ElasticSearchMixin', 'InvestorCountriesForTargetCountryView',
-    'TargetCountriesForInvestorCountryView',
     'FilterCreateView', 'FilterDeleteView', 'FilterListView', 'SetDefaultFiltersView',
     'FilterClearView', 'FilterPresetView',
 )

@@ -39,6 +39,11 @@ class ActivityQuerySetTestCase(TestCase):
         statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_DELETED, )
         self.assertEqual(set(statuses), set(qs.values_list('fk_status_id', flat=True)))
 
+    def test_public_or_deleted_with_user(self):
+        user = get_user_model().objects.get(username='reporter')
+        qs = self.qs.public_or_deleted(user=user)
+        self.assertGreater(qs.count(), 0)
+
     def test_public_or_pending(self):
         qs = self.qs.public_or_pending()
         self.assertGreater(qs.count(), 0)
@@ -129,6 +134,11 @@ class ActivityBaseTestCase(BaseDealTestCase):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual({20, 30, 101}, set(activity.stakeholders))
 
+    def test_stakeholders_without_operating_company(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.involvements.all().delete()
+        self.assertEqual([], activity.stakeholders)
+
     def test_get_history(self):
         activity = HistoricalActivity.objects.get(id=21)
         user = get_user_model().objects.get(username='reporter')
@@ -158,6 +168,13 @@ class ActivityBaseTestCase(BaseDealTestCase):
     def test_is_editable_new_version_with_author(self):
         activity = HistoricalActivity.objects.get(id=21)
         user = get_user_model().objects.get(username='reporter')
+        self.assertEqual(False, activity.is_editable(user=user))
+
+    def test_is_editable_new_version_with_rejected(self):
+        activity = HistoricalActivity.objects.get(id=21)
+        activity.fk_status_id = HistoricalActivity.STATUS_REJECTED
+        activity.save()
+        user = get_user_model().objects.get(username='reporter-2')
         self.assertEqual(False, activity.is_editable(user=user))
 
     def test_is_editable_new_version_with_editor(self):
@@ -195,9 +212,51 @@ class ActivityBaseTestCase(BaseDealTestCase):
         investor_country = Country.objects.get(id=116)
         self.assertEqual({investor_country}, set(activity.get_investor_countries()))
 
-    def test_get_deal_size(self):
+    def test_get_deal_size_with_intended(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='negotiation_status').update(
+            value=HistoricalActivity.NEGOTIATION_STATUS_UNDER_NEGOTIATION)
+        activity.attributes.create(name='intended_size', value='2000')
+        self.assertEqual(2000, activity.get_deal_size())
+
+    def test_get_deal_size_with_concluded(self):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual(1000, activity.get_deal_size())
+
+    def test_get_deal_size_with_failed(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='negotiation_status').update(
+            value=HistoricalActivity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED)
+        activity.attributes.create(name='intended_size', value='2000')
+        self.assertEqual(2000, activity.get_deal_size())
+
+    def test_get_deal_size_with_cancelled(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='negotiation_status').update(
+            value=HistoricalActivity.NEGOTIATION_STATUS_CONTRACT_CANCELLED)
+        self.assertEqual(1000, activity.get_deal_size())
+
+    def test_get_deal_size_with_expired(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='negotiation_status').update(
+            value=HistoricalActivity.NEGOTIATION_STATUS_CONTRACT_EXPIRED)
+        self.assertEqual(1000, activity.get_deal_size())
+
+    def test_get_deal_size_with_change_of_ownership(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='negotiation_status').update(
+            value=HistoricalActivity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP)
+        self.assertEqual(1000, activity.get_deal_size())
+
+    def test_get_deal_size_with_comma(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='contract_size').update(value='2000,0')
+        self.assertEqual(2000, activity.get_deal_size())
+
+    def test_get_deal_size_with_dot(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='contract_size').update(value='2000.0')
+        self.assertEqual(2000, activity.get_deal_size())
 
     def test_get_negotiation_status(self):
         activity = HistoricalActivity.objects.get(id=10)
@@ -219,27 +278,92 @@ class ActivityBaseTestCase(BaseDealTestCase):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual({'Non-Food'}, set(activity.get_agricultural_produce()))
 
-    def test_is_public_deal(self):
+    def test_get_agricultural_produce_with_multi(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.create(name="crops", value="4")
+        self.assertEqual(activity.AGRICULTURAL_PRODUCE_MULTI, activity.get_agricultural_produce())
+
+    def test_is_public_deal_with_has_flog_not_public(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.create(name='not_public', value='True')
+        self.assertEqual(False, activity.is_public_deal())
+
+    def test_is_public_deal__with_missing_information(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='target_country').delete()
+        self.assertEqual(False, activity.is_public_deal())
+
+    def test_is_public_deal__with_involvements_missing(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.involvements.all().delete()
+        self.assertEqual(False, activity.is_public_deal())
+
+    def test_is_public_deal__with_invalid_investors(self):
+        activity = HistoricalActivity.objects.get(id=100)
+        self.assertEqual(False, activity.is_public_deal())
+
+    def test_is_public_deal__with_high_income_country(self):
+        activity = HistoricalActivity.objects.get(id=90)
+        self.assertEqual(False, activity.is_public_deal())
+
+    def test_is_public_deal__with_filters_passed(self):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual(True, activity.is_public_deal())
 
-    def test_get_not_public_reason(self):
+    def test_get_not_public_reason_with_has_flog_not_public(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.create(name='not_public', value='True')
+        self.assertEqual('1. Flag not public set', activity.get_not_public_reason())
+
+    def test_get_not_public_reason_with_missing_information(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.attributes.filter(name='target_country').delete()
+        self.assertEqual('2. Minimum information missing', activity.get_not_public_reason())
+
+    def test_get_not_public_reason_with_involvements_missing(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        activity.involvements.all().delete()
+        self.assertEqual('3. involvements missing', activity.get_not_public_reason())
+
+    def test_get_not_public_reason_with_invalid_investors(self):
+        activity = HistoricalActivity.objects.get(id=100)
+        self.assertEqual('4. Invalid Operating company name and Invalid Parent companies/investors', activity.get_not_public_reason())
+
+    def test_get_not_public_reason_with_high_income_country(self):
+        activity = HistoricalActivity.objects.get(id=90)
+        self.assertEqual('5. High income country', activity.get_not_public_reason())
+
+    def test_get_not_public_reason_with_filters_passed(self):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual('Filters passed (public)', activity.get_not_public_reason())
 
-    def test_is_high_income_target_country(self):
-        activity = HistoricalActivity.objects.get(id=10)
-        self.assertEqual(0, activity.is_high_income_target_country())
+    def test_is_high_income_target_country_with_high(self):
+        activity = HistoricalActivity.objects.get(id=90)
+        self.assertEqual(True, activity.is_high_income_target_country())
 
-    def test_has_invalid_operating_company(self):
+    def test_is_high_income_target_country_without_high(self):
+        activity = HistoricalActivity.objects.get(id=10)
+        self.assertEqual(False, activity.is_high_income_target_country())
+
+    def test_has_invalid_operating_company_with_valid(self):
         activity = HistoricalActivity.objects.get(id=10)
         involvements = activity.involvements.all()
         self.assertEqual(False, activity.has_invalid_operating_company(involvements))
 
-    def test_has_invalid_parents(self):
+    def test_has_invalid_operating_company_with_invalid(self):
+        activity = HistoricalActivity.objects.get(id=100)
+        involvements = activity.involvements.all()
+        self.assertEqual(True, activity.has_invalid_operating_company(involvements))
+
+    def test_has_invalid_parents_with_valid(self):
         activity = HistoricalActivity.objects.get(id=10)
         involvements = activity.involvements.all()
         self.assertEqual(False, activity.has_invalid_parents(involvements))
+
+    def test_has_invalid_parents_with_invalid(self):
+        activity = HistoricalActivity.objects.get(id=100)
+        involvements = activity.involvements.all()
+        self.assertEqual(True, activity.has_invalid_parents(involvements))
 
     def test_missing_information(self):
         activity = HistoricalActivity.objects.get(id=10)
@@ -253,9 +377,13 @@ class ActivityBaseTestCase(BaseDealTestCase):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual('2000', activity.get_init_date())
 
-    def test_get_deal_scope(self):
+    def test_get_deal_scope_transnational(self):
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual('transnational', activity.get_deal_scope())
+
+    def test_get_deal_scope_domestic_and_self_reference(self):
+        activity = HistoricalActivity.objects.get(id=90)
+        self.assertEqual('domestic', activity.get_deal_scope())
 
     def test_format_investors(self):
         activity = HistoricalActivity.objects.get(id=10)
@@ -315,7 +443,7 @@ class ActivityTestCase(TestCase):
         self.assertEqual('2000', activity.init_date)
         self.assertEqual(datetime(2000, 1, 1, 0, 0, tzinfo=pytz.utc), activity.fully_updated_date)
         self.assertEqual(True, activity.is_public)
-        self.assertEqual('Test Investor 1#1#Cambodia', activity.top_investors)
+        self.assertEqual('Test Investor 6#6#Cambodia', activity.top_investors)
         self.assertGreater(activity.availability, 0)
         self.assertEqual(False, activity.forest_concession)
 
@@ -347,7 +475,7 @@ class HistoricalActivityQuerySetTestCase(TestCase):
         self.assertGreater(qs.count(), 0)
 
     def test_latest_ids(self):
-        latest_ids = self.qs.latest_ids()
+        latest_ids = self.qs.latest_ids(status=HistoricalActivity.PUBLIC_STATUSES)
         self.assertGreater(len(latest_ids), 0)
 
     def test_latest_only(self):
@@ -425,20 +553,38 @@ class HistoricalActivityTestCase(BaseDealTestCase):
         changed_attrs = current_version.compare_attributes_to(previous_version)
         expected = [
             (1, 'production_size', '2000', None),
-            (30, 'nature', 'Concession', 'Pure contract farming'),
-            (30, 'crops', '2', '1')
+            (1, 'nature', 'Concession', 'Pure contract farming'),
+            (1, 'intention', 'Mining', 'Forest logging / management'),
+            (1, 'crops', '2', '1'),
+            (1, 'intended_size', None, '1000')
         ]
         self.assertEqual(expected, changed_attrs)
 
-    def test_update_public_activity(self):
+    def test_update_public_activity_with_pending(self):
         activity = HistoricalActivity.objects.get(id=21)
-        activity.update_public_activity()
+        activity.update_public_activity(),
         self.assertEqual(HistoricalActivity.STATUS_OVERWRITTEN, activity.fk_status_id)
 
         public_activity = Activity.objects.filter(activity_identifier=2)
         self.assertEqual(1, public_activity.count())
         production_size = public_activity.first().attributes.get(name='production_size')
         self.assertEqual('2000', production_size.value)
+
+    def test_update_public_activity_with_to_delete(self):
+        activity = HistoricalActivity.objects.get(id=61)
+        activity.update_public_activity()
+        self.assertEqual(HistoricalActivity.STATUS_DELETED, activity.fk_status_id)
+
+        public_activity = Activity.objects.filter(activity_identifier=6)
+        self.assertEqual(0, public_activity.count())
+
+    def test_update_public_activity_with_rejected(self):
+        activity = HistoricalActivity.objects.get(id=50)
+        activity.update_public_activity()
+        self.assertEqual(HistoricalActivity.STATUS_REJECTED, activity.fk_status_id)
+
+        public_activity = Activity.objects.filter(activity_identifier=5)
+        self.assertEqual(0, public_activity.count())
 
     def test_changeset_comment(self):
         activity = HistoricalActivity.objects.get(id=50)
