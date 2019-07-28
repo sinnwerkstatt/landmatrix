@@ -166,16 +166,16 @@
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                 {% if item.type == 'activity' %}
-                                    <a href="{% url 'manage_approve_change_deal' id=item.history_id %}"
+                                    <a href="{% url 'change_deal' deal_id=item.id %}"
                                        class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_deal' id=item.history_id %}"
+                                    <a href="{% url 'change_deal' deal_id=item.id %}"
                                        class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
-                                    <a href="{% url 'manage_approve_change_investor' id=item.history_id %}"
+                                    <a href="{% url 'investor_update' investor_id=item.id %}"
                                        class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_investor' id=item.history_id %}"
-                                       class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
+                                    <a href="{% url 'investor_update' investor_id=item.id %}"
+                                       class="label label-reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}
                                 </td>
@@ -227,15 +227,15 @@
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                 {% if item.type == 'activity' %}
-                                    <a href="{% url 'manage_approve_delete_deal' id=item.history_id %}"
+                                    <a href="{% url 'delete_deal' deal_id=item.id %}"
                                        class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_delete_deal' id=item.history_id %}"
+                                    <a href="{% url 'delete_deal' deal_id=item.id %}"
                                        class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
-                                    <a href="{% url 'manage_approve_delete_investor' id=item.history_id %}"
+                                    <a href="{% url 'investor_delete' investor_id=item.id %}"
                                        class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_delete_investor' id=item.history_id %}"
+                                    <a href="{% url 'investor_delete' investor_id=item.id %}"
                                        class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}
@@ -289,15 +289,15 @@
                                 <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                 {% if item.type == 'activity' %}
-                                    <a href="{% url 'manage_approve_change_deal' id=item.history_id %}"
+                                    <a href="{% url 'change_deal' deal_id=item.id %}"
                                        class="label label-default approve label-deal"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_deal' id=item.history_id %}"
+                                    <a href="{% url 'change_deal' deal_id=item.id %}"
                                        class="label label-default reject label-deal"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% else %}
-                                    <a href="{% url 'manage_approve_change_investor' id=item.history_id %}"
+                                    <a href="{% url 'investor_update' investor_id=item.id %}"
                                        class="label label-default approve label-investor"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_investor' id=item.history_id %}"
+                                    <a href="{% url 'investor_update' investor_id=item.id %}"
                                        class="label label-default reject label-investor"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 {% endif %}

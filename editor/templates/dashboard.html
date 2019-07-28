@@ -341,25 +341,25 @@
                                         <td class="action">
                                             {% if pending.act_inv.type == 'activity' %}
                                                 {% if pending.action == 'add' %}
-                                                    <a href="{% url 'manage_approve_change_deal' id=pending.act_inv.history_id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_change_deal' id=pending.act_inv.history_id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'change_deal' deal_id=pending.act_inv.id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'change_deal' deal_id=pending.act_inv.id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% elif pending.action == 'update' %}
-                                                    <a href="{% url 'manage_approve_change_deal' id=pending.act_inv.history_id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_change_deal' id=pending.act_inv.history_id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'change_deal' deal_id=pending.act_inv.id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'change_deal' deal_id=pending.act_inv.id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% elif pending.action == 'delete' %}
-                                                    <a href="{% url 'manage_approve_delete_deal' id=pending.act_inv.history_id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_delete_deal' id=pending.act_inv.history_id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'delete_deal' deal_id=pending.act_inv.id %}" class="approve label label-deal"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'delete_deal' deal_id=pending.act_inv.id %}" class="reject label label-deal"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% endif %}
                                             {% else %}
                                                 {% if pending.action == 'add' %}
-                                                    <a href="{% url 'manage_approve_change_investor' id=pending.act_inv.history_id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_change_investor' id=pending.act_inv.history_id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'investor_update' investor_id=pending.act_inv.id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'investor_update' investor_id=pending.act_inv.id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% elif pending.action == 'update' %}
-                                                    <a href="{% url 'manage_approve_change_investor' id=pending.act_inv.history_id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_change_investor' id=pending.act_inv.history_id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'investor_update' investor_id=pending.act_inv.id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'investor_update' investor_id=pending.act_inv.id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% elif pending.action == 'delete' %}
-                                                    <a href="{% url 'manage_approve_delete_investor' id=pending.act_inv.history_id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                    <a href="{% url 'manage_reject_delete_investor' id=pending.act_inv.history_id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                                    <a href="{% url 'investor_delete' investor_id=pending.act_inv.id %}" class="approve label label-investor"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                    <a href="{% url 'investor_delete' investor_id=pending.act_inv.id %}" class="reject label label-investor"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                                 {% endif %}
                                             {% endif %}
                                         </td>
