@@ -406,6 +406,6 @@ $(document).ready(function() {
 
     // Allow numbers only for number fields (otherwise only checked when submitting)
     $(':input.input-filter-number').inputFilter(function (value) {
-        return /^\d*$/.test(value);
+        return /^[\d\.,]*$/.test(value);
     });
 });

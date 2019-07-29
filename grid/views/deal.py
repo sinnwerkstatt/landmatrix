@@ -163,6 +163,7 @@ class DealBaseView(TemplateView):
 
         context = self.get_context_data(**self.kwargs)
         context['forms'] = forms
+        context['action_comment_form'] = context['forms'][-1]
         return self.render_to_response(context)
 
     def create_attributes(self, activity, forms):

@@ -339,7 +339,7 @@ class NumberInput(forms.TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         attrs.update({
             'type': 'number',
-            'class': 'form-control'
+            'class': 'form-control input-filter-number'
         })
         return super(NumberInput, self).render(name, value, attrs, renderer)
 
