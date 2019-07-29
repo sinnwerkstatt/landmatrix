@@ -549,7 +549,8 @@ a.remove-ybd:hover {
 .input-group .select2 {
   width: 280px !important;
   min-width: auto !important;
-  float: left; }
+  float: left;
+  font-size: 16px; }
 
 .control-group .input-group-addon {
   border-top-right-radius: 4px !important;
