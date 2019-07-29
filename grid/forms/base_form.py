@@ -98,8 +98,8 @@ class FieldsDisplayFormMixin(object):
         if data:
             for value in data.split('#'):
                 date_values = value.split(':')
-                current = date_values.pop()
-                date = date_values.pop()
+                current = date_values.pop() if date_values else None
+                date = date_values.pop() if date_values else None
                 if date_values:
                     # Replace value with label for choice fields
                     if isinstance(field.fields[0], forms.ChoiceField):
