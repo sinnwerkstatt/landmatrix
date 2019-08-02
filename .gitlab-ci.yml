@@ -1,23 +1,26 @@
-image: python:3.4
-
-before_script:
-  - pip install virtualenv
-  - virtualenv --system-site-packages venv
-  - source venv/bin/activate
-  - pip install -r requirements.txt
-  - cp landmatrix/settings.py.dist landmatrix/settings.py
-  - python manage.py migrate
+image: ubuntu:18.04
 
 services:
-  - mdillon/postgis:latest
-  - elasticsearch:latest
-  - redis:latest
+  - mdillon/postgis:10
+  - elasticsearch:5
+  #- redis:latest
 
 variables:
   POSTGRES_DB: landmatrix
   POSTGRES_USER: landmatrix
-  POSTGRES_PASSWORD: ""
+  POSTGRES_PASSWORD: landmatrix
+
+before_script:
+  - export LANG=C.UTF-8
+  - ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+  - apt-get update
+  - apt-get install -y git python3-pip gdal-bin
+  - pip3 install pipenv
+  - pipenv install --dev
+  - echo -e " DJANGO_SETTINGS_MODULE=config.settings.dev\nDATABASE_URL=postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix" > .env
+  - pipenv run doit migrate
+
 
 test:
   script:
-    - venv/bin/python manage.py test
+    - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci --exclude-tag integration

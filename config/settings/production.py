@@ -25,9 +25,6 @@ TWITTER_TIMELINE = {
 
 # whether to show SQL generated (is referenced below when configuring logging)
 
-CONVERT_DB = False
-CONVERT_FROM_MY = False
-TEST_AGAINST_LIVE_DB = False
 DEBUG = False
 
 # INSTALLED_APPS = (

@@ -21,16 +21,6 @@ INTERNAL_IPS = ('127.0.0.1',)
 # except ModuleNotFoundError:
 #     pass
 
-
-INSTALLED_APPS = [
-    'coverage',
-    'test_without_migrations',
-    'django_nose',
-    # 'debug_toolbar',
-    # 'template_timings_panel',
-    ] + INSTALLED_APPS
-
-
 if env.bool('FRONTENDDEV', default=False):
     INSTALLED_APPS = [
         'django_gulp',
@@ -63,14 +53,3 @@ NOCAPTCHA = True
 RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
 RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
-
-
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Tell nose to measure coverage on the 'foo' and 'bar' apps
-#NOSE_ARGS = [
-#    '--with-coverage',
-#    '--cover-package=api,charts,editor,feeds,grid,landmatrix,map,wagtailcms'
-#]
-
