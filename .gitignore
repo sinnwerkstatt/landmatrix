@@ -1,21 +1,15 @@
 
+.env
 landmatrix/settings.py
 
 # Collected(!) statics
-/static
-#static
-/static/*
+/static-collected/
+/media/
 
-node_modules
-media
-media/*
-media/js
+/node_modules/
 
-reference_data.sql
 
-# Ignore global javascript vendor packages
-# no, don't, we dont want to add them manually on server
-#landmatrix/static/vendor/
+landmatrix/static/css/main.css
 
 # IDE files and files from my personal environment
 dir.sh
@@ -26,13 +20,6 @@ ProfilingResults
 errors.txt
 landmatrix*.sql
 
-# default sqlite db used only for basic development
-db.sqlite3
-
-# temporary files only used during development
-old_models.py
-landmatrix_2.*sql
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -41,8 +28,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-bin/
-./build/
+/builds/
 develop-eggs/
 ./dist/
 eggs/
@@ -55,9 +41,6 @@ var/
 .installed.cfg
 *.egg
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 .tox/
@@ -83,3 +66,6 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+
+.doit.db

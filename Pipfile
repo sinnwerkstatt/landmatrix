@@ -1,0 +1,77 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Django = "<2.2"
+wagtail = "<2.6"
+
+elasticsearch = "<2"
+psycopg2-binary = "<2.8" # >=2.8 needs django2.2; https://code.djangoproject.com/ticket/30331
+redis = "*"
+python-memcached = "*"
+
+djangorestframework = "*"
+djangorestframework-gis = "*"
+django-crispy-forms = "*"
+django-environ = "*"
+django-file-resubmit = "*"
+django-modeltranslation = "*"
+django-contrib-comments = "*"
+django-threadedcomments = "*"
+django-bootstrap3-datetimepicker-2 = "*"
+django-impersonate = "*"
+django-multiselectfield = "*"
+django-recaptcha = "*"
+django-registration = "*"
+django-rest-swagger = "*"
+django-wkhtmltopdf = "*"
+django-compressor = "*"
+django-sass-processor = "*"
+
+wagtail-blog = "*"
+wagtail-modeltranslation = "*"
+
+geojson = "<2"
+unicodecsv = "*"
+openpyxl = "*"
+tweepy = "*"
+country-bounding-boxes = "*"
+python-dateutil = "*"
+
+#plumbing
+doit = "*"
+celery = "*"
+gunicorn = "*"
+
+pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref = "1.4.2"}
+
+#alt?
+#django-hstore==1.4.*
+#python-mimeparse==0.1.*
+#django-sekizai==0.9.*
+#django-simple-history==2.6.*
+#django-classy-tags==0.8.*
+#django-mptt==0.9.*
+#django-jstemplate==1.3.*
+
+
+
+
+[dev-packages]
+pygments = "*"
+coverage = "*"
+django-gulp = "*"
+django-nose = "*"
+
+django-livereload = "*"
+django-extensions = "*"
+django-test-without-migrations = "*"
+
+libsass = "*"
+ipdb = "*"
+
+
+[requires]
+python_version = "3.6"
