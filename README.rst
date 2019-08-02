@@ -1,40 +1,64 @@
+Landmatrix
+==========
+
+
 Installation
-============
+------------
 
-1. Install system packages (Debian)
-
-.. code-block:: shell
-
-    $ sudo apt-get install postgresql-9.4-postgis-scripts postgresql-9.4-postgis-2.1 postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 \
-                     virtualenvwrapper python3-psycopg2 libpq-dev npm
-
-2. Setup a virtual environment for Python3.4 including the postgres driver (Virtualenv):
+System packages (Ubuntu/Debian)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: shell
 
-    $ mkvirtualenv landmatrix --system-site-packages -p /usr/bin/python3.4
-    $ workon landmatrix
-    
-3. Install Django requirements (PIP):
+    $ sudo apt install postgresql-10-postgis-scripts
 
-If you intend to do ANY development on the frontend/backend, use the requirements-dev.txt in the next step, it will
-include the default requirements.txt:
+    # Install yarn (https://yarnpkg.com/lang/en/docs/install/#debian-stable)
+    $ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    $ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    $ sudo apt-get update && sudo apt-get install yarn
 
-.. code-block:: shell
 
-    $ pip install -r requirements.txt
+Database
+~~~~~~~~
 
-4. Set up the database, user and postgis (Init script):
-
-.. code-block:: shell
-
-    $ ./init.sh
-
-5. Create settings file and adapt database settings:
+You will need PostgreSQL including PostGIS. This project will **not** work with anything else.
 
 .. code-block:: shell
 
-    $ cp landmatrix/settings.py.dist landmatrix/settings.py
+  $ sudo -u postgres psql -c "CREATE USER landmatrix WITH PASSWORD 'landmatrix'"
+  $ sudo -u postgres psql -c "CREATE DATABASE landmatrix WITH OWNER landmatrix"
+  $ sudo -u postgres psql landmatrix -c "CREATE EXTENSION postgis"
+
+
+Python virtual environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This can be done in several ways, but we recommend `Pipenv <https://docs.pipenv.org/en/latest/>`_.
+
+Once you have pipenv on your system, install the dependencies:
+
+.. code-block:: shell
+
+  $ pipenv --sync
+
+
+Custom settings via .env
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: shell
+
+  $ cp .env.example .env
+  $ $EDITOR .env  # make changes fitting your host system
+
+
+
+.. code-block:: shell
+
+  $ pipenv run ./manage.py createsuperuser
+
+
+old.
+=====
 
 6. Run database migrations:
 

@@ -81,7 +81,7 @@ INSTALLED_APPS = [
 
     # 'jstemplate',
 
-    # 'simple_history',
+    'simple_history',
     # 'django_extensions',
     'crispy_forms',
     'wkhtmltopdf',

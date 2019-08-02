@@ -29,6 +29,7 @@ django-rest-swagger = "*"
 django-wkhtmltopdf = "*"
 django-compressor = "*"
 django-sass-processor = "*"
+django-simple-history = "*"
 
 wagtail-blog = "*"
 wagtail-modeltranslation = "*"
@@ -51,7 +52,7 @@ pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref =
 #django-hstore==1.4.*
 #python-mimeparse==0.1.*
 #django-sekizai==0.9.*
-#django-simple-history==2.6.*
+
 #django-classy-tags==0.8.*
 #django-mptt==0.9.*
 #django-jstemplate==1.3.*
