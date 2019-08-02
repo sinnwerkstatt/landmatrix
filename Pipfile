@@ -17,6 +17,7 @@ djangorestframework-gis = "*"
 django-crispy-forms = "*"
 django-environ = "*"
 django-file-resubmit = "*"
+django-jstemplate = "*"
 django-modeltranslation = "*"
 django-contrib-comments = "*"
 django-threadedcomments = "*"
@@ -26,10 +27,10 @@ django-multiselectfield = "*"
 django-recaptcha = "*"
 django-registration = "*"
 django-rest-swagger = "*"
-django-wkhtmltopdf = "*"
 django-compressor = "*"
 django-sass-processor = "*"
 django-simple-history = "*"
+django-wkhtmltopdf = "*"
 
 wagtail-blog = "*"
 wagtail-modeltranslation = "*"
@@ -55,7 +56,7 @@ pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref =
 
 #django-classy-tags==0.8.*
 #django-mptt==0.9.*
-#django-jstemplate==1.3.*
+
 
 
 

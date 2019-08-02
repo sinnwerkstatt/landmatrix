@@ -24,3 +24,4 @@ before_script:
 test:
   script:
     - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci --exclude-tag integration
+    - pipenv run coverage report

@@ -79,7 +79,7 @@ INSTALLED_APPS = [
 
     'treebeard',
 
-    # 'jstemplate',
+    'jstemplate',
 
     'simple_history',
     # 'django_extensions',
@@ -216,7 +216,7 @@ IMPERSONATE = {
 }
 
 
-ELASTICSEARCH_URL = 'http://localhost:9200/'
+ELASTICSEARCH_URL = 'http://localhost'
 ELASTICSEARCH_INDEX_NAME = 'landmatrix'
 
 # CELERY SETTINGS

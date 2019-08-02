@@ -232,7 +232,7 @@ class ElasticSearch(object):
     stderr = None
 
     def __init__(self, index_name=None, stdout=None, stderr=None):
-        self.conn = PyElasticSearch()
+        self.conn = PyElasticSearch(urls=self.url)
         if index_name:
             self.index_name = index_name
         if stdout:

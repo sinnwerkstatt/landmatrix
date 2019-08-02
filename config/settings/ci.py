@@ -31,7 +31,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # ]
 
 
-ELASTICSEARCH_URL = 'http://elasticsearch:9200/'
+ELASTICSEARCH_URL = 'http://elasticsearch'
 BROKER_URL = 'redis://redis:6379/0'
 CELERY_REDIS_BACKEND = BROKER_URL
 CELERY_NAME = 'landmatrix'

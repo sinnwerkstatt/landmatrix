@@ -2,10 +2,8 @@
 
 {% load i18n static filter_tags %}
 
-{% block head %}
-  {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static "map/css/map.css" %}">
-  {% endaddtoblock %}
+{% block css %}
+  <link rel="stylesheet" href="{% static "map/css/map.css" %}">
 {% endblock %}
 
 {% block page_title %}{% trans "Map" %}{% endblock %}
@@ -38,7 +36,5 @@
 {% endblock %}
 
 {% block js %}
-  {% addtoblock "js" %}
-    {% include "map/includes/script.html" %}
-  {% endaddtoblock %}
+  {% include "map/includes/script.html" %}
 {% endblock %}
