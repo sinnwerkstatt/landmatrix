@@ -30,9 +30,7 @@ class BaseGeometryWidget(Widget):
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
 
-        defaults = (
-            'geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw',
-        )
+        defaults = ('geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw')
         for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
@@ -45,7 +43,7 @@ class BaseGeometryWidget(Widget):
         if value:
             try:
                 value = GEOSGeometry(value, self.map_srid)
-            except (GEOSException, ValueError) as err:
+            except (GEOSException, ValueError) as err:  # pragma: no cover
                 logger.error(
                     "Error creating geometry from value '%s' (%s)", value, err)
 
@@ -64,7 +62,7 @@ class BaseGeometryWidget(Widget):
                     ogr = value.ogr
                     ogr.transform(self.map_srid)
                     value = ogr
-                except gdal.GDALException as err:
+                except gdal.GDALException as err:  # pragma: no cover
                     logger.error(
                         "Error transforming geometry from srid '%s' to srid "
                         "'%s' (%s)", value.srid, self.map_srid, err)
@@ -79,7 +77,6 @@ class BaseGeometryWidget(Widget):
             "STATIC_URL": settings.STATIC_URL,
             "LANGUAGE_BIDI": translation.get_language_bidi(),
         })
-
 
         context = self.build_attrs(
             self.attrs or {},
@@ -213,7 +210,6 @@ class LocationWidget(TextInput):
 
         rendered_location = super().render(name, value, attrs, renderer)
         rendered_map = map_widget.render(map_name, None)
-        output = '<div>{}</div><div>{}</div>'.format(
-            rendered_location, rendered_map)
+        output = '<div>{}</div><div>{}</div>'.format(rendered_location, rendered_map)
 
         return output

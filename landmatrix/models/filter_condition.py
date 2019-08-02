@@ -22,30 +22,15 @@ class FilterCondition(models.Model):
 
     fk_rule = models.ForeignKey('landmatrix.FilterPreset', related_name='conditions', on_delete=models.CASCADE)
     variable = models.CharField(_("Variable"), max_length=32)
-    key = models.CharField(_("Key"), choices=KEY_CHOICES, max_length=32,
-                            default=KEY_CHOICE_VALUE)
-    operator = models.CharField(_("Operator"), max_length=20,
-                                choices=OPERATOR_CHOICES)
+    key = models.CharField(_("Key"), choices=KEY_CHOICES, max_length=32, default=KEY_CHOICE_VALUE)
+    operator = models.CharField(_("Operator"), max_length=20, choices=OPERATOR_CHOICES)
     value = models.CharField(_("Value"), max_length=1024, null=True, blank=True)
 
     def __str__(self):
         return '{}.{} {} {}'.format(self.variable, self.key, self.operator, self.value)
 
     def to_filter(self):
-        return Filter(
-            self.variable, self.operator, self.parsed_value,
-            label=str(self), key=self.key)
-
-    def __getitem__(self, item):
-        if item == 'variable':
-            return self.variable
-        elif item == 'key':
-            return self.key
-        elif item == 'operator':
-            return self.operator
-        elif item == 'value':
-            return self.parsed_value
-        raise ValueError('FilterCondition<{}>[{}]'.format(str(self), item))
+        return Filter(self.variable, self.operator, self.parsed_value, label=str(self), key=self.key)
 
     @property
     def parsed_value(self):

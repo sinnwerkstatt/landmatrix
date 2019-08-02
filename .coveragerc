@@ -1,0 +1,44 @@
+[run]
+omit =
+    integration/*
+    */tests/*
+    */migrations/*
+    */management/commands/*
+    */urls.py
+    */settings/*
+    */default_settings.py
+    */settings.py
+    */wsgi.py
+    */__init__.py
+    manage.py
+    fabfile.py
+source = .
+
+[report]
+show_missing = True
+skip_covered = True
+#sort = Miss
+exclude_lines =
+    pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __unicode__
+    def __repr__
+    def __str__
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+omit =
+    integration/*
+    */tests/*
+    */migrations/*
+    */management/commands/*
+    */urls.py
+    */settings/*
+    */default_settings.py
+    */settings.py
+    */wsgi.py
+    */__init__.py
+    manage.py
+    fabfile.py

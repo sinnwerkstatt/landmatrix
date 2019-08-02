@@ -7,7 +7,7 @@ from django.contrib.gis.gdal.geomtype import OGRGeomType
 
 
 def parse_shapefile(files):
-    '''
+    """
     Takes shapefiles (in memory or temp) and returns MultiPolygon
     suitable for saving to the DB.
 
@@ -15,7 +15,7 @@ def parse_shapefile(files):
 
     We don't check for unknown extensions as there are quite a few optional
     ones.
-    '''
+    """
     required_extensions = ('shp', 'shx', 'dbf', 'prj')
     extensions = [file_obj.name[-3:].lower() for file_obj in files]
     if set(required_extensions).difference(set(extensions)):
@@ -28,7 +28,7 @@ def parse_shapefile(files):
     with TemporaryDirectory() as temp_dir:
         shapefile_path = None
         for file_obj in files:
-            file_name = file_obj.name
+            file_name = os.path.basename(file_obj.name)
             file_extension = file_name[-3:].lower()
             full_path = os.path.join(temp_dir, file_name)
 
@@ -39,22 +39,22 @@ def parse_shapefile(files):
                 for chunk in file_obj.chunks():
                     temp_file.write(chunk)
 
-        if shapefile_path is None:
+        if shapefile_path is None:  # pragma: no cover
             raise ValueError('A file with the extension shp is required')
 
         try:
             clean_polygons = extract_polygons(shapefile_path)
-        except TypeError:
+        except TypeError:  # pragma: no cover
             raise ValueError('No polygons found in shapefile.')
 
     return clean_polygons
 
 
 def extract_polygons(shapefile_path):
-    '''
+    """
     Given an (existing, saved to disk) shapefile, retrieve all polygons as
     one MultiPolygon.
-    '''
+    """
     polygons = GDALMultiPolygon(OGRGeomType('MultiPolygon'))  # empty GDAL geom
 
     try:
@@ -66,7 +66,7 @@ def extract_polygons(shapefile_path):
                     geometry = feature.geom.transform(4326, clone=True)
                     polygons.add(geometry)
 
-    except GDALException as err:
+    except GDALException as err:  # pragma: no cover
         message = str(err)
         # Make sure we don't expose the confusing file path
         message = message.replace('at "{}"'.format(shapefile_path), '')

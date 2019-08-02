@@ -1,9 +1,3 @@
-'''
-django-wkhtmltopdf almost works, however when piping a file to it, it has
-trouble finding all assets.
-
-Instead, just pass the URL and let wkhtmltopdf (the script) work its magic.
-'''
 import os
 import copy
 import subprocess
@@ -18,7 +12,11 @@ from django.conf import settings
 from wkhtmltopdf.utils import _options_to_args
 
 
-def _update_querystring(url, params):
+def update_querystring(url, params):
+    """
+    django-wkhtmltopdf almost works, however when piping a file to it, it has trouble finding all assets.
+    Instead, just pass the URL and let wkhtmltopdf (the script) work its magic.
+    """
     parsed_url = urlparse.urlparse(url)
     query_string = dict(urlparse.parse_qsl(parsed_url[4]))
     query_string.update(params)
@@ -32,7 +30,7 @@ def _update_querystring(url, params):
     return new_url
 
 
-def wkhtmltopdf(pages, output=None, **kwargs):
+def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
     """
     Copied from wkhtmltopdf to improve error handling.
     If wkhtmltopdf fails, there's nothing we can do, but at least this version
@@ -124,7 +122,7 @@ class PDFResponse(FileResponse):
 
 
 class PDFViewMixin:
-    '''
+    """
     PDFViewMixin allows regular views to be rendered as a PDF.
 
     It works by making another request to the server, to render an HTML page
@@ -145,7 +143,7 @@ class PDFViewMixin:
 
     Additionally, a `pdf_filename` class attribute (or get_pdf_filename) method
     are required to set the response filename.
-    '''
+    """
     pdf_filename = None
     pdf_export_url = None
     pdf_render_url = None
@@ -154,14 +152,12 @@ class PDFViewMixin:
     pdf_rendering_context_name = 'is_pdf_export'
     pdf_javascript_delay = 200
 
-    def get(self, request, *args, **kwargs):
-        if 'format' in kwargs and kwargs['format'].upper() == 'PDF':
+    def get(self, request, *args, format=None, **kwargs):
+        if format and format.upper() == 'PDF':
             # build a URL to generate HTML for the PDF view
-            pdf_rendering_url = self.build_full_pdf_rendering_url(
-                request, *args, **kwargs)
+            pdf_rendering_url = self.build_full_pdf_rendering_url(request, *args, **kwargs)
             pdf_filename = self.get_pdf_filename(request, *args, **kwargs)
-            response = self.render_url_to_pdf_response(
-                pdf_rendering_url, pdf_filename)
+            response = self.render_url_to_pdf_response(pdf_rendering_url, pdf_filename)
         else:
             # Render the PDF HTML
             context = self.get_context_data(**kwargs)
@@ -182,26 +178,20 @@ class PDFViewMixin:
         return reverse(self.pdf_export_url, args=args, kwargs=kwargs)
 
     def get_pdf_render_url(self, request, *args, **kwargs):
-        '''Strip out the format arg, and reverse the URL'''
-        kwargs_copy = copy.copy(kwargs)
-        if 'format' in kwargs_copy:
-            del kwargs_copy['format']
-        return reverse(self.pdf_render_url, args=args, kwargs=kwargs_copy)
+        return reverse(self.pdf_render_url, args=args, kwargs=kwargs)
 
     def build_full_pdf_rendering_url(self, request, *args, **kwargs):
         pdf_render_url = self.get_pdf_render_url(request, *args, **kwargs)
         url = request.build_absolute_uri(pdf_render_url)
-        url = _update_querystring(url, {self.pdf_rendering_context_name: 1})
+        url = update_querystring(url, {self.pdf_rendering_context_name: 1})
 
         return url
 
     def render_url_to_pdf_response(self, url, filename):
         pdf_output = NamedTemporaryFile(delete=True)
 
-        wkhtmltopdf(
-            [url], javascript_delay=self.pdf_javascript_delay or 0,
-            output=pdf_output.name, load_error_handling='ignore',
-            no_stop_slow_scripts=True)
+        wkhtmltopdf([url], javascript_delay=self.pdf_javascript_delay or 0, output=pdf_output.name,
+                    load_error_handling='ignore', no_stop_slow_scripts=True)
 
         response = PDFResponse(pdf_output, filename=filename)
 

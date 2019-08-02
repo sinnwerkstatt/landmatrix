@@ -1,7 +1,7 @@
-'''
+"""
 TODO: these are used in many DB queries! Move those to models and build
 choices from them.
-'''
+"""
 from django.utils.translation import ugettext_lazy as _
 
 # Agriculture
@@ -95,28 +95,3 @@ actor_choices = (
     ('Intermediary', _("Intermediary")),
     ('Other', _("Other (please specify)")),
 )
-
-
-def int_choice_to_string(choices):
-    if choices and len(choices[0]) == 3:
-        for key, value, sub_choices in choices:
-            if sub_choices:
-                yield (value, value, int_choice_to_string(sub_choices))
-            else:
-                yield (value, value, None)
-    elif choices and len(choices[0]) == 2:
-        for key, value in choices:
-            yield (value, value)
-
-
-def get_choice_parent(selected_choice, choices):
-    for parent_choice in int_choice_to_string(choices):
-        if len(parent_choice) != 3:
-            break
-        child_choices = parent_choice[2]
-        if child_choices:
-            for child_choice in child_choices:
-                if child_choice[0] == selected_choice:
-                    return parent_choice[0]
-
-    return None

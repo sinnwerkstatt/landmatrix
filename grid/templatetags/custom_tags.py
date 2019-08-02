@@ -1,11 +1,9 @@
-import re
 import time, datetime
 from uuid import uuid4
 
 from django import template
 from django.forms.fields import MultiValueField, ChoiceField, BooleanField
-from django.template import Node, Variable
-from django.template.defaultfilters import slugify, title, stringfilter
+from django.template.defaultfilters import slugify, title
 from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
@@ -20,38 +18,12 @@ from grid.utils import has_perm_approve_reject
 register = template.Library()
 
 
-@register.filter
-def lookup(d, key):
-    if key < len(d):
-        return d[key]
-
-
-@register.filter
-@stringfilter
-def slug_and_slash_to_plus(value):
-    """
-    Converts any slashes in the given value into spaces, then slugify's the result.
-    Leading and Trailing slashes (e.g. /some/url/) are ignored.
-    """
-    return slugify('+'.join(value.split('/')))
-
-
-@register.filter
-def replaceUnderscores(value):
-    return value.replace("_", " ")
-
-
-@register.filter
-def split(str,splitter):
-    return str.split(splitter)
-
-
 @register.filter(name='ensure_list')
 def ensure_list(value):
     if isinstance(value, (list, tuple)):
         return value
     else:
-        return [value,]
+        return [value, ]
 
 
 @register.filter(name='fields_display')
@@ -68,9 +40,9 @@ def get_display_values(values, field):
     for v in values:
         if "|" in v:
             for ybd in v.split("|"):
-                result.append("%s%s" % (ybd.split(":")[1] and "[%s]" % ybd.split(":")[1] or "" , get_display_value_by_field(field, ybd.split(":")[0])))
+                result.append("%s%s" % (ybd.split(":")[1] and "[%s]" % ybd.split(":")[1] or "", get_display_value_by_field(field, ybd.split(":")[0])))
         elif ":" in v:
-            result.append("%s%s" % (v.split(":")[1] and "[%s] " % v.split(":")[1] or "" , get_display_value_by_field(field, v.split(":")[0])))
+            result.append("%s%s" % (v.split(":")[1] and "[%s] " % v.split(":")[1] or "", get_display_value_by_field(field, v.split(":")[0])))
         else:
             result.append(get_display_value_by_field(field, v))
     return result
@@ -96,9 +68,9 @@ def get_display_value_by_field(field, value):
         if isinstance(value, (list, tuple)):
             dvalue = []
             for v in value:
-                dvalue.append(get_value_from_i18nized_choices_dict(choices_dict, value))
+                dvalue.append(get_value_from_choices_dict(choices_dict, v))
         else:
-            dvalue = value and get_value_from_i18nized_choices_dict(choices_dict, value)
+            dvalue = value and get_value_from_choices_dict(choices_dict, value)
         return dvalue
     if isinstance(field, BooleanField):
         dvalue = value == "on" and "True" or value == "off" and "False" or None
@@ -106,38 +78,17 @@ def get_display_value_by_field(field, value):
     return value
 
 
-def get_value_from_i18nized_choices_dict(choices_dict, value):
-    try:
-        if choices_dict.get(int(value)):
-            return str(choices_dict.get(int(value)))
-    except ValueError:
-        pass
+def get_value_from_choices_dict(choices_dict, value):
 
-    if value in choices_dict.values():
+    if str(value).isdigit():
+        int_value = int(value)
+        if int_value in choices_dict:
+            return str(choices_dict.get(int_value))
+
+    if value in choices_dict:
         return value
-    raise RuntimeError('Damn: %s not in %s' %(value, str(choices_dict)))
 
-
-@register.filter
-def get_range(value):
-  """
-    Filter - returns a list containing range made from given value
-    Usage (in template):
-
-    <ul>{% for i in 3|get_range %}
-      <li>{{ i }}. Do something</li>
-    {% endfor %}</ul>
-
-    Results with the HTML:
-    <ul>
-      <li>0. Do something</li>
-      <li>1. Do something</li>
-      <li>2. Do something</li>
-    </ul>
-
-    Instead of 3 one may use the variable set in the views
-  """
-  return range(int(value))
+    return
 
 
 @register.filter
@@ -154,77 +105,12 @@ def naturaltime_from_string(value):
         return "%s ago" % natural_time[0]
 
 
-@register.filter
-def timestamp_from_epoch(timestamp):
-    try:
-        #assume, that timestamp is given in seconds with decimal point
-        ts = float(timestamp)
-    except ValueError:
-        return None
-    return datetime.datetime.fromtimestamp(ts)
-
-
-
-"""
-This is custom tag I wrote for myself for solving situations when you have filter form and page
-numbers in the same page. You want to change ?page=.. or add it if it doesn't exist to save
-filter form data while moving through pages.
-
-Usage: place this code in your application_dir/templatetags/add_get_parameter.py
-In template:
-{% load add_get_parameter %}
-<a href="{% add_get_paramater param1='const_value',param2=variable_in_context %}">
-    Link with modified params
-</a>
-
-It's required that you have 'django.core.context_processors.request' in TEMPLATE_CONTEXT_PROCESSORS
-
-URL: http://django.mar.lt/2010/07/add-get-parameter-tag.html
-"""
-
-
-class AddGetParameter(Node):
-    def __init__(self, values):
-        self.values = values
-
-    def render(self, context):
-        req = context.get('request')
-        params = req.GET.copy()
-        for key, value in self.values.items():
-            params[key] = Variable(value).resolve(context)
-        return '?%s' % params.urlencode()
-
-
-@register.tag
-def add_get_parameter(parser, token):
-    from re import split
-    contents = split(r'\s+', token.contents, 2)[1]
-    pairs = split(r',', contents)
-
-    values = {}
-
-    for pair in pairs:
-        s = split(r'=', pair, 2)
-        values[s[0]] = s[1]
-
-    return AddGetParameter(values)
-
-
-@register.simple_tag
-def get_GET_params(GET):
-    return GET.urlencode()
-
-
 @register.simple_tag
 def add_or_update_param(GET, new_param, new_value):
     params = GET.copy()
     params[new_param] = new_value
     return params.urlencode()
 
-
-@register.filter
-def create_order_by_link(value):
-    return value
 
 @register.filter
 def add_class(field, new_cls):
@@ -243,12 +129,6 @@ def add_class(field, new_cls):
         else:
             attrs['class'] = new_cls
         return mark_safe(field.as_widget())
-        #return mark_safe(field.as_widget(attrs={"class":new_cls}))
-
-
-@register.filter
-def classname(obj):
-    return obj.__class__.__name__
 
 
 @register.filter
@@ -261,12 +141,6 @@ def decimalgroupstring(obj):
         return str(new + " " + " ".join(origs))
     except ValueError:
         return obj
-
-
-@register.filter
-def addstr(arg1, arg2):
-    """concatenate arg1 & arg2"""
-    return str(arg1) + str(arg2)
 
 
 @register.filter

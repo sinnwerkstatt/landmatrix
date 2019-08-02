@@ -67,7 +67,7 @@ def init_fixtures():
         run("%(path)s/manage.py loaddata init.json" % env)
         
 def update():
-    ''' Only deploy and reload modules from git, do no installing or migrating'''
+    """ Only deploy and reload modules from git, do no installing or migrating"""
     with cd(env.path):
         run("git pull %(push_remote)s %(push_branch)s" % env)
         compile_less()

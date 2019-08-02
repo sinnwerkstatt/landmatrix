@@ -1,15 +1,11 @@
-'''
-Collected form widgets.
-
-There is a lot of code in here. Most of is just adding attributes and html
-though. A lot of this can be moved to templates or made simpler.
-Also, I don't think all of these are actually used.
-TODO: clean up
-'''
+"""
+Collected form widgets
+"""
 import re
 from itertools import chain
 
 from django import forms
+from django.forms import ClearableFileInput
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
@@ -62,7 +58,7 @@ class YearBasedWidget(forms.MultiWidget):
         return [None, None]
 
     def render_for_template(self):
-        raise Exception(self.attrs)
+        raise NotImplementedError()
 
     def format_output(self, rendered_widgets):
         return u''.join(rendered_widgets)
@@ -196,61 +192,6 @@ class YearBasedSelectMultipleNumber(YearBasedWidget):
         ]
 
 
-class YearBasedMultipleSelect(YearBasedWidget):
-    def __init__(self, *args, **kwargs):
-        self.choices = kwargs.pop("choices")
-        # Remove empty option
-        self.choices = filter(lambda c: c[0] != 0, self.choices)
-        self.widget = forms.CheckboxSelectMultiple(choices=self.choices, attrs={"class": "year-based"})
-        super(YearBasedMultipleSelect, self).__init__(*args, **kwargs)
-
-
-class YearBasedIntegerField(forms.MultiValueField):
-
-    def __init__(self, *args, **kwargs):
-        kwargs["fields"] = [
-            forms.IntegerField(required=False),
-            forms.CharField(required=False),
-            forms.BooleanField(required=False)
-        ]
-        if 'placeholder' in kwargs:
-            attrs = {'placeholder': kwargs.pop('placeholder', None)}
-        else:
-            attrs = {}
-        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs=attrs)
-        super(YearBasedIntegerField, self).__init__(*args, **kwargs)
-
-    def clean(self, value):
-        # update fields
-        if value:
-            self.fields = []
-            for i in range(len(value)//3):
-                self.fields.extend([
-                    forms.IntegerField(required=False),
-                    forms.CharField(required=False),
-                    forms.BooleanField(required=False)
-                ])
-        return super(YearBasedIntegerField, self).clean(value)
-
-    def compress(self, data_list):
-        """  """
-        if data_list:
-            yb_data = []
-            for i in range(len(data_list)//3):
-                if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
-            return "#".join(yb_data)
-        else:
-            self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
-
-
-class YearBasedCheckboxInput(forms.MultiWidget):
-    def __init__(self, *args, **kwargs):
-        self.widget = forms.CheckboxInput(attrs={"class": "year-based"})
-        super().__init__(*args, **kwargs)
-
-
-
 class TextChoiceInput(YearBasedWidget):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs.pop("choices")
@@ -268,34 +209,6 @@ class MultiTextInput(YearBasedWidget):
         return [
             forms.TextInput(),
         ]
-
-
-class SelectAllCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
-
-    def render(self, name, value, attrs=None, renderer=None):
-        output = u"""
-          <label for="select-all-%(id)s">
-          <input type="checkbox" name="select-all-%(id)s" class="select" id="select-all-%(id)s">
-           Select all
-          </label>
-          <script type="text/javascript">
-            $("#select-all-%(id)s").click(function() {
-            $(this).parents(".input-group").find("ul :checkbox").attr("checked", this.checked);
-            });
-            $(document).ready(function () {
-                var checked = $("#select-all-%(id)s").parents(".input-group").find("ul :checked").length;
-                var all = $("#select-all-%(id)s").parents(".input-group").find("ul :checkbox").length
-                if (checked == all) {
-                    $("#select-all-%(id)s").attr("checked", "checked");
-                }
-            });
-
-          </script>
-        """ % {
-            "id": attrs.get("id"),
-        }
-        output += super(SelectAllCheckboxSelectMultiple, self).render(name, value, attrs, renderer)
-        return mark_safe(output)
 
 
 class PrimaryInvestorSelect(forms.Select):
@@ -351,7 +264,7 @@ class FileInputWithInitial(ResubmitFileWidget):
     new_upload_template = "{}-new"
 
     def render(self, name, value, attrs=None, renderer=None, **kwargs):
-        if attrs is None:
+        if attrs is None:  # pragma: no cover
             attrs = {}
 
         output = ""
@@ -435,64 +348,6 @@ class NestedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         return mark_safe(u'\n'.join(output))
 
 
-class LivesearchSelectMultiple(forms.CheckboxSelectMultiple):
-
-    def render(self, name, value, attrs=None, renderer=None):
-        output = ['<input type="text" class="livesearch multiple"></input>']
-        if value is None: value = []
-        has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, {name: name})
-        output.append(u'<ul>')
-        # Normalize to strings
-        str_values = set([force_text(v.id) for v in value])
-        for i, (option_value, option_label) in enumerate(self.choices):
-            option_value = force_text(option_value)
-            option_label = conditional_escape(force_text(option_label))
-            output.append(u'<li><a href="#%s" %s>%s</a>%s</li>' % (
-                option_value,
-                option_value in str_values and "class=\"selected-subsidiary\"" or "",
-                option_label,
-                option_value in str_values and "<input type=\"hidden\" name=\"%s\" value=\"%s\">" % (name, option_value) or ""
-            ))
-        output.append(u'</ul>')
-        return mark_safe(u'\n'.join(output))
-
-
-class LivesearchSelect(forms.RadioSelect):
-
-    def render(self, name, value, attrs=None, renderer=None):
-        output = [
-            '<a href="#" class="livesearch"><i class="lm lm-search"></i></a>',
-            '<p class="livesearch-active"></p>',
-            '<input type="hidden" name="%s" value="%s">' % (name, value)]
-        if value is None: value = []
-        has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, {name: name})
-        output.append(u'<ul style="display:none">')
-        value = force_text(value)
-        for i, (option_value, option_label) in enumerate(self.choices):
-            option_value = force_text(option_value)
-            option_label = conditional_escape(force_text(option_label))
-            output.append(u'<li><a href="#%s" %s>%s</a></li>' % (
-                option_value,
-                option_value == value and "class=\"active\"" or "",
-                option_label
-            ))
-        output.append(u'</ul>')
-        return mark_safe(u'\n'.join(output))
-
-
-class DecimalInput(forms.TextInput):
-
-    def render(self, name, value, attrs=None, renderer=None):
-        attrs.update({
-            'type': 'number',
-            'step': 'any',
-            'class': 'form-control'
-        })
-        return super(DecimalInput, self).render(name, value, attrs, renderer)
-
-
 class CountrySelect(forms.Select):
 
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
@@ -513,38 +368,10 @@ class CommentInput(forms.Textarea):
         return super(CommentInput, self).render(name, value, attrs, renderer)
 
 
-class BrowseTextInput(forms.TextInput):
-
-    def render(self, name, value, attrs=None, renderer=None):
-        output = super(BrowseTextInput, self).render(name, value, attrs, renderer)
-        output = '<div class="value-wrapper">%s</div>' % output
-        output += '<input type="hidden" name="hidden_%s" value="%s"/>' % (name, ",".join(value))
-        return mark_safe(output)
-
-    def value_from_datadict(self, data, files, name):
-
-        value = data.getlist(name)
-        if not value:
-            # could be ybd field, try with suffix _0 and _1 for value|year
-            ybd = []
-            value = ",".join(data.getlist("%s_0" % name, []))
-            if value:
-                ybd.append(value)
-            year = ",".join(data.getlist("%s_1" % name, []))
-            if year:
-                if ybd:
-                    ybd.append(year)
-                else:
-                    ybd.append("")
-                    ybd.append(year)
-            value = ["|".join(ybd)]
-        return value or []
-
-
 class AreaWidget(forms.MultiWidget):
-    '''
+    """
     Area widget includes a map, and a shapefile upload field.
-    '''
+    """
 
     MAP_WIDGET_ATTRS = {
         'map_width': 600,
@@ -558,6 +385,7 @@ class AreaWidget(forms.MultiWidget):
     FILE_WIDGET_ATTRS = {
         'multiple': True,
     }
+    map_srid = 4326
 
     def __init__(self, *args, **kwargs):
         self.initially_hidden = kwargs.pop('initially_hidden', True)
@@ -568,15 +396,16 @@ class AreaWidget(forms.MultiWidget):
 
         widgets = [
             SerializedMapWidget(attrs=map_attrs),
-            ResubmitFileWidget(attrs=file_attrs),
+            # ResubmitFileWidget(attrs=file_attrs),  - doesn't yet seem to support multiple
+            ClearableFileInput(attrs=file_attrs),
         ]
         super().__init__(widgets, *args, **kwargs)
 
     def render(self, name, value, attrs=None, renderer=None):
-        '''
+        """
         Overridden to pass name to format_output, so we can do js things
         with the map.
-        '''
+        """
         if self.is_localized:
             for widget in self.widgets:
                 widget.is_localized = self.is_localized
@@ -590,7 +419,7 @@ class AreaWidget(forms.MultiWidget):
         for i, widget in enumerate(self.widgets):
             try:
                 widget_value = value[i]
-            except IndexError:
+            except IndexError:  # pragma: no cover
                 widget_value = None
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
@@ -611,7 +440,7 @@ class AreaWidget(forms.MultiWidget):
             show_hide_link_text = _('Hide area')
             show_hide_link_alt_text = _('Show area')
 
-        output = '''
+        output = """
         <div id="{name}-container" class="area-container" style="{style}">
             {map_widget}
             <div class="input-group">
@@ -620,7 +449,7 @@ class AreaWidget(forms.MultiWidget):
             </div>
         </div>
         <a href="#{name}-container" class="show-hide-area pull-right" data-alternate="{link_alt_text}">{link_text}</a>
-        '''.format(
+        """.format(
             name=name, style=container_style, map_widget=rendered_widgets[0],
             file_widget=rendered_widgets[1], link_text=show_hide_link_text,
             link_alt_text=show_hide_link_alt_text,

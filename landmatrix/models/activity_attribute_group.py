@@ -1,5 +1,3 @@
-from landmatrix.models.default_string_representation import DefaultStringRepresentation
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.db import models as geomodels
@@ -16,7 +14,7 @@ class ActivityAttributeGroup(models.Model):
         verbose_name_plural = _('Activity attribute groups')
 
 
-class ActivityAttributeBase(DefaultStringRepresentation, geomodels.Model):
+class ActivityAttributeBase(geomodels.Model):
     fk_group = models.ForeignKey(ActivityAttributeGroup, blank=True, null=True, verbose_name=_("Activity Attribute Group"),
                                  on_delete=models.SET_NULL)
     fk_language = models.ForeignKey("Language", blank=True, null=True, verbose_name=_("Language"),

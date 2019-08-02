@@ -31,16 +31,8 @@ urlpatterns = [
         name='manage_reject_delete_investor'),
 
     url(r'^manage/$', ManageRootView.as_view(), name='manage'),
-    url(
-        r'^log/latest_added/', LogAddedView.as_view(), name='log_added'),
-    url(
-        r'^log/latest_modified/', LogModifiedView.as_view(),
-        name='log_modified'),
-    url(
-        r'^log/latest_deleted/', LogDeletedView.as_view(), name='log_deleted'),
-    url(
-        r'^log/$',
-        login_required(
-            RedirectView.as_view(pattern_name='log_added', permanent=False)),
-        name='log'),
+    url(r'^log/latest_added/', LogAddedView.as_view(), name='log_added'),
+    url(r'^log/latest_modified/', LogModifiedView.as_view(), name='log_modified'),
+    url(r'^log/latest_deleted/', LogDeletedView.as_view(), name='log_deleted'),
+    url(r'^log/$', login_required(RedirectView.as_view(pattern_name='log_added', permanent=False)), name='log'),
 ]

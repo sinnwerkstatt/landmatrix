@@ -9,7 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.conf import settings
 
-from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorBase, \
     HistoricalInvestorVentureInvolvement
@@ -20,9 +19,9 @@ from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
 
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
-        '''
+        """
         Status public, not to be confused with is_public.
-        '''
+        """
         if user and user.is_authenticated:
             return self.filter(models.Q(fk_status_id__in=ActivityBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
@@ -30,12 +29,9 @@ class ActivityQuerySet(models.QuerySet):
             return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
 
     def public_or_deleted(self, user=None):
-        statuses = ActivityBase.PUBLIC_STATUSES + (
-            ActivityBase.STATUS_DELETED,
-        )
+        statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_DELETED, )
         if user and user.is_authenticated:
-            return self.filter(models.Q(fk_status_id__in=statuses) |
-                        models.Q(history_user=user))
+            return self.filter(models.Q(fk_status_id__in=statuses) | models.Q(history_user=user))
         else:
             return self.filter(fk_status_id__in=statuses)
 
@@ -74,37 +70,8 @@ class ActivityQuerySet(models.QuerySet):
     def rejected(self):
         return self.filter(fk_status_id=ActivityBase.STATUS_REJECTED)
 
-    def activity_identifier_count(self):
-        return self.order_by('-id').values('activity_identifier').distinct().count()
 
-    def overall_activity_count(self):
-        return self.public().activity_identifier_count()
-
-    def public_activity_count(self):
-        return self.public().filter(is_public=False).activity_identifier_count()
-
-
-class NegotiationStatusManager(models.Manager):
-    '''
-    Manager for Negotiation status grouped query. (used by API call)
-    '''
-
-    def get_queryset(self):
-        deals_count = Coalesce(
-            models.Count('activity_identifier'), models.Value(0))
-        hectares_sum = Coalesce(models.Sum('deal_size'), models.Value(0))
-
-        queryset = ActivityQuerySet(self.model, using=self._db)
-        queryset = queryset.exclude(negotiation_status__isnull=True)
-        queryset = queryset.values('negotiation_status')
-        queryset = queryset.annotate(
-            deals_count=deals_count, hectares_sum=hectares_sum)
-        queryset = queryset.distinct()
-
-        return queryset
-
-
-class ActivityBase(DefaultStringRepresentation, models.Model):
+class ActivityBase(models.Model):
     ACTIVITY_IDENTIFIER_DEFAULT = 2147483647  # Max safe int
 
     # FIXME: Replace fk_status with Choice Field
@@ -226,19 +193,18 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1, on_delete=models.PROTECT)
 
     objects = ActivityQuerySet.as_manager()
-    negotiation_status_objects = NegotiationStatusManager()
 
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
-        '''
+        """
         If there's no identifier, set it to a default, and update it to the id
         post save.
 
         This is pretty much just for import, which keeps trying to get the
         next id and getting it wrong.
-        '''
+        """
         if self.activity_identifier is None:
             self.activity_identifier = self.ACTIVITY_IDENTIFIER_DEFAULT
 
@@ -248,7 +214,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             kwargs['update_fields'] = ['activity_identifier']
             self.activity_identifier = self.__class__.get_next_activity_identifier()
             # re-save
-            super().save(*args, **kwargs)
+            super().save()
 
     @classmethod
     def get_next_activity_identifier(cls):
@@ -273,7 +239,6 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     def operational_stakeholder(self):
         if self.involvements.count() == 0:
             return
-            raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self), str(involvement)))
         else:
             involvement = self.involvements.order_by('-id')[0]
         return involvement.fk_investor
@@ -305,21 +270,26 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         return queryset.latest()
 
     def is_editable(self, user=None):
-        if self.get_latest(user) != self:
-            # Only superuser are allowed to edit old versions
-            if user and user.is_superuser:
-                return True
-            return False
-        if user:
-            # Status: Pending
-            is_editor = user.has_perm('landmatrix.review_activity')
-            is_author = self.history_user_id == user.id
-            # Only Editors and Administrators are allowed to edit pending deals
-            if not is_editor:
-                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
-                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
-                    return False
-        return True
+        if user and user.is_authenticated:
+            if self.get_latest(user) != self:
+                # Only superuser are allowed to edit old versions
+                if user and user.is_superuser:
+                    return True
+                return False
+            else:
+                is_editor = user.has_perm('landmatrix.review_activity')
+                # Only Editors and Administrators are allowed to edit pending deals
+                if is_editor:
+                    return True
+                else:
+                    is_author = self.history_user_id == user.id
+                    if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE):
+                        return False
+                    elif self.fk_status_id == self.STATUS_REJECTED and not is_author:
+                        return False
+                    else:
+                        return True
+        return False
 
     @property
     def target_country(self):
@@ -328,19 +298,16 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             country = country.first()
             try:
                 return Country.objects.defer('geom').get(id=country.value)
-            except Country.DoesNotExist:
+            except Country.DoesNotExist:  # pragma: no cover
                 return None
-            # Deprecated: Was necessary because of wrong values in the database
-            except:
-                return None
-        else:
+        else:  # pragma: no cover
             return None
 
     @property
     def attributes_as_dict(self):
-        '''
+        """
         Returns all attributes, *grouped* as a nested dict.
-        '''
+        """
         attrs = defaultdict(dict)
         for attr in self.attributes.select_related('fk_group'):
             attrs[attr.fk_group.name][attr.name] = attr.value
@@ -389,7 +356,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 country = Country.objects.defer('geom').select_related('fk_region')
                 country = country.get(id=country_id)
                 countries.append(country)
-            except Country.DoesNotExist:
+            except Country.DoesNotExist:  # pragma: no cover
                 pass
         return countries
 
@@ -500,20 +467,12 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         # 4B. Invalid Parent companies/investors?
         if self.has_invalid_operating_company(involvements) and self.has_invalid_parents(involvements):
             return False
-        # 6. High income country?
+        # 5. High income country?
         if self.is_high_income_target_country():
             return False
         return True
 
     def get_not_public_reason(self):
-        # Presets:
-        # >= 2000
-        # Size given and size > 200 ha
-        # 5. has subinvestors
-        # 6. has valid investor (not unknown)
-        # 7. Intention is not Mining
-        # 8. Target country is no high income country
-
         # 1. Flag „not public“ set?
         if self.has_flag_not_public():
             return '1. Flag not public set'
@@ -524,16 +483,13 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         involvements = self.involvements.all()
         if involvements.count() == 0:
             return '3. involvements missing'
-        # 4. Invalid Operating company name?
-        if self.has_invalid_operating_company(involvements):
-            return ''
-        # 4. Invalid Operating company name?
-        # 5. Invalid Parent companies/investors?
+        # 4A. Invalid Operating company name?
+        # 4B. Invalid Parent companies/investors?
         if self.has_invalid_operating_company(involvements) and self.has_invalid_parents(involvements):
-            return '4. Invalid Operating company name or 5. Invalid Parent companies/investors'
-        # 6. High income country
+            return '4. Invalid Operating company name and Invalid Parent companies/investors'
+        # 5. High income country?
         if self.is_high_income_target_country():
-            return '6. High income country'
+            return '5. High income country'
         return 'Filters passed (public)'
 
     def is_high_income_target_country(self):
@@ -552,7 +508,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     def has_invalid_operating_company(self, involvements):
         for i in involvements:
-            if not i.fk_investor:
+            if not i.fk_investor:  # pragma: no cover
                 continue
             investor_name = i.fk_investor.name
             invalid_name = "^(unknown|unnamed)( \(([, ]*(unnamed investor [0-9]+)*)+\))?$"
@@ -562,7 +518,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     def has_invalid_parents(self, involvements):
         for i in involvements:
-            if not i.fk_investor:
+            if not i.fk_investor:  # pragma: no cover
                 continue
             # Operating company name given?
             # investor_name = i.fk_investor.name
@@ -594,12 +550,11 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     #    size_too_small = int(intended_size) < MIN_DEAL_SIZE and int(contract_size) < MIN_DEAL_SIZE and int(production_size) < MIN_DEAL_SIZE
     #    return no_size_set or size_too_small
 
-
     def has_flag_not_public(self):
         # Filter B1 (flag is unreliable not set):
         not_public = self.attributes.filter(name="not_public")
         not_public = len(not_public) > 0 and not_public[0].value or None
-        return not_public and not_public in ("True", "on")
+        return not_public and not_public in ("True", "on") or False
 
     def get_init_date(self):
         init_dates = []
@@ -624,7 +579,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 init_dates.append(implementation_stati[0].date)
         if init_dates:
             return min(init_dates)
-        else:
+        else:  # pragma: no cover
             return None
 
     def get_deal_scope(self):
@@ -660,7 +615,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         elif len(target_countries) > 0 and len(investor_countries) == 0:
             # treat deals without investor country as transnational
             return "transnational"
-        else:
+        else:  # pragma: no cover
             return None
 
     def format_investors(self, investors):
@@ -689,14 +644,14 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         try:
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
             return activity.history_date
-        except:
+        except:  # pragma: no cover
             return None
 
     def get_updated_user(self):
         try:
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
             return activity.history_user.id
-        except:
+        except:  # pragma: no cover
             return None
 
     def get_fully_updated_date(self):
@@ -704,7 +659,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
                                                          fully_updated=True).latest()
             return activity.history_date
-        except:
+        except:  # pragma: no cover
             return None
 
     def get_fully_updated_user(self):
@@ -712,7 +667,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
                                                          fully_updated=True).latest()
             return activity.history_user.id
-        except:
+        except:  # pragma: no cover
             return None
 
 
@@ -780,13 +735,13 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return self.filter(activity_identifier__in=qs).filter(id__in=self.latest_ids())
 
     def _single_revision_identifiers(self):
-        '''
+        """
         Get all activity identifiers (as values) that only have a single
         revision.
 
         This query looks a bit strange, but the order of operations is required
         in order to construct the group by correctly.
-        '''
+        """
         queryset = HistoricalActivity.objects.values('activity_identifier') # don't use 'self' here
         queryset = queryset.annotate(
             revisions_count=models.Count('activity_identifier'),
@@ -798,17 +753,17 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return queryset
 
     def with_multiple_revisions(self):
-        '''
+        """
         Get only new activities (without any other historical instances).
-        '''
+        """
         subquery = self._single_revision_identifiers()
         queryset = self.exclude(activity_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
 
     def without_multiple_revisions(self):
-        '''
+        """
         Get only new activities (without any other historical instances).
-        '''
+        """
         subquery = self._single_revision_identifiers()
         queryset = self.filter(activity_identifier__in=subquery)
         return queryset.filter(id__in=self.latest_ids())
@@ -842,7 +797,8 @@ class HistoricalActivity(ActivityBase):
     objects = HistoricalActivityQuerySet.as_manager()
 
     def approve_change(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
+        if self.fk_status_id != HistoricalActivity.STATUS_PENDING:  # pragma: no cover
+            return
 
         # Only approvals of administrators should go public
         if user.has_perm('landmatrix.change_activity'):
@@ -863,29 +819,34 @@ class HistoricalActivity(ActivityBase):
             except IndexError:
                 pass
             else:
-                investor.approve()
+                investor.approve_change(user=user, comment=comment)
 
             self.update_public_activity()
 
-        self.changesets.create(fk_user=user, comment=comment)
+            self.changesets.create(fk_user=user, comment=comment)
 
     def reject_change(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
-        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
-        self.save(update_fields=['fk_status'])
-        #self.update_public_activity() - don't update public activity
+        if self.fk_status_id != HistoricalActivity.STATUS_PENDING:  # pragma: no cover
+            return
 
-        try:
-            investor = self.involvements.all()[0].fk_investor
-        except IndexError:
-            pass
-        else:
-            investor.reject()
+        # Only rejections of administrators should go public
+        if user.has_perm('landmatrix.change_activity'):
+            self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+            self.save(update_fields=['fk_status'])
+            #self.update_public_activity() - don't update public activity
 
-        self.changesets.create(fk_user=user, comment=comment)
+            try:
+                investor = self.involvements.all()[0].fk_investor
+            except IndexError:
+                pass
+            else:
+                investor.reject_change(user=user, comment=comment)
+
+            self.changesets.create(fk_user=user, comment=comment)
 
     def approve_delete(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
+        if self.fk_status_id != HistoricalActivity.STATUS_TO_DELETE:  # pragma: no cover
+            return
 
         # Only approvals of administrators should be deleted
         if user.has_perm('landmatrix.delete_activity'):
@@ -893,21 +854,25 @@ class HistoricalActivity(ActivityBase):
             self.save(update_fields=['fk_status'])
             self.update_public_activity()
 
-        self.changesets.create(fk_user=user, comment=comment)
+            self.changesets.create(fk_user=user, comment=comment)
 
     def reject_delete(self, user=None, comment=None):
-        assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
-        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
-        self.save(update_fields=['fk_status'])
+        if self.fk_status_id != HistoricalActivity.STATUS_TO_DELETE:  # pragma: no cover
+            return
 
-        try:
-            investor = self.involvements.all()[0].fk_investor
-        except IndexError:
-            pass
-        else:
-            investor.reject()
+        # Only approvals of administrators should be deleted
+        if user.has_perm('landmatrix.delete_activity'):
+            self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+            self.save(update_fields=['fk_status'])
 
-        self.changesets.create(fk_user=user, comment=comment)
+            try:
+                investor = self.involvements.all()[0].fk_investor
+            except IndexError:  # pragma: no cover
+                pass
+            else:
+                investor.reject_change(user=user, comment=comment)
+
+            self.changesets.create(fk_user=user, comment=comment)
 
     def compare_attributes_to(self, version):
         changed_attrs = []  # (group_id, key, current_val, other_val)
@@ -963,13 +928,13 @@ class HistoricalActivity(ActivityBase):
         if self.fk_status_id == self.STATUS_DELETED:
             if activity:
                 activity.delete()
-            return True
+            return
         elif self.fk_status_id == self.STATUS_REJECTED:
             # Activity add has been rejected?
             activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
-            if len(activities) == 1:
+            if activity and len(activities) == 1:
                 activity.delete()
-                return True
+            return
 
         if not activity:
             activity = Activity.objects.create(
@@ -1026,14 +991,14 @@ class HistoricalActivity(ActivityBase):
 
     @property
     def changeset_comment(self):
-        '''
+        """
         Previously in changeset protocol there was some voodoo around getting
         a changeset with the same datetime as history_date. That doesn't work,
         because history_date is set when the activity is revised, and the
         changeset is timestamped when it is reviewed.
 
         So, just grab the most recent one.
-        '''
+        """
 
         changeset = self.changesets.first()
         comment = changeset.comment if changeset else ''

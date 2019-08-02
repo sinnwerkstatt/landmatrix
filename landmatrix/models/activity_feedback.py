@@ -4,13 +4,6 @@ from django.conf import settings
 from django.utils import timezone
 
 
-class ActivityFeedbackManager(models.Manager):
-
-    def active(self):
-        active_statuses = ('active', 'overwritten')
-        return self.filter(fk_activity__fk_status__name__in=active_statuses)
-
-
 class ActivityFeedback(models.Model):
 
     fk_activity = models.ForeignKey(
@@ -23,8 +16,6 @@ class ActivityFeedback(models.Model):
         related_name="user_created", blank=True, null=True, on_delete=models.SET_NULL)
     comment = models.TextField(_("Comment"))
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
-
-    objects = ActivityFeedbackManager()
 
     def __str__(self):
         return str(self.fk_activity)

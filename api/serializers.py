@@ -13,7 +13,7 @@ from landmatrix.models.investor import InvestorBase, HistoricalInvestor
 class FilterPresetSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPreset
-        exclude = ('is_default', 'overrides_default')
+        exclude = ('is_default_country', 'is_default_global')
 
 
 class UserSerializer(serializers.ModelSerializer):

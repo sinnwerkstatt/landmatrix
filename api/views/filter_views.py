@@ -2,6 +2,7 @@ import coreapi
 import coreschema
 from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
+from django.views import View
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -14,7 +15,7 @@ from api.serializers import FilterPresetSerializer
 from grid.views.browse_filter_conditions import get_activity_field_label, get_investor_field_label
 
 
-class FilterDocTypeMixin:
+class FilterDocTypeMixin(View):
 
     doc_type = ''
 
@@ -108,7 +109,7 @@ class FilterCreateView(FilterDocTypeMixin,
                 if len(value) == 1:
                     value = value[0]
                 display_value = request_data.get('display_value', None)
-            except KeyError as err:
+            except KeyError as err:  # pragma: no cover
                 raise serializers.ValidationError(
                     {err.args[0]: _("This field is required.")})
             # Check for duplicates
@@ -119,7 +120,6 @@ class FilterCreateView(FilterDocTypeMixin,
                     return Response(stored_filters)
             # Remove filters for same variable
             if request_data.get('replace_variable', ''):
-                print("TEST: " + request_data.get('replace_variable', ''))
                 stored_filters = dict((k, v) for k, v in stored_filters.items() if v.get('variable') != variable)
             if self.doc_type == 'investor':
                 label = get_investor_field_label(variable)
@@ -232,9 +232,6 @@ class SetDefaultFiltersView(FilterDocTypeMixin,
     Set default filters for current session cookie.
     Used within the filter section of map, data and chart views.
     """
-
-    def get_object(self):
-        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('set_default_filters', False):

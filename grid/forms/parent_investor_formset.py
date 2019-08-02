@@ -77,8 +77,7 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
         valid_choice = self.data.get('%s-fk_investor' % self.prefix,
                                      self.initial.get('fk_investor', None))
         if valid_choice:
-            field = self.fields['fk_investor']
-            field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
+            field = self.fields['fk_investor'];field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
 
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:
@@ -139,15 +138,17 @@ class ParentInvestorForm(ParentCompanyForm):
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
+    ROLE = HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
+
     def save(self, fk_venture, commit=True):
-        '''
+        """
         We are sort of emulating an inline formset here. Save will update
         everything with the relevant associated venture.
-        '''
+        """
         instances = super().save(commit=False)
 
         for instance in instances:
-            if not hasattr(instance, 'fk_investor') or not fk_venture:
+            if not hasattr(instance, 'fk_investor') or not fk_venture:  # pragma: no cover
                 continue
             instance.id = None
             instance.fk_venture = fk_venture

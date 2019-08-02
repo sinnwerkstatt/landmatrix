@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from grid.fields import YearBasedField
 from grid.views.deal import DealUpdateView
-from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from grid.utils import get_spatial_properties
@@ -63,7 +62,7 @@ FIELD_TYPE_MAPPING = {
 FIELD_TYPE_FALLBACK = {'type': 'text'}
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract', 'involvement_size')
-DOC_TYPES_INVESTOR = ('investor', 'involvement', 'top_investor')
+DOC_TYPES_INVESTOR = ('investor', 'involvement')
 
 _landmatrix_mappings = None
 
@@ -171,9 +170,9 @@ def get_elasticsearch_properties(doc_type=None):
                     continue
                 if formset_name:
                     if name in _landmatrix_mappings[formset_name]['properties']:
-                        continue
+                        continue  # pragma: no cover
                 elif name in _landmatrix_mappings['deal']['properties']:
-                    continue
+                    continue  # pragma: no cover
                 field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
                 field_mappings = {}
                 field_mappings[name] = field_type
@@ -199,7 +198,7 @@ def get_elasticsearch_properties(doc_type=None):
 
         # Doc type: involvement
         for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
-            if field_name in _landmatrix_mappings['involvement']['properties']:
+            if field_name in _landmatrix_mappings['involvement']['properties']:  # pragma: no cover
                 continue
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
@@ -229,7 +228,6 @@ def get_elasticsearch_properties(doc_type=None):
 class ElasticSearch(object):
     conn = None
     url = settings.ELASTICSEARCH_URL
-    index_name = settings.ELASTICSEARCH_INDEX_NAME
     stdout = None
     stderr = None
 
@@ -242,11 +240,22 @@ class ElasticSearch(object):
         if stderr:
             self.stderr = stderr
 
+    @property
+    def index_name(self):
+        if hasattr(self, '_index_name'):
+            return self._index_name
+        else:
+            return settings.ELASTICSEARCH_INDEX_NAME
+
+    @index_name.setter
+    def index_name(self, index_name):
+        self._index_name = index_name
+
     def create_index(self, delete=True):
         if delete:
             try:
                 self.conn.delete_index(self.index_name)
-            except ElasticHttpNotFoundError as e:
+            except ElasticHttpNotFoundError as e:  # pragma: no cover
                 pass
         mappings = dict((k, v) for k, v in get_elasticsearch_properties().items())
         settings = {
@@ -298,7 +307,8 @@ class ElasticSearch(object):
                                         for doc in paginator.page(page)),
                             index=self.index_name,
                             doc_type=doc_type)
-                    except BulkError as e:
+                    # pragma: no cover
+                    except BulkError as e:  # pragma: no cover
                         for error in e.errors:
                             msg = '%s: %s on ID %s' % (
                                 error['index']['error']['type'],
@@ -315,7 +325,7 @@ class ElasticSearch(object):
 
     def index_investor(self, investor_identifier=None, investor_id=None, investor=None):
         if investor_id:
-            investor_identifier = HistoricalActivity.objects.get(pk=investor_id).investor_identifier
+            investor_identifier = HistoricalInvestor.objects.get(pk=investor_id).investor_identifier
         if investor:
             investor_identifier = investor.investor_identifier
         return self.index_investor_documents(investor_identifiers=[investor_identifier, ])
@@ -350,7 +360,8 @@ class ElasticSearch(object):
                     self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
                         index=self.index_name,
                         doc_type=doc_type)
-                except BulkError as e:
+                # pragma: no cover
+                except BulkError as e:  # pragma: no cover
                     for error in e.errors:
                         msg = '%s: %s on ID %s' % (
                                 error['index']['error']['type'],
@@ -487,7 +498,7 @@ class ElasticSearch(object):
                     #value['type'] = 'multipolygon'
                     value = a.polygon.json or ''
                 # do not include empty values
-                if value is None or value == '':
+                if value is None or value == '':  # pragma: no cover
                     continue
 
                 # Doc types: location, data_source or contract
@@ -495,7 +506,7 @@ class ElasticSearch(object):
                 group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
                 if group_match:
                     dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
-                    if count == 0:
+                    if count == 0:  # pragma: no cover
                         # Fixme: This should not happen
                         self.stderr and self.stderr.write(
                             _('Attribute group "%s" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)' % (
@@ -518,19 +529,20 @@ class ElasticSearch(object):
                         key = '%s_count' % dt
                         if key not in deal_attrs.keys():
                             deal_attrs[key] = count
-                        elif deal_attrs[key] < count:
+                        elif deal_attrs[key] < count:  # pragma: no cover
                             deal_attrs[key] = count
 
-                        # Create list with correct length to ensure formset values have the same index
-                        if not a.name in deal_attrs:
-                            deal_attrs[a.name] = [''] * count
-                            if attribute:
-                                deal_attrs[attribute_key] = [''] * count
-                        else:
-                            while len(deal_attrs[a.name]) < count:
+                        if a.name in deal_attrs:
+                            while len(deal_attrs[a.name]) < count:  # pragma: no cover
                                 deal_attrs[a.name].append('')
                                 if attribute:
                                     deal_attrs[attribute_key].append('')
+                        else:
+                            # Create list with correct length to ensure formset values have the same index
+                            deal_attrs[a.name] = [''] * count
+                            if attribute:
+                                deal_attrs[attribute_key] = [''] * count
+
                         deal_attrs[a.name][count-1] = value
                         if attribute:
                             deal_attrs['%s_attr' % a.name][count-1] = attribute
@@ -562,7 +574,7 @@ class ElasticSearch(object):
 
             if doc_type in ('deal', 'location'):
                 deal_attrs.update(self.get_display_properties(deal_attrs, doc_type=doc_type))
-                deal_attrs.update(self.get_spatial_properties(deal_attrs, doc_type=doc_type))
+                deal_attrs.update(self.get_spatial_properties(deal_attrs))
                 if doc_type == 'location':
                     # Create single document for each location
                     spatial_names = list(get_spatial_properties()) + ['target_region', 'geo_point']
@@ -573,7 +585,7 @@ class ElasticSearch(object):
                                 continue
                             if len(deal_attrs[name]) > i:
                                 doc[name] = deal_attrs[name][i]
-                            else:
+                            else:  # pragma: no cover
                                 doc[name] = ''
                             name_display = '%s_display' % name
                             if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
@@ -610,7 +622,7 @@ class ElasticSearch(object):
                     try:
                         # Use defer, because direct access to ForeignKey is very slow sometimes
                         country = Country.objects.defer('geom').get(id=investor.fk_country_id)
-                    except Country.DoesNotExist:
+                    except Country.DoesNotExist:  # pragma: no cover
                         pass
                 doc = deal_attrs.copy()
                 doc.update({
@@ -625,7 +637,7 @@ class ElasticSearch(object):
 
         return docs
 
-    def get_spatial_properties(self, doc, doc_type='deal'):
+    def get_spatial_properties(self, doc):
         properties = {
             'geo_point': [],
             'point_lat': [],
@@ -810,7 +822,7 @@ class ElasticSearch(object):
                     es_query['sort'] = sort
                 if aggs:
                     es_query['aggs'] = aggs
-                query_params = {'scroll':'1m'}
+                query_params = {'scroll': '1m'}
                 query_result = self.conn.search(es_query,
                                         index=self.index_name,
                                         doc_type=doc_type,
@@ -829,23 +841,6 @@ class ElasticSearch(object):
                     break
             
         return results
-
-    def aggregate(self, aggregations, query=None, doc_type='deal'):
-        """
-        Executes aggregation queries
-        @return: The full list of hits.
-        """
-
-        es_query = {
-            'aggregations': aggregations,
-            'query': query,
-            'size': 0,
-        }
-        raw_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
-        result = {}
-        for key in aggregations.keys():
-            result[key] = raw_result['aggregations'][key]['buckets']
-        return result
 
     def delete_activity(self, activity_identifier):
         query = {
@@ -873,17 +868,8 @@ class ElasticSearch(object):
                             query_params={'routing': activity_id},
                             index=self.index_name,
                             doc_type=doc_type)
-            except ElasticHttpNotFoundError as e:
+            except ElasticHttpNotFoundError as e:  # pragma: no cover
                 pass
-
-    def get_deals_by_activity_identifier(self, activity_identifier, doc_type='deal'):
-        return self.search({"constant_score": {
-            "filter": {
-                "term": {
-                    "activity_identifier": activity_identifier
-                }
-            }
-        }})
 
     def delete_investor(self, investor_identifier):
         query = {
@@ -917,8 +903,9 @@ class ElasticSearch(object):
                             doc_type=doc_type)
                 #elif doc_type == 'top_investors':
                 # FIXME: Recreate top_investors?
-            except ElasticHttpNotFoundError as e:
+            except ElasticHttpNotFoundError as e:  # pragma: no cover
                 pass
+
 
 # Init two connections
 es_search = ElasticSearch()

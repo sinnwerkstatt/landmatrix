@@ -67,4 +67,3 @@ class InvestorFilterForm(forms.ModelForm):
     class Meta:
         model = Investor
         exclude = ('fk_status', 'subinvestors')
-

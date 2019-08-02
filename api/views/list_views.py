@@ -49,9 +49,9 @@ class ElasticSearchMixin:
         return self.doc_type
 
     def load_filters_from_url(self, exclude=[]):
-        '''
+        """
         Read any querystring param filters. Preset filters not allowed.
-        '''
+        """
         if self.request:
             variables = self.request.GET.getlist('variable')
             operators = self.request.GET.getlist('operator')
@@ -85,8 +85,8 @@ class ElasticSearchMixin:
             if 'variable' in filter and filter['variable'].startswith('parent_stakeholder_'):
                 filter['variable'] = filter['variable'].replace('parent_stakeholder_', '')
                 parent_company_filters[filter_name] = filter
-                filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
             elif 'variable' in filter and filter['variable'].startswith('tertiary_investor_'):
+                filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
                 tertiary_investor_filters[filter_name] = filter
             else:
                 filters[filter_name] = filter
@@ -100,8 +100,8 @@ class ElasticSearchMixin:
                 operational_companies.extend([str(id) for id in ids])
             filters['parent_company'] = self.get_investor_filter(operational_companies)
         if tertiary_investor_filters:
-            query = self.format_filters(tertiary_investor_filters.values())
-            raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
+            query = {'bool': self.format_filters(tertiary_investor_filters.values())}
+            raw_result_list = self.execute_elasticsearch_query(query, 'investor')
             operational_companies = []
             for result in raw_result_list:
                 ids = result['_source']['tertiary_investor_of']
@@ -160,7 +160,7 @@ class ElasticSearchMixin:
                             },
                             '_filter_name': preset_name,
                         })
-                    if filter_query.get('must_not', []):
+                    if filter_query.get('must_not', []):  # pragma: no cover
                         query['must_not'].append({
                             'bool': {
                                 'should': filter_query['must_not'],
@@ -176,7 +176,7 @@ class ElasticSearchMixin:
 
                 # example: ('should', {'match': {'intention__value': 3},
                 #                      '_filter_name': 'intention__value__not_in'})
-                if filter_obj['variable'] in exclude:
+                if filter_obj['variable'] in exclude:  # pragma: no cover
                     continue
                 elastic_operator, elastic_match = filter_obj.to_elasticsearch_match()
 
@@ -193,7 +193,7 @@ class ElasticSearchMixin:
                 else:
                     # if match phrase exists for this filter, and it is a bool,
                     # add the generated match(es) to its list
-                    if 'bool' in existing_match_phrase:
+                    if 'bool' in existing_match_phrase:  # pragma: no cover
                         if 'must' in existing_match_phrase['bool']:
                             existing_match_phrase['bool']['must'].append(elastic_match)
                         else:
@@ -201,7 +201,7 @@ class ElasticSearchMixin:
                     else:
                         # if match phrase exists and is a single match, pop it
                         existing_single_match = branch_list.pop(existing_i)
-                        if 'bool' in elastic_match:
+                        if 'bool' in elastic_match:  # pragma: no cover
                             inside_operator = [key_name for key_name in elastic_match.keys()
                                                if not key_name == '_filter_name'][0]
                             # if we have a bool, add the bool, add the popped match to bool
@@ -239,12 +239,12 @@ class ElasticSearchMixin:
                 lat_min, lat_max = float(lat_min), float(lat_max)
                 lon_min, lon_max = float(lon_min), float(lon_max)
                 # respect the 180th meridian
-                if lon_min > lon_max:
+                if lon_min > lon_max:   # pragma: no cover
                     lon_max, lon_min = lon_min, lon_max
-                if lat_min > lat_max:
+                if lat_min > lat_max:  # pragma: no cover
                     lat_max, lat_min = lat_min, lat_max
                 window = (lon_min, lat_min, lon_max, lat_max)
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 pass
 
         # add geo_point window match:
@@ -322,17 +322,17 @@ class ElasticSearchMixin:
         return query
 
     def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[], aggs={}):
-        from api.elasticsearch import es_search as es
-        es.refresh_index()
+        from api.elasticsearch import es_search
 
+        es_search.refresh_index()
         #print('Elasticsearch query executed:\n')
         #from pprint import pprint
         #pprint(query)
         #pprint(aggs)
 
         try:
-            results = es.search(query, doc_type=doc_type, sort=sort, aggs=aggs)
-        except Exception as e:
+            results = es_search.search(query, doc_type=doc_type, sort=sort, aggs=aggs)
+        except Exception as e:  # pragma: no cover
             raise
         return results
 
@@ -603,7 +603,6 @@ class LatestChangesView(ElasticSearchMixin,
                 }
             })
 
-
         # Search deals
         raw_results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                        sort={'history_date': 'desc'})
@@ -650,8 +649,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         # filter results
         result_list = self.filter_deals(raw_result_list)
         # parse results
-        features = filter(None,
-                          [self.create_feature_from_result(result) for result in result_list])
+        features = list(filter(None, [self.create_feature_from_result(result) for result in result_list]))
         response = Response(FeatureCollection(features))
         return response
 
@@ -695,7 +693,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
 
         try:
             geometry = (float(result['point_lon']), float(result['point_lat']))
-        except ValueError:
+        except ValueError:  # pragma: no cover
             return None
         return Feature(
             # Do not use ID for feature. Duplicate IDs lead to problems in
@@ -767,7 +765,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         :param intentions:
         :return:
         """
-        if not intentions:
+        if not intentions:  # pragma: no cover
             return {}
         agriculture_count, forestry_count = 0, 0
         for key, value in INTENTION_AGRICULTURE_MAP.items():
@@ -872,7 +870,7 @@ class PolygonGeomView(GlobalDealsView, APIView):
         features = []
         for result in result_list:
             feature = result.get(polygon_field)
-            if not feature:
+            if not feature:  # pragma: no cover
                 continue
 
             # Again, case sensitive: multipolygon in ES needs to be MultiPolygon

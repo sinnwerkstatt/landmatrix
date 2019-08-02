@@ -60,9 +60,9 @@ class DealSpatialForm(BaseForm):
         name = 'location'
 
     def __init__(self, *args, **kwargs):
-        '''
+        """
         Pass the values we need through to map widgets
-        '''
+        """
         super().__init__(*args, **kwargs)
 
         lat_lon_attrs = self.get_default_lat_lon_attrs()
@@ -85,8 +85,7 @@ class DealSpatialForm(BaseForm):
         if isinstance(self.fields['location'].widget, MapWidget):
             self.fields['location'].widget = MapWidget(attrs=location_attrs)
         else:
-            self.fields['location'].widget = LocationWidget(
-                map_attrs=location_attrs)
+            self.fields['location'].widget = LocationWidget(map_attrs=location_attrs)
 
     def get_location_map_widget_attrs(self):
         attrs = {
@@ -103,7 +102,7 @@ class DealSpatialForm(BaseForm):
         for field, attr in bound_fields:
             try:
                 attrs[attr] = self[field].auto_id
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 pass
 
         return attrs
@@ -111,13 +110,13 @@ class DealSpatialForm(BaseForm):
     def get_default_lat_lon_attrs(self):
         attrs = {}
         try:
-            lat = float(self['point_lat'].value() or 0)
-        except ValueError:
+            lat = float(self.data.get('%s-point_lat' % self.prefix) or 0)
+        except ValueError:  # pragma: no cover
             lat = None
 
         try:
-            lon = float(self['point_lon'].value() or 0)
-        except ValueError:
+            lon = float(self.data.get('%s-point_lon' % self.prefix) or 0)
+        except ValueError:  # pragma: no cover
             lon = None
 
         if lat and lon:
@@ -129,7 +128,7 @@ class DealSpatialForm(BaseForm):
 
         return attrs
 
-    def clean_area_field(self, field_name):
+    def _clean_area_field(self, field_name):
         value = self.cleaned_data[field_name]
 
         try:
@@ -147,20 +146,20 @@ class DealSpatialForm(BaseForm):
             shapefile_data = hasattr(self.files, 'getlist') and self.files.getlist(field_name) or self.files[field_name]
             try:
                 value = parse_shapefile(shapefile_data)
-            except ValueError as err:
+            except ValueError as err:  # pragma: no cover
                 error_msg = _('Error parsing shapefile: %s') % err
                 raise forms.ValidationError(error_msg)
 
         return value
 
     def clean_contract_area(self):
-        return self.clean_area_field('contract_area')
+        return self._clean_area_field('contract_area')
 
     def clean_intended_area(self):
-        return self.clean_area_field('intended_area')
+        return self._clean_area_field('intended_area')
 
     def clean_production_area(self):
-        return self.clean_area_field('production_area')
+        return self._clean_area_field('production_area')
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()

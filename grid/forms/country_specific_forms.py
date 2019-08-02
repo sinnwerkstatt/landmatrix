@@ -21,9 +21,9 @@ def get_country_specific_form_classes(activity, data=None, files=None):
 
 
 class MongoliaForm(BaseForm):
-    '''
+    """
     This is just a simple example.
-    '''
+    """
     form_title = _('Mongolia')
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(
@@ -33,7 +33,7 @@ class MongoliaForm(BaseForm):
         required=False, label=_("Test integer"), widget=NumberInput)
 
     class Meta:
-        name = 'germany specific info'
+        name = 'mongolia specific info'
 
 
 COUNTRY_SPECIFIC_FORMS = {

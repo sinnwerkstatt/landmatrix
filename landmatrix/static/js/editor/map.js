@@ -138,7 +138,7 @@ var markerStyle = new ol.style.Style({
 
 /* Initialize map for deal location (detail/add/edit views) */
 function initializeMap (mapId, lat, lon) {
-    const target = "map" + mapId;
+    var target = "map" + mapId;
 
     var fields = getLocationFields(mapId);
 

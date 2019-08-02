@@ -14,13 +14,6 @@ STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor
 ALL_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor.CLASSIFICATION_CHOICES)
 
 
-# TODO: move to fields.
-# TODO: Change this to a livesearch widget
-class InvestorField(forms.ChoiceField):
-    def widget_attrs(self, widget):
-        return {'class': 'investorfield'}
-
-
 class BaseInvestorForm(BaseModelForm):
     form_title = _('Investor')
 
@@ -34,10 +27,8 @@ class BaseInvestorForm(BaseModelForm):
         required=False, label=_("Country of registration/origin"),
         queryset=Country.objects.none(),
         widget=forms.Select(attrs={'class': 'form-control countryfield'}))
-    comment = forms.CharField(
-        required=False, label=_("Comment"), widget=CommentInput)
-    action_comment = forms.CharField(
-        required=False, label=_('Action comment'), widget=CommentInput)
+    comment = forms.CharField(required=False, label=_("Comment"), widget=CommentInput)
+    action_comment = forms.CharField(required=False, label=_('Action comment'), widget=CommentInput)
 
     class Meta:
         model = HistoricalInvestor
@@ -53,9 +44,9 @@ class BaseInvestorForm(BaseModelForm):
             self.fields['fk_country'].queryset = Country.objects.filter(pk=valid_choice)
 
     def save(self, commit=True, user=None):
-        '''
+        """
         Force status to pending on update.
-        '''
+        """
         hinvestor = super().save(commit=False)
         hinvestor.fk_status_id = HistoricalInvestor.STATUS_PENDING
         # Create new historical investor
@@ -115,7 +106,7 @@ class ExportInvestorForm(BaseInvestorForm):
                 output[key] = []
                 continue
             if not isinstance(values, (list, tuple)):
-                values = [values,]
+                values = [values, ]
             # Remove # in name
             if field_name == '%sname' % prefix:
                 values = [v.replace('#', '') for v in values]

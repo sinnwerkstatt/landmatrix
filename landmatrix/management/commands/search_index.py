@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from django.core.management import BaseCommand
 
 from api.elasticsearch import es_save, DOC_TYPES_ACTIVITY, DOC_TYPES_INVESTOR

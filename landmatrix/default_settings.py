@@ -276,11 +276,9 @@ DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
 DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL
 
 # Recaptcha spam protection for comments
-# Replace these with real keys and don't commit them
-RECAPTCHA_PUBLIC_KEY = '6LfmBB8TAAAAAPntejlNyxcW86R7uBUFH_yAyofS'
-RECAPTCHA_PRIVATE_KEY = '6LfmBB8TAAAAAGksxrVZdp7xIBLb6rNlOL6cocPK'
 NOCAPTCHA = True
 RECAPTCHA_USE_SSL = True
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 # Django REST Framework settings
 REST_FRAMEWORK = {

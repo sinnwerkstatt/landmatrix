@@ -4,10 +4,8 @@ from django.contrib import admin
 from .models import NotificationEmail
 
 
-
-
-
 class NotificationEmailAdmin(admin.ModelAdmin):
+
     list_display = ('created_on', 'sent_status', 'to', 'subject')
     list_display_links = list_display
     date_hierarchy = 'created_on'
@@ -30,5 +28,6 @@ class NotificationEmailAdmin(admin.ModelAdmin):
         for email in queryset:
             email.send()
     resend_failed_emails.short_description = _("Retry failed notifications")
+
 
 admin.site.register(NotificationEmail, NotificationEmailAdmin)

@@ -75,7 +75,7 @@ class FAQsBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['titel'] = value.get('title')
+        context['title'] = value.get('title')
         context['list'] = []
         for faq in value.get('faqs'):
             context['list'].append({
@@ -113,7 +113,7 @@ class NoWrapsStreamBlock(StreamBlock):
     def render_basic(self, value, context=None):
         def get_class(block):
             if block.block_type != 'full_width_container':
-                return 'block-%s block'%block.block_type
+                return 'block-%s block' % block.block_type
             else:
                 return ''
 
@@ -231,12 +231,16 @@ class GalleryBlock(StructBlock):
         images = []
         if images_data:
             for image in images_data:
-                if not image.get('image'):
+                if not image.get('image'):  # pragma: no cover
                     continue
                 rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
                 name = image.get('image').title
-                image_context = {'url': url, 'name': name, 'href': image.get('url')}
+                image_context = {
+                    'url': url,
+                    'name': name,
+                    'href': image.get('url')
+                }
                 images.append(image_context)
         context['images'] = images
         return context
@@ -248,10 +252,6 @@ class GalleryBlock(StructBlock):
 
 
 class TitleBlock(blocks.CharBlock):
-
-    def get_context(self, value, parent_context=None):
-        context = super().get_context(value, parent_context)
-        return context
 
     class Meta:
         icon = 'title'
@@ -270,7 +270,7 @@ class TitleWithIconBlock(StructBlock):
         context['value'] = value.get('value')
         context['fa_icon'] = value.get('fa_icon')
         context['url'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
-                                                     page=parent_context.get('page'))
+                                                    page=parent_context.get('page'))
         return context
 
     class Meta:
@@ -311,7 +311,7 @@ def get_country_or_region(request, page=None):
         result['region'] = page.region
     elif hasattr(page, 'country'):
         result['country'] = page.country
-    elif request and request.resolver_match:
+    elif request and hasattr(request, 'resolver_match') and request.resolver_match:
         kwargs = request.resolver_match.kwargs
         if 'region_slug' in kwargs:
             result['region'] = DataRegion.objects.get(slug=kwargs.get('region_slug'))
@@ -385,9 +385,9 @@ class MapDataChartsBlock(StructBlock):
 
 class LinkMapBlock(StructBlock):
 
-    '''
+    """
     Note that the map template used here is NOT the one from ol3_widgets.
-    '''
+    """
     class Meta:
         icon = 'fa fa-map-marker'
         label = 'Map'
@@ -435,9 +435,7 @@ class RegionBlock(StructBlock):
         context = super().get_context(value, parent_context=parent_context)
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         if context.get('country'):
-            context['region'] = self.country.fk_region
-        else:
-            context['region'] = None
+            context['region'] = context['country'].fk_region
         return context
 
 
@@ -453,8 +451,6 @@ class CountriesBlock(StructBlock):
         context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
         if context.get('region'):
             context['countries'] = DataCountry.objects.filter(fk_region=context.get('region'))
-        else:
-            context['countries'] = DataCountry.objects.all()
         return context
 
 DATA_BLOCKS = [

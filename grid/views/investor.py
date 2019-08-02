@@ -22,308 +22,6 @@ from grid.utils import has_perm_approve_reject
 from landmatrix.models.investor import InvestorBase, Investor, HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
-class InvestorFormsMixin:
-    """
-    Handle the shared form behaviour for create and update.
-    """
-    def get_form_class(self):
-        hinvestor = self.get_object()
-        # Check current role of investor
-        role = self.request.GET.get('role', '')
-        if role == 'parent_investor':
-            return ParentInvestorForm
-        elif role == 'parent_company':
-            return ParentStakeholderForm
-        else:
-            return OperationalCompanyForm
-
-    def get_formset_kwargs(self):
-        kwargs = {}
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
-
-        return kwargs
-
-    def get_venture_involvements_queryset(self):
-        if self.object:
-            queryset = self.object.venture_involvements.all()
-        else:
-            queryset = HistoricalInvestorVentureInvolvement.objects.none()
-        queryset = queryset.order_by('fk_investor__name')
-
-        return queryset
-
-    def get_stakeholders_formset_kwargs(self):
-        kwargs = self.get_formset_kwargs()
-        kwargs['prefix'] = 'parent-company-form'
-
-        queryset = self.get_venture_involvements_queryset().filter(
-            role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
-        kwargs['queryset'] = queryset
-
-        return kwargs
-
-    def get_investors_formset_kwargs(self):
-        kwargs = self.get_formset_kwargs()
-        kwargs['prefix'] = 'parent-investor-form'
-
-        queryset = self.get_venture_involvements_queryset().filter(
-            role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
-        kwargs['queryset'] = queryset
-
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        if 'form' not in context:
-            context['form'] = self.get_form(form_class=self.get_form_class())
-
-        if 'parent_companies' not in context:
-            stakeholders_kwargs = self.get_stakeholders_formset_kwargs()
-            context['parent_companies'] = ParentCompanyFormSet(
-                **stakeholders_kwargs)
-
-        if 'parent_investors' not in context:
-            investors_kwargs = self.get_investors_formset_kwargs()
-            context['parent_investors'] = ParentInvestorFormSet(
-                **investors_kwargs)
-
-        role = self.request.GET.get('role', None)
-        if not role:
-            # Guess role
-            hinvestor = self.get_object()
-            if hinvestor and hinvestor.is_operating_company:
-                context['role'] = 'operational_stakeholder'
-            else:
-                context['role'] = 'parent_investor'
-        ROLE_MAP = {
-            'operational_stakeholder': _('Operating company'),
-            'parent_company': _('Parent company'),
-            'parent_investor': _('Tertiary investor/lender'),
-        }
-        context['role'] = ROLE_MAP.get(role, _('Operating company'))
-        return context
-
-    def form_invalid(self, investor_form, stakeholders_formset,
-                     investors_formset):
-        context = self.get_context_data(
-            form=investor_form, parent_companies=stakeholders_formset,
-            parent_investors=investors_formset)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        '''
-        Override standard post behaviour to check all three forms.
-        '''
-        self.object = self.get_object()
-
-        stakeholders_formset_kwargs = self.get_stakeholders_formset_kwargs()
-        investors_formset_kwargs = self.get_investors_formset_kwargs()
-
-        investor_form = self.get_form()
-        stakeholders_formset = ParentCompanyFormSet(**stakeholders_formset_kwargs)
-        investors_formset = ParentInvestorFormSet(**investors_formset_kwargs)
-
-        forms = (investor_form, stakeholders_formset, investors_formset)
-
-        if all([form.is_valid() for form in forms]):
-            response = self.form_valid(investor_form, stakeholders_formset, investors_formset)
-        else:
-            response = self.form_invalid(investor_form, stakeholders_formset, investors_formset)
-
-        return response
-
-
-class InvestorUpdateView(InvestorFormsMixin,
-                         UpdateView):
-
-    template_name = 'grid/investor_form.html'
-    context_object_name = 'investor'
-    model = HistoricalInvestor
-    success_message = _('Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon.')
-    success_message_admin = _('Your changes to the investor have been saved successfully.')
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_object(self):
-        # TODO: Cache result for user
-        investor_id = self.kwargs.get('investor_id')
-        history_id = self.kwargs.get('history_id')
-        queryset = HistoricalInvestor.objects
-        try:
-            if history_id:
-                investor = queryset.get(id=history_id)
-            else:
-                investor = queryset.filter(investor_identifier=investor_id).latest()
-        except ObjectDoesNotExist as e:
-            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        # Reporters are allowed to change only investors they've created
-        #user = self.request.user
-        #if user.groups.filter(name='Reporters').count() > 0:
-        #    if investor.history_user != user:
-        #        raise Http404('You are not allowed to edit investor %s' % investor_id)
-        return investor
-
-    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        old_hinvestor = self.get_object()
-        is_admin = self.request.user.has_perm('landmatrix.change_investor')
-        is_editor = self.request.user.has_perm('landmatrix.review_investor')
-
-        if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
-            # Only editors and administrators are allowed to edit pending versions
-            if not is_editor and not is_admin:
-                return HttpResponseForbidden('Investor version is pending')
-
-        # Don't create new version if rejected
-        if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hinvestor):
-            hinvestor = old_hinvestor
-        else:
-            hinvestor = investor_form.save(user=self.request.user)
-            stakeholders_formset.save(hinvestor)
-            investors_formset.save(hinvestor)
-
-        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
-            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
-            hinvestor.approve_change(self.request.user, hinvestor.comment)
-        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
-            hinvestor.reject_change(self.request.user, hinvestor.comment)
-        else:
-            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
-
-        # Is dialog?
-        self.object = hinvestor
-        if self.request.GET.get('popup', False):
-            return self.render_popup()
-
-        return redirect('investor_detail', investor_id=hinvestor.investor_identifier)
-
-    def render_popup(self):
-        result = """
-        <script type="text/javascript">
-        opener.dismissChangeInvestorPopup(window, '%s', '%s', '%s')
-        </script>
-        """ % (
-            escape(self.object.id),
-            escape(self.object.name),
-            escape(self.object.investor_identifier),
-        )
-        return HttpResponse(result)
-
-
-class InvestorCreateView(InvestorFormsMixin,
-                         CreateView):
-
-    model = HistoricalInvestor
-    template_name = 'grid/investor_form.html'
-    context_object_name = 'investor'
-    success_message = _('The investor has been submitted successfully (#{}). It will be reviewed and published soon.')
-    success_message_admin = _('The investor has been added successfully (#{}).')
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_success_url(self):
-        return reverse_lazy(
-            'investor_update', kwargs={'investor_id': self.object.investor_identifier})
-
-    def get_object(self):
-        return None
-
-    def get_stakeholders_formset_kwargs(self):
-        kwargs = super().get_stakeholders_formset_kwargs()
-
-        parent_id = self.request.GET.get('parent_id', False)
-        if parent_id:
-            parent_initial = {'fk_investor': parent_id}
-            if 'initial' not in kwargs:
-                kwargs['initial'] = []
-            kwargs['initial'].append(parent_initial)
-
-        return kwargs
-
-    def render_popup(self):
-        result = """
-        <script type="text/javascript">
-        opener.dismissAddInvestorPopup(window, '%s', '%s', '%s')
-        </script>
-        """ % (
-            escape(self.object.id),
-            escape(self.object.name),
-            escape(self.object.investor_identifier)
-        )
-        return HttpResponse(result)
-
-    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        hinvestor = investor_form.save(user=self.request.user)
-        stakeholders_formset.save(self.object)
-        investors_formset.save(self.object)
-
-        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
-            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
-            hinvestor.approve_change(self.request.user, hinvestor.comment)
-        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
-            hinvestor.reject_change(self.request.user, hinvestor.comment)
-        else:
-            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
-
-        # Is dialog?
-        self.object = hinvestor
-        if self.request.GET.get('popup', False):
-            response = self.render_popup()
-        else:
-            response = HttpResponseRedirect(self.get_success_url())
-
-        return response
-
-
-class InvestorDetailView(DetailView):
-
-    model = HistoricalInvestor
-    template_name = "grid/investor_detail.html"
-    context_object_name = "investor"
-
-    def get_object(self):
-        # TODO: Cache result for user
-        investor_id = self.kwargs.get('investor_id')
-        history_id = self.kwargs.get('history_id', None)
-        queryset = HistoricalInvestor.objects
-        if not self.request.user.is_authenticated:
-            i = self._get_public_investor()
-            if not i:
-                raise Http404('Investor %s is not public' % investor_id)
-            queryset = queryset.public_or_deleted(self.request.user)
-        try:
-            if history_id:
-                investor = queryset.get(id=history_id)
-            else:
-                investor = queryset.filter(investor_identifier=investor_id).latest()
-        except ObjectDoesNotExist as e:
-            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        # Status: Deleted
-        if investor.fk_status_id == HistoricalInvestor.STATUS_DELETED:
-            # Only Administrators are allowed to edit (recover) deleted deals
-            if not self.request.user.has_perm('landmatrix.change_investor'):
-                raise Http404('Investor %s has been deleted' % investor_id)
-        # Status: Rejected
-        #if investor.fk_status_id == HistoricalInvestor.STATUS_REJECTED:
-        #    # Only Administrators are allowed to edit (recover) deleted investors
-        #    if not self.request.user.has_perm('landmatrix.review_investor') and \
-        #       not investor.history_user == self.request.user:
-        #        raise Http404('Investor %s has been rejected' % investor_id)
-        return investor
-
-    def _get_public_investor(self):
-        # TODO: Cache result for user
-        return Investor.objects.filter(investor_identifier=self.kwargs.get('investor_id')).first()
-
-
 class InvestorListView(TableGroupView):
 
     template_name = "grid/investors.html"
@@ -412,15 +110,322 @@ class InvestorListView(TableGroupView):
         if value:
             value['display'] = dict(InvestorBase.ROLE_CHOICES).get(value['value'])
             return value
-        else:
+        else:  # pragma: no cover
             return value
 
     def get_field_label(self, column):
         return get_investor_field_label(column)
 
 
+class InvestorFormsMixin:
+    """
+    Handle the shared form behaviour for create and update.
+    """
+    def get_form_class(self):
+        hinvestor = self.get_object()
+        # Check current role of investor
+        role = self.request.GET.get('role', '')
+        if role == 'parent_investor':
+            return ParentInvestorForm
+        elif role == 'parent_company':
+            return ParentStakeholderForm
+        else:
+            return OperationalCompanyForm
+
+    def get_formset_kwargs(self):
+        kwargs = {}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+
+        return kwargs
+
+    def get_venture_involvements_queryset(self):
+        if self.object:
+            queryset = self.object.venture_involvements.all()
+        else:
+            queryset = HistoricalInvestorVentureInvolvement.objects.none()
+        queryset = queryset.order_by('fk_investor__name')
+
+        return queryset
+
+    def get_stakeholders_formset_kwargs(self):
+        kwargs = self.get_formset_kwargs()
+        kwargs['prefix'] = 'parent-company-form'
+
+        queryset = self.get_venture_involvements_queryset().filter(
+            role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
+        kwargs['queryset'] = queryset
+
+        return kwargs
+
+    def get_investors_formset_kwargs(self):
+        kwargs = self.get_formset_kwargs()
+        kwargs['prefix'] = 'parent-investor-form'
+
+        queryset = self.get_venture_involvements_queryset().filter(
+            role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
+        kwargs['queryset'] = queryset
+
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if 'form' not in context:  # pragma: no cover
+            context['form'] = self.get_form(form_class=self.get_form_class())
+
+        if 'parent_companies' not in context:
+            stakeholders_kwargs = self.get_stakeholders_formset_kwargs()
+            context['parent_companies'] = ParentCompanyFormSet(**stakeholders_kwargs)
+
+        if 'parent_investors' not in context:
+            investors_kwargs = self.get_investors_formset_kwargs()
+            context['parent_investors'] = ParentInvestorFormSet(**investors_kwargs)
+
+        role = self.request.GET.get('role', None)
+        if not role:
+            # Guess role
+            hinvestor = self.get_object()
+            if hinvestor and hinvestor.is_operating_company:
+                context['role'] = 'operational_stakeholder'
+            else:
+                context['role'] = 'parent_investor'
+        ROLE_MAP = {
+            'operational_stakeholder': _('Operating company'),
+            'parent_company': _('Parent company'),
+            'parent_investor': _('Tertiary investor/lender'),
+        }
+        context['role'] = ROLE_MAP.get(role, _('Operating company'))
+        return context
+
+    def form_invalid(self, investor_form, stakeholders_formset,
+                     investors_formset):
+        messages.error(self.request, _('Please correct the error below.'))
+
+        context = self.get_context_data(form=investor_form,
+                                        parent_companies=stakeholders_formset,
+                                        parent_investors=investors_formset)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Override standard post behaviour to check all three forms.
+        """
+        self.object = self.get_object()
+        stakeholders_formset_kwargs = self.get_stakeholders_formset_kwargs()
+        investors_formset_kwargs = self.get_investors_formset_kwargs()
+
+        investor_form = self.get_form()
+        stakeholders_formset = ParentCompanyFormSet(**stakeholders_formset_kwargs)
+        investors_formset = ParentInvestorFormSet(**investors_formset_kwargs)
+
+        forms = (investor_form, stakeholders_formset, investors_formset)
+
+        if all([form.is_valid() for form in forms]):
+            response = self.form_valid(investor_form, stakeholders_formset, investors_formset)
+        else:
+            response = self.form_invalid(investor_form, stakeholders_formset, investors_formset)
+
+        return response
+
+
+class InvestorDetailView(DetailView):
+
+    model = HistoricalInvestor
+    template_name = "grid/investor_detail.html"
+    context_object_name = "investor"
+
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id', None)
+        queryset = HistoricalInvestor.objects
+        if not self.request.user.is_authenticated:
+            i = self._get_public_investor()
+            if not i:
+                raise Http404('Investor %s is not public' % investor_id)
+            queryset = queryset.public_or_deleted(self.request.user)
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        # Status: Deleted
+        if investor.fk_status_id == HistoricalInvestor.STATUS_DELETED:
+            # Only Administrators are allowed to edit (recover) deleted deals
+            if not self.request.user.has_perm('landmatrix.change_investor'):
+                raise Http404('Investor %s has been deleted' % investor_id)
+        # Status: Rejected
+        #if investor.fk_status_id == HistoricalInvestor.STATUS_REJECTED:
+        #    # Only Administrators are allowed to edit (recover) deleted investors
+        #    if not self.request.user.has_perm('landmatrix.review_investor') and \
+        #       not investor.history_user == self.request.user:
+        #        raise Http404('Investor %s has been rejected' % investor_id)
+        return investor
+
+    def _get_public_investor(self):
+        # TODO: Cache result for user
+        return Investor.objects.filter(investor_identifier=self.kwargs.get('investor_id')).first()
+
+
+class InvestorCreateView(InvestorFormsMixin,
+                         CreateView):
+
+    model = HistoricalInvestor
+    template_name = 'grid/investor_form.html'
+    context_object_name = 'investor'
+    success_message = _('The investor has been submitted successfully (#{}). It will be reviewed and published soon.')
+    success_message_admin = _('The investor has been added successfully (#{}).')
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('investor_update', kwargs={'investor_id': self.object.investor_identifier})
+
+    def get_object(self):
+        return None
+
+    def get_stakeholders_formset_kwargs(self):
+        kwargs = super().get_stakeholders_formset_kwargs()
+
+        parent_id = self.request.GET.get('parent_id', False)
+        if parent_id:
+            parent_initial = {'fk_investor': parent_id}
+            if 'initial' not in kwargs:
+                kwargs['initial'] = []
+            kwargs['initial'].append(parent_initial)
+
+        return kwargs
+
+    def render_popup(self):
+        result = """
+        <script type="text/javascript">
+        opener.dismissAddInvestorPopup(window, '%s', '%s', '%s')
+        </script>
+        """ % (
+            escape(self.object.id),
+            escape(self.object.name),
+            escape(self.object.investor_identifier)
+        )
+        return HttpResponse(result)
+
+    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
+        hinvestor = investor_form.save(user=self.request.user)
+        stakeholders_formset.save(self.object)
+        investors_formset.save(self.object)
+
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+            hinvestor.approve_change(self.request.user, hinvestor.comment)
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            hinvestor.reject_change(self.request.user, hinvestor.comment)
+        else:
+            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
+
+        # Is dialog?
+        self.object = hinvestor
+        if self.request.GET.get('popup', False):
+            response = self.render_popup()
+        else:
+            response = HttpResponseRedirect(self.get_success_url())
+
+        return response
+
+
+class InvestorUpdateView(InvestorFormsMixin,
+                         UpdateView):
+
+    template_name = 'grid/investor_form.html'
+    context_object_name = 'investor'
+    model = HistoricalInvestor
+    success_message = _('Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon.')
+    success_message_admin = _('Your changes to the investor have been saved successfully.')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        investor = self.get_object()
+        if not investor.is_editable(request.user):
+            # Redirect to investor detail
+            args = {'investor_id': investor.investor_identifier}
+            if 'history_id' in kwargs:
+                args['history_id'] = kwargs['history_id']
+            return HttpResponseRedirect(reverse('investor_detail', kwargs=args))
+        return super(InvestorUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id')
+        queryset = HistoricalInvestor.objects
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        # Reporters are allowed to change only investors they've created
+        #user = self.request.user
+        #if user.groups.filter(name='Reporters').count() > 0:
+        #    if investor.history_user != user:
+        #        raise Http404('You are not allowed to edit investor %s' % investor_id)
+        return investor
+
+    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
+        old_hinvestor = self.get_object()
+        is_admin = self.request.user.has_perm('landmatrix.change_investor')
+        is_editor = self.request.user.has_perm('landmatrix.review_investor')
+
+        if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
+            # Only editors and administrators are allowed to edit pending versions - already handled by get_object()
+            if not is_editor and not is_admin:  # pragma: no cover
+                return HttpResponseForbidden('Investor version is pending')
+
+        # Don't create new version if rejected
+        if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hinvestor):
+            hinvestor = old_hinvestor
+        else:
+            hinvestor = investor_form.save(user=self.request.user)
+            stakeholders_formset.save(hinvestor)
+            investors_formset.save(hinvestor)
+
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+            hinvestor.approve_change(self.request.user, hinvestor.comment)
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            hinvestor.reject_change(self.request.user, hinvestor.comment)
+        else:
+            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
+
+        # Is dialog?
+        self.object = hinvestor
+        if self.request.GET.get('popup', False):
+            return self.render_popup()
+
+        return redirect('investor_detail', investor_id=hinvestor.investor_identifier)
+
+    def render_popup(self):
+        result = """
+        <script type="text/javascript">
+        opener.dismissChangeInvestorPopup(window, '%s', '%s', '%s')
+        </script>
+        """ % (
+            escape(self.object.id),
+            escape(self.object.name),
+            escape(self.object.investor_identifier),
+        )
+        return HttpResponse(result)
+
+
 class DeleteInvestorView(InvestorUpdateView):
-    
+
     success_message = _('The investor #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The investor #{} has been deleted successfully.')
 
@@ -432,7 +437,7 @@ class DeleteInvestorView(InvestorUpdateView):
         if not self.request.user.has_perm('landmatrix.review_investor'):
             queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 investor = queryset.get(id=history_id)
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()
@@ -442,6 +447,10 @@ class DeleteInvestorView(InvestorUpdateView):
             if investor.fk_status_id == investor.STATUS_DELETED:
                 raise Http404('Investor %s has already been deleted' % investor_id)
         return investor
+
+    def get(self, request, *args, **kwargs):
+        hinvestor = self.get_object()
+        return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
@@ -495,10 +504,8 @@ class RecoverInvestorView(InvestorUpdateView):
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.has_perm('landmatrix.review_investor'):
-            queryset = queryset.public()
         try:
-            if history_id:
+            if history_id:  # pragma: no cover
                 investor = queryset.get(id=history_id)
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()

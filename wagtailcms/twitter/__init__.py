@@ -88,5 +88,6 @@ class TwitterTimeline:
                     result = ''
         return result
 
+
 if __name__ == '__main__':
     TwitterTimeline().get_timeline('Twitter')

@@ -38,9 +38,9 @@ class DealContractForm(BaseForm):
 
 
 class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1)):
-    '''
+    """
     TODO: inherit from BaseFormSet
-    '''
+    """
     form_title = _('Contracts')
 
     @classmethod
