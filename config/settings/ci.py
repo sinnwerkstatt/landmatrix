@@ -30,8 +30,6 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 #    '--cover-package=api,charts,editor,feeds,grid,landmatrix,map,wagtailcms'
 # ]
 
-
-ELASTICSEARCH_URL = 'http://elasticsearch'
 BROKER_URL = 'redis://redis:6379/0'
 CELERY_REDIS_BACKEND = BROKER_URL
 CELERY_NAME = 'landmatrix'

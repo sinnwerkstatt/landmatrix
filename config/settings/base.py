@@ -215,8 +215,7 @@ IMPERSONATE = {
     "ALLOW_SUPERUSER": True
 }
 
-
-ELASTICSEARCH_URL = 'http://localhost'
+ELASTICSEARCH_URL = env('ELASTICSEARCH_URL', default='http://localhost')
 ELASTICSEARCH_INDEX_NAME = 'landmatrix'
 
 # CELERY SETTINGS
