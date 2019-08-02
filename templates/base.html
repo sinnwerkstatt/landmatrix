@@ -1,4 +1,4 @@
-{% load filter_tags i18n sass_tags sekizai_tags static wagtailcore_tags custom_tags %}<!DOCTYPE html>
+{% load static i18n filter_tags sass_tags wagtailcore_tags custom_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -11,19 +11,18 @@
     <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
    {% if page.search_description %} <meta name="description" content="{{ page.search_description }}"/>{% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.min.css" %}">
     <!-- <link rel="stylesheet" href="{% static "css/content.css" %}"> -->
-    <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
-    <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
-    <link rel="stylesheet" href="{% static "vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
+    <link rel="stylesheet" href="{% static "select2/dist/css/select2.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.css" %}">
+    <link rel="stylesheet" href="{% static "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
     <link href="{% sass_src 'css/main.scss' %}" rel="stylesheet" type="text/css" />
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
-    <script src="{% static "vendor/jquery/dist/jquery.js" %}"></script>
-    <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+    <script src="{% static "jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "select2/dist/js/select2.full.js" %}"></script>
 
 
     {% if is_pdf_export %}
@@ -34,7 +33,6 @@
     {% endblock %}
     {% block css %}
     {% endblock %}
-    {% render_block "css" %}
 
 </head>
 <body class="{% if popup %}popup {% endif %}{% block body_class %}{% endblock %}">
@@ -67,7 +65,7 @@
                                     {% if request.user.get_full_name %}
                                         {{ request.user.get_full_name }}
                                     {% else %}
-                                        {{ request.user.username }}
+                                        {{ request.user.username }}
                                     {% endif %}
                                     <br><small>{% get_user_role user %}</small>
                                 </p>
@@ -281,9 +279,9 @@
 {% endblock %}
 
 {% block footer_scripts %}
-    <script src="{% static "vendor/bootstrap/js/popover.js" %}"></script>
-    <script src="{% static "vendor/moment/min/moment-with-locales.min.js" %}" type="text/javascript"></script>
-    <script src="{% static "vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "bootstrap/js/popover.js" %}"></script>
+    <script src="{% static "moment/min/moment-with-locales.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
 
     <script src="{% static "js/csrf.js" %}"></script>
     <script src="{% static "js/main.js" %}"></script>
@@ -384,6 +382,5 @@
 {% endblock %}
 {% block js %}
 {% endblock %}
-{% render_block "js" %}
 </body>
 </html>

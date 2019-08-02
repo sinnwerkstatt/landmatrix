@@ -669,7 +669,7 @@ def editor_js():
 def editor_css():
     # Add extra CSS files to the admin like font-awesome
     css_files = [
-        'vendor/font-awesome/css/font-awesome.min.css',
+        'font-awesome/css/font-awesome.min.css',
         'css/wagtail-font-awesome.css'
     ]
 

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+    <link rel="stylesheet" href="{% static "openlayers/dist/ol.css" %}"/>
     <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
@@ -50,11 +50,11 @@ var mapDisableDeals = true,
 </script>
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
-<script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm.js" %}"></script>
+<script type="text/javascript" src="{% static "ol3-google-maps/dist/ol3gm.js" %}"></script>
 <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 <script type="text/javascript" src="{% static "js/clusterspiderfier.js" %}"></script>
-<script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
+<script type="text/javascript" src="{% static "nprogress/nprogress.js" %}"></script>
 
 <script type="text/javascript" src="{% static "js/map.js" %}"></script>
 <script type="text/javascript">

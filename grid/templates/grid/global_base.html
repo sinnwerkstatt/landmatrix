@@ -2,9 +2,9 @@
 {% load i18n static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+    <link rel="stylesheet" href="{% static "openlayers/dist/ol.css" %}"/>
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
-    <link href="{% static 'vendor/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
     {% block global_head %}
     {% endblock %}
 {% endblock %}
@@ -19,16 +19,16 @@
 
 {% block js %}
     <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "vendor/formset/src/jquery.formset.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "jquery.formset/src/jquery.formset.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "legacy/vendor/jquery.stickytableheaders.js" %}" type="text/javascript" charset="utf-8"></script>
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
-    <script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm.js" %}"></script>
+    <script type="text/javascript" src="{% static "ol3-google-maps/dist/ol3gm.js" %}"></script>
     <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
-    <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
+    <script type="text/javascript" src="{% static "nprogress/nprogress.js" %}"></script>
     <script type="text/javascript" src="{% static "js/editor/map.js" %}" charset="utf-8"></script>
-    <script src="{% static "vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "bootstrap-switch/dist/js/bootstrap-switch.min.js" %}" type="text/javascript"></script>
     {% block global_js %}
     {% endblock %}
 {% endblock %}

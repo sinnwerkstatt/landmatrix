@@ -102,11 +102,11 @@ class OpenLayersWidget(BaseGeometryWidget):
     class Media:
         css = {
             'all': (
-                'vendor/openlayers/ol.css',
+                'openlayers/dist/ol.css',
             )
         }
         js = (
-            'vendor/openlayers/ol.js',
+            'openlayers/dist/ol.js',
             'js/mapwidget.js',
         )
 

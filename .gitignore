@@ -1,6 +1,5 @@
 
 .env
-landmatrix/settings.py
 
 # Collected(!) statics
 /static-collected/
@@ -69,3 +68,5 @@ docs/_build/
 
 
 .doit.db
+
+/landmatrix/static/css/.sass-cache/

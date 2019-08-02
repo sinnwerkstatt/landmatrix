@@ -3,12 +3,12 @@
 
 {% block css %}
 <link href="{% sass_src 'css/charts.scss' %}" rel="stylesheet" type="text/css" />
-<link href="{% static 'vendor/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
+<link href="{% static 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
-<script src="{% static "vendor/d3/d3.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "d3/d3.min.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block page_title %}{% trans "Chart" %}{% endblock %}
@@ -65,8 +65,8 @@
 
 {% block after %}
 
-    <!--[if gte IE 9]--><script type="text/javascript" src="{% static "vendor/d3/d3.js" %}"></script><!--<![endif]-->
-    <script type="text/javascript" src="{% static "vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js" %}"></script>
+    <!--[if gte IE 9]--><script type="text/javascript" src="{% static "d3/d3.js" %}"></script><!--<![endif]-->
+    <script type="text/javascript" src="{% static "bootstrap-switch/dist/js/bootstrap-switch.min.js" %}"></script>
 
     <script type="text/javascript">
 function get_filter() {
