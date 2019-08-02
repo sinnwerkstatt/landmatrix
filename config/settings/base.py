@@ -226,3 +226,6 @@ CELERY_NAME = 'landmatrix'
 
 
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
+
+# django-registration
+ACCOUNT_ACTIVATION_DAYS = 7
