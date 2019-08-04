@@ -6,12 +6,11 @@ omit =
     */management/commands/*
     */urls.py
     */settings/*
-    */default_settings.py
-    */settings.py
     */wsgi.py
     */__init__.py
     manage.py
     fabfile.py
+    dodo.py
 source = .
 
 [report]
@@ -36,9 +35,8 @@ omit =
     */management/commands/*
     */urls.py
     */settings/*
-    */default_settings.py
-    */settings.py
     */wsgi.py
     */__init__.py
     manage.py
     fabfile.py
+    dodo.py
