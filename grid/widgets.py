@@ -183,13 +183,16 @@ class YearBasedSelectMultipleNumber(YearBasedWidget):
         super(YearBasedSelectMultipleNumber, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
-        return [
-            forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
+        widgets = [
+            forms.SelectMultiple(choices=[], attrs={"class": "year-based"}),
             # Don't use NumberInput here, since it doesn't allow setSelectionRange (used by input filter JS)
             forms.TextInput(attrs={"class": "year-based input-filter-number", "placeholder": self.placeholder}),
             forms.TextInput(attrs={"class": "year-based-year"}),
             forms.CheckboxInput(attrs={"class": "year-based-is-current"})
         ]
+        # Prevent early database query fired by list(choices) method in widget init
+        widgets[0].choices = self.choices
+        return widgets
 
 
 class TextChoiceInput(YearBasedWidget):
