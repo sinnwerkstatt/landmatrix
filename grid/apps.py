@@ -9,4 +9,20 @@ class GridConfig(AppConfig):
     VARIABLES = None
 
     def ready(self):
-        pass
+        self.VARIABLES = self.get_variables()
+
+    def get_variables(self):
+        from grid.views.deal import DealBaseView
+        from grid.fields import TitleField
+        variables = OrderedDict()
+
+        deal_forms = [
+            form.form if hasattr(form, 'form') else form
+            for form in DealBaseView.FORMS
+        ]
+        for form in deal_forms:
+            for field_name, field in form.base_fields.items():
+                if isinstance(field, TitleField):
+                    continue
+                variables[field_name] = field
+        return variables
