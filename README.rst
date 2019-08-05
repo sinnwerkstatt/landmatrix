@@ -1,5 +1,8 @@
-[![pipeline status](https://git.sinntern.de/django/landmatrix/badges/master/pipeline.svg)](https://git.sinntern.de/django/landmatrix/commits/master)
-[![coverage report](https://git.sinntern.de/django/landmatrix/badges/master/coverage.svg)](https://git.sinntern.de/django/landmatrix/commits/master)
+.. raw:: html
+
+  <a href="https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project"><img alt="pipeline status" src="https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/pipeline.svg" /></a>
+  <a href="https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project"><img alt="coverage report" src="https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/coverage.svg" /></a>
+
 
 Landmatrix
 ==========
