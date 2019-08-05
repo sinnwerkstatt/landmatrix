@@ -1,7 +1,9 @@
-.. raw:: html
+|pipeline status| |coverage report|
 
-  <a href="https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project"><img alt="pipeline status" src="https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/pipeline.svg" /></a>
-  <a href="https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project"><img alt="coverage report" src="https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/coverage.svg" /></a>
+.. |pipeline status| image:: https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/pipeline.svg
+   :target: https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project
+.. |coverage report| image:: https://git.sinntern.de/django/landmatrix/badges/1611_locally_setup_project/coverage.svg
+   :target: https://git.sinntern.de/django/landmatrix/commits/1611_locally_setup_project
 
 
 Landmatrix
