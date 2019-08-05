@@ -878,32 +878,44 @@ class HistoricalActivity(ActivityBase):
         changed_attrs = []  # (group_id, key, current_val, other_val)
 
         def get_lookup(attr):
-            return (attr.fk_group_id, attr.name)
+            return attr.fk_group_id, attr.name
 
-        current_attrs = list(self.attributes.all())
-        current_lookups = {
-            get_lookup(attr) for attr in current_attrs
-        }
-        # Build a dict of attrs for quick lookup with one query
-        other_attrs = {}
-        if version:
-            for attr in version.attributes.all():
-                other_attrs[get_lookup(attr)] = attr.value
+        def get_value(values):
+            if len(values) == 1:
+                return next(iter(values))
+            return values
 
-        for attr in current_attrs:
-            lookup = get_lookup(attr)
-            if lookup not in other_attrs:
-                changes = (attr.fk_group_id, attr.name, attr.value, None)
+        def get_comparison_dict(queryset):
+            attrs = {}
+            for attr in queryset:
+                lookup = get_lookup(attr)
+                if lookup in attrs:
+                    attrs[lookup]['values'].add(attr.value)
+                else:
+                    attrs[lookup] = {
+                        'attribute': attr,
+                        'values': {attr.value}
+                    }
+            return attrs
+
+        current_attrs = get_comparison_dict(queryset=self.attributes.all())
+        other_attrs = get_comparison_dict(queryset=version.attributes.all()) if version else {}
+
+        for lookup, attr_dict in current_attrs.items():
+            attr = attr_dict['attribute']
+            values = attr_dict['values']
+            if lookup not in other_attrs.keys():
+                changes = (attr.fk_group_id, attr.name, get_value(values), None)
                 changed_attrs.append(changes)
-            elif lookup in other_attrs and attr.value != other_attrs[lookup]:
-                other_val = other_attrs[lookup]
-                changes = (attr.fk_group_id, attr.name, attr.value, other_val)
+            elif lookup in other_attrs.keys() and values != other_attrs[lookup]['values']:
+                other_val = get_value(other_attrs[lookup]['values'])
+                changes = (attr.fk_group_id, attr.name, get_value(values), other_val)
                 changed_attrs.append(changes)
 
         # Check attributes that are not in this version
-        for lookup in set(other_attrs.keys()) - current_lookups:
+        for lookup in set(other_attrs.keys()) - set(current_attrs.keys()):
             group_id, key = lookup
-            changes = (group_id, key, None, other_attrs[lookup])
+            changes = (group_id, key, None, get_value(other_attrs[lookup]['values']))
             changed_attrs.append(changes)
 
         return changed_attrs

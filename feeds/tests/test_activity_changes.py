@@ -51,9 +51,7 @@ class FeedsActivityChangesTestCase(TestCase):
 
         expected = [
             (1, 'production_size', '2000', None),
-            (1, 'nature', 'Concession', 'Pure contract farming'),
             (1, 'intention', 'Mining', 'Forest logging / management'),
-            (1, 'crops', '2', '1'),
             (1, 'intended_size', None, '1000'),
             (None, 'operational_stakeholder', None, HistoricalInvestor.objects.get(id=10)),
         ]
