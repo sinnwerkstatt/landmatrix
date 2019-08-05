@@ -1,3 +1,6 @@
+[![pipeline status](https://git.sinntern.de/django/landmatrix/badges/master/pipeline.svg)](https://git.sinntern.de/django/landmatrix/commits/master)
+[![coverage report](https://git.sinntern.de/django/landmatrix/badges/master/coverage.svg)](https://git.sinntern.de/django/landmatrix/commits/master)
+
 Installation
 ============
 
