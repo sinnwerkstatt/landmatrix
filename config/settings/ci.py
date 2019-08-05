@@ -22,7 +22,7 @@ RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 # Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Tell nose to measure coverage on the 'foo' and 'bar' apps
 # NOSE_ARGS = [
@@ -34,6 +34,3 @@ BROKER_URL = 'redis://redis:6379/0'
 CELERY_REDIS_BACKEND = BROKER_URL
 CELERY_NAME = 'landmatrix'
 
-CONVERT_DB = False
-CONVERT_FROM_MY = False
-TEST_AGAINST_LIVE_DB = False

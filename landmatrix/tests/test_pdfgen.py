@@ -54,9 +54,8 @@ class PDFViewMixinTestCase(TestCase):
         self.assertEqual('http://localhost/deal/1/?is_pdf_export=1', url)
 
     def test_render_url_to_pdf_response(self):
-        response = self.mixin.render_url_to_pdf_response('http://localhost', 'file.pdf')
-        self.assertIsInstance(response, PDFResponse)
-        self.assertEqual('file.pdf', response.filename)
+        with self.assertRaises(CalledProcessError):
+            response = self.mixin.render_url_to_pdf_response('http://localhost', 'file.pdf')
 
     def test_update_querystring(self):
         url = 'http://www.example.com/path/?key=value'

@@ -228,3 +228,8 @@ BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
 
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
+
+# TODO: Remove this settings from code
+CONVERT_DB = False
+CONVERT_FROM_MY = False
+TEST_AGAINST_LIVE_DB = False

@@ -184,7 +184,7 @@ class YearBasedSelectMultipleNumber(YearBasedWidget):
 
     def get_widgets(self):
         return [
-            # forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
+            forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
             # Don't use NumberInput here, since it doesn't allow setSelectionRange (used by input filter JS)
             forms.TextInput(attrs={"class": "year-based input-filter-number", "placeholder": self.placeholder}),
             forms.TextInput(attrs={"class": "year-based-year"}),

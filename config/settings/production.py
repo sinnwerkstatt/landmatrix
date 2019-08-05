@@ -72,8 +72,6 @@ DEBUG = False
 #   }
 #}
 
-# TODO @sl has been renamed; is this okay?
-# former: CELERY_ALWAYS_EAGER = True  , now (celery 4.0+):
 CELERY_TASK_ALWAYS_EAGER = True
 
 try:

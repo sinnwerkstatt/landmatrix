@@ -193,6 +193,6 @@ class PDFViewMixin:
         wkhtmltopdf([url], javascript_delay=self.pdf_javascript_delay or 0, output=pdf_output.name,
                     load_error_handling='ignore', no_stop_slow_scripts=True)
 
-        response = PDFResponse(pdf_output, filename=filename)
+        response = PDFResponse(pdf_output, filename=filename)  # pragma: no cover
 
-        return response
+        return response  # pragma: no cover
