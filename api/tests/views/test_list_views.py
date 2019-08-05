@@ -210,6 +210,8 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin,
             'must_not': [{'match': {'intention': 'Mining'}}],
             'should': []
         }
+        print(expected)
+        print(query)
         self.assertEqual(expected, query)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
