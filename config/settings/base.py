@@ -231,6 +231,8 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 WKHTMLTOPDF_CMD = env('DJANGO_WKHTMLTOPDF_CMD', default=None)
 
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default=[])
+
 # TODO: Remove this settings from code
 CONVERT_DB = False
 CONVERT_FROM_MY = False
