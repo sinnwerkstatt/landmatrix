@@ -188,16 +188,16 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin,
         ]
         query = self.mixin.format_filters(filters)
         oc_filter = {
-            {'match_phrase': {'operating_company_id': '1'}},
-            {'match_phrase': {'operating_company_id': '2'}}
+            "{'match_phrase': {'operating_company_id': '1'}}",
+            "{'match_phrase': {'operating_company_id': '2'}}"
         }
         init_date_filter = {
-            {'bool': {'must_not': {'exists': {'field': 'init_date'}}}},
-            {'range': {'init_date': {'gt': '1999-12-31'}}}
+            "{'bool': {'must_not': {'exists': {'field': 'init_date'}}}}",
+            "{'range': {'init_date': {'gt': '1999-12-31'}}}"
         }
         mining_filter = [{'match': {'intention': 'Mining'}}]
-        self.assertEqual(oc_filter, set(query['must'][0]['bool']['should']))
-        self.assertEqual(init_date_filter, set(query['must'][1]['bool']['should']))
+        self.assertEqual(oc_filter, set(str(f) for f in query['must'][0]['bool']['should']))
+        self.assertEqual(init_date_filter, set(str(f) for f in query['must'][1]['bool']['should']))
         self.assertEqual(mining_filter, query['must_not'])
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
