@@ -36,15 +36,30 @@
   padding: 5px 0 0 30px;
 }
 
-.form-control {
+.input-group {
+  font-size: 0;
+}
+
+.form-control,
+input.year-based,
+input.year-based-year {
+  font-size: 16px;
+  line-height: 1.5em;
+  padding: 5px !important;
   width: auto;
   display: inline-block;
   border: solid 1px $lm_medium2;
-  min-height: 3em;
+  min-height: 2.6em;
+  float: none;
 }
 
 .form-control:focus {
   border-color: #B9D635;
+}
+
+.placeholder,
+.form-control::placeholder {
+  color: #757575;
 }
 
 .control-group.url .input-group {
@@ -55,9 +70,45 @@ textarea.form-control {
   width: 100%;
 }
 
+.input-group input,
+.input-group select {
+  border-radius: 0;
+}
+
+.input-group .year-based-year,
+.input-group .input-group-addon.helptext {
+  border-left: none;
+}
+
+.input-group input:first-child,
+.input-group select:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.input-group input:last-of-type,
+.input-group select:last-of-type {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.input-group select.year-based {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.input-group > .btn {
+  vertical-align: top;
+}
+
+.input-group label {
+  font-size: 16px;
+}
+
 .control-group .input-group-addon {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
+  vertical-align: top;
 }
 
 .control-group.file a.input-group-addon {
@@ -251,15 +302,18 @@ a.remove-ybd:hover {
   width: 280px !important;
   min-width: auto !important;
   float: left;
+  font-size: 16px;
 }
 
 .control-group .input-group-addon {
   border-top-right-radius: 4px !important;
   border-bottom-right-radius: 4px !important;
   width: auto;
-  height: 3em;
+  font-size: 16px;
+  line-height: 1.5em;
+  height: 2.6em;
   display: inline-block;
-  padding: 14px 12px;
+  padding: 5px 10px;
 }
 
 .dynamic-form .remove-form {

@@ -90,6 +90,7 @@ class YearBasedFloatField(YearBasedField):
             attrs = {'placeholder': kwargs.pop('placeholder', None)}
         else:
             attrs = {}
+        attrs['class'] = 'year-based input-filter-number'
         kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs=attrs)
         super(YearBasedFloatField, self).__init__(*args, **kwargs)
 

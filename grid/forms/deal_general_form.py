@@ -26,7 +26,7 @@ class DealGeneralForm(BaseForm):
         required=False, label="", initial=_("Land area"))
     intended_size = forms.FloatField(localize=True,
         required=False, label=_("Intended size (in ha)"), help_text=_("ha"),
-        widget=forms.TextInput(attrs={'placeholder': _('Size')}))
+        widget=forms.TextInput(attrs={'placeholder': _('Size'), 'class': 'form-control input-filter-number'}))
     contract_size = YearBasedFloatField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
