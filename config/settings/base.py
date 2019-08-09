@@ -229,7 +229,7 @@ BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
 
-WKHTMLTOPDF_CMD = env('DJANGO_WKHTMLTOPDF_CMD', default=None)
+WKHTMLTOPDF_CMD = env('DJANGO_WKHTMLTOPDF_CMD', default='wkhtmltopdf')
 
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
