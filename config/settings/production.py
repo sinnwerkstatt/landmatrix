@@ -9,8 +9,8 @@ from .base import *  # noqa
 # https://developers.google.com/recaptcha/docs/faq
 RECAPTCHA_USE_SSL = True
 NOCAPTCHA = True
-RECAPTCHA_PUBLIC_KEY = env("DJANGO_RECAPTCHA_PUBLIC_KEY")
-RECAPTCHA_PRIVATE_KEY = env("DJANGO_RECAPTCHA_PRIVATE_KEY")
+RECAPTCHA_PUBLIC_KEY = env('DJANGO_RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('DJANGO_RECAPTCHA_PRIVATE_KEY')
 
 
 TWITTER_TIMELINE = {
@@ -20,8 +20,18 @@ TWITTER_TIMELINE = {
     'access_token_secret': '5VJCSXUmuenivcm6Z1r23Na1TOwnQkRbcNws9LBg13nN7'
 }
 
+INSTALLED_APPS += (
+    'raven.contrib.django.raven_compat',
+)
 
-
+RAVEN_CONFIG = {
+    'dsn': env('DJANGO_RAVEN_DSN'),
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    #'release': raven.fetch_git_sha(os.path.dirname(__file__)),
+    'string_max_length': 12000,
+    'list_max_length': 1200,
+}
 
 # whether to show SQL generated (is referenced below when configuring logging)
 
@@ -65,12 +75,10 @@ DEBUG = False
 #     }
 # }
 
-#CACHES = {
-#   'default': {
-#       'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-#       'LOCATION': '127.0.0.1:11211',
-#   }
-#}
+CACHES['default'] = {
+   'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+   'LOCATION': 'unix:/srv/http/dev.landmatrix.org/run/memcached.socket',
+}
 
 CELERY_TASK_ALWAYS_EAGER = True
 

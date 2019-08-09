@@ -229,6 +229,8 @@ BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
 
+WKHTMLTOPDF_CMD = env('DJANGO_WKHTMLTOPDF_CMD', default=None)
+
 # TODO: Remove this settings from code
 CONVERT_DB = False
 CONVERT_FROM_MY = False
