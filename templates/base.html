@@ -106,6 +106,7 @@
                     <li class="dropdown">
                         <span>
                             <select class="nav-select" id="nav-region-select" style="display:none">
+                                <option></option>
                                 {% for region in nav_regions %}
                                 <option value="{{ region.1 }}">{{ region.2 }}</option>
                                 {% endfor %}
@@ -115,6 +116,7 @@
                     <li class="dropdown">
                         <span>
                             <select class="nav-select" id="nav-country-select" style="display:none">
+                                <option></option>
                                 {% for country_group in nav_countries %}
                                 <optgroup label="{{ country_group.text }}">
                                     {% for country in country_group.children %}
