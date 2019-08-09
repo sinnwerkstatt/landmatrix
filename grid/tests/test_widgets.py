@@ -153,7 +153,7 @@ class NumberInputTestCase(TestCase):
         widget = NumberInput()
         output = widget.render('name', 'value', attrs={})
         self.assertIn('type="number"', output)
-        self.assertIn('class="form-control"', output)
+        self.assertIn('form-control', output)
 
 
 class FileInputWithInitialTestCase(TestCase):

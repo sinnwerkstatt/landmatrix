@@ -187,32 +187,18 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin,
             PresetFilter(preset=10),  # OR relation
         ]
         query = self.mixin.format_filters(filters)
-        expected = {
-            'must': [
-                {
-                    'bool': {
-                        'should': [
-                            {'match_phrase': {'operating_company_id': '1'}},
-                            {'match_phrase': {'operating_company_id': '2'}}
-                        ],
-                        'minimum_should_match': 1}
-                    },
-                    {'bool': {
-                        'should': [
-                            {'bool': {'must_not': {'exists': {'field': 'init_date'}}}},
-                            {'range': {'init_date': {'gt': '1999-12-31'}}}
-                        ],
-                        'minimum_should_match': 1
-                    }
-                }
-            ],
-            'filter': [],
-            'must_not': [{'match': {'intention': 'Mining'}}],
-            'should': []
+        oc_filter = {
+            {'match_phrase': {'operating_company_id': '1'}},
+            {'match_phrase': {'operating_company_id': '2'}}
         }
-        print(expected)
-        print(query)
-        self.assertEqual(expected, query)
+        init_date_filter = {
+            {'bool': {'must_not': {'exists': {'field': 'init_date'}}}},
+            {'range': {'init_date': {'gt': '1999-12-31'}}}
+        }
+        mining_filter = [{'match': {'intention': 'Mining'}}]
+        self.assertEqual(oc_filter, set(query['must'][0]['bool']['should']))
+        self.assertEqual(init_date_filter, set(query['must'][1]['bool']['should']))
+        self.assertEqual(mining_filter, query['must_not'])
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test')
     def test_create_query_from_filters(self):
