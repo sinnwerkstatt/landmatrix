@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Activation failed" %}{% endblock %}
+{% block title %}{% trans "Activation failed" %}{% endblock %}
+{% block breadcrumb_inner %}
+<li>{% trans "Activation failed" %}</li>
+{% endblock %}
+
+{% block content %}
+<p>{% trans "Your account could not be activated. Please try again." %}</p>
+{% endblock %}
