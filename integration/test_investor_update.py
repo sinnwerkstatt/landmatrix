@@ -82,7 +82,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Updates of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Administrator with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageUpdatesView.as_view()(request)
@@ -100,7 +100,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'editor')
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Updates of Editor does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Editor with country
         request = self.mock_request('get', url, 'editor-myanmar')
         response = ManageUpdatesView.as_view()(request)
@@ -128,7 +128,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Updates of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Administrator with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageUpdatesView.as_view()(request)
@@ -173,7 +173,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Updates of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Administrator with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageUpdatesView.as_view()(request)

@@ -134,7 +134,7 @@ class BaseDealTestCase(PermissionsTestCaseMixin,
         items = list(filter(lambda i: i['history_id'] == activity.id, response.context_data['items']))
         self.assertEqual(1, len(items), msg='Deal does not appear in Manage section')
         if role:
-            self.assertEqual(self.get_username_and_role(role, items[0]['user']),
+            self.assertEqual(items[0]['user'], self.get_username_and_role(role),
                              msg='Deal has wrong user in Manage section')
 
     @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
@@ -233,7 +233,7 @@ class BaseInvestorTestCase(BaseDealTestCase):
         items = list(filter(lambda i: i['history_id'] == investor.id, response.context_data['items']))
         self.assertEqual(1, len(items), msg='Investor does not appear in Manage section')
         if role:
-            self.assertEqual(self.get_username_and_role(role, items[0]['user']),
+            self.assertEqual(items[0]['user'], self.get_username_and_role(role),
                              msg='Deal has wrong user in Manage section')
 
     def assert_investor_not_in_list(self, response, investor):

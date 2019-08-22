@@ -90,7 +90,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Deletes of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Admin with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageDeletesView.as_view()(request)
@@ -108,7 +108,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'editor')
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Deletes of Editor does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Editor with country
         request = self.mock_request('get', url, 'editor-myanmar')
         response = ManageDeletesView.as_view()(request)
@@ -140,7 +140,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Deletes of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Administrator with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageDeletesView.as_view()(request)
@@ -191,7 +191,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         request = self.mock_request('get', url, 'administrator')
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(200, response.status_code, msg='Manage Pending Deletes of Administrator does not work')
-        self.assert_investor_not_in_list(response, investor)
+        self.assert_investor_in_list(response, investor)
         # Administrator with country
         request = self.mock_request('get', url, 'administrator-myanmar')
         response = ManageDeletesView.as_view()(request)
