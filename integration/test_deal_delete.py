@@ -4,7 +4,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.urls import reverse
 from django.http import Http404
-from django.test import tag
+from django.test import tag, override_settings
 from openpyxl import load_workbook
 
 from editor.views import LogDeletedView, ManageForUserView, ManageDeletesView, ApproveActivityDeleteView
@@ -28,6 +28,7 @@ class TestDealDelete(BaseDealTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def assert_deal_deleted(self, activity, user=None):
         # Check if deal is NOT public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -63,6 +64,7 @@ class TestDealDelete(BaseDealTestCase):
         #if '#%s' % str(activity.activity_identifier) in activity_identifiers:
         #    self.fail('Deal still appears in export after deletion (checked XLS only)')
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_reporter(self):
         # Delete deal as reporter
         activity = HistoricalActivity.objects.latest_only().public().latest()
@@ -167,6 +169,7 @@ class TestDealDelete(BaseDealTestCase):
 
         self.assert_deal_deleted(activity, self.users['reporter'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Delete deal as editor
         activity = HistoricalActivity.objects.latest_only().public().latest()
@@ -220,6 +223,7 @@ class TestDealDelete(BaseDealTestCase):
 
         self.assert_deal_deleted(activity, self.users['editor'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator(self):
         # Delete deal as administrator
         activity = HistoricalActivity.objects.latest_only().public().latest()

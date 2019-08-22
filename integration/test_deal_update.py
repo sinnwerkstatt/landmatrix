@@ -2,7 +2,7 @@ from io import BytesIO
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import tag
+from django.test import tag, override_settings
 from django.urls import reverse
 from openpyxl import load_workbook
 
@@ -28,6 +28,7 @@ class TestDealUpdate(BaseDealTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def assert_deal_updated(self, activity, user):
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -59,6 +60,7 @@ class TestDealUpdate(BaseDealTestCase):
         #if '#%s' % str(activity.activity_identifier) not in activity_identifiers:
         #    self.fail('Deal does not appear in export (checked XLS only)')
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_reporter(self):
         # Change deal as reporter
         activity = HistoricalActivity.objects.latest_only().public().latest()
@@ -152,6 +154,7 @@ class TestDealUpdate(BaseDealTestCase):
 
         self.assert_deal_updated(activity, self.users['reporter'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Change deal as editor
         activity = HistoricalActivity.objects.latest_only().public().latest()
@@ -202,6 +205,7 @@ class TestDealUpdate(BaseDealTestCase):
 
         self.assert_deal_updated(activity, self.users['editor'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator_with_investor_create(self):
         """
         Test change deal as administrator
@@ -229,6 +233,7 @@ class TestDealUpdate(BaseDealTestCase):
         self.assert_deal_updated(activity, self.users['administrator'])
         self.assert_investors_approved(activity)
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator_with_investor_update(self):
         """
         Test change deal as administrator

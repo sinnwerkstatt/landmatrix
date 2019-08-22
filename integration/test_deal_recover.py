@@ -2,7 +2,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.urls import reverse
 from django.http import Http404
-from django.test import tag
+from django.test import tag, override_settings
 
 from grid.views.deal import DealDetailView, DealRecoverView
 from landmatrix.models import HistoricalActivity
@@ -23,6 +23,7 @@ class TestDealRecover(BaseDealTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Recover deal as editor
         activity = HistoricalActivity.objects.latest_only().deleted().latest()
@@ -49,6 +50,7 @@ class TestDealRecover(BaseDealTestCase):
         else:
             self.fail("Deal recovered although editors shouldn't be able to recover")
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_admin(self):
         # Recover deal as editor
         activity = HistoricalActivity.objects.latest_only().deleted().latest()

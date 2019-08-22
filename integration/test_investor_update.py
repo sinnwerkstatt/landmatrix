@@ -2,7 +2,7 @@ from io import BytesIO
 
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
-from django.test import tag
+from django.test import tag, override_settings
 from openpyxl import load_workbook
 
 from editor.views import LogModifiedView, ManageForUserView, ManageUpdatesView, ApproveInvestorChangeView
@@ -26,6 +26,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def assert_investor_updated(self, investor, user):
         # Check if investor is public
         url = reverse('investor_detail', kwargs={'investor_id': investor.investor_identifier})
@@ -54,6 +55,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
         #if '#%s' % str(investor.investor_identifier) not in investor_identifiers:
         #    self.fail('Investor does not appear in export (checked XLS only)')
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_reporter(self):
         # Change investor as reporter
         investor = HistoricalInvestor.objects.latest_only().public().latest()
@@ -152,6 +154,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
 
         self.assert_investor_updated(investor, self.users['reporter'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Change investor as editor
         investor = HistoricalInvestor.objects.latest_only().public().latest()
@@ -201,6 +204,7 @@ class TestInvestorUpdate(BaseInvestorTestCase):
 
         self.assert_investor_updated(investor, self.users['editor'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator(self):
         # Change investor as administrator
         investor = HistoricalInvestor.objects.latest_only().public().latest()

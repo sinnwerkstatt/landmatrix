@@ -3,7 +3,7 @@ from io import BytesIO
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 from django.http import Http404
-from django.test import tag
+from django.test import tag, override_settings
 from openpyxl import load_workbook
 
 from editor.views import LogDeletedView, ManageForUserView, ManageDeletesView, ApproveInvestorDeleteView
@@ -27,6 +27,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def assert_investor_deleted(self, investor, user=None):
         # Check if investor is NOT public
         url = reverse('investor_detail', kwargs={'investor_id': investor.investor_identifier})
@@ -59,6 +60,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
         #if '#%s' % str(investor.investor_identifier) in investor_identifiers:
         #    self.fail('Investor still appears in export after deletion (checked XLS only)')
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_reporter(self):
         # Delete investor as reporter
         investor = HistoricalInvestor.objects.latest_only().public().latest()
@@ -168,6 +170,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
 
         self.assert_investor_deleted(investor, self.users['reporter'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Delete investor as editor
         investor = HistoricalInvestor.objects.latest_only().public().latest()
@@ -219,6 +222,7 @@ class TestInvestorDelete(BaseInvestorTestCase):
 
         self.assert_investor_deleted(investor, self.users['editor'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator(self):
         # Delete investor as administrator
         investor = HistoricalInvestor.objects.latest_only().public().latest()

@@ -3,7 +3,7 @@ from io import BytesIO
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.urls import reverse
-from django.test import tag
+from django.test import tag, override_settings
 from openpyxl import load_workbook
 
 from editor.views import LogAddedView, ManageForUserView, ManageAddsView, ApproveInvestorChangeView
@@ -17,6 +17,7 @@ from grid.tests.views.base import BaseInvestorTestCase
 @tag('integration')
 class TestInvestorCreate(BaseInvestorTestCase):
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def assert_investor_created(self, investor, user):
         # Check if investor is public
         request = self.factory.get(reverse('investor_detail', kwargs={'investor_id': investor.investor_identifier}))
@@ -48,6 +49,7 @@ class TestInvestorCreate(BaseInvestorTestCase):
         #if '#%s' % str(investor.investor_identifier) not in investor_identifiers:
         #    self.fail('Investor does not appear in export (checked XLS only)')
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_reporter(self):
         # Add investor as reporter
         data = self.INVESTOR_DATA.copy()
@@ -140,6 +142,7 @@ class TestInvestorCreate(BaseInvestorTestCase):
 
         self.assert_investor_created(investor, self.users['reporter'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Add investor as editor
         data = self.INVESTOR_DATA.copy()
@@ -184,6 +187,7 @@ class TestInvestorCreate(BaseInvestorTestCase):
 
         self.assert_investor_created(investor, self.users['editor'])
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_administrator(self):
         # Add investor as administrator
         data = self.INVESTOR_DATA.copy()

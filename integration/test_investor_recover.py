@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.urls import reverse
-from django.test import tag
+from django.test import tag, override_settings
 from django.http import Http404
 
 from grid.views.investor import InvestorDetailView, RecoverInvestorView
@@ -23,6 +23,7 @@ class TestInvestorRecover(BaseInvestorTestCase):
         'venture_involvements',
     ]
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_editor(self):
         # Recover investor as editor
         investor = HistoricalInvestor.objects.latest_only().deleted().latest()
@@ -49,6 +50,7 @@ class TestInvestorRecover(BaseInvestorTestCase):
         else:
             self.fail("Investor recovered although editors shouldn't be able to recover")
 
+    @override_settings(ELASTICSEARCH_INDEX_NAME='landmatrix_test', CELERY_ALWAYS_EAGER=True)
     def test_admin(self):
         # Recover investor as editor
         investor = HistoricalInvestor.objects.latest_only().deleted().latest()
