@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 Django = "<2.2"
-wagtail = "<2.6"
+wagtail = "<2.7"
 
 elasticsearch = "<2"
 psycopg2-binary = "<2.8" # >=2.8 needs django2.2; https://code.djangoproject.com/ticket/30331
@@ -46,20 +46,9 @@ python-dateutil = "*"
 doit = "*"
 celery = "*"
 gunicorn = "*"
+raven = "*"
 
 pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref = "1.4.2"}
-
-#alt?
-#django-hstore==1.4.*
-#python-mimeparse==0.1.*
-#django-sekizai==0.9.*
-
-#django-classy-tags==0.8.*
-#django-mptt==0.9.*
-
-
-
-
 
 [dev-packages]
 pygments = "*"
