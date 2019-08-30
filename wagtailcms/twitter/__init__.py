@@ -54,9 +54,9 @@ class TwitterTimeline:
 
             if getattr(status, 'quoted_status', None):
                 update['quoted_status'] = {}
-                update['quoted_status']['text'] = self.linkify(status.quoted_status['text'])
+                update['quoted_status']['text'] = self.linkify(status.quoted_status.text)
                 try:
-                    media = status.quoted_status['extended_entities']['media'][0]['media_url_https']
+                    media = status.quoted_status.extended_entities['media'][0]['media_url_https']
                     update['quoted_status']['media_url_https'] = media
                 except:
                     pass
@@ -71,7 +71,6 @@ class TwitterTimeline:
         return stati
 
     def get_timeline(self, username):
-
         result = cache.get(self.KEY)
         cached_username = cache.get(self.KEY_US)
         if not result or cached_username != username:
