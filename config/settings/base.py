@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = environ.Path(__file__) - 3  # type: environ.Path
 
-
 env = environ.Env()
 env.read_env(BASE_DIR('.env'))
 
@@ -21,10 +20,8 @@ USE_L10N = True
 USE_TZ = True
 SITE_ID = 1
 
-
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
-
 
 EMAIL_CONFIG = env.email_url('DJANGO_EMAIL_URL', default='consolemail://')
 vars().update(EMAIL_CONFIG)
@@ -38,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    #'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.postgres',
     'wagtail_modeltranslation',
@@ -166,7 +163,6 @@ MAX_UPLOAD_SIZE = 20971520
 DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
 DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL
 
-
 MEDIA_ROOT = BASE_DIR('media')
 MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR('static-collected')
@@ -186,14 +182,13 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # SASS_PATH = os.path.join(BASE_DIR, 'static/css'),
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    },
+    'default': env.cache('DJANGO_CACHE_URL', default='dummycache://'),
     "file_resubmit": {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         "LOCATION": '/tmp/file_resubmit/'
     },
 }
+
 
 COMMENTS_APP = 'public_comments'
 
@@ -222,7 +217,6 @@ ELASTICSEARCH_INDEX_NAME = 'landmatrix'
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_REDIS_BACKEND = BROKER_URL
 CELERY_NAME = 'landmatrix'
-
 
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
 

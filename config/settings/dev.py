@@ -1,11 +1,9 @@
-
 from .base import *  # noqa
 
 DEBUG = env.bool('DJANGO_DEBUG', default=True)
 SECRET_KEY = env("DJANGO_SECRET_KEY", default='CHANGEME')
 
 INTERNAL_IPS = ('127.0.0.1',)
-
 
 # try:
 #     import django_extensions
@@ -23,12 +21,11 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 if env.bool('FRONTENDDEV', default=False):
     INSTALLED_APPS = [
-        'django_gulp',
-        'livereload'
-    ] + INSTALLED_APPS
+                         'django_gulp',
+                         'livereload'
+                     ] + INSTALLED_APPS
 
     MIDDLEWARE += ['livereload.middleware.LiveReloadScript']
-
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
