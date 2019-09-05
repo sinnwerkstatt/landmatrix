@@ -5,11 +5,11 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default='CHANGEME')
 
 INTERNAL_IPS = ('127.0.0.1',)
 
-# try:
-#     import django_extensions
-#     INSTALLED_APPS += ['django_extensions']
-# except ModuleNotFoundError:
-#     pass
+try:
+    import django_extensions
+    INSTALLED_APPS += ['django_extensions']
+except ModuleNotFoundError:
+    pass
 
 # try:
 #     import debug_toolbar

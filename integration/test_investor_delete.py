@@ -1,17 +1,16 @@
 from io import BytesIO
 
 from django.contrib.auth.models import AnonymousUser
-from django.urls import reverse
 from django.http import Http404
-from django.test import tag, override_settings
+from django.test import override_settings, tag
+from django.urls import reverse
 from openpyxl import load_workbook
 
-from editor.views import LogDeletedView, ManageForUserView, ManageDeletesView, ApproveInvestorDeleteView
-from grid.views.investor import InvestorDetailView, DeleteInvestorView
-from grid.views.export import ExportView
-from landmatrix.models import HistoricalInvestor
-
-from grid.tests.views.base import BaseInvestorTestCase
+from apps.editor.views import ApproveInvestorDeleteView, ManageDeletesView, ManageForUserView
+from apps.grid.tests.views.base import BaseInvestorTestCase
+from apps.grid.views.export import ExportView
+from apps.grid.views.investor import DeleteInvestorView, InvestorDetailView
+from apps.landmatrix.models import HistoricalInvestor
 
 
 @tag('integration')

@@ -1,12 +1,6 @@
 #!/usr/bin/env python
-import os
-import sys
-import csv
-from collections import OrderedDict
 from django.core.management import BaseCommand
 from django.db import connections
-
-from landmatrix.models import Activity, ActivityAttribute
 
 
 class Command(BaseCommand):

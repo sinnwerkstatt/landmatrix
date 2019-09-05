@@ -3,7 +3,7 @@ import os
 import sys
 from django.core.management import BaseCommand
 
-from landmatrix.models.activity_changeset import ActivityChangeset
+from apps.landmatrix.models.activity_changeset import ActivityChangeset
 
 
 class Command(BaseCommand):

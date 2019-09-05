@@ -2,16 +2,15 @@ from io import BytesIO
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.test import override_settings, tag
 from django.urls import reverse
-from django.test import tag, override_settings
 from openpyxl import load_workbook
 
-from editor.views import LogAddedView, ManageForUserView, ManageAddsView, ApproveInvestorChangeView
-from grid.views.investor import InvestorDetailView, InvestorCreateView
-from grid.views.export import ExportView
-from landmatrix.models import HistoricalInvestor
-
-from grid.tests.views.base import BaseInvestorTestCase
+from apps.editor.views import ApproveInvestorChangeView, LogAddedView, ManageAddsView, ManageForUserView
+from apps.grid.tests.views.base import BaseInvestorTestCase
+from apps.grid.views.export import ExportView
+from apps.grid.views.investor import InvestorCreateView, InvestorDetailView
+from apps.landmatrix.models import HistoricalInvestor
 
 
 @tag('integration')

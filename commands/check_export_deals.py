@@ -1,10 +1,9 @@
 #!/usr/bin/env python
+from django.contrib.auth.models import AnonymousUser
 from django.core.management import BaseCommand
 from django.test.client import RequestFactory
-from django.contrib.auth.models import AnonymousUser
 
-from grid.views.export import ExportView
-from grid.views.base import OldTableGroupView
+from apps.grid.views.export import ExportView
 
 
 class Command(BaseCommand):

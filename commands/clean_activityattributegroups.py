@@ -3,7 +3,7 @@ import re
 
 from django.core.management import BaseCommand
 
-from landmatrix.models import *
+from apps.landmatrix.models import Activity
 
 
 class Command(BaseCommand):

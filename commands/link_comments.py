@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from threadedcomments import get_model
 
-from landmatrix.models import HistoricalActivity, Activity
+from apps.landmatrix.models import HistoricalActivity, Activity
 
 
 class Command(BaseCommand):

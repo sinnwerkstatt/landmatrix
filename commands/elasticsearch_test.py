@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-import os
-import sys
-
-from django.core.management import BaseCommand
-from pyelasticsearch import BulkError
 
 from pprint import pprint
-from landmatrix.models.activity import HistoricalActivity
-from api.elasticsearch import es_search
+
+from django.core.management import BaseCommand
+
+from apps.api.elasticsearch import es_search
 
 
 class Command(BaseCommand):
@@ -73,4 +70,3 @@ class Command(BaseCommand):
         result = es.search(query)
         print('>>> received')
         pprint(result)
-        

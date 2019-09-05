@@ -1,6 +1,6 @@
-import io
 from django.db.models import Max
-from editor.models import Activity, PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group, A_Tag
+
+from apps.editor.models import A_Key_Value_Lookup, A_Tag, Activity, Country, Involvement, PrimaryInvestor, SH_Tag, SH_Tag_Group, Stakeholder
 
 
 class View:
