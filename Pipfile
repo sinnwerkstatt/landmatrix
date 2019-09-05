@@ -27,7 +27,6 @@ django-multiselectfield = "*"
 django-recaptcha = "*"
 django-registration = "*"
 django-rest-swagger = "*"
-django-compressor = "*"
 django-sass-processor = "*"
 django-simple-history = "*"
 django-wkhtmltopdf = "*"
@@ -53,11 +52,10 @@ pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref =
 [dev-packages]
 pygments = "*"
 coverage = "*"
-django-gulp = "*"
-django-nose = "*"
 
 django-livereload = "*"
 django-extensions = "*"
+django-debug-toolbar = "*"
 django-test-without-migrations = "*"
 
 libsass = "*"

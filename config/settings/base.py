@@ -43,13 +43,9 @@ INSTALLED_APPS = [
     'wagtail_modeltranslation.migrate',
     'django.contrib.admin',
     'django.contrib.sites',
-
     # OL3 widgets must come before GIS
     'apps.ol3_widgets',
     'django.contrib.gis',
-    # 'django_hstore',
-
-    # 'tastypie',
 
     # wagtail and dependencies
     'wagtail.contrib.forms',
@@ -66,20 +62,16 @@ INSTALLED_APPS = [
     'blog',
 
     'modelcluster',
-    'compressor',
     'taggit',
-
     'sass_processor',
-    # 'sekizai',
 
     'bootstrap3_datetime',
 
-    'treebeard',
+    # 'treebeard',
 
     'jstemplate',
 
     'simple_history',
-    # 'django_extensions',
     'crispy_forms',
     'wkhtmltopdf',
     'threadedcomments',
@@ -88,7 +80,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_gis',
-    # 'rest_framework_docs',
     'rest_framework_swagger',
     'django.contrib.syndication',
     'file_resubmit',
@@ -166,12 +157,12 @@ MEDIA_ROOT = BASE_DIR('media')
 MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR('static-collected')
 STATIC_URL = '/static/'
-# STATICFILES_FINDERS = (
-#     'django.contrib.staticfiles.finders.FileSystemFinder',
-#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     'compressor.finders.CompressorFinder',
-#     'sass_processor.finders.CssFinder'
-# )
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'compressor.finders.CompressorFinder',
+    'sass_processor.finders.CssFinder'
+]
 STATICFILES_DIRS = [
     BASE_DIR('node_modules'),
 ]

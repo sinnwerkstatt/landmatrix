@@ -18,10 +18,10 @@ from apps.landmatrix.views import *
 
 handler500 = 'apps.landmatrix.views.handler500'
 
-CACHE_TIMEOUT = 24*3600
+CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
-    #url(r'^accounts/register/$', RegistrationView.as_view(), name='registration_register'),
+    # url(r'^accounts/register/$', RegistrationView.as_view(), name='registration_register'),
     url(r'^accounts/register/$', RegistrationView.as_view(form_class=CustomRegistrationForm),
         name='registration_register'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
@@ -31,7 +31,7 @@ urlpatterns = [
 
     url(r'^language/(?P<language>[^/]+)/$', SwitchLanguageView.as_view(), name='switch_language'),
 
-    #url(r'^api/docs/', include('rest_framework_docs.urls')),
+    # url(r'^api/docs/', include('rest_framework_docs.urls')),
     url(r'^api/', include('apps.api.urls')),
 
     # Wagtail
@@ -81,10 +81,20 @@ urlpatterns = [
     url(r'^investors/compare/(?P<investor_1>\d+)/(?P<investor_2>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
     url(r'^investors/compare/(?P<investor_1>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
     url(r'^editor/', include('apps.editor.urls')),
-    url(r'^ajax/widget/(?P<doc_type>deal|investor)/', FilterWidgetAjaxView.as_view(),name='ajax_widget'),
+    url(r'^ajax/widget/(?P<doc_type>deal|investor)/', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
 
     url(r'', include(wagtail_urls)),
 ]
-# Non i18n patterns
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.DEBUG:
+    # Non i18n patterns
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    try:
+        import debug_toolbar
+
+        urlpatterns = [
+                          url('__debug__/', include(debug_toolbar.urls))
+                      ] + urlpatterns
+    except ImportError:
+        pass
