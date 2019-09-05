@@ -735,7 +735,7 @@ class InvestorActivityInvolvementManager(models.Manager):
         :return:
         """
         activity_class = self.model._meta.get_field('fk_activity').related_model
-        current_activities = activity_class.objects.latest_ids()
+        current_activities = activity_class.objects.latest_ids(status=[2])
         return self.filter(fk_activity_id__in=current_activities)
 
 
