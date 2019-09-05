@@ -25,6 +25,7 @@ test:
     - apt-get install -y gdal-bin wkhtmltopdf xvfb
     - echo -e "DJANGO_SETTINGS_MODULE=config.settings.dev\nDATABASE_URL=postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix\nELASTICSEARCH_URL='http://elasticsearch'" > .env
     - pipenv sync --dev
+    - yarn install --frozen-lockfile
     - pipenv run doit update
 
   script:
@@ -49,6 +50,7 @@ deploy to staging:
     E=O=F
   only:
     - dev
+    - gitlabcicd
 
 deploy to production:
   stage: deploy
