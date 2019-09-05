@@ -48,7 +48,7 @@ deploy to staging:
     sudo /bin/systemctl restart django-dev.landmatrix.org.service
     E=O=F
   only:
-    - master
+    - dev
 
 deploy to production:
   stage: deploy
