@@ -1,5 +1,5 @@
 {% extends "grid/global_base.html" %}
-{% load i18n static custom_tags %}
+{% load i18n static custom_tags investor_tags %}
 
 {% block head %}
 {{ block.super }}
@@ -490,13 +490,14 @@
 
 
             <div class="panel panel-default">
+            {% involvements_for_current_activities investor as involvements %}
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#deals_body"
                        id="deals">
                         <h5 class="panel-title">
                             {% trans "Deals (Involvements as Operating company)" %}
-                            <small>({{ investor.involvements.for_current_activities.count }})</small>
+                            <small>({{ involvements|length }})</small>
                             <span id="collapsebtn_deals"
                                   class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -506,9 +507,9 @@
                 <div id="deals_body"
                      class="panel-collapse collapse">
                     <div class="panel-body">
-                        {% if investor.involvements.for_current_activities.count > 0 %}
+                        {% if involvements|length > 0 %}
                         <ul class="list-unstyled">
-                        {% for involvement in investor.involvements.for_current_activities %}
+                        {% for involvement in involvements %}
                             <li>
                                 <a class="label label-deal"
                                    href="{% url "deal_detail" deal_id=involvement.fk_activity.activity_identifier history_id=involvement.fk_activity.id %}"

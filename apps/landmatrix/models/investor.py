@@ -729,13 +729,14 @@ class InvestorActivityInvolvementManager(models.Manager):
         return InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity_identifier).\
             filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
 
-    def for_current_activities(self):
+    def for_current_activities(self, user_is_editor=False):
         """
         Get involvements for newest versions of activities
         :return:
         """
         activity_class = self.model._meta.get_field('fk_activity').related_model
-        current_activities = activity_class.objects.latest_ids(status=[2])
+        stati = [1, 2, 3, 6] if user_is_editor else [2, 3]
+        current_activities = activity_class.objects.latest_ids(status=stati)
         return self.filter(fk_activity_id__in=current_activities)
 
 
