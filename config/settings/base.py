@@ -1,4 +1,5 @@
 import os
+import sys
 
 import environ
 from django.utils.translation import ugettext_lazy as _
@@ -179,7 +180,6 @@ CACHES = {
     },
 }
 
-
 COMMENTS_APP = 'apps.public_comments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
@@ -201,7 +201,15 @@ IMPERSONATE = {
 }
 
 ELASTICSEARCH_URL = env('ELASTICSEARCH_URL', default='http://localhost')
-ELASTICSEARCH_INDEX_NAME = 'landmatrix'
+try:
+    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r").read()
+except FileNotFoundError:
+    open(".es_index_ab_switch", "w").write("a")
+    ELASTIC_INDEX_AB = "a"
+ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatrix")
+ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
+print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
+sys.stdout.flush()
 
 # CELERY SETTINGS
 BROKER_URL = 'redis://localhost:6379/0'
