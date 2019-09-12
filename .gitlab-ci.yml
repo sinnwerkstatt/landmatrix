@@ -3,7 +3,6 @@ image: sinntern/ubuntu_for_django:latest
 services:
   - mdillon/postgis:10
   - elasticsearch:5
-  #- redis:latest
 
 variables:
   POSTGRES_DB: landmatrix
@@ -11,8 +10,8 @@ variables:
   POSTGRES_PASSWORD: landmatrix
   STAGING_HOST: dev.landmatrix.org
   STAGING_USER: landmatrix
-#  PRODUCTION_HOST: landmatrix.org
-#  PRODUCTION_USER: landmatrix
+  PRODUCTION_HOST: landmatrix.org
+  PRODUCTION_USER: landmatrix
 
 stages:
   - test
@@ -22,6 +21,7 @@ test:
   stage: test
   before_script:
     - export LANG=C.UTF-8
+    - apt-get update
     - apt-get install -y gdal-bin wkhtmltopdf xvfb
     - echo -e "DJANGO_SETTINGS_MODULE=config.settings.dev\nDATABASE_URL=postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix\nELASTICSEARCH_URL='http://elasticsearch'" > .env
     - pipenv sync --dev
@@ -32,38 +32,44 @@ test:
     - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
 
   after_script:
-      - export LANG=C.UTF-8
-      - pipenv run coverage report
+    - pipenv run coverage report
 
 deploy to staging:
   stage: deploy
   script:
-  - eval $(ssh-agent -s)
-  - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - |
-    ssh $STAGING_USER@$STAGING_HOST << E=O=F
-    cd htdocs
-    git pull
-    pipenv sync --dev
-    pipenv run doit update
-    sudo /bin/systemctl restart django-dev.landmatrix.org.service
-    E=O=F
+    - eval $(ssh-agent -s)
+    - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - |
+      ssh $STAGING_USER@$STAGING_HOST << E=O=F
+      mv maintenance.html_ maintenance.html
+      cd ~/htdocs
+      git checkout master
+      git pull
+      pipenv sync --dev
+      pipenv run doit update
+      sudo /bin/systemctl restart django-dev.landmatrix.org.service
+      cd ~
+      mv maintenance.html maintenance.html_
+      E=O=F
   only:
-    - dev
-    - gitlabcicd
+    - master
 
 deploy to production:
   stage: deploy
   script:
-  - eval $(ssh-agent -s)
-  - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - |
-    ssh $PRODUCTION_USER@$PRODUCTION_HOST << E=O=F
-    cd htdocs
-    git pull
-    pipenv sync --dev
-    pipenv run doit update
-    sudo /bin/systemctl restart django-landmatrix.org.service
-    E=O=F
+    - eval $(ssh-agent -s)
+    - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - |
+      ssh $PRODUCTION_USER@$PRODUCTION_HOST << E=O=F
+      mv maintenance.html_ maintenance.html
+      cd ~/htdocs
+      git checkout production
+      git pull
+      pipenv sync
+      pipenv run doit update
+      sudo /bin/systemctl restart django-landmatrix.org.service
+      cd ~
+      mv maintenance.html maintenance.html_
+      E=O=F
   only:
     - production
