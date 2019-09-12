@@ -21,17 +21,19 @@ test:
   stage: test
   before_script:
     - export LANG=C.UTF-8
-    - apt-get update
-    - apt-get install -y gdal-bin wkhtmltopdf xvfb
+    - apt-get -qq update
+    - apt-get -qq install -y gdal-bin wkhtmltopdf xvfb
     - echo -e "DJANGO_SETTINGS_MODULE=config.settings.dev\nDATABASE_URL=postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix\nELASTICSEARCH_URL='http://elasticsearch'" > .env
     - pipenv sync --dev
     - yarn install --frozen-lockfile
     - pipenv run doit update
 
   script:
+    - export LANG=C.UTF-8
     - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
 
   after_script:
+    - export LANG=C.UTF-8
     - pipenv run coverage report
 
 deploy to staging:
