@@ -6,7 +6,7 @@ from collections import OrderedDict
 from django.core.management import BaseCommand
 from django.db import connections
 
-from landmatrix.models import Activity, ActivityAttribute
+from apps.landmatrix.models import Activity, ActivityAttribute
 
 
 class Command(BaseCommand):

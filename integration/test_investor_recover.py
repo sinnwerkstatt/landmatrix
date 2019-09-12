@@ -1,13 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.urls import reverse
-from django.test import tag, override_settings
 from django.http import Http404
+from django.test import override_settings, tag
+from django.urls import reverse
 
-from grid.views.investor import InvestorDetailView, RecoverInvestorView
-from landmatrix.models import HistoricalInvestor
-
-from grid.tests.views.base import BaseInvestorTestCase
+from apps.grid.tests.views.base import BaseInvestorTestCase
+from apps.grid.views.investor import InvestorDetailView, RecoverInvestorView
+from apps.landmatrix.models import HistoricalInvestor
 
 
 @tag('integration')

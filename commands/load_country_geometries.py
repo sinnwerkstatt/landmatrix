@@ -12,8 +12,8 @@ from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon
 from django.core.management import BaseCommand
 
-from landmatrix import settings
-from landmatrix.models import Country
+from apps.landmatrix import settings
+from apps.landmatrix.models import Country
 
 
 class Command(BaseCommand):

@@ -1,4 +1,5 @@
 import os
+import sys
 
 import environ
 from django.utils.translation import ugettext_lazy as _
@@ -43,13 +44,9 @@ INSTALLED_APPS = [
     'wagtail_modeltranslation.migrate',
     'django.contrib.admin',
     'django.contrib.sites',
-
     # OL3 widgets must come before GIS
-    'ol3_widgets',
+    'apps.ol3_widgets',
     'django.contrib.gis',
-    # 'django_hstore',
-
-    # 'tastypie',
 
     # wagtail and dependencies
     'wagtail.contrib.forms',
@@ -66,20 +63,16 @@ INSTALLED_APPS = [
     'blog',
 
     'modelcluster',
-    'compressor',
     'taggit',
-
     'sass_processor',
-    # 'sekizai',
 
     'bootstrap3_datetime',
 
-    'treebeard',
+    # 'treebeard',
 
     'jstemplate',
 
     'simple_history',
-    # 'django_extensions',
     'crispy_forms',
     'wkhtmltopdf',
     'threadedcomments',
@@ -88,23 +81,22 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_gis',
-    # 'rest_framework_docs',
     'rest_framework_swagger',
     'django.contrib.syndication',
     'file_resubmit',
 
     #   apps of the actual landmatrix project
-    'message',
-    'landmatrix',
-    'grid',
-    'map',
-    'charts',
-    'editor',
-    'wagtailcms',
-    'api',
-    'notifications',
-    'public_comments',
-    'feeds',
+    'apps.message',
+    'apps.landmatrix',
+    'apps.grid',
+    'apps.map',
+    'apps.charts',
+    'apps.editor',
+    'apps.wagtailcms',
+    'apps.api',
+    'apps.notifications',
+    'apps.public_comments',
+    'apps.feeds',
     'impersonate',
     'celery',
 ]
@@ -147,11 +139,10 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                # 'sekizai.context_processors.sekizai',
-                'wagtailcms.context_processors.add_root_page',
-                'wagtailcms.context_processors.add_data_source_dir',
-                'wagtailcms.context_processors.add_countries_and_regions',
-                'message.context_processors.add_custom_messages'
+                'apps.wagtailcms.context_processors.add_root_page',
+                'apps.wagtailcms.context_processors.add_data_source_dir',
+                'apps.wagtailcms.context_processors.add_countries_and_regions',
+                'apps.message.context_processors.add_custom_messages'
             ],
         },
     },
@@ -167,12 +158,12 @@ MEDIA_ROOT = BASE_DIR('media')
 MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR('static-collected')
 STATIC_URL = '/static/'
-# STATICFILES_FINDERS = (
-#     'django.contrib.staticfiles.finders.FileSystemFinder',
-#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     'compressor.finders.CompressorFinder',
-#     'sass_processor.finders.CssFinder'
-# )
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'compressor.finders.CompressorFinder',
+    'sass_processor.finders.CssFinder'
+]
 STATICFILES_DIRS = [
     BASE_DIR('node_modules'),
 ]
@@ -189,8 +180,7 @@ CACHES = {
     },
 }
 
-
-COMMENTS_APP = 'public_comments'
+COMMENTS_APP = 'apps.public_comments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
 
@@ -211,7 +201,15 @@ IMPERSONATE = {
 }
 
 ELASTICSEARCH_URL = env('ELASTICSEARCH_URL', default='http://localhost')
-ELASTICSEARCH_INDEX_NAME = 'landmatrix'
+try:
+    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r").read()
+except FileNotFoundError:
+    open(".es_index_ab_switch", "w").write("a")
+    ELASTIC_INDEX_AB = "a"
+ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatrix")
+ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
+print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
+sys.stdout.flush()
 
 # CELERY SETTINGS
 BROKER_URL = 'redis://localhost:6379/0'

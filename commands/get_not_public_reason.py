@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from django.core.management import BaseCommand
 
-from landmatrix.models import Activity
+from apps.landmatrix.models import Activity
 
 
 class Command(BaseCommand):

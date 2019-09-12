@@ -3,7 +3,7 @@ from django.core.management import BaseCommand
 from django.contrib.gis.geos import Polygon, GeometryCollection
 from country_bounding_boxes import country_subunits_by_iso_code
 
-from landmatrix.models.country import Country
+from apps.landmatrix.models.country import Country
 
 
 def find_bounds(country_obj):

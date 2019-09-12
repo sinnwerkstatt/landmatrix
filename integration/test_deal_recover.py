@@ -1,13 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.urls import reverse
 from django.http import Http404
-from django.test import tag, override_settings
+from django.test import override_settings, tag
+from django.urls import reverse
 
-from grid.views.deal import DealDetailView, DealRecoverView
-from landmatrix.models import HistoricalActivity
-
-from grid.tests.views.base import BaseDealTestCase
+from apps.grid.tests.views.base import BaseDealTestCase
+from apps.grid.views.deal import DealDetailView, DealRecoverView
+from apps.landmatrix.models import HistoricalActivity
 
 
 @tag('integration')

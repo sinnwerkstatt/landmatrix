@@ -8,7 +8,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 INSTALLED_APPS = [
                      'coverage',
                      'test_without_migrations',
-                     'django_nose',
+                     # 'django_nose',
                      # 'debug_toolbar',
                      # 'template_timings_panel',
                  ] + INSTALLED_APPS

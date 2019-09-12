@@ -2,13 +2,13 @@ from pprint import pprint
 
 from django.core.management.base import BaseCommand
 
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttribute
-from landmatrix.models.country import Country
+from apps.landmatrix.models.activity import Activity
+from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
+from apps.landmatrix.models.country import Country
 
 import csv
 
-from landmatrix.models.investor import Investor
+from apps.landmatrix.models.investor import Investor
 
 
 

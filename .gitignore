@@ -1,5 +1,6 @@
 
 .env
+.es_index_ab_switch
 
 # Collected(!) statics
 /static-collected/

@@ -1,0 +1,528 @@
+{% extends "grid/global_base.html" %}
+{% load i18n static custom_tags investor_tags %}
+
+{% block head %}
+{{ block.super }}
+    <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block header %}
+{% if not request.GET.popup %}{{ block.super }}{% endif %}
+{% endblock %}
+{% block footer %}
+{% if not request.GET.popup %}{{ block.super }}{% endif %}
+{% endblock %}
+{% block messages %}
+{% if investor.fk_status_id == 1 or investor.fk_status_id == 6 %}
+<p class="alert alert-danger">{% trans "This investor version is pending." %}</p>
+{% elif investor.fk_status_id == 4 %}
+<p class="alert alert-danger">{% trans "This investor has been deleted. It is not visible for public users." %}</p>
+{% elif investor.fk_status_id == 5 %}
+<p class="alert alert-danger">{% trans "This investor version has been rejected. It is not visible for public users." %}</p>
+{% endif %}
+{% endblock %}
+{% block breadcrumb %}
+{% if not request.GET.popup %}{{ block.super }}{% endif %}
+{% endblock %}
+{% block breadcrumb_inner %}
+    <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
+    <li>{% trans "Investor" %} #{{ investor.investor_identifier }}</li>
+{% endblock %}
+{% block subnav %}
+{% if not request.GET.popup %}{{ block.super }}{% endif %}
+{% endblock %}
+{% block subnav_inner %}
+    {% if investor|is_editable:user %}
+        <li role="presentation">
+            {% if investor|get_latest:request.user == investor %}
+            <a href="{% url "investor_update" investor_id=investor.investor_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+            {% else %}
+            <a class="text-danger" href="{% url "investor_update" investor_id=investor.investor_identifier history_id=investor.id %}" target="_blank"><i class="fa fa-warning"></i> {% trans "Edit old version" %}</a>
+            {% endif %}
+        </li>
+    {% endif %}
+    <li role="presentation"><a href="#history">
+        <i class="fa fa-history"></i> {% trans "History" %}
+    </a></li>
+    <li role="presentation"><a href="#comments">
+        <i class="fa fa-comments"></i> {% trans "Comments" %}
+    </a></li>
+    <li class="divider"></li>
+{% endblock %}
+{% block page_title %}
+    {{ investor.name }} (#{{ investor.investor_identifier }})
+{% endblock %}
+{% block title %}
+    {{ investor.name }} <small>(#{{ investor.investor_identifier }})</small>
+{% endblock %}
+
+{% block content %}
+<div class="popup">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#general_info_body"
+                       id="general_info">
+                        <h5 class="panel-title">
+                            {% trans "General info" %}
+                            <span id="collapsebtn_genereal_info"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="general_info_body"
+                     class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        {% if investor.name %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"name" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.name }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if investor.fk_country %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"fk_country" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.fk_country }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if investor.classification %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"classification" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.get_classification_display }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if investor.homepage %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"homepage" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.homepage }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if investor.opencorporates_link %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"opencorporates_link" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.opencorporates_link }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if investor.comment %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ investor|field_label:"comment" }}
+                            </div>
+                            <div class="col-md-9">
+                                {{ investor.comment }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#parent_companies_body"
+                       id="parent_companies">
+                        <h5 class="panel-title">
+                            {% trans "Parent companies" %}
+                            <small>({{ investor.venture_involvements.parent_companies.count }})</small>
+                            <span id="collapsebtn_parent_companies"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="parent_companies_body"
+                     class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% for involvement in investor.venture_involvements.parent_companies.all %}
+                            <h3>
+                                {% trans "Parent company" %}
+                                <small>#{{ forloop.counter }}</small>
+                            </h3>
+                            {% if involvement.fk_investor %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {% trans "Investor" %}
+                                </div>
+                                <div class="col-md-9">
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier history_id=involvement.fk_investor.id %}" target="_blank">{{ involvement.fk_investor }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.investment_type %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"investment_type" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.get_investment_type_display }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.percentage %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"percentage" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.percentage }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_amount %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_amount" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_amount }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_date %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_date" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_date }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.comment %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"comment" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.comment }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#tertiary_investors_body"
+                       id="tertiary_investors">
+                        <h5 class="panel-title">
+                            {% trans "Tertiary investors/lenders" %}
+                            <small>({{ investor.venture_involvements.tertiary_investors.count }})</small>
+                            <span id="collapsebtn_tertiary_investors"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="tertiary_investors_body"
+                     class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% for involvement in investor.venture_involvements.tertiary_investors.all %}
+                            <h3>
+                                {% trans "Tertiary investor/lender" %}
+                                <small>#{{ forloop.counter }}</small>
+                            </h3>
+                            {% if involvement.fk_investor %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {% trans "Investor" %}
+                                </div>
+                                <div class="col-md-9">
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier history_id=involvement.fk_investor.id %}" target="_blank">{{ involvement.fk_investor }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.investment_type %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"investment_type" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.get_investment_type_display }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.percentage %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"percentage" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.percentage }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_amount %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_amount" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_amount }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_date %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_date" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_date }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.comment %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"comment" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.comment }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#involvements_parent_company_body"
+                       id="involvements_parent_company">
+                        <h5 class="panel-title">
+                            {% trans "Involvements as Parent Company" %}
+                            <small>({{ investor.investors.parent_companies.latest_only.count }})</small>
+                            <span id="collapsebtn_involvements_parent_company"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="involvements_parent_company_body"
+                     class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% for involvement in investor.investors.parent_companies.latest_only %}
+                            <h3>
+                                {% trans "Involvement" %}
+                                <small>#{{ forloop.counter }}</small>
+                            </h3>
+                            {% if involvement.fk_venture %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {% trans "Investor" %}
+                                </div>
+                                <div class="col-md-9">
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier history_id=involvement.fk_venture.id %}" target="_blank">{{ involvement.fk_venture }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.investment_type %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"investment_type" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.get_investment_type_display }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.percentage %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"percentage" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.percentage }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_amount %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_amount" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_amount }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_date %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_date" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_date }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.comment %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"comment" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.comment }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#involvements_tertiary_investors_body"
+                       id="involvements_tertiary_investors">
+                        <h5 class="panel-title">
+                            {% trans "Involvements as Tertiary investor/lender" %}
+                            <small>({{ investor.investors.tertiary_investors.latest_only.count }})</small>
+                            <span id="collapsebtn_involvements_tertiary_investors"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="involvements_tertiary_investors_body"
+                     class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% for involvement in investor.investors.tertiary_investors.latest_only %}
+                            <h3>
+                                {% trans "Involvement" %}
+                                <small>#{{ forloop.counter }}</small>
+                            </h3>
+                            {% if involvement.fk_venture %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {% trans "Investor" %}
+                                </div>
+                                <div class="col-md-9">
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier history_id=involvement.fk_venture.id %}" target="_blank">{{ involvement.fk_venture }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.investment_type %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"investment_type" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.get_investment_type_display }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.percentage %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"percentage" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.percentage }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_amount %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_amount" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_amount }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.loans_date %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"loans_date" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.loans_date }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if involvement.comment %}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ involvement|field_label:"comment" }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ involvement.comment }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default">
+            {% involvements_for_current_activities investor as involvements %}
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#deals_body"
+                       id="deals">
+                        <h5 class="panel-title">
+                            {% trans "Deals (Involvements as Operating company)" %}
+                            <small>({{ involvements|length }})</small>
+                            <span id="collapsebtn_deals"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="deals_body"
+                     class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% if involvements|length > 0 %}
+                        <ul class="list-unstyled">
+                        {% for involvement in involvements %}
+                            <li>
+                                <a class="label label-deal"
+                                   href="{% url "deal_detail" deal_id=involvement.fk_activity.activity_identifier history_id=involvement.fk_activity.id %}"
+                                   target="_blank">{{ involvement.fk_activity.activity_identifier }}</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        {% include "grid/includes/investor_history.html" %}
+
+</div>
+{% endblock %}
