@@ -1,8 +1,9 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import path
 
 from .views import EditCommentView
 
 urlpatterns = [
-    url('', include('django_comments.urls')),
-    url('^edit/(?P<comment_id>[\d]+)/$', EditCommentView.as_view(), name='comments-edit'),
+    path('', include('django_comments.urls')),
+    path('edit/<int:comment_id>/', EditCommentView.as_view(), name='comments-edit'),
 ]

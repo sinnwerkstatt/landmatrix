@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path
 
-from .views import *
+from .views import MapView
 
 urlpatterns = [
-    url(r'^$', MapView.as_view(), name='map'),
+    path('', MapView.as_view(), name='map'),
 ]
