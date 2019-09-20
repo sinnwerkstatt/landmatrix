@@ -9,7 +9,7 @@
 /node_modules/
 
 
-landmatrix/static/css/main.css
+apps/landmatrix/static/css/*.css
 
 # IDE files and files from my personal environment
 dir.sh

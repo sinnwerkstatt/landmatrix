@@ -64,7 +64,6 @@ INSTALLED_APPS = [
 
     'modelcluster',
     'taggit',
-    'sass_processor',
 
     'bootstrap3_datetime',
 
@@ -158,7 +157,6 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'compressor.finders.CompressorFinder',
-    'sass_processor.finders.CssFinder'
 ]
 STATICFILES_DIRS = [
     BASE_DIR('node_modules'),
@@ -166,7 +164,6 @@ STATICFILES_DIRS = [
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-# SASS_PATH = os.path.join(BASE_DIR, 'static/css'),
 
 CACHES = {
     'default': env.cache('DJANGO_CACHE_URL', default='dummycache://'),
