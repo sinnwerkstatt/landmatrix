@@ -1,4 +1,4 @@
-{% load static i18n filter_tags sass_tags wagtailcore_tags custom_tags %}<!DOCTYPE html>
+{% load static i18n filter_tags sass_tags wagtailcore_tags custom_tags landmatrix_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -107,7 +107,8 @@
                         <span>
                             <select class="nav-select" id="nav-region-select" style="display:none">
                                 <option></option>
-                                {% for region in nav_regions %}
+                                {% nav_regions as navregions %}
+                                {% for region in navregions %}
                                 <option value="{{ region.1 }}">{{ region.2 }}</option>
                                 {% endfor %}
                             </select>
@@ -117,7 +118,8 @@
                         <span>
                             <select class="nav-select" id="nav-country-select" style="display:none">
                                 <option></option>
-                                {% for country_group in nav_countries %}
+                                {% nav_countries as navcountries %}
+                                {% for country_group in navcountries %}
                                 <optgroup label="{{ country_group.text }}">
                                     {% for country in country_group.children %}
                                     <option value="{{ country.1 }}">{{ country.2 }}</option>
@@ -242,19 +244,20 @@
             {# wagtailcms.context_processors.add_root_page #}
 
             <div id="footer-nav" class="row">
+                {% wagtail_root_page as wagtailrootpage %}
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_1|richtext }}
+                    {{ wagtailrootpage.footer_column_1|richtext }}
                 </div>
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_2|richtext }}
-                </div>
-
-                <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_3|richtext }}
+                    {{ wagtailrootpage.footer_column_2|richtext }}
                 </div>
 
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_4|richtext }}
+                    {{ wagtailrootpage.footer_column_3|richtext }}
+                </div>
+
+                <div class="col-md-3">
+                    {{ wagtailrootpage.footer_column_4|richtext }}
                 </div>
             </div>
 

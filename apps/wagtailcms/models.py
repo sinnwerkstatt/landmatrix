@@ -1,17 +1,13 @@
 from blog.models import BlogPage
-from django.conf import settings
 from django.db import models
-from django.utils.html import format_html, format_html_join
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
-from wagtail.core import hooks
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
-from wagtail.core.whitelist import attribute_rule
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.region import Region as DataRegion
-from apps.wagtailcms.blocks import COLUMN_BLOCKS, CONTENT_BLOCKS, DATA_BLOCKS, NoWrapsStreamField, get_country_or_region, Columns1To1Block, \
-    ThreeColumnsBlock
+from apps.wagtailcms.blocks import COLUMN_BLOCKS, CONTENT_BLOCKS, Columns1To1Block, DATA_BLOCKS, NoWrapsStreamField, ThreeColumnsBlock, \
+    get_country_or_region
 
 
 class WagtailRootPage(Page):
@@ -98,42 +94,3 @@ class CountryPage(Page):
                          FieldPanel('country')
                      ] + Page.promote_panels
     parent_page_types = ['wagtailcms.CountryIndex']
-
-
-# FIXME: Move hooks to wagtail_hooks.py
-@hooks.register('insert_editor_js')
-def editor_js():
-    return format_html(
-        """
-        <script>
-          registerHalloPlugin('hallojustify');
-        </script>
-        """
-    )
-
-
-@hooks.register('insert_editor_css')
-def editor_css():
-    # Add extra CSS files to the admin like font-awesome
-    css_files = [
-        'font-awesome/css/font-awesome.min.css',
-        'css/wagtail-font-awesome.css'
-    ]
-
-    css_includes = format_html_join(
-        '\n',
-        '<link rel="stylesheet" href="{0}{1}">',
-        ((settings.STATIC_URL, filename) for filename in css_files))
-
-    return css_includes
-
-
-@hooks.register('construct_whitelister_element_rules')
-def whitelister_element_rules():
-    return {
-        'h2': attribute_rule({'style': True}),
-        'h3': attribute_rule({'style': True}),
-        'h4': attribute_rule({'style': True}),
-        'h5': attribute_rule({'style': True}),
-        'p': attribute_rule({'style': True}),
-    }
