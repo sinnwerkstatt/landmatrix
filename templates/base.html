@@ -1,4 +1,4 @@
-{% load static i18n filter_tags sass_tags wagtailcore_tags custom_tags landmatrix_tags %}<!DOCTYPE html>
+{% load static i18n filter_tags sass_tags wagtailcore_tags custom_tags landmatrix_tags message_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -164,7 +164,8 @@
         {% block navutils %}
 
             {% block messages %}
-                {% for message in custom_messages %}
+               {% custom_messages as custommessages %}
+                {% for message in custommessages %}
                     <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
                         {% if message.title %}<strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
                     </p>
@@ -294,7 +295,7 @@
     <script type="text/javascript">
         function select2_open (e) {
             $(this).parents("li").addClass("open")
-        } 
+        }
         function select2_close (e) {
             $(this).parents("li").removeClass("open")
         }

@@ -136,13 +136,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
-                'django.template.context_processors.static',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                'apps.wagtailcms.context_processors.add_root_page',
                 'apps.wagtailcms.context_processors.add_data_source_dir',
-                'apps.wagtailcms.context_processors.add_countries_and_regions',
-                'apps.message.context_processors.add_custom_messages'
             ],
         },
     },
