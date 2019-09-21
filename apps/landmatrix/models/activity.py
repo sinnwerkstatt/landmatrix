@@ -8,10 +8,9 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
-from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.crop import Crop
 from apps.landmatrix.models.investor import HistoricalInvestorVentureInvolvement, Investor, InvestorActivityInvolvement, InvestorBase
+from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
 
 
 class ActivityQuerySet(models.QuerySet):
@@ -440,6 +439,7 @@ class ActivityBase(models.Model):
         return 0
 
     def get_agricultural_produce(self):
+        from apps.landmatrix.models import Crop
         crop_ids = set(a.value for a in self.attributes.filter(name='crops'))
         crops = Crop.objects.select_related('fk_agricultural_produce').filter(id__in=crop_ids)
         agricultural_produce = set(c.fk_agricultural_produce.name for c in crops if

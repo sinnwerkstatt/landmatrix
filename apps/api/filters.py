@@ -14,7 +14,6 @@ from django.utils.translation import ugettext_lazy as _
 # We can't import from landmatrix.models as FilterCondition imports from here
 from apps.landmatrix.models.activity import Activity
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.filter_preset import FilterPreset
 
 FILTER_FORMATS_SQL = 0
 FILTER_FORMATS_ELASTICSEARCH = 1
@@ -151,7 +150,7 @@ class Filter(BaseFilter):
         key = self['key'] or 'value'
         # TODO: hopefully _parse_value is no longer required
         value = self.parse_value(self['value'], variable=self['variable'], key=key)
-        
+
         if 'in' in self['operator'] and not isinstance(value, list):
             value = [value]
 
@@ -191,7 +190,7 @@ class Filter(BaseFilter):
                 value = str(country.pk)
 
         return value
-    
+
     def to_elasticsearch_match(self):
         """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool
             (for multiple matches) dictionary object.
@@ -206,11 +205,11 @@ class Filter(BaseFilter):
                       })
             Note: This comes with an added '_filter_name' attribute for internal aggregation
                   which needs to be removed. """
-            
+
         key = self['key'] or 'value'
         value = self.parse_value(self['value'], variable=self['variable'], key=key)
         definition_key = '__'.join((self['variable'], key, self['operator']))
-        
+
         # only the starting operator of this match or query-match is important for the logical operation,
         # we now map which one
         elastic_operator = None
@@ -223,11 +222,11 @@ class Filter(BaseFilter):
                                                                             self['variable'],
                                                                             single_value)
                 inside_operator = operator
-                matches.append(partial_match) 
+                matches.append(partial_match)
             match = {'bool': {inside_operator: matches}, '_filter_name': definition_key}
             if inside_operator == 'should':
                 match['bool']['minimum_should_match'] = 1
-            elastic_operator = 'must' 
+            elastic_operator = 'must'
             # 'must' is always right here, because the list makes the query already a composite, and the inner operator has effect
         else:
             if isinstance(value, list):
@@ -251,6 +250,7 @@ class Filter(BaseFilter):
 class PresetFilter(BaseFilter):
 
     def __init__(self, preset, name=None, label=None, hidden=False):
+        from apps.landmatrix.models.filter import FilterPreset
         if isinstance(preset, FilterPreset):
             self.preset_id = preset.pk
             self.filter = preset

@@ -11,7 +11,6 @@ class CountryManager(models.Manager):
 
 
 class Country(models.Model):
-
     fk_region = models.ForeignKey("Region", verbose_name=_("Region"), on_delete=models.PROTECT)
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
@@ -52,7 +51,35 @@ class Country(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('name', )
+        ordering = ('name',)
 
     def get_absolute_url(self):
         return reverse_lazy('country', kwargs={'country_slug': self.slug})
+
+
+class Region(models.Model):
+    name = models.CharField("Name", max_length=255)
+    slug = models.SlugField("Slug")
+    point_lat_min = models.DecimalField(
+        _("Latitude of northernmost point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
+    point_lon_min = models.DecimalField(
+        _("Longitude of westernmost point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
+    point_lat_max = models.DecimalField(
+        _("Latitude of southernmost point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
+    point_lon_max = models.DecimalField(
+        _("Longitude of easternmost point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def point_lon(self):
+        return (self.point_lon_min + self.point_lon_max) / 2
+
+    @property
+    def point_lat(self):
+        return (self.point_lat_min + self.point_lat_max) / 2

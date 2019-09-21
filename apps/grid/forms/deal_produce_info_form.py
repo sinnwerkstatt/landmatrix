@@ -3,10 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.grid.fields import TitleField, YearBasedModelMultipleChoiceIntegerField
 from apps.grid.widgets import CommentInput, NumberInput
-from apps.landmatrix.models.animal import Animal
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.crop import Crop
-from apps.landmatrix.models.mineral import Mineral
+from apps.landmatrix.models import Animal, Country, Crop, Mineral
 from .base_form import BaseForm
 
 

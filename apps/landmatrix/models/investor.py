@@ -7,7 +7,6 @@ from multiselectfield import MultiSelectField
 
 
 class InvestorQuerySet(models.QuerySet):
-
     def public(self, user=None):
         """
         Status public, not to be confused with is_public.
@@ -19,12 +18,9 @@ class InvestorQuerySet(models.QuerySet):
             return self.filter(fk_status_id__in=InvestorBase.PUBLIC_STATUSES)
 
     def public_or_deleted(self, user=None):
-        statuses = InvestorBase.PUBLIC_STATUSES + (
-            InvestorBase.STATUS_DELETED,
-        )
+        statuses = InvestorBase.PUBLIC_STATUSES + (InvestorBase.STATUS_DELETED, )
         if user and user.is_authenticated:
-            return self.filter(models.Q(fk_status_id__in=statuses) |
-                        models.Q(history_user=user))
+            return self.filter(models.Q(fk_status_id__in=statuses) | models.Q(history_user=user))
         else:
             return self.filter(fk_status_id__in=statuses)
 

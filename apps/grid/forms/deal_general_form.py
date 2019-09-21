@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.grid.fields import (TitleField, YearBasedChoiceField, YearBasedFloatField, YearBasedIntegerField, YearBasedMultipleChoiceIntegerField)
 from apps.grid.widgets import CommentInput
 from apps.landmatrix.models.activity import Activity
-from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models import Currency
 from .base_form import BaseForm
 from .choices import grouped_intention_choices, nature_choices, price_type_choices
 

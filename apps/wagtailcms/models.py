@@ -5,7 +5,7 @@ from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 
 from apps.landmatrix.models.country import Country as DataCountry
-from apps.landmatrix.models.region import Region as DataRegion
+from apps.landmatrix.models import Region as DataRegion
 from apps.wagtailcms.blocks import COLUMN_BLOCKS, CONTENT_BLOCKS, Columns1To1Block, DATA_BLOCKS, NoWrapsStreamField, ThreeColumnsBlock, \
     get_country_or_region
 

@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from apps.api.filters import Filter, PresetFilter
 from apps.api.serializers import FilterPresetSerializer
 from apps.grid.views.browse_filter_conditions import get_activity_field_label, get_investor_field_label
-from apps.landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
+from apps.landmatrix.models.filter import FilterPreset as FilterPresetModel
 
 
 class FilterDocTypeMixin(View):

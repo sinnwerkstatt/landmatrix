@@ -5,9 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_registration.forms import RegistrationForm
 
 from apps.grid.fields import UserModelChoiceField
-from .models.activity import Activity
-from .models.investor import Investor
-from .models.region import Region
+from .models import Activity, Investor, Region
 
 
 class CustomRegistrationForm(RegistrationForm):

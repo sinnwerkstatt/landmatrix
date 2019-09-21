@@ -9,7 +9,7 @@ from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
-from apps.landmatrix.models.region import Region as DataRegion
+from apps.landmatrix.models import Region as DataRegion
 from apps.wagtailcms.twitter import TwitterTimeline
 
 

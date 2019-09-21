@@ -7,8 +7,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
 from apps.grid.views.filter import FilterWidgetMixin
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.region import Region
+from apps.landmatrix.models import Country, Region
 from apps.wagtailcms.models import WagtailRootPage
 
 

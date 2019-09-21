@@ -2,6 +2,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 
 from apps.api.filters import *
+from apps.landmatrix.models import FilterPreset
 
 
 class FiltersTestCase(TestCase):
