@@ -1,33 +1,33 @@
 {% load i18n wagtailcore_tags %}
 <div id="news" class="block col-md-12">
-    <h3 class="center">{% trans "News and Publications" %}</h3>
+  <h3 class="center">{% trans "News and Publications" %}</h3>
 
-    <div class="row row-flex">
-        {% for item in news %}
-        <div class="col-sm-6 col-md-4 ">
-          <div class="thumbnail flex-col">
-            {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
-            <div class="caption">
-              <h3><a href="/stay-informed/{{ item.slug }}/">{{ item.title }}</a></h3>
-              <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
-              <p>
-                <a href="/stay-informed/{{ item.slug }}/" class="btn">{% trans "Read more" %}</a>
-              </p>
-            </div>
+  <div class="row row-flex">
+    {% for item in news %}
+      <div class="col-sm-6 col-md-4 ">
+        <div class="thumbnail flex-col">
+          {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
+          <div class="caption">
+            <h3><a href="/stay-informed/{{ item.slug }}/">{{ item.title }}</a></h3>
+            <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
+            <p>
+              <a href="/stay-informed/{{ item.slug }}/" class="btn">{% trans "Read more" %}</a>
+            </p>
           </div>
         </div>
-        {% empty %}
-            <div class="col-sm-12">
-                <p class="alert alert-default" style="margin: 0 auto 15px">{% blocktrans with t=tag|title %}No news or publications available for {{ t }}.{% endblocktrans %}</p>
-            </div>
-        {% endfor %}
-    </div>
+      </div>
+    {% empty %}
+      <div class="col-sm-12">
+        <p class="alert alert-default" style="margin: 0 auto 15px">{% blocktrans with t=tag|title %}No news or publications available for {{ t }}.{% endblocktrans %}</p>
+      </div>
+    {% endfor %}
+  </div>
 
-    <div class="text-center">
-        <p><a class="btn"
-              href="/stay-informed/{% if tag %}?tag={{ tag }}{% endif %}">
-            {% trans "All News and Publications" %}{% if name %}: {{ name }}{% endif %}
-        </a></p>
-    </div>
+  <div class="text-center">
+    <p><a class="btn"
+          href="/stay-informed/{% if tag %}?tag={{ tag }}{% endif %}">
+      {% trans "All News and Publications" %}{% if name %}: {{ name }}{% endif %}
+    </a></p>
+  </div>
 
 </div> <!-- News -->

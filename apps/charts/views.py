@@ -101,32 +101,6 @@ class PerspectiveChartView(BaseChartPDFView):
     chart = "chart_perspective"
 
 
-#class SpecialInterestView(ChartPDFView):
-#    template_name = "charts/special-interest.html"
-#    chart = "special_interest"
-#    pdf_javascript_delay = 10000
-#
-#    def get_pdf_export_url(self, request, *args, **kwargs):
-#        """
-#        Special handling for the 'variable' switch
-#        """
-#        url = super().get_pdf_export_url(request, *args, **kwargs)
-#        if 'variable' in request.GET:
-#            url += '?variable={}'.format(request.GET['variable'])
-#
-#        return url
-#
-#    def get_pdf_render_url(self, request, *args, **kwargs):
-#        """
-#        Special handling for the 'variable' switch
-#        """
-#        url = super().get_pdf_render_url(request, *args, **kwargs)
-#        if 'variable' in request.GET:
-#            url += '?variable={}'.format(request.GET['variable'])
-#
-#        return url
-
-
 class AgriculturalDriversChartView(BaseChartPDFView):
     template_name = "charts/special-interest/agricultural-drivers.html"
     chart = "chart_agricultural_drivers"

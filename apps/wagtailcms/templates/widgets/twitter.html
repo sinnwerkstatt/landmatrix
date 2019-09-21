@@ -1,37 +1,37 @@
 {% load i18n %}
 <div class="widget-twitter-timeline">
-	{% if not timeline %}
-		<div class="twitter-timeline-empty">
-		Feed currently not available.
-		</div>
-	{%  else %}
-	{% for status in timeline %}
-		<div class="twitter-timeline-update">
-			<div class="twitter-timeline-meta">
-				<a href="https://twitter.com/{{ status.screen_name }}" target="_blank" class="twitter-timeline-username">
-					{{ status.name }}
-				</a>
-				·
-				<a href="https://twitter.com/{{ status.screen_name }}" target="_blank" class="twitter-timeline-screenname">
-					@{{ status.screen_name }}
-				</a>
-				·
-				<a target="_blank" href="https://twitter.com/{{status.screen_name}}/status/{{status.id_str}}" class="twitter-timeline-time">
-					{{status.created_at}}
-				</a>
-			</div>
-			<div class="twitter-timeline-text">
-				{{status.text|safe }}
-			</div>
-			{% if status.extended_entities %}
-			<!-- <div class="twitter-timeline-media">
+  {% if not timeline %}
+    <div class="twitter-timeline-empty">
+      Feed currently not available.
+    </div>
+  {% else %}
+    {% for status in timeline %}
+      <div class="twitter-timeline-update">
+        <div class="twitter-timeline-meta">
+          <a href="https://twitter.com/{{ status.screen_name }}" target="_blank" class="twitter-timeline-username">
+            {{ status.name }}
+          </a>
+          ·
+          <a href="https://twitter.com/{{ status.screen_name }}" target="_blank" class="twitter-timeline-screenname">
+            @{{ status.screen_name }}
+          </a>
+          ·
+          <a target="_blank" href="https://twitter.com/{{ status.screen_name }}/status/{{ status.id_str }}" class="twitter-timeline-time">
+            {{ status.created_at }}
+          </a>
+        </div>
+        <div class="twitter-timeline-text">
+          {{ status.text|safe }}
+        </div>
+        {% if status.extended_entities %}
+          <!-- <div class="twitter-timeline-media">
 				<div class="twitter-timeline-imagecontainer">
 					<img src="{{status.extended_entities.media_url_https}}">
 				</div>
 			</div> -->
-			{% endif %}
-			{% if status.quoted_status %}
-			<!-- <div class="twitter-timeline-quote">
+        {% endif %}
+        {% if status.quoted_status %}
+          <!-- <div class="twitter-timeline-quote">
 				{{status.quoted_status.text|safe}}
 				{% if status.quoted_status.media_url_https %}
 				<div class="twitter-timeline-quote-media">
@@ -41,9 +41,9 @@
 				</div>
 				{% endif %}
 			</div> -->
-			{% endif %}
-		</div>
-	{% endfor %}
-	{% endif %}
-	<a href="https://twitter.com/{{ username }}" target="_blank" class="btn">{% trans "Tweets by" %} @{{ username }}</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <a href="https://twitter.com/{{ username }}" target="_blank" class="btn">{% trans "Tweets by" %} @{{ username }}</a>
 </div><!-- widget-twitter-timeline -->
