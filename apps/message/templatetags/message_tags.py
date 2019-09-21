@@ -7,4 +7,4 @@ register = template.Library()
 
 @register.simple_tag
 def custom_messages():
-    return Message.objects.active()
+    return Message.objects.filter(is_active=True)

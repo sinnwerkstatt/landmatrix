@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from .managers import MessageManager
-
 
 class Message(models.Model):
 
@@ -24,8 +22,6 @@ class Message(models.Model):
     level = models.CharField(_('Level'), max_length=10, choices=LEVEL_CHOICES, default=LEVEL_INFO)
 
     is_active = models.BooleanField(_('Is active'))
-
-    objects = MessageManager()
 
     class Meta:
         verbose_name = _('Message')

@@ -1,18 +1,17 @@
-from blog.models import BlogIndexPage, BlogPage
-from modeltranslation.translator import TranslationOptions
+from blog.models import BlogIndexPage
 from modeltranslation.decorators import register
+from modeltranslation.translator import TranslationOptions
 
 from .models import *
 
 
 @register(WagtailRootPage)
 class WagtailRootPageTR(TranslationOptions):
-
     fields = (
         'body',
         'map_introduction',
         'data_introduction',
-        #'charts_introduction',
+        # 'charts_introduction',
         'footer_column_1',
         'footer_column_2',
         'footer_column_3',
@@ -22,10 +21,10 @@ class WagtailRootPageTR(TranslationOptions):
 
 @register(WagtailPage)
 class WagtailPageTR(TranslationOptions):
-
     fields = (
         'body',
     )
+
 
 @register(RegionIndex)
 class RegionIndexTR(TranslationOptions):
@@ -36,7 +35,6 @@ class RegionIndexTR(TranslationOptions):
 
 @register(RegionPage)
 class RegionPageTR(TranslationOptions):
-
     fields = (
         'body',
     )
@@ -44,7 +42,6 @@ class RegionPageTR(TranslationOptions):
 
 @register(CountryIndex)
 class CountryIndexTR(TranslationOptions):
-
     fields = (
         'body',
     )
@@ -52,7 +49,6 @@ class CountryIndexTR(TranslationOptions):
 
 @register(CountryPage)
 class CountryPageTR(TranslationOptions):
-
     fields = (
         'body',
     )
