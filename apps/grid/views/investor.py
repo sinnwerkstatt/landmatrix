@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,6 +5,7 @@ from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
@@ -465,7 +464,7 @@ class DeleteInvestorView(InvestorUpdateView):
         else:
             hinvestor.fk_status_id = hinvestor.STATUS_TO_DELETE
         hinvestor.history_user = self.request.user
-        hinvestor.history_date = datetime.now()
+        hinvestor.history_date = timezone.now()
         hinvestor.public_version = None
         hinvestor.save()
         for involvement in involvements:
@@ -532,7 +531,7 @@ class RecoverInvestorView(InvestorUpdateView):
         hinvestor.pk = None
         hinvestor.fk_status_id = hinvestor.STATUS_OVERWRITTEN
         hinvestor.history_user = self.request.user
-        hinvestor.history_date = datetime.now()
+        hinvestor.history_date = timezone.now()
         hinvestor.save()
         for involvement in involvements:
             involvement.pk = None

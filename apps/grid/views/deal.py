@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,6 +7,7 @@ from django.forms import BaseFormSet
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -506,7 +505,7 @@ class DealDeleteView(DealBaseView):
         else:
             hactivity.fk_status_id = hactivity.STATUS_TO_DELETE
         hactivity.history_user = self.request.user
-        hactivity.history_date = datetime.now()
+        hactivity.history_date = timezone.now()
         hactivity.public_version = None
         hactivity.save()
         for hattribute in attributes:
@@ -568,7 +567,7 @@ class DealRecoverView(DealBaseView):
         hactivity.pk = None
         hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
         hactivity.history_user = self.request.user
-        hactivity.history_date = datetime.now()
+        hactivity.history_date = timezone.now()
         hactivity.save()
         for hattribute in attributes:
             hattribute.pk = None
