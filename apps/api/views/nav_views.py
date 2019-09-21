@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 
 from apps.api.serializers import RegionSerializer
 from apps.landmatrix.models import Country
+from apps.landmatrix.templatetags.landmatrix_tags import nav_countries
 from apps.wagtailcms.models import CountryPage, RegionPage
 from .list_views import ElasticSearchMixin
 
@@ -19,6 +20,7 @@ class CountryListView(APIView):
     """
     Get all countries.
     """
+
     def get(self, request):
         queryset = Country.objects.all()
         queryset = queryset.only('id', 'slug', 'name').order_by('name')
@@ -31,23 +33,9 @@ class TargetCountryListView(APIView):
     Get all target countries grouped by National Observatories and Others.
     Used by the navigation.
     """
+
     def get(self, request):
-        countries = []
-        observatories = CountryPage.objects.filter(live=True).order_by('title')
-        countries.append({
-            'text': _('Observatories'),
-            'children': [
-                [country.country.id if country.country else None, country.slug, country.title]
-                for country in observatories]
-        })
-        other_countries = Country.objects.filter(is_target_country=True, high_income=False)
-        other_countries = other_countries.exclude(id__in=[c.country.id
-                                                          for c in observatories if c.country])
-        other_countries = other_countries.only('id', 'slug', 'name').order_by('name')
-        countries.append({
-            'text': _('Other'),
-            'children': [[country.id, country.slug, country.name] for country in other_countries]
-        })
+        countries = nav_countries()
         return Response(countries)
 
 
@@ -94,11 +82,11 @@ class InvestorListView(ElasticSearchMixin,
 
         term = self.request.GET.get('q', '')
         if term:
-            #latest_ids = HistoricalInvestor.objects.latest_ids()
-            #queryset = HistoricalInvestor.objects.filter(id__in=latest_ids)
-            #queryset = queryset.filter(name__icontains=term.lower())
-            #results = []
-            #for investor in queryset:
+            # latest_ids = HistoricalInvestor.objects.latest_ids()
+            # queryset = HistoricalInvestor.objects.filter(id__in=latest_ids)
+            # queryset = queryset.filter(name__icontains=term.lower())
+            # results = []
+            # for investor in queryset:
             #    top_investors = ""
             #    if "unknown" in investor.name.lower():
             #        top_investors = investor.format_investors(investor.get_top_investors())

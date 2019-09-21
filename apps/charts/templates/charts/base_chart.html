@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n static filter_tags sass_tags %}
+{% load i18n static filter_tags %}
 
 {% block css %}
-<link href="{% sass_src 'css/charts.scss' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static 'css/charts.css' %}" rel="stylesheet">
 <link href="{% static 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
 {% endblock %}
 
