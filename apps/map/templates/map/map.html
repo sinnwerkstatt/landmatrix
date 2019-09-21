@@ -3,6 +3,7 @@
 {% load i18n static filter_tags %}
 
 {% block css %}
+  {{ block.super }}
   <link rel="stylesheet" href="{% static "map/css/map.css" %}">
 {% endblock %}
 
@@ -35,6 +36,7 @@
   {% include "map/includes/markup.html" %}
 {% endblock %}
 
-{% block js %}
+{% block javascript %}
+  {{ block.super }}
   {% include "map/includes/script.html" %}
 {% endblock %}
