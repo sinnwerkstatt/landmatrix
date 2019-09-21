@@ -40,21 +40,21 @@ def task_setup_js_environment():
     }
 
 
-# def task_generate_css():
-#     for scss in glob('landmatrix/static/**/main.scss', recursive=True):
-#         css = scss[:-4] + 'css'
-#         yield {
-#             'name': scss,
-#             'file_dep': [scss],
-#             'targets': [css],
-#             'actions': [f'pysassc {scss} > {css}'],
-#             'clean': True
-#         }
+def task_generate_css():
+    for scss in glob('apps/landmatrix/static/css/[a-z]*.scss', recursive=True):
+        css = scss[:-4] + 'css'
+        yield {
+            'name': scss,
+            'file_dep': [scss],
+            'targets': [css],
+            'actions': [f'pysassc {scss} > {css}'],
+            'clean': True
+        }
 
 
 def task_collectstatic():
     return {
-        # 'task_dep': ['generate_css'],
+        'task_dep': ['generate_css'],
         'actions': ['./manage.py collectstatic --noinput'],
     }
 
