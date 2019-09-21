@@ -1,9 +1,9 @@
 |pipeline status| |coverage report|
 
-.. |pipeline status| image:: https://git.sinntern.de/django/landmatrix/badges/dev/pipeline.svg
-   :target: https://git.sinntern.de/django/landmatrix/commits/dev
-.. |coverage report| image:: https://git.sinntern.de/django/landmatrix/badges/dev/coverage.svg
-   :target: https://git.sinntern.de/django/landmatrix/commits/dev
+.. |pipeline status| image:: https://git.sinntern.de/django/landmatrix/badges/master/pipeline.svg
+   :target: https://git.sinntern.de/django/landmatrix/commits/master
+.. |coverage report| image:: https://git.sinntern.de/django/landmatrix/badges/master/coverage.svg
+   :target: https://git.sinntern.de/django/landmatrix/commits/master
 
 
 Landmatrix
