@@ -1,3 +1,0 @@
-[{"imports": ["test.b.b"],"name": "test.a.a", "size": 1},
-{"imports": ["test.a.a", "test.a.a"],"name": "test.b.b", "size": 1},
-{"imports": ["test.a.a", "test.b.b"],"name": "test.c.c", "size": 1}]

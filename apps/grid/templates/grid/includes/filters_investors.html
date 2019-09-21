@@ -140,7 +140,9 @@
     </div>
 </div>
 
-{% block js %}
+{% block javascript %}
+  {{ block.super }}
+
     <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
         var doc_type = "investor";

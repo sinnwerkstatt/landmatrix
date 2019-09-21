@@ -9,7 +9,7 @@ $.fn.textWidth = function (text) {
     var width = html.width();
     html.remove();
     return width;
-}
+};
 
 function getParameterByName(name) {
     var urlParams;
@@ -180,169 +180,6 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     return s.join(dec);
 }
 
-//var geocoders = new Array();
-//var maps = new Array();
-//var markers = new Array();
-//var autocompletes = new Array();
-//var latChanged = new Array();
-//var lonChanged = new Array();
-//var center_lat = 41.659,
-//    center_lng = -4.714;
-//var latlng;
-//var circle,
-//    circle_hectares = -1,
-//    circle_radius = 0;
-//
-//function drawCircle (latlng, i) {
-//      if (circle_hectares == -1) {
-//          var query_params = get_query_params(get_base_filter(), "");
-//          var json_query = "/api/hectares.json" + query_params;
-//          jQuery.getJSON(json_query, function (data) {
-//              circle_hectares = parseFloat(data["hectares"]);
-//              circle_radius = Math.sqrt((circle_hectares * 10000) / Math.PI);
-//              // Update legend
-//              $(".legend li .hectares").text(number_format(circle_hectares, 0));
-//              return drawCircle(latlng, i);
-//          });
-//      } else {
-//          circle && circle.setMap(null); // Remove existing circle
-//          circle = new google.maps.Circle({
-//              map: maps[i],
-//              center: latlng,
-//              fillColor: "#ed881b",
-//              fillOpacity: 0.5,
-//              strokeColor: "#ed881b",
-//              strokeOpacity: 1,
-//              strokeWeight: 2,
-//              radius: circle_radius
-//          });
-//      };
-//};
-//function initializeMap (el, index, draw_circle, lat, lng) {
-//  //MAP
-//  var options = {
-//    zoom: 16,
-//    center: latlng,
-//    mapTypeId: google.maps.MapTypeId.ROADMAP
-//  };
-//  maps[index] = new google.maps.Map(el, options);
-//  //GEOCODER
-//  geocoders[index] = new google.maps.Geocoder();
-//
-//  markers[index] = new google.maps.Marker({
-//    map: maps[index],
-//    draggable: true
-//  });
-//  if (lat && lng) {
-//    latlng = new google.maps.LatLng(lat, lng);
-//  } else {
-//    latlng = new google.maps.LatLng(center_lat, center_lng);
-//  }
-//  maps[index].setCenter(latlng);
-//  draw_circle && drawCircle(latlng, index);
-//  markers[index].setPosition(latlng);
-//  latChanged[index] = lat;
-//  lonChanged[index] = lng;
-//  if (latlng.length == 0) {
-//      maps[index].setZoom(2);
-//  } else {
-//      //maps[index].setZoom(2);
-//      maps[index].setZoom(5);
-//  }
-//
-//  // changed lan or lng value, center map and request target Country
-//  $(el).parents("ul").find(".point_lat input, .point_lon input").change(function() {
-//    var accuracy = $(this).parents("ul").find(".level_of_accuracy select :selected").first().val();
-//    var value = $(this).val();
-//    if ($(this).parents("li").hasClass("point_lat")) {
-//      latChanged[index] = value;
-//    } else {
-//      lonChanged[index] = value;
-//    }
-//    if (accuracy == "40" && latChanged[index] != null && latChanged[index] != "" && lonChanged[index] != null && lonChanged[index] != "") {
-//      var latLng = new google.maps.LatLng(latChanged[index], lonChanged[index]);
-//      maps[index].setCenter(latLng);
-//      drawCircle(latlng, index);
-//      maps[index].setZoom(8);
-//      markers[index].setPosition(latLng);
-//      geocoders[index].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
-//        for(var i = 0; i < results[0].address_components.length; i++) {
-//            if (results[0].address_components[i].types.indexOf("country") != -1) {
-//              country = results[0].address_components[i].short_name;
-//              $(el).parents("ul").find(".target_country option[title='" + country + "']").attr('selected', 'selected');
-//              $(el).parents("ul").find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
-//            }
-//          };
-//      });
-//    }
-//  });
-//  //switched level of accuracy fire event on lan and lon input fields
-//  $(el).parents("ul").find(".level_of_accuracy select").change(function() {
-//    if ($(this).find(":selected").val() == "40") {
-//      $(this).parents("ul").find(".point_lat input, .point_lon input").change();
-//    }
-//  });
-//  google.maps.event.addListener(markers[index], 'drag', function() {
-//  geocoders[index].geocode({'latLng': markers[index].getPosition(), "language": "en"}, function(results, status) {
-//    if (status == google.maps.GeocoderStatus.OK) {
-//      if (results[0]) {
-//        $(el).parents("ul").find(".point_lat input").val(markers[index].getPosition().lat());
-//        $(el).parents("ul").find(".point_lon input").val(markers[index].getPosition().lng());
-//      }
-//    }
-//  });
-//});
-//  return maps[index];
-//}
-//
-//function init_google_maps(el, index, draw_circle) {
-//  el.autocomplete({
-//        //This bit uses the geocoder to fetch address values
-//        source: function(request, response) {
-//          var accuracy = el.parents("ul").find(".level_of_accuracy select :selected").first().val();
-//          // only lookup name when level of accuracy is not exact coordinates
-//          if (accuracy != "40") {
-//            geocoders[index].geocode( {'address': request.term, 'language':'en'}, function(results, status) {
-//              response($.map(results, function(item) {
-//                country = "";
-//                for(var i = 0; i < item.address_components.length; i++) {
-//                  if ($.inArray("country", item.address_components[i].types) != -1) {
-//                    country = item.address_components[i].short_name;
-//                  }
-//                };
-//                return {
-//                  label:  item.formatted_address,
-//                  value: item.formatted_address,
-//                  latitude: item.geometry.location.lat(),
-//                  longitude: item.geometry.location.lng(),
-//                  country: country
-//                }
-//              }));
-//            })
-//          }
-//        },
-//        open: function(event, ui) { $(".ui-autocomplete").css("z-index", 10000); },
-//        close: function(event, ui) { $(".ui-autocomplete").css("z-index", 1); },
-//        //This bit is executed upon selection of an address
-//        select: function(event, ui) {
-//          el.parents("ul.form").find(".point_lat input").val(ui.item.latitude).change();
-//          el.parents("ul.form").find(".point_lon input").val(ui.item.longitude).change();
-//          //$("#id_spatial_data-target_country option:selected").removeAttr("selected"); - doesn't work in FF 14
-//          el.parents("ul.form").find(".target_country option:selected").removeAttr("selected");
-//          el.parents("ul.form").find(".target_country option[title='" + ui.item.country + "']").attr('selected', 'selected');
-//          latlng = new google.maps.LatLng(ui.item.latitude, ui.item.longitude);
-//          markers[index].setPosition(latlng);
-//          maps[index].setCenter(latlng);
-//          draw_circle && drawCircle(latlng, index);
-//        }
-//      });
-//  if (draw_circle) {
-//    google.maps.event.addListener(markers[index], 'drag', function() {
-//        latlng = new google.maps.LatLng(markers[index].getPosition().lat(), markers[index].getPosition().lng());
-//        drawCircle(latlng, index)
-//    });
-//  }
-//};
 
 var numeric_operators = ["lt", "gt", "gte", "lte", "is", "is_empty"];
 var string_operators = ["not_in", "in", "is", "contains"];
@@ -740,22 +577,11 @@ $(document).ready(function () {
         }
     }
 
-    //$(".get-the-detail .map").each(function (i) {
-    //  initializeMap(this, i, false, $($(this).parents("tr").siblings().find(".point_lat")[i]).val(), $($(this).parents("tr").siblings().find(".point_lon")[i]).val());
-    //});
     // enable hover of subnav to change entry-point graphics
     $(".get-the-detail .subnav li").hover(function () {
         $(".entry-point span").removeClass().addClass("entry-point-" + $(this).attr("class").split(" ")[0]);
     });
-    //$(".public .form:not(.empty) .map").each(function (i) {
-    //    initializeMap(this, i, false, $(this).parents("ul.form").find(".point_lat").val(), $(this).parents("ul.form").find(".point_lon").val());
-    //    init_google_maps($(this).prev("input"), i, false);
-    //});
-    //$("#add-spatial-data").click(function () {
-    //  var index = $(".spatial :input[name=spatial_data-TOTAL_FORMS]").val() - 1;
-    //  initializeMap($(".form:visible .field.location .map").last()[0], index);
-    //  init_google_maps($(".form:visible .field.location input").last(), index);
-    //});
+
     // tooltips
     $('.toggle-tooltip:not(.left,.bottom)').tooltip({placement: "top", html: true});
     $('.toggle-tooltip.left').tooltip({placement: "left", html: true});
@@ -763,4 +589,38 @@ $(document).ready(function () {
 
     $('.comment-reply-link').click(show_reply_form);
     $('#cancel-reply').click(cancel_reply_form);
+});
+
+// <!-- Select2 init -->
+function select2_open(e) {
+    $(this).parents("li").addClass("open")
+}
+
+function select2_close(e) {
+    $(this).parents("li").removeClass("open")
+}
+
+$(function() {
+    // Regions
+    let region_select = $('#nav-region-select').select2({
+        placeholder: regions_placeholder,
+        dropdownCssClass: "select2-main"
+    }).on('select2:open', select2_open)
+      .on('select2:close', select2_close);
+
+    region_select.select2('val', '');
+    region_select.on('change', function () {
+        location.href = '/region/' + $(this).val();
+    });
+    // Countries
+    let country_select = $('#nav-country-select').select2({
+        placeholder: countries_placeholder,
+        dropdownCssClass: "select2-main",
+        //allowClear: true
+    }).on('select2:open', select2_open)
+      .on('select2:close', select2_close);
+    country_select.select2('val', '');
+    country_select.on('change', function (e) {
+        location.href = '/country/' + $(this).val();
+    });
 });

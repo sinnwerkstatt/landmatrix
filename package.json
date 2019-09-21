@@ -7,19 +7,26 @@
     "bootstrap": "~3.3",
     "bootstrap-additions": "^0.3.1",
     "bootstrap-switch": "~3.3",
+    "chart.js": "~2.5.0",
     "d3": "~3.5",
     "d3-sankey": "~0.12.1",
     "eonasdan-bootstrap-datetimepicker": "~4.17.47",
     "font-awesome": "~4.7.0",
+    "handlebars": "~4.0.6",
     "humanize-duration": "~3.20.0",
     "jquery": "~1.12",
     "jquery.formset": "~1.3.0",
     "moment": "~2.13.0",
-    "moment-timezone" : "~0.5.3",
+    "moment-timezone": "~0.5.3",
     "nprogress": "~0.2.0",
-    "openlayers": "~3.19",
+    "ol-layerswitcher": "^3.3.0",
     "ol3-google-maps": "~0.12",
+    "openlayers": "~3.19",
+    "openlayers4": "npm:openlayers@~4.0.1",
     "raphael": "~2.1.4",
     "select2": "~4.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
   }
 }

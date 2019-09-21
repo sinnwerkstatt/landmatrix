@@ -5,12 +5,13 @@
 <!--[if gt IE 8]><!-->
 <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
+  {% if page.search_description %}<meta name="description" content="{{ page.search_description }}"/>{% endif %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
-   {% if page.search_description %} <meta name="description" content="{{ page.search_description }}"/>{% endif %}
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block css %}
     <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.min.css" %}">
     <!-- <link rel="stylesheet" href="{% static "css/content.css" %}"> -->
     <link rel="stylesheet" href="{% static "select2/dist/css/select2.min.css" %}"/>
@@ -24,369 +25,279 @@
     <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
     <script src="{% static "select2/dist/js/select2.full.js" %}"></script>
 
-
     {% if is_pdf_export %}
-        <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" title="no title" charset="utf-8">
+      <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css">
     {% endif %}
+  {% endblock %}
 
-    {% block head %}
-    {% endblock %}
-    {% block css %}
-    {% endblock %}
-
+  {% block head %}
+  {% endblock %}
 </head>
+
 <body class="{% if popup %}popup {% endif %}{% block body_class %}{% endblock %}">
 
 {% block header %}
-    <div class="navbar navbar-default navbar-main navbar-fixed-top" role="navigation">
-        <div class="container-fluid">
+  <div class="navbar navbar-default navbar-main navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#main-navbar-collapse" aria-expanded="false">
+          <span class="sr-only">{% trans "Toggle navigation" %}</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}" alt="Landmatrix Logo"></a>
+      </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="main-navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          {#% include "language_chooser.html" %#}
+          {% if request.user.is_authenticated %}
+            <li>
+              <p class="navbar-text dropdown-header">
+                {% if request.user.get_full_name %}
+                  {{ request.user.get_full_name }}
+                {% else %}
+                  {{ request.user.username }}
+                {% endif %}
+                <br><small>{% get_user_role user %}</small>
+              </p>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-haspopup="true" aria-expanded="false">
+                <i class="fa {% if request.user.is_impersonate %}fa-user-secret{% else %}fa-user{% endif %} messages"></i>
+              </a>
+              <ul class="dropdown-menu">
+                {% if request.user.is_impersonate %}
+                  <li><a href="{% url 'impersonate-stop' %}">{% trans "Stop impersonation" %}</a></li>
+                  <li role="separator" class="divider"></li>
+                {% endif %}
+                <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
+                <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
+                <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
+                <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li>
+              <a href="{% url "login" %}?next=/" role="button" title="{% trans "Login/Register" %}"
+                 class="toggle-tooltip bottom">
+                <i class="fa fa-user"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
 
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#main-navbar-collapse" aria-expanded="false">
-                    <span class="sr-only">{% trans "Toggle navigation"%}</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}"></a>
-            </div>
-
-            <div class="collapse navbar-collapse" id="main-navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    {#% include "language_chooser.html" %#}
-                    {% block user_tools %}
-                        {% if request.user.is_authenticated %}
-                            <li>
-                                <p class="navbar-text dropdown-header">
-                                    {% if request.user.get_full_name %}
-                                        {{ request.user.get_full_name }}
-                                    {% else %}
-                                        {{ request.user.username }}
-                                    {% endif %}
-                                    <br><small>{% get_user_role user %}</small>
-                                </p>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa {% if request.user.is_impersonate %}fa-user-secret{% else %}fa-user{% endif %} messages"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% if request.user.is_impersonate %}
-                                    <li><a href="{% url 'impersonate-stop' %}">{% trans "Stop impersonation" %}</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    {% endif %}
-                                    <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
-                                    <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
-                                    <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
-                                    <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
-                                </ul>
-                            </li>
-                        {% else %}
-                        <li>
-                            <a href="{% url "login" %}?next=/" role="button" title="{% trans "Login/Register" %}"
-                               class="toggle-tooltip bottom">
-                                <i class="fa fa-user"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                    {% endblock %}
-                </ul>
-
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="/global/">
-                            <span class="nav-text">{% trans 'Global' %}</span>
-                        </a>
-                    </li>
-                    <li class="dropdown">
-                        <span>
-                            <select class="nav-select" id="nav-region-select" style="display:none">
-                                <option></option>
-                                {% nav_regions as navregions %}
-                                {% for region in navregions %}
-                                <option value="{{ region.1 }}">{{ region.2 }}</option>
-                                {% endfor %}
-                            </select>
-                        </span>
-                    </li>
-                    <li class="dropdown">
-                        <span>
-                            <select class="nav-select" id="nav-country-select" style="display:none">
-                                <option></option>
-                                {% nav_countries as navcountries %}
-                                {% for country_group in navcountries %}
-                                <optgroup label="{{ country_group.text }}">
-                                    {% for country in country_group.children %}
-                                    <option value="{{ country.1 }}">{{ country.2 }}</option>
-                                    {% endfor %}
-                                </optgroup>
-                                {% endfor %}
-                            </select>
-                        </span>
-                    </li>
-                    <li>
-                        <a href="/stay-informed/" role="button">
-                            <span class="nav-text">Stay informed</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/get-involved/" role="button">
-                           <span class="nav-text">{% trans "Get involved" %}</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/faq/" role="button">
-                           <span class="nav-text">{% trans "FAQ" %}</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="/global/">
+              <span class="nav-text">{% trans 'Global' %}</span>
+            </a>
+          </li>
+          <li class="dropdown">
+            <span>
+              <select class="nav-select" id="nav-region-select" style="display:none">
+                <option></option>
+                {% nav_regions as navregions %}
+                {% for region in navregions %}
+                  <option value="{{ region.1 }}">{{ region.2 }}</option>
+                {% endfor %}
+              </select>
+            </span>
+          </li>
+          <li class="dropdown">
+            <span>
+              <select class="nav-select" id="nav-country-select" style="display:none">
+                <option></option>
+                {% nav_countries as navcountries %}
+                {% for country_group in navcountries %}
+                  <optgroup label="{{ country_group.text }}">
+                  {% for country in country_group.children %}
+                    <option value="{{ country.1 }}">{{ country.2 }}</option>
+                  {% endfor %}
+                  </optgroup>
+                {% endfor %}
+              </select>
+            </span>
+          </li>
+          <li>
+            <a href="/stay-informed/" role="button"><span class="nav-text">Stay informed</span></a>
+          </li>
+          <li>
+            <a href="/get-involved/" role="button"><span class="nav-text">{% trans "Get involved" %}</span></a>
+          </li>
+          <li>
+            <a href="/faq/" role="button"><span class="nav-text">{% trans "FAQ" %}</span></a>
+          </li>
+        </ul>
+      </div>
     </div>
-
+  </div>
 {% endblock %}
 
 <div class="wrap">
-    <!--[if lt IE 7]>
+  <!--[if lt IE 7]>
                 <p class="chromeframe">{% trans 'You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>' %}
             <![endif]-->
 
-    {# top-level navigation #}
-    {# This code is taken from http://twitter.github.com/bootstrap/examples/hero.html #}
+  <div class="container">
+    {% block navutils %}
+      {% block messages %}
+        {% custom_messages as custommessages %}
+        {% for message in custommessages %}
+          <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
+            {% if message.title %}<strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
+          </p>
+        {% endfor %}
+        {% for message in messages %}
+          <p class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}{% else %} alert-info{% endif %}">
+            {{ message|safe }}
+          </p>
+        {% endfor %}
+        {% block extra_messages %}{% endblock %}
+      {% endblock %}
 
-    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          {% block breadcrumb %}
+            <ul class="breadcrumb">
+              <li><a href="/">{% trans 'Home' %}</a></li>
+              {% block breadcrumb_inner %}
+              {% endblock %}
+            </ul>
+          {% endblock %}
+        </div>
+        <div class="col-md-6 col-md-offset-2">
 
-        {% block navutils %}
+          {% block subnav %}
+            <ul class="subnav nav nav-pills pull-right">
+              {% block subnav_inner %}
+                <li role="presentation"><a href="{% url 'map' %}{% list_params %}">
+                  <i class="fa fa-map-marker"></i> {% trans "Map" %}
+                </a></li>
+                <li role="presentation"><a href="{% url 'data' %}{% list_params %}">
+                  <i class="fa fa-table"></i> {% trans "Data" %}
+                </a></li>
+                <li role="presentation"><a href="{% url 'charts' %}{% list_params %}">
+                  <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
+                </a></li>
+                <li class="divider"></li>
+                <li role="presentation">
+                  {% include "export.html" %}
+                </li>
+              {% endblock %}
+              <li role="presentation">
+                {% include "share.html" %}
+              </li>
+            </ul>
+          {% endblock %}
+        </div>
+      </div>
 
-            {% block messages %}
-               {% custom_messages as custommessages %}
-                {% for message in custommessages %}
-                    <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
-                        {% if message.title %}<strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
-                    </p>
-                {% endfor %}
-                {% for message in messages %}
-                    <p class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}{% else %} alert-info{% endif %}">
-                        {{ message|safe }}
-                    </p>
-                {% endfor %}
-                {% block extra_messages %}{% endblock %}
-            {% endblock %}
+    {% endblock %}
 
-            <div class="row">
-                <div class="col-md-4">
+    <noscript>
+      <div id="javascriptwarning" class="alert alert-danger" role="alert">Please <a href="http://www.enable-javascript.com/" target="_blank">enable
+        Javascript</a> to use all features of the Landmatrix!
+      </div>
+    </noscript>
 
-                    {% block breadcrumb %}
-                        <ul class="breadcrumb">
-                            <li><a href="/">{% trans 'Home' %}</a></li>
-                            {% block breadcrumb_inner %}
-                            {% endblock %}
-                        </ul>
-                    {% endblock %}
-                </div>
-                <div class="col-md-6 col-md-offset-2">
+    {% block title_section %}
+      <div class="row">
+        <div class="col-md-12">
+          <h1><span>{% block title %}{% endblock %}</span></h1>
+        </div>
+      </div>
+    {% endblock %}
 
-                    {% block subnav %}
-                        <ul class="subnav nav nav-pills pull-right">
-                            {% block subnav_inner %}
-                            <li role="presentation"><a href="{% url 'map' %}{% list_params %}">
-                                <i class="fa fa-map-marker"></i> {% trans "Map" %}
-                            </a></li>
-                            <li role="presentation"><a href="{% url 'data' %}{% list_params %}">
-                                <i class="fa fa-table"></i> {% trans "Data" %}
-                            </a></li>
-                            <li role="presentation"><a href="{% url 'charts' %}{% list_params %}">
-                                <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
-                            </a></li>
-                            <li class="divider"></li>
-                            <li role="presentation">
-                                {% include "export.html" %}
-                            </li>
-                            {% endblock %}
-                            <li role="presentation">
-                                {% include "share.html" %}
-                            </li>
-                        </ul>
-                    {% endblock %}
-                </div>
-            </div>
+    {% block content %}{% endblock %}
 
-        {% endblock %}
-
-        <noscript><div id="javascriptwarning" class="alert alert-danger" role="alert">Please <a href="http://www.enable-javascript.com/" target="_blank">enable Javascript</a> to use all features of the Landmatrix!</div></noscript>
-
-        {% block title_section %}
-            <div class="row">
-                <div class="col-md-12">
-                    <h1><span>{% block title %}{% endblock %}</span></h1>
-                </div>
-            </div>
-        {% endblock %}
-
-        {% block content %}{% endblock %}
-
-    </div> <!-- /container -->
-
-    <div class="push"></div>
+  </div> <!-- /container -->
 </div>
 
 {% block footer %}
+  <footer>
+    <div class="container">
+      {% block footer_pages %}
+        {# reads the four footer columns from the WagtailRootPage assigned #}
+        {# to the context by the context processor #}
+        {# wagtailcms.context_processors.add_root_page #}
 
-    <footer>
-        <div class="container">
-            {% block footer_pages %}
-            {# reads the four footer columns from the WagtailRootPage assigned #}
-            {# to the context by the context processor #}
-            {# wagtailcms.context_processors.add_root_page #}
+        <div id="footer-nav" class="row">
+          {% wagtail_root_page as wagtailrootpage %}
+          <div class="col-md-3">
+            {{ wagtailrootpage.footer_column_1|richtext }}
+          </div>
+          <div class="col-md-3">
+            {{ wagtailrootpage.footer_column_2|richtext }}
+          </div>
 
-            <div id="footer-nav" class="row">
-                {% wagtail_root_page as wagtailrootpage %}
-                <div class="col-md-3">
-                    {{ wagtailrootpage.footer_column_1|richtext }}
-                </div>
-                <div class="col-md-3">
-                    {{ wagtailrootpage.footer_column_2|richtext }}
-                </div>
+          <div class="col-md-3">
+            {{ wagtailrootpage.footer_column_3|richtext }}
+          </div>
 
-                <div class="col-md-3">
-                    {{ wagtailrootpage.footer_column_3|richtext }}
-                </div>
-
-                <div class="col-md-3">
-                    {{ wagtailrootpage.footer_column_4|richtext }}
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <hr/>
-                </div>
-            </div>
-            {% endblock %}
-
-            <div id="footer-etc" class="row">
-                <div class="col-md-6">
-                    <p>
-                        &copy; {% now "Y" %} The Land Matrix | All rights reserved
-                    </p>
-                </div>
-                <div class="col-md-6 text-right">
-                    <a target="_blank" href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
-                    <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
-                </div>
-            </div>
+          <div class="col-md-3">
+            {{ wagtailrootpage.footer_column_4|richtext }}
+          </div>
         </div>
-    </footer>
+
+        <div class="row">
+          <div class="col-md-12">
+            <hr/>
+          </div>
+        </div>
+      {% endblock %}
+
+      <div id="footer-etc" class="row">
+        <div class="col-md-6">
+          <p>
+            &copy; {% now "Y" %} The Land Matrix | All rights reserved
+          </p>
+        </div>
+        <div class="col-md-6 text-right">
+          <a target="_blank" href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
+          <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
 {% endblock %}
 
-{% block footer_scripts %}
-    <script src="{% static "bootstrap/js/popover.js" %}"></script>
-    <script src="{% static "moment/min/moment-with-locales.min.js" %}" type="text/javascript"></script>
-    <script src="{% static "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
+{% block javascript %}
+  <script src="{% static "bootstrap/js/popover.js" %}"></script>
+  <script src="{% static "moment/min/moment-with-locales.min.js" %}" type="text/javascript"></script>
+  <script src="{% static "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
+  <script src="{% static "js/csrf.js" %}"></script>
+  <script>
+    const regions_placeholder = "{% trans 'Regions' %}";
+    const countries_placeholder = "{% trans 'Countries' %}";
+  </script>
+  <script src="{% static "js/main.js" %}"></script>
 
-    <script src="{% static "js/csrf.js" %}"></script>
-    <script src="{% static "js/main.js" %}"></script>
-    <!-- Select2 init -->
-    <script type="text/javascript">
-        function select2_open (e) {
-            $(this).parents("li").addClass("open")
-        }
-        function select2_close (e) {
-            $(this).parents("li").removeClass("open")
-        }
-        $(document).ready(function () {
-            // Regions
-            var region_select = $('#nav-region-select').select2({
-                placeholder: "{% trans 'Regions' %}",
-                dropdownCssClass: "select2-main"
-            }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
-            /*var region_request = $.ajax({
-                url: '/api/regions.json',
-                cache: true
-            });
-            region_request.then(function (data) {
-              for (var d = 0; d < data.length; d++) {
-                var item = data[d];
-                var option = new Option(item[2], item[1], false, false);
-                region_select.append(option);
-              }
-              region_select.select2('val', '');
-              region_select.on('change', function () {
-                location.href = '/region/' + $(this).val();
-              });
-              //$element.trigger('change');
-            });
-            */
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function () {
+      var u = (("https:" == document.location.protocol) ? "https" : "http") + "://stats.landmatrix.org//";
+      _paq.push(['setTrackerUrl', u + 'piwik.php']);
+      _paq.push(['setSiteId', 1]);
+      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      g.type = 'text/javascript';
+      g.defer = true;
+      g.async = true;
+      g.src = u + 'piwik.js';
+      s.parentNode.insertBefore(g, s);
+    })();
 
-            region_select.select2('val', '');
-            region_select.on('change', function () {
-              location.href = '/region/' + $(this).val();
-            });
-            // Countries
-            var country_select = $('#nav-country-select').select2({
-                placeholder: "{% trans 'Countries' %}",
-                dropdownCssClass: "select2-main",
-                //allowClear: true
-            }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
-            /*var country_request = $.ajax({
-                url: '/api/target-countries.json',
-                cache: true
-            }),
-                group, opt_group,
-                item, option;
-            country_request.then(function (data) {
-                country_select.data(data);
-              for (var d = 0; d < data.length; d++) {
-                group = data[d];
-                opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
-                for (var o = 0; o < group.children.length; o++) {
-                    item = group.children[o];
-                    option = new Option(item[2], item[1], false, false);
-                    opt_group.append(option);
-                }
-                country_select.append(opt_group);
-              }
-              country_select.select2('val', '');
-              country_select.on('change', function (e) {
-                location.href = '/country/' + $(this).val();
-              });
-            });
-            */
-            country_select.select2('val', '');
-            country_select.on('change', function (e) {
-              location.href = '/country/' + $(this).val();
-            });
-        });
-    </script>
-    <!-- Piwik -->
-    <script type="text/javascript">
-        var _paq = _paq || [];
-        _paq.push(['trackPageView']);
-        _paq.push(['enableLinkTracking']);
-        (function () {
-            var u = (("https:" == document.location.protocol) ? "https" : "http") + "://stats.landmatrix.org//";
-            _paq.push(['setTrackerUrl', u + 'piwik.php']);
-            _paq.push(['setSiteId', 1]);
-            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-            g.type = 'text/javascript';
-            g.defer = true;
-            g.async = true;
-            g.src = u + 'piwik.js';
-            s.parentNode.insertBefore(g, s);
-        })();
-
-    </script>
-    <noscript><p><img src="https://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
-    <!-- End Piwik Code -->
-{% endblock %}
-{% block js %}
+  </script>
+  <noscript><p><img src="https://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+  <!-- End Piwik Code -->
 {% endblock %}
 </body>
 </html>
