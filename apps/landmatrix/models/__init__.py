@@ -4,8 +4,6 @@ from apps.landmatrix.models.activity_changeset import ActivityChangeset, ReviewD
 from apps.landmatrix.models.activity_feedback import ActivityFeedback
 from apps.landmatrix.models.agricultural_produce import AgriculturalProduce
 from apps.landmatrix.models.animal import Animal
-from apps.landmatrix.models.browse_condition import BrowseCondition
-from apps.landmatrix.models.browse_rule import BrowseRule
 from apps.landmatrix.models.comment import Comment
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.crop import Crop

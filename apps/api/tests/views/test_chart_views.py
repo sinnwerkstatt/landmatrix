@@ -29,7 +29,7 @@ class ChartViewsTestCase(TestCase):
             'venture_involvements',
         ]
         for fixture in fixtures:
-            call_command('loaddata', fixture)
+            call_command('loaddata', fixture, **{'verbosity': 0})
         es_save.create_index(delete=True)
         es_save.index_activity_documents()
         es_save.index_investor_documents()

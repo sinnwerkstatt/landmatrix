@@ -17,8 +17,6 @@
   {"model": "contenttypes.contenttype", "pk": 28, "fields": {"app_label": "landmatrix", "model": "crop"}},
   {"model": "contenttypes.contenttype", "pk": 30, "fields": {"app_label": "landmatrix", "model": "language"}},
   {"model": "contenttypes.contenttype", "pk": 32, "fields": {"app_label": "landmatrix", "model": "region"}},
-  {"model": "contenttypes.contenttype", "pk": 35, "fields": {"app_label": "landmatrix", "model": "browserule"}},
-  {"model": "contenttypes.contenttype", "pk": 36, "fields": {"app_label": "landmatrix", "model": "browsecondition"}},
   {"model": "contenttypes.contenttype", "pk": 37, "fields": {"app_label": "landmatrix", "model": "currency"}},
   {"model": "contenttypes.contenttype", "pk": 38, "fields": {"app_label": "landmatrix", "model": "animal"}},
   {"model": "contenttypes.contenttype", "pk": 39, "fields": {"app_label": "landmatrix", "model": "mineral"}},
