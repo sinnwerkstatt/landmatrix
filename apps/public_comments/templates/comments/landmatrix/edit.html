@@ -7,22 +7,22 @@
 {% block title %}{% trans "Edit comment" %} #{{ comment.id }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
-    <li><a href="{% url 'deal-detail' comment.content_object.activity_identifier %}">{% trans "Deal" %} #{{ deal.activity_identifier }}</a></li>
-    <li>{% trans "Edit comment" %} #{{ comment.id }}</li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
+  <li><a href="{% url 'deal-detail' comment.content_object.activity_identifier %}">{% trans "Deal" %} #{{ deal.activity_identifier }}</a></li>
+  <li>{% trans "Edit comment" %} #{{ comment.id }}</li>
 {% endblock %}
 
 {% block subnav_inner %}
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{% url 'comments-edit' comment.id %}">
+  <form method="post" action="{% url 'comments-edit' comment.id %}">
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}
-        {{ hidden }}
+      {{ hidden }}
     {% endfor %}
     <input type="hidden" name="next" value="{% url 'deal_detail' deal_id=comment.content_object.activity_identifier %}">
     {% include "grid/form.html" %}
     <input type="submit" class="btn btn-primary" value="{% trans "Save comment" %}">
-</form>
+  </form>
 {% endblock %}

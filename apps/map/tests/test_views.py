@@ -21,7 +21,6 @@ class MapSettingsMixinTestCase(TestCase):
 
 
 class MapViewTestCase(TestCase):
-
     fixtures = [
         'countries_and_regions',
         'users_and_groups',

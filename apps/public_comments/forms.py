@@ -9,7 +9,6 @@ ThreadedCommentForm = get_threaded_comment_form()
 
 
 class PublicCommentForm(ThreadedCommentForm):
-
     spam_protection = ReCaptchaField()
     url = forms.CharField(required=False, widget=forms.HiddenInput)
 

@@ -5,7 +5,6 @@ from apps.public_comments.forms import EditCommentForm, PublicCommentForm
 
 
 class PublicCommentFormTestCase(TestCase):
-
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
@@ -31,7 +30,6 @@ class PublicCommentFormTestCase(TestCase):
 
 
 class EditCommentFormTestCase(TestCase):
-
     fixtures = [
         'countries_and_regions',
         'users_and_groups',

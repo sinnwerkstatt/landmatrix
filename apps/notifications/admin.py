@@ -5,11 +5,10 @@ from .models import NotificationEmail
 
 
 class NotificationEmailAdmin(admin.ModelAdmin):
-
     list_display = ('created_on', 'sent_status', 'to', 'subject')
     list_display_links = list_display
     date_hierarchy = 'created_on'
-    list_filter = ('sent_status', )
+    list_filter = ('sent_status',)
     readonly_fields = (
         'sent_exception', 'sent_status', 'created_on', 'sent_on', 'to', 'cc',
         'bcc', 'reply_to', 'subject', 'from_email', 'body_text', 'body_html',
@@ -27,6 +26,7 @@ class NotificationEmailAdmin(admin.ModelAdmin):
         queryset = queryset.exclude(sent_status=NotificationEmail.STATUS_SENT)
         for email in queryset:
             email.send()
+
     resend_failed_emails.short_description = _("Retry failed notifications")
 
 

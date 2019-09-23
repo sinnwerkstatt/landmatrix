@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 
 from django.conf import settings
@@ -96,7 +94,6 @@ class BaseGeometryWidget(Widget):
 
 
 class OpenLayersWidget(BaseGeometryWidget):
-
     template_name = 'widgets/openlayers.html'
 
     class Media:
@@ -136,7 +133,6 @@ class OSMWidget(OpenLayersWidget):
 
 
 class SerializedMapWidget(OSMWidget):
-
     template_name = 'widgets/map.html'
     initial_center_lon = 0
     initial_center_lat = 0

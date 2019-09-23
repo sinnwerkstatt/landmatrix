@@ -7,7 +7,6 @@ from apps.public_comments.models import ThreadedComment
 
 
 class DistributionTestCase(TestCase):
-
     fixtures = [
         'countries_and_regions',
         'users_and_groups',

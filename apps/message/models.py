@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class Message(models.Model):
-
     LEVEL_DEBUG = 'debug'
     LEVEL_INFO = 'info'
     LEVEL_SUCCESS = 'success'

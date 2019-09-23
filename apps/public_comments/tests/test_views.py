@@ -9,9 +9,7 @@ from apps.landmatrix.models import Activity
 from apps.public_comments.forms import PublicCommentForm
 
 
-class EditCommentViewTestCase(PermissionsTestCaseMixin,
-                              TestCase):
-
+class EditCommentViewTestCase(PermissionsTestCaseMixin, TestCase):
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
