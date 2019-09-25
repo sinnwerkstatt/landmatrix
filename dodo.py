@@ -45,14 +45,15 @@ def task_collectstatic():
 
 
 def task_compilemessages():
-    pofiles = glob("**/locale/**/*.po", recursive=True)
-    mofiles = [pofile[:-2] + "mo" for pofile in pofiles]
-    return {
-        "file_dep": pofiles,
-        "targets": mofiles,
-        "actions": [f"./manage.py compilemessages"],
-        "clean": True,
-    }
+    for pofile in glob("**/LC_MESSAGES/*.po", recursive=True):
+        mofile = pofile[:-2] + "mo"
+        yield {
+            "name": pofile,
+            "file_dep": [pofile],
+            "targets": [mofile],
+            "actions": [f"msgfmt -o {mofile} {pofile}"],
+            "clean": True,
+        }
 
 
 def task_migrate():

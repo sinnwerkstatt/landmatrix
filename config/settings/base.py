@@ -99,8 +99,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # populate the history user automatically
     "simple_history.middleware.HistoryRequestMiddleware",
-    # FIXME: Temp. disabled because there's just one language in the frontend
-    # 'django.middleware.locale.LocaleMiddleware',
     # wagtail and dependencies
     "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -201,8 +199,3 @@ ACCOUNT_ACTIVATION_DAYS = 7
 WKHTMLTOPDF_CMD = env("DJANGO_WKHTMLTOPDF_CMD", default="wkhtmltopdf")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
-
-# TODO: Remove this settings from code
-CONVERT_DB = False
-CONVERT_FROM_MY = False
-TEST_AGAINST_LIVE_DB = False

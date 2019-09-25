@@ -60,6 +60,7 @@ django-test-without-migrations = "*"
 libsass = "*"
 ipdb = "*"
 
+pylint = "*"
 
 [requires]
 python_version = "3.6"

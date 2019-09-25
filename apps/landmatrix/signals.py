@@ -4,6 +4,7 @@ from django_registration.signals import user_registered
 from apps.editor.models import UserRegionalInfo
 
 
+# pylint: disable=unused-argument
 def create_userregionalinfo(sender, user, request, **kwargs):
     group, created = Group.objects.get_or_create(name="Reporters")
     user.groups.add(group)

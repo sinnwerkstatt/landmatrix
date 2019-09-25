@@ -874,7 +874,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
 class HistoricalActivity(ActivityBase):
     """
     All versions (including the current) of activities
-    
+
     Only the current historical activity should have a public version set.
     """
 
@@ -1130,7 +1130,7 @@ class HistoricalActivity(ActivityBase):
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
         super().save(*args, **kwargs)
-        if update_elasticsearch and not settings.CONVERT_DB:
+        if update_elasticsearch:
             from ..tasks import index_activity, delete_activity
 
             if self.fk_status_id == self.STATUS_DELETED:

@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
@@ -93,7 +92,8 @@ class FilteredQuerySetMixin:
 
     def get_filtered_investor_queryset(self, queryset=None):
         """
-        Filter historical investors by country/region of logged in user (using target country of assigned deals)
+        Filter historical investors by country/region of logged in user
+         (using target country of assigned deals)
         :param queryset:
         :return:
         """
@@ -267,13 +267,12 @@ class PendingChangesMixin(FilteredQuerySetMixin):
 
 
 class DashboardView(LatestQuerySetMixin, PendingChangesMixin, TemplateView):
-
     template_name = "dashboard.html"
     paginate_by = 10
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -314,7 +313,7 @@ class DashboardView(LatestQuerySetMixin, PendingChangesMixin, TemplateView):
 
         context.update(
             {
-                #'statistics': {
+                # 'statistics': {
                 #    'overall_deal_count': deal_count,
                 #    'public_deal_count': public_count,
                 #    'not_public_deal_count': private_count,
@@ -346,14 +345,13 @@ class DashboardView(LatestQuerySetMixin, PendingChangesMixin, TemplateView):
 
 
 class BaseLogView(LatestQuerySetMixin, ListView):
-
     template_name = "log.html"
     paginate_by = 50
     context_object_name = "items"
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -393,8 +391,8 @@ class ManageRootView(RedirectView):
     query_string = True
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.has_perm("landmatrix.review_activity"):
@@ -411,10 +409,11 @@ class BaseManageView(PendingChangesMixin, ListView):
     context_object_name = "items"
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
-    def process_objects_for_template(self, object_list):
+    @staticmethod
+    def process_objects_for_template(object_list):
         return list(map(activity_or_investor_to_template, object_list))
 
     def get_context_data(self, **kwargs):
@@ -445,10 +444,11 @@ class ManageFeedbackView(BaseManageView):
     action = "feedback"
 
     @method_decorator(permission_required("landmatrix.review_activity"))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
-    def process_objects_for_template(self, object_list):
+    @staticmethod
+    def process_objects_for_template(object_list):
         return list(map(feedback_to_template, object_list))
 
     def get_queryset(self):
@@ -466,8 +466,8 @@ class ManageAddsView(BaseManageView):
     action = "pending_adds"
 
     @method_decorator(permission_required("landmatrix.review_activity"))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return self.get_pending_adds_queryset()
@@ -477,8 +477,8 @@ class ManageUpdatesView(BaseManageView):
     action = "pending_updates"
 
     @method_decorator(permission_required("landmatrix.review_activity"))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return self.get_pending_updates_queryset()
@@ -488,8 +488,8 @@ class ManageDeletesView(BaseManageView):
     action = "pending_deletes"
 
     @method_decorator(permission_required("landmatrix.review_activity"))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return self.get_pending_deletes_queryset()
@@ -503,7 +503,6 @@ class ManageForUserView(BaseManageView):
 
 
 class BaseManageDealView(FormView, DetailView):
-
     template_name = "manage_item.html"
     form_class = ApproveRejectChangeForm
     model = HistoricalActivity
@@ -511,8 +510,8 @@ class BaseManageDealView(FormView, DetailView):
     context_object_name = "item"
 
     @method_decorator(permission_required("landmatrix.review_activity"))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         if not hasattr(self, "object"):  # pragma: no cover
@@ -534,7 +533,6 @@ class BaseManageDealView(FormView, DetailView):
 
 
 class ApproveActivityChangeView(BaseManageDealView):
-
     queryset = HistoricalActivity.objects.pending_only()
     action = "approve"
 
@@ -548,7 +546,6 @@ class ApproveActivityChangeView(BaseManageDealView):
 
 
 class RejectActivityChangeView(BaseManageDealView):
-
     queryset = HistoricalActivity.objects.pending_only()
     action = "reject"
 
@@ -562,7 +559,6 @@ class RejectActivityChangeView(BaseManageDealView):
 
 
 class ApproveActivityDeleteView(BaseManageDealView):
-
     queryset = HistoricalActivity.objects.to_delete()
     action = "approve"
 
@@ -582,7 +578,6 @@ class ApproveActivityDeleteView(BaseManageDealView):
 
 
 class RejectActivityDeleteView(BaseManageDealView):
-
     queryset = HistoricalActivity.objects.to_delete()
     action = "reject"
 
@@ -602,12 +597,10 @@ class RejectActivityDeleteView(BaseManageDealView):
 
 
 class BaseManageInvestorView(BaseManageDealView):
-
     model = HistoricalInvestor
 
 
 class ApproveInvestorChangeView(BaseManageInvestorView):
-
     queryset = HistoricalInvestor.objects.pending_only()
     action = "approve"
 
@@ -621,7 +614,6 @@ class ApproveInvestorChangeView(BaseManageInvestorView):
 
 
 class RejectInvestorChangeView(BaseManageInvestorView):
-
     queryset = HistoricalInvestor.objects.pending_only()
     action = "reject"
 

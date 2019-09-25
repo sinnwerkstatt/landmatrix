@@ -12,7 +12,7 @@ from apps.grid.templatetags.custom_tags import get_user_role
 def activity_or_investor_to_template(act_inv) -> dict:
     """
     Prepare activity/investor for template usage
-    :param act_or_inv: activity or investor
+    :param act_inv: activity or investor
     :return:
     """
     try:
@@ -30,12 +30,12 @@ def activity_or_investor_to_template(act_inv) -> dict:
 
     is_activity = hasattr(act_inv, "activity_identifier")
     if is_activity:
-        id = act_inv.activity_identifier
+        act_id = act_inv.activity_identifier
     else:
-        id = act_inv.investor_identifier
+        act_id = act_inv.investor_identifier
 
     return {
-        "id": id,
+        "id": act_id,
         "history_id": act_inv.id,
         "user": user,
         "timestamp": history_date.strftime("%Y-%m-%d %H:%M:%S"),

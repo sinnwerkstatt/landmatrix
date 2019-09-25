@@ -714,7 +714,7 @@ class HistoricalInvestor(InvestorBase):
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
         super().save(*args, **kwargs)
-        if update_elasticsearch and not settings.CONVERT_DB:
+        if update_elasticsearch:
             from ..tasks import index_investor, delete_investor
 
             if self.fk_status_id == self.STATUS_DELETED:

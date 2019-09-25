@@ -40,9 +40,7 @@ class ChartViewTestCaseMixin:
         if not self.viewname_pdf:
             return
         with self.assertRaises(CalledProcessError):
-            response = self.client.get(
-                reverse(self.viewname_pdf, kwargs={"format": "PDF"})
-            )
+            self.client.get(reverse(self.viewname_pdf, kwargs={"format": "PDF"}))
 
 
 class IntentionChartViewTestCase(ChartViewTestCaseMixin, TestCase):
