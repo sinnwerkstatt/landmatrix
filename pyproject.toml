@@ -12,3 +12,15 @@ exclude = '''
   | node_modules
 )/
 '''
+#
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = false
+line_length = 88
+known_first_party = 'apps'
+known_django = 'celery,django,django_registration,wagtail'
+default_section = 'THIRDPARTY'
+sections = 'FUTURE,STDLIB,THIRDPARTY,DJANGO,FIRSTPARTY,LOCALFOLDER'
+no_lines_before = 'LOCALFOLDER,DJANGO'
