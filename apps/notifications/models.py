@@ -8,7 +8,6 @@ from .exceptions import AlreadySentError, NotificationError
 
 
 class NotificationEmailManager(models.Manager):
-
     def send(self, *args, **kwargs):
         notification = NotificationEmail(*args, **kwargs)
         notification.send()
@@ -39,6 +38,7 @@ class NotificationEmail(models.Model):
 
     Exceptions are saved in the database and not raised.
     """
+
     STATUS_NEW = 1
     STATUS_SENT = 2
     STATUS_ERROR = 3
@@ -49,31 +49,30 @@ class NotificationEmail(models.Model):
         (STATUS_ERROR, _("Error")),
     )
 
-    created_on = models.DateTimeField(default=timezone.now,
-                                      verbose_name=_("Created On"))
-    sent_on = models.DateTimeField(blank=True, null=True, editable=False,
-                                   verbose_name=_("Sent on"))
-    sent_status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES,
-                                                   default=STATUS_NEW,
-                                                   editable=False)
+    created_on = models.DateTimeField(
+        default=timezone.now, verbose_name=_("Created On")
+    )
+    sent_on = models.DateTimeField(
+        blank=True, null=True, editable=False, verbose_name=_("Sent on")
+    )
+    sent_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES, default=STATUS_NEW, editable=False
+    )
     sent_exception = models.TextField(blank=True)
 
     to = models.TextField(blank=False, verbose_name=_("To"))
     cc = models.TextField(blank=True, verbose_name=_("CC"))
     bcc = models.TextField(blank=True, verbose_name=_("BCC"))
     reply_to = models.TextField(blank=True, verbose_name=_("Reply To"))
-    subject = models.CharField(max_length=255, blank=True,
-                               verbose_name=_("Subject"))
-    from_email = models.CharField(max_length=255, blank=True,
-                                  verbose_name=_("From"))
-    body_text = models.TextField(blank=False,
-                                 verbose_name=_("Body Plain Text"))
+    subject = models.CharField(max_length=255, blank=True, verbose_name=_("Subject"))
+    from_email = models.CharField(max_length=255, blank=True, verbose_name=_("From"))
+    body_text = models.TextField(blank=False, verbose_name=_("Body Plain Text"))
     body_html = models.TextField(blank=True, verbose_name=_("Body HTML"))
 
     objects = NotificationEmailManager()
 
     class Meta:
-        get_latest_by = 'created_on'
+        get_latest_by = "created_on"
 
     def __init__(self, *args, template_name=None, context=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -85,8 +84,8 @@ class NotificationEmail(models.Model):
         if not self.is_new:  # pragma: no cover
             raise NotificationError("Can't modify an existing email record.")
 
-        text_template = loader.get_template('{}.txt'.format(template_name))
-        html_template = loader.get_template('{}.html'.format(template_name))
+        text_template = loader.get_template("{}.txt".format(template_name))
+        html_template = loader.get_template("{}.html".format(template_name))
 
         self.body_text = text_template.render(context)
         self.body_html = html_template.render(context)
@@ -104,21 +103,21 @@ class NotificationEmail(models.Model):
             raise AlreadySentError("Notification email has already been sent.")
 
         message_kwargs = {
-            'subject': self.subject,
-            'body': self.body_text,
-            'from_email': self.from_email or None,
-            'to': self.to.split(','),
+            "subject": self.subject,
+            "body": self.body_text,
+            "from_email": self.from_email or None,
+            "to": self.to.split(","),
         }
         if self.cc:
-            message_kwargs['cc'] = self.cc.split(',')
+            message_kwargs["cc"] = self.cc.split(",")
         if self.bcc:
-            message_kwargs['bcc'] = self.bcc.split(',')
+            message_kwargs["bcc"] = self.bcc.split(",")
         if self.reply_to:
-            message_kwargs['reply_to'] = self.reply_to.split(',')
+            message_kwargs["reply_to"] = self.reply_to.split(",")
 
         if self.body_html:
             message = EmailMultiAlternatives(**message_kwargs)
-            message.attach_alternative(self.body_html, 'text/html')
+            message.attach_alternative(self.body_html, "text/html")
         else:
             message = EmailMessage(**message_kwargs)
 
@@ -130,6 +129,6 @@ class NotificationEmail(models.Model):
         else:
             self.sent_status = self.STATUS_SENT
             self.sent_on = timezone.now()
-            self.sent_exception = ''
+            self.sent_exception = ""
 
         self.save()

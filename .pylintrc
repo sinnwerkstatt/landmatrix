@@ -1,0 +1,31 @@
+
+[MASTER]
+jobs=4
+
+# Add files or directories to the blacklist. They should be base names, not
+# paths.
+ignore=migrations,tests
+
+# Add files or directories matching the regex patterns to the blacklist. The
+# regex matches against base names, not paths.
+ignore-patterns=object_detection_grpc_client.py,prediction_pb2.py,prediction_pb2_grpc.py
+
+# List of plugins (as comma separated values of python modules names) to load,
+# usually to register additional checkers.
+#load-plugins=
+
+# A comma-separated list of package or module names from where C extensions may
+# be loaded. Extensions are loading into the active Python interpreter and may
+# run arbitrary code
+extension-pkg-whitelist=
+
+
+
+[MESSAGES CONTROL]
+# Only show warnings with the listed confidence levels. Leave empty to show
+# all. Valid levels: HIGH, INFERENCE, INFERENCE_FAILURE, UNDEFINED
+# confidence=HIGH
+disable=missing-docstring,too-few-public-methods,bad-continuation,C0103,
+
+[DESIGN]
+max-parents=15

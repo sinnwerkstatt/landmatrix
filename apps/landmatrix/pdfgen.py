@@ -22,8 +22,12 @@ def update_querystring(url, params):
     query_string.update(params)
     encoded_qs = urlparse.urlencode(query_string)
     url_components = (
-        parsed_url[0], parsed_url[1], parsed_url[2], parsed_url[3],
-        encoded_qs, '',
+        parsed_url[0],
+        parsed_url[1],
+        parsed_url[2],
+        parsed_url[3],
+        encoded_qs,
+        "",
     )
     new_url = urlparse.urlunparse(url_components)
 
@@ -66,36 +70,32 @@ def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
 
     if output is None:
         # Standard output.
-        output = '-'
+        output = "-"
 
     # Default options:
-    options = getattr(settings, 'WKHTMLTOPDF_CMD_OPTIONS', None)
+    options = getattr(settings, "WKHTMLTOPDF_CMD_OPTIONS", None)
     if options is None:
-        options = {'quiet': True}
+        options = {"quiet": True}
     else:
         options = copy.copy(options)
     options.update(kwargs)
 
     # Force --encoding utf8 unless the user has explicitly overridden this.
-    options.setdefault('encoding', 'utf8')
+    options.setdefault("encoding", "utf8")
 
-    env = getattr(settings, 'WKHTMLTOPDF_ENV', None)
+    env = getattr(settings, "WKHTMLTOPDF_ENV", None)
     if env is not None:
         env = dict(os.environ, **env)
 
-    cmd = 'WKHTMLTOPDF_CMD'
-    cmd = getattr(settings, cmd, os.environ.get(cmd, 'wkhtmltopdf'))
+    cmd = "WKHTMLTOPDF_CMD"
+    cmd = getattr(settings, cmd, os.environ.get(cmd, "wkhtmltopdf"))
 
-    ck_args = list(chain(shlex.split(cmd),
-                         _options_to_args(**options),
-                         list(pages),
-                         [output]))
+    ck_args = list(
+        chain(shlex.split(cmd), _options_to_args(**options), list(pages), [output])
+    )
 
     with TemporaryFile() as errors_tempfile:
-        ck_kwargs = {
-            'env': env,
-            'stderr': errors_tempfile,
-        }
+        ck_kwargs = {"env": env, "stderr": errors_tempfile}
 
         try:
             output = subprocess.check_output(ck_args, **ck_kwargs)
@@ -108,17 +108,23 @@ def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
 
 
 class PDFResponse(FileResponse):
-
-    def __init__(self, content, status=200, content_type='application/pdf',
-                 filename=None, *args, **kwargs):
+    def __init__(
+        self,
+        content,
+        status=200,
+        content_type="application/pdf",
+        filename=None,
+        *args,
+        **kwargs,
+    ):
         super().__init__(content, status=status, content_type=content_type)
 
         self.filename = filename
         if self.filename:
             header_text = 'attachment; filename="{}"'.format(self.filename)
-            self['Content-Disposition'] = header_text
+            self["Content-Disposition"] = header_text
         else:
-            del self['Content-Disposition']
+            del self["Content-Disposition"]
 
 
 class PDFViewMixin:
@@ -144,25 +150,28 @@ class PDFViewMixin:
     Additionally, a `pdf_filename` class attribute (or get_pdf_filename) method
     are required to set the response filename.
     """
+
     pdf_filename = None
     pdf_export_url = None
     pdf_render_url = None
 
     send_pdf_as_attachment = True
-    pdf_rendering_context_name = 'is_pdf_export'
+    pdf_rendering_context_name = "is_pdf_export"
     pdf_javascript_delay = 200
 
     def get(self, request, *args, format=None, **kwargs):
-        if format and format.upper() == 'PDF':
+        if format and format.upper() == "PDF":
             # build a URL to generate HTML for the PDF view
-            pdf_rendering_url = self.build_full_pdf_rendering_url(request, *args, **kwargs)
+            pdf_rendering_url = self.build_full_pdf_rendering_url(
+                request, *args, **kwargs
+            )
             pdf_filename = self.get_pdf_filename(request, *args, **kwargs)
             response = self.render_url_to_pdf_response(pdf_rendering_url, pdf_filename)
         else:
             # Render the PDF HTML
             context = self.get_context_data(**kwargs)
             pdf_export_url = self.get_pdf_export_url(request, *args, **kwargs)
-            context['pdf_export_url'] = pdf_export_url
+            context["pdf_export_url"] = pdf_export_url
 
             if self.pdf_rendering_context_name in request.GET:
                 context[self.pdf_rendering_context_name] = True
@@ -190,8 +199,13 @@ class PDFViewMixin:
     def render_url_to_pdf_response(self, url, filename):
         pdf_output = NamedTemporaryFile(delete=True)
 
-        wkhtmltopdf([url], javascript_delay=self.pdf_javascript_delay or 0, output=pdf_output.name,
-                    load_error_handling='ignore', no_stop_slow_scripts=True)
+        wkhtmltopdf(
+            [url],
+            javascript_delay=self.pdf_javascript_delay or 0,
+            output=pdf_output.name,
+            load_error_handling="ignore",
+            no_stop_slow_scripts=True,
+        )
 
         response = PDFResponse(pdf_output, filename=filename)  # pragma: no cover
 

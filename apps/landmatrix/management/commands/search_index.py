@@ -4,32 +4,36 @@ from apps.api.elasticsearch import DOC_TYPES_ACTIVITY, DOC_TYPES_INVESTOR, es_sa
 
 
 class Command(BaseCommand):
-    help = 'Update deal index for elasticsearch'
+    help = "Update deal index for elasticsearch"
     es = None
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-rb', '--rebuild', action='store_true', dest='rebuild',
+            "-rb",
+            "--rebuild",
+            action="store_true",
+            dest="rebuild",
             help="Rebuild index",
         )
         parser.add_argument(
-            '-d', '--delete', action='store_true', dest='delete',
-            help="Delete index",
+            "-d", "--delete", action="store_true", dest="delete", help="Delete index"
         )
         parser.add_argument(
-            '-rf', '--refresh', action='store_true', dest='refresh',
+            "-rf",
+            "--refresh",
+            action="store_true",
+            dest="refresh",
             help="Refresh index",
         )
         parser.add_argument(
-            '-dt', '--doc-type', type=str, dest='doc_type',
-            help="Doc type",
+            "-dt", "--doc-type", type=str, dest="doc_type", help="Doc type"
         )
 
     def handle(self, *args, **options):
-        rebuild = options.get('rebuild')
-        delete = options.get('delete')
-        refresh = options.get('refresh')
-        doc_type = options.get('doc_type')
+        rebuild = options.get("rebuild")
+        delete = options.get("delete")
+        refresh = options.get("refresh")
+        doc_type = options.get("doc_type")
 
         es = es_save
         es.stdout = self.stdout
@@ -41,9 +45,9 @@ class Command(BaseCommand):
         if rebuild:
             if doc_type:
                 if doc_type in DOC_TYPES_ACTIVITY:
-                    es.index_activity_documents(doc_types=[doc_type, ])
+                    es.index_activity_documents(doc_types=[doc_type])
                 elif doc_type in DOC_TYPES_INVESTOR:
-                    es.index_investor_documents(doc_types=[doc_type, ])
+                    es.index_investor_documents(doc_types=[doc_type])
             else:
                 es.index_activity_documents()
                 es.index_investor_documents()

@@ -8,21 +8,26 @@ from apps.grid.widgets import CommentInput
 
 
 class PublicUserInformationForm(BaseForm):
-    form_title = _('User information')
-    form_description = _('Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org.')
+    form_title = _("User information")
+    form_description = _(
+        "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
+    )
 
-    tg_public_user = TitleField(
-        required=False, label="", initial=_("User information"))
+    tg_public_user = TitleField(required=False, label="", initial=_("User information"))
     tg_action_comment = forms.CharField(
-        required=True, label="",
-        help_text=_("Write something about yourself and your company. This won't be published."),
-        widget=CommentInput)
+        required=True,
+        label="",
+        help_text=_(
+            "Write something about yourself and your company. This won't be published."
+        ),
+        widget=CommentInput,
+    )
     public_user_name = forms.CharField(required=False, label=_("Name"))
     public_user_email = forms.EmailField(required=True, label=_("Email"))
     public_user_phone = forms.CharField(required=False, label=_("Phone"))
     captcha = ReCaptchaField()
 
-    #def get_action_comment(self):
+    # def get_action_comment(self):
     #    action_comment = ""
     #    groups = super(PublicUserInformationForm, self).get_attributes()
     #    if len(groups) > 0:
@@ -38,4 +43,4 @@ class PublicUserInformationForm(BaseForm):
         return {}
 
     class Meta:
-        name = 'user_information'
+        name = "user_information"

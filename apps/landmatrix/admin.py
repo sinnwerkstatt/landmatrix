@@ -5,6 +5,8 @@ from apps.landmatrix.models import *
 
 class FilterConditionAdmin(admin.ModelAdmin):
     pass
+
+
 admin.site.register(FilterCondition, FilterConditionAdmin)
 
 
@@ -14,10 +16,16 @@ class FilterConditionInline(admin.TabularInline):
 
 
 class FilterPresetAdmin(admin.ModelAdmin):
-    list_display = ['name', 'group', 'relation', 'is_default_country', 'is_default_global']
-    inlines = [
-        FilterConditionInline
+    list_display = [
+        "name",
+        "group",
+        "relation",
+        "is_default_country",
+        "is_default_global",
     ]
+    inlines = [FilterConditionInline]
+
+
 admin.site.register(FilterPreset, FilterPresetAdmin)
 
 
@@ -27,14 +35,16 @@ class FilterPresetInline(admin.TabularInline):
 
 
 class FilterPresetGroupAdmin(admin.ModelAdmin):
-    inlines = [
-        FilterPresetInline
-    ]
+    inlines = [FilterPresetInline]
+
+
 admin.site.register(FilterPresetGroup, FilterPresetGroupAdmin)
 
 
 class CountryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_target_country']
+    list_display = ["name", "is_target_country"]
+
+
 admin.site.register(Country, CountryAdmin)
 
 admin.site.register(Region)
@@ -50,14 +60,15 @@ admin.site.register(ActivityFeedback)
 admin.site.register(Animal)
 admin.site.register(Mineral)
 
+
 class CropAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'slug', 'fk_agricultural_produce')
-    list_filter = ('fk_agricultural_produce',)
+    list_display = ("code", "name", "slug", "fk_agricultural_produce")
+    list_filter = ("fk_agricultural_produce",)
+
+
 admin.site.register(Crop, CropAdmin)
 
 admin.site.register(Currency)
 admin.site.register(Investor)
 admin.site.register(InvestorActivityInvolvement)
 admin.site.register(InvestorVentureInvolvement)
-
-

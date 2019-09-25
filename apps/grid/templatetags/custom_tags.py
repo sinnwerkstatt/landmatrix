@@ -17,31 +17,43 @@ from apps.grid.utils import has_perm_approve_reject
 register = template.Library()
 
 
-@register.filter(name='ensure_list')
+@register.filter(name="ensure_list")
 def ensure_list(value):
     if isinstance(value, (list, tuple)):
         return value
     else:
-        return [value, ]
+        return [value]
 
 
-@register.filter(name='fields_display')
+@register.filter(name="fields_display")
 def get_fields_display(form, user):
-    if hasattr(form, 'get_fields_display'):
+    if hasattr(form, "get_fields_display"):
         return form.get_fields_display(user=user)
     else:
-        return ''
+        return ""
 
 
-@register.filter(name='display_values')
+@register.filter(name="display_values")
 def get_display_values(values, field):
     result = []
     for v in values:
         if "|" in v:
             for ybd in v.split("|"):
-                result.append("%s%s" % (ybd.split(":")[1] and "[%s]" % ybd.split(":")[1] or "", get_display_value_by_field(field, ybd.split(":")[0])))
+                result.append(
+                    "%s%s"
+                    % (
+                        ybd.split(":")[1] and "[%s]" % ybd.split(":")[1] or "",
+                        get_display_value_by_field(field, ybd.split(":")[0]),
+                    )
+                )
         elif ":" in v:
-            result.append("%s%s" % (v.split(":")[1] and "[%s] " % v.split(":")[1] or "", get_display_value_by_field(field, v.split(":")[0])))
+            result.append(
+                "%s%s"
+                % (
+                    v.split(":")[1] and "[%s] " % v.split(":")[1] or "",
+                    get_display_value_by_field(field, v.split(":")[0]),
+                )
+            )
         else:
             result.append(get_display_value_by_field(field, v))
     return result
@@ -57,8 +69,8 @@ def get_display_value_by_field(field, value):
                 if isinstance(c, (list, tuple)):
                     # This is an optgroup, so look inside the group for options
                     for k2, v2 in c:
-                        choices_dict.update({k2:v2})
-                choices_dict.update({k:v})
+                        choices_dict.update({k2: v2})
+                choices_dict.update({k: v})
         else:
             choices_dict = dict(field.choices)
 
@@ -93,9 +105,11 @@ def get_value_from_choices_dict(choices_dict, value):
 @register.filter
 def naturaltime_from_string(value):
     if not value:
-        return ''
+        return ""
     time_format = "%Y-%m-%d %H:%M:%S"
-    date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(value, time_format)))
+    date = datetime.datetime.fromtimestamp(
+        time.mktime(time.strptime(value, time_format))
+    )
     natural_time = naturaltime(date)
     natural_time = natural_time.split(",")
     if len(natural_time) == 1:
@@ -113,20 +127,23 @@ def add_or_update_param(GET, new_param, new_value):
 
 @register.filter
 def add_class(field, new_cls):
-    #return mark_safe(re.sub(r'(<(select|input|textarea).*?class=\")', '\1%s ' % new_cls, str(field)))
-    #cls = field.field.widget.attrs.get('class', '')
-    #cls += ' ' + new_cls
-    if isinstance(field.field.widget, (forms.CheckboxInput, forms.RadioSelect, forms.CheckboxSelectMultiple)):
+    # return mark_safe(re.sub(r'(<(select|input|textarea).*?class=\")', '\1%s ' % new_cls, str(field)))
+    # cls = field.field.widget.attrs.get('class', '')
+    # cls += ' ' + new_cls
+    if isinstance(
+        field.field.widget,
+        (forms.CheckboxInput, forms.RadioSelect, forms.CheckboxSelectMultiple),
+    ):
         return field
-    #elif isinstance(field.field.widget, forms.MultiValueWidget):
+    # elif isinstance(field.field.widget, forms.MultiValueWidget):
     #    attrs = field.field.widget.get_widgets()
     else:
         # MultiValueWidget?
         attrs = field.field.widget.attrs
-        if 'class' in attrs:
-            attrs['class'] += ' %s' % new_cls
+        if "class" in attrs:
+            attrs["class"] += " %s" % new_cls
         else:
-            attrs['class'] = new_cls
+            attrs["class"] = new_cls
         return mark_safe(field.as_widget())
 
 
@@ -145,22 +162,22 @@ def decimalgroupstring(obj):
 @register.filter
 def random_id(obj):
     """Overwrite bound form field with random ID (workaround for location/map)"""
-    return obj.as_widget(attrs={'id': obj.auto_id + ('_%i' % uuid4())})
+    return obj.as_widget(attrs={"id": obj.auto_id + ("_%i" % uuid4())})
 
 
 @register.simple_tag
 def get_user_role(user):
     output = []
     roles = OrderedDict()
-    roles['Administrators'] = _('Administrator')
-    roles['Editors'] = _('Editor')
-    roles['Reporters'] = _('Reporter')
+    roles["Administrators"] = _("Administrator")
+    roles["Editors"] = _("Editor")
+    roles["Reporters"] = _("Reporter")
     groups = [g.name for g in user.groups.all()]
     for role, name in roles.items():
         if role in groups:
             output.append(str(name))
     if not output:
-        output.append(str(_('No role')))
+        output.append(str(_("No role")))
     userregionalinfo = None
     try:
         userregionalinfo = user.userregionalinfo
@@ -170,19 +187,19 @@ def get_user_role(user):
         area = [c.name for c in user.userregionalinfo.country.all()]
         area.extend([r.name for r in user.userregionalinfo.region.all()])
         if area:
-            output.append(str(_('for')))
-            output.append(', '.join(area))
-    return ' '.join(output)
+            output.append(str(_("for")))
+            output.append(", ".join(area))
+    return " ".join(output)
 
 
 @register.filter
 def history(item, user):
-    return hasattr(item, 'get_history') and item.get_history(user) or []
+    return hasattr(item, "get_history") and item.get_history(user) or []
 
 
 @register.filter
 def history_count(item, user):
-    return hasattr(item, 'get_history') and len(item.get_history(user)) or 0
+    return hasattr(item, "get_history") and len(item.get_history(user)) or 0
 
 
 @register.filter
@@ -197,7 +214,7 @@ def get_latest(object, user):
 
 @register.filter
 def deslugify(slug):
-    return title(slug.replace('_', ' ').replace('-', ' '))
+    return title(slug.replace("_", " ").replace("-", " "))
 
 
 @register.filter

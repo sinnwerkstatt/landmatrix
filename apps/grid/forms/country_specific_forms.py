@@ -24,18 +24,18 @@ class MongoliaForm(BaseForm):
     """
     This is just a simple example.
     """
-    form_title = _('Mongolia')
+
+    form_title = _("Mongolia")
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(
-        required=False, label=_("Intended size"), help_text=_("ha"),
-        widget=NumberInput)
+        required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput
+    )
     test_integer = forms.IntegerField(
-        required=False, label=_("Test integer"), widget=NumberInput)
+        required=False, label=_("Test integer"), widget=NumberInput
+    )
 
     class Meta:
-        name = 'mongolia specific info'
+        name = "mongolia specific info"
 
 
-COUNTRY_SPECIFIC_FORMS = {
-    'mongolia': MongoliaForm,
-}
+COUNTRY_SPECIFIC_FORMS = {"mongolia": MongoliaForm}

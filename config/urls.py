@@ -10,47 +10,58 @@ from apps.grid.views.investor_comparison import InvestorComparisonView
 from apps.landmatrix.forms import CustomRegistrationForm
 from apps.landmatrix.views import CountryView, RegionView, SwitchLanguageView
 
-handler500 = 'apps.landmatrix.views.handler500'
+handler500 = "apps.landmatrix.views.handler500"
 
 CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
-    path('accounts/register/', RegistrationView.as_view(form_class=CustomRegistrationForm), name='registration_register'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('django_registration.backends.activation.urls')),
-    path('admin/', admin.site.urls),
-    path('impersonate/', include('impersonate.urls')),
-
-    path('language/<language>/', SwitchLanguageView.as_view(), name='switch_language'),
-
+    path(
+        "accounts/register/",
+        RegistrationView.as_view(form_class=CustomRegistrationForm),
+        name="registration_register",
+    ),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/", include("django_registration.backends.activation.urls")),
+    path("admin/", admin.site.urls),
+    path("impersonate/", include("impersonate.urls")),
+    path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # path('api/docs/', include('rest_framework_docs.urls')),
-    path('api/', include('apps.api.urls')),
-
+    path("api/", include("apps.api.urls")),
     # Wagtail
-    path('cms/', include('wagtail.admin.urls')),
-    path('news/', include('blog.urls', namespace='news')),
-    path('documents/', include('wagtail.documents.urls')),
-
-    path('data/', include('apps.grid.urls')),
-    path('map/', include('apps.map.urls')),
-    path('charts/', include('apps.charts.urls')),
-
-    path('deal/comments/', include('apps.public_comments.urls')),
-    path('deal/', include('apps.grid.urls.deal')),
-    path('compare/<int:activity_1>/<int:activity_2>/', DealComparisonView.as_view(), name='compare_deals'),
-    path('compare/<int:activity_1>/', DealComparisonView.as_view(), name='compare_deals'),
-
-    path('region/<slug:region_slug>/', RegionView.as_view(), name='region'),
-    path('country/<slug:country_slug>/', CountryView.as_view(), name='country'),
-
-    path('investor/', include('apps.grid.urls.investor')),
-    path('investors/compare/<int:investor_1>/<int:investor_2>/', InvestorComparisonView.as_view(), name='compare_investors'),
-    path('investors/compare/<int:investor_1>/', InvestorComparisonView.as_view(), name='compare_investors'),
-
-    path('editor/', include('apps.editor.urls')),
-    path('ajax/widget/<di:doc_type>/', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
-
-    path('', include('wagtail.core.urls')),
+    path("cms/", include("wagtail.admin.urls")),
+    path("news/", include("blog.urls", namespace="news")),
+    path("documents/", include("wagtail.documents.urls")),
+    path("data/", include("apps.grid.urls")),
+    path("map/", include("apps.map.urls")),
+    path("charts/", include("apps.charts.urls")),
+    path("deal/comments/", include("apps.public_comments.urls")),
+    path("deal/", include("apps.grid.urls.deal")),
+    path(
+        "compare/<int:activity_1>/<int:activity_2>/",
+        DealComparisonView.as_view(),
+        name="compare_deals",
+    ),
+    path(
+        "compare/<int:activity_1>/", DealComparisonView.as_view(), name="compare_deals"
+    ),
+    path("region/<slug:region_slug>/", RegionView.as_view(), name="region"),
+    path("country/<slug:country_slug>/", CountryView.as_view(), name="country"),
+    path("investor/", include("apps.grid.urls.investor")),
+    path(
+        "investors/compare/<int:investor_1>/<int:investor_2>/",
+        InvestorComparisonView.as_view(),
+        name="compare_investors",
+    ),
+    path(
+        "investors/compare/<int:investor_1>/",
+        InvestorComparisonView.as_view(),
+        name="compare_investors",
+    ),
+    path("editor/", include("apps.editor.urls")),
+    path(
+        "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
+    ),
+    path("", include("wagtail.core.urls")),
 ]
 
 if settings.DEBUG:
@@ -60,6 +71,6 @@ if settings.DEBUG:
     try:
         import debug_toolbar
 
-        urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns
+        urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
     except ImportError:
         pass

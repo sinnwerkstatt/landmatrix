@@ -8,50 +8,40 @@ from .models import *
 @register(WagtailRootPage)
 class WagtailRootPageTR(TranslationOptions):
     fields = (
-        'body',
-        'map_introduction',
-        'data_introduction',
+        "body",
+        "map_introduction",
+        "data_introduction",
         # 'charts_introduction',
-        'footer_column_1',
-        'footer_column_2',
-        'footer_column_3',
-        'footer_column_4',
+        "footer_column_1",
+        "footer_column_2",
+        "footer_column_3",
+        "footer_column_4",
     )
 
 
 @register(WagtailPage)
 class WagtailPageTR(TranslationOptions):
-    fields = (
-        'body',
-    )
+    fields = ("body",)
 
 
 @register(RegionIndex)
 class RegionIndexTR(TranslationOptions):
-    fields = (
-        'body',
-    )
+    fields = ("body",)
 
 
 @register(RegionPage)
 class RegionPageTR(TranslationOptions):
-    fields = (
-        'body',
-    )
+    fields = ("body",)
 
 
 @register(CountryIndex)
 class CountryIndexTR(TranslationOptions):
-    fields = (
-        'body',
-    )
+    fields = ("body",)
 
 
 @register(CountryPage)
 class CountryPageTR(TranslationOptions):
-    fields = (
-        'body',
-    )
+    fields = ("body",)
 
 
 @register(BlogIndexPage)

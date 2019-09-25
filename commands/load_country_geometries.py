@@ -17,15 +17,15 @@ from apps.landmatrix.models import Country
 
 
 class Command(BaseCommand):
-    help = 'Populates the countries with shape geometries (from biogeo.ucdavis.edu)'
+    help = "Populates the countries with shape geometries (from biogeo.ucdavis.edu)"
 
     def handle(self, *args, **options):
 
         countries = Country.objects.all()
-        shp_base_url = 'http://biogeo.ucdavis.edu/data/gadm2.8/shp/{}_adm_shp.zip'
-        shp_base_filename = '{}_adm0.shp'
+        shp_base_url = "http://biogeo.ucdavis.edu/data/gadm2.8/shp/{}_adm_shp.zip"
+        shp_base_filename = "{}_adm0.shp"
 
-        temp_dir_path = os.path.join(settings.BASE_DIR, 'temp_geom_import')
+        temp_dir_path = os.path.join(settings.BASE_DIR, "temp_geom_import")
         create_folder(temp_dir_path)
 
         for country in countries:
@@ -40,18 +40,18 @@ class Command(BaseCommand):
             shp_filename = shp_base_filename.format(country.code_alpha3.upper())
             ds = DataSource(os.path.join(temp_dir_path, shp_filename))
             if ds.layer_count != 1:
-                raise Exception('There should be exactly 1 layer in the SHP file!')
+                raise Exception("There should be exactly 1 layer in the SHP file!")
 
             layer = ds[0]
 
             geoms = layer.get_geoms(geos=True)
             if len(geoms) != 1:
-                raise Exception('There should be exactly one geometry')
+                raise Exception("There should be exactly one geometry")
 
             # Geometry is either a MultiPolygon already. Or it is a Polygon, in
             # which case it needs to be transferred to a MultiPolygon
             geometry = geoms[0]
-            if geometry.geom_type == 'Polygon':
+            if geometry.geom_type == "Polygon":
                 geometry = MultiPolygon(geometry)
 
             country.geom = geometry

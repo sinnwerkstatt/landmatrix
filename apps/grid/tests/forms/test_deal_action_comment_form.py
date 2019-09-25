@@ -6,20 +6,20 @@ from apps.landmatrix.models import HistoricalActivity
 
 class GridDealActionCommentFormTestCase(TestCase):
 
-    fixtures = [
-        'status'
-    ]
+    fixtures = ["status"]
 
     def setUp(self):
-        self.form =  DealActionCommentForm()
-        self.form.data = {'tg_action_comment': 'test'}
+        self.form = DealActionCommentForm()
+        self.form.data = {"tg_action_comment": "test"}
 
     def test_get_attributes(self):
         attributes = self.form.get_attributes()
         self.assertEqual({}, attributes)
 
     def test_get_data(self):
-        activity = HistoricalActivity.objects.create(id=1, activity_identifier=1, comment='action comment')
-        activity.attributes.create(name='tg_action_comment', value='test')
+        activity = HistoricalActivity.objects.create(
+            id=1, activity_identifier=1, comment="action comment"
+        )
+        activity.attributes.create(name="tg_action_comment", value="test")
         data = self.form.get_data(activity)
-        self.assertEqual(['action comment'], data.getlist('tg_action_comment'))
+        self.assertEqual(["action comment"], data.getlist("tg_action_comment"))

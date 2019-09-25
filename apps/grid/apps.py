@@ -4,7 +4,7 @@ from django.apps import AppConfig
 
 
 class GridConfig(AppConfig):
-    name = 'apps.grid'
+    name = "apps.grid"
     verbose_name = "Grid"
 
     VARIABLES = None
@@ -15,11 +15,11 @@ class GridConfig(AppConfig):
     def get_variables(self):
         from apps.grid.views.deal import DealBaseView
         from apps.grid.fields import TitleField
+
         variables = OrderedDict()
 
         deal_forms = [
-            form.form if hasattr(form, 'form') else form
-            for form in DealBaseView.FORMS
+            form.form if hasattr(form, "form") else form for form in DealBaseView.FORMS
         ]
         for form in deal_forms:
             for field_name, field in form.base_fields.items():

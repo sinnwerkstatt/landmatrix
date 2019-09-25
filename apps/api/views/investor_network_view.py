@@ -15,6 +15,7 @@ class InvestorNetworkView(APIView):
     Get investor network.
     Used within charts section.
     """
+
     schema = ManualSchema(
         fields=[
             coreapi.Field(
@@ -23,7 +24,7 @@ class InvestorNetworkView(APIView):
                 location="query",
                 description="Operating company ID",
                 schema=coreschema.Integer(),
-            ),
+            )
         ]
     )
 
@@ -31,19 +32,21 @@ class InvestorNetworkView(APIView):
         """
         Returns an investor object.
         """
-        investor_id = self.request.GET.get('investor_id')
-        history_id = self.request.GET.get('history_id')
+        investor_id = self.request.GET.get("investor_id")
+        history_id = self.request.GET.get("history_id")
         if history_id and not investor_id:
-            investor_id = HistoricalInvestor.objects.get(id=history_id).investor_identifier
+            investor_id = HistoricalInvestor.objects.get(
+                id=history_id
+            ).investor_identifier
         queryset = HistoricalInvestor.objects
         if not self.request.user.is_authenticated:
             queryset = queryset.public_or_deleted(self.request.user)
         try:
             investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+            raise Http404("Investor %s does not exist (%s)" % (investor_id, str(e)))
 
-        #self.check_object_permissions(self.request, investor)
+        # self.check_object_permissions(self.request, investor)
 
         return investor
 
@@ -51,10 +54,12 @@ class InvestorNetworkView(APIView):
         # TODO: determine what operational_stakeholder_diagram does here -
         # it seems to just be passed back in the response.
         investor = self.get_object()
-        serialized_response = HistoricalInvestorNetworkSerializer(investor, user=request.user)
-        #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
+        serialized_response = HistoricalInvestorNetworkSerializer(
+            investor, user=request.user
+        )
+        # parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()
-        #response_data['index'] = investor_diagram
+        # response_data['index'] = investor_diagram
 
         return Response(response_data)

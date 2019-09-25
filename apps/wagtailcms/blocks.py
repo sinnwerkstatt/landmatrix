@@ -14,23 +14,27 @@ from apps.wagtailcms.twitter import TwitterTimeline
 
 
 class LinkBlock(StructBlock):
-    cls = blocks.ChoiceBlock(choices=[
-        ('btn', 'Button'),
-        ('btn btn-with-space', 'Button (with space)'),
-    ], required=False, label='Type')
-    url = blocks.URLBlock(label='URL')
+    cls = blocks.ChoiceBlock(
+        choices=[("btn", "Button"), ("btn btn-with-space", "Button (with space)")],
+        required=False,
+        label="Type",
+    )
+    url = blocks.URLBlock(label="URL")
     text = blocks.CharBlock()
 
     class Meta:
-        icon = 'anchor'
-        template = 'widgets/link.html'
+        icon = "anchor"
+        template = "widgets/link.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['href'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
-                                                     page=parent_context.get('page'))
-        context['text'] = value.get('text')
-        context['class'] = value.get('cls')
+        context["href"] = get_country_or_region_link(
+            value.get("url"),
+            request=parent_context.get("request"),
+            page=parent_context.get("page"),
+        )
+        context["text"] = value.get("text")
+        context["class"] = value.get("cls")
         return context
 
 
@@ -38,12 +42,12 @@ class AnchorBlock(StructBlock):
     slug = blocks.CharBlock()
 
     class Meta:
-        icon = 'anchor'
-        template = 'widgets/anchor.html'
+        icon = "anchor"
+        template = "widgets/anchor.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['slug'] = value.get('slug')
+        context["slug"] = value.get("slug")
         return context
 
 
@@ -57,19 +61,21 @@ class FAQsBlock(StructBlock):
     faqs = blocks.ListBlock(FAQBlock())
 
     class Meta:
-        icon = 'fa fa-medkit'
-        template = 'widgets/faq_block.html'
+        icon = "fa fa-medkit"
+        template = "widgets/faq_block.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['title'] = value.get('title')
-        context['list'] = []
-        for faq in value.get('faqs'):
-            context['list'].append({
-                'slug': faq.get('slug'),
-                'term': faq.get('question'),
-                'definition': faq.get('answer')
-            })
+        context["title"] = value.get("title")
+        context["list"] = []
+        for faq in value.get("faqs"):
+            context["list"].append(
+                {
+                    "slug": faq.get("slug"),
+                    "term": faq.get("question"),
+                    "definition": faq.get("answer"),
+                }
+            )
         return context
 
 
@@ -82,38 +88,36 @@ class TwitterBlock(StructBlock):
     # tweet_limit = CharBlock(required=True, max_length=2)
 
     class Meta:
-        icon = 'fa fa-twitter'
-        template = 'widgets/twitter.html'
+        icon = "fa fa-twitter"
+        template = "widgets/twitter.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        twitte = TwitterTimeline(count=(value.get('count')))
-        context['timeline'] = twitte.get_timeline(value.get('username'))
-        context['username'] = value.get('username')  # context['timeline'][0]['screen_name']
+        twitte = TwitterTimeline(count=(value.get("count")))
+        context["timeline"] = twitte.get_timeline(value.get("username"))
+        context["username"] = value.get(
+            "username"
+        )  # context['timeline'][0]['screen_name']
         return context
 
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
-
     def render_basic(self, value, context=None):
         def get_class(block):
-            if block.block_type != 'full_width_container':
-                return 'block-%s block' % block.block_type
+            if block.block_type != "full_width_container":
+                return "block-%s block" % block.block_type
             else:
-                return ''
+                return ""
 
         return format_html_join(
-            '\n', '<div class="{1}">{0}</div>',
-            [
-                (child.render(context=context), get_class(child))
-                for child in value
-            ]
+            "\n",
+            '<div class="{1}">{0}</div>',
+            [(child.render(context=context), get_class(child)) for child in value],
         )
 
 
 class NoWrapsStreamField(StreamField):
-
     def __init__(self, block_types, **kwargs):
         super().__init__(block_types, **kwargs)
         if isinstance(block_types, Block):
@@ -125,39 +129,42 @@ class NoWrapsStreamField(StreamField):
 
 
 class ImageBlock(ImageChooserBlock):
-    url = blocks.URLBlock(required=False, label='URL')
+    url = blocks.URLBlock(required=False, label="URL")
 
     class Meta:
-        icon = 'image'
-        template = 'widgets/image.html'
+        icon = "image"
+        template = "widgets/image.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value)
-        context['url'] = value.get_rendition('max-1200x1200').url
-        context['name'] = value.title
+        context["url"] = value.get_rendition("max-1200x1200").url
+        context["name"] = value.title
         return context
 
 
 class SectionDivider(StructBlock):
     class Meta:
-        icon = 'fa fa-minus'
-        template = 'widgets/divider.html'
+        icon = "fa fa-minus"
+        template = "widgets/divider.html"
 
 
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
-    url = blocks.URLBlock(required=False, label='URL')
+    url = blocks.URLBlock(required=False, label="URL")
     caption = blocks.RichTextBlock(required=False)
 
     class Meta:
-        icon = 'image'
-        template = 'widgets/image.html'
+        icon = "image"
+        template = "widgets/image.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['href'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
-                                                     page=parent_context.get('page'))
-        context['url'] = value.get('image').get_rendition('max-1200x1200').url
+        context["href"] = get_country_or_region_link(
+            value.get("url"),
+            request=parent_context.get("request"),
+            page=parent_context.get("page"),
+        )
+        context["url"] = value.get("image").get_rendition("max-1200x1200").url
         # context['name'] = value.get('caption')
         return context
 
@@ -167,112 +174,114 @@ class SliderBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['title'] = value.get('title')
-        images_data = value.get('images')
+        context["title"] = value.get("title")
+        images_data = value.get("images")
         images = []
         if images_data:
             for image in images_data:
-                rendition = image.get('image').get_rendition('max-1200x1200')
+                rendition = image.get("image").get_rendition("max-1200x1200")
                 url = rendition.url
-                name = image.get('image').title
+                name = image.get("image").title
                 image_context = {
-                    'url': url,
-                    'name': name,
-                    'href': image.get('url'),
-                    'caption': image.get('caption')
+                    "url": url,
+                    "name": name,
+                    "href": image.get("url"),
+                    "caption": image.get("caption"),
                 }
                 images.append(image_context)
-        context['images'] = images
+        context["images"] = images
         return context
 
     class Meta:
-        icon = 'fa fa-picture-o'
-        label = 'Slider'
-        template = 'widgets/slider.html'
+        icon = "fa fa-picture-o"
+        label = "Slider"
+        template = "widgets/slider.html"
 
 
 class GalleryBlock(StructBlock):
-    columns = blocks.ChoiceBlock(choices=[
-        (1, '1 column'),
-        (2, '2 columns'),
-        (3, '3 columns'),
-        (4, '4 columns'),
-        (5, '5 columns'),
-        (6, '6 columns'),
-    ], icon='fa fa-columns')
+    columns = blocks.ChoiceBlock(
+        choices=[
+            (1, "1 column"),
+            (2, "2 columns"),
+            (3, "3 columns"),
+            (4, "4 columns"),
+            (5, "5 columns"),
+            (6, "6 columns"),
+        ],
+        icon="fa fa-columns",
+    )
     images = blocks.ListBlock(LinkedImageBlock())
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['title'] = value.get('title')
-        columns_data = value.get('columns')
+        context["title"] = value.get("title")
+        columns_data = value.get("columns")
         if columns_data and columns_data.isdigit():
-            context['columns'] = int(columns_data)
-        images_data = value.get('images')
+            context["columns"] = int(columns_data)
+        images_data = value.get("images")
         images = []
         if images_data:
             for image in images_data:
-                if not image.get('image'):  # pragma: no cover
+                if not image.get("image"):  # pragma: no cover
                     continue
-                rendition = image.get('image').get_rendition('max-1200x1200')
+                rendition = image.get("image").get_rendition("max-1200x1200")
                 url = rendition.url
-                name = image.get('image').title
-                image_context = {
-                    'url': url,
-                    'name': name,
-                    'href': image.get('url')
-                }
+                name = image.get("image").title
+                image_context = {"url": url, "name": name, "href": image.get("url")}
                 images.append(image_context)
-        context['images'] = images
+        context["images"] = images
         return context
 
     class Meta:
-        icon = 'fa fa-th'
-        label = 'Gallery'
-        template = 'widgets/gallery.html'
+        icon = "fa fa-th"
+        label = "Gallery"
+        template = "widgets/gallery.html"
 
 
 class TitleBlock(blocks.CharBlock):
     class Meta:
-        icon = 'title'
-        label = 'Title'
-        template = 'widgets/title.html'
+        icon = "title"
+        label = "Title"
+        template = "widgets/title.html"
 
 
 class TitleWithIconBlock(StructBlock):
-    value = blocks.CharBlock(label='Title')
+    value = blocks.CharBlock(label="Title")
     fa_icon = blocks.CharBlock(required=False)
-    url = blocks.URLBlock(label='URL', required=False)
+    url = blocks.URLBlock(label="URL", required=False)
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['value'] = value.get('value')
-        context['fa_icon'] = value.get('fa_icon')
-        context['url'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
-                                                    page=parent_context.get('page'))
+        context["value"] = value.get("value")
+        context["fa_icon"] = value.get("fa_icon")
+        context["url"] = get_country_or_region_link(
+            value.get("url"),
+            request=parent_context.get("request"),
+            page=parent_context.get("page"),
+        )
         return context
 
     class Meta:
-        icon = 'title'
-        label = 'Title with Icon'
-        template = 'widgets/title.html'
+        icon = "title"
+        label = "Title with Icon"
+        template = "widgets/title.html"
 
 
 CONTENT_BLOCKS = [
-    ('heading', TitleBlock()),
-    ('title', TitleWithIconBlock()),
-    ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageBlock()),
-    ('linked_image', LinkedImageBlock()),
-    ('media', EmbedBlock(icon="media")),
-    ('html', RawHTMLBlock(icon="code")),
-    ('link', LinkBlock(icon="link")),
-    ('anchor', AnchorBlock(icon="link")),
-    ('gallery', GalleryBlock()),
-    ('slider', SliderBlock()),
-    ('section_divider', SectionDivider()),
-    ('twitter', TwitterBlock()),
-    ('faqs_block', FAQsBlock()),
+    ("heading", TitleBlock()),
+    ("title", TitleWithIconBlock()),
+    ("paragraph", blocks.RichTextBlock()),
+    ("image", ImageBlock()),
+    ("linked_image", LinkedImageBlock()),
+    ("media", EmbedBlock(icon="media")),
+    ("html", RawHTMLBlock(icon="code")),
+    ("link", LinkBlock(icon="link")),
+    ("anchor", AnchorBlock(icon="link")),
+    ("gallery", GalleryBlock()),
+    ("slider", SliderBlock()),
+    ("section_divider", SectionDivider()),
+    ("twitter", TwitterBlock()),
+    ("faqs_block", FAQsBlock()),
 ]
 
 
@@ -281,29 +290,26 @@ def get_country_or_region(request, page=None):
     Get country or region from current page (if CountryPage/RegionPage)
     or from URL query (if CountryIndexPage/RegionIndexPage)
     """
-    result = {
-        'region': None,
-        'country': None,
-    }
-    if hasattr(page, 'region'):
-        result['region'] = page.region
-    elif hasattr(page, 'country'):
-        result['country'] = page.country
-    elif request and hasattr(request, 'resolver_match') and request.resolver_match:
+    result = {"region": None, "country": None}
+    if hasattr(page, "region"):
+        result["region"] = page.region
+    elif hasattr(page, "country"):
+        result["country"] = page.country
+    elif request and hasattr(request, "resolver_match") and request.resolver_match:
         kwargs = request.resolver_match.kwargs
-        if 'region_slug' in kwargs:
-            result['region'] = DataRegion.objects.get(slug=kwargs.get('region_slug'))
-        elif 'country_slug' in kwargs:
-            result['country'] = DataCountry.objects.get(slug=kwargs.get('country_slug'))
+        if "region_slug" in kwargs:
+            result["region"] = DataRegion.objects.get(slug=kwargs.get("region_slug"))
+        elif "country_slug" in kwargs:
+            result["country"] = DataCountry.objects.get(slug=kwargs.get("country_slug"))
     return result
 
 
 def get_country_or_region_link(link, request=None, page=None):
     data = get_country_or_region(request, page=page)
-    if data.get('region', None):
-        link = '%s?region=%s' % (link, data['region'].id)
-    elif data.get('country', None):
-        link = '%s?country=%s' % (link, data['country'].id)
+    if data.get("region", None):
+        link = "%s?region=%s" % (link, data["region"].id)
+    elif data.get("country", None):
+        link = "%s?country=%s" % (link, data["country"].id)
     return link
 
 
@@ -311,50 +317,62 @@ class LatestNewsBlock(StructBlock):
     limit = blocks.CharBlock()
 
     class Meta:
-        icon = 'fa fa-list'
-        label = 'Latest news'
-        template = 'widgets/latest-news.html'
+        icon = "fa fa-list"
+        label = "Latest news"
+        template = "widgets/latest-news.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
-        queryset = BlogPage.objects.live().public().order_by('-date')
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
+        queryset = BlogPage.objects.live().public().order_by("-date")
         tag = None
-        if context.get('country'):
-            tag = context.get('country').slug
-            context['name'] = context.get('country').name
-        elif context.get('region'):
-            tag = context.get('region').slug
-            context['name'] = context.get('region').name
+        if context.get("country"):
+            tag = context.get("country").slug
+            context["name"] = context.get("country").name
+        elif context.get("region"):
+            tag = context.get("region").slug
+            context["name"] = context.get("region").name
         if tag:
             queryset = queryset.filter(tags__slug=tag)
-        limit = value.get('limit')
-        context['tag'] = tag
-        context['news'] = queryset[:int(limit)]
+        limit = value.get("limit")
+        context["tag"] = tag
+        context["news"] = queryset[: int(limit)]
         return context
 
 
 class StatisticsBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-list'
-        label = 'Statistics'
-        template = 'widgets/statistics.html'
+        icon = "fa fa-list"
+        label = "Statistics"
+        template = "widgets/statistics.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
         return context
 
 
 class MapDataChartsBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-chain'
-        label = 'Map / Grid / Charts'
-        template = 'widgets/map-data-charts.html'
+        icon = "fa fa-chain"
+        label = "Map / Grid / Charts"
+        template = "widgets/map-data-charts.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
         return context
 
 
@@ -364,22 +382,29 @@ class LinkMapBlock(StructBlock):
     """
 
     class Meta:
-        icon = 'fa fa-map-marker'
-        label = 'Map'
-        template = 'widgets/link-map.html'
+        icon = "fa fa-map-marker"
+        label = "Map"
+        template = "widgets/link-map.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
         # prevent circular import
         from apps.map.views import MapSettingsMixin
+
         legend = MapSettingsMixin().get_legend()
-        context.update({
-            'legend': legend,
-            'legend_json': json.dumps(legend),
-            'map_object': context.get('region') or context.get('country'),
-            'is_country': bool(context.get('country'))
-        })
+        context.update(
+            {
+                "legend": legend,
+                "legend_json": json.dumps(legend),
+                "map_object": context.get("region") or context.get("country"),
+                "is_country": bool(context.get("country")),
+            }
+        )
         return context
 
 
@@ -387,96 +412,114 @@ class LatestDatabaseModificationsBlock(StructBlock):
     limit = blocks.CharBlock()
 
     class Meta:
-        icon = 'fa fa-list'
-        label = 'Latest database modifications'
-        template = 'widgets/latest-database-modifications.html'
+        icon = "fa fa-list"
+        label = "Latest database modifications"
+        template = "widgets/latest-database-modifications.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
-        context['limit'] = value.get('limit')
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
+        context["limit"] = value.get("limit")
         return context
 
 
 class RegionBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-map-marker'
-        label = 'Region'
-        template = 'widgets/region.html'
+        icon = "fa fa-map-marker"
+        label = "Region"
+        template = "widgets/region.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
-        if context.get('country'):
-            context['region'] = context['country'].fk_region
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
+        if context.get("country"):
+            context["region"] = context["country"].fk_region
         return context
 
 
 class CountriesBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-flag'
-        label = 'Countries'
-        template = 'widgets/countries.html'
+        icon = "fa fa-flag"
+        label = "Countries"
+        template = "widgets/countries.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context.update(get_country_or_region(parent_context.get('request'), parent_context.get('page')))
-        if context.get('region'):
-            context['countries'] = DataCountry.objects.filter(fk_region=context.get('region'))
+        context.update(
+            get_country_or_region(
+                parent_context.get("request"), parent_context.get("page")
+            )
+        )
+        if context.get("region"):
+            context["countries"] = DataCountry.objects.filter(
+                fk_region=context.get("region")
+            )
         return context
 
 
 DATA_BLOCKS = [
-    ('latest_news', LatestNewsBlock()),
-    ('link_map', LinkMapBlock()),
-    ('statistics', StatisticsBlock()),
-    ('map_data_charts', MapDataChartsBlock()),
-    ('latest_database_modifications', LatestDatabaseModificationsBlock()),
-    ('countries', CountriesBlock()),
-    ('region', RegionBlock()),
+    ("latest_news", LatestNewsBlock()),
+    ("link_map", LinkMapBlock()),
+    ("statistics", StatisticsBlock()),
+    ("map_data_charts", MapDataChartsBlock()),
+    ("latest_database_modifications", LatestDatabaseModificationsBlock()),
+    ("countries", CountriesBlock()),
+    ("region", RegionBlock()),
 ]
 
 
 class Columns1To1Block(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
-    right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
+    right_column = blocks.StreamBlock(
+        CONTENT_BLOCKS + DATA_BLOCKS, form_classname="pull-right"
+    )
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
 
-        for column in ['left_column', 'right_column']:
+        for column in ["left_column", "right_column"]:
             context[column] = value.get(column)
 
         return context
 
     class Meta:
-        label = 'Two Columns'
-        template = 'widgets/two-columns.html'
-        icon = 'fa fa-columns'
+        label = "Two Columns"
+        template = "widgets/two-columns.html"
+        icon = "fa fa-columns"
 
 
 class ThreeColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     middle_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
-    right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
+    right_column = blocks.StreamBlock(
+        CONTENT_BLOCKS + DATA_BLOCKS, form_classname="pull-right"
+    )
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
 
-        for column in ['left_column', 'middle_column', 'right_column']:
+        for column in ["left_column", "middle_column", "right_column"]:
             context[column] = value.get(column)
 
         return context
 
     class Meta:
-        label = 'Three Columns'
-        template = 'widgets/three-columns.html'
-        icon = 'fa fa-columns'
+        label = "Three Columns"
+        template = "widgets/three-columns.html"
+        icon = "fa fa-columns"
 
 
 COLUMN_BLOCKS = [
-    ('columns_1_1', Columns1To1Block()),
-    ('columns_3', ThreeColumnsBlock()),
+    ("columns_1_1", Columns1To1Block()),
+    ("columns_3", ThreeColumnsBlock()),
 ]
 
 
@@ -490,46 +533,49 @@ class TabsBlock(StructBlock):
     tabs = blocks.ListBlock(TabBlock())
 
     class Meta:
-        icon = 'fa fa-folder'
-        template = 'widgets/tabs_block.html'
+        icon = "fa fa-folder"
+        template = "widgets/tabs_block.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['list'] = []
-        for tab in value.get('tabs'):
-            context['list'].append({
-                'title': tab.get('title'),
-                'fa_icon': tab.get('fa_icon'),
-                'content': tab.get('content')
-            })
+        context["list"] = []
+        for tab in value.get("tabs"):
+            context["list"].append(
+                {
+                    "title": tab.get("title"),
+                    "fa_icon": tab.get("fa_icon"),
+                    "content": tab.get("content"),
+                }
+            )
         return context
 
 
-CONTENT_BLOCKS += [
-    ('tabs_block', TabsBlock()),
-]
+CONTENT_BLOCKS += [("tabs_block", TabsBlock())]
 
 
 class FullWidthContainerBlock(StructBlock):
-    color = blocks.ChoiceBlock(choices=[
-        ('white', 'White'),
-        ('lightgrey', 'Light grey'),
-        ('darkgrey', 'Dark grey')
-    ], default='white')
-    content = NoWrapsStreamBlock(COLUMN_BLOCKS + DATA_BLOCKS + CONTENT_BLOCKS, form_classname='pull-right')
+    color = blocks.ChoiceBlock(
+        choices=[
+            ("white", "White"),
+            ("lightgrey", "Light grey"),
+            ("darkgrey", "Dark grey"),
+        ],
+        default="white",
+    )
+    content = NoWrapsStreamBlock(
+        COLUMN_BLOCKS + DATA_BLOCKS + CONTENT_BLOCKS, form_classname="pull-right"
+    )
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['content'] = value.get('content')
-        context['color'] = value.get('color')
+        context["content"] = value.get("content")
+        context["color"] = value.get("color")
         return context
 
     class Meta:
-        icon = 'fa fa-arrows-h'
-        label = 'Full width container'
-        template = 'widgets/full-width-container.html'
+        icon = "fa fa-arrows-h"
+        label = "Full width container"
+        template = "widgets/full-width-container.html"
 
 
-CONTENT_BLOCKS += [
-    ('full_width_container', FullWidthContainerBlock(form_classname='')),
-]
+CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]

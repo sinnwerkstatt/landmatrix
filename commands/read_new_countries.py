@@ -11,34 +11,44 @@ import csv
 from apps.landmatrix.models.investor import Investor
 
 
-
 class Command(BaseCommand):
 
-    renamed_countries = {
+    renamed_countries = {}
 
-    }
     def add_arguments(self, parser):
         parser.add_argument(
-            '--show_dropped_countries', action='store_true', dest='show_dropped_countries', default=False
+            "--show_dropped_countries",
+            action="store_true",
+            dest="show_dropped_countries",
+            default=False,
         )
         parser.add_argument(
-            '--show_additional_countries', action='store_true', dest='show_additional_countries', default=False
+            "--show_additional_countries",
+            action="store_true",
+            dest="show_additional_countries",
+            default=False,
         )
         parser.add_argument(
-            '--show_orphaned_deals', action='store_true', dest='show_orphaned_deals', default=False
+            "--show_orphaned_deals",
+            action="store_true",
+            dest="show_orphaned_deals",
+            default=False,
         )
         parser.add_argument(
-            '--set_target_country_flags', action='store_true', dest='set_target_country_flags', default=False
+            "--set_target_country_flags",
+            action="store_true",
+            dest="set_target_country_flags",
+            default=False,
         )
 
     def handle(self, *args, **options):
-        if options['show_dropped_countries']:
+        if options["show_dropped_countries"]:
             self.show_dropped_countries()
-        elif options['show_additional_countries']:
+        elif options["show_additional_countries"]:
             self.show_additional_countries()
-        elif options['show_orphaned_deals']:
+        elif options["show_orphaned_deals"]:
             self.show_orphaned_deals()
-        elif options['set_target_country_flags']:
+        elif options["set_target_country_flags"]:
             self.set_target_country_flags()
         else:
             print(options)
@@ -65,7 +75,7 @@ class Command(BaseCommand):
             )
 
     def set_target_country_flags(self):
-        country_ids = ActivityAttribute.objects.filter(name='target_country')
+        country_ids = ActivityAttribute.objects.filter(name="target_country")
         countries = Country.objects.filter(pk__in=[aa.value for aa in country_ids])
         for country in countries:
             country.is_target_country = True
@@ -74,23 +84,27 @@ class Command(BaseCommand):
 
 def get_investor_country(deal):
     investors = Investor.objects.filter(investoractivityinvolvement__fk_activity=deal)
-    countries = [Country.objects.get(pk=country).name for country in set(investors.values_list('fk_country', flat=True))]
+    countries = [
+        Country.objects.get(pk=country).name
+        for country in set(investors.values_list("fk_country", flat=True))
+    ]
     return countries
+
 
 def get_orphaned_countries():
     dropped_countries = get_old_countries() - get_new_countries()
-    dropped_countries_ids = list(Country.objects.filter(name__in=dropped_countries).values_list('id', flat=True))
-    deals_in_dropped_countries = ActivityAttribute.objects.filter(name='target_country')
-    return [
-        Country.objects.get(pk=aa.value) for aa in deals_in_dropped_countries
-    ]
+    dropped_countries_ids = list(
+        Country.objects.filter(name__in=dropped_countries).values_list("id", flat=True)
+    )
+    deals_in_dropped_countries = ActivityAttribute.objects.filter(name="target_country")
+    return [Country.objects.get(pk=aa.value) for aa in deals_in_dropped_countries]
 
 
 def get_new_countries():
     new_countries = set()
-    with open('target_countries_regions.csv') as csvfile:
+    with open("target_countries_regions.csv") as csvfile:
         reader = csv.reader(csvfile)
-        next(reader)    # skip header line
+        next(reader)  # skip header line
         for row in reader:
             country, region = row
             new_countries.add(country)
@@ -102,4 +116,8 @@ def get_old_countries():
 
 
 def deals_in_country(country):
-    return set(Activity.objects.filter(attributes__name='target_country', attributes__value=country.id))
+    return set(
+        Activity.objects.filter(
+            attributes__name="target_country", attributes__value=country.id
+        )
+    )

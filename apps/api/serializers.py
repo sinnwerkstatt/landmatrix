@@ -4,14 +4,18 @@ from django.urls import reverse
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from apps.landmatrix.models import Activity, FilterPreset, HistoricalInvestorVentureInvolvement
+from apps.landmatrix.models import (
+    Activity,
+    FilterPreset,
+    HistoricalInvestorVentureInvolvement,
+)
 from apps.landmatrix.models.investor import HistoricalInvestor, InvestorBase
 
 
 class FilterPresetSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPreset
-        exclude = ('is_default_country', 'is_default_global')
+        exclude = ("is_default_country", "is_default_global")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,13 +26,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'full_name')
+        fields = ("id", "username", "full_name")
 
 
 class RegionSerializer(serializers.BaseSerializer):
     """
     Returns a region as a list: [id, slug, title].
     """
+
     def to_representation(self, obj):
         return [obj.region.id, obj.region.slug, obj.title]
 
@@ -45,7 +50,7 @@ class DealLocationSerializer(serializers.Serializer):
         Convert our binary polygon representation to a GEOSGeometry.
         """
         # TODO: DRY, we should have a model with a list of these fields
-        for geo_field in ('contract_area', 'intended_area', 'production_area'):
+        for geo_field in ("contract_area", "intended_area", "production_area"):
             if geo_field in obj and obj[geo_field]:
                 if not isinstance(obj[geo_field], GEOSGeometry):
                     obj[geo_field] = GEOSGeometry(obj[geo_field], srid=4326)
@@ -57,6 +62,7 @@ class DealSerializer(serializers.Serializer):
     """
     Used to serialize the deal list view.
     """
+
     deal_id = serializers.IntegerField()
     intention = serializers.CharField()
     intended_size = serializers.IntegerField()
@@ -67,9 +73,9 @@ class DealSerializer(serializers.Serializer):
 
     def to_representation(self, obj):
         locations = []
-        location_fields = self.fields['locations'].child.fields.keys()
+        location_fields = self.fields["locations"].child.fields.keys()
         array_elements = [obj[field] for field in location_fields]
-        split_elements = [elem.split(';') for elem in array_elements]
+        split_elements = [elem.split(";") for elem in array_elements]
 
         for values in zip(*split_elements):
             location = {}
@@ -79,7 +85,7 @@ class DealSerializer(serializers.Serializer):
             locations.append(location)
 
         # For our intfields, we sometimes get unexpected floats. Round those.
-        for field in ('contract_size', 'intended_size', 'production_size'):
+        for field in ("contract_size", "intended_size", "production_size"):
             value = obj[field]
             if isinstance(value, str):
                 try:
@@ -91,7 +97,7 @@ class DealSerializer(serializers.Serializer):
                         value = None
                 obj[field] = value
 
-        obj['locations'] = locations
+        obj["locations"] = locations
 
         return super().to_representation(obj)
 
@@ -100,14 +106,20 @@ class DealDetailSerializer(serializers.ModelSerializer):
     """
     Returns deal attributes.
     """
+
     attributes = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
         fields = (
-            'activity_identifier', 'fk_status', 'is_public',
-            'deal_scope', 'negotiation_status', 'implementation_status',
-            'deal_size', 'attributes'
+            "activity_identifier",
+            "fk_status",
+            "is_public",
+            "deal_scope",
+            "negotiation_status",
+            "implementation_status",
+            "deal_size",
+            "attributes",
         )
 
     def get_attributes(self, obj):
@@ -152,7 +164,9 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
+    def to_representation(
+        self, obj, parent_types=["parent_stakeholders", "parent_investors"]
+    ):
         response = {
             "id": obj.id,
             "name": obj.name,
@@ -163,32 +177,42 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
             "homepage": obj.homepage,
             "opencorporates_link": obj.opencorporates_link,
             "comment": obj.comment,
-            "url": reverse("investor_detail", kwargs={"investor_id": obj.investor_identifier}),
+            "url": reverse(
+                "investor_detail", kwargs={"investor_id": obj.investor_identifier}
+            ),
             "stakeholders": [],
         }
-        involvements = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=obj)
+        involvements = HistoricalInvestorVentureInvolvement.objects.filter(
+            fk_venture=obj
+        )
         if self.user and not self.user.is_authenticated:
-            involvements = involvements.filter(fk_investor__fk_status_id__in=(
-                InvestorBase.STATUS_ACTIVE,
-                InvestorBase.STATUS_OVERWRITTEN
-            ))
+            involvements = involvements.filter(
+                fk_investor__fk_status_id__in=(
+                    InvestorBase.STATUS_ACTIVE,
+                    InvestorBase.STATUS_OVERWRITTEN,
+                )
+            )
         for parent_type in parent_types:
             parents = []
-            if parent_type == 'parent_investors':
+            if parent_type == "parent_investors":
                 parent_involvements = involvements.investors()
             else:
                 parent_involvements = involvements.stakeholders()
             for i, involvement in enumerate(parent_involvements):
                 # Always get latest version of parent investor
-                parent_investor = HistoricalInvestor.objects.filter(investor_identifier=involvement.fk_investor.investor_identifier)
+                parent_investor = HistoricalInvestor.objects.filter(
+                    investor_identifier=involvement.fk_investor.investor_identifier
+                )
                 if self.user and not self.user.is_authenticated:
-                    parent_investor = parent_investor.filter(fk_status_id__in=(
-                        InvestorBase.STATUS_ACTIVE,
-                        InvestorBase.STATUS_OVERWRITTEN
-                    ))
+                    parent_investor = parent_investor.filter(
+                        fk_status_id__in=(
+                            InvestorBase.STATUS_ACTIVE,
+                            InvestorBase.STATUS_OVERWRITTEN,
+                        )
+                    )
                 parent_investor = parent_investor.latest()
                 parent = self.to_representation(parent_investor, parent_types)
-                parent["type"] = parent_type == 'parent_investors' and 2 or 1
+                parent["type"] = parent_type == "parent_investors" and 2 or 1
                 parent["involvement"] = {
                     "percentage": involvement.percentage,
                     "investment_type": involvement.get_investment_type_display(),
@@ -199,6 +223,6 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                     "comment": involvement.comment,
                 }
                 parents.append(parent)
-            response['stakeholders'].extend(parents)
+            response["stakeholders"].extend(parents)
 
         return response

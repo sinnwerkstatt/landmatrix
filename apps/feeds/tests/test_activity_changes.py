@@ -10,12 +10,12 @@ from apps.landmatrix.models import HistoricalInvestor
 class FeedsActivityChangesTestCase(TestCase):
 
     fixtures = [
-        'countries_and_regions',
-        'users_and_groups',
-        'status',
-        'activities',
-        'investors',
-        'activity_involvements',
+        "countries_and_regions",
+        "users_and_groups",
+        "status",
+        "activities",
+        "investors",
+        "activity_involvements",
     ]
 
     def setUp(self):
@@ -50,10 +50,15 @@ class FeedsActivityChangesTestCase(TestCase):
         changes.sort(key=sort_key)
 
         expected = [
-            (1, 'production_size', '2000', None),
-            (1, 'intention', 'Mining', 'Forest logging / management'),
-            (1, 'intended_size', None, '1000'),
-            (None, 'operational_stakeholder', None, HistoricalInvestor.objects.get(id=10)),
+            (1, "production_size", "2000", None),
+            (1, "intention", "Mining", "Forest logging / management"),
+            (1, "intended_size", None, "1000"),
+            (
+                None,
+                "operational_stakeholder",
+                None,
+                HistoricalInvestor.objects.get(id=10),
+            ),
         ]
         expected.sort(key=sort_key)
         self.assertEqual(expected, changes)

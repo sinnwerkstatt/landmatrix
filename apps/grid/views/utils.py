@@ -1,14 +1,26 @@
 from apps.grid.forms.deal_action_comment_form import DealActionCommentForm
-from apps.grid.forms.deal_contract_form import DealContractFormSet, PublicViewDealContractFormSet
-from apps.grid.forms.deal_data_source_form import AddDealDataSourceFormSet, PublicViewDealDataSourceFormSet
+from apps.grid.forms.deal_contract_form import (
+    DealContractFormSet,
+    PublicViewDealContractFormSet,
+)
+from apps.grid.forms.deal_data_source_form import (
+    AddDealDataSourceFormSet,
+    PublicViewDealDataSourceFormSet,
+)
 from apps.grid.forms.deal_employment_form import DealEmploymentForm
 from apps.grid.forms.deal_former_use_form import DealFormerUseForm
 from apps.grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from apps.grid.forms.deal_general_form import DealGeneralForm
 from apps.grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from apps.grid.forms.deal_overall_comment_form import DealOverallCommentForm
-from apps.grid.forms.deal_produce_info_form import DealProduceInfoForm, PublicViewDealProduceInfoForm
-from apps.grid.forms.deal_spatial_form import DealSpatialFormSet, PublicViewDealSpatialFormSet
+from apps.grid.forms.deal_produce_info_form import (
+    DealProduceInfoForm,
+    PublicViewDealProduceInfoForm,
+)
+from apps.grid.forms.deal_spatial_form import (
+    DealSpatialFormSet,
+    PublicViewDealSpatialFormSet,
+)
 from apps.grid.forms.deal_vggt_form import DealVGGTForm
 from apps.grid.forms.deal_water_form import DealWaterForm
 from apps.grid.forms.operational_stakeholder_form import OperationalStakeholderForm
@@ -45,6 +57,4 @@ PUBLIC_FORMS = [
     ("vggt", DealVGGTForm),
     ("overall_comment", DealOverallCommentForm),
 ]
-USER_FORMS = [
-    ("action_comment", DealActionCommentForm),
-]
+USER_FORMS = [("action_comment", DealActionCommentForm)]

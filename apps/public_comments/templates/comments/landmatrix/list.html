@@ -1,20 +1,20 @@
 {% load threadedcomments_tags %}
 {% load i18n %}
 <div id="comments">
-    {% for comment in comment_list|fill_tree|annotate_tree %}
-        {% if comment.open %}
-            <ul>
-        {% else %}
-            </li>
-        {% endif %}
-        <li id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
-            <dl class="comment">
-                <dt>
-                    <small>
-                    {{ comment.submit_date }} {% trans "by" %} {{ comment.name }} 
-                    | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment-reply-link">{% trans "Reply" %}</a>
-                    {% if perms.django_comments.can_moderate %}
-                    <span class="comment-moderation">
+  {% for comment in comment_list|fill_tree|annotate_tree %}
+    {% if comment.open %}
+      <ul>
+    {% else %}
+      </li>
+    {% endif %}
+  <li id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
+    <dl class="comment">
+      <dt>
+        <small>
+          {{ comment.submit_date }} {% trans "by" %} {{ comment.name }}
+          | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment-reply-link">{% trans "Reply" %}</a>
+          {% if perms.django_comments.can_moderate %}
+            <span class="comment-moderation">
                         | <a href="{% url 'comments-edit' comment.id %}">{% trans "Edit" %}</a>
                         | <form action="{% url 'comments-delete' comment.id %}" method="POST">
                             {% csrf_token %}
@@ -22,14 +22,14 @@
                             <input type="submit" value="{% trans "Delete" %}">
                         </form>
                     </span>
-                    {% endif %}
-                    </small>
-                </dt>
-                <dd>
-                    {{ comment.comment|linebreaks }}
-                </dd>
+          {% endif %}
+        </small>
+      </dt>
+      <dd>
+        {{ comment.comment|linebreaks }}
+      </dd>
 
-            </dl>
-            {% for close in comment.close %}</li></ul>{% endfor %}
-    {% endfor %}
+    </dl>
+    {% for close in comment.close %}</li></ul>{% endfor %}
+  {% endfor %}
 </div>

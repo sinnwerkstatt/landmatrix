@@ -4,7 +4,7 @@ from wagtail.core import hooks
 from wagtail.core.whitelist import attribute_rule
 
 
-@hooks.register('insert_editor_js')
+@hooks.register("insert_editor_js")
 def editor_js():
     return format_html(
         """
@@ -15,28 +15,29 @@ def editor_js():
     )
 
 
-@hooks.register('insert_editor_css')
+@hooks.register("insert_editor_css")
 def editor_css():
     # Add extra CSS files to the admin like font-awesome
     css_files = [
-        'font-awesome/css/font-awesome.min.css',
-        'css/wagtail-font-awesome.css'
+        "font-awesome/css/font-awesome.min.css",
+        "css/wagtail-font-awesome.css",
     ]
 
     css_includes = format_html_join(
-        '\n',
+        "\n",
         '<link rel="stylesheet" href="{0}{1}">',
-        ((settings.STATIC_URL, filename) for filename in css_files))
+        ((settings.STATIC_URL, filename) for filename in css_files),
+    )
 
     return css_includes
 
 
-@hooks.register('construct_whitelister_element_rules')
+@hooks.register("construct_whitelister_element_rules")
 def whitelister_element_rules():
     return {
-        'h2': attribute_rule({'style': True}),
-        'h3': attribute_rule({'style': True}),
-        'h4': attribute_rule({'style': True}),
-        'h5': attribute_rule({'style': True}),
-        'p': attribute_rule({'style': True}),
+        "h2": attribute_rule({"style": True}),
+        "h3": attribute_rule({"style": True}),
+        "h4": attribute_rule({"style": True}),
+        "h5": attribute_rule({"style": True}),
+        "p": attribute_rule({"style": True}),
     }

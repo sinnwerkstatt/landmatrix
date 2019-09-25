@@ -1,1 +1,1 @@
-default_app_config = 'apps.grid.apps.GridConfig'
+default_app_config = "apps.grid.apps.GridConfig"

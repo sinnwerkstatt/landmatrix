@@ -20,17 +20,20 @@ class EditCommentView(UpdateView):
         comment_form
             the edit form
     """
+
     form_class = EditCommentForm
-    template_name = 'comments/landmatrix/edit.html'
+    template_name = "comments/landmatrix/edit.html"
     model = ThreadedComment
     queryset = ThreadedComment.objects.filter(site__pk=settings.SITE_ID)
-    pk_url_kwarg = 'comment_id'
-    context_object_name = 'comment'
+    pk_url_kwarg = "comment_id"
+    context_object_name = "comment"
 
-    @method_decorator(permission_required('django_comments.can_moderate'))
+    @method_decorator(permission_required("django_comments.can_moderate"))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         form.save()
-        return next_redirect(self.request, fallback='comments-edit-done', c=self.object.pk)
+        return next_redirect(
+            self.request, fallback="comments-edit-done", c=self.object.pk
+        )

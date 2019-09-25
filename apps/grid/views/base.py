@@ -6,7 +6,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from apps.api.views import ElasticSearchMixin
-from apps.grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP, intention_choices
+from apps.grid.forms.choices import (
+    INTENTION_AGRICULTURE_MAP,
+    INTENTION_FORESTRY_MAP,
+    intention_choices,
+)
 from apps.grid.views.browse_filter_conditions import get_activity_field_label
 from apps.grid.views.filter import FilterWidgetMixin
 from apps.landmatrix.models import Country, Crop, Region
@@ -16,25 +20,25 @@ INTENTION_MAP = {}
 for choice, value in intention_choices:
     if choice in INTENTION_AGRICULTURE_MAP.keys():
         INTENTION_MAP[choice] = {
-            'value': _('Agriculture'),
-            'slug': 'agriculture',
-            'order_by': _('Agriculture'),
+            "value": _("Agriculture"),
+            "slug": "agriculture",
+            "order_by": _("Agriculture"),
         }
     elif choice in INTENTION_FORESTRY_MAP.keys():
         INTENTION_MAP[choice] = {
-            'value': _('Forestry'),
-            'slug': 'forestry',
-            'order_by': _('Forestry'),
+            "value": _("Forestry"),
+            "slug": "forestry",
+            "order_by": _("Forestry"),
         }
     INTENTION_MAP[choice] = {
-        'value': value,
-        'slug': urlencode(choice),
-        'order_by': value,
+        "value": value,
+        "slug": urlencode(choice),
+        "order_by": value,
         #'is_parent': choices and len(choices) > 0
     }
-    #if not choices:
+    # if not choices:
     #    continue
-    #for schoice, svalue in choices:
+    # for schoice, svalue in choices:
     #    INTENTION_MAP[schoice] = {
     #        'value': svalue,
     #        'slug': slugify(schoice),
@@ -43,86 +47,107 @@ for choice, value in intention_choices:
     #    }
 
 
-class TableGroupView(FilterWidgetMixin,
-                     ElasticSearchMixin,
-                     TemplateView):
+class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
 
     LOAD_MORE_AMOUNT = 20
-    QUERY_LIMITED_GROUPS = ["target_country", "operational_stakeholder_name",
-                            "parent_stakeholder_country", "all", "crop"]
+    QUERY_LIMITED_GROUPS = [
+        "target_country",
+        "operational_stakeholder_name",
+        "parent_stakeholder_country",
+        "all",
+        "crop",
+    ]
     DEFAULT_GROUP = "by-target-region"
     COLUMN_GROUPS = {
-        "target_country": ["target_country_display", "target_region_display", "intention"],
+        "target_country": [
+            "target_country_display",
+            "target_region_display",
+            "intention",
+        ],
         "target_region": ["target_region_display", "intention"],
-        "investor_name": ["investor_id", "investor_name", "investor_country_display", "intention"],
+        "investor_name": [
+            "investor_id",
+            "investor_name",
+            "investor_country_display",
+            "intention",
+        ],
         "investor_country": ["investor_country_display", "intention"],
         "investor_region": ["investor_region_display"],
         "intention": ["intention"],
         "crop": ["crops"],
         "year": ["year", "intention"],
         "data_source_type": ["type", "intention"],
-        "all": ["activity_identifier", "target_country_display", "top_investors",
-                "intention", "current_negotiation_status_display",
-                "current_implementation_status_display",
-                "deal_size"]
+        "all": [
+            "activity_identifier",
+            "target_country_display",
+            "top_investors",
+            "intention",
+            "current_negotiation_status_display",
+            "current_implementation_status_display",
+            "deal_size",
+        ],
     }
-    AGGREGATE_COLUMNS = {
-        "investor_name": "investor_name.raw",
-    }
+    AGGREGATE_COLUMNS = {"investor_name": "investor_name.raw"}
     GROUP_COLUMNS_LIST = COLUMN_GROUPS["all"]
     GROUP_NAMES = {
         "operational_stakeholder_name": _("Investor name"),
-        #"operational_stakeholder_country": _("Investor country"),
-        #"operational_stakeholder_region": _("Investor region"),
+        # "operational_stakeholder_country": _("Investor country"),
+        # "operational_stakeholder_region": _("Investor region"),
     }
     COLUMN_LABELS_MAP = {
         # Activity
-        'activity_identifier': _('ID'),
-        'deal_count': _('Deals'),
-        'availability': _('Availability'),
-        'deal_size': _('Deal size'),
-        'top_investors': _("Top investors"),
-        'parent_companies': _("Parent companies"),
-        'current_negotiation_status': _('Negotiation status'),
-        'current_implementation_status': _('Implementation status'),
-        'target_region': _('Target region'),
+        "activity_identifier": _("ID"),
+        "deal_count": _("Deals"),
+        "availability": _("Availability"),
+        "deal_size": _("Deal size"),
+        "top_investors": _("Top investors"),
+        "parent_companies": _("Parent companies"),
+        "current_negotiation_status": _("Negotiation status"),
+        "current_implementation_status": _("Implementation status"),
+        "target_region": _("Target region"),
         # Activity overwrites
-        'crops': _('Crops'),
-        'type': _('Data source type'),
+        "crops": _("Crops"),
+        "type": _("Data source type"),
         # Investors
         # 'operational_stakeholder_country': _('Operating company country'),
         # 'operational_stakeholder_region': _('Operating company region'),
-        'operational_stakeholder': _('Operating company'),
-        'investor_country': _('Investor country'),
-        'investor_region': _('Investor region'),
-        'investor_id': _('Investor ID'),
-        'investor_name': _('Investor name'),
-        'operational_stakeholder_name': _('Operating company name'),
-        'parent_stakeholder': _('Parent investors'),
-        'parent_stakeholder_country': _('Parent investor country'),
-        'parent_stakeholder_region': _('Parent investor region'),
-        'parent_stakeholder_percentage': _('Parent investor percentages'),
-        'parent_stakeholder_classification': _(
-            'Parent investor classifications'),
-        'parent_stakeholder_homepage': _('Parent investor homepages'),
-        'parent_stakeholder_opencorporates_link': _(
-            'Parent stakeholder Opencorporates links'),
-        'parent_stakeholder_comment': _('Comment on parent investor'),
-        'operating_company_investor_identifier': _('ID'),
-        'operating_company_fk_country': _("Operating company country of registration/origin"),
-        'operating_company_region': _("Operating company region of registration/origin"),
-        'operating_company_classification': _("Operating company classification"),
-        'operating_company_homepage': _("Operating company homepage"),
-        'operating_company_opencorporates_link': _("Operating company Opencorporates link"),
-        'operating_company_comment': _("Additional comment on Operating company"),
+        "operational_stakeholder": _("Operating company"),
+        "investor_country": _("Investor country"),
+        "investor_region": _("Investor region"),
+        "investor_id": _("Investor ID"),
+        "investor_name": _("Investor name"),
+        "operational_stakeholder_name": _("Operating company name"),
+        "parent_stakeholder": _("Parent investors"),
+        "parent_stakeholder_country": _("Parent investor country"),
+        "parent_stakeholder_region": _("Parent investor region"),
+        "parent_stakeholder_percentage": _("Parent investor percentages"),
+        "parent_stakeholder_classification": _("Parent investor classifications"),
+        "parent_stakeholder_homepage": _("Parent investor homepages"),
+        "parent_stakeholder_opencorporates_link": _(
+            "Parent stakeholder Opencorporates links"
+        ),
+        "parent_stakeholder_comment": _("Comment on parent investor"),
+        "operating_company_investor_identifier": _("ID"),
+        "operating_company_fk_country": _(
+            "Operating company country of registration/origin"
+        ),
+        "operating_company_region": _(
+            "Operating company region of registration/origin"
+        ),
+        "operating_company_classification": _("Operating company classification"),
+        "operating_company_homepage": _("Operating company homepage"),
+        "operating_company_opencorporates_link": _(
+            "Operating company Opencorporates link"
+        ),
+        "operating_company_comment": _("Additional comment on Operating company"),
     }
-    ID_FIELD = 'activity_identifier'
+    ID_FIELD = "activity_identifier"
     DEFAULT_ORDER_BY = ID_FIELD
-    GROUP_COLUMNS = ('deal_count', 'deal_size', 'availability')
+    GROUP_COLUMNS = ("deal_count", "deal_size", "availability")
     ORDER_MAP = {
-        'deal_count': '_count',
-        'deal_size': 'deal_size_sum',
-        'availability': 'availability_avg',
+        "deal_count": "_count",
+        "deal_size": "deal_size_sum",
+        "availability": "availability_avg",
     }
 
     template_name = "grid/deals.html"
@@ -142,30 +167,32 @@ class TableGroupView(FilterWidgetMixin,
         """
         self.group = group or self.DEFAULT_GROUP
         self.group = self.group.replace("by-", "").replace("-", "_")
-        self.group_value = group_value or ''
+        self.group_value = group_value or ""
         context = super(TableGroupView, self).get_context_data()
 
         root = WagtailRootPage.objects.first()
         if root and root.data_introduction:
-            context['introduction'] = root.data_introduction
+            context["introduction"] = root.data_introduction
 
         items = self.get_records()
         items = self.get_items(items)
-        context.update({
-            "view": "data",
-            "data": {
-                "items": items,
-                "order_by": self.order_by,
-                "count": self.num_results
-            },
-            "name": self.group_value,
-            "columns": self.columns_dict,
-            "default_columns": self.default_columns_dict,
-            "load_more": self._load_more_amount(),
-            "group_slug": self.group,
-            "group_value": self.group_value,
-            "group": self.GROUP_NAMES.get(self.group, self.group),
-        })
+        context.update(
+            {
+                "view": "data",
+                "data": {
+                    "items": items,
+                    "order_by": self.order_by,
+                    "count": self.num_results,
+                },
+                "name": self.group_value,
+                "columns": self.columns_dict,
+                "default_columns": self.default_columns_dict,
+                "load_more": self._load_more_amount(),
+                "group_slug": self.group,
+                "group_value": self.group_value,
+                "group": self.GROUP_NAMES.get(self.group, self.group),
+            }
+        )
 
         return context
 
@@ -176,7 +203,7 @@ class TableGroupView(FilterWidgetMixin,
         """
         query = self.create_query_from_filters()
         aggs = {}
-        if self.group == 'all':
+        if self.group == "all":
             order_by = self.order_by
         elif self.group_value:
             query = self.get_group_value_query(query)
@@ -187,29 +214,32 @@ class TableGroupView(FilterWidgetMixin,
             order_by = None
 
         # Search deals
-        results = self.execute_elasticsearch_query(query, doc_type=self.doc_type, fallback=False,
-                                                   sort=order_by, aggs=aggs)
+        results = self.execute_elasticsearch_query(
+            query, doc_type=self.doc_type, fallback=False, sort=order_by, aggs=aggs
+        )
 
         if aggs:
-            results = results[self.group]['buckets']
+            results = results[self.group]["buckets"]
 
             # Cache investors (for name and country)
-            if self.group == 'investor_name':
+            if self.group == "investor_name":
                 investors = {}
-                for investor in self.execute_elasticsearch_query({}, doc_type='investor'):
-                    investor = investor['_source']
-                    investors[str(investor['investor_identifier'])] = {
-                        'name': investor['name'],
-                        'fk_country_display': investor.get('fk_country_display'),
+                for investor in self.execute_elasticsearch_query(
+                    {}, doc_type="investor"
+                ):
+                    investor = investor["_source"]
+                    investors[str(investor["investor_identifier"])] = {
+                        "name": investor["name"],
+                        "fk_country_display": investor.get("fk_country_display"),
                     }
                 self.group_values = investors
         else:
-            results = getattr(self, 'filter_%ss' % self.doc_type)(results)
+            results = getattr(self, "filter_%ss" % self.doc_type)(results)
 
         self.num_results = len(results)
 
         if self.limit_query():
-            results = results[:self._load_more()]
+            results = results[: self._load_more()]
 
         return results
 
@@ -220,32 +250,26 @@ class TableGroupView(FilterWidgetMixin,
         :return:
         """
         # FIXME: Merge with ExportView.get_group_value_query into Mixin
-        if not 'bool' in query:
-            query['bool'] = {}
-        if not 'filter' in query['bool']:
-            query['bool']['filter'] = []
+        if not "bool" in query:
+            query["bool"] = {}
+        if not "filter" in query["bool"]:
+            query["bool"]["filter"] = []
         # Deslugify model choices
-        if 'country' in self.group:
+        if "country" in self.group:
             country = Country.objects.get(slug=self.group_value)
             filter_value = country.id
-        elif 'region' in self.group:
+        elif "region" in self.group:
             region = Region.objects.get(slug=self.group_value)
             filter_value = region.id
-        elif 'crop' in self.group:
+        elif "crop" in self.group:
             crop = Crop.objects.get(slug=self.group_value)
             filter_value = crop.id
         else:
             filter_value = self.group_value
-        filter_field = self.COLUMN_GROUPS[self.group][0].replace('_display', '')
-        query['bool']['filter'].append({
-            'bool': {
-                'filter': {
-                    'term': {
-                        filter_field: filter_value
-                    }
-                }
-            }
-        })
+        filter_field = self.COLUMN_GROUPS[self.group][0].replace("_display", "")
+        query["bool"]["filter"].append(
+            {"bool": {"filter": {"term": {filter_field: filter_value}}}}
+        )
         return query
 
     def _get_group_agg(self, group):
@@ -256,18 +280,12 @@ class TableGroupView(FilterWidgetMixin,
         """
         return {
             self.group: {
-                'terms': {
-                    'field': group,
-                    'size': 10000,
-                    'order': self.order_by,
+                "terms": {"field": group, "size": 10000, "order": self.order_by},
+                "aggs": {
+                    "all": {
+                        "terms": {"field": self.AGGREGATE_COLUMNS.get(group, group)}
+                    }
                 },
-                'aggs': {
-                    'all': {
-                        'terms': {
-                            'field': self.AGGREGATE_COLUMNS.get(group, group)
-                        }
-                    },
-                }
             }
         }
 
@@ -280,31 +298,23 @@ class TableGroupView(FilterWidgetMixin,
         fields = self.COLUMN_GROUPS.get(self.group)
         aggs = self._get_group_agg(fields[0])
         # Add extra field for non-display value (required for filter)
-        if '_display' in fields[0]:
-            field = fields[0].replace('_display', '')
-            aggs[self.group]['aggs'][field] = {
-                'terms': {
-                    'field': self.AGGREGATE_COLUMNS.get(field, field)
-                }
+        if "_display" in fields[0]:
+            field = fields[0].replace("_display", "")
+            aggs[self.group]["aggs"][field] = {
+                "terms": {"field": self.AGGREGATE_COLUMNS.get(field, field)}
             }
         # Collect terms for all other fields
         for field in fields[1:]:
-            aggs[self.group]['aggs'][field] = {
-                'terms': {
-                    'field': self.AGGREGATE_COLUMNS.get(field, field)
-                }
+            aggs[self.group]["aggs"][field] = {
+                "terms": {"field": self.AGGREGATE_COLUMNS.get(field, field)}
             }
         # Exclude empty
-        if self.group != 'investor_name':
-            if not 'bool' in query:
-                query['bool'] = {}
-            if not 'must_not' in query['bool']:
-                query['bool']['must_not'] = []
-            query['bool']['must_not'].append({
-                'term': {
-                    fields[0]: ""
-                }
-            })
+        if self.group != "investor_name":
+            if not "bool" in query:
+                query["bool"] = {}
+            if not "must_not" in query["bool"]:
+                query["bool"]["must_not"] = []
+            query["bool"]["must_not"].append({"term": {fields[0]: ""}})
         return query, aggs
 
     def limit_query(self):
@@ -334,7 +344,8 @@ class TableGroupView(FilterWidgetMixin,
 
         :return:
         """
-        if not self._load_more(): return None
+        if not self._load_more():
+            return None
         if self.num_results > self._load_more():
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
@@ -346,8 +357,8 @@ class TableGroupView(FilterWidgetMixin,
         :return:
         """
         columns = []
-        if not default and self.request.GET.get('columns'):
-            columns = self.request.GET.getlist('columns')
+        if not default and self.request.GET.get("columns"):
+            columns = self.request.GET.getlist("columns")
             if self.ID_FIELD not in columns:  # pragma: no cover
                 columns = [self.ID_FIELD] + columns
         elif self.group_value:
@@ -355,16 +366,15 @@ class TableGroupView(FilterWidgetMixin,
         else:
             try:
                 columns = self.COLUMN_GROUPS[self.group]
-                if self.group != 'all':
+                if self.group != "all":
                     columns += self.GROUP_COLUMNS
             except KeyError:  # pragma: no cover
-                raise Http404(
-                    _("Unknown group '%(group)s'.") % {'group': self.group})
+                raise Http404(_("Unknown group '%(group)s'.") % {"group": self.group})
         return columns
 
     @property
     def columns(self):
-        return [c.replace('_display', '') for c in self.get_columns()]
+        return [c.replace("_display", "") for c in self.get_columns()]
 
     def get_columns_dict(self, default=False):
         """Get column information for template"""
@@ -373,21 +383,22 @@ class TableGroupView(FilterWidgetMixin,
         order_by = self.get_order_by_field()[0]
         for i, name in enumerate(self.get_columns(default=default)):
             label = None
-            column = name.replace('_display', '')
+            column = name.replace("_display", "")
             if column in self.COLUMN_LABELS_MAP.keys():
                 label = self.COLUMN_LABELS_MAP[column]
             else:
                 label = self.get_field_label(column)
-            columns[column] = {
-                'label': label,
-                'name': column,
-            }
-            if self.group != 'all' and not self.group_value:
+            columns[column] = {"label": label, "name": column}
+            if self.group != "all" and not self.group_value:
                 order_by_columns = self.GROUP_COLUMNS
                 if i == 0 or column in order_by_columns:
-                    columns[column]['order_by'] = '-'+column if column == order_by else column
+                    columns[column]["order_by"] = (
+                        "-" + column if column == order_by else column
+                    )
             else:
-                columns[column]['order_by'] = '-'+column if column == order_by else column
+                columns[column]["order_by"] = (
+                    "-" + column if column == order_by else column
+                )
 
         return columns
 
@@ -405,7 +416,7 @@ class TableGroupView(FilterWidgetMixin,
         return self.get_columns_dict(default=True)
 
     def get_items(self, results):
-        if self.group and self.group != 'all' and not self.group_value:
+        if self.group and self.group != "all" and not self.group_value:
             items = [self.get_group_item(item) for item in results]
         else:
             items = [self.get_deal_item(item) for item in results]
@@ -414,15 +425,18 @@ class TableGroupView(FilterWidgetMixin,
     def get_deal_item(self, result):
         item = OrderedDict()
         for column in self.get_columns():
-            if column in ('target_country', 'current_negotiation_status',
-                          'current_implementation_status'):  # pragma: no cover
-                column += '_display'
+            if column in (
+                "target_country",
+                "current_negotiation_status",
+                "current_implementation_status",
+            ):  # pragma: no cover
+                column += "_display"
             value = result.get(column, None)
-            if value and hasattr(self, 'clean_{}'.format(column)):
-                value = getattr(self, 'clean_{}'.format(column))(value, result)
+            if value and hasattr(self, "clean_{}".format(column)):
+                value = getattr(self, "clean_{}".format(column))(value, result)
             if not isinstance(value, (list, tuple)):
-                value = [value,]
-            column = column.replace('_display', '')
+                value = [value]
+            column = column.replace("_display", "")
             item[column] = value
         return item
 
@@ -431,66 +445,65 @@ class TableGroupView(FilterWidgetMixin,
         columns = self.COLUMN_GROUPS[self.group]
         for i, column in enumerate(columns):
             if i == 0:
-                value = {
-                    'display': result['key'],
-                    'value': result['key'],
-                }
-                column = column.replace('_display', '')
-                if '_display' in columns[i]:
-                    value['value'] = result[column]['buckets'][0]['key']
-                if value and hasattr(self, 'clean_{}'.format(column)):  # pragma: no cover
-                    value = getattr(self, 'clean_{}'.format(column))(value, result)
+                value = {"display": result["key"], "value": result["key"]}
+                column = column.replace("_display", "")
+                if "_display" in columns[i]:
+                    value["value"] = result[column]["buckets"][0]["key"]
+                if value and hasattr(
+                    self, "clean_{}".format(column)
+                ):  # pragma: no cover
+                    value = getattr(self, "clean_{}".format(column))(value, result)
                 item[column] = value
             else:
                 if column in result:
-                    value = [i['key'] for i in result[column]['buckets']]
+                    value = [i["key"] for i in result[column]["buckets"]]
                 else:
-                    value = ''
-                column = column.replace('_display', '')
-                if value and hasattr(self, 'clean_{}'.format(column)):
-                    value = getattr(self, 'clean_{}'.format(column))(value, result)
+                    value = ""
+                column = column.replace("_display", "")
+                if value and hasattr(self, "clean_{}".format(column)):
+                    value = getattr(self, "clean_{}".format(column))(value, result)
                 if not isinstance(value, (list, tuple)):
-                    value = [value, ]
+                    value = [value]
                 item[column] = value
         return item
 
     def get_order_by_field(self):
-        order_by = self.request.GET.getlist('order_by', [])
+        order_by = self.request.GET.getlist("order_by", [])
         if len(order_by) > 0 and order_by[0]:
             return order_by
-        elif self.group and self.group != 'all' and not self.group_value:
-            return [self.columns[0], ]
+        elif self.group and self.group != "all" and not self.group_value:
+            return [self.columns[0]]
         else:
-            return [self.DEFAULT_ORDER_BY, ]
+            return [self.DEFAULT_ORDER_BY]
 
     @property
     def order_by(self):
         order_by = self.get_order_by_field()
         order_by = order_by[0]
-        if order_by.startswith('-'):
-            dir = 'desc'
+        if order_by.startswith("-"):
+            dir = "desc"
             order_by = order_by[1:]
         else:
-            dir = 'asc'
-        if self.group != 'all' and not self.group_value:
+            dir = "asc"
+        if self.group != "all" and not self.group_value:
             ORDER_MAP = self.ORDER_MAP
-            ORDER_MAP[self.columns[0]] = '_term'
+            ORDER_MAP[self.columns[0]] = "_term"
             order_by = ORDER_MAP.get(order_by, order_by)
         order_by = {order_by: dir}
         return order_by
 
     def clean_parent_companies(self, value, result):
         investors = []
-        for investor in value.split('|'):
-            investor = investor.split('#')
-            investors.append({'id': investor[1], 'name': investor[0]})
+        for investor in value.split("|"):
+            investor = investor.split("#")
+            investors.append({"id": investor[1], "name": investor[0]})
         return investors
 
     def clean_top_investors(self, value, result):
         investors = []
-        for investor in value.split('|'):
-            investor = investor.split('#')
-            investors.append({'id': investor[1], 'name': investor[0]})
+        for investor in value.split("|"):
+            investor = investor.split("#")
+            investors.append({"id": investor[1], "name": investor[0]})
         return investors
 
     def clean_intention(self, value, result):
@@ -498,24 +511,21 @@ class TableGroupView(FilterWidgetMixin,
             intentions = [INTENTION_MAP.get(intention) for intention in value]
             return list(filter(None, intentions))
         elif isinstance(value, dict):
-            if value['value'] in INTENTION_MAP:
-                intention = INTENTION_MAP.get(value['value'])
+            if value["value"] in INTENTION_MAP:
+                intention = INTENTION_MAP.get(value["value"])
                 return {
-                    'value': intention['slug'],
-                    'display': intention['value'],
-                    'is_parent': False,
+                    "value": intention["slug"],
+                    "display": intention["value"],
+                    "is_parent": False,
                 }
             else:
-                value['is_parent'] = True
+                value["is_parent"] = True
                 return value
 
     def clean_crops(self, value, result):
         if isinstance(value, dict):
-            crop = Crop.objects.get(pk=value['value']).name
-            return {
-                'value': crop,
-                'display': crop,
-            }
+            crop = Crop.objects.get(pk=value["value"]).name
+            return {"value": crop, "display": crop}
         elif isinstance(value, list):
             return [Crop.objects.get(pk=v).name for v in value]
         else:
@@ -523,20 +533,20 @@ class TableGroupView(FilterWidgetMixin,
 
     def clean_investor_name(self, value, result):
         if self.group_values:
-            investor = self.group_values.get(result['key'], None)
+            investor = self.group_values.get(result["key"], None)
             if investor:
-                return investor['name']
+                return investor["name"]
             else:
-                return ''
+                return ""
         else:
             return value
 
     def clean_investor_country(self, value, result):
         if self.group_values:
-            investor = self.group_values.get(result['key'], None)
+            investor = self.group_values.get(result["key"], None)
             if investor:
-                return investor['fk_country_display']
+                return investor["fk_country_display"]
             else:
-                return ''
+                return ""
         else:
             return value

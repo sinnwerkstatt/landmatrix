@@ -1,10 +1,7 @@
 image: sinntern/ubuntu_for_django:latest
 
-services:
-  - mdillon/postgis:10
-  - elasticsearch:5
-
 variables:
+  LANG: C.UTF-8
   POSTGRES_DB: landmatrix
   POSTGRES_USER: landmatrix
   POSTGRES_PASSWORD: landmatrix
@@ -12,29 +9,35 @@ variables:
   STAGING_USER: landmatrix
   PRODUCTION_HOST: landmatrix.org
   PRODUCTION_USER: landmatrix
+  DJANGO_SETTINGS_MODULE: config.settings.dev
+  DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
+  ELASTICSEARCH_URL: "http://elasticsearch"
 
 stages:
   - test
   - deploy
 
-test:
+before_script:
+  - pipenv sync --dev
+  - yarn install --frozen-lockfile
+
+formatting and linting:
   stage: test
-  before_script:
-    - export LANG=C.UTF-8
-    - apt-get -qq update
-    - apt-get -qq install -y gdal-bin wkhtmltopdf xvfb
-    - echo -e "DJANGO_SETTINGS_MODULE=config.settings.dev\nDATABASE_URL=postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix\nELASTICSEARCH_URL='http://elasticsearch'" > .env
-    - pipenv sync --dev
-    - yarn install --frozen-lockfile
-    - pipenv run doit update
-
   script:
-    - export LANG=C.UTF-8
-    - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
+    - black . --check
+    - pipenv run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
+    - pipenv run pylint apps --exit-zero
 
-  after_script:
-    - export LANG=C.UTF-8
+tests and coverage:
+  stage: test
+  services:
+    - mdillon/postgis:10
+    - elasticsearch:5
+  script:
+    - pipenv run doit -n 4 update
+    - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
     - pipenv run coverage report
+  coverage: /^TOTAL.*\s+(\d+\%)$/
 
 deploy to staging:
   stage: deploy
