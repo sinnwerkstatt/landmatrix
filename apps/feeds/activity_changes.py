@@ -8,8 +8,10 @@ class ActivityChangesList:
 
     def __init__(self, activity_identifier, max_items=100):
         self.activity_identifier = activity_identifier
-        queryset = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
-        queryset = queryset.order_by('-history_date')[:max_items]
+        queryset = HistoricalActivity.objects.filter(
+            activity_identifier=self.activity_identifier
+        )
+        queryset = queryset.order_by("-history_date")[:max_items]
         self.history = list(queryset)
 
     def __iter__(self):
@@ -42,7 +44,7 @@ class ActivityChangesList:
             if self.later_activity.operational_stakeholder != stakeholder:
                 change = (
                     None,
-                    'operational_stakeholder',
+                    "operational_stakeholder",
                     self.later_activity.operational_stakeholder,
                     stakeholder,
                 )

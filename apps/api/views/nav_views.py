@@ -23,7 +23,7 @@ class CountryListView(APIView):
 
     def get(self, request):
         queryset = Country.objects.all()
-        queryset = queryset.only('id', 'slug', 'name').order_by('name')
+        queryset = queryset.only("id", "slug", "name").order_by("name")
         response = [[c.id, c.slug, c.name] for c in queryset]
         return Response(response)
 
@@ -44,23 +44,23 @@ class RegionListView(ListAPIView):
     Get all target regions.
     Used by the navigation.
     """
+
     # Filter out pages without an assigned region, those just error
-    queryset = RegionPage.objects.filter(
-        region__isnull=False).order_by('title')
+    queryset = RegionPage.objects.filter(region__isnull=False).order_by("title")
     serializer_class = RegionSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 30
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 1000
 
 
-class InvestorListView(ElasticSearchMixin,
-                       ListAPIView):
+class InvestorListView(ElasticSearchMixin, ListAPIView):
     """
     Get all Operating companies, Parent companies and Tertiary investors/lenders.
     """
+
     schema = ManualSchema(
         fields=[
             coreapi.Field(
@@ -69,7 +69,7 @@ class InvestorListView(ElasticSearchMixin,
                 location="query",
                 description="Search term",
                 schema=coreschema.String(),
-            ),
+            )
         ]
     )
     pagination_class = StandardResultsSetPagination
@@ -80,7 +80,7 @@ class InvestorListView(ElasticSearchMixin,
     def get_queryset(self):
         results = {}
 
-        term = self.request.GET.get('q', '')
+        term = self.request.GET.get("q", "")
         if term:
             # latest_ids = HistoricalInvestor.objects.latest_ids()
             # queryset = HistoricalInvestor.objects.filter(id__in=latest_ids)
@@ -98,26 +98,28 @@ class InvestorListView(ElasticSearchMixin,
             #        "top_investors": top_investors,
             #    })
             query = {
-                'bool': {
-                    'must': [
-                        {'bool': {
-                            'should': [
-                                {'match_phrase': {'name': term.lower()}},
-                                {'wildcard': {'name': '*%s*' % term.lower()}},
-                            ],
-                            'minimum_should_match': 1
-                        }},
-                        {'terms': {'fk_status': [1, 2, 3]}},
+                "bool": {
+                    "must": [
+                        {
+                            "bool": {
+                                "should": [
+                                    {"match_phrase": {"name": term.lower()}},
+                                    {"wildcard": {"name": "*%s*" % term.lower()}},
+                                ],
+                                "minimum_should_match": 1,
+                            }
+                        },
+                        {"terms": {"fk_status": [1, 2, 3]}},
                     ]
                 }
             }
             # Search deals
-            raw_results = self.execute_elasticsearch_query(query, doc_type='investor',
-                                                           fallback=False,
-                                                           sort='name.raw')
+            raw_results = self.execute_elasticsearch_query(
+                query, doc_type="investor", fallback=False, sort="name.raw"
+            )
             results = OrderedDict()
             for raw_result in raw_results:
-                result = raw_result['_source']
+                result = raw_result["_source"]
                 id = result["investor_identifier"]
                 if id in results:
                     # Always prefer pending version

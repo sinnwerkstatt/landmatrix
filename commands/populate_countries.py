@@ -8,11 +8,11 @@ from apps.landmatrix.models.country import Country
 
 def find_bounds(country_obj):
     bounding_boxes = [
-        c.bbox for c in country_subunits_by_iso_code(country_obj.code_alpha3)]
+        c.bbox for c in country_subunits_by_iso_code(country_obj.code_alpha3)
+    ]
 
     if not bounding_boxes:
-        message = 'No data found for country code {}'.format(
-            country_obj.code_alpha3)
+        message = "No data found for country code {}".format(country_obj.code_alpha3)
         raise ValueError(message)
 
     polygons = []
@@ -26,7 +26,7 @@ def find_bounds(country_obj):
 
 
 class Command(BaseCommand):
-    help = 'Populates the country bounding boxes for zooming in the map'
+    help = "Populates the country bounding boxes for zooming in the map"
 
     def handle(self, *args, **options):
         for country in Country.objects.all():
@@ -41,5 +41,7 @@ class Command(BaseCommand):
 
             country.save()
 
-            message = "Updated bounds for country {country.name}: ({country.point_lon_min}, {country.point_lat_min}), ({country.point_lon_max}, {country.point_lat_max})".format(country=country)
+            message = "Updated bounds for country {country.name}: ({country.point_lon_min}, {country.point_lat_min}), ({country.point_lon_max}, {country.point_lat_max})".format(
+                country=country
+            )
             print(message)

@@ -8,14 +8,18 @@ from .base_form import BaseForm
 
 class DealGenderRelatedInfoForm(BaseForm):
 
-    form_title = _('Gender-related info')
+    form_title = _("Gender-related info")
 
     tg_gender_specific_info = TitleField(
-        required=False, label="",
-        initial=_("Any gender-specific information about the investment and its impacts"))
+        required=False,
+        label="",
+        initial=_(
+            "Any gender-specific information about the investment and its impacts"
+        ),
+    )
     tg_gender_specific_info_comment = forms.CharField(
-        required=False, label=_("Comment on gender-related info"),
-        widget=CommentInput)
+        required=False, label=_("Comment on gender-related info"), widget=CommentInput
+    )
 
     class Meta:
-        name = 'gender-related_info'
+        name = "gender-related_info"

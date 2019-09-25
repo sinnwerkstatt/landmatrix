@@ -2,7 +2,6 @@ from django.test import TestCase
 
 
 class GridDealVGGTFormTestCase(TestCase):
-
     def setUp(self):
         pass
 

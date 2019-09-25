@@ -39,7 +39,10 @@ INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
 
 intention_forestry_choices = (
     (INTENTION_TIMBER_PLANTATION, _("Timber plantation (for wood and fibre)")),
-    (INTENTION_FOREST_LOGGING, _("Forest logging / management (for wood and fibre)")),  # new
+    (
+        INTENTION_FOREST_LOGGING,
+        _("Forest logging / management (for wood and fibre)"),
+    ),  # new
     (INTENTION_CARBON, _("For carbon sequestration/REDD")),
     (INTENTION_FORESTRY_UNSPECIFIED, _("Forestry unspecified")),
 )
@@ -57,7 +60,9 @@ intention_other_choices = (
     (INTENTION_OTHER, _("Other (please specify)")),
 )
 
-intention_choices = intention_agriculture_choices + intention_forestry_choices + intention_other_choices
+intention_choices = (
+    intention_agriculture_choices + intention_forestry_choices + intention_other_choices
+)
 
 INTENTION_MAP = dict(intention_choices)
 
@@ -76,22 +81,36 @@ nature_choices = (
     (NATURE_OUTRIGHT_PURCHASE, _("Outright Purchase")),
     (NATURE_LEASE, _("Lease")),
     (NATURE_CONCESSION, _("Concession")),
-    (NATURE_EXPLOITATION_PERMIT, _("Exploitation permit / license / concession (for mineral resources)")),
+    (
+        NATURE_EXPLOITATION_PERMIT,
+        _("Exploitation permit / license / concession (for mineral resources)"),
+    ),
     (NATURE_CONTRACT_FARMING, _("Pure contract farming")),
 )
 
 price_type_choices = (
-    ('', _("---------")),
+    ("", _("---------")),
     ("per ha", _("per ha")),
     ("for specified area", _("for specified area")),
 )
 
 actor_choices = (
-    ('', _("---------")),
-    ('Government / State institutions', _("Government / State institutions (government, ministries, departments, agencies etc.)")),
-    ('Traditional land-owners / communities', _("Traditional land-owners / communities")),
-    ('Traditional local authority', _("Traditional local authority (e.g. Chiefdom council / Chiefs)")),
-    ('Broker', _("Broker")),
-    ('Intermediary', _("Intermediary")),
-    ('Other', _("Other (please specify)")),
+    ("", _("---------")),
+    (
+        "Government / State institutions",
+        _(
+            "Government / State institutions (government, ministries, departments, agencies etc.)"
+        ),
+    ),
+    (
+        "Traditional land-owners / communities",
+        _("Traditional land-owners / communities"),
+    ),
+    (
+        "Traditional local authority",
+        _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
+    ),
+    ("Broker", _("Broker")),
+    ("Intermediary", _("Intermediary")),
+    ("Other", _("Other (please specify)")),
 )

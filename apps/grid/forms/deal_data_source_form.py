@@ -15,41 +15,39 @@ from apps.landmatrix.storage import data_source_storage
 
 
 class DealDataSourceForm(BaseForm):
-    form_title = 'Data source'
+    form_title = "Data source"
 
-    tg_data_source = TitleField(
-        required=False, label="", initial=_("Data source")
-    )
+    tg_data_source = TitleField(required=False, label="", initial=_("Data source"))
     type = forms.ChoiceField(
-        required=False, label=_("Data source type"), choices=(
+        required=False,
+        label=_("Data source type"),
+        choices=(
             ("", _("---------")),
             ("Media report", _("Media report")),
             ("Research Paper / Policy Report", _("Research Paper / Policy Report")),
             ("Government sources", _("Government sources")),
             ("Company sources", _("Company sources")),
             ("Contract", _("Contract")),
-            ("Contract (contract farming agreement)", _("Contract (contract farming agreement)")),
+            (
+                "Contract (contract farming agreement)",
+                _("Contract (contract farming agreement)"),
+            ),
             ("Personal information", _("Personal information")),
             ("Crowdsourcing", _("Crowdsourcing")),
             ("Other", _("Other (Please specify in comment field)")),
-        )
+        ),
     )
-    url = forms.URLField(
-        required=False, label=_("URL"),
-    )
+    url = forms.URLField(required=False, label=_("URL"))
     file = FileFieldWithInitial(
-        required=False, label=_("File"),
-        help_text=_("Maximum file size: 10MB")
+        required=False, label=_("File"), help_text=_("Maximum file size: 10MB")
     )
-    file_not_public = forms.BooleanField(
-        required=False, label=_("Keep PDF not public")
-    )
-    publication_title = forms.CharField(
-        required=False, label=_("Publication title")
-    )
+    file_not_public = forms.BooleanField(required=False, label=_("Keep PDF not public"))
+    publication_title = forms.CharField(required=False, label=_("Publication title"))
     date = YearMonthDateField(
-        required=False, label=_("Date"), help_text="[YYYY-MM-DD]",
-    #    input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+        required=False,
+        label=_("Date"),
+        help_text="[YYYY-MM-DD]",
+        #    input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
 
     # Optional personal information for Crowdsourcing and Personal information
@@ -67,7 +65,7 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Comment on data source"), widget=CommentInput
     )
 
-    #def clean_date(self):
+    # def clean_date(self):
     #    date = self.cleaned_data["date"]
     #    try:
     #        return date and date.strftime("%Y-%m-%d") or ""
@@ -88,14 +86,18 @@ class DealDataSourceForm(BaseForm):
         return 4  # pragma: no cover
 
     def get_fields_display(self, user=None):
-        if not (user and user.is_authenticated and user.has_perm('landmatrix.review_activity')):
+        if not (
+            user
+            and user.is_authenticated
+            and user.has_perm("landmatrix.review_activity")
+        ):
             # Remove file field if not Editor/Admin
-            if self.initial.get('file_not_public', False):
-                self.initial.pop('file_not_public')
-                if 'file' in self.initial:
-                    self.initial.pop('file')
+            if self.initial.get("file_not_public", False):
+                self.initial.pop("file_not_public")
+                if "file" in self.initial:
+                    self.initial.pop("file")
             # Remove personal information fields
-            for field_name in ('name', 'company', 'email', 'phone'):
+            for field_name in ("name", "company", "email", "phone"):
                 if field_name in self.initial:
                     self.initial.pop(field_name)
         return super().get_fields_display(user=user)
@@ -109,27 +111,29 @@ class DealDataSourceForm(BaseForm):
     #    #tags = ActivityAttributeGroup.objects.filter(fk_activity=deal_activity).\
     #    #    filter(pk__gte=group.id).filter(pk__lte=next_group_id).\
     #    #    filter(belongs_to_data_source).values_list('attributes', flat=True)
+
+
 #
-    #    attributes = {}
-    #    for tag in tags:
-    #        for key in tag.keys():
-    #            if key in attributes and attributes[key] != tag[key]:
-    #                # raise RuntimeError()
-    #                # print(
-    #                #     'ALERT: found different values under the same tag group. Deal ID {}, group {}, tags {}'.format(
-    #                #         deal.activity.activity_identifier, group.id, str(tags)
-    #                #     ))
-    #                pass
-    #            attributes[key] = tag[key]
+#    attributes = {}
+#    for tag in tags:
+#        for key in tag.keys():
+#            if key in attributes and attributes[key] != tag[key]:
+#                # raise RuntimeError()
+#                # print(
+#                #     'ALERT: found different values under the same tag group. Deal ID {}, group {}, tags {}'.format(
+#                #         deal.activity.activity_identifier, group.id, str(tags)
+#                #     ))
+#                pass
+#            attributes[key] = tag[key]
 #
-    #    return attributes
+#    return attributes
 
 
 DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
 
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
-    form_title = _('Data sources')
+    form_title = _("Data sources")
     extra = 1
     max_num = 1
 
@@ -141,35 +145,40 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             # FIXME: Move this to DealDataSourceForm.get_attributes
             uploaded = self.get_file_from_upload(request.FILES, count)
             if uploaded:
-                if 'file' in form_attributes:
-                    form_attributes['file']['value'] = uploaded  # pragma: no cover
+                if "file" in form_attributes:
+                    form_attributes["file"]["value"] = uploaded  # pragma: no cover
                 else:
-                    form_attributes['file'] = {'value': uploaded}
+                    form_attributes["file"] = {"value": uploaded}
 
             attributes.append(form_attributes)
         return attributes
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
-        groups = activity.attributes.filter(
-            fk_group__name__startswith=cls.Meta.name).values_list(
-            'fk_group__name', flat=True).order_by('fk_group__name').distinct()
+        groups = (
+            activity.attributes.filter(fk_group__name__startswith=cls.Meta.name)
+            .values_list("fk_group__name", flat=True)
+            .order_by("fk_group__name")
+            .distinct()
+        )
         data = []
         for i, group in enumerate(groups):
-            form_data = DealDataSourceForm.get_data(activity, group=group)#, prefix='%s-%i' % (cls.Meta.name, i))
+            form_data = DealDataSourceForm.get_data(
+                activity, group=group
+            )  # , prefix='%s-%i' % (cls.Meta.name, i))
             if form_data:
                 data.append(form_data)
         return data
 
     def get_file_from_upload(self, files, form_index):
-        key = 'data_source-{}-file-new'.format(form_index)
+        key = "data_source-{}-file-new".format(form_index)
         file = files.get(key)
         if file:
             return data_source_storage.save(file.name, file)
         return None
 
     class Meta:
-        name = 'data_source'
+        name = "data_source"
 
 
 class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
@@ -177,18 +186,15 @@ class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
 
 
 class PublicViewDealDataSourceForm(DealDataSourceForm):
-
     class Meta:
-        name = 'data_source'
-        fields = (
-            "tg_data_source", "type", "url", "company", "date"
-        )
-        readonly_fields = (
-            "tg_data_source", "type", "url", "company", "date"
-        )
+        name = "data_source"
+        fields = ("tg_data_source", "type", "url", "company", "date")
+        readonly_fields = ("tg_data_source", "type", "url", "company", "date")
 
 
 class PublicViewDealDataSourceFormSet(
-    formset_factory(PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0)
+    formset_factory(
+        PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0
+    )
 ):
-    form_title = _('Data sources')
+    form_title = _("Data sources")

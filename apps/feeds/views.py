@@ -8,8 +8,8 @@ from .activity_changes import ActivityChangesList
 class ActivityChangesFeed(Feed):
 
     ttl = 0  # TTL value for client side caching
-    title_template = 'deal-change-title.html'
-    description_template = 'deal-change-description.html'
+    title_template = "deal-change-title.html"
+    description_template = "deal-change-description.html"
     max_items = 100
 
     def get_object(self, request, deal_id=None):
@@ -17,12 +17,8 @@ class ActivityChangesFeed(Feed):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        item = kwargs.get('item', None)
-        context.update({
-            'timestamp': item[0],
-            'deal': item[1],
-            'changes': item[2],
-        })
+        item = kwargs.get("item", None)
+        context.update({"timestamp": item[0], "deal": item[1], "changes": item[2]})
 
         return context
 
@@ -31,29 +27,27 @@ class ActivityChangesFeed(Feed):
         return changes
 
     def title(self, obj):
-        title = _("Deal %(deal_id)s History") % {'deal_id': obj}
+        title = _("Deal %(deal_id)s History") % {"deal_id": obj}
 
         return title
 
     def description(self, obj):
-        description = _("A list of changes made to deal %(deal_id)s") % {
-            'deal_id': obj,
-        }
+        description = _("A list of changes made to deal %(deal_id)s") % {"deal_id": obj}
 
         return description
 
     def link(self, obj):
-        url = reverse('deal_detail', kwargs={'deal_id': obj})
+        url = reverse("deal_detail", kwargs={"deal_id": obj})
 
         return url
 
     def item_link(self, item):
         timestamp, activity, changes = item
         deal_url_kwargs = {
-            'deal_id': activity.activity_identifier,
-            'history_id': activity.id,
+            "deal_id": activity.activity_identifier,
+            "history_id": activity.id,
         }
-        url = reverse('deal_detail', kwargs=deal_url_kwargs)
+        url = reverse("deal_detail", kwargs=deal_url_kwargs)
 
         return url
 

@@ -8,17 +8,16 @@ from apps.api.views.list_views import ElasticSearchMixin
 from apps.landmatrix.models import Activity
 
 
-class Command(ElasticSearchMixin,
-              BaseCommand):
-    help = 'Compares the public deal lists of the old database with the new database.'
+class Command(ElasticSearchMixin, BaseCommand):
+    help = "Compares the public deal lists of the old database with the new database."
 
-    #def add_arguments(self, parser):
+    # def add_arguments(self, parser):
     #    parser.add_argument('file', nargs='+', type=str)
 
     def handle(self, *args, **options):
         old = self.get_old_activities() or []
         new = self.get_new_activities() or []
-        #with open(options['file'][0], 'r') as csvfile:
+        # with open(options['file'][0], 'r') as csvfile:
         #    reader = csv.reader(csvfile, delimiter=';')
         #    for i, row in enumerate(reader):
         #        if i == 0:
@@ -30,80 +29,84 @@ class Command(ElasticSearchMixin,
         additional = list(set(new) - set(old))
         additional.sort()
         missing_deals = OrderedDict()
-        missing_deals['status'] = []
-        missing_deals['deal_size'] = []
-        missing_deals['init_date'] = []
-        missing_deals['deal_scope'] = []
-        missing_deals['unknown'] = []
+        missing_deals["status"] = []
+        missing_deals["deal_size"] = []
+        missing_deals["init_date"] = []
+        missing_deals["deal_scope"] = []
+        missing_deals["unknown"] = []
         additional_deals = OrderedDict()
-        additional_deals['no_inv'] = []
-        additional_deals['oc_only'] = []
-        additional_deals['deal_scope'] = []
-        additional_deals['unknown'] = []
+        additional_deals["no_inv"] = []
+        additional_deals["oc_only"] = []
+        additional_deals["deal_scope"] = []
+        additional_deals["unknown"] = []
 
         for deal_id in missing:
             a = Activity.objects.get(activity_identifier=deal_id)
             inv = a.involvements.all()
-            if a.fk_status_id not in (2,3):
-                missing_deals['status'].append(a)
+            if a.fk_status_id not in (2, 3):
+                missing_deals["status"].append(a)
             elif a.init_date and a.init_date < "1999-12-31":
-                missing_deals['deal_size'].append(a)
+                missing_deals["deal_size"].append(a)
             elif a.deal_size < 200:
-                missing_deals['deal_size'].append(a)
-            elif a.deal_scope == 'domestic':
-                missing_deals['deal_scope'].append(a)
+                missing_deals["deal_size"].append(a)
+            elif a.deal_scope == "domestic":
+                missing_deals["deal_scope"].append(a)
             else:
-                missing_deals['unknown'].append(a)
+                missing_deals["unknown"].append(a)
 
         for deal_id in additional:
             a = Activity.objects.get(activity_identifier=deal_id)
             inv = a.involvements.all()
             if inv.count() == 0:
-                additional_deals['no_inv'].append(a)
+                additional_deals["no_inv"].append(a)
             elif inv[0].fk_investor.venture_involvements.count() == 0:
-                additional_deals['oc_only'].append(a)
+                additional_deals["oc_only"].append(a)
             else:
-                additional_deals['unknown'].append(a)
+                additional_deals["unknown"].append(a)
 
         for key, value in missing_deals.items():
-            self.stdout.write('-- MISSING: %i %s deals:' % (len(value), key))
+            self.stdout.write("-- MISSING: %i %s deals:" % (len(value), key))
             for a in value:
                 inv = a.involvements.all()
                 if inv.count() > 0:
                     investor_name = inv[0].fk_investor.name
                 else:
-                    investor_name = ''
-                self.stdout.write('%s (%s, %s, %s, %s, %s, %s, %s) --> %s' % (
-                    a.activity_identifier,
-                    a.is_public and 'public' or 'not public',
-                    a.deal_size,
-                    a.init_date,
-                    a.deal_scope,
-                    a.negotiation_status,
-                    a.fk_status.name,
-                    investor_name,
-                    a.get_not_public_reason(),
+                    investor_name = ""
+                self.stdout.write(
+                    "%s (%s, %s, %s, %s, %s, %s, %s) --> %s"
+                    % (
+                        a.activity_identifier,
+                        a.is_public and "public" or "not public",
+                        a.deal_size,
+                        a.init_date,
+                        a.deal_scope,
+                        a.negotiation_status,
+                        a.fk_status.name,
+                        investor_name,
+                        a.get_not_public_reason(),
                     )
                 )
 
         for key, value in additional_deals.items():
-            self.stdout.write('-- ADDITIONAL: %i %s deals:' % (len(value), key))
+            self.stdout.write("-- ADDITIONAL: %i %s deals:" % (len(value), key))
             for a in value:
                 inv = a.involvements.all()
                 if inv.count() > 0:
                     investor_name = inv[0].fk_investor.name
                 else:
-                    investor_name = ''
-                self.stdout.write('%s (%s, %s, %s, %s, %s) --> %s' % (
-                    a.activity_identifier,
-                    a.is_public and 'public' or 'not public',
-                    a.deal_scope,
-                    a.negotiation_status,
-                    a.fk_status.name,
-                    investor_name,
-                    a.get_not_public_reason(),
+                    investor_name = ""
+                self.stdout.write(
+                    "%s (%s, %s, %s, %s, %s) --> %s"
+                    % (
+                        a.activity_identifier,
+                        a.is_public and "public" or "not public",
+                        a.deal_scope,
+                        a.negotiation_status,
+                        a.fk_status.name,
+                        investor_name,
+                        a.get_not_public_reason(),
+                    )
                 )
-                                  )
 
     def get_old_activities(self):
         sql = """
@@ -167,18 +170,19 @@ class Command(ElasticSearchMixin,
         AND deal_scope.value = 'transnational' ) AS sub
              WHERE a.id = sub.id;
         """
-        cursor = connections['v1_my'].cursor()
+        cursor = connections["v1_my"].cursor()
         cursor.execute(sql)
         results = [a[0] for a in cursor.fetchall()]
-        self.stdout.write('-- Found %i old deals' % len(results))
+        self.stdout.write("-- Found %i old deals" % len(results))
         return results
 
     def get_new_activities(self):
         from django.test.client import RequestFactory
         from django.contrib.sessions.middleware import SessionMiddleware
         from django.contrib.auth.models import AnonymousUser
+
         rf = RequestFactory()
-        request = rf.get('/')
+        request = rf.get("/")
         middleware = SessionMiddleware()
         middleware.process_request(request)
         request.session.save()
@@ -187,13 +191,16 @@ class Command(ElasticSearchMixin,
         self.request = request
         self.disable_filters()
         query = self.create_query_from_filters()
-        query['bool']['filter'].append({
-            'terms': {
-                'current_negotiation_status': ['Oral agreement',
-                                               'Contract signed']
+        query["bool"]["filter"].append(
+            {
+                "terms": {
+                    "current_negotiation_status": ["Oral agreement", "Contract signed"]
+                }
             }
-        })
-        results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False)
-        results = [r['_source']['activity_identifier'] for r in results]
-        self.stdout.write('-- Found %i new deals' % len(results))
+        )
+        results = self.execute_elasticsearch_query(
+            query, doc_type="deal", fallback=False
+        )
+        results = [r["_source"]["activity_identifier"] for r in results]
+        self.stdout.write("-- Found %i new deals" % len(results))
         return results

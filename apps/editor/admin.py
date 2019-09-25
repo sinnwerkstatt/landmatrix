@@ -10,13 +10,14 @@ from .models import UserRegionalInfo
 class UserRegionalInfoInline(admin.StackedInline):
     model = UserRegionalInfo
     can_delete = False
-    verbose_name_plural = 'regional info'
-    fk_name = 'user'
+    verbose_name_plural = "regional info"
+    fk_name = "user"
 
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (UserRegionalInfoInline, )
+    inlines = (UserRegionalInfoInline,)
+
 
 # Re-register UserAdmin
 admin.site.unregister(User)

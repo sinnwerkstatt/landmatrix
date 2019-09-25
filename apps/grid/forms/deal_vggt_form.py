@@ -10,7 +10,8 @@ class DealVGGTForm(BaseForm):
     """
     Voluntary Guidelines on the Responsible Governance of Tenure Form.
     """
-    form_title = _('Guidelines & Principles')
+
+    form_title = _("Guidelines & Principles")
     APPLIED_CHOICES = (
         ("Yes", _("Yes")),
         ("Partially", _("Partially")),
@@ -19,23 +20,37 @@ class DealVGGTForm(BaseForm):
 
     tg_vggt = TitleField(
         required=False,
-        initial=_("Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"))
+        initial=_(
+            "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+        ),
+    )
     vggt_applied = forms.ChoiceField(
         required=False,
-        label=_("Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"),
-        choices=APPLIED_CHOICES, widget=forms.RadioSelect)
+        label=_(
+            "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+        ),
+        choices=APPLIED_CHOICES,
+        widget=forms.RadioSelect,
+    )
     tg_vggt_applied_comment = forms.CharField(
-        required=False, label=_("Comment on VGGT"), widget=CommentInput)
+        required=False, label=_("Comment on VGGT"), widget=CommentInput
+    )
 
     tg_prai = TitleField(
         required=False,
-        initial=_("Principles for Responsible Agricultural Investments (PRAI)"))
+        initial=_("Principles for Responsible Agricultural Investments (PRAI)"),
+    )
     prai_applied = forms.ChoiceField(
         required=False,
-        label=_("Application of Principles for Responsible Agricultural Investments (PRAI)"),
-        choices=APPLIED_CHOICES, widget=forms.RadioSelect)
+        label=_(
+            "Application of Principles for Responsible Agricultural Investments (PRAI)"
+        ),
+        choices=APPLIED_CHOICES,
+        widget=forms.RadioSelect,
+    )
     tg_prai_applied_comment = forms.CharField(
-        required=False, label=_("Comment on PRAI"), widget=CommentInput)
+        required=False, label=_("Comment on PRAI"), widget=CommentInput
+    )
 
     class Meta:
-        name = 'vggt'
+        name = "vggt"

@@ -7,7 +7,7 @@ from django.forms.widgets import TextInput, Widget
 from django.template import loader
 from django.utils import six, translation
 
-logger = logging.getLogger('django.contrib.gis')
+logger = logging.getLogger("django.contrib.gis")
 
 
 class BaseGeometryWidget(Widget):
@@ -16,36 +16,35 @@ class BaseGeometryWidget(Widget):
     Renders a map using the WKT of the geometry.
     """
 
-    geom_type = 'GEOMETRY'
+    geom_type = "GEOMETRY"
     map_srid = 4326
     map_width = 600
     map_height = 400
     display_raw = False
 
     supports_3d = False
-    template_name = ''  # set on subclasses
+    template_name = ""  # set on subclasses
 
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
 
-        defaults = ('geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw')
+        defaults = ("geom_type", "map_srid", "map_width", "map_height", "display_raw")
         for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
             self.attrs.update(attrs)
 
     def serialize(self, value):
-        return value.wkt if value else ''
+        return value.wkt if value else ""
 
     def deserialize(self, value):
         if value:
             try:
                 value = GEOSGeometry(value, self.map_srid)
             except (GEOSException, ValueError) as err:  # pragma: no cover
-                logger.error(
-                    "Error creating geometry from value '%s' (%s)", value, err)
+                logger.error("Error creating geometry from value '%s' (%s)", value, err)
 
-        return value or ''
+        return value or ""
 
     def get_context(self, name, value, attrs=None):
         # If a string reaches here (via a validation error on another
@@ -63,27 +62,30 @@ class BaseGeometryWidget(Widget):
                 except gdal.GDALException as err:  # pragma: no cover
                     logger.error(
                         "Error transforming geometry from srid '%s' to srid "
-                        "'%s' (%s)", value.srid, self.map_srid, err)
+                        "'%s' (%s)",
+                        value.srid,
+                        self.map_srid,
+                        err,
+                    )
 
         if not attrs:
             attrs = {}
-        attrs.update({
-            "name": name,
-            "module": 'geodjango_%s' % name.replace('-', '_'),  # JS-safe
-            "serialized": self.serialize(value),
-            "geom_type": gdal.OGRGeomType(self.attrs['geom_type']),
-            "STATIC_URL": settings.STATIC_URL,
-            "LANGUAGE_BIDI": translation.get_language_bidi(),
-        })
-
-        context = self.build_attrs(
-            self.attrs or {},
-            attrs
+        attrs.update(
+            {
+                "name": name,
+                "module": "geodjango_%s" % name.replace("-", "_"),  # JS-safe
+                "serialized": self.serialize(value),
+                "geom_type": gdal.OGRGeomType(self.attrs["geom_type"]),
+                "STATIC_URL": settings.STATIC_URL,
+                "LANGUAGE_BIDI": translation.get_language_bidi(),
+            }
         )
 
+        context = self.build_attrs(self.attrs or {}, attrs)
+
         # fallback if no id
-        if 'id' not in context:
-            context['id'] = name
+        if "id" not in context:
+            context["id"] = name
 
         return context
 
@@ -94,21 +96,14 @@ class BaseGeometryWidget(Widget):
 
 
 class OpenLayersWidget(BaseGeometryWidget):
-    template_name = 'widgets/openlayers.html'
+    template_name = "widgets/openlayers.html"
 
     class Media:
-        css = {
-            'all': (
-                'openlayers/dist/ol.css',
-            )
-        }
-        js = (
-            'openlayers/dist/ol.js',
-            'js/mapwidget.js',
-        )
+        css = {"all": ("openlayers/dist/ol.css",)}
+        js = ("openlayers/dist/ol.js", "js/mapwidget.js")
 
     def serialize(self, value):
-        return value.json if value else ''
+        return value.json if value else ""
 
 
 class OSMWidget(OpenLayersWidget):
@@ -116,7 +111,7 @@ class OSMWidget(OpenLayersWidget):
     An OpenLayers/OpenStreetMap-based widget.
     """
 
-    template_name = 'widgets/openlayers_osm.html'
+    template_name = "widgets/openlayers_osm.html"
     initial_center_lon = 5
     initial_center_lat = 47
     initial_zoom = 8
@@ -124,7 +119,7 @@ class OSMWidget(OpenLayersWidget):
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
 
-        defaults = ('initial_center_lon', 'initial_center_lat', 'initial_zoom')
+        defaults = ("initial_center_lon", "initial_center_lat", "initial_zoom")
 
         for key in defaults:
             self.attrs[key] = getattr(self, key)
@@ -133,14 +128,14 @@ class OSMWidget(OpenLayersWidget):
 
 
 class SerializedMapWidget(OSMWidget):
-    template_name = 'widgets/map.html'
+    template_name = "widgets/map.html"
     initial_center_lon = 0
     initial_center_lat = 0
     initial_zoom = 5
     initial_point = None
-    geom_type = 'POINT'
+    geom_type = "POINT"
 
-    initial_layer = 'osm'
+    initial_layer = "osm"
     show_controls = True
     show_deals = False
     show_layer_switcher = False
@@ -155,11 +150,17 @@ class SerializedMapWidget(OSMWidget):
         super().__init__(attrs=attrs)
 
         defaults = (
-            'initial_layer', 'show_controls', 'show_deals', 'disable_drawing',
-            'show_layer_switcher', 'initial_point',
-            'bound_location_field_id', 'bound_lat_field_id',
-            'bound_lon_field_id', 'bound_level_of_accuracy_field_id',
-            'bound_target_country_field_id',
+            "initial_layer",
+            "show_controls",
+            "show_deals",
+            "disable_drawing",
+            "show_layer_switcher",
+            "initial_point",
+            "bound_location_field_id",
+            "bound_lat_field_id",
+            "bound_lon_field_id",
+            "bound_level_of_accuracy_field_id",
+            "bound_target_country_field_id",
         )
         for key in defaults:
             self.attrs[key] = getattr(self, key)
@@ -171,20 +172,21 @@ class MapWidget(SerializedMapWidget):
     """
     MapWidgets are used where we just need a map, not anything serialized.
     """
-    initial_layer = 'satellite'
+
+    initial_layer = "satellite"
 
     def deserialize(self, value):
         """
         MapWidget is not acutally serialized when used with location,
         so ignore any values.
         """
-        return ''
+        return ""
 
     def serialize(self, value):
         """
         See deserialize.
         """
-        return ''
+        return ""
 
 
 class LocationWidget(TextInput):
@@ -194,18 +196,18 @@ class LocationWidget(TextInput):
 
     def __init__(self, *args, **kwargs):
         map_attrs = {}
-        if 'map_attrs' in kwargs:
-            map_attrs = kwargs.pop('map_attrs')
+        if "map_attrs" in kwargs:
+            map_attrs = kwargs.pop("map_attrs")
 
         super().__init__(*args, **kwargs)
         self.map_attrs = map_attrs
 
     def render(self, name, value, attrs=None, renderer=None):
         map_widget = MapWidget(attrs=self.map_attrs)
-        map_name = '{}-map'.format(name)
+        map_name = "{}-map".format(name)
 
         rendered_location = super().render(name, value, attrs, renderer)
         rendered_map = map_widget.render(map_name, None)
-        output = '<div>{}</div><div>{}</div>'.format(rendered_location, rendered_map)
+        output = "<div>{}</div><div>{}</div>".format(rendered_location, rendered_map)
 
         return output

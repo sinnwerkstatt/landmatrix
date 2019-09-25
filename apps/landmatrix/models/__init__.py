@@ -4,13 +4,28 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models.activity import Activity, HistoricalActivity
-from apps.landmatrix.models.activity_attribute_group import ActivityAttribute, ActivityAttributeGroup, HistoricalActivityAttribute
+from apps.landmatrix.models.activity_attribute_group import (
+    ActivityAttribute,
+    ActivityAttributeGroup,
+    HistoricalActivityAttribute,
+)
 from apps.landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
 from apps.landmatrix.models.activity_feedback import ActivityFeedback
 from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.filter import FilterCondition, FilterPreset, FilterPresetGroup
-from apps.landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorActivityInvolvement, HistoricalInvestorVentureInvolvement, Investor, \
-    InvestorActivityInvolvement, InvestorBase, InvestorVentureInvolvement
+from apps.landmatrix.models.filter import (
+    FilterCondition,
+    FilterPreset,
+    FilterPresetGroup,
+)
+from apps.landmatrix.models.investor import (
+    HistoricalInvestor,
+    HistoricalInvestorActivityInvolvement,
+    HistoricalInvestorVentureInvolvement,
+    Investor,
+    InvestorActivityInvolvement,
+    InvestorBase,
+    InvestorVentureInvolvement,
+)
 
 
 class AgriculturalProduce(models.Model):
@@ -32,13 +47,22 @@ class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     comment = models.TextField(_("Comment"))
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
-    fk_user = models.ForeignKey(User, verbose_name=_("User"), blank=True, null=True, on_delete=models.SET_NULL)
+    fk_user = models.ForeignKey(
+        User, verbose_name=_("User"), blank=True, null=True, on_delete=models.SET_NULL
+    )
     fk_activity = models.ForeignKey(
-        "Activity", verbose_name=_("Activity"), blank=True, null=True, on_delete=models.CASCADE
+        "Activity",
+        verbose_name=_("Activity"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
     fk_activity_attribute_group = models.ForeignKey(
-        "ActivityAttributeGroup", verbose_name=_("Activity attribute group"), blank=True, null=True,
-        on_delete=models.SET_NULL
+        "ActivityAttributeGroup",
+        verbose_name=_("Activity attribute group"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     def __str__(self):
@@ -47,7 +71,10 @@ class Comment(models.Model):
 
 class Crop(models.Model):
     fk_agricultural_produce = models.ForeignKey(
-        "AgriculturalProduce", null=True, verbose_name=_("Agricultural produce"), on_delete=models.SET_NULL
+        "AgriculturalProduce",
+        null=True,
+        verbose_name=_("Agricultural produce"),
+        on_delete=models.SET_NULL,
     )
     code = models.CharField("Code", max_length=255)
     name = models.CharField("Name", max_length=255)

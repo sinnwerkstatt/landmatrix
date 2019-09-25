@@ -16,10 +16,10 @@ def parse_shapefile(files):
     We don't check for unknown extensions as there are quite a few optional
     ones.
     """
-    required_extensions = ('shp', 'shx', 'dbf', 'prj')
+    required_extensions = ("shp", "shx", "dbf", "prj")
     extensions = [file_obj.name[-3:].lower() for file_obj in files]
     if set(required_extensions).difference(set(extensions)):
-        raise ValueError('SHP, SHX, DBF and PRJ files are required')
+        raise ValueError("SHP, SHX, DBF and PRJ files are required")
 
     clean_polygons = None
 
@@ -32,20 +32,20 @@ def parse_shapefile(files):
             file_extension = file_name[-3:].lower()
             full_path = os.path.join(temp_dir, file_name)
 
-            if file_extension == 'shp':
+            if file_extension == "shp":
                 shapefile_path = full_path
 
-            with open(full_path, 'wb+') as temp_file:
+            with open(full_path, "wb+") as temp_file:
                 for chunk in file_obj.chunks():
                     temp_file.write(chunk)
 
         if shapefile_path is None:  # pragma: no cover
-            raise ValueError('A file with the extension shp is required')
+            raise ValueError("A file with the extension shp is required")
 
         try:
             clean_polygons = extract_polygons(shapefile_path)
         except TypeError:  # pragma: no cover
-            raise ValueError('No polygons found in shapefile.')
+            raise ValueError("No polygons found in shapefile.")
 
     return clean_polygons
 
@@ -55,13 +55,13 @@ def extract_polygons(shapefile_path):
     Given an (existing, saved to disk) shapefile, retrieve all polygons as
     one MultiPolygon.
     """
-    polygons = GDALMultiPolygon(OGRGeomType('MultiPolygon'))  # empty GDAL geom
+    polygons = GDALMultiPolygon(OGRGeomType("MultiPolygon"))  # empty GDAL geom
 
     try:
         data_source = DataSource(shapefile_path)
 
         for layer in data_source:
-            if layer.geom_type.name in ('Polygon', 'MultiPolygon'):
+            if layer.geom_type.name in ("Polygon", "MultiPolygon"):
                 for feature in layer:
                     geometry = feature.geom.transform(4326, clone=True)
                     polygons.add(geometry)
@@ -69,7 +69,7 @@ def extract_polygons(shapefile_path):
     except GDALException as err:  # pragma: no cover
         message = str(err)
         # Make sure we don't expose the confusing file path
-        message = message.replace('at "{}"'.format(shapefile_path), '')
+        message = message.replace('at "{}"'.format(shapefile_path), "")
         raise ValueError(message)
 
     return polygons.geos
