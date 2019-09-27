@@ -1,11 +1,22 @@
 from django.urls import path
 from django.urls.converters import StringConverter, register_converter
-from rest_framework_swagger.views import get_swagger_view
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 from apps.api.views import *
 from apps.api.views.list_views import PolygonGeomView
 
-schema_view = get_swagger_view(title="Land Matrix API")
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Land Matrix API",
+        default_version="v1",
+        # description="Test description",
+        # contact=openapi.Contact(email="contact@snippets.local"),
+        # license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    # permission_classes=(permissions.AllowAny,),
+)
 
 
 class DealInvestorMatch(StringConverter):
@@ -129,5 +140,5 @@ urlpatterns = [
     ),
     path("statistics.json", StatisticsView.as_view(), name="statistics_api"),
     path("latest_changes.json", LatestChangesView.as_view(), name="latest_changes_api"),
-    path("", schema_view),
+    path("", schema_view.with_ui("swagger", cache_timeout=0)),
 ]
