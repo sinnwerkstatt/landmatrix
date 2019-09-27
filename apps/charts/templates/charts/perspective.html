@@ -3,16 +3,18 @@
 
 {% block page_title %}{% trans "It's a big deal" %}{% endblock %}
 {% block title %}{% trans "It's a big deal" %}{% endblock %}
-{% block breadcrumb_inner %}
-  {{ block.super }}
-  <li>{% trans "It's a big deal" %}</li>
-{% endblock %}
 
-{% block head %}
+{% block css %}
+  {{ block.super }}
   <link rel="stylesheet" href="{% static "openlayers/dist/ol.css" %}"/>
   <link rel="stylesheet" href="{% static "nprogress/nprogress.css" %}"/>
   <link rel="stylesheet" href="{% static "map/css/ol3-layerswitcher.css" %}"/>
   <link rel="stylesheet" href="{% static "map/css/map.css" %}"/>
+{% endblock %}
+
+{% block breadcrumb_inner %}
+  {{ block.super }}
+  <li>{% trans "It's a big deal" %}</li>
 {% endblock %}
 
 {% block description %}

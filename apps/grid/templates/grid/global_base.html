@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block head %}
-    <link rel="stylesheet" href="{% static "openlayers/dist/ol.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
-    <link href="{% static 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
-    {% block global_head %}
-    {% endblock %}
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "openlayers/dist/ol.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+  <link href="{% static 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
 {% endblock %}
-{% block body_class %}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">

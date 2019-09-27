@@ -1,7 +1,7 @@
 {% extends "grid/global_base.html" %}
 {% load i18n custom_tags static humanize %}
 
-{% block head %}
+{% block css %}
 {{ block.super }}
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
 {#     <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script> #}
@@ -11,7 +11,6 @@
     {# TODO: these need to be in head because of how dealpanels inits the widgets, but we should be able to move them #}
     <script src="{% static "js/locationwidget.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
-
 {% endblock %}
 
 

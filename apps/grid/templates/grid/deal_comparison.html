@@ -1,12 +1,9 @@
 {% extends "grid/global_base.html" %}
 {% load static i18n custom_tags %}
 
-{% block global_head %}
-{% endblock %}
-
-{% block head %}
-{{ block.super }}
-    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
 {% endblock %}
 
 {% block page_title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
@@ -45,7 +42,7 @@
               </h5>
             </a>
           </div>
-          <div id="collapse_{{ forloop.counter }}" 
+          <div id="collapse_{{ forloop.counter }}"
                class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
             <div class="panel-body{% if not comparison_forms.2 %} bg-warning{% endif %}">
               <div class="col-md-6">

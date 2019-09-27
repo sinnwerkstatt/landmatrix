@@ -4,9 +4,9 @@
 {% block page_title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
 
-{% block head %}
-{{ block.super }}
-    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
 {% endblock %}
 
 

@@ -1,10 +1,11 @@
 {% extends "grid/global_base.html" %}
 {% load i18n static custom_tags investor_tags %}
 
-{% block head %}
+{% block css %}
   {{ block.super }}
-    <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static "d3-tip/dist/index.js" %}"></script>
 {% endblock %}
 
 {% block header %}

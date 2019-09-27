@@ -3,10 +3,9 @@
 
 {% block body_class %}add-deal{% endblock %}
 
-{% block head %}
-{{ block.super }}
-{{ wizard.form.media }}
-
+{% block css %}
+  {{ block.super }}
+  {{ wizard.form.media }}
 {% endblock %}
 
 {% block page_title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} {{ type }} {{ id }}{% endblock %}
