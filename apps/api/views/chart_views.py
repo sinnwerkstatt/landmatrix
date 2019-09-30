@@ -871,6 +871,8 @@ class AgriculturalProduceListView(BaseChartView):
             (self.slugify(ap.name), 0) for ap in AgriculturalProduce.objects.all()
         )
         agricultural_produces["multiple_use"] = 0
+        # TODO @simon.liedtke I added this to stop the error, but I don't really know what I did here
+        agricultural_produces["multi_crop"] = 0
 
         # Get target regions
         target_regions = {}
