@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile, TemporaryFile
 from django.conf import settings
 from django.http import FileResponse
 from django.urls import reverse
-from wkhtmltopdf.utils import _options_to_args
 
 
 def update_querystring(url, params):
@@ -90,9 +89,21 @@ def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
     cmd = "WKHTMLTOPDF_CMD"
     cmd = getattr(settings, cmd, os.environ.get(cmd, "wkhtmltopdf"))
 
-    ck_args = list(
-        chain(shlex.split(cmd), _options_to_args(**options), list(pages), [output])
-    )
+    # FIXME: this is overwritten because django-wkhtmltopdf has a bug here
+    # https://github.com/incuna/django-wkhtmltopdf/pull/161
+    # should be _options_to_args(**options)
+    options_args = [
+        "--encoding",
+        "utf8",
+        "--javascript-delay",
+        "200",
+        "--load-error-handling",
+        "ignore",
+        "--no-stop-slow-scripts",
+        "--quiet",
+    ]
+
+    ck_args = list(chain(shlex.split(cmd), options_args, list(pages), [output]))
 
     with TemporaryFile() as errors_tempfile:
         ck_kwargs = {"env": env, "stderr": errors_tempfile}
