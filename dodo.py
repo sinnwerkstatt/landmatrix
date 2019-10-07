@@ -21,7 +21,7 @@ def task_initial_setup():
 
 
 #############################
-def task_setup_js_environment():
+def task_yarn_install():
     return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install --prod"]}
 
 
@@ -39,7 +39,7 @@ def task_generate_css():
 
 def task_collectstatic():
     return {
-        "task_dep": ["generate_css"],
+        "task_dep": ["yarn_install", "generate_css"],
         "actions": ["./manage.py collectstatic --noinput"],
     }
 
