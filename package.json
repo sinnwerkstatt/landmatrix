@@ -4,8 +4,8 @@
   "repository": "https://github.com/sinnwerkstatt/landmatrix",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "bootstrap": "~3.3.6",
-    "bootstrap-switch": "~3.3",
+    "bootstrap": "3.3.6",
+    "bootstrap-switch": "3.3.2",
     "chart.js": "~2.5.0",
     "d3": "~3.5",
     "d3-sankey": "~0.12.1",
