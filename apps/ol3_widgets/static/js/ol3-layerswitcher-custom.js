@@ -210,7 +210,7 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
     var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
 
     // Layer group?
-    if (lyr.getLayers && !lyr.mapTypeId_) {
+    if (!!lyr.getLayers && !lyr.mapTypeId_ && lyr.C.type !== 'base') {
         var item = document.createElement('div');
         item.className = 'layer';
 
