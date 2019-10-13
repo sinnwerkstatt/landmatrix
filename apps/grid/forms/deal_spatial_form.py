@@ -106,12 +106,12 @@ class DealSpatialForm(BaseForm):
     def get_default_lat_lon_attrs(self):
         attrs = {}
         try:
-            lat = float(self['point_lat'].value() or 0)
+            lat = float(self["point_lat"].value() or 0)
         except ValueError:  # pragma: no cover
             lat = None
 
         try:
-            lon = float(self['point_lon'].value() or 0)
+            lon = float(self["point_lon"].value() or 0)
         except ValueError:  # pragma: no cover
             lon = None
 
