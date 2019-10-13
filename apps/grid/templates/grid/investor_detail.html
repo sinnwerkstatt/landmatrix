@@ -169,7 +169,7 @@
                                     {% trans "Investor" %}
                                 </div>
                                 <div class="col-md-9">
-                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier history_id=involvement.fk_investor.id %}" target="_blank">{{ involvement.fk_investor }}</a>
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier %}" target="_blank">{{ involvement.fk_investor }}</a>
                                 </div>
                             </div>
                             {% endif %}
@@ -256,7 +256,7 @@
                                     {% trans "Investor" %}
                                 </div>
                                 <div class="col-md-9">
-                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier history_id=involvement.fk_investor.id %}" target="_blank">{{ involvement.fk_investor }}</a>
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_investor.investor_identifier %}" target="_blank">{{ involvement.fk_investor }}</a>
                                 </div>
                             </div>
                             {% endif %}
@@ -343,7 +343,7 @@
                                     {% trans "Investor" %}
                                 </div>
                                 <div class="col-md-9">
-                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier history_id=involvement.fk_venture.id %}" target="_blank">{{ involvement.fk_venture }}</a>
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier %}" target="_blank">{{ involvement.fk_venture }}</a>
                                 </div>
                             </div>
                             {% endif %}
@@ -430,7 +430,7 @@
                                     {% trans "Investor" %}
                                 </div>
                                 <div class="col-md-9">
-                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier history_id=involvement.fk_venture.id %}" target="_blank">{{ involvement.fk_venture }}</a>
+                                    <a href="{% url "investor_detail" investor_id=involvement.fk_venture.investor_identifier %}" target="_blank">{{ involvement.fk_venture }}</a>
                                 </div>
                             </div>
                             {% endif %}
