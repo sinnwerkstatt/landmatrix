@@ -183,7 +183,16 @@ def get_elasticsearch_properties(doc_type=None):
                     field_mappings["%s_display" % name] = field_type
                 # Additionally save complete attribute (including value2, date, is_current) for all YearBasedField
                 if isinstance(field, YearBasedField):
-                    field_mappings["%s_attr" % name] = {"type": "nested"}
+                    field_mappings["%s_attr" % name] = {
+                        "type": "nested",
+                        "properties": {
+                            "value": {"type": "keyword"},
+                            "value2": {"type": "keyword"},
+                            "polygon": {"type": "keyword"},
+                            "date": {"type": "keyword"},
+                            "is_current": {"type": "keyword"},
+                        },
+                    }
                 _landmatrix_mappings["deal"]["properties"].update(field_mappings)
                 if formset_name:
                     _landmatrix_mappings[formset_name]["properties"].update(
