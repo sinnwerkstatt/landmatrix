@@ -454,7 +454,7 @@
                             };
                             return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${$.param(imgParams)}`;
                         },
-                      dataSourceOwner: 'Source: <a href="http://data.globalforestwatch.org/datasets/indonesia-oil-palm-concessions" target="_blank">Global Forest Watch</a>'
+                      dataSourceOwner: 'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>'
                     })
                 ];
             }
