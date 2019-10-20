@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -304,6 +305,11 @@ class InvestorDetailView(DetailView):
         return Investor.objects.filter(
             investor_identifier=self.kwargs.get("investor_id")
         ).first()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["INVESTOR_GRAPH_ENABLED"] = settings.LANDMATRIX_INVESTOR_GRAPH_ENABLED
+        return context
 
 
 class InvestorCreateView(InvestorFormsMixin, CreateView):

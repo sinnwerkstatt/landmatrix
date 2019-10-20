@@ -93,6 +93,11 @@ urlpatterns = [
         InvestorNetworkView.as_view(),
         name="api_investor_network",
     ),
+    path(
+        "deal_investor_network.json",
+        DealInvestorNetworkView.as_view(),
+        name="api_deal_investor_network",
+    ),
     path("investors.json", InvestorListView.as_view(), name="investors_api"),
     path("logging.json", LoggingView.as_view(), name="logging_api"),
     path(

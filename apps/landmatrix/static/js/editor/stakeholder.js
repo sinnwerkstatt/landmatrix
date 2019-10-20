@@ -10,7 +10,7 @@ function initInvestorForm(form) {
         generateButtons($(this));
         // Deal detail/form?
         if ($("#investor-info_body #investor-network").size() > 0) {
-            loadInvestorNetwork($(this).val());
+            loadDealInvestorNetwork($(this).val());
         }
     });
 }
@@ -596,12 +596,12 @@ var linkedTreeChartBuilder = function( parentElement ) {
     return update;
 };
 
-function loadInvestorNetwork(historyId, investorId) {
+function loadDealInvestorNetwork(historyId, investorId) {
     var selector = "#investor-network";
     if ($(selector).size() === 0) {
         return;
     }
-    var url = "/api/investor_network.json";
+    var url = "/api/deal_investor_network.json";
     if (historyId) {
         url += "?history_id=" + historyId;
     } else if (investorId) {

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.urls import reverse
@@ -126,7 +127,7 @@ class DealDetailSerializer(serializers.ModelSerializer):
         return obj.attributes_as_dict
 
 
-class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
+class DealInvestorNetworkSerializer(serializers.BaseSerializer):
     """
     This serializer takes an investor and outputs a list of involvements
     formatted like:
@@ -226,3 +227,131 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
             response["stakeholders"].extend(parents)
 
         return response
+
+
+class InvestorNetworkSerializer(serializers.BaseSerializer):
+    """
+    This serializer takes an investor and outputs a list of involvements
+    formatted like:
+    {
+        "nodes": [
+            {
+                "id": 123,
+                "name": "",
+                "country": "",
+                "classification": "",
+                "homepage": "",
+                "opencorporates_link": "",
+                "comment": "",
+            },
+        ],
+        "links": [
+            {
+                "source": 123,
+                "target": 456,
+                "type": 1, (1 = parent company, 2 = tertiary investor/lender)
+                "percentage": "",
+                "investment_type": "",
+                "loans_amount": "",
+                "loans_currency": "",
+                "loans_date": "",
+                "comment": "",
+            ],
+        ]
+    }
+    This is not REST, but it maintains compatibility with the existing API.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+    def _get_node_data(self, investor):
+        return {
+            "id": investor.investor_identifier,
+            "name": investor.name,
+            "status": investor.fk_status.name,
+            "investor_identifier": investor.investor_identifier,
+            "country": str(investor.fk_country),
+            "classification": investor.get_classification_display(),
+            "homepage": investor.homepage,
+            "opencorporates_link": investor.opencorporates_link,
+            "comment": investor.comment,
+            "url": reverse(
+                "investor_detail", kwargs={"investor_id": investor.investor_identifier}
+            ),
+        }
+
+    def _get_link_data(self, involvement):
+        return {
+            "source": involvement.fk_investor.investor_identifier,
+            "target": involvement.fk_venture.investor_identifier,
+            "type": 1 if involvement.role == involvement.STAKEHOLDER_ROLE else 2,
+            "percentage": involvement.percentage,
+            "investment_type": involvement.get_investment_type_display(),
+            "loans_amount": involvement.loans_amount,
+            "loans_currency": str(involvement.loans_currency),
+            "loans_date": involvement.loans_date,
+            "parent_relation": involvement.get_parent_relation_display(),
+            "comment": involvement.comment,
+        }
+
+    def _has_next_level(self, investor):
+        return investor.venture_involvements.count() > 0
+
+    def to_representation(self, obj, depth=1):
+        nodes, links = [], []
+        nodes.append(self._get_node_data(obj))
+        investors = {obj.id}
+        nodes_processed, links_processed = {obj.investor_identifier}, set()
+        for i in range(depth):
+            involvements = HistoricalInvestorVentureInvolvement.objects.filter(
+                Q(fk_venture_id__in=investors) | Q(fk_investor_id__in=investors)
+            )
+            if self.user and not self.user.is_authenticated:
+                involvements = involvements.filter(
+                    fk_venture__fk_status_id__in=(
+                        InvestorBase.STATUS_ACTIVE,
+                        InvestorBase.STATUS_OVERWRITTEN,
+                    ),
+                    fk_investor__fk_status_id__in=(
+                        InvestorBase.STATUS_ACTIVE,
+                        InvestorBase.STATUS_OVERWRITTEN,
+                    ),
+                )
+            investors = set(involvements.values_list("fk_investor_id", flat=True))
+            investors = investors.union(
+                set(involvements.values_list("fk_venture_id", flat=True))
+            )
+            for involvement in involvements:
+                # Create links
+                if involvement.id in links_processed:
+                    continue
+                links.append(self._get_link_data(involvement))
+                links_processed.add(involvement.id)
+
+                # Create nodes
+                parent_investors = [involvement.fk_investor, involvement.fk_venture]
+                for parent_investor in parent_investors:
+                    investor_identifier = parent_investor.investor_identifier
+                    if investor_identifier in nodes_processed:
+                        continue
+                    # Always get latest version of parent investor
+                    latest_investor = HistoricalInvestor.objects.filter(
+                        investor_identifier=investor_identifier
+                    )
+                    if self.user and not self.user.is_authenticated:
+                        latest_investor = latest_investor.filter(
+                            fk_status_id__in=(
+                                InvestorBase.STATUS_ACTIVE,
+                                InvestorBase.STATUS_OVERWRITTEN,
+                            )
+                        )
+                    latest_investor = latest_investor.latest()
+                    node_data = self._get_node_data(latest_investor)
+                    # Last level visible: Set flag for more levels
+                    node_data["has_next_level"] = self._has_next_level(parent_investor)
+                    nodes.append(node_data)
+                    nodes_processed.add(investor_identifier)
+
+        return {"nodes": nodes, "links": links}

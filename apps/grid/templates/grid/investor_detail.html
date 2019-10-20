@@ -5,7 +5,6 @@
   {{ block.super }}
   <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
   <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
-  <script src="{% static "d3-tip/dist/index.js" %}"></script>
 {% endblock %}
 
 {% block header %}
@@ -136,6 +135,10 @@
                                 {{ investor.comment }}
                             </div>
                         </div>
+                        {% endif %}
+
+                        {% if INVESTOR_GRAPH_ENABLED %}
+                          {% include "grid/includes/investor_network.html" with history_id=investor.id %}
                         {% endif %}
                     </div>
                 </div>
@@ -526,4 +529,13 @@
         {% include "grid/includes/investor_history.html" %}
 
 </div>
+{% endblock %}
+
+
+{% block javascript %}
+    {{ block.super }}
+    {% if INVESTOR_GRAPH_ENABLED %}
+    <script src="{% static "js/vendor/d3.v4.min.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/investor-network.js" %}" type="text/javascript" charset="utf-8"></script>
+    {% endif %}
 {% endblock %}
