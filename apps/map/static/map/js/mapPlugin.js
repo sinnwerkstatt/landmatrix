@@ -441,8 +441,20 @@
                         }
                       }),
                       visible: false,
-                      // legendUrl: '/static/map/images/legend_indigenous_lands.png',  // TODO REPLACE THIS WITH CORRECT LEGEND
-                      dataSourceOwner: 'Source: <a href="http://data.globalforestwatch.org/datasets/indonesia-oil-palm-concessions" target="_blank">Global Forest Watch</a>'
+                      opacity: 0.6,
+                      legendUrlFunction: function() {
+                            let imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'ind_oil_palm_concessions',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${$.param(imgParams)}`;
+                        },
+                      dataSourceOwner: 'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>'
                     })
                 ];
             }
