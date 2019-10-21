@@ -521,8 +521,10 @@ class HistoricalActivityQuerySetTestCase(TestCase):
         self.assertGreater(qs.count(), 0)
 
     def test_latest_ids(self):
+        latest_ids = self.qs.latest_ids()
+        self.assertEqual(len(latest_ids), 12)
         latest_ids = self.qs.latest_ids(status=HistoricalActivity.PUBLIC_STATUSES)
-        self.assertGreater(len(latest_ids), 0)
+        self.assertEqual(len(latest_ids), 4)
 
     def test_latest_only(self):
         qs = self.qs.latest_only()
