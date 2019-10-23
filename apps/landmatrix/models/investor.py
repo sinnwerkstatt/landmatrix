@@ -244,7 +244,7 @@ class InvestorBase(models.Model):
         """
         if hasattr(self, "investors"):
             queryset = self.investors.all()
-            queryset = queryset.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+            queryset = queryset.filter(role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
             return queryset.exists()
         else:  # pragma: no cover
             return False
@@ -253,7 +253,7 @@ class InvestorBase(models.Model):
     def is_parent_investor(self):
         if hasattr(self, "investors"):
             queryset = self.investors.all()
-            queryset = queryset.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+            queryset = queryset.filter(role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
             return queryset.exists()
         else:  # pragma: no cover
             return False
@@ -274,50 +274,6 @@ class InvestorBase(models.Model):
             .order_by("-id")
             .first()
         )
-
-    def get_top_investors(self):
-        """
-        Get list of highest parent companies (all right-hand side parent companies of the network
-        visualisation)
-        """
-        investors_processed = set()
-
-        def get_parent_companies(investors):
-            parents = []
-            for investor in investors:
-                if investor.id in investors_processed:
-                    parents.append(investor)
-                    continue
-                else:
-                    investors_processed.add(investor.id)
-                # Check if there are parent companies for investor
-                queryset = InvestorVentureInvolvement.objects.filter(
-                    fk_venture=investor,
-                    fk_venture__fk_status__in=(
-                        InvestorBase.STATUS_ACTIVE,
-                        InvestorBase.STATUS_OVERWRITTEN,
-                    ),
-                    fk_investor__fk_status__in=(
-                        InvestorBase.STATUS_ACTIVE,
-                        InvestorBase.STATUS_OVERWRITTEN,
-                    ),
-                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE,
-                ).exclude(fk_investor=investor)
-                queryset = queryset.select_related(
-                    "fk_investor", "fk_investor__fk_country"
-                ).defer("fk_investor__fk_country__geom")
-                parent_companies = [ivi.fk_investor for ivi in queryset]
-                if parent_companies:
-                    parents.extend(get_parent_companies(parent_companies))
-                elif investor.fk_status_id in (
-                    InvestorBase.STATUS_ACTIVE,
-                    InvestorBase.STATUS_OVERWRITTEN,
-                ):
-                    parents.append(investor)
-            return parents
-
-        top_investors = list(set(get_parent_companies([self])))
-        return top_investors
 
     def format_investors(self, investors):
         # First name, then ID to be able to sort by name
@@ -350,14 +306,16 @@ class InvestorBase(models.Model):
         # Parent company?
         if (
             self.investors.filter(
-                role=InvestorVentureInvolvement.STAKEHOLDER_ROLE
+                role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
             ).count()
             > 0
         ):
             roles.append(InvestorBase.ROLE_PARENT_COMPANY)
         # Tertiary investor/lender?
         if (
-            self.investors.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE).count()
+            self.investors.filter(
+                role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE
+            ).count()
             > 0
         ):
             roles.append(InvestorBase.ROLE_TERTIARY_INVESTOR)
@@ -378,7 +336,7 @@ class InvestorBase(models.Model):
                     return True
                 return False
             # Status: Pending
-            is_editor = user.has_perm("landmatrix.review_activity")
+            is_editor = user.has_perm("landmatrix.review_historicalactivity")
             is_author = self.history_user_id == user.id
             # Only Editors and Administrators are allowed to edit pending deals
             if is_editor:
@@ -391,22 +349,6 @@ class InvestorBase(models.Model):
                 else:
                     return True
         return False
-
-
-class Investor(InvestorBase):
-
-    subinvestors = models.ManyToManyField(
-        "self",
-        through="InvestorVentureInvolvement",
-        symmetrical=False,
-        through_fields=("fk_venture", "fk_investor"),
-    )
-
-    class Meta:
-        ordering = ("name",)
-        verbose_name = _("Investor")
-        verbose_name_plural = _("Investors")
-        permissions = (("review_investor", "Can review investor changes"),)
 
 
 class HistoricalInvestorQuerySet(InvestorQuerySet):
@@ -511,7 +453,7 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
             return
 
         # Only approvals of administrators should go public
-        if user.has_perm("landmatrix.change_activity"):
+        if user.has_perm("landmatrix.change_historicalactivity"):
             # TODO: this logic is taken from changeset protocol
             # but it won't really work properly. We need to determine behaviour
             # when updates happen out of order. There can easily be many edits,
@@ -538,7 +480,7 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
         if self.fk_status_id != HistoricalInvestor.STATUS_TO_DELETE:  # pragma: no cover
             return
         # Only approvals of administrators should be deleted
-        if user.has_perm("landmatrix.delete_activity"):
+        if user.has_perm("landmatrix.delete_historicalactivity"):
             self.fk_status_id = HistoricalInvestor.STATUS_DELETED
             self.save(update_fields=["fk_status"])
             self.update_public_investor()
@@ -623,15 +565,8 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
             else:
                 investor_identifiers.append(hinv.investor_identifier)
 
-            # Update public investor (leaving involvements)
-            investor = Investor.objects.filter(
-                investor_identifier=hinv.investor_identifier
-            ).first()
-
             # Investor has been deleted?
             if self.fk_status_id == self.STATUS_DELETED:
-                if investor:
-                    investor.delete()
                 return
             elif self.fk_status_id == self.STATUS_REJECTED:
                 # Investor add has been rejected?
@@ -639,58 +574,19 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                     investor_identifier=self.investor_identifier
                 )
                 if len(investors) == 1:
-                    investor.delete()
                     return
 
-            if not investor:
-                investor = Investor(investor_identifier=hinv.investor_identifier)
-
-            # investor.id = hinv.id
-            investor.investor_identifier = hinv.investor_identifier
-            investor.name = hinv.name
-            investor.fk_country_id = hinv.fk_country_id
-            investor.classification = hinv.classification
-            investor.homepage = hinv.homepage
-            investor.opencorporates_link = hinv.opencorporates_link
-            investor.fk_status_id = hinv.fk_status_id
-            investor.comment = hinv.comment
-            investor.save()
-
-            # Recreate involvements
-            investor.venture_involvements.all().delete()
             for hinvolvement in hinv.venture_involvements.all():
                 # Update InvestorVentureInvolvement
                 hinvolvement.fk_status_id = hinv.STATUS_OVERWRITTEN
                 hinvolvement.save()
-                subinvestor = Investor.objects.filter(
-                    investor_identifier=hinvolvement.fk_investor.investor_identifier
-                ).first()
-                if subinvestor:
-                    # Replace InvestorVentureInvolvement
-                    investor.venture_involvements.create(
-                        fk_investor=subinvestor,
-                        role=hinvolvement.role,
-                        investment_type=hinvolvement.investment_type,
-                        percentage=hinvolvement.percentage,
-                        loans_amount=hinvolvement.loans_amount,
-                        loans_currency=hinvolvement.loans_currency,
-                        loans_date=hinvolvement.loans_date,
-                        parent_relation=hinvolvement.parent_relation,
-                        comment=hinvolvement.comment,
-                        fk_status=hinvolvement.fk_status,
-                    )
                 # Update investor
                 update_investor(hinvolvement.fk_investor, approve=approve)
 
-            return investor
+        update_investor(self, approve=approve)
+        self.update_current_involvements()
 
-        investor = update_investor(self, approve=approve)
-        if investor:
-            self.update_current_involvements(investor)
-
-        return investor
-
-    def update_current_involvements(self, investor):
+    def update_current_involvements(self):
         # Update all current involvements (linking to the old investor version) to the new investor version
         queryset = (
             HistoricalInvestorActivityInvolvement.objects.for_current_activities()
@@ -703,24 +599,15 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
             involvement.fk_investor_id = self.id
             involvement.save()
 
-        queryset = InvestorActivityInvolvement.objects
-        queryset = queryset.filter(
-            fk_investor__investor_identifier=self.investor_identifier
-        )
-        queryset = queryset.exclude(fk_investor_id=investor.id)
-        for involvement in queryset:  # pragma: no cover
-            involvement.fk_investor_id = investor.id
-            involvement.save()
-
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
         super().save(*args, **kwargs)
         if update_elasticsearch:
-            from ..tasks import index_investor, delete_investor
+            from apps.landmatrix.tasks import index_investor, delete_historicalinvestor
 
             if self.fk_status_id == self.STATUS_DELETED:
                 transaction.on_commit(
-                    lambda: delete_investor.delay(self.investor_identifier)
+                    lambda: delete_historicalinvestor.delay(self.investor_identifier)
                 )
             else:
                 transaction.on_commit(
@@ -732,6 +619,7 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
         verbose_name_plural = _("Historical investors")
         get_latest_by = "history_date"
         ordering = ["-history_date"]
+        permissions = (("review_historicalinvestor", "Can review investor changes"),)
 
 
 class InvestorVentureQuerySet(models.QuerySet):
@@ -753,10 +641,10 @@ class InvestorVentureQuerySet(models.QuerySet):
         return self.tertiary_investors()
 
     def parent_companies(self):
-        return self.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+        return self.filter(role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
 
     def tertiary_investors(self):
-        return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+        return self.filter(role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
 
 
 class InvestorVentureInvolvementBase(models.Model):
@@ -851,28 +739,6 @@ class InvestorVentureInvolvementBase(models.Model):
         abstract = True
 
 
-class InvestorVentureInvolvement(InvestorVentureInvolvementBase):
-    # FIXME: related names are named the wrong way here
-    fk_venture = models.ForeignKey(
-        Investor,
-        verbose_name=_("Investor ID Downstream"),
-        db_index=True,
-        related_name="venture_involvements",
-        on_delete=models.CASCADE,
-    )
-    fk_investor = models.ForeignKey(
-        Investor,
-        verbose_name=_("Investor ID Upstream"),
-        db_index=True,
-        related_name="investors",
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = _("Investor Venture Involvement")
-        verbose_name_plural = _("Investor Venture Involvements")
-        ordering = ("-id",)
-
 
 class HistoricalInvestorVentureInvolvement(
     ExportModelOperationsMixin("investor_venture_involvement"),
@@ -901,16 +767,6 @@ class HistoricalInvestorVentureInvolvement(
 
 
 class InvestorActivityInvolvementManager(models.Manager):
-    def get_involvements_for_activity(self, activity_identifier):
-        return InvestorActivityInvolvement.objects.filter(
-            fk_activity__activity_identifier=activity_identifier
-        ).filter(
-            fk_investor__fk_status_id__in=(
-                Investor.STATUS_ACTIVE,
-                Investor.STATUS_OVERWRITTEN,
-            )
-        )
-
     def for_current_activities(self, user_is_editor=False):
         """
         Get involvements for newest versions of activities
@@ -967,27 +823,6 @@ class InvestorActivityInvolvementBase(models.Model):
     class Meta:
         abstract = True
 
-
-class InvestorActivityInvolvement(InvestorActivityInvolvementBase):
-    fk_activity = models.ForeignKey(
-        "Activity",
-        verbose_name=_("Activity"),
-        related_name="involvements",
-        db_index=True,
-        on_delete=models.CASCADE,
-    )
-    fk_investor = models.ForeignKey(
-        "Investor",
-        verbose_name=_("Investor"),
-        related_name="involvements",
-        db_index=True,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = _("Investor Activity Involvement")
-        verbose_name_plural = _("Investor Activity Involvements")
-        ordering = ("-id",)
 
 
 class HistoricalInvestorActivityInvolvement(

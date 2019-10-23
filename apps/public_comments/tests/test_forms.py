@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from apps.landmatrix.models import Activity
+from apps.landmatrix.models import HistoricalActivity
 from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.public_comments.forms import EditCommentForm, PublicCommentForm
 
@@ -11,7 +11,7 @@ class PublicCommentFormTestCase(ActivitiesFixtureMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.activity = Activity.objects.get(id=10)
+        self.activity = HistoricalActivity.objects.get(id=10)
         self.form = PublicCommentForm(self.activity)
 
     def test_init(self):
@@ -33,7 +33,7 @@ class EditCommentFormTestCase(ActivitiesFixtureMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.activity = Activity.objects.get(id=10)
+        self.activity = HistoricalActivity.objects.get(id=10)
         self.form = EditCommentForm(self.activity)
 
     def test_init(self):

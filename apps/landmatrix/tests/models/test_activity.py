@@ -200,7 +200,7 @@ class ActivityBaseTestCase(
     ]
 
     def test_save(self):
-        activity = Activity()
+        activity = HistoricalActivity()
         activity.save()
         self.assertIsNotNone(activity.activity_identifier)
         self.assertNotEqual(
@@ -538,52 +538,6 @@ class ActivityBaseTestCase(
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual(1, activity.get_fully_updated_user())
 
-
-class ActivityTestCase(
-    ActivitiesFixtureMixin,
-    InvestorsFixtureMixin,
-    InvestorActivityInvolvementsFixtureMixin,
-    BaseDealTestCase,
-):
-
-    act_fixtures = [
-        {
-            "id": 10,
-            "activity_identifier": 1,
-            "fully_updated": True,
-            "attributes": {
-                "negotiation_status": {"value": "Contract signed", "date": "2000"},
-                "implementation_status": {
-                    "value": ActivityBase.IMPLEMENTATION_STATUS_IN_OPERATION,
-                    "date": "2000",
-                },
-            },
-        }
-    ]
-    inv_fixtures = [{"id": 10, "investor_identifier": 1, "name": "Test Investor #1"}]
-    act_inv_fixtures = {"10": "10"}
-
-    def test_refresh_cached_attributes(self):
-        activity = Activity.objects.get(id=10)
-        activity.refresh_cached_attributes()
-        self.assertEqual(
-            Activity.IMPLEMENTATION_STATUS_IN_OPERATION, activity.implementation_status
-        )
-        self.assertEqual("Contract signed", activity.negotiation_status)
-        self.assertEqual(200, activity.contract_size)
-        self.assertEqual(3, activity.production_size)
-        self.assertEqual(200, activity.deal_size)
-        self.assertEqual("transnational", activity.deal_scope)
-        self.assertEqual("2000", activity.init_date)
-        self.assertEqual(
-            datetime(2000, 1, 1, 0, 0, tzinfo=pytz.utc), activity.fully_updated_date
-        )
-        self.assertEqual(True, activity.is_public)
-        self.assertEqual("Test Investor 1#1#Cambodia", activity.top_investors)
-        self.assertGreater(activity.availability, 0)
-        self.assertEqual(False, activity.forest_concession)
-
-
 class HistoricalActivityQuerySetTestCase(
     ActivitiesFixtureMixin,
     InvestorsFixtureMixin,
@@ -682,11 +636,6 @@ class HistoricalActivityTestCase(
         changeset = activity.changesets.latest()
         self.assertEqual("Test approve change", changeset.comment)
 
-        public_activity = Activity.objects.filter(activity_identifier=2)
-        self.assertEqual(1, public_activity.count())
-        production_size = public_activity.first().attributes.get(name="production_size")
-        self.assertEqual("100", production_size.value)
-
     def test_reject_change(self):
         activity = HistoricalActivity.objects.get(id=21)
         user = get_user_model().objects.get(username="administrator")
@@ -695,13 +644,6 @@ class HistoricalActivityTestCase(
         self.assertGreater(activity.changesets.count(), 0)
         changeset = activity.changesets.latest()
         self.assertEqual("Test reject change", changeset.comment)
-
-        public_activity = Activity.objects.filter(activity_identifier=2)
-        self.assertEqual(1, public_activity.count())
-        production_size = public_activity.first().attributes.filter(
-            name="production_size"
-        )
-        self.assertEqual(1, production_size.count())
 
     def test_approve_delete(self):
         activity = HistoricalActivity.objects.get(id=31)
@@ -712,9 +654,6 @@ class HistoricalActivityTestCase(
         changeset = activity.changesets.latest()
         self.assertEqual("Test approve delete", changeset.comment)
 
-        public_activity = Activity.objects.filter(activity_identifier=3)
-        self.assertEqual(0, public_activity.count())
-
     def test_reject_delete(self):
         activity = HistoricalActivity.objects.get(id=31)
         user = get_user_model().objects.get(username="administrator")
@@ -723,9 +662,6 @@ class HistoricalActivityTestCase(
         self.assertGreater(activity.changesets.count(), 0)
         changeset = activity.changesets.latest()
         self.assertEqual("Test reject delete", changeset.comment)
-
-        public_activity = Activity.objects.filter(activity_identifier=3)
-        self.assertEqual(1, public_activity.count())
 
     def test_compare_attributes_to(self):
         current_version = HistoricalActivity.objects.get(id=21)
@@ -739,26 +675,15 @@ class HistoricalActivityTestCase(
         activity.update_public_activity(),
         self.assertEqual(HistoricalActivity.STATUS_OVERWRITTEN, activity.fk_status_id)
 
-        public_activity = Activity.objects.filter(activity_identifier=2)
-        self.assertEqual(1, public_activity.count())
-        production_size = public_activity.first().attributes.get(name="production_size")
-        self.assertEqual("100", production_size.value)
-
     def test_update_public_activity_with_to_delete(self):
         activity = HistoricalActivity.objects.get(id=60)
         activity.update_public_activity()
         self.assertEqual(HistoricalActivity.STATUS_DELETED, activity.fk_status_id)
 
-        public_activity = Activity.objects.filter(activity_identifier=6)
-        self.assertEqual(0, public_activity.count())
-
     def test_update_public_activity_with_rejected(self):
         activity = HistoricalActivity.objects.get(id=50)
         activity.update_public_activity()
         self.assertEqual(HistoricalActivity.STATUS_REJECTED, activity.fk_status_id)
-
-        public_activity = Activity.objects.filter(activity_identifier=5)
-        self.assertEqual(0, public_activity.count())
 
     def test_changeset_comment(self):
         ActivityChangeset.objects.create(

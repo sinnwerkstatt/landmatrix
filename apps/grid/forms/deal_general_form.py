@@ -9,7 +9,7 @@ from apps.grid.fields import (
     YearBasedMultipleChoiceIntegerField,
 )
 from apps.grid.widgets import CommentInput
-from apps.landmatrix.models.activity import Activity
+from apps.landmatrix.models.activity import HistoricalActivity
 from apps.landmatrix.models import Currency
 from .base_form import BaseForm
 from .choices import grouped_intention_choices, nature_choices, price_type_choices
@@ -85,7 +85,7 @@ class DealGeneralForm(BaseForm):
     negotiation_status = YearBasedChoiceField(
         required=False,
         label=_("Negotiation status"),
-        choices=Activity.NEGOTIATION_STATUS_CHOICES,
+        choices=HistoricalActivity.NEGOTIATION_STATUS_CHOICES,
     )
     tg_negotiation_status_comment = forms.CharField(
         required=False, label=_("Comment on negotiation status"), widget=CommentInput
@@ -98,7 +98,7 @@ class DealGeneralForm(BaseForm):
     implementation_status = YearBasedChoiceField(
         required=False,
         label=_("Implementation status"),
-        choices=Activity.IMPLEMENTATION_STATUS_CHOICES,
+        choices=HistoricalActivity.IMPLEMENTATION_STATUS_CHOICES,
     )
     tg_implementation_status_comment = forms.CharField(
         required=False, label=_("Comment on implementation status"), widget=CommentInput

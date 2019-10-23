@@ -5,7 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from threadedcomments.models import ThreadedComment
 
 from apps.grid.tests.views.base import PermissionsTestCaseMixin
-from apps.landmatrix.models import Activity
+from apps.landmatrix.models import HistoricalActivity
 from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.public_comments.forms import PublicCommentForm
 
@@ -19,7 +19,7 @@ class EditCommentViewTestCase(
     def setUp(self):
         super().setUp()
         user = get_user_model().objects.get(username="reporter")
-        self.activity = Activity.objects.get(id=10)
+        self.activity = HistoricalActivity.objects.get(id=10)
         self.comment = ThreadedComment.objects.create(
             user=user, comment="comment", content_object=self.activity, site_id=1
         )

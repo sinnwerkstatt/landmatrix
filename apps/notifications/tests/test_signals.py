@@ -3,7 +3,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 
-from apps.landmatrix.models import Activity
+from apps.landmatrix.models import HistoricalActivity
 from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.notifications.models import NotificationEmail
 from apps.public_comments.forms import PublicCommentForm
@@ -24,7 +24,7 @@ class SignalsTestCase(ActivitiesFixtureMixin, TestCase):
                 "g-recaptcha-response": ["g-recaptcha-response"],
             }
         )
-        activity = Activity.objects.get(id=10)
+        activity = HistoricalActivity.objects.get(id=10)
         form = PublicCommentForm(activity)
         data.update(form.generate_security_data())
         self.client.login(username="reporter", password="test")

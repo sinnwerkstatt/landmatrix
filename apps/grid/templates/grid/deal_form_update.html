@@ -43,7 +43,7 @@
             {% include "grid/includes/deal_history.html" %}
         </div>
         {% if activity.fk_status_id == 4 %}
-        {% if perms.landmatrix.change_activity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-deal" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this deal" %}</a>{% endif %}
+        {% if perms.landmatrix.change_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-deal" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this deal" %}</a>{% endif %}
         {% else %}
         <p>
             {{ action_comment_form.tg_action_comment.label_tag }}<strong> ({% trans "mandatory" %})</strong>
@@ -66,7 +66,7 @@
         </button>
         {% endif %}
         or <a href="{% url "deal_detail" deal_id=deal_id %}">{% trans 'Cancel' %}</a>
-        {% if perms.landmatrix.review_activity or perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
+        {% if perms.landmatrix.review_historicalactivity or perms.landmatrix.delete_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
         {% endif %}
     </form>
     {% if activity.fk_status_id == 4 %}

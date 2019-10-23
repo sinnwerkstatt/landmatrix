@@ -31,8 +31,8 @@ class TasksTestCase(TestCase):
         self.assertEqual("SUCCESS", task.status)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def test_delete_activity(self):
-        task = delete_activity.s(2).apply()
+    def test_delete_historicalactivity(self):
+        task = delete_historicalactivity.s(2).apply()
         self.assertEqual("SUCCESS", task.status)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -41,6 +41,6 @@ class TasksTestCase(TestCase):
         self.assertEqual("SUCCESS", task.status)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def test_delete_investor(self):
-        task = delete_investor.s(2).apply()
+    def test_delete_historicalinvestor(self):
+        task = delete_historicalinvestor.s(2).apply()
         self.assertEqual("SUCCESS", task.status)

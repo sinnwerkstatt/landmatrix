@@ -3,9 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from apps.landmatrix.models.activity import Activity, HistoricalActivity
+from apps.landmatrix.models.activity import HistoricalActivity
 from apps.landmatrix.models.activity_attribute_group import (
-    ActivityAttribute,
     ActivityAttributeGroup,
     HistoricalActivityAttribute,
 )
@@ -21,10 +20,6 @@ from apps.landmatrix.models.investor import (
     HistoricalInvestor,
     HistoricalInvestorActivityInvolvement,
     HistoricalInvestorVentureInvolvement,
-    Investor,
-    InvestorActivityInvolvement,
-    InvestorBase,
-    InvestorVentureInvolvement,
 )
 
 
@@ -49,20 +44,6 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     fk_user = models.ForeignKey(
         User, verbose_name=_("User"), blank=True, null=True, on_delete=models.SET_NULL
-    )
-    fk_activity = models.ForeignKey(
-        "Activity",
-        verbose_name=_("Activity"),
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE,
-    )
-    fk_activity_attribute_group = models.ForeignKey(
-        "ActivityAttributeGroup",
-        verbose_name=_("Activity attribute group"),
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
     )
 
     def __str__(self):

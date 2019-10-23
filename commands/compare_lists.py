@@ -5,7 +5,7 @@ from django.core.management import BaseCommand
 from django.db import connections
 
 from apps.api.views.list_views import ElasticSearchMixin
-from apps.landmatrix.models import Activity
+from apps.landmatrix.models import HistoricalActivity
 
 
 class Command(ElasticSearchMixin, BaseCommand):
@@ -41,7 +41,7 @@ class Command(ElasticSearchMixin, BaseCommand):
         additional_deals["unknown"] = []
 
         for deal_id in missing:
-            a = Activity.objects.get(activity_identifier=deal_id)
+            a = HistoricalActivity.objects.get(activity_identifier=deal_id)
             inv = a.involvements.all()
             if a.fk_status_id not in (2, 3):
                 missing_deals["status"].append(a)
@@ -55,7 +55,7 @@ class Command(ElasticSearchMixin, BaseCommand):
                 missing_deals["unknown"].append(a)
 
         for deal_id in additional:
-            a = Activity.objects.get(activity_identifier=deal_id)
+            a = HistoricalActivity.objects.get(activity_identifier=deal_id)
             inv = a.involvements.all()
             if inv.count() == 0:
                 additional_deals["no_inv"].append(a)

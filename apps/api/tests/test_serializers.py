@@ -5,17 +5,14 @@ from django.test import TestCase
 from rest_framework_gis.fields import GeoJsonDict
 
 from apps.api.serializers import *
-from apps.landmatrix.models import Activity
 from apps.landmatrix.tests.mixins import (
-    InvestorsFixtureMixin,
     InvestorVentureInvolvementsFixtureMixin,
-    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
 )
 from apps.wagtailcms.models import RegionPage
 
 
 class UserSerializerTestCase(TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups"]
 
     def test_get_full_name(self):
@@ -25,7 +22,6 @@ class UserSerializerTestCase(TestCase):
 
 
 class RegionSerializerTestCase(TestCase):
-
     fixtures = ["countries_and_regions"]
 
     def test_to_representation(self):
@@ -112,25 +108,9 @@ class DealSerializerTestCase(TestCase):
         )
 
 
-class DealDetailSerializerTestCase(ActivitiesFixtureMixin, TestCase):
-
-    fixtures = ["countries_and_regions", "users_and_groups", "status"]
-
-    act_fixtures = [{"id": 10, "activity_identifier": 1}]
-
-    def test_get_attributes(self):
-        activity = Activity.objects.get(activity_identifier=1)
-        serializer = DealDetailSerializer(instance=activity)
-        attributes_dict = {"activity_identifier": 1}
-        result = serializer.to_representation(activity)
-        for key, value in attributes_dict.items():
-            self.assertEqual(value, result.get(key))
-
-
 class HistoricalInvestorNetworkSerializerTestCase(
     InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
 ):
-
     inv_fixtures = [
         {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
         {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},

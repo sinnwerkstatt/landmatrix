@@ -84,7 +84,7 @@ class InvestorListViewTestCase(
         self.assertEqual("role", response.context.get("group_slug"))
         items = response.context.get("data", {}).get("items")
         self.assertGreater(len(items), 0)
-        expected = {r[1] for r in InvestorBase.ROLE_CHOICES}
+        expected = {r[1] for r in HistoricalInvestor.ROLE_CHOICES}
         self.assertEqual(
             expected, set(i.get("roles", {}).get("display") for i in items)
         )
