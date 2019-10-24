@@ -1,3 +1,4 @@
+from ariadne.contrib.django.views import GraphQLView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -10,6 +11,8 @@ from apps.grid.views.filter import FilterWidgetAjaxView
 from apps.grid.views.investor_comparison import InvestorComparisonView
 from apps.landmatrix.forms import CustomRegistrationForm
 from apps.landmatrix.views import CountryView, RegionView, SwitchLanguageView
+
+from apps.graphql.schema import schema as graphql_schema
 
 handler500 = "apps.landmatrix.views.handler500"
 
@@ -28,6 +31,7 @@ urlpatterns = [
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # path('api/docs/', include('rest_framework_docs.urls')),
     path("api/", include("apps.api.urls")),
+    path("graphql/", GraphQLView.as_view(schema=graphql_schema), name="graphql"),
     # Wagtail
     path("cms/", include("wagtail.admin.urls")),
     path("news/", include("blog.urls", namespace="news")),

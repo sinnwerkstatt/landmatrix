@@ -84,9 +84,14 @@ INSTALLED_APPS = [
     "apps.notifications",
     "apps.public_comments",
     "apps.feeds",
+    "apps.greennewdeal",
     "impersonate",
     "celery",
     "django_prometheus",
+    # GreenNewDeal
+    "reversion",
+    "django_elasticsearch_dsl",
+    "ariadne.contrib.django",
 ]
 
 MIDDLEWARE = [
@@ -189,6 +194,17 @@ ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatr
 ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
 print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
+
+# GreenNewDeal
+ELASTICSEARCH_DSL = {
+    "default": {"hosts": "localhost:9201"},
+}
+ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
+# ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = 'django_elasticsearch_dsl.signals.CelerySignalProcessor'
+ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
+    "apps.greennewdeal.documents.signals.DoNothingProcessor"
+)
+# ELASTICSEARCH_DSL_PARALLEL ...
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

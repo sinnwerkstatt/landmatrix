@@ -1,0 +1,10 @@
+type Query {
+  deals: [Deal!]!
+  deal(id: Int!): Deal!
+}
+
+type Deal {
+    id: Int
+  name: String
+  status: String
+}

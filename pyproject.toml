@@ -17,6 +17,11 @@ wagtail = "<2.8"
 simplejson = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
+# greennewdeal
+django-reversion = "*"
+elasticsearch-dsl = ">=7.0.0,<8.0.0"
+django-elasticsearch-dsl = { git = "git@github.com:django-elasticsearch/django-elasticsearch-dsl.git", branch = "master" }
+
 psycopg2-binary = "*"
 redis = "*"
 python-memcached = "*"
@@ -51,6 +56,7 @@ tweepy = "*"
 country-bounding-boxes = "*"
 python-dateutil = "*"
 
+
 #plumbing
 doit = "*"
 celery = "*"
@@ -58,6 +64,7 @@ libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 raven = { version = "*", optional = true }
+ariadne = "^0.10.0"
 
 
 [tool.poetry.dev-dependencies]
