@@ -87,9 +87,11 @@ INSTALLED_APPS = [
     "apps.feeds",
     "impersonate",
     "celery",
+    "django_prometheus",
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -103,6 +105,7 @@ MIDDLEWARE = [
     "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 TEMPLATES = [

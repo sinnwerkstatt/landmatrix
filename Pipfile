@@ -47,6 +47,7 @@ doit = "*"
 celery = "*"
 gunicorn = "*"
 raven = "*"
+django-prometheus = "*"
 
 pyelasticsearch = {git = "git+git://github.com/simonline/pyelasticsearch", ref = "1.4.2"}
 
