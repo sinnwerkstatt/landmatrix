@@ -48,6 +48,7 @@
   {"model": "landmatrix.historicalactivity", "pk": 20, "fields": {"activity_identifier": 2, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 21, "fields": {"activity_identifier": 2, "fk_status": 1, "history_date": "2000-01-01T01:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 30, "fields": {"activity_identifier": 3, "fk_status": 3, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
+  {"model": "landmatrix.historicalactivity", "pk": 40, "fields": {"activity_identifier": 4, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 40, "fields": {"activity_identifier": 4, "fk_status": 4, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},
   {"model": "landmatrix.historicalactivity", "pk": 50, "fields": {"activity_identifier": 5, "fk_status": 5, "history_date": "2000-01-01T00:00:00Z", "history_user": 1}},
   {"model": "landmatrix.historicalactivity", "pk": 60, "fields": {"activity_identifier": 6, "fk_status": 2, "history_date": "2000-01-01T00:00:00Z", "history_user": 2}},

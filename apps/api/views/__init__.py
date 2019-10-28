@@ -14,6 +14,7 @@ __all__ = (
     "InvestmentIntentionListView",
     "InvestorCountrySummaryView",
     "InvestorListView",
+    "DealInvestorNetworkView",
     "InvestorNetworkView",
     "LatestChangesView",
     "LoggingView",

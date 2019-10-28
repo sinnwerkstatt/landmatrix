@@ -6,27 +6,37 @@ from rest_framework.response import Response
 from rest_framework.schemas import ManualSchema
 from rest_framework.views import APIView
 
-from apps.api.serializers import HistoricalInvestorNetworkSerializer
+from apps.api.serializers import (
+    DealInvestorNetworkSerializer,
+    InvestorNetworkSerializer,
+)
 from apps.landmatrix.models.investor import HistoricalInvestor
 
 
-class InvestorNetworkView(APIView):
+class DealInvestorNetworkView(APIView):
     """
-    Get investor network.
-    Used within charts section.
+    Get deal investor network.
     """
 
     schema = ManualSchema(
         fields=[
             coreapi.Field(
-                "operational_stakeholder",
-                required=True,
+                "investor_id",
+                required=False,
                 location="query",
-                description="Operating company ID",
+                description="Investor ID",
                 schema=coreschema.Integer(),
-            )
+            ),
+            coreapi.Field(
+                "history_id",
+                required=False,
+                location="query",
+                description="Investor version ID",
+                schema=coreschema.Integer(),
+            ),
         ]
     )
+    serializer = DealInvestorNetworkSerializer
 
     def get_object(self):
         """
@@ -54,12 +64,50 @@ class InvestorNetworkView(APIView):
         # TODO: determine what operational_stakeholder_diagram does here -
         # it seems to just be passed back in the response.
         investor = self.get_object()
-        serialized_response = HistoricalInvestorNetworkSerializer(
-            investor, user=request.user
-        )
+        serialized_response = self.serializer(investor, user=request.user)
         # parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()
         # response_data['index'] = investor_diagram
 
+        return Response(response_data)
+
+
+class InvestorNetworkView(DealInvestorNetworkView):
+    """
+    Get investor network.
+    """
+
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "investor_id",
+                required=False,
+                location="query",
+                description="Investor ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "history_id",
+                required=False,
+                location="query",
+                description="Investor version ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "depth",
+                required=False,
+                location="query",
+                description="Dep version ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
+    serializer = InvestorNetworkSerializer
+
+    def get(self, request, format=None):
+        investor = self.get_object()
+        serializer = self.serializer(investor, user=request.user)
+        depth = int(request.query_params.get("depth", "1"))
+        response_data = serializer.to_representation(investor, depth=depth)
         return Response(response_data)

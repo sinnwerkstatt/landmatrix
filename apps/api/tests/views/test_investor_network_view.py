@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 
-class APIInvestorNetworkViewTestCase(TestCase):
+class APIDealInvestorNetworkViewTestCase(TestCase):
 
     fixtures = [
         "status",
@@ -14,7 +14,7 @@ class APIInvestorNetworkViewTestCase(TestCase):
 
     def test(self):
         response = self.client.get(
-            reverse("api_investor_network"), data={"investor_id": 7}
+            reverse("api_deal_investor_network"), data={"investor_id": 7}
         )
         self.assertEqual(200, response.status_code)
         investor_network = response.data
@@ -36,7 +36,7 @@ class APIInvestorNetworkViewTestCase(TestCase):
 
     def test_with_history_id(self):
         response = self.client.get(
-            reverse("api_investor_network"), data={"history_id": 70}
+            reverse("api_deal_investor_network"), data={"history_id": 70}
         )
         self.assertEqual(200, response.status_code)
         investor_network = response.data
@@ -45,6 +45,6 @@ class APIInvestorNetworkViewTestCase(TestCase):
 
     def test_with_invalid_investor(self):
         response = self.client.get(
-            reverse("api_investor_network"), data={"investor_id": 9999}
+            reverse("api_deal_investor_network"), data={"investor_id": 9999}
         )
         self.assertEqual(404, response.status_code)

@@ -67,7 +67,7 @@ function dismissAddInvestorPopup(win, newId, newRepr, newInvestorIdentifier) {
             //  $(elem).change(); // trigger change
             //});
             generateButtons(elem);
-            loadInvestorNetwork(newId);
+            loadDealInvestorNetwork(newId);
         }
     } else {
         console.log("Could not get input id for win " + name);
@@ -121,7 +121,7 @@ function dismissChangeInvestorPopup(win, newId, newRepr, newInvestorIdentifier) 
             //  $(elem).change(); // trigger change
             //});
             generateButtons(elem);
-            loadInvestorNetwork(newId);
+            loadDealInvestorNetwork(newId);
         }
     } else {
         console.log("Could not get input id for win " + name);
@@ -340,7 +340,7 @@ $(document).ready(function() {
     /* Collapse existing investor fields on page load */
     initInvestorField($("#id_operational_stakeholder"), function () {
         generateButtons($(this));
-        loadInvestorNetwork($(this).val());
+        loadDealInvestorNetwork($(this).val());
     });
     $(".form.existing-investor:not(.empty) li.investor div ul li a:not(.selected-investor)").hide();
 

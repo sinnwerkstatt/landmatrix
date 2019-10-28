@@ -132,7 +132,7 @@ class HistoricalInvestorNetworkSerializerTestCase(TestCase):
 
     def test_to_representation(self):
         investor = HistoricalInvestor.objects.get(id=70)
-        serializer = HistoricalInvestorNetworkSerializer(user=AnonymousUser())
+        serializer = DealInvestorNetworkSerializer(user=AnonymousUser())
         investor_network = serializer.to_representation(investor)
         self.assertEqual(70, investor_network.get("id"))
         self.assertEqual(7, investor_network.get("investor_identifier"))

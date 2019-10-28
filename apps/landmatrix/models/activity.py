@@ -6,6 +6,7 @@ from django.db import models, transaction
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django_prometheus.models import ExportModelOperationsMixin
 
 from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
 from apps.landmatrix.models.country import Country
@@ -856,22 +857,22 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return queryset.filter(id__in=self.latest_ids())
 
     def latest_ids(self, status=None):
-        queryset = HistoricalActivity.objects
-        if status:
-            queryset = queryset.filter(fk_status_id__in=status)
-        queryset = (
-            queryset.values("activity_identifier")
+        max_ids = (
+            HistoricalActivity.objects.values("activity_identifier")
             .annotate(max_id=models.Max("id"))
             .order_by()
             .values_list("max_id", flat=True)
         )
+        queryset = HistoricalActivity.objects.filter(id__in=max_ids)
+        if status:
+            queryset = queryset.filter(fk_status_id__in=status)
         return queryset
 
     def latest_only(self):
         return self.filter(id__in=self.latest_ids())
 
 
-class HistoricalActivity(ActivityBase):
+class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
     """
     All versions (including the current) of activities
 

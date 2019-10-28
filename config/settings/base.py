@@ -87,9 +87,11 @@ INSTALLED_APPS = [
     "apps.feeds",
     "impersonate",
     "celery",
+    "django_prometheus",
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -103,6 +105,7 @@ MIDDLEWARE = [
     "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 TEMPLATES = [
@@ -199,3 +202,5 @@ ACCOUNT_ACTIVATION_DAYS = 7
 WKHTMLTOPDF_CMD = env("DJANGO_WKHTMLTOPDF_CMD", default="wkhtmltopdf")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
+
+LANDMATRIX_INVESTOR_GRAPH_ENABLED = False

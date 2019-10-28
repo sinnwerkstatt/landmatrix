@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django_prometheus import exports
 from django_registration.backends.activation.views import RegistrationView
 
 from apps.grid.views.deal_comparison import DealComparisonView
@@ -60,6 +61,11 @@ urlpatterns = [
     path("editor/", include("apps.editor.urls")),
     path(
         "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
+    ),
+    path(
+        "prometheus/metrics/",
+        exports.ExportToDjangoView,
+        name="prometheus-django-metrics",
     ),
     path("", include("wagtail.core.urls")),
 ]

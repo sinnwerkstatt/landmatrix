@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models as geomodels
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django_prometheus.models import ExportModelOperationsMixin
 
 
 class ActivityAttributeGroup(models.Model):
@@ -65,7 +66,9 @@ class ActivityAttribute(ActivityAttributeBase):
         verbose_name_plural = _("Activity attributes")
 
 
-class HistoricalActivityAttribute(ActivityAttributeBase):
+class HistoricalActivityAttribute(
+    ExportModelOperationsMixin("activity_attribute"), ActivityAttributeBase
+):
     """All versions (including the current) of activity attributes"""
 
     fk_activity = models.ForeignKey(
