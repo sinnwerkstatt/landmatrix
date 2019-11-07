@@ -17,13 +17,11 @@ stages:
   - test
   - deploy
 
-before_script:
-  - pipenv sync --dev
-  - yarn install --frozen-lockfile
-
 formatting and linting:
   stage: test
   script:
+    - pipenv sync --dev
+    - yarn install --frozen-lockfile
     - black . --check
     - pipenv run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     - pipenv run pylint apps --exit-zero
@@ -34,6 +32,8 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
+    - pipenv sync --dev
+    - yarn install --frozen-lockfile
     - pipenv run doit -n 4 update
     - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
     - pipenv run coverage report

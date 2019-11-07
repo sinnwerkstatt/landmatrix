@@ -1,46 +1,62 @@
-function initYBDfield(container) {
-    // Prevent multiple selection of current checkboxes
-    container.find('.year-based-is-current').click(function () {
-        var checkbox = $(this);
-        if (checkbox.is(':checked')) {
-            // Uncheck other checkboxes
-            checkbox.parents('.controls').find(':checkbox:not(#' + checkbox.attr('id') + ')').attr('checked', false);
-        }
-    });
+function initYBDfieldNoSelect(container) {
+  // Prevent multiple selection of current checkboxes
+  container.find('.year-based-is-current').click(function () {
+    var checkbox = $(this);
+    if (checkbox.is(':checked')) {
+      // Uncheck other checkboxes
+      checkbox.parents('.controls').find(':checkbox:not(#' + checkbox.attr('id') + ')').attr('checked', false);
+    }
+  });
 }
 
-function cloneYBDfield(link) {
-  link = $(link);
-  var container = link.parents(".controls"),
-      field = container.find(".input-group:last-child"),
-      data = field.children(":not(a,.select2)").clone(),
-      remove_link = field.find("a.remove-ybd").clone();
+function initYBDfield(container) {
+  container.find('select:not(.select2-hidden-accessible)').select2();
+  container.find('.remove-ybd').click(removeYBDfield);
+
+  // Prevent multiple selection of current checkboxes
+  container.find('.year-based-is-current').click(function () {
+    let checkbox = $(this);
+    if (checkbox.is(':checked')) {
+      checkbox.parents('.controls').find(':checkbox:not(#' + checkbox.attr('id') + ')').attr('checked', false);
+    }
+  });
+}
+
+function cloneYBDfield() {
+  let field = $(this).parents(".input-group");
+
+  let container = field.parents(".controls");
+
+  let data = field.children(":not(a,.select2)").clone();
+
   data.filter(':checkbox').prop('checked', false);
-  var new_field = $("<div class=\"input-group\"></div>");
-  new_field.append(data);
-  remove_link.css("display", "inline-block");
-  new_field.append(remove_link);
-  link.parents(".controls").append(new_field);
-  new_field.find('.select2-hidden-accessible').select2();
-  new_field.find('.remove-ybd').click(function () { removeYBDfield(this); });
-  new_field.find(':input:not(:checkbox)').val("");
+  data.filter("select").removeClass("select2-hidden-accessible").removeData("select2-id");
+
+  let new_field = $('<div class="input-group"></div>').append(data);
+
+  let removeLink = field.find("a.remove-ybd").clone().css("display", "inline-block");
+  removeLink.appendTo(new_field);
+
+  container.append(new_field);
+
   renumberYBDInputs(container);
   initYBDfield(container);
 }
 
-function removeYBDfield(link) {
-  link = $(link);
-  var container = link.parents(".controls");
+function removeYBDfield() {
+  let link = $(this);
+  let container = link.parents(".controls");
   link.parents('.input-group').remove();
   renumberYBDInputs(container);
 }
 
 function renumberYBDInputs(container) {
-  container = $(container);
-  var inputs = container.find(':input:not([type=search])'),
-      counter = 0,
-      prefix = inputs.first().attr("name");
+  let inputs = container.find(':input:not([type=search])');
+  let prefix = inputs.first().attr("name");
   prefix = prefix.slice(0, prefix.lastIndexOf("_")+1);
+
+  let counter = 0;
+  console.log(inputs);
   inputs.each(function () {
     $(this)
       .attr("id", "id_" + prefix + counter)
@@ -49,11 +65,11 @@ function renumberYBDInputs(container) {
   });
 }
 
-$(document).ready(function () {
+$(function () {
   $("input.year-based-year").prop("placeholder", "YYYY-MM-DD");
   $("input.year-based-is-current").after($('<label>' + 'Current' + '</label>'));
 
-  $(".add-ybd").click(function () { cloneYBDfield(this); });
-  $(".remove-ybd").click(function () { removeYBDfield(this); });
-  initYBDfield($('.year-based').parents('.controls'));
+  $(".add-ybd").click(cloneYBDfield);
+  $(".remove-ybd").click(removeYBDfield);
+  initYBDfieldNoSelect($('.year-based').parents('.controls'));
 });

@@ -22,7 +22,7 @@
     "openlayers": "~3.19",
     "openlayers4": "npm:openlayers@~4.0.1",
     "raphael": "~2.1.4",
-    "select2": "~4.0"
+    "select2": "4.0.2"
   },
   "devDependencies": {
     "prettier": "^1.18.2"
