@@ -20,11 +20,11 @@ stages:
 formatting and linting:
   stage: test
   script:
-    - pipenv sync --dev
+    - poetry install
     - yarn install --frozen-lockfile
     - black . --check
-    - pipenv run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
-    - pipenv run pylint apps --exit-zero
+    - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
+    - poetry run pylint apps --exit-zero
 
 tests and coverage:
   stage: test
@@ -32,11 +32,11 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
-    - pipenv sync --dev
+    - poetry install
     - yarn install --frozen-lockfile
-    - pipenv run doit -n 4 update
-    - pipenv run coverage run --source='.' manage.py test --settings=config.settings.ci
-    - pipenv run coverage report
+    - poetry run doit -n 4 update
+    - poetry run coverage run --source='.' manage.py test --settings=config.settings.ci
+    - poetry run coverage report
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 deploy to staging:
@@ -50,8 +50,8 @@ deploy to staging:
       cd ~/htdocs
       git checkout master
       git pull
-      pipenv sync --dev
-      pipenv run doit update
+      poetry install -E production
+      poetry run doit update
       sudo /bin/systemctl restart django-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
@@ -70,8 +70,8 @@ deploy to production:
       cd ~/htdocs
       git checkout production
       git pull
-      pipenv sync
-      pipenv run doit update
+      poetry install --no-dev -E production
+      poetry run doit update
       sudo /bin/systemctl restart django-landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_

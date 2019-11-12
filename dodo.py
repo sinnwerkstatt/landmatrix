@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-
-""" A dodo.py file is used to execute tasks with `doit` """
 from glob import glob
+
+import environ
+
+env = environ.Env()
 
 DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
@@ -61,9 +63,6 @@ def task_migrate():
 
 
 def task_reset_db():
-    import environ
-
-    env = environ.Env()
     db = env.db()
     actions = []
     if db["ENGINE"] == "django.db.backends.sqlite3":

@@ -1,3 +1,82 @@
+[tool.poetry]
+name = "landmatrix"
+version = "0.1.0"
+license = "AGPL-3.0+"
+authors = [
+  "Simon Liedtke <simon.liedtke@gmail.com>",
+  "Andreas Nüßlein <andreas@nuessle.in>"
+]
+readme = 'README.rst'
+
+[tool.poetry.dependencies]
+python = "^3.6"
+Django = "<2.3"
+wagtail = "<2.7"
+
+elasticsearch = "<2"
+simplejson = "*"
+pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch"}
+
+psycopg2-binary = "*"
+redis = "*"
+python-memcached = "*"
+
+djangorestframework = "*"
+djangorestframework-gis = "*"
+drf-yasg = "*"
+packaging = "*"
+#django-rest-swagger = "*"
+django-crispy-forms = "*"
+django-environ = "*"
+django-file-resubmit = "*"
+django-jstemplate = "*"
+django-modeltranslation = "*"
+django-contrib-comments = "*"
+django-threadedcomments = "*"
+django-bootstrap3-datetimepicker-2 = "*"
+django-impersonate = "*"
+django-multiselectfield = "*"
+django-recaptcha = "*"
+django-registration = "*"
+django-simple-history = "*"
+django-wkhtmltopdf = "*"
+
+wagtail-blog = "*"
+wagtail-modeltranslation = "*"
+
+geojson = "<2"
+unicodecsv = "*"
+openpyxl = "*"
+tweepy = "*"
+country-bounding-boxes = "*"
+python-dateutil = "*"
+
+#plumbing
+doit = "*"
+celery = "*"
+libsass = "*"
+django-prometheus = "*"
+gunicorn = { version = "*", optional = true }
+raven = { version = "*", optional = true }
+
+
+[tool.poetry.dev-dependencies]
+ipdb = "*"
+black = { version = "*", allows-prereleases = true }
+mypy = "*"
+coverage = "*"
+django-livereload = "*"
+django-extensions = "*"
+django-debug-toolbar = "*"
+django-test-without-migrations = "*"
+
+pylint = "*"
+pylint-django = "*"
+#pygments = "*"
+
+[tool.poetry.extras]
+production = ["gunicorn", "raven"]
+
 
 [tool.black]
 line-length = 88
