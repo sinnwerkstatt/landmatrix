@@ -72,7 +72,9 @@ django-test-without-migrations = "*"
 
 pylint = "*"
 pylint-django = "*"
-#pygments = "*"
+
+pygments = "*"
+mkdocs = "*"
 
 [tool.poetry.extras]
 production = ["gunicorn", "raven"]
