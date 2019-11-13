@@ -7,7 +7,7 @@ from django.utils.datastructures import MultiValueDict
 
 from apps.grid.templatetags.custom_tags import get_user_role
 from apps.landmatrix.models.investor import InvestorBase
-from integration.mixins import MockRequestMixin
+from tests.mixins import MockRequestMixin
 
 
 class PermissionsTestCaseMixin:
