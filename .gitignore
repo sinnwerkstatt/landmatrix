@@ -1,73 +1,31 @@
+landmatrix*.sql
+landmatrix*.sql.gz
+apps/landmatrix/static/css/*.css
+/landmatrix/static/css/.sass-cache/
 
-.env
-.es_index_ab_switch
-
-# Collected(!) statics
+# project
+/.env
+/.doit.db
+/temporary.db
+/static/**/*.css
 /static-collected/
 /media/
-
-/node_modules/
-
-
-apps/landmatrix/static/css/*.css
-
-# IDE files and files from my personal environment
-dir.sh
-.idea
-\#*\#
-*~
-ProfilingResults
-errors.txt
-landmatrix*.sql
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-
-# C extensions
-*.so
-
-# Distribution / packaging
-/builds/
-develop-eggs/
-./dist/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-
-# Unit test / coverage reports
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-
-# Translations
 *.mo
+.es_index_ab_switch
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
-
-# Rope
-.ropeproject
-
-# Django stuff:
-*.log
-*.pot
-
-# Sphinx documentation
-docs/_build/
+# python
+__pycache__/
+*.pyc
+.coverage
 
 
-.doit.db
+# javascript
+/node_modules/
+webpack-stats.json
+package-lock.json
+/frontend/dist/
+/yarn-error.log
 
-/landmatrix/static/css/.sass-cache/
+# IDEs
+.idea/
+.vscode/

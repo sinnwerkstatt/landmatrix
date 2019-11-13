@@ -6,7 +6,7 @@ authors = [
   "Simon Liedtke <simon.liedtke@gmail.com>",
   "Andreas Nüßlein <andreas@nuessle.in>"
 ]
-readme = 'README.rst'
+readme = 'README.md'
 
 [tool.poetry.dependencies]
 python = "^3.6"
