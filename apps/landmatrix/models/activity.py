@@ -15,7 +15,8 @@ from apps.landmatrix.models.investor import (
     Investor,
     InvestorActivityInvolvement,
     InvestorBase,
-    HistoricalInvestor)
+    HistoricalInvestor,
+)
 from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
 
 
@@ -629,17 +630,18 @@ class ActivityBase(models.Model):
                 )
             )
             investor_identifiers = investor_identifiers.values_list(
-                'fk_investor__investor_identifier', flat=True)
+                "fk_investor__investor_identifier", flat=True
+            )
             for investor_identifier in investor_identifiers:
-                countries.update(get_investor_countries(investor_identifier,
-                                                        investors))
+                countries.update(get_investor_countries(investor_identifier, investors))
             return countries
 
         target_countries = {
             c.value for c in self.attributes.filter(name="target_country")
         }
         investor_identifiers = self.involvements.values_list(
-            'fk_investor__investor_identifier', flat=True)
+            "fk_investor__investor_identifier", flat=True
+        )
         investor_countries = set()
         for investor_identifier in investor_identifiers:
             investor_countries.update(get_investor_countries(investor_identifier))
