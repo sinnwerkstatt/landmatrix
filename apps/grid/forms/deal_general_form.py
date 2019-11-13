@@ -57,7 +57,7 @@ class DealGeneralForm(BaseForm):
     )
     intention = YearBasedMultipleChoiceIntegerField(
         required=False,
-        label=_("Intention of the investment"),
+        label=_("Intention of investment"),
         choices=grouped_intention_choices,
     )
     tg_intention_comment = forms.CharField(

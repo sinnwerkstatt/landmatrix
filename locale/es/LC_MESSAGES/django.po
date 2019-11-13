@@ -1043,7 +1043,7 @@ msgstr ""
 
 #: grid/forms/add_deal_general_form.py:43
 #: grid/forms/change_deal_general_form.py:43
-msgid "Intention of the investment"
+msgid "Intention of investment"
 msgstr ""
 
 #: grid/forms/add_deal_general_form.py:51
