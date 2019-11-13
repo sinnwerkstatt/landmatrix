@@ -15,7 +15,7 @@ from apps.landmatrix.models.investor import (
     Investor,
     InvestorActivityInvolvement,
     InvestorBase,
-)
+    HistoricalInvestor)
 from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
 
 
@@ -606,39 +606,43 @@ class ActivityBase(models.Model):
             return None
 
     def get_deal_scope(self):
-        def get_investor_countries(involvement, investors=None):
+        def get_investor_countries(investor_identifier, investors=None):
             if not investors:
                 investors = set()
             countries = set()
             # Check if investor already processed to prevent infinite loops
-            if involvement.fk_investor_id in investors:
+            if investor_identifier in investors:
                 return countries
             else:
-                investors.add(involvement.fk_investor_id)
-            if involvement.fk_investor.fk_status_id in (
-                Investor.STATUS_ACTIVE,
-                Investor.STATUS_OVERWRITTEN,
-            ):
-                if involvement.fk_investor.fk_country_id:
-                    countries.add(str(involvement.fk_investor.fk_country_id))
-            sinvolvements = involvement.fk_investor.venture_involvements.stakeholders()
-            sinvolvements = sinvolvements.filter(
+                investors.add(investor_identifier)
+            investor = HistoricalInvestor.objects.latest_only()
+            investor = investor.filter(investor_identifier=investor_identifier).first()
+            if not investor:
+                return countries
+            if investor.fk_country_id:
+                countries.add(str(investor.fk_country_id))
+            investor_identifiers = investor.venture_involvements.stakeholders()
+            investor_identifiers = investor_identifiers.filter(
                 fk_investor__fk_status_id__in=(
                     Investor.STATUS_ACTIVE,
                     Investor.STATUS_OVERWRITTEN,
                 )
             )
-            for sinvolvement in sinvolvements:
-                countries.update(get_investor_countries(sinvolvement, investors))
+            investor_identifiers = investor_identifiers.values_list(
+                'fk_investor__investor_identifier', flat=True)
+            for investor_identifier in investor_identifiers:
+                countries.update(get_investor_countries(investor_identifier,
+                                                        investors))
             return countries
 
         target_countries = {
             c.value for c in self.attributes.filter(name="target_country")
         }
-        involvements = self.involvements.all()
+        investor_identifiers = self.involvements.values_list(
+            'fk_investor__investor_identifier', flat=True)
         investor_countries = set()
-        for oc_involvement in involvements:
-            investor_countries.update(get_investor_countries(oc_involvement))
+        for investor_identifier in investor_identifiers:
+            investor_countries.update(get_investor_countries(investor_identifier))
         if len(target_countries) > 0 and len(investor_countries) > 0:
             if len(target_countries.symmetric_difference(investor_countries)) == 0:
                 return "domestic"
