@@ -159,7 +159,7 @@ class ActivityBase(models.Model):
         (IMPLEMENTATION_STATUS_PROJECT_ABANDONED, _("Project abandoned")),
     )
 
-    AGRICULTURAL_PRODUCE_MULTI = "Multi Crop"
+    AGRICULTURAL_PRODUCE_MULTI = "Multiple Use"
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     # FIXME: Availability should be moved to HistoricalActivity
