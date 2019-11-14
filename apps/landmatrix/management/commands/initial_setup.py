@@ -35,10 +35,13 @@ class Command(BaseCommand):
     @atomic
     def handle(self, *args, **options):
         print("  Creating Pages... ", end="", flush=True)
-        ### clear page tree
-        Page.objects.first().get_root().get_children().delete()
+        # clear page tree
+        root_page = Page.objects.first().get_root()
+        root_page.title = "root"
+        root_page.title_en = "root"
+        root_page.save()
+        root_page.get_children().delete()
 
-        root_page = Page.objects.get(path="0001")
         wt_root = WagtailRootPage(title="Land Matrix")
         root_page.add_child(instance=wt_root)
         wt_root.save()
@@ -64,5 +67,7 @@ class Command(BaseCommand):
         print("\033[92m" + "OK" + "\033[0m")
 
         print("  Creating users... ", end="", flush=True)
-        nuts = create_user("testnuss", "testnuss@noova.de", "tux", "Andreas", "Nüßlein")
+        user = create_user(
+            "landmatrixuser", "testuser@domain.tld", "landmatrix", "Land", "Matrix"
+        )
         print("\033[92m" + "OK" + "\033[0m")

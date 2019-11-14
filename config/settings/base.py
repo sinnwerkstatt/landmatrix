@@ -149,6 +149,7 @@ STATICFILES_DIRS = [BASE_DIR("node_modules")]
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
+LOCALE_PATHS = [BASE_DIR("config/locale")]
 
 CACHES = {
     "default": env.cache("DJANGO_CACHE_URL", default="dummycache://"),
