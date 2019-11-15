@@ -81,10 +81,10 @@
                                 <div class="panel-body">
                                     {% if form.forms %}
                                         {% for subform in form.forms %}
-                                            {% include "grid/includes/dealpanels_display.html" with form=subform form_count=forloop.counter user=user %}
+                                            {% include "grid/includes/dealpanels_display.html" with form=subform form_count=forloop.counter user=user investor=activity.operational_stakeholder %}
                                         {% endfor %}
                                     {% else %}
-                                        {% include "grid/includes/dealpanels_display.html" with form=form user=user %}
+                                        {% include "grid/includes/dealpanels_display.html" with form=form user=user investor=activity.operational_stakeholder %}
                                     {% endif %}
                                 </div>
                             </div>

@@ -1,7 +1,19 @@
 {% load custom_tags i18n %}
+
+{% if form.Meta.name == 'investor_info' and not user.is_anonymous %}
+  {% if investor.fk_status_id == 1 or investor.fk_status_id == 6 %}
+  <p class="alert alert-danger">{% trans "This operating company is pending." %}</p>
+  {% elif investor.fk_status_id == 4 %}
+  <p class="alert alert-danger">{% trans "This operating company has been deleted. It is not visible for public users." %}</p>
+  {% elif investor.fk_status_id == 5 %}
+  <p class="alert alert-danger">{% trans "This operating company has been rejected. It is not visible for public users." %}</p>
+  {% endif %}
+{% endif %}
+
 {% for field in form|fields_display:user %}
     {% if field.name == 'tg' %}
         <h3>{{ field.value }}{% if form_count %} <small>#{{ form_count }}</small>{% endif %}</h3>
+    {% elif field.name == 'operational_stakeholder' and investor.fk_status_id not in investor.PUBLIC_STATUSES and user.is_anonymous %}
     {% else %}
         <div class="row {{ field.name }}{% if field.hidden %} hidden{% endif %}">
             <div class="col-md-3">
@@ -44,8 +56,7 @@
 {% endfor %}
 
 {% if form.Meta.name == 'investor_info' %}
-    {% include "grid/includes/deal_investor_network.html" with history_id=form.initial.operational_stakeholder %}
-
+    {% include "grid/includes/deal_investor_network.html" with investor=investor user=user %}
 {% endif %}
 
 {% include "map/modals/legend.html" %}

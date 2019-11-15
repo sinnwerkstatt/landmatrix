@@ -78,8 +78,13 @@
                 </div>
 
                 <div id="parent_companies_body"
-                     class="panel-collapse collapse{% for form in parent_companies.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
+                     class="panel-collapse collapse{% if parent_companies.non_form_errors %} in{% endif %}{% for form in parent_companies.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
                     <div class="panel-body">
+                        {% if parent_companies.non_form_errors %}
+                          {% for error in parent_companies.non_form_errors %}
+                              <p class="alert alert-danger">{{ error }}</p>
+                          {% endfor %}
+                        {% endif %}
                         {{ parent_companies.management_form }}
                         {% for form in parent_companies.forms %}
                             <div class="dynamic-form {{ parent_companies.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
@@ -106,7 +111,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-default{% for form in parent_investors.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
+            <div class="panel panel-default{% if parent_investors.non_form_errors %} in{% endif %}{% for form in parent_investors.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#parent_investors_body"
@@ -122,6 +127,11 @@
                 <div id="parent_investors_body"
                      class="panel-collapse collapse{% for form in parent_investors.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
                     <div class="panel-body">
+                        {% if parent_investors.non_form_errors %}
+                          {% for error in parent_investors.non_form_errors %}
+                            <p class="alert alert-danger">{{ error }}</p>
+                          {% endfor %}
+                        {% endif %}
                         {{ parent_investors.management_form }}
                         {% for form in parent_investors.forms %}
                             <div class="dynamic-form {{ parent_investors.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">

@@ -1,5 +1,7 @@
 {% load i18n %}
 <p>&nbsp;</p>
+
+{% if investor.fk_status_id in investor.PUBLIC_STATUSES %}
 <p class="alert alert-info">
     <strong>{% trans "Network of parent companies and tertiary investors/lenders" %}.</strong> {% trans "Please right-click the nodes to get more details." %}
 </p>
@@ -23,14 +25,15 @@
         if ($("#investor-info_body #investor-network").size() > 0) {
             $('#accordion').on('show.bs.collapse', function (e) {
                 if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
-                    loadDealInvestorNetwork({{ history_id }});
+                    loadDealInvestorNetwork({{ investor.id }});
                 }
                 ;
             });
         // Investor detail/form
         } else if ($("#general_info_body #investor-network").size() > 0) {
-            loadDealInvestorNetwork(null, {{ investor_id }});
+            loadDealInvestorNetwork(null, {{ investor.id }});
         }
 	});
 </script>
 {% include "grid/modals/investor_modal.html" %}
+{% endif %}

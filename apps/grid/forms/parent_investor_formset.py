@@ -175,6 +175,22 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
     ROLE = HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
 
+    def clean(self):
+        """
+        Checks that the total percentage each role is max. 100%
+        :return:
+        """
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        total_percentage = 0
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            total_percentage += form.cleaned_data.get("percentage") or 0
+        if total_percentage > 100:
+            raise forms.ValidationError("Total ownership share should be 100% or less.")
+
     def save(self, fk_venture, commit=True):
         """
         We are sort of emulating an inline formset here. Save will update
