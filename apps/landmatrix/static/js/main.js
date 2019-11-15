@@ -610,7 +610,10 @@ $(function() {
 
     region_select.select2('val', '');
     region_select.on('change', function () {
-        location.href = '/region/' + $(this).val();
+      let val = $(this).val();
+      if (val) {
+        location.href = '/region/' + val;
+      }
     });
     // Countries
     let country_select = $('#nav-country-select').select2({
@@ -620,7 +623,10 @@ $(function() {
     }).on('select2:open', select2_open)
       .on('select2:close', select2_close);
     country_select.select2('val', '');
-    country_select.on('change', function (e) {
-        location.href = '/country/' + $(this).val();
+    country_select.on('change', function () {
+      let val = $(this).val();
+      if (val) {
+        location.href = '/country/' + val;
+      }
     });
 });
