@@ -871,8 +871,6 @@ class AgriculturalProduceListView(BaseChartView):
             (self.slugify(ap.name), 0) for ap in AgriculturalProduce.objects.all()
         )
         agricultural_produces["multiple_use"] = 0
-        # TODO @simon.liedtke I added this to stop the error, but I don't really know what I did here
-        agricultural_produces["multi_crop"] = 0
 
         # Get target regions
         target_regions = {}
@@ -930,64 +928,6 @@ class AgriculturalProduceListView(BaseChartView):
         target_regions["overall"] = overall
 
         return Response(list(target_regions.values()))
-
-    #
-    # def __init__(self, get_data):
-    #     self.get_data = get_data
-    #
-    # def all(self):
-    #     output = []
-    #     for region, value in self.REGIONS.items():
-    #         ap_region = {
-    #             "food_crop": 0,
-    #             "non_food": 0,
-    #             "flex_crop": 0,
-    #             "multiple_use": 0,
-    #         }
-    #         hectares = {
-    #             "food_crop": 0,
-    #             "non_food": 0,
-    #             "flex_crop": 0,
-    #             "multiple_use": 0,
-    #         }
-    #         ap_list = self.get_agricultural_produces(self.get_data, value)
-    #         available_sum, not_available_sum = self.calculate_sums(ap_list)
-    #
-    #         for ap in ap_list:
-    #             if ap['agricultural_produce']:
-    #                 ap_name = ap['agricultural_produce'].lower().replace(" ", "_").replace("-", "_")
-    #                 ap_region[ap_name] = round(float(ap['hectares'])/available_sum*100)
-    #                 hectares[ap_name] = ap['hectares']
-    #
-    #         output.append({
-    #             "region": region,
-    #             "available": available_sum,
-    #             "not_available": not_available_sum,
-    #             "agricultural_produce": ap_region,
-    #             "hectares": hectares,
-    #         })
-    #     return output
-    #
-    # def calculate_sums(self, ap_list):
-    #     available_sum, not_available_sum = 0, 0
-    #     for ap in ap_list:
-    #         if ap['agricultural_produce']:
-    #             available_sum += float(ap['hectares'])
-    #         else:
-    #             not_available_sum += float(ap['hectares'])
-    #     return available_sum, not_available_sum
-    #
-    # def get_agricultural_produces(self, get, region_ids):
-    #     queryset = AgriculturalProduceQuerySet(get, region_ids)
-    #     sanitized_values = [
-    #         {
-    #             'agricultural_produce': item['agricultural_produce'] or 0.0,
-    #             'deals': item['deals'] or 0,
-    #             'hectares': item['hectares'] or 0.0,
-    #         }
-    #         for item in queryset.all()
-    #     ]
-    #     return sanitized_values
 
 
 class ProduceInfoView(BaseChartView):

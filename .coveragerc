@@ -1,6 +1,6 @@
 [run]
 omit =
-    integration/*
+    tests/integration/*
     */tests/*
     */migrations/*
     */management/commands/*
@@ -29,7 +29,7 @@ exclude_lines =
     raise AssertionError
     raise NotImplementedError
 omit =
-    integration/*
+    tests/integration/*
     */tests/*
     */migrations/*
     */management/commands/*

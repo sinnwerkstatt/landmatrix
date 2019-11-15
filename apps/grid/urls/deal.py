@@ -39,5 +39,5 @@ urlpatterns = [
     path("add/", DealCreateView.as_view(), name="add_deal"),
     path("delete/<int:deal_id>/", DealDeleteView.as_view(), name="delete_deal"),
     path("recover/<int:deal_id>/", DealRecoverView.as_view(), name="recover_deal"),
-    path("", DealListView.as_view(), name="data"),
+    path("", DealListView.as_view(), name="deals"),
 ]
