@@ -11,7 +11,7 @@ comment_notification_subject = _("Land Matrix: New comment")
 
 def get_recipients_for_comment_on_activity(comment, activity):
     # Add users assigned to target country or region
-    recipients = UserRegionalInfo.objects.filter(is_active=True)
+    recipients = UserRegionalInfo.objects.filter(user__is_active=True)
     recipients = recipients.filter(
         Q(country=activity.target_country) | Q(region=activity.target_country.fk_region)
     )

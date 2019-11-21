@@ -7,6 +7,8 @@ from .base import *
 
 DEBUG = False
 
+WAGTAIL_ENABLE_UPDATE_CHECK = False
+
 try:
     SECRET_KEY = env("DJANGO_SECRET_KEY")
 except ImproperlyConfigured:
