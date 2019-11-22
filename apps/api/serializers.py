@@ -9,6 +9,7 @@ from apps.landmatrix.models import (
     Activity,
     FilterPreset,
     HistoricalInvestorVentureInvolvement,
+    HistoricalActivity,
 )
 from apps.landmatrix.models.investor import HistoricalInvestor, InvestorBase
 
@@ -266,26 +267,45 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    def _get_node_data(self, investor):
+    def _get_investor_data(self, investor, is_root=False):
+        investor_identifier = investor.investor_identifier
+        country = investor.fk_country
         return {
-            "id": investor.investor_identifier,
+            "id": f"I{investor_identifier}",
+            "type": 1,
             "name": investor.name,
             "status": investor.fk_status.name,
-            "investor_identifier": investor.investor_identifier,
-            "country": str(investor.fk_country),
+            "is_root": is_root,
+            "identifier": investor_identifier,
+            "country": str(country),
+            "country_code": str(country.code_alpha2),
             "classification": investor.get_classification_display(),
             "homepage": investor.homepage,
             "opencorporates_link": investor.opencorporates_link,
             "comment": investor.comment,
             "url": reverse(
-                "investor_detail", kwargs={"investor_id": investor.investor_identifier}
+                "investor_detail", kwargs={"investor_id": investor_identifier}
             ),
         }
 
-    def _get_link_data(self, involvement):
+    def _get_deal_data(self, activity):
+        activity_identifier = activity.activity_identifier
+        target_country = activity.target_country
         return {
-            "source": involvement.fk_investor.investor_identifier,
-            "target": involvement.fk_venture.investor_identifier,
+            "id": f"D{activity_identifier}",
+            "type": 2,
+            "name": str(activity_identifier),
+            "status": activity.fk_status.name,
+            "identifier": activity_identifier,
+            "country": str(target_country),
+            "country_code": str(target_country.code_alpha2),
+            "url": reverse("deal_detail", kwargs={"deal_id": activity_identifier}),
+        }
+
+    def _get_investor_link_data(self, involvement):
+        return {
+            "source": f"I{involvement.fk_investor.investor_identifier}",
+            "target": f"I{involvement.fk_venture.investor_identifier}",
             "type": 1 if involvement.role == involvement.STAKEHOLDER_ROLE else 2,
             "percentage": involvement.percentage,
             "investment_type": involvement.get_investment_type_display(),
@@ -296,14 +316,22 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "comment": involvement.comment,
         }
 
+    def _get_deal_link_data(self, investor, activity):
+        return {
+            "source": f"I{investor.investor_identifier}",
+            "target": f"D{activity.activity_identifier}",
+            "type": 3,
+        }
+
     def _has_next_level(self, investor):
         return investor.venture_involvements.count() > 0
 
     def to_representation(self, obj, depth=1):
         nodes, links = [], []
-        nodes.append(self._get_node_data(obj))
+        nodes.append(self._get_investor_data(obj, True))
         investors = {obj.id}
-        nodes_processed, links_processed = {obj.investor_identifier}, set()
+        investors_processed, activities_processed = {obj.investor_identifier}, set()
+        inv_links_processed, act_links_processed = set(), set()
         for i in range(depth):
             involvements = HistoricalInvestorVentureInvolvement.objects.filter(
                 Q(fk_venture_id__in=investors) | Q(fk_investor_id__in=investors)
@@ -324,18 +352,19 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                 set(involvements.values_list("fk_venture_id", flat=True))
             )
             for involvement in involvements:
-                # Create links
-                if involvement.id in links_processed:
+                # Create investor link
+                if involvement.id in inv_links_processed:
                     continue
-                links.append(self._get_link_data(involvement))
-                links_processed.add(involvement.id)
+                links.append(self._get_investor_link_data(involvement))
+                inv_links_processed.add(involvement.id)
 
-                # Create nodes
                 parent_investors = [involvement.fk_investor, involvement.fk_venture]
                 for parent_investor in parent_investors:
+                    # Create investor node
                     investor_identifier = parent_investor.investor_identifier
-                    if investor_identifier in nodes_processed:
+                    if investor_identifier in investors_processed:
                         continue
+
                     # Always get latest version of parent investor
                     latest_investor = HistoricalInvestor.objects.filter(
                         investor_identifier=investor_identifier
@@ -348,10 +377,33 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                             )
                         )
                     latest_investor = latest_investor.latest()
-                    node_data = self._get_node_data(latest_investor)
+                    node_data = self._get_investor_data(latest_investor)
+
                     # Last level visible: Set flag for more levels
                     node_data["has_next_level"] = self._has_next_level(parent_investor)
                     nodes.append(node_data)
-                    nodes_processed.add(investor_identifier)
+                    investors_processed.add(investor_identifier)
+
+                    # Create deal node and links
+                    activities = HistoricalActivity.objects.latest_only()
+                    activities = activities.filter(
+                        involvements__fk_investor__investor_identifier=investor_identifier
+                    )
+                    for activity in activities:
+                        # Create deal link
+                        activity_identifier = activity.activity_identifier
+                        link_id = f"{investor_identifier}-{activity_identifier}"
+                        if link_id in act_links_processed:
+                            continue
+                        links.append(
+                            self._get_deal_link_data(parent_investor, activity)
+                        )
+                        act_links_processed.add(link_id)
+
+                        # Create deal node
+                        if activity_identifier in activities_processed:
+                            continue
+                        nodes.append(self._get_deal_data(activity))
+                        activities_processed.add(activity_identifier)
 
         return {"nodes": nodes, "links": links}

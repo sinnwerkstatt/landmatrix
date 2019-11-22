@@ -1,7 +1,8 @@
 var inv_margin = { top: 20, right: 30, bottom: 20, left: 30 },
     inv_width = 960 - inv_margin.left - inv_margin.right,
     inv_height = 500 - inv_margin.top - inv_margin.bottom,
-    inv_svg, inv_node, inv_link, inv_edgepaths, inv_defs, inv_simulation;
+    inv_svg, inv_node, inv_inv_node, inv_deal_node,
+    inv_link, inv_edgepaths, inv_defs, inv_simulation;
 
 function loadInvestorNetwork(investorId, depth) {
     if (investorId <= 0) {
@@ -17,7 +18,8 @@ function loadInvestorNetwork(investorId, depth) {
 var inv_classes = {
   0: 'operating',
   1: 'parent',
-  2: 'tertiary'
+  2: 'tertiary',
+  3: 'deal'
 };
 
 
@@ -47,6 +49,27 @@ var showInvestorModal = function( data, i ) {
     modal.find('.modal-footer a.investor-link').attr('href', data.url);
     modal.modal("show");
 };
+
+var showDealModal = function( data, i ) {
+    var modal = $('#deal');
+    modal.find('.modal-header h4').text('#' + data.name);
+  	var output = [
+  	  data.country
+  	];
+    output = output.filter(function (val) {return val;}).join('<br>');
+    modal.find('.modal-body p').html(output);
+    modal.find('.modal-footer a.deal-link').attr('href', data.url);
+    modal.modal("show");
+};
+
+function wordwrap(str, width) {
+  var width = width || 20;
+  if (!str) {
+    return str;
+  }
+  var regex = '.{1,' +width+ '}(\\s|$)';
+  return str.match( RegExp(regex, 'g') );
+}
 
 function drawInvestorNetwork(links, nodes) {
   d3.select("#investor-network").select("svg").remove();
@@ -124,37 +147,98 @@ function drawInvestorNetwork(links, nodes) {
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; })
     .attr("class", function (d) {
-      return 'node investor' + (d.has_next_level ? ' has-children' : '');
+      var cls =  'node';
+      cls += d.type === 1 ? ' investor' : ' deal';
+      cls += d.is_root ? ' is-root' : '';
+      cls += d.has_next_level ? ' has-children' : '';
+      return cls;
     })
     .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended)
-    )
+    );
+
+  inv_node.append("circle")
+    .attr("r", 28);
+
+  // Investor nodes
+  inv_inv_node = inv_svg.selectAll(".node.investor")
     // .on("click", click)
     .on("contextmenu", function (d, i) {
       d3.event.preventDefault();
       showInvestorModal(d, i);
     });
 
-    $('svg .node').tooltip({
-      'container': 'body',
-      'placement': 'bottom',
-      'html': true,
-      'title': function() {
-        var data = d3.select(this).datum(),
-            name = "<strong>" + data.name + '</strong>',
-            meta = [data.country, data.classification].filter(function (val) {return val;}).join(", ");
-        return name + (meta ? '<br>' + meta : '');
+  $('svg .node.investor').tooltip({
+    'container': 'body',
+    'placement': 'bottom',
+    'html': true,
+    'title': function() {
+      var data = d3.select(this).datum(),
+          name = "<strong>" + data.name + '</strong>',
+          meta = [data.country, data.classification].filter(function (val) {return val;}).join(", ");
+      return name + (meta ? '<br>' + meta : '');
     }
   });
 
-  inv_node.append("circle")
-    .attr("r", 28);
+  inv_inv_node.append("text")
+    .attr("dy", "-1.1em")
+    .attr("class", "subtitle")
+    .text(function (d) {return '#' + d.identifier;});
 
-  inv_node.append("text")
+  inv_inv_node.append("text")
+    .attr("dy", "-.1em")
+    .text(function (d) {
+      if (d.name.length > 20) {
+        return wordwrap(d.name)[0];
+      } else {
+        return '';
+      }
+    });
+
+  inv_inv_node.append("text")
+    .attr("dy", ".9em")
+    .text(function (d) {
+      if (d.name.length <= 40) {
+        return d.name.length > 20 ? wordwrap(d.name)[1] : d.name;
+      } else {
+        return wordwrap(d.name)[1] + '...';
+      }
+    });
+
+  inv_inv_node.append("text")
+    .attr("dy", "1.9em")
+    .attr("class", "subtitle")
+    .text(function (d) {return d.country_code;});
+
+  // Deal nodes
+  inv_deal_node = inv_svg.selectAll(".node.deal")
+    // .on("click", click)
+    .on("contextmenu", function (d, i) {
+      d3.event.preventDefault();
+      showDealModal(d, i);
+    });
+
+  $('svg .node.deal').tooltip({
+    'container': 'body',
+    'placement': 'bottom',
+    'html': true,
+    'title': function() {
+      var data = d3.select(this).datum(),
+          name = "<strong>#" + data.name + '</strong>';
+      return name + '<br>' + data.country;
+    }
+  });
+
+  inv_deal_node.append("text")
     .attr("dy", ".35em")
-    .text(function (d) {return '#' + d.id;});
+    .text(function (d) {return '#' + d.identifier;});
+
+  inv_deal_node.append("text")
+    .attr("dy", "1.9em")
+    .attr("class", "subtitle")
+    .text(function (d) {return d.country_code;});
 
   inv_simulation
     .nodes(nodes)
