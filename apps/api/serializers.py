@@ -299,6 +299,13 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "identifier": activity_identifier,
             "country": str(target_country),
             "country_code": str(target_country.code_alpha2),
+            "intention": activity.get_current("intention"),
+            "nature": activity.get_current("nature"),
+            "negotiation_status": activity.get_negotiation_status(),
+            "implementation_status": activity.get_implementation_status(),
+            "intended_size": activity.get_intended_size(),
+            "contract_size": activity.get_contract_size(),
+            "production_size": activity.get_production_size(),
             "url": reverse("deal_detail", kwargs={"deal_id": activity_identifier}),
         }
 

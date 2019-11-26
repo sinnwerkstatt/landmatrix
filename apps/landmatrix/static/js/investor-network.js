@@ -26,7 +26,7 @@ var inv_classes = {
 var showInvestorModal = function( data, i ) {
     var modal = $('#stakeholder'),
         type = (data.type === 1 && "Parent company" || data.type === 2 && "Tertiary investor/lender" || "Operating company");
-    modal.find('.modal-header h4').text(data.name);
+    modal.find('.modal-header h4').text(data.name + ' (#' + data.identifier + ')');
   	var output = [
   	  data.classification,
   	  data.country,
@@ -52,9 +52,14 @@ var showInvestorModal = function( data, i ) {
 
 var showDealModal = function( data, i ) {
     var modal = $('#deal');
-    modal.find('.modal-header h4').text('#' + data.name);
+    modal.find('.modal-header h4').text('Deal #' + data.name);
   	var output = [
-  	  data.country
+  	  data.country,
+      data.intention,
+      data.implementation_status,
+      data.intended_size,
+      data.contract_size,
+      data.production_size
   	];
     output = output.filter(function (val) {return val;}).join('<br>');
     modal.find('.modal-body p').html(output);
@@ -176,16 +181,16 @@ function drawInvestorNetwork(links, nodes) {
     'html': true,
     'title': function() {
       var data = d3.select(this).datum(),
-          name = "<strong>" + data.name + '</strong>',
+          name = "<strong>" + data.name + ' (#' + data.identifier + ')</strong>',
           meta = [data.country, data.classification].filter(function (val) {return val;}).join(", ");
       return name + (meta ? '<br>' + meta : '');
     }
   });
 
-  inv_inv_node.append("text")
-    .attr("dy", "-1.1em")
-    .attr("class", "subtitle")
-    .text(function (d) {return '#' + d.identifier;});
+  // inv_inv_node.append("text")
+  //   .attr("dy", "-1.1em")
+  //   .attr("class", "subtitle")
+  //   .text(function (d) {return '#' + d.identifier;});
 
   inv_inv_node.append("text")
     .attr("dy", "-.1em")
@@ -198,7 +203,7 @@ function drawInvestorNetwork(links, nodes) {
     });
 
   inv_inv_node.append("text")
-    .attr("dy", ".9em")
+    .attr("dy", function (d)  { return d.name.length > 20 ? ".9em" : ".35em" })
     .text(function (d) {
       if (d.name.length <= 40) {
         return d.name.length > 20 ? wordwrap(d.name)[1] : d.name;
@@ -226,7 +231,7 @@ function drawInvestorNetwork(links, nodes) {
     'html': true,
     'title': function() {
       var data = d3.select(this).datum(),
-          name = "<strong>#" + data.name + '</strong>';
+          name = "<strong>Deal #" + data.name + '</strong>';
       return name + '<br>' + data.country;
     }
   });
