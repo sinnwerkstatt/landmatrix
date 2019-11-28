@@ -4,12 +4,13 @@ var inv_margin = { top: 20, right: 30, bottom: 20, left: 30 },
     inv_svg, inv_node, inv_inv_node, inv_deal_node,
     inv_link, inv_edgepaths, inv_defs, inv_simulation;
 
-function loadInvestorNetwork(investorId, depth) {
+function loadInvestorNetwork(investorId, depth, showDeals) {
     if (investorId <= 0) {
         return;
     }
-    d3.json("/api/investor_network.json?history_id=" + investorId + "&depth=" + depth,
-        function (data) {
+    var url = "/api/investor_network.json?history_id=" + investorId;
+    url += "&depth=" + depth + "&show_deals=" + showDeals;
+    d3.json(url, function (data) {
           drawInvestorNetwork(data.links, data.nodes);
         }
     );
@@ -110,19 +111,6 @@ function drawInvestorNetwork(links, nodes) {
     .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
     .attr('fill', '#F78E8F')
     .style('stroke','none');
-
-  inv_simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function (d) {return d.id;})
-      .distance(500)
-      .strength(0))
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(inv_width / 2, inv_height / 2));
-    //.stop();
-
-  // inv_simulation.force("link")
-  //  .links(links);
-
-  // for (var i = 0; i < 300; ++i) inv_simulation.tick();
 
   inv_link = inv_svg.selectAll(".link")
     .data(links)
@@ -245,9 +233,21 @@ function drawInvestorNetwork(links, nodes) {
     .attr("class", "subtitle")
     .text(function (d) {return d.country_code;});
 
-  inv_simulation
-    .nodes(nodes)
+  inv_simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink().id(function (d) {return d.id;})
+      .distance(500)
+      .strength(0))
+    // .force("charge", d3.forceManyBody())
+    .force("charge", d3.forceCollide().radius(40))
+    .force("r", d3.forceRadial(function(d) { return d.is_root ? 200 : 100; }))
+    .force("center", d3.forceCenter(inv_width / 2, inv_height / 2))
+    //.stop();
     .on("tick", ticked);
+
+  // inv_simulation.force("link")
+  //  .links(links);
+
+  // for (var i = 0; i < 300; ++i) inv_simulation.tick();
 
   inv_simulation.force("link")
     .links(links);

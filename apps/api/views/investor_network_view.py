@@ -109,5 +109,6 @@ class InvestorNetworkView(DealInvestorNetworkView):
         investor = self.get_object()
         serializer = self.serializer(investor, user=request.user)
         depth = int(request.query_params.get("depth", "1"))
-        response_data = serializer.to_representation(investor, depth=depth)
+        show_deals = request.query_params.get("show_deals", "1") == "1"
+        response_data = serializer.to_representation(investor, depth=depth, show_deals=show_deals)
         return Response(response_data)

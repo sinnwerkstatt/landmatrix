@@ -277,8 +277,8 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "status": investor.fk_status.name,
             "is_root": is_root,
             "identifier": investor_identifier,
-            "country": str(country),
-            "country_code": str(country.code_alpha2),
+            "country": str(country) if country else "",
+            "country_code": str(country.code_alpha2) if country else "",
             "classification": investor.get_classification_display(),
             "homepage": investor.homepage,
             "opencorporates_link": investor.opencorporates_link,
@@ -297,8 +297,8 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "name": str(activity_identifier),
             "status": activity.fk_status.name,
             "identifier": activity_identifier,
-            "country": str(target_country),
-            "country_code": str(target_country.code_alpha2),
+            "country": str(target_country) if target_country else "",
+            "country_code": str(target_country.code_alpha2) if target_country else "",
             "intention": activity.get_current("intention"),
             "nature": activity.get_current("nature"),
             "negotiation_status": activity.get_negotiation_status(),
@@ -333,7 +333,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
     def _has_next_level(self, investor):
         return investor.venture_involvements.count() > 0
 
-    def to_representation(self, obj, depth=1):
+    def to_representation(self, obj, depth=1, show_deals=True):
         nodes, links = [], []
         nodes.append(self._get_investor_data(obj, True))
         investors = {obj.id}
@@ -391,26 +391,27 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     nodes.append(node_data)
                     investors_processed.add(investor_identifier)
 
-                    # Create deal node and links
-                    activities = HistoricalActivity.objects.latest_only()
-                    activities = activities.filter(
-                        involvements__fk_investor__investor_identifier=investor_identifier
-                    )
-                    for activity in activities:
-                        # Create deal link
-                        activity_identifier = activity.activity_identifier
-                        link_id = f"{investor_identifier}-{activity_identifier}"
-                        if link_id in act_links_processed:
-                            continue
-                        links.append(
-                            self._get_deal_link_data(parent_investor, activity)
+                    if show_deals:
+                        # Create deal node and links
+                        activities = HistoricalActivity.objects.latest_only()
+                        activities = activities.filter(
+                            involvements__fk_investor__investor_identifier=investor_identifier
                         )
-                        act_links_processed.add(link_id)
+                        for activity in activities:
+                            # Create deal link
+                            activity_identifier = activity.activity_identifier
+                            link_id = f"{investor_identifier}-{activity_identifier}"
+                            if link_id in act_links_processed:
+                                continue
+                            links.append(
+                                self._get_deal_link_data(parent_investor, activity)
+                            )
+                            act_links_processed.add(link_id)
 
-                        # Create deal node
-                        if activity_identifier in activities_processed:
-                            continue
-                        nodes.append(self._get_deal_data(activity))
-                        activities_processed.add(activity_identifier)
+                            # Create deal node
+                            if activity_identifier in activities_processed:
+                                continue
+                            nodes.append(self._get_deal_data(activity))
+                            activities_processed.add(activity_identifier)
 
         return {"nodes": nodes, "links": links}
