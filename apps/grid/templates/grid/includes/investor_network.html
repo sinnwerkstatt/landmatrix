@@ -33,12 +33,11 @@
 
 <script type="text/javascript">
   function updateInvestorNetwork() {
-	    var depth = parseInt($("#depth").val()),
-          showDeals = $("#show_deals")[0].checked && "1" || "0";
-	    loadInvestorNetwork({{ history_id }}, depth, showDeals);
+	    var showDeals = $("#show_deals")[0].checked && "1" || "0";
+	    loadInvestorNetwork({{ history_id }}, 10, showDeals);
   }
 	$(document).ready(function () {
-	  $("#depth").change(updateInvestorNetwork);
+	  // $("#depth").change(updateInvestorNetwork);
 	  $("#show_deals").change(updateInvestorNetwork);
 	  updateInvestorNetwork();
 	});

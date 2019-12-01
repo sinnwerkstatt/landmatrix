@@ -932,33 +932,43 @@ table td.number {
 div#investor-network {
   overflow-x: scroll !important;
 
+  .svg-chart-container {
+    border: 2px solid #ddd;
+  }
+
   .node {
     text-align: center;
     cursor: pointer;
   }
 
-  .node circle {
+  .node.hover-other circle {
+    fill: #f2fafa; /* .2 of primary color */
+    stroke: #dcf0f0; /* .2 of primary color */
+  }
+
+  .node circle,
+  .node.hover circle {
     fill: #bee7e7;
     stroke: #44b7b6;
     stroke-width: 2;
     transition: all .2s ease-in-out;
   }
 
-  .node:hover circle {
+  .node.is-root circle,
+  .node.is-root.hover circle {
     fill: #44b7b6;
+    stroke: #44b7b6;
   }
 
-  .node.is-root circle {
-    fill: #44b7b6;
+  .node.deal.hover-other circle {
+    fill: #fff9f2; /* .2 of primary color */
+    stroke: #ffe9d7; /* .2 of primary color */
   }
 
-  .node.deal circle {
+  .node.deal circle,
+  .node.deal.hover circle {
     fill: #fcdfbf;
     stroke: #fc941f;
-  }
-
-  .node.deal:hover circle {
-    fill: #fc941f;
   }
 
   .node text {
@@ -1000,6 +1010,16 @@ div#investor-network {
   .link.deal,
   .crosslink.deal {
     stroke: #fc941f;
+  }
+
+  .link.hover-other,
+  .crosslink.hover-other {
+    opacity: .2;
+  }
+
+  .link.hover,
+  .crosslink.hover {
+    opacity: 1;
   }
 
   .node.has-children circle {

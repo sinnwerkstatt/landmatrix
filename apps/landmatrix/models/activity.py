@@ -880,8 +880,8 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
             queryset = queryset.filter(fk_status_id__in=status)
         return queryset
 
-    def latest_only(self):
-        return self.filter(id__in=self.latest_ids())
+    def latest_only(self, status=None):
+        return self.filter(id__in=self.latest_ids(status))
 
 
 class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):

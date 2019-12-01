@@ -17,7 +17,7 @@ function initInvestorForm(form) {
 
 function generateButtons(field) {
     var investorId = field.val(),
-        investorIdentifier = field.select2('data')[0].investor_identifier,
+        investorIdentifier = field.select2('data')[0].identifier,
         addLink = '/investor/add/',
         role = field.attr('name');
     if (investorIdentifier === undefined) {
@@ -100,31 +100,31 @@ var updateReferences = function( data ) {
 
     while (node = nodes.pop()) {
         var children = {};
-        if (Object.keys(node.stakeholders || {}).length > 0) {
-            children = node.stakeholders;
-        } else if (Object.keys(node._stakeholders || {}).length > 0) {
-            children = node._stakeholders;
+        if (Object.keys(node.investors || {}).length > 0) {
+            children = node.investors;
+        } else if (Object.keys(node._investors || {}).length > 0) {
+            children = node._investors;
         }
         // Original?
         if (Object.keys(children).length > 0) {
-            if (node.investor_identifier in uniqueNodes) {
-                uniqueNodes[node.investor_identifier].original = node;
+            if (node.id in uniqueNodes) {
+                uniqueNodes[node.id].original = node;
             } else {
-                uniqueNodes[node.investor_identifier] = {
+                uniqueNodes[node.id] = {
                     original: node,
                     duplicates: []
                 };
 
-                for (var investor_identifier in children) {
-                  nodes.push(children[investor_identifier]);
+                for (var id in children) {
+                  nodes.push(children[id]);
                 }
             }
         } else {
           // Duplicate
-          if (node.investor_identifier in uniqueNodes) {
-              uniqueNodes[node.investor_identifier].duplicates.push(node);
+          if (node.id in uniqueNodes) {
+              uniqueNodes[node.id].duplicates.push(node);
           } else {
-            uniqueNodes[node.investor_identifier] = {
+            uniqueNodes[node.id] = {
                 original: undefined,
                 duplicates: [node]
             };
@@ -132,15 +132,15 @@ var updateReferences = function( data ) {
         }
     }
 
-    for (var investor_identifier in uniqueNodes) {
-        var node = uniqueNodes[investor_identifier],
+    for (var id in uniqueNodes) {
+        var node = uniqueNodes[id],
             duplicate;
         if (!node.original) continue;
         for (var i = 0; i < node.duplicates.length; i++) {
             duplicate = node.duplicates[i];
             duplicate.found = "1";
-            duplicate.stakeholders = node.original.stakeholders;
-            duplicate._stakeholders = node.original._stakeholders;
+            duplicate.investors = node.original.investors;
+            duplicate._investors = node.original._investors;
         }
     }
 
@@ -158,8 +158,8 @@ var getLinkedTreeData = function( curRoot, curCrossLinks ) {
         // Find link
         for (var i = 0; i < curCrossLinks.length; i++) {
           link = curCrossLinks[i];
-          if (link.source.investor_identifier === node.investor_identifier &&
-              link.target.investor_identifier === childNode.investor_identifier) {
+          if (link.source.id === node.id &&
+              link.target.id === childNode.id) {
             // Link already existing? Done.
             found = true;
             break;
@@ -176,14 +176,14 @@ var getLinkedTreeData = function( curRoot, curCrossLinks ) {
         return link;
     }
 
-    function getChild( investor_identifier, children ) {
+    function getChild( id, children ) {
         if (!children) return;
 
         // Find child
         var child;
         for (var i = 0; i < children.length; i++) {
           child = children[i];
-          if (child.investor_identifier === investor_identifier) {
+          if (child.id === id) {
             break;
           }
         }
@@ -197,21 +197,21 @@ var getLinkedTreeData = function( curRoot, curCrossLinks ) {
             links = [];
 
         // Node already processed?
-        if (currentNode.investor_identifier in nodesProcessed) {
-          links.push(getLink(parentNode, nodesProcessed[currentNode.investor_identifier], currentNode.type));
+        if (currentNode.id in nodesProcessed) {
+          links.push(getLink(parentNode, nodesProcessed[currentNode.id], currentNode.type));
           // New node
         } else {
           node = currentNode;
-          nodesProcessed[currentNode.investor_identifier] = node;
+          nodesProcessed[currentNode.id] = node;
           // Node has children
-          if (node.stakeholders && Object.keys(node.stakeholders).length > 0) {
+          if (node.investors && Object.keys(node.investors).length > 0) {
             var children = [],
                 childNode;
 
             // First only check all direct children
-            for (var investor_identifier in node.stakeholders) {
-              if (!node.stakeholders.hasOwnProperty(investor_identifier)) continue;
-              childNode = node.stakeholders[investor_identifier];
+            for (var id in node.investors) {
+              if (!node.investors.hasOwnProperty(id)) continue;
+              childNode = node.investors[id];
 
               var [childRoot, childCrossLinks] = getChildrenAndLinks(childNode, node);
 
@@ -248,8 +248,8 @@ var getLinkedTreeData = function( curRoot, curCrossLinks ) {
 var showInvestorModal = function( d, i ) {
     var modal = $('#stakeholder'),
         data = d.data,
-        type = (data.type === 1 && "Parent company" || data.type === 2 && "Tertiary investor/lender" || "Operating company");
-    modal.find('.modal-header h4').text(data.name);
+      type = (data.type === "parent" && "Parent company" || data.type === "tertiary" && "Tertiary investor/lender" || "Operating company");
+    modal.find('.modal-header h4').text(data.name + ' (#' + data.identifier + ')');
   	var output = [
   	  data.classification,
   	  data.country,
@@ -336,9 +336,9 @@ function diagonal(s, d) {
     return  `M ${s.y} ${s.x} L ${d.y} ${d.x}`;
 };
 
-var findNode = function (investor_identifier) {
+var findNode = function (id) {
    return d3.selectAll(".node").filter( function (d) {
-       return d && (d.data.investor_identifier === investor_identifier);
+       return d && (d.data.id === id);
    }).datum();
 };
 
@@ -350,6 +350,15 @@ var shortenLink = function (node) {
     return `M ${s.y} ${s.x} L ${d.x} ${d.y}`;
 };
 
+function wordwrap(str, width) {
+  var width = width || 20;
+  if (!str) {
+    return str;
+  }
+  var regex = '.{1,' +width+ '}(\\s|$)';
+  return str.match( RegExp(regex, 'g') );
+}
+
 // The chart builder function to build a tree with cross links.
 // Configuration is excluded for the simplicity of the example.
 var linkedTreeChartBuilder = function( parentElement ) {
@@ -359,7 +368,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
       data;
 
     // Set up the boundaries.
-    var margin = { top: 20, right: 30, bottom: 20, left: 30 };
+    var margin = { top: 20, right: 30, bottom: 20, left: 80 };
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
 
@@ -436,12 +445,12 @@ var linkedTreeChartBuilder = function( parentElement ) {
         // ****************** Nodes section ***************************
         // Update the nodes…
         var node = chart.selectAll("g.node")
-          .data(nodes, function(d) { return d.data.investor_identifier; });
+          .data(nodes, function(d) { return d.data.id; });
 
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
           .attr( 'class', function (d) {
-            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders).length > 0 ? ' has-children' : '');
+            return 'node ' + classes[d.data.type] + (d.data._investors && Object.keys(d.data._investors).length > 0 ? ' has-children' : '');
           } )
           .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
           .on("click", click)
@@ -450,25 +459,61 @@ var linkedTreeChartBuilder = function( parentElement ) {
             showInvestorModal(d, i);
           });
 
+        nodeEnter.append("circle")
+          .attr("r", 1e-6);
+
+        // Tooltip
         $('svg .node').tooltip({
           'container': 'body',
           'placement': 'bottom',
           'html': true,
           'title': function() {
-            var data = d3.select(this).datum().data,
-                name = "<strong>" + data.name + '</strong>',
-                meta = [data.country, data.classification].filter(function (val) {return val;}).join(", ");
+            var data = d3.select(this).datum().data;
+            var name = "<strong>" + data.name + ' (#' + data.identifier + ')</strong>',
+              meta = [data.country, data.classification].filter(function (val) {
+                return val;
+              }).join(", ");
             return name + (meta ? '<br>' + meta : '');
           }
         });
 
-        nodeEnter.append("circle")
-          .attr("r", 1e-6);
+        // Subtitle top
+        // nodeEnter.append("text")
+        //   .attr("dy", "-1.1em")
+        //   .attr("class", "subtitle")
+        //   .text(function (d) {return '#' + d.identifier;});
 
+        // Title (first or center row)
         nodeEnter.append("text")
-          .attr("x", 0)
-          .attr("dy", ".35em")
-          .text(function(d) { return '#' + d.data.investor_identifier; });
+          .attr("dy", "-.1em")
+          .text(function (d) {
+            var name = d.data.name;
+            if (name.length > 20) {
+              return wordwrap(name)[0];
+            } else {
+              return '';
+            }
+          });
+
+        // Title (second row)
+        nodeEnter.append("text")
+          .attr("dy", function (d)  {
+            return d.data.name.length > 20 ? ".9em" : ".35em";
+          })
+          .text(function (d) {
+            var name = d.data.name;
+            if (name.length <= 40) {
+              return name.length > 20 ? wordwrap(name)[1] : name;
+            } else {
+              return wordwrap(name)[1] + '...';
+            }
+          });
+
+        // Subtitle (bottom)
+        nodeEnter.append("text")
+          .attr("dy", "1.9em")
+          .attr("class", "subtitle")
+          .text(function (d) {return d.data.country_code;});
 
         // UPDATE
         var nodeUpdate = nodeEnter.merge(node);
@@ -477,7 +522,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         nodeUpdate//.transition()
           //.duration(duration)
           .attr( 'class', function (d) {
-            return 'node ' + classes[d.data.type] + (d.data._stakeholders && Object.keys(d.data._stakeholders).length > 0 ? ' has-children' : '');
+            return 'node ' + classes[d.data.type] + (d.data._investors && Object.keys(d.data._investors).length > 0 ? ' has-children' : '');
           } )
           .attr("transform", function(d) {
           	return "translate(" + d.y + "," + d.x + ")"
@@ -504,7 +549,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         // ****************** links section ***************************
         // Update the links
         var link = chart.selectAll("path.link")
-          .data(links, function(d) { return d.data.investor_identifier; });
+          .data(links, function(d) { return d.parent.data.id + '-' + d.data.id; });
 
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert("path", "g")
@@ -522,10 +567,10 @@ var linkedTreeChartBuilder = function( parentElement ) {
           .attr('d', function(d){ return diagonal(d, d.parent) })
           .attr('d', shortenLink)
           .attr( 'class', function (d) {
-            return 'link ' + classes[d.data.type];
+            return 'link ' + d.data.type;
           })
           .attr('marker-end', function(d) {
-          	return 'url(#arrowhead-' + classes[d.data.type] + ')';
+          	return 'url(#arrowhead-' + d.data.type + ')';
           });
 
         // Transition exiting nodes to the parent's new position.
@@ -540,11 +585,11 @@ var linkedTreeChartBuilder = function( parentElement ) {
         // *************** cross links section ************************
         // The edge lines for the cross-links.
         var crossLink = chart.selectAll( 'path.crosslink' )
-          .data( curCrossLinksData, function(d) { return d.target.investor_identifier; });
+          .data( curCrossLinksData, function(d) { return d.parent.data.id + '-' + d.data.id; });
 
         var crossLinkEnter = crossLink.enter().insert( "path", "g" )
           .attr("d", function(d) {
-            var o = {x: source.x0, y: source.y0};
+            var o = {x: d.source.x0, y: d.source.y0};
             return crossLinkDiagonal(o, o);
           });
 
@@ -555,21 +600,21 @@ var linkedTreeChartBuilder = function( parentElement ) {
         crosslinkUpdate//.transition()
           //.duration( duration )
           .attr( 'class', function (d) {
-            return 'crosslink ' + classes[d.type];
+            return 'crosslink ' + d.type;
           })
           .attr('d', function(d){
-          	return crossLinkDiagonal(findNode(d.target.investor_identifier), findNode(d.source.investor_identifier));
+          	return crossLinkDiagonal(findNode(d.target.id), findNode(d.source.id));
           })
           .attr('d', function(d){
-          	return crossLinkDiagonal(findNode(d.target.investor_identifier), findNode(d.source.investor_identifier), this);
+          	return crossLinkDiagonal(findNode(d.target.id), findNode(d.source.id), this);
           })
-          .attr('marker-end',function (d) { return 'url(#arrowhead-' + classes[d.type] + ')'; });
+          .attr('marker-end',function (d) { return 'url(#arrowhead-' + d.type + ')'; });
 
 			 	// Remove any exiting links
         var crossLinkExit = crossLink.exit()//.transition()
           //.duration( duration )
           .attr("d", function(d) {
-          	var o = {x: source.x, y: source.y};
+          	var o = {x: d.source.x, y: d.source.y};
           	return diagonal(o, o);
           })
           .remove();
@@ -582,12 +627,12 @@ var linkedTreeChartBuilder = function( parentElement ) {
 
         // Toggle children on click.
         function click(d) {
-            if (d.data.stakeholders) {
-                d.data._stakeholders = d.data.stakeholders;
-                d.data.stakeholders = null;
+            if (d.data.investors) {
+                d.data._investors = d.data.investors;
+                d.data.investors = null;
             } else {
-                d.data.stakeholders = d.data._stakeholders;
-                d.data._stakeholders = null;
+                d.data.investors = d.data._investors;
+                d.data._investors = null;
             }
             update(d);
         }

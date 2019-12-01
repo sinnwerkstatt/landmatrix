@@ -98,7 +98,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
                 "depth",
                 required=False,
                 location="query",
-                description="Dep version ID",
+                description="Depth",
                 schema=coreschema.Integer(),
             ),
         ]
@@ -110,5 +110,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
         serializer = self.serializer(investor, user=request.user)
         depth = int(request.query_params.get("depth", "1"))
         show_deals = request.query_params.get("show_deals", "1") == "1"
-        response_data = serializer.to_representation(investor, depth=depth, show_deals=show_deals)
+        response_data = serializer.to_representation(
+            investor, show_deals=show_deals, depth=depth
+        )
         return Response(response_data)
