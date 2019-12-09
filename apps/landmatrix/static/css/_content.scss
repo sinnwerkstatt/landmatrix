@@ -461,6 +461,15 @@ ul li a {
   color: $lm_dark;
 }
 
+#footer-nav .rich-text a:hover {
+  text-decoration: underline !important;
+  color: $lm_orange;
+}
+
+#footer-nav .rich-text h3 a:hover {
+  text-decoration: none !important;
+}
+
 .icon-none {
   width: 14px;
   height: 14px;
