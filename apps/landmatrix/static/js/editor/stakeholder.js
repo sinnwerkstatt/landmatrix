@@ -585,7 +585,7 @@ var linkedTreeChartBuilder = function( parentElement ) {
         // *************** cross links section ************************
         // The edge lines for the cross-links.
         var crossLink = chart.selectAll( 'path.crosslink' )
-          .data( curCrossLinksData, function(d) { return d.parent.data.id + '-' + d.data.id; });
+          .data( curCrossLinksData, function(d) { return d.source.id + '-' + d.target.id; });
 
         var crossLinkEnter = crossLink.enter().insert( "path", "g" )
           .attr("d", function(d) {

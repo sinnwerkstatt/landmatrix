@@ -930,11 +930,10 @@ table td.number {
 
 
 div#investor-network {
-  overflow-x: scroll !important;
-
-  .svg-chart-container {
-    border: 2px solid #ddd;
-  }
+  border: 2px solid #ddd;
+  display: block;
+  width: 900px;
+  height: 460px;
 
   .node {
     text-align: center;

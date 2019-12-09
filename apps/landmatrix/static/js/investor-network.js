@@ -273,7 +273,7 @@ function renderChartCollapsibleNetwork(params) {
 
       // ###########################   BEHAVIORS #########################
       var behaviors = {};
-      // behaviors.zoom = d3.zoom().scaleExtent([0.75, 100, 8]).on('zoom', zoomed);
+      behaviors.zoom = d3.zoom().scaleExtent([0.75, 1.5, 8]).on('zoom', zoomed);
       behaviors.drag = d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
 
       // ###########################   LAYOUTS #########################
@@ -368,9 +368,10 @@ function renderChartCollapsibleNetwork(params) {
 
       // Add svg
       invSvg = container.patternify({ tag: 'svg', selector: 'svg-chart-container' })
+        .attr('viewBox', '0 0 ' + attrs.svgWidth + ' ' + attrs.svgHeight)
         .attr('width', attrs.svgWidth)
-        .attr('height', attrs.svgHeight);
-        //.call(behaviors.zoom);
+        .attr('height', attrs.svgHeight)
+        .call(behaviors.zoom);
 
       // Add container g element
       var chart = invSvg.patternify({ tag: 'g', selector: 'chart' })
@@ -614,8 +615,18 @@ function renderChartCollapsibleNetwork(params) {
         // Apply transform event props to the wrapper
         chart.attr('transform', transform);
 
-        invSvg.selectAll('.node').attr("transform", function (d) { return `translate(${d.x},${d.y}) scale(${1 / (attrs.lastTransform ? attrs.lastTransform.k : 1)})`; });
-        invSvg.selectAll('.link').attr("stroke-width", attrs.lineStrokeWidth / (attrs.lastTransform ? attrs.lastTransform.k : 1));
+        invSvg.selectAll('marker')
+          .attr('refX', function (d) {
+            return 32 / (attrs.lastTransform ? attrs.lastTransform.k : 1);
+          });
+
+        invSvg.selectAll('.node')
+          .attr("transform", function (d) {
+          return `translate(${d.x},${d.y}) scale(${1 / (attrs.lastTransform ? attrs.lastTransform.k : 1)})`;
+        });
+        invSvg.selectAll('.link')
+          .attr("stroke-width",
+            attrs.lineStrokeWidth / (attrs.lastTransform ? attrs.lastTransform.k : 1));
 
       }
 
