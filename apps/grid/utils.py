@@ -12,14 +12,16 @@ def get_display_value(field, values, attributes=None, formset=None):
     if isinstance(field, forms.ModelChoiceField):
         # Use cached unfiltered queryset to retrieve object (because some fields use none() for ajax)
         model_name = field.queryset.model._meta.model_name
+        # Always query all objects (for caching)
+        queryset = field.queryset.model.objects.all()
         choices = cache.get("%s_choices" % model_name)
         if not choices:
             if field.queryset.model in (HistoricalInvestor, Investor):
                 choices = dict(
-                    ((str(o.pk), str(o.investor_identifier)) for o in field.queryset)
+                    ((str(o.pk), str(o.investor_identifier)) for o in queryset)
                 )
             else:
-                choices = dict(((str(o.pk), str(o)) for o in field.queryset))
+                choices = dict(((str(o.pk), str(o)) for o in queryset))
             cache.set("%s_choices" % model_name, choices)
         output = [value and choices.get(str(value), "") or "" for value in values]
     elif isinstance(field, forms.ChoiceField):
