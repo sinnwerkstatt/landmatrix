@@ -260,6 +260,10 @@ div.fullwidth.fullwidth-lightgrey {
   padding: 30px 0;
 }
 
+[class*="block-"] + [class*="block-"] {
+  margin-top: 30px;
+}
+
 .block.block-section_divider {
   padding: 0;
 }
