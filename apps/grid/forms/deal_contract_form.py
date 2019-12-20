@@ -19,7 +19,7 @@ class DealContractForm(BaseForm):
     contract_expiration_date = YearMonthDateField(
         required=False, label=_("Contract expiration date"), help_text="[YYYY-MM-DD]"
     )
-    sold_as_deal = forms.IntegerField(required=False, label=_("Sold as deal no."))
+    # sold_as_deal = forms.IntegerField(required=False, label=_("Sold as deal no."))
     agreement_duration = forms.IntegerField(
         required=False,
         label=_("Duration of the agreement (in years)"),

@@ -370,9 +370,9 @@ class ActivityBase(models.Model):
 
     def get_deal_size(self):
         # FIXME: This should probably not sort by -date but by -id (latest element instead of newest)
-        intended_size = self._get_current("intended_size")
-        contract_size = self._get_current("contract_size")
-        production_size = self._get_current("production_size")
+        intended_size = self.get_current("intended_size")
+        contract_size = self.get_current("contract_size")
+        production_size = self.get_current("production_size")
 
         negotiation_status = self.get_negotiation_status()
         # 1) IF Negotiation status IS Intended
@@ -413,7 +413,7 @@ class ActivityBase(models.Model):
         else:
             return 0
 
-    def _get_current(self, attribute):
+    def get_current(self, attribute):
         """
         Returns the relevant state for the deal.
         Uses
@@ -433,19 +433,25 @@ class ActivityBase(models.Model):
         return current.value
 
     def get_negotiation_status(self):
-        return self._get_current("negotiation_status")
+        return self.get_current("negotiation_status")
 
     def get_implementation_status(self):
-        return self._get_current("implementation_status")
+        return self.get_current("implementation_status")
+
+    def get_intended_size(self):
+        intended_size = self.get_current("intended_size")
+        if intended_size:
+            return int(float(intended_size))
+        return 0
 
     def get_contract_size(self):
-        contract_size = self._get_current("contract_size")
+        contract_size = self.get_current("contract_size")
         if contract_size:
             return int(float(contract_size))
         return 0
 
     def get_production_size(self):
-        production_size = self._get_current("production_size")
+        production_size = self.get_current("production_size")
         if production_size:
             return int(float(production_size))
         return 0
@@ -874,8 +880,8 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
             queryset = queryset.filter(fk_status_id__in=status)
         return queryset
 
-    def latest_only(self):
-        return self.filter(id__in=self.latest_ids())
+    def latest_only(self, status=None):
+        return self.filter(id__in=self.latest_ids(status))
 
 
 class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):

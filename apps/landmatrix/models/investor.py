@@ -740,10 +740,8 @@ class InvestorVentureQuerySet(models.QuerySet):
     def active(self):
         return self.filter(fk_status__name__in=self.ACTIVE_STATUS_NAMES)
 
-    def latest_only(self):
-        latest_ids = HistoricalInvestor.objects.latest_ids(
-            status=HistoricalInvestor.PUBLIC_STATUSES
-        )
+    def latest_only(self, status=None):
+        latest_ids = HistoricalInvestor.objects.latest_ids(status=status)
         return self.filter(fk_venture_id__in=latest_ids, fk_investor_id__in=latest_ids)
 
     # deprecated

@@ -18,21 +18,21 @@ class APIDealInvestorNetworkViewTestCase(TestCase):
         )
         self.assertEqual(200, response.status_code)
         investor_network = response.data
-        self.assertEqual(70, investor_network.get("id"))
-        self.assertEqual(7, investor_network.get("investor_identifier"))
+        self.assertEqual("I7", investor_network.get("id"))
+        self.assertEqual(7, investor_network.get("identifier"))
         self.assertEqual("Test Investor #7", investor_network.get("name"))
         self.assertEqual("Cambodia", investor_network.get("country"))
         self.assertEqual("Private company", investor_network.get("classification"))
         self.assertEqual("/investor/7/", investor_network.get("url"))
-        stakeholders = investor_network.get("stakeholders")
-        self.assertIsInstance(stakeholders, (tuple, list))
-        self.assertEqual(1, len(stakeholders))
-        self.assertEqual(10, stakeholders[0].get("id"))
-        self.assertEqual(1, stakeholders[0].get("investor_identifier"))
-        self.assertEqual("Test Investor #1", stakeholders[0].get("name"))
-        self.assertEqual("Cambodia", stakeholders[0].get("country"))
-        self.assertEqual("Private company", stakeholders[0].get("classification"))
-        self.assertEqual("/investor/1/", stakeholders[0].get("url"))
+        investors = investor_network.get("investors")
+        self.assertIsInstance(investors, (tuple, list))
+        self.assertEqual(1, len(investors))
+        self.assertEqual("I1", investors[0].get("id"))
+        self.assertEqual(1, investors[0].get("identifier"))
+        self.assertEqual("Test Investor #1", investors[0].get("name"))
+        self.assertEqual("Cambodia", investors[0].get("country"))
+        self.assertEqual("Private company", investors[0].get("classification"))
+        self.assertEqual("/investor/1/", investors[0].get("url"))
 
     def test_with_history_id(self):
         response = self.client.get(
@@ -40,8 +40,8 @@ class APIDealInvestorNetworkViewTestCase(TestCase):
         )
         self.assertEqual(200, response.status_code)
         investor_network = response.data
-        self.assertEqual(70, investor_network.get("id"))
-        self.assertEqual(7, investor_network.get("investor_identifier"))
+        self.assertEqual("I7", investor_network.get("id"))
+        self.assertEqual(7, investor_network.get("identifier"))
 
     def test_with_invalid_investor(self):
         response = self.client.get(

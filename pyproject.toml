@@ -13,9 +13,8 @@ python = "^3.6"
 Django = "<2.3"
 wagtail = "<2.7"
 
-elasticsearch = "<2"
 simplejson = "*"
-pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch"}
+pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
 psycopg2-binary = "*"
 redis = "*"

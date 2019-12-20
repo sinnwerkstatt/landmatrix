@@ -9,6 +9,7 @@ from apps.landmatrix.models import (
     Activity,
     FilterPreset,
     HistoricalInvestorVentureInvolvement,
+    HistoricalActivity,
 )
 from apps.landmatrix.models.investor import HistoricalInvestor, InvestorBase
 
@@ -165,24 +166,47 @@ class DealInvestorNetworkSerializer(serializers.BaseSerializer):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    def to_representation(
-        self, obj, parent_types=["parent_stakeholders", "parent_investors"]
-    ):
-        response = {
-            "id": obj.id,
-            "name": obj.name,
-            "status": obj.fk_status.name,
-            "investor_identifier": obj.investor_identifier,
-            "country": str(obj.fk_country),
-            "classification": obj.get_classification_display(),
-            "homepage": obj.homepage,
-            "opencorporates_link": obj.opencorporates_link,
-            "comment": obj.comment,
+    def _get_investor_data(self, investor, is_root=True):
+        investor_identifier = investor.investor_identifier
+        country = investor.fk_country
+        return {
+            "id": f"I{investor_identifier}",
+            "type": "investor",
+            "name": investor.name,
+            "status": investor.fk_status.name,
+            "is_root": is_root,
+            "identifier": investor_identifier,
+            "country": str(country) if country else "",
+            "country_code": str(country.code_alpha2) if country else "",
+            "classification": investor.get_classification_display(),
+            "homepage": investor.homepage,
+            "opencorporates_link": investor.opencorporates_link,
+            "comment": investor.comment,
             "url": reverse(
-                "investor_detail", kwargs={"investor_id": obj.investor_identifier}
+                "investor_detail", kwargs={"investor_id": investor_identifier}
             ),
-            "stakeholders": [],
+            "investors": [],
         }
+
+    def _get_investor_link_data(self, involvement):
+        return {
+            "percentage": involvement.percentage,
+            "investment_type": involvement.get_investment_type_display(),
+            "loans_amount": involvement.loans_amount,
+            "loans_currency": str(involvement.loans_currency),
+            "loans_date": involvement.loans_date,
+            "parent_relation": involvement.get_parent_relation_display(),
+            "comment": involvement.comment,
+        }
+
+    def to_representation(
+        self,
+        obj,
+        parent_types=["parent_stakeholders", "parent_investors"],
+        show_deals=False,
+        is_root=True,
+    ):
+        response = self._get_investor_data(obj, is_root)
         involvements = HistoricalInvestorVentureInvolvement.objects.filter(
             fk_venture=obj
         )
@@ -200,9 +224,10 @@ class DealInvestorNetworkSerializer(serializers.BaseSerializer):
             else:
                 parent_involvements = involvements.stakeholders()
             for i, involvement in enumerate(parent_involvements):
+                investor_identifier = involvement.fk_investor.investor_identifier
                 # Always get latest version of parent investor
                 parent_investor = HistoricalInvestor.objects.filter(
-                    investor_identifier=involvement.fk_investor.investor_identifier
+                    investor_identifier=investor_identifier
                 )
                 if self.user and not self.user.is_authenticated:
                     parent_investor = parent_investor.filter(
@@ -212,19 +237,15 @@ class DealInvestorNetworkSerializer(serializers.BaseSerializer):
                         )
                     )
                 parent_investor = parent_investor.latest()
-                parent = self.to_representation(parent_investor, parent_types)
-                parent["type"] = parent_type == "parent_investors" and 2 or 1
-                parent["involvement"] = {
-                    "percentage": involvement.percentage,
-                    "investment_type": involvement.get_investment_type_display(),
-                    "loans_amount": involvement.loans_amount,
-                    "loans_currency": str(involvement.loans_currency),
-                    "loans_date": involvement.loans_date,
-                    "parent_relation": involvement.get_parent_relation_display(),
-                    "comment": involvement.comment,
-                }
+                parent = self.to_representation(
+                    parent_investor, parent_types, is_root=False
+                )
+                parent["type"] = (
+                    "tertiary" if parent_type == "parent_investors" else "parent"
+                )
+                parent["involvement"] = self._get_investor_link_data(involvement)
                 parents.append(parent)
-            response["stakeholders"].extend(parents)
+            response["investors"].extend(parents)
 
         return response
 
@@ -234,29 +255,48 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
     This serializer takes an investor and outputs a list of involvements
     formatted like:
     {
-        "nodes": [
+        "id": "I123",
+        "name": "",
+        "country": "",
+        "classification": "",
+        "homepage": "",
+        "opencorporates_link": "",
+        "comment": "",
+        "investors": [
             {
-                "id": 123,
+                "id": "I345",
                 "name": "",
-                "country": "",
-                "classification": "",
-                "homepage": "",
-                "opencorporates_link": "",
-                "comment": "",
+                [...]
+                "involvement": [
+                    "parent_type": "stakeholder" // or "investor"
+                    "percentage": "",
+                    "investment_type": "",
+                    "loans_amount": "",
+                    "loans_currency": "",
+                    "loans_date": "",
+                    "comment": "",
+                ],
+                "investors": [],
             },
         ],
-        "links": [
+        "deals": [
             {
-                "source": 123,
-                "target": 456,
-                "type": 1, (1 = parent company, 2 = tertiary investor/lender)
-                "percentage": "",
-                "investment_type": "",
-                "loans_amount": "",
-                "loans_currency": "",
-                "loans_date": "",
-                "comment": "",
-            ],
+                "id": "D123",
+                "type": 2,
+                "name": 123,
+                "status": "active",
+                "identifier": 123,
+                "country": "Cambodia",
+                "country_code": "CD",
+                "intention": "",
+                "nature": "",
+                "negotiation_status": "",
+                "implementation_status": "",
+                "intended_size": "",
+                "contract_size": "",
+                "production_size": "",
+                "url": "",
+            },
         ]
     }
     This is not REST, but it maintains compatibility with the existing API.
@@ -266,27 +306,62 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    def _get_node_data(self, investor):
+    def _get_investor_data(self, investor, is_root=False):
+        investor_identifier = investor.investor_identifier
+        country = investor.fk_country
         return {
-            "id": investor.investor_identifier,
+            "id": f"I{investor_identifier}",
+            "type": "investor",
             "name": investor.name,
             "status": investor.fk_status.name,
-            "investor_identifier": investor.investor_identifier,
-            "country": str(investor.fk_country),
+            "is_root": is_root,
+            "identifier": investor_identifier,
+            "country": str(country) if country else "",
+            "country_code": str(country.code_alpha2) if country else "",
             "classification": investor.get_classification_display(),
             "homepage": investor.homepage,
             "opencorporates_link": investor.opencorporates_link,
             "comment": investor.comment,
             "url": reverse(
-                "investor_detail", kwargs={"investor_id": investor.investor_identifier}
+                "investor_detail", kwargs={"investor_id": investor_identifier}
             ),
+            "investors": [],
+            "deals": [],
         }
 
-    def _get_link_data(self, involvement):
+    def _get_deal_data(self, activity):
+        activity_identifier = activity.activity_identifier
+        target_country = activity.target_country
         return {
-            "source": involvement.fk_investor.investor_identifier,
-            "target": involvement.fk_venture.investor_identifier,
-            "type": 1 if involvement.role == involvement.STAKEHOLDER_ROLE else 2,
+            "id": f"D{activity_identifier}",
+            "type": "deal",
+            "name": str(activity_identifier),
+            "status": activity.fk_status.name,
+            "identifier": activity_identifier,
+            "country": str(target_country) if target_country else "",
+            "country_code": str(target_country.code_alpha2) if target_country else "",
+            "intention": activity.get_current("intention"),
+            "nature": activity.get_current("nature"),
+            "negotiation_status": activity.get_negotiation_status(),
+            "implementation_status": activity.get_implementation_status(),
+            "intended_size": activity.get_intended_size(),
+            "contract_size": activity.get_contract_size(),
+            "production_size": activity.get_production_size(),
+            "url": reverse("deal_detail", kwargs={"deal_id": activity_identifier}),
+        }
+
+    def _get_investor_link_data(self, involvement, investor_identifier):
+        ROLE_MAP = {
+            HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE: "parent",
+            HistoricalInvestorVentureInvolvement.INVESTOR_ROLE: "tertiary",
+        }
+        if involvement.fk_investor.investor_identifier == investor_identifier:
+            direction = "parent"
+        else:
+            direction = "child"
+        return {
+            "dir": direction,
+            "type": ROLE_MAP.get(involvement.role, "operating"),
             "percentage": involvement.percentage,
             "investment_type": involvement.get_investment_type_display(),
             "loans_amount": involvement.loans_amount,
@@ -299,59 +374,71 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
     def _has_next_level(self, investor):
         return investor.venture_involvements.count() > 0
 
-    def to_representation(self, obj, depth=1):
-        nodes, links = [], []
-        nodes.append(self._get_node_data(obj))
-        investors = {obj.id}
-        nodes_processed, links_processed = {obj.investor_identifier}, set()
-        for i in range(depth):
-            involvements = HistoricalInvestorVentureInvolvement.objects.filter(
-                Q(fk_venture_id__in=investors) | Q(fk_investor_id__in=investors)
+    def to_representation(
+        self, obj, show_deals=True, depth=1, is_root=True, processed=None
+    ):
+        response = self._get_investor_data(obj, is_root)
+
+        # Skip next level if maximum depth reached or investor already processed
+        investor_identifier = obj.investor_identifier
+
+        if processed is None:
+            processed = {"investors": set(), "involvements": set()}
+        if depth == 0 or investor_identifier in processed["investors"]:
+            return response
+        processed["investors"].add(investor_identifier)
+
+        # Get parent investors (where current investor is "parent" or "child")
+        status = None
+        if self.user and not self.user.is_authenticated:
+            status = HistoricalInvestor.PUBLIC_STATUSES
+        involvements = HistoricalInvestorVentureInvolvement.objects.latest_only(status)
+        involvements = involvements.filter(
+            Q(fk_venture__investor_identifier=investor_identifier)
+            | Q(fk_investor__investor_identifier=investor_identifier)
+        ).distinct()
+
+        investors = []
+        for i, involvement in enumerate(involvements):
+            inv_key = f"{involvement.fk_venture.investor_identifier}-{involvement.fk_investor.investor_identifier}"
+            if inv_key in processed["involvements"]:
+                continue
+            processed["involvements"].add(inv_key)
+            if involvement.fk_investor.investor_identifier != investor_identifier:
+                related_identifier = involvement.fk_investor.investor_identifier
+            else:
+                related_identifier = involvement.fk_venture.investor_identifier
+            # Always get latest version of parent investor
+            related_investor = HistoricalInvestor.objects.latest_only(status)
+            related_investor = related_investor.filter(
+                investor_identifier=related_identifier
+            ).latest()
+            related = self.to_representation(
+                related_investor,
+                show_deals=show_deals,
+                depth=depth - 1,
+                is_root=False,
+                processed=processed,
             )
+            related["involvement"] = self._get_investor_link_data(
+                involvement, investor_identifier
+            )
+            investors.append(related)
+        response["investors"].extend(investors)
+
+        # Get deals (where current investor is an operating company)
+        if show_deals:
+            deals = []
+            # Create deal node and links
+            status = None
             if self.user and not self.user.is_authenticated:
-                involvements = involvements.filter(
-                    fk_venture__fk_status_id__in=(
-                        InvestorBase.STATUS_ACTIVE,
-                        InvestorBase.STATUS_OVERWRITTEN,
-                    ),
-                    fk_investor__fk_status_id__in=(
-                        InvestorBase.STATUS_ACTIVE,
-                        InvestorBase.STATUS_OVERWRITTEN,
-                    ),
-                )
-            investors = set(involvements.values_list("fk_investor_id", flat=True))
-            investors = investors.union(
-                set(involvements.values_list("fk_venture_id", flat=True))
-            )
-            for involvement in involvements:
-                # Create links
-                if involvement.id in links_processed:
-                    continue
-                links.append(self._get_link_data(involvement))
-                links_processed.add(involvement.id)
+                status = HistoricalActivity.PUBLIC_STATUSES
+            activities = HistoricalActivity.objects.latest_only(status)
+            activities = activities.filter(
+                involvements__fk_investor__investor_identifier=investor_identifier
+            ).distinct()
+            for activity in activities:
+                deals.append(self._get_deal_data(activity))
+            response["deals"].extend(deals)
 
-                # Create nodes
-                parent_investors = [involvement.fk_investor, involvement.fk_venture]
-                for parent_investor in parent_investors:
-                    investor_identifier = parent_investor.investor_identifier
-                    if investor_identifier in nodes_processed:
-                        continue
-                    # Always get latest version of parent investor
-                    latest_investor = HistoricalInvestor.objects.filter(
-                        investor_identifier=investor_identifier
-                    )
-                    if self.user and not self.user.is_authenticated:
-                        latest_investor = latest_investor.filter(
-                            fk_status_id__in=(
-                                InvestorBase.STATUS_ACTIVE,
-                                InvestorBase.STATUS_OVERWRITTEN,
-                            )
-                        )
-                    latest_investor = latest_investor.latest()
-                    node_data = self._get_node_data(latest_investor)
-                    # Last level visible: Set flag for more levels
-                    node_data["has_next_level"] = self._has_next_level(parent_investor)
-                    nodes.append(node_data)
-                    nodes_processed.add(investor_identifier)
-
-        return {"nodes": nodes, "links": links}
+        return response
