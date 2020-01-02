@@ -169,7 +169,7 @@ table th {
 .widget-columns-2 .carousel-control {
   font-size: 30px;
   line-height: 15px;
-  width: 30px !important;
+  width: 60px !important;
   height: 30px !important;
 }
 
@@ -183,6 +183,15 @@ table th {
     display: inline-block;
     padding: .2em .6em .3em;
   }
+}
+
+.carousel img,
+.widget-image img {
+  width: 100%;
+}
+
+.widget-image {
+  position: relative;
 }
 
 .checkboxes input[type=checkbox]:checked + label:before {
@@ -1337,10 +1346,21 @@ html,body {
   }
 }
 
+.richtext-image.fullwidth {
+  width: 100%;
+  height: auto;
+}
+
 .richtext-image.left {
   float: left;
-  margin-top: 25px;
-  max-width: 300px;
+  margin-right: 40px;
+  max-width: 50%;
+}
+
+.richtext-image.right {
+  float: right;
+  margin-left: 40px;
+  max-width: 50%;
 }
 
 .rich-text ul li {

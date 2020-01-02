@@ -225,3 +225,8 @@ def can_approve_reject(user, object=None):
 @register.filter()
 def field_label(model, field_name):
     return model._meta.get_field(field_name).verbose_name
+
+
+@register.filter()
+def substract(value, arg):
+    return int(value) - int(arg)

@@ -1,6 +1,8 @@
 import json
+import re
 
 from blog.models import BlogPage
+from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
 from wagtail.core import blocks
 from wagtail.core.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
@@ -13,7 +15,18 @@ from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
-class LinkBlock(StructBlock):
+class ExternalLinkMixin:
+    def _is_external_link(self, url):
+        current_site = Site.objects.get_current()
+        if current_site and current_site.domain in url:
+            return False
+        elif re.match(r"^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*", url):
+            return False
+        else:
+            return True
+
+
+class LinkBlock(ExternalLinkMixin, StructBlock):
     cls = blocks.ChoiceBlock(
         choices=[("btn", "Button"), ("btn btn-with-space", "Button (with space)")],
         required=False,
@@ -33,6 +46,7 @@ class LinkBlock(StructBlock):
             request=parent_context.get("request"),
             page=parent_context.get("page"),
         )
+        context["external"] = self._is_external_link(context["href"])
         context["text"] = value.get("text")
         context["class"] = value.get("cls")
         return context
@@ -148,7 +162,7 @@ class SectionDivider(StructBlock):
         template = "widgets/divider.html"
 
 
-class LinkedImageBlock(StructBlock):
+class LinkedImageBlock(ExternalLinkMixin, StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label="URL")
     caption = blocks.RichTextBlock(required=False)
@@ -164,8 +178,11 @@ class LinkedImageBlock(StructBlock):
             request=parent_context.get("request"),
             page=parent_context.get("page"),
         )
-        context["url"] = value.get("image").get_rendition("max-1200x1200").url
-        # context['name'] = value.get('caption')
+        context["external"] = self._is_external_link(context["href"])
+        image = value.get("image")
+        context["url"] = image.get_rendition("max-1200x1200").url
+        context["name"] = image.title
+        context["caption"] = value.get("caption")
         return context
 
 
