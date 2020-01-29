@@ -10,7 +10,7 @@ env = environ.Env()
 env.read_env(BASE_DIR(".env"))
 
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", _("English")), ("es", _("Español")), ("fr", _("Français"))]
+LANGUAGES = [("en", _("English")), ('de', _('German')), ("es", _("Español")), ("fr", _("Français"))]
 TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_L10N = True
@@ -93,6 +93,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    # 'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

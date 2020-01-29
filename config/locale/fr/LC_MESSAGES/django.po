@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-14 09:08+0100\n"
+"POT-Creation-Date: 2020-01-29 13:39+0100\n"
 "PO-Revision-Date: 2016-05-24 18:18+0200\n"
 "Last-Translator: Simon Liedtke <simon.liedtke@sinnwerkstatt.com>\n"
 "Language-Team: Spanish <simon.liedtke@sinnwerkstatt.com>\n"
@@ -505,14 +505,14 @@ msgstr ""
 #: apps/charts/templates/charts/subnav.html:28
 #: apps/grid/forms/deal_general_form.py:83
 #: apps/grid/forms/deal_general_form.py:87 apps/grid/views/base.py:105
-#: apps/landmatrix/models/activity.py:751
+#: apps/landmatrix/models/activity.py:757
 msgid "Negotiation status"
 msgstr ""
 
 #: apps/charts/templates/charts/subnav.html:29
 #: apps/grid/forms/deal_general_form.py:96
 #: apps/grid/forms/deal_general_form.py:100 apps/grid/views/base.py:106
-#: apps/landmatrix/models/activity.py:759 apps/map/views.py:20
+#: apps/landmatrix/models/activity.py:765 apps/map/views.py:20
 msgid "Implementation status"
 msgstr ""
 
@@ -694,12 +694,12 @@ msgstr ""
 #: apps/editor/templates/manage.html:267 apps/editor/templates/manage.html:329
 #: apps/grid/forms/investor_form.py:38
 #: apps/grid/forms/parent_investor_formset.py:91
-#: apps/landmatrix/models/__init__.py:48 apps/landmatrix/models/activity.py:899
+#: apps/landmatrix/models/__init__.py:48 apps/landmatrix/models/activity.py:905
 #: apps/landmatrix/models/activity_changeset.py:44
 #: apps/landmatrix/models/activity_feedback.py:28
 #: apps/landmatrix/models/investor.py:144
 #: apps/landmatrix/models/investor.py:505
-#: apps/landmatrix/models/investor.py:844
+#: apps/landmatrix/models/investor.py:842
 msgid "Comment"
 msgstr ""
 
@@ -740,8 +740,8 @@ msgstr ""
 #: apps/editor/templates/manage.html:206
 #: apps/grid/templates/grid/includes/filters_investors.html:132
 #: apps/landmatrix/models/activity.py:94 apps/landmatrix/models/investor.py:79
-#: apps/landmatrix/models/investor.py:788
-#: apps/landmatrix/models/investor.py:953 templates/filters.html:169
+#: apps/landmatrix/models/investor.py:786
+#: apps/landmatrix/models/investor.py:951 templates/filters.html:169
 msgid "Deleted"
 msgstr ""
 
@@ -807,7 +807,7 @@ msgstr ""
 #: apps/editor/templates/manage_item.html:36
 #: apps/grid/templates/grid/deal_form_add.html:47
 #: apps/grid/templates/grid/deal_form_update.html:62
-#: apps/grid/templates/grid/investor_form.html:170
+#: apps/grid/templates/grid/investor_form.html:180
 msgid "Approve"
 msgstr ""
 
@@ -826,7 +826,7 @@ msgstr ""
 #: apps/editor/templates/manage_item.html:36
 #: apps/grid/templates/grid/deal_form_add.html:50
 #: apps/grid/templates/grid/deal_form_update.html:65
-#: apps/grid/templates/grid/investor_form.html:173
+#: apps/grid/templates/grid/investor_form.html:183
 msgid "Reject"
 msgstr ""
 
@@ -916,8 +916,8 @@ msgstr ""
 
 #: apps/editor/templates/manage.html:100 apps/landmatrix/models/activity.py:168
 #: apps/landmatrix/models/investor.py:147
-#: apps/landmatrix/models/investor.py:847
-#: apps/landmatrix/models/investor.py:961
+#: apps/landmatrix/models/investor.py:845
+#: apps/landmatrix/models/investor.py:959
 #: apps/wagtailcms/templates/widgets/latest-database-modifications.html:7
 msgid "Status"
 msgstr ""
@@ -946,7 +946,7 @@ msgstr ""
 #: apps/editor/templates/manage_item.html:28
 #: apps/grid/forms/deal_action_comment_form.py:33
 #: apps/grid/forms/investor_form.py:40
-#: apps/grid/templates/grid/investor_form.html:155
+#: apps/grid/templates/grid/investor_form.html:165
 msgid "Action comment"
 msgstr ""
 
@@ -1209,7 +1209,7 @@ msgstr ""
 #: apps/grid/forms/deal_action_comment_form.py:31
 #: apps/grid/forms/deal_action_comment_form.py:35
 #: apps/grid/templates/grid/includes/deal_history.html:31
-#: apps/grid/views/export.py:350 apps/landmatrix/models/activity.py:900
+#: apps/grid/views/export.py:350 apps/landmatrix/models/activity.py:906
 msgid "Fully updated"
 msgstr ""
 
@@ -1273,10 +1273,6 @@ msgstr ""
 
 #: apps/grid/forms/deal_contract_form.py:20
 msgid "Contract expiration date"
-msgstr ""
-
-#: apps/grid/forms/deal_contract_form.py:22
-msgid "Sold as deal no."
 msgstr ""
 
 #: apps/grid/forms/deal_contract_form.py:25
@@ -2382,8 +2378,8 @@ msgstr ""
 #: apps/grid/templates/grid/investor_detail.html:346
 #: apps/grid/templates/grid/investor_detail.html:433
 #: apps/grid/views/filter.py:343 apps/landmatrix/models/investor.py:407
-#: apps/landmatrix/models/investor.py:983
-#: apps/landmatrix/models/investor.py:1008
+#: apps/landmatrix/models/investor.py:981
+#: apps/landmatrix/models/investor.py:1006
 msgid "Investor"
 msgstr ""
 
@@ -2406,7 +2402,7 @@ msgstr ""
 #: apps/grid/views/filter.py:314 apps/grid/views/filter.py:318
 #: apps/grid/views/filter.py:367 apps/grid/views/filter.py:370
 #: apps/grid/views/investor.py:226 apps/landmatrix/models/investor.py:118
-#: apps/landmatrix/models/investor.py:798
+#: apps/landmatrix/models/investor.py:796
 msgid "Tertiary investor/lender"
 msgstr ""
 
@@ -2418,7 +2414,7 @@ msgstr ""
 #: apps/grid/views/filter.py:302 apps/grid/views/filter.py:305
 #: apps/grid/views/filter.py:353 apps/grid/views/filter.py:356
 #: apps/grid/views/investor.py:225 apps/landmatrix/models/investor.py:117
-#: apps/landmatrix/models/investor.py:797
+#: apps/landmatrix/models/investor.py:795
 msgid "Parent company"
 msgstr ""
 
@@ -2453,7 +2449,7 @@ msgid "Comment on investment chain"
 msgstr ""
 
 #: apps/grid/forms/parent_investor_formset.py:73
-#: apps/grid/forms/parent_investor_formset.py:208
+#: apps/grid/forms/parent_investor_formset.py:224
 #: apps/grid/templates/grid/investor_detail.html:153
 #: apps/grid/templates/grid/investor_form.html:73 apps/grid/views/base.py:104
 #: apps/grid/views/investor.py:68
@@ -2465,7 +2461,7 @@ msgid "Existing parent company"
 msgstr ""
 
 #: apps/grid/forms/parent_investor_formset.py:88
-#: apps/landmatrix/models/investor.py:823
+#: apps/landmatrix/models/investor.py:821
 msgid "Ownership share"
 msgstr ""
 
@@ -2473,9 +2469,9 @@ msgstr ""
 msgid "Existing investor"
 msgstr ""
 
-#: apps/grid/forms/parent_investor_formset.py:216
+#: apps/grid/forms/parent_investor_formset.py:232
 #: apps/grid/templates/grid/investor_detail.html:240
-#: apps/grid/templates/grid/investor_form.html:115
+#: apps/grid/templates/grid/investor_form.html:120
 msgid "Tertiary investors/lenders"
 msgstr ""
 
@@ -2604,7 +2600,7 @@ msgstr ""
 #: apps/grid/templates/grid/deal_detail.html:131
 #: apps/grid/templates/grid/deal_form_add.html:38
 #: apps/grid/templates/grid/deal_form_update.html:54
-#: apps/grid/templates/grid/investor_form.html:164
+#: apps/grid/templates/grid/investor_form.html:174
 msgid ""
 "I've read and agree to the <a href=\"/data-policy\" target=\"_blank\">Data "
 "Policy</a>."
@@ -2644,7 +2640,7 @@ msgstr ""
 
 #: apps/grid/templates/grid/deal_form_add.html:43
 #: apps/grid/templates/grid/deal_form_update.html:58
-#: apps/grid/templates/grid/investor_form.html:167
+#: apps/grid/templates/grid/investor_form.html:177
 #: templates/registration/password_change_form.html:16
 #: templates/registration/password_reset_confirm.html:20
 #: templates/registration/password_reset_form.html:16
@@ -2665,7 +2661,7 @@ msgid "Recover this deal"
 msgstr ""
 
 #: apps/grid/templates/grid/deal_form_update.html:68
-#: apps/grid/templates/grid/investor_form.html:176
+#: apps/grid/templates/grid/investor_form.html:186
 msgid "Cancel"
 msgstr ""
 
@@ -2737,8 +2733,8 @@ msgstr ""
 #: apps/grid/templates/grid/form.html:18
 #: apps/grid/templates/grid/includes/dealpanels.html:133
 #: apps/grid/templates/grid/includes/investor_involvements_formset.html:54
-#: apps/grid/templates/grid/investor_form.html:95
-#: apps/grid/templates/grid/investor_form.html:137
+#: apps/grid/templates/grid/investor_form.html:100
+#: apps/grid/templates/grid/investor_form.html:147
 msgid "Remove"
 msgstr ""
 
@@ -2771,48 +2767,62 @@ msgstr ""
 msgid "First version"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:4
+#: apps/grid/templates/grid/includes/deal_investor_network.html:6
 #: apps/grid/templates/grid/includes/investor_network.html:4
 msgid "Network of parent companies and tertiary investors/lenders"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:4
+#: apps/grid/templates/grid/includes/deal_investor_network.html:6
 #: apps/grid/templates/grid/includes/investor_network.html:4
 msgid "Please right-click the nodes to get more details."
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:9
-#: apps/grid/templates/grid/includes/investor_network.html:17
+#: apps/grid/templates/grid/includes/deal_investor_network.html:11
+#: apps/grid/templates/grid/includes/investor_network.html:21
 #: apps/map/templates/map/includes/markup.html:75
 #: apps/map/templates/map/modals/legend.html:7
 msgid "Legend"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:11
-#: apps/grid/templates/grid/includes/investor_network.html:19
+#: apps/grid/templates/grid/includes/deal_investor_network.html:13
+#: apps/grid/templates/grid/includes/investor_network.html:24
 msgid "Is parent company of"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:12
-#: apps/grid/templates/grid/includes/investor_network.html:20
+#: apps/grid/templates/grid/includes/deal_investor_network.html:14
+#: apps/grid/templates/grid/includes/investor_network.html:25
 msgid "Is tertiary investor/lender of"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:13
-#: apps/grid/templates/grid/includes/investor_network.html:21
+#: apps/grid/templates/grid/includes/deal_investor_network.html:15
+#: apps/grid/templates/grid/includes/investor_network.html:26
 msgid ""
 "Left-click to reveal related parent companies and tertiary investors/lenders."
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:14
-#: apps/grid/templates/grid/includes/investor_network.html:22
+#: apps/grid/templates/grid/includes/deal_investor_network.html:16
+#: apps/grid/templates/grid/includes/investor_network.html:27
 msgid "Right-click on investors to get more information."
 msgstr ""
 
-#: apps/grid/templates/grid/includes/deal_investor_network.html:15
-#: apps/grid/templates/grid/includes/investor_network.html:23
+#: apps/grid/templates/grid/includes/deal_investor_network.html:17
+#: apps/grid/templates/grid/includes/investor_network.html:28
 msgid ""
 "Left-click to hide related parent companies and tertiary investors/lenders."
+msgstr ""
+
+#: apps/grid/templates/grid/includes/dealpanels_display.html:5
+msgid "This operating company is pending."
+msgstr ""
+
+#: apps/grid/templates/grid/includes/dealpanels_display.html:7
+msgid ""
+"This operating company has been deleted. It is not visible for public users."
+msgstr ""
+
+#: apps/grid/templates/grid/includes/dealpanels_display.html:9
+msgid ""
+"This operating company has been rejected. It is not visible for public users."
 msgstr ""
 
 #: apps/grid/templates/grid/includes/filters_investors.html:9
@@ -2883,8 +2893,8 @@ msgstr ""
 
 #: apps/grid/templates/grid/includes/filters_investors.html:133
 #: apps/landmatrix/models/activity.py:91 apps/landmatrix/models/investor.py:76
-#: apps/landmatrix/models/investor.py:782
-#: apps/landmatrix/models/investor.py:947 templates/filters.html:170
+#: apps/landmatrix/models/investor.py:780
+#: apps/landmatrix/models/investor.py:945 templates/filters.html:170
 msgid "Pending"
 msgstr ""
 
@@ -2897,11 +2907,18 @@ msgid "Unknown region"
 msgstr ""
 
 #: apps/grid/templates/grid/includes/investor_network.html:11
-#: apps/message/models.py:22
-msgid "Level"
+msgid "Level of parent investors"
 msgstr ""
 
-#: apps/grid/templates/grid/includes/investor_network.html:24
+#: apps/grid/templates/grid/includes/investor_network.html:17
+msgid "Show deals"
+msgstr ""
+
+#: apps/grid/templates/grid/includes/investor_network.html:23
+msgid "Is operating company of"
+msgstr ""
+
+#: apps/grid/templates/grid/includes/investor_network.html:29
 msgid "Double-click to zoom in."
 msgstr ""
 
@@ -3010,19 +3027,19 @@ msgstr ""
 msgid "Add investor"
 msgstr ""
 
-#: apps/grid/templates/grid/investor_form.html:93
+#: apps/grid/templates/grid/investor_form.html:98
 msgid "Add another parent company"
 msgstr ""
 
-#: apps/grid/templates/grid/investor_form.html:135
+#: apps/grid/templates/grid/investor_form.html:145
 msgid "Add another lender"
 msgstr ""
 
-#: apps/grid/templates/grid/investor_form.html:160
+#: apps/grid/templates/grid/investor_form.html:170
 msgid "Recover this investor"
 msgstr ""
 
-#: apps/grid/templates/grid/investor_form.html:177
+#: apps/grid/templates/grid/investor_form.html:187
 msgid "Delete this investor"
 msgstr ""
 
@@ -3045,6 +3062,15 @@ msgstr ""
 
 #: apps/grid/templates/grid/investors.html:126
 msgid "Add an investor"
+msgstr ""
+
+#: apps/grid/templates/grid/modals/deal_modal.html:13
+#: apps/grid/templates/grid/modals/investor_modal.html:13
+msgid "Back"
+msgstr ""
+
+#: apps/grid/templates/grid/modals/deal_modal.html:14
+msgid "More details about this deal"
 msgstr ""
 
 #: apps/grid/templates/grid/modals/delete_deal_modal.html:7
@@ -3073,10 +3099,6 @@ msgstr ""
 
 #: apps/grid/templates/grid/modals/delete_investor_modal.html:10
 msgid "Are you sure you want to delete this investor?"
-msgstr ""
-
-#: apps/grid/templates/grid/modals/investor_modal.html:13
-msgid "Back"
 msgstr ""
 
 #: apps/grid/templates/grid/modals/investor_modal.html:14
@@ -3129,7 +3151,7 @@ msgid "Availability"
 msgstr ""
 
 #: apps/grid/views/base.py:102 apps/grid/views/export.py:345
-#: apps/landmatrix/models/activity.py:779
+#: apps/landmatrix/models/activity.py:785
 msgid "Deal size"
 msgstr ""
 
@@ -3264,21 +3286,21 @@ msgstr ""
 msgid "The deal #{} has been recovered successfully."
 msgstr ""
 
-#: apps/grid/views/export.py:343 apps/landmatrix/models/activity.py:741
+#: apps/grid/views/export.py:343 apps/landmatrix/models/activity.py:747
 msgid "Is public"
 msgstr ""
 
-#: apps/grid/views/export.py:344 apps/landmatrix/models/activity.py:743
+#: apps/grid/views/export.py:344 apps/landmatrix/models/activity.py:749
 msgid "Deal scope"
 msgstr ""
 
 #: apps/grid/views/export.py:346 apps/landmatrix/forms.py:67
-#: apps/landmatrix/models/activity.py:767
+#: apps/landmatrix/models/activity.py:773
 msgid "Current size under contract"
 msgstr ""
 
 #: apps/grid/views/export.py:347 apps/landmatrix/forms.py:69
-#: apps/landmatrix/models/activity.py:773
+#: apps/landmatrix/models/activity.py:779
 msgid "Current size in operation (production)"
 msgstr ""
 
@@ -3290,7 +3312,7 @@ msgstr ""
 msgid "Current implementation status"
 msgstr ""
 
-#: apps/grid/views/export.py:351 apps/landmatrix/models/activity.py:791
+#: apps/grid/views/export.py:351 apps/landmatrix/models/activity.py:797
 msgid "Top parent companies"
 msgstr ""
 
@@ -3361,17 +3383,17 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: apps/landmatrix/forms.py:71 apps/landmatrix/models/activity.py:792
+#: apps/landmatrix/forms.py:71 apps/landmatrix/models/activity.py:798
 msgid "Forest concession"
 msgstr ""
 
-#: apps/landmatrix/models/__init__.py:55 apps/landmatrix/models/activity.py:811
+#: apps/landmatrix/models/__init__.py:55 apps/landmatrix/models/activity.py:817
 #: apps/landmatrix/models/activity_attribute_group.py:59
 #: apps/landmatrix/models/activity_attribute_group.py:76
 #: apps/landmatrix/models/activity_changeset.py:15
 #: apps/landmatrix/models/activity_feedback.py:10
-#: apps/landmatrix/models/investor.py:976
-#: apps/landmatrix/models/investor.py:1001
+#: apps/landmatrix/models/investor.py:974
+#: apps/landmatrix/models/investor.py:999
 msgid "Activity"
 msgstr ""
 
@@ -3402,27 +3424,27 @@ msgid "Description"
 msgstr ""
 
 #: apps/landmatrix/models/activity.py:92 apps/landmatrix/models/investor.py:77
-#: apps/landmatrix/models/investor.py:784
-#: apps/landmatrix/models/investor.py:949
+#: apps/landmatrix/models/investor.py:782
+#: apps/landmatrix/models/investor.py:947
 #: templates/django_registration/activate.html:7
 msgid "Active"
 msgstr ""
 
 #: apps/landmatrix/models/activity.py:93 apps/landmatrix/models/investor.py:78
-#: apps/landmatrix/models/investor.py:786
-#: apps/landmatrix/models/investor.py:951
+#: apps/landmatrix/models/investor.py:784
+#: apps/landmatrix/models/investor.py:949
 msgid "Overwritten"
 msgstr ""
 
 #: apps/landmatrix/models/activity.py:95 apps/landmatrix/models/investor.py:80
-#: apps/landmatrix/models/investor.py:790
-#: apps/landmatrix/models/investor.py:955
+#: apps/landmatrix/models/investor.py:788
+#: apps/landmatrix/models/investor.py:953
 msgid "Rejected"
 msgstr ""
 
 #: apps/landmatrix/models/activity.py:96 apps/landmatrix/models/investor.py:81
-#: apps/landmatrix/models/investor.py:792
-#: apps/landmatrix/models/investor.py:957
+#: apps/landmatrix/models/investor.py:790
+#: apps/landmatrix/models/investor.py:955
 msgid "To delete"
 msgstr ""
 
@@ -3494,23 +3516,23 @@ msgstr ""
 msgid "availability"
 msgstr ""
 
-#: apps/landmatrix/models/activity.py:782
+#: apps/landmatrix/models/activity.py:788
 msgid "Initiation year or date"
 msgstr ""
 
-#: apps/landmatrix/models/activity.py:789
+#: apps/landmatrix/models/activity.py:795
 msgid "Fully updated date"
 msgstr ""
 
-#: apps/landmatrix/models/activity.py:812
+#: apps/landmatrix/models/activity.py:818
 msgid "Activities"
 msgstr ""
 
-#: apps/landmatrix/models/activity.py:1153
+#: apps/landmatrix/models/activity.py:1159
 msgid "Historical activity"
 msgstr ""
 
-#: apps/landmatrix/models/activity.py:1154
+#: apps/landmatrix/models/activity.py:1160
 msgid "Historical activities"
 msgstr ""
 
@@ -3788,81 +3810,81 @@ msgstr ""
 msgid "Historical investors"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:803
+#: apps/landmatrix/models/investor.py:801
 msgid "Shares/Equity"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:804
+#: apps/landmatrix/models/investor.py:802
 msgid "Debt financing"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:807
+#: apps/landmatrix/models/investor.py:805
 msgid "Subsidiary of parent company"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:808
+#: apps/landmatrix/models/investor.py:806
 msgid "Local branch of parent company"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:809
+#: apps/landmatrix/models/investor.py:807
 msgid "Joint venture of parent companies"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:813
+#: apps/landmatrix/models/investor.py:811
 msgid "Relation type"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:828
+#: apps/landmatrix/models/investor.py:826
 msgid "Loan amount"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:831
+#: apps/landmatrix/models/investor.py:829
 msgid "Loan currency"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:838
+#: apps/landmatrix/models/investor.py:836
 msgid "Parent relation"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:860
-#: apps/landmatrix/models/investor.py:886
+#: apps/landmatrix/models/investor.py:858
+#: apps/landmatrix/models/investor.py:884
 msgid "Investor ID Downstream"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:867
-#: apps/landmatrix/models/investor.py:893
+#: apps/landmatrix/models/investor.py:865
+#: apps/landmatrix/models/investor.py:891
 msgid "Investor ID Upstream"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:874
+#: apps/landmatrix/models/investor.py:872
 msgid "Investor Venture Involvement"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:875
+#: apps/landmatrix/models/investor.py:873
 msgid "Investor Venture Involvements"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:900
+#: apps/landmatrix/models/investor.py:898
 msgid "Historical Investor Venture Involvement"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:901
+#: apps/landmatrix/models/investor.py:899
 msgid "Historical Investor Venture Involvements"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:990
+#: apps/landmatrix/models/investor.py:988
 msgid "Investor Activity Involvement"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:991
+#: apps/landmatrix/models/investor.py:989
 msgid "Investor Activity Involvements"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:1015
+#: apps/landmatrix/models/investor.py:1013
 msgid "Historical Investor Activity Involvement"
 msgstr ""
 
-#: apps/landmatrix/models/investor.py:1016
+#: apps/landmatrix/models/investor.py:1014
 msgid "Historical Investor Activity Involvements"
 msgstr ""
 
@@ -4010,6 +4032,10 @@ msgstr ""
 
 #: apps/message/models.py:20
 msgid "Text"
+msgstr ""
+
+#: apps/message/models.py:22
+msgid "Level"
 msgstr ""
 
 #: apps/message/models.py:25
@@ -4165,6 +4191,10 @@ msgstr ""
 #: config/settings/base.py:13
 msgid "English"
 msgstr "English"
+
+#: config/settings/base.py:13
+msgid "German"
+msgstr ""
 
 #: config/settings/base.py:13
 msgid "Español"
