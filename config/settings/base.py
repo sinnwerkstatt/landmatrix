@@ -1,4 +1,3 @@
-import os
 import sys
 
 import environ
@@ -10,7 +9,7 @@ env = environ.Env()
 env.read_env(BASE_DIR(".env"))
 
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", _("English")), ('de', _('German')), ("es", _("Español")), ("fr", _("Français"))]
+LANGUAGES = [("en", _("English")), ("es", _("Español")), ("fr", _("Français"))]
 TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_L10N = True
