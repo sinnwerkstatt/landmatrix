@@ -62,12 +62,12 @@ raven = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
-black = { version = "*", allows-prereleases = true }
+black = { version = "*", allow-prereleases = true }
 mypy = "*"
 coverage = "*"
 django-livereload = "*"
 django-extensions = "*"
-django-debug-toolbar = "*"
+#django-debug-toolbar = "*"
 django-test-without-migrations = "*"
 
 pylint = "*"
