@@ -36,8 +36,8 @@
 
       <ul class="pager">
         {% if blogs.has_previous %}
-          <li class="previous"><a href="?page=
-                  {{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; {% trans "Newer" %}</a>
+          <li class="previous">
+            <a href="?page={{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; {% trans "Newer" %}</a>
           </li>
         {% endif %}
 
@@ -46,13 +46,15 @@
             {% if blog_page|slugify == request.GET.page %}
               <a style="background: #fc941f; color: white;">{{ blog_page }}</a>
             {% else %}
-              <a href="?page=
-                      {{ blog_page }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{{ blog_page }}</a>
+              <a href="?page={{ blog_page }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{{ blog_page }}</a>
             {% endif %}
           </li>
         {% endfor %}
+
         {% if blogs.has_next %}
-          <li class="next"><a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{% trans "Older" %}  &rarr;</a></li>
+          <li class="next">
+            <a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{% trans "Older" %}  &rarr;</a>
+          </li>
         {% endif %}
       </ul>
 

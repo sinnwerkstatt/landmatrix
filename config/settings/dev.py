@@ -12,14 +12,6 @@ try:
 except ModuleNotFoundError:
     pass
 
-try:
-    import debug_toolbar
-
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-
-except ModuleNotFoundError:
-    pass
 
 if env.bool("FRONTENDDEV", default=False):
     INSTALLED_APPS = [
