@@ -860,6 +860,7 @@ class CountryGeomView(APIView):
                 location="query",
                 description="Country ID",
                 schema=coreschema.Integer(),
+                example="104",
             )
         ]
     )

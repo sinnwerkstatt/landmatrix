@@ -7,12 +7,63 @@ from django.urls import reverse
 
 from apps.api.elasticsearch import es_save
 from apps.landmatrix.models import Region
+from apps.landmatrix.models.activity import ActivityBase
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin, \
+    InvestorActivityInvolvementsFixtureMixin, InvestorVentureInvolvementsFixtureMixin
 
 
-class ChartViewsTestCase(TestCase):
+class ChartViewsTestCase(TestCase,
+                         ActivitiesFixtureMixin,
+                         InvestorsFixtureMixin,
+                         InvestorActivityInvolvementsFixtureMixin,
+                         InvestorVentureInvolvementsFixtureMixin):
+
+    act_fixtures = [
+    ]
+    inv_fixtures = [
+        {"id": 1},
+        {"id": 2}
+    ]
+    act_inv_fixtures = {
+    }
+    inv_inv_fixtures = [
+        {"fk_venture_id": "1", "fk_investor_id": "2"}
+    ]
+
+    @classmethod
+    def _create_negotiation_status_fixture(cls):
+        for value, label in ActivityBase.NEGOTIATION_STATUS_CHOICES:
+            if not value:
+                continue
+            id = len(cls.act_fixtures) + 1
+            cls.act_fixtures.append({
+                "id": id,
+                "attributes": {
+                    "target_country": {"value": "104"},
+                    "contract_size": {"value": "1000"},
+                    "type": {"value": "Media report"},
+                    "negotiation_status": {"value": value},
+                }
+            })
+            cls.act_inv_fixtures[str(id)] = "1"
+
     @classmethod
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def setUpClass(cls):
+        cls._create_negotiation_status_fixture()
+
+        # Resource extraction
+        # Logging
+        # Contract farming
+        # Implementation status
+        # Investment intention
+        # Investor country
+        # Target counotry
+        # Transnational deals
+        # Hectares
+        # Agricultural Produce
+        # Produce info
+
         super().setUpClass()
 
         fixtures = [
@@ -22,10 +73,6 @@ class ChartViewsTestCase(TestCase):
             "crops",
             "animals",
             "minerals",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})
@@ -38,8 +85,11 @@ class ChartViewsTestCase(TestCase):
     def test_negotiation_status_list_view(self):
         response = self.client.get(reverse("negotiation_status_api"))
         self.assertEqual(200, response.status_code)
+        import pdb
+        pdb.set_trace()
+
         expected = [
-            {"name": "Concluded (Contract signed)", "deals": 3, "hectares": 3000}
+            {"name": "Concluded (Contract signed)", "deals": 1, "hectares": 1000}
         ]
         self.assertEqual(expected, response.data)
 

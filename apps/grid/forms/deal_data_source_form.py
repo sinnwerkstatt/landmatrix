@@ -16,6 +16,7 @@ from apps.landmatrix.storage import data_source_storage
 
 class DealDataSourceForm(BaseForm):
     form_title = "Data source"
+    exclude_in_export = ("file_not_public", "includes_in_country_verified_information")
 
     tg_data_source = TitleField(required=False, label="", initial=_("Data source"))
     type = forms.ChoiceField(

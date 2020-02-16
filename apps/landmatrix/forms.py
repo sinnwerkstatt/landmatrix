@@ -102,3 +102,20 @@ class InvestorFilterForm(forms.ModelForm):
     class Meta:
         model = Investor
         exclude = ("fk_status", "subinvestors")
+
+
+class ExportActivityForm(forms.Form):
+    activity_identifier = forms.IntegerField(label=_("Deal ID"))
+    is_public = forms.BooleanField(label=_("Is public"))
+    deal_scope = forms.CharField(label=_("Deal scope"))
+    deal_size = forms.IntegerField(label=_("Deal size"))
+    current_contract_size = forms.IntegerField(label=_("Current size under contract"))
+    current_production_size = forms.IntegerField(label=_("Current size in operation (production)"))
+    current_negotiation_status_display = forms.CharField(label=_("Current negotiation status"))
+    current_implementation_status_display = forms.CharField(label=_("Current implementation status"))
+    fully_updated_date = forms.DateField(label=_("Fully updated"))
+    top_investors = forms.CharField(label=_("Top parent companies"))
+
+    class Meta:
+        model = Activity
+        exclude = ()

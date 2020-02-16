@@ -59,15 +59,15 @@ def get_display_value(field, values, attributes=None, formset=None):
         if multiple[0]:
             for attribute in attributes:
                 key = "%s:%s" % (
-                    attribute["date"] or "",
-                    values_count > 2 and attribute["value2"] or "",
+                    attribute.get("date") or "",
+                    values_count > 2 and attribute.get("value2") or "",
                 )
                 if key in attributes_by_date:  # pragma: no cover
-                    if attribute["value"]:
-                        attributes_by_date[key][1] += ", " + attribute["value"]
+                    if attribute.get("value"):
+                        attributes_by_date[key][1] += ", " + attribute.get("value")
                 else:
-                    is_current = attribute["is_current"] and "current" or ""
-                    attributes_by_date[key] = [is_current, attribute["value"]]
+                    is_current = attribute.get("is_current") and "current" or ""
+                    attributes_by_date[key] = [is_current, attribute.get("value")]
             if values_count > 2:
                 output = [
                     delimiters[1].join([d.split(":")[0], a[0], d.split(":")[1], a[1]])
@@ -80,16 +80,16 @@ def get_display_value(field, values, attributes=None, formset=None):
                 ]
         else:
             for attribute in attributes:
-                is_current = attribute["is_current"] and "current" or ""
+                is_current = attribute.get("is_current") and "current" or ""
                 # Value:Value2:Date:Is current
                 if values_count > 2:  # pragma: no cover
                     output.append(
                         delimiters[1].join(
                             [
-                                attribute["date"] or "",
+                                attribute.get("date") or "",
                                 is_current,
-                                attribute["value2"],
-                                attribute["value"],
+                                attribute.get("value2"),
+                                attribute.get("value"),
                             ]
                         )
                     )
@@ -97,14 +97,14 @@ def get_display_value(field, values, attributes=None, formset=None):
                 elif values_count > 1:
                     output.append(
                         delimiters[1].join(
-                            [attribute["date"] or "", is_current, attribute["value"]]
+                            [attribute.get("date") or "", is_current, attribute["value"]]
                         )
                     )
                 # Value:Value2 (e.g. Actors field)
                 else:
                     output.append(
                         delimiters[1].join(
-                            [attribute["value"], attribute["value2"] or ""]
+                            [attribute.get("value"), attribute.get("value2") or ""]
                         )
                     )
     # elif isinstance(field, forms.FileField):

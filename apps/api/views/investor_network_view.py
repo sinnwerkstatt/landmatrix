@@ -26,6 +26,7 @@ class DealInvestorNetworkView(APIView):
                 location="query",
                 description="Investor ID",
                 schema=coreschema.Integer(),
+                example="1",
             ),
             coreapi.Field(
                 "history_id",
@@ -33,6 +34,7 @@ class DealInvestorNetworkView(APIView):
                 location="query",
                 description="Investor version ID",
                 schema=coreschema.Integer(),
+                example="10",
             ),
         ]
     )
@@ -86,6 +88,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
                 location="query",
                 description="Investor ID",
                 schema=coreschema.Integer(),
+                example="1",
             ),
             coreapi.Field(
                 "history_id",
@@ -93,6 +96,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
                 location="query",
                 description="Investor version ID",
                 schema=coreschema.Integer(),
+                example="10",
             ),
             coreapi.Field(
                 "depth",
@@ -100,6 +104,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
                 location="query",
                 description="Depth",
                 schema=coreschema.Integer(),
+                example="1",
             ),
         ]
     )

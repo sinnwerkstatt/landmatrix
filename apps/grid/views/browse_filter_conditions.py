@@ -67,7 +67,7 @@ def get_activity_field_label(key):
     return None
 
 
-def get_investor_field_label(key):
+def get_investor_field_label(key, prefix=False):
     CUSTOM_FIELDS = {"investor_identifier": _("Investor ID")}
     if key in CUSTOM_FIELDS.keys():
         return str(CUSTOM_FIELDS[key])

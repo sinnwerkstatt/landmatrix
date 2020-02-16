@@ -8,11 +8,17 @@ from django.test import TestCase
 from apps.grid.tests.views.base import BaseDealTestCase
 from apps.landmatrix.models import HistoricalInvestor
 from apps.landmatrix.models.activity import *
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin
 
 
 class ActivityQuerySetTestCase(TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    fixtures = [
+        "countries_and_regions",
+        "users_and_groups",
+        "status",
+        "activities"
+    ]
 
     def setUp(self):
         self.qs = HistoricalActivity.objects

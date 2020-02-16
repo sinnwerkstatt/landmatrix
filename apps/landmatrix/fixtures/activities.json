@@ -23,6 +23,7 @@
   {"model": "landmatrix.activityattribute", "pk": 116, "fields": {"fk_activity_id": 10, "name": "fully_updated", "value": "True", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 117, "fields": {"fk_activity_id": 10, "name": "tg_land_area_comment", "value": "", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 118, "fields": {"fk_activity_id": 10, "name": "id", "value": "", "fk_group": 10}},
+
   {"model": "landmatrix.activityattribute", "pk": 201, "fields": {"fk_activity_id": 20, "name": "target_country", "value": "104", "fk_group": 10}},
   {"model": "landmatrix.activityattribute", "pk": 202, "fields": {"fk_activity_id": 20, "name": "type", "value": "Media report", "fk_group": 20}},
   {"model": "landmatrix.activityattribute", "pk": 203, "fields": {"fk_activity_id": 20, "name": "contract_size", "value": 1000, "fk_group":  1}},
