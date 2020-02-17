@@ -64,15 +64,12 @@ raven = { version = "*", optional = true }
 ipdb = "*"
 black = { version = "*", allow-prereleases = true }
 mypy = "*"
-coverage = "*"
 django-livereload = "*"
 django-extensions = "*"
-#django-debug-toolbar = "*"
-django-test-without-migrations = "*"
-
+pytest-django = "*"
+pytest-cov = "*"
 pylint = "*"
 pylint-django = "*"
-
 pygments = "*"
 mkdocs = "*"
 

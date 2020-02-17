@@ -35,8 +35,7 @@ tests and coverage:
     - poetry install
     - yarn install --frozen-lockfile
     - poetry run doit -n 4 update
-    - poetry run coverage run --source='.' manage.py test --settings=config.settings.ci
-    - poetry run coverage report
+    - poetry run pytest
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 deploy to staging:
