@@ -7,10 +7,6 @@ class PopulateActivitiesCommandTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -29,10 +25,6 @@ class SearchIndexCommandTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):

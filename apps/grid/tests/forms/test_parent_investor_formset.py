@@ -11,8 +11,6 @@ class InvestorVentureInvolvementFormTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -66,8 +64,6 @@ class ParentCompanyFormTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -99,8 +95,6 @@ class ParentInvestorFormTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -132,8 +126,6 @@ class BaseInvolvementFormSetTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "venture_involvements",
     ]
 
     def setUp(self):

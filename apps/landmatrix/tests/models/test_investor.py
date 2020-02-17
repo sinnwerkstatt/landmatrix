@@ -120,10 +120,6 @@ class InvestorBaseTestCase(BaseDealTestCase):
         "users_and_groups",
         "status",
         "crops",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_get_next_investor_identifier(self):
@@ -334,10 +330,6 @@ class HistoricalInvestorTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_approve_change(self):
@@ -446,10 +438,6 @@ class InvestorVentureQuerySetTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -507,10 +495,6 @@ class InvestorActivityInvolvementManagerTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):

@@ -17,10 +17,6 @@ class DealComparisonViewTestCase(TestCase):
         "crops",
         "animals",
         "minerals",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def assert_comparison(self, context_data):

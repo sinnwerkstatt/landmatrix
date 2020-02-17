@@ -11,10 +11,6 @@ class InvestorComparisonViewTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def assert_comparison(self, context_data):

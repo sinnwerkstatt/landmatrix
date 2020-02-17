@@ -22,10 +22,6 @@ class DealListViewTestCase(TestCase):
             "crops",
             "animals",
             "minerals",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})
@@ -171,10 +167,6 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -337,10 +329,6 @@ class DealDetailViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_with_anonymous(self):
@@ -397,10 +385,6 @@ class DealDeleteViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -474,10 +458,6 @@ class DealRecoverViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -541,10 +521,6 @@ class DealTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_get_forms(self):

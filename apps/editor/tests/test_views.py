@@ -12,10 +12,6 @@ class FilteredQuerySetMixinTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -99,10 +95,6 @@ class LatestQuerySetMixinTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -141,10 +133,6 @@ class PendingChangesMixinTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def setUp(self):
@@ -229,10 +217,6 @@ class DashboardViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test(self):
@@ -253,10 +237,6 @@ class ManageItemsTestCaseMixin:
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     url = None
@@ -290,10 +270,6 @@ class ManageRootViewTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_with_reporter(self):
@@ -347,10 +323,6 @@ class ManageItemTestCaseMixin:
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     url = None
@@ -395,10 +367,6 @@ class RejectActivityChangeViewTestCase(ManageItemTestCaseMixin, BaseDealTestCase
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
 

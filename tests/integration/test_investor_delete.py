@@ -24,10 +24,6 @@ class TestInvestorDelete(BaseInvestorTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(

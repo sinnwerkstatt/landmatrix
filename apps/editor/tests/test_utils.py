@@ -15,8 +15,6 @@ class EditorUtilsTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
     ]
 
     def test_activity_or_investor_to_template_with_activity(self):

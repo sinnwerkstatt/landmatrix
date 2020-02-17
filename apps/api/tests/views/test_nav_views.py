@@ -65,8 +65,6 @@ class InvestorListViewTestCase(TestCase):
             "status",
             "countries_and_regions",
             "users_and_groups",
-            "investors",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})

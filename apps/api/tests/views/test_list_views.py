@@ -13,9 +13,37 @@ from apps.api.views import ElasticSearchMixin
 from apps.grid.tests.views.base import PermissionsTestCaseMixin
 from apps.landmatrix.models.activity import ActivityBase
 from apps.landmatrix.models.investor import InvestorBase
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorVentureInvolvementsFixtureMixin, \
+    InvestorActivityInvolvementsFixtureMixin, InvestorsFixtureMixin
 
 
-class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
+class ElasticSearchMixinTestCase(PermissionsTestCaseMixin,
+                                 ActivitiesFixtureMixin,
+                                 InvestorsFixtureMixin,
+                                 InvestorActivityInvolvementsFixtureMixin,
+                                 InvestorVentureInvolvementsFixtureMixin,
+                                 TestCase):
+
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "attributes": {}},
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {"id": 21, "activity_identifier": 2, "fk_status_id": 1, "attributes": {}},
+    ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {"id": 21, "investor_identifier": 2, "fk_status_id": 1, "name": "Test Investor #2"},
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+    ]
+    act_inv_fixtures = {
+        "10": "10",
+        "20": "20",
+        "21": "20",
+    }
+    inv_inv_fixtures = [
+        {"fk_venture_id": "10", "fk_investor_id": "20", "role": "ST"},
+        {"fk_venture_id": "10", "fk_investor_id": "30", "role": "IN"}
+    ]
 
     fixtures = []
 
@@ -32,10 +60,6 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
             "animals",
             "minerals",
             "status",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})
@@ -134,7 +158,7 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        expected = [{"match_phrase": {"operating_company_id": "70"}}]
+        expected = [{"match_phrase": {"operating_company_id": "10"}}]
         self.assertEqual(expected, formatted_filters.get("must"))
         self.assertEqual([], formatted_filters.get("filter"))
         self.assertEqual([], formatted_filters.get("must_not"))
@@ -158,7 +182,7 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        expected = [{"match_phrase": {"operating_company_id": "70"}}]
+        expected = [{"match_phrase": {"operating_company_id": "20"}}]
         self.assertEqual(expected, formatted_filters.get("must"))
         self.assertEqual([], formatted_filters.get("filter"))
         self.assertEqual([], formatted_filters.get("must_not"))
@@ -548,13 +572,9 @@ class ListViewsTestCase(TestCase):
             "countries_and_regions",
             "users_and_groups",
             "status",
-            "investors",
             "crops",
             "minerals",
             "animals",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})

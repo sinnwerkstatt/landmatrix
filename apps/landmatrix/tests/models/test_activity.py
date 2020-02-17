@@ -123,10 +123,6 @@ class ActivityBaseTestCase(BaseDealTestCase):
         "users_and_groups",
         "status",
         "crops",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_save(self):
@@ -476,10 +472,6 @@ class ActivityTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_refresh_cached_attributes(self):
@@ -543,10 +535,6 @@ class HistoricalActivityTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_approve_change(self):

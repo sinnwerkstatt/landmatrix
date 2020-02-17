@@ -13,9 +13,6 @@ class FeedsActivityChangesTestCase(TestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "activities",
-        "investors",
-        "activity_involvements",
     ]
 
     def setUp(self):

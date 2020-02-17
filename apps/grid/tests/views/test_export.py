@@ -7,8 +7,7 @@ from apps.grid.utils import get_display_value
 from apps.grid.views.utils import DEAL_FORMS
 from apps.landmatrix.forms import ExportActivityForm
 from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin, \
-    InvestorActivityInvolvementsFixtureMixin, InvestorVentureInvolvementsFixtureMixin
-
+    InvestorActivityInvolvementsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, ElasticSearchFixtureMixin
 
 try:
     import xml.etree.cElementTree as ET
@@ -27,7 +26,8 @@ from openpyxl import load_workbook
 from apps.api.elasticsearch import es_save
 
 
-class ExportViewTestCase(TestCase,
+class ExportViewTestCase(ElasticSearchFixtureMixin,
+                         TestCase,
                          ActivitiesFixtureMixin,
                          InvestorsFixtureMixin,
                          InvestorActivityInvolvementsFixtureMixin,
@@ -50,41 +50,10 @@ class ExportViewTestCase(TestCase,
     deal_attributes = {}
 
     @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
-
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "crops",
-            "animals",
-            "minerals",
-            "currencies",
-            # "investors",
-            # "activities",
-            # "activity_involvements",
-            # "venture_involvements",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-        cls.load_investor_fixtures()
-        cls.load_activity_fixtures()
-        cls.load_activity_involvement_fixtures()
-        cls.load_investor_involvement_fixtures()
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
-
+    def create_fixture(cls):
         cls.deal_attributes = cls._get_deal_attributes()
         cls.involvement_attributes = cls._get_involvement_attributes()
         cls.investor_attributes = cls._get_investor_attributes()
-
-    def setUp(self):
-        # Don't create fixtures for each test
-        pass
 
     @classmethod
     def _get_deal_attributes(cls):

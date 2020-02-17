@@ -24,8 +24,6 @@ class GridUtilsTestCase(BaseDealTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
     ]
 
     def test_get_display_value_without_value(self):

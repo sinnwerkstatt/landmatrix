@@ -23,10 +23,6 @@ class TableGroupViewTestCase(TestCase):
             "crops",
             "animals",
             "minerals",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})

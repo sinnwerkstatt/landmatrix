@@ -22,10 +22,6 @@ class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
             "crops",
             "minerals",
             "animals",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
         ]
         for fixture in fixtures:
             call_command("loaddata", fixture, **{"verbosity": 0})
@@ -289,10 +285,6 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -458,10 +450,6 @@ class InvestorDetailViewTestCase(BaseInvestorTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     def test_with_anonymous(self):
@@ -519,10 +507,6 @@ class InvestorDeleteViewTestCase(BaseInvestorTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -614,10 +598,6 @@ class InvestorRecoverViewTestCase(BaseInvestorTestCase):
         "countries_and_regions",
         "users_and_groups",
         "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
