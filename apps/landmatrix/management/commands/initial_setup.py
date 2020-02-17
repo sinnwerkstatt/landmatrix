@@ -42,10 +42,12 @@ class Command(BaseCommand):
         root_page.save()
         root_page.get_children().delete()
 
+        # reload root (as per https://github.com/wagtail/wagtail/issues/3402#issuecomment-297940917)
+        root_page = Page.objects.first().get_root()
+
         wt_root = WagtailRootPage(title="Land Matrix")
         root_page.add_child(instance=wt_root)
         wt_root.save()
-
         Site.objects.get_or_create(
             hostname="localhost", port=8000, root_page=wt_root, is_default_site=True
         )
