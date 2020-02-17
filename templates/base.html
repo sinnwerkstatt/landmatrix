@@ -21,6 +21,10 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
+    {% if is_pdf_export %}
+    <script src="{% static "js/wkhtml.js" %}"></script>
+    <script src="{% static "js/vendor/requestAnimationFrame-polyfill.js" %}"></script>
+    {% endif %}
     <script src="{% static "jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
     <script src="{% static "select2/dist/js/select2.full.js" %}"></script>

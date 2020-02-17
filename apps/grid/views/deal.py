@@ -280,10 +280,10 @@ class DealBaseView(TemplateView):
 
 
 class DealDetailView(PDFViewMixin, TemplateView):
-
     template_name = "grid/deal_detail.html"
     pdf_export_url = "deal_detail_pdf"
     pdf_render_url = "deal_detail"
+    pdf_javascript_delay = 300
 
     def get_pdf_filename(self, request, *args, **kwargs):
         return "deal_{deal_id}.pdf".format(**kwargs)

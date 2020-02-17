@@ -602,7 +602,7 @@ function select2_close(e) {
 
 $(function() {
     // Regions
-    let region_select = $('#nav-region-select').select2({
+    var region_select = $('#nav-region-select').select2({
         placeholder: regions_placeholder,
         dropdownCssClass: "select2-main"
     }).on('select2:open', select2_open)
@@ -610,13 +610,13 @@ $(function() {
 
     region_select.select2('val', '');
     region_select.on('change', function () {
-      let val = $(this).val();
+      var val = $(this).val();
       if (val) {
         location.href = '/region/' + val;
       }
     });
     // Countries
-    let country_select = $('#nav-country-select').select2({
+    var country_select = $('#nav-country-select').select2({
         placeholder: countries_placeholder,
         dropdownCssClass: "select2-main",
         //allowClear: true
@@ -624,7 +624,7 @@ $(function() {
       .on('select2:close', select2_close);
     country_select.select2('val', '');
     country_select.on('change', function () {
-      let val = $(this).val();
+      var val = $(this).val();
       if (val) {
         location.href = '/country/' + val;
       }

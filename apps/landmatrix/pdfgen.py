@@ -9,6 +9,7 @@ from tempfile import NamedTemporaryFile, TemporaryFile
 from django.conf import settings
 from django.http import FileResponse
 from django.urls import reverse
+from django.utils import six
 
 
 def update_querystring(url, params):
@@ -31,6 +32,55 @@ def update_querystring(url, params):
     new_url = urlparse.urlunparse(url_components)
 
     return new_url
+
+
+NO_ARGUMENT_OPTIONS = ['--collate', '--no-collate', '-H', '--extended-help', '-g',
+                       '--grayscale', '-h', '--help', '--htmldoc', '--license', '-l',
+                       '--lowquality', '--manpage', '--no-pdf-compression', '-q',
+                       '--quiet', '--read-args-from-stdin', '--readme',
+                       '--use-xserver', '-V', '--version', '--dump-default-toc-xsl',
+                       '--outline', '--no-outline', '--background', '--no-background',
+                       '--custom-header-propagation', '--no-custom-header-propagation',
+                       '--debug-javascript', '--no-debug-javascript',
+                       '--default-header',
+                       '--disable-external-links', '--enable-external-links',
+                       '--disable-forms', '--enable-forms', '--images', '--no-images',
+                       '--disable-internal-links', '--enable-internal-links', '-n',
+                       '--disable-javascript', '--enable-javascript',
+                       '--keep-relative-links',
+                       '--load-media-error-handling',
+                       '--disable-local-file-access', '--enable-local-file-access',
+                       '--exclude-from-outline', '--include-in-outline',
+                       '--disable-plugins',
+                       '--enable-plugins', '--print-media-type',
+                       '--no-print-media-type',
+                       '--resolve-relative-links', '--disable-smart-shrinking',
+                       '--enable-smart-shrinking', '--stop-slow-scripts',
+                       '--no-stop-slow-scripts', '--disable-toc-back-links',
+                       '--enable-toc-back-links', '--footer-line', '--no-footer-line',
+                       '--header-line', '--no-header-line', '--disable-dotted-lines',
+                       '--disable-toc-links', '--verbose']
+
+
+def _options_to_args(**options):
+    """
+    Converts ``options`` into a list of command-line arguments.
+    Skip arguments where no value is provided
+    For flag-type (No argument) variables, pass only the name and only then if the value is True
+    """
+    flags = []
+    for name in sorted(options):
+        value = options[name]
+        formatted_flag = '--%s' % name if len(name) > 1 else '-%s' % name
+        formatted_flag = formatted_flag.replace('_', '-')
+        accepts_no_arguments = formatted_flag in NO_ARGUMENT_OPTIONS
+        if value is None or (value is False and accepts_no_arguments):
+            continue
+        flags.append(formatted_flag)
+        if accepts_no_arguments:
+            continue
+        flags.append(six.text_type(value))
+    return flags
 
 
 def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
@@ -89,21 +139,10 @@ def wkhtmltopdf(pages, output=None, **kwargs):  # pragma: no cover
     cmd = "WKHTMLTOPDF_CMD"
     cmd = getattr(settings, cmd, os.environ.get(cmd, "wkhtmltopdf"))
 
-    # FIXME: this is overwritten because django-wkhtmltopdf has a bug here
-    # https://github.com/incuna/django-wkhtmltopdf/pull/161
-    # should be _options_to_args(**options)
-    options_args = [
-        "--encoding",
-        "utf8",
-        "--javascript-delay",
-        "200",
-        "--load-error-handling",
-        "ignore",
-        "--no-stop-slow-scripts",
-        "--quiet",
-    ]
+    options_args = _options_to_args(**options)
 
     ck_args = list(chain(shlex.split(cmd), options_args, list(pages), [output]))
+    print(ck_args)
 
     with TemporaryFile() as errors_tempfile:
         ck_kwargs = {"env": env, "stderr": errors_tempfile}
@@ -216,6 +255,8 @@ class PDFViewMixin:
             output=pdf_output.name,
             load_error_handling="ignore",
             no_stop_slow_scripts=True,
+            enable_javascript = True,
+            debug_javascript = True,
         )
 
         response = PDFResponse(pdf_output, filename=filename)  # pragma: no cover

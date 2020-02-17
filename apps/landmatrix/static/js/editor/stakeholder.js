@@ -213,7 +213,9 @@ var getLinkedTreeData = function( curRoot, curCrossLinks ) {
               if (!node.investors.hasOwnProperty(id)) continue;
               childNode = node.investors[id];
 
-              var [childRoot, childCrossLinks] = getChildrenAndLinks(childNode, node);
+              var childrenAndLinks = getChildrenAndLinks(childNode, node);
+              var childRoot = childrenAndLinks[0]
+              var childCrossLinks = childrenAndLinks[1];
 
               if (Object.keys(childRoot).length > 0) {
                 children.push(childRoot);
@@ -333,7 +335,7 @@ var crossDiagonal = function() {
 };
 
 function diagonal(s, d) {
-    return  `M ${s.y} ${s.x} L ${d.y} ${d.x}`;
+    return  "M "+s.y+" "+s.x+" L "+d.y+" "+d.x;
 };
 
 var findNode = function (id) {
@@ -347,7 +349,7 @@ var shortenLink = function (node) {
     var pl = this.getTotalLength();
     var r = 40;
     var d = this.getPointAtLength(Math.round(pl - r));
-    return `M ${s.y} ${s.x} L ${d.x} ${d.y}`;
+    return diagonal(s, d);
 };
 
 function wordwrap(str, width) {
@@ -431,7 +433,10 @@ var linkedTreeChartBuilder = function( parentElement ) {
     // The chart update function that this builder returns.
     var update = function( source ) {
 
-        var [curRoot, curCrossLinksData] = getLinkedTreeData( treeData, crossLinksData );
+        var linkedTreeData = getLinkedTreeData( treeData, crossLinksData );
+        var curRoot = linkedTreeData[0]
+        var curCrossLinksData = linkedTreeData[1];
+
         curRoot = d3.hierarchy(curRoot, function(d) { return d.children; });
 
   			// Compute the new tree layout.
