@@ -280,14 +280,18 @@ class FilterListView(FilterDocTypeMixin, APIView):
 
 class FilterClearView(FilterDocTypeMixin, APIView):
     def get_object(self):
-        return self.request.session.get("%s:filters" % self.doc_type, {})
+        return self.request.session.get(f"{self.doc_type}:filters", {})
 
     def get(self, request, *args, **kwargs):
         """
         Show filters of current session cookie.
         Used within the filter section of map, data and chart views.
         """
-        request.session["%s:filters" % self.doc_type] = {}
+        if not self.doc_type:
+            request.session["deal:filters"] = {}
+            request.session["investor:filters"] = {}
+        else:
+            request.session[f"{self.doc_type}:filters"] = {}
         filters = self.get_object()
         return Response(filters)
 
