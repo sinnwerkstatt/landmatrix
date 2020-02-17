@@ -34,32 +34,74 @@ def update_querystring(url, params):
     return new_url
 
 
-NO_ARGUMENT_OPTIONS = ['--collate', '--no-collate', '-H', '--extended-help', '-g',
-                       '--grayscale', '-h', '--help', '--htmldoc', '--license', '-l',
-                       '--lowquality', '--manpage', '--no-pdf-compression', '-q',
-                       '--quiet', '--read-args-from-stdin', '--readme',
-                       '--use-xserver', '-V', '--version', '--dump-default-toc-xsl',
-                       '--outline', '--no-outline', '--background', '--no-background',
-                       '--custom-header-propagation', '--no-custom-header-propagation',
-                       '--debug-javascript', '--no-debug-javascript',
-                       '--default-header',
-                       '--disable-external-links', '--enable-external-links',
-                       '--disable-forms', '--enable-forms', '--images', '--no-images',
-                       '--disable-internal-links', '--enable-internal-links', '-n',
-                       '--disable-javascript', '--enable-javascript',
-                       '--keep-relative-links',
-                       '--load-media-error-handling',
-                       '--disable-local-file-access', '--enable-local-file-access',
-                       '--exclude-from-outline', '--include-in-outline',
-                       '--disable-plugins',
-                       '--enable-plugins', '--print-media-type',
-                       '--no-print-media-type',
-                       '--resolve-relative-links', '--disable-smart-shrinking',
-                       '--enable-smart-shrinking', '--stop-slow-scripts',
-                       '--no-stop-slow-scripts', '--disable-toc-back-links',
-                       '--enable-toc-back-links', '--footer-line', '--no-footer-line',
-                       '--header-line', '--no-header-line', '--disable-dotted-lines',
-                       '--disable-toc-links', '--verbose']
+NO_ARGUMENT_OPTIONS = [
+    "--collate",
+    "--no-collate",
+    "-H",
+    "--extended-help",
+    "-g",
+    "--grayscale",
+    "-h",
+    "--help",
+    "--htmldoc",
+    "--license",
+    "-l",
+    "--lowquality",
+    "--manpage",
+    "--no-pdf-compression",
+    "-q",
+    "--quiet",
+    "--read-args-from-stdin",
+    "--readme",
+    "--use-xserver",
+    "-V",
+    "--version",
+    "--dump-default-toc-xsl",
+    "--outline",
+    "--no-outline",
+    "--background",
+    "--no-background",
+    "--custom-header-propagation",
+    "--no-custom-header-propagation",
+    "--debug-javascript",
+    "--no-debug-javascript",
+    "--default-header",
+    "--disable-external-links",
+    "--enable-external-links",
+    "--disable-forms",
+    "--enable-forms",
+    "--images",
+    "--no-images",
+    "--disable-internal-links",
+    "--enable-internal-links",
+    "-n",
+    "--disable-javascript",
+    "--enable-javascript",
+    "--keep-relative-links",
+    "--load-media-error-handling",
+    "--disable-local-file-access",
+    "--enable-local-file-access",
+    "--exclude-from-outline",
+    "--include-in-outline",
+    "--disable-plugins",
+    "--enable-plugins",
+    "--print-media-type",
+    "--no-print-media-type",
+    "--resolve-relative-links",
+    "--disable-smart-shrinking",
+    "--enable-smart-shrinking",
+    "--stop-slow-scripts",
+    "--no-stop-slow-scripts",
+    "--disable-toc-back-links",
+    "--enable-toc-back-links",
+    "--footer-line",
+    "--no-footer-line",
+    "--header-line",
+    "--no-header-line",
+    "--disable-dotted-lines",
+    "--disable-toc-links",
+    "--verbose",
+]
 
 
 def _options_to_args(**options):
@@ -71,8 +113,8 @@ def _options_to_args(**options):
     flags = []
     for name in sorted(options):
         value = options[name]
-        formatted_flag = '--%s' % name if len(name) > 1 else '-%s' % name
-        formatted_flag = formatted_flag.replace('_', '-')
+        formatted_flag = "--%s" % name if len(name) > 1 else "-%s" % name
+        formatted_flag = formatted_flag.replace("_", "-")
         accepts_no_arguments = formatted_flag in NO_ARGUMENT_OPTIONS
         if value is None or (value is False and accepts_no_arguments):
             continue
@@ -255,8 +297,8 @@ class PDFViewMixin:
             output=pdf_output.name,
             load_error_handling="ignore",
             no_stop_slow_scripts=True,
-            enable_javascript = True,
-            debug_javascript = True,
+            enable_javascript=True,
+            debug_javascript=True,
         )
 
         response = PDFResponse(pdf_output, filename=filename)  # pragma: no cover
