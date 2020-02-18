@@ -73,7 +73,7 @@ class CustomTagsTestCase(TestCase):
 
     def test_naturaltime_from_string(self):
         value = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.assertRegexpMatches(naturaltime_from_string(value), r"(now|seconds ago)$")
+        self.assertRegex(naturaltime_from_string(value), r"(now|seconds ago)$")
         self.assertEqual("", naturaltime_from_string(None))
 
     def test_add_or_update_param(self):
@@ -104,7 +104,7 @@ class CustomTagsTestCase(TestCase):
         form = DealSpatialForm(initial={"location": "test"})
         field = CharField()
         bound_field = BoundField(form, field, "location")
-        self.assertRegexpMatches(random_id(bound_field), r"id=\"id_location_\d+\"")
+        self.assertRegex(random_id(bound_field), r"id=\"id_location_\d+\"")
 
     def test_get_user_role_with_country_editor(self):
         user = get_user_model().objects.get(username="editor-myanmar")

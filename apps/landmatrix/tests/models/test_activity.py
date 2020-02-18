@@ -6,12 +6,10 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from apps.grid.tests.views.base import BaseDealTestCase
-from apps.landmatrix.models import HistoricalInvestor
 from apps.landmatrix.models.activity import *
 
 
 class ActivityQuerySetTestCase(TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
 
     def setUp(self):
@@ -111,7 +109,6 @@ class ActivityQuerySetTestCase(TestCase):
 
 
 class ActivityBaseTestCase(BaseDealTestCase):
-
     fixtures = [
         "countries_and_regions",
         "users_and_groups",
@@ -465,7 +462,6 @@ class ActivityBaseTestCase(BaseDealTestCase):
 
 
 class ActivityTestCase(TestCase):
-
     fixtures = [
         "countries_and_regions",
         "users_and_groups",
@@ -500,7 +496,6 @@ class ActivityTestCase(TestCase):
 
 
 class HistoricalActivityQuerySetTestCase(TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
 
     def setUp(self):
@@ -532,7 +527,6 @@ class HistoricalActivityQuerySetTestCase(TestCase):
 
 
 class HistoricalActivityTestCase(BaseDealTestCase):
-
     fixtures = [
         "countries_and_regions",
         "users_and_groups",
@@ -601,12 +595,12 @@ class HistoricalActivityTestCase(BaseDealTestCase):
         current_version = HistoricalActivity.objects.get(id=21)
         previous_version = HistoricalActivity.objects.get(id=20)
         changed_attrs = current_version.compare_attributes_to(previous_version)
-        expected = [
+        expected = {
             (1, "production_size", "2000", None),
             (1, "intention", "Mining", "Forest logging / management"),
             (1, "intended_size", None, "1000"),
-        ]
-        self.assertEqual(expected, changed_attrs)
+        }
+        self.assertEqual(expected, set(changed_attrs))
 
     def test_update_public_activity_with_pending(self):
         activity = HistoricalActivity.objects.get(id=21)
