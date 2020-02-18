@@ -349,7 +349,7 @@ var shortenLink = function (node) {
     var pl = this.getTotalLength();
     var r = 40;
     var d = this.getPointAtLength(Math.round(pl - r));
-    return diagonal(s, d);
+    return  "M "+s.y+" "+s.x+" L "+d.x+" "+d.y;
 };
 
 function wordwrap(str, width) {
