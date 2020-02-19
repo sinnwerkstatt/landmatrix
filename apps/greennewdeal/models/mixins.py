@@ -1,3 +1,36 @@
+import reversion
+
+
+class ReversionSaveMixin:
+    STATUS_DRAFT = 1
+    STATUS_LIVE = 2
+    STATUS_LIVE_AND_DRAFT = 3
+    STATUS_DELETED = 4
+    STATUS_REJECTED = 5
+    STATUS_TO_DELETE = 6
+
+    def save_revision(self, status, date=None, user=None, comment=None):
+        already_in_db = self.__class__.objects.filter(pk=self.pk).exists()
+        live_and_draft = already_in_db and status == self.STATUS_DRAFT
+
+        with reversion.create_revision():
+            self.status = status
+
+            reversion.add_to_revision(self)
+            reversion.set_date_created(date)
+            reversion.set_user(user)
+            reversion.set_comment(comment)
+
+            if not live_and_draft:
+                self.save()
+
+        if live_and_draft:
+            self.__class__.objects.filter(pk=self.pk).update(
+                status=self.STATUS_LIVE_AND_DRAFT
+            )
+
+
+# TODO: Old Fields, delete after GND major upgrade
 # [x for x in HistoricalActivityAttribute.objects.values_list(
 # "name", flat=True).distinct().order_by("name")]
 

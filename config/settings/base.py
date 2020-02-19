@@ -84,11 +84,11 @@ INSTALLED_APPS = [
     "apps.notifications",
     "apps.public_comments",
     "apps.feeds",
-    "apps.greennewdeal",
     "impersonate",
     "celery",
     "django_prometheus",
     # GreenNewDeal
+    "apps.greennewdeal",
     "reversion",
     "django_elasticsearch_dsl",
     "ariadne.contrib.django",
@@ -205,6 +205,7 @@ ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
     "apps.greennewdeal.documents.signals.DoNothingProcessor"
 )
 # ELASTICSEARCH_DSL_PARALLEL ...
+CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

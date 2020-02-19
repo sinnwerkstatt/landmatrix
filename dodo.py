@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 from glob import glob
 
 import environ
@@ -42,11 +41,6 @@ def task_reset_db():
         actions = [f"rm -f {db['NAME']}"]
 
     return {"actions": actions}
-
-
-def task_run_tests():
-    os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.ci"
-    return {"actions": ["coverage run ./manage.py test --failfast"]}
 
 
 #############################

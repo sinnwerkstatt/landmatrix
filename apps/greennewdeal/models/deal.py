@@ -7,19 +7,19 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from apps.greennewdeal.models.country import Country
-
-from apps.greennewdeal.models.old_deal import (
-    OldDealMixin,
-    OldDataSourceMixin,
-    OldLocationMixin,
+from apps.greennewdeal.models.mixins import (
     OldContractMixin,
+    OldDataSourceMixin,
+    OldDealMixin,
+    OldLocationMixin,
+    ReversionSaveMixin,
 )
 
 
 @reversion.register(
     follow=["locations", "contracts", "datasources"], ignore_duplicates=True
 )
-class Deal(models.Model, OldDealMixin):
+class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     """ Deal """
 
     """ Locations """
@@ -735,23 +735,6 @@ class Deal(models.Model, OldDealMixin):
 
     def __str__(self):
         return f"#{self.id} in {self.target_country}"
-
-    def save_revision(self, draft=False, date=None, user=None, comment=None):
-        if draft:
-            status = 3 if self.pk else 1
-        else:
-            status = 2
-
-        with reversion.create_revision():
-            self.status = status
-            reversion.add_to_revision(self)
-            reversion.set_date_created(date)
-            reversion.set_user(user)
-            reversion.set_comment(comment)
-
-            if not draft:
-                self.save()
-        self.__class__.objects.filter(pk=self.pk).update(status=status)
 
 
 @reversion.register(ignore_duplicates=True)

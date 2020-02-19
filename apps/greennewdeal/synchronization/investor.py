@@ -45,11 +45,11 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
         investor.opencorporates = histvestor.opencorporates_link or ""
         investor.comment = histvestor.comment or ""
 
-        investor.status = STATUS_MAP[histvestor.fk_status_id]
+        status = STATUS_MAP[histvestor.fk_status_id]
         investor.timestamp = histvestor.history_date
 
         investor.save_revision(
-            histvestor.fk_status_id == 1,
+            status,
             histvestor.history_date,
             histvestor.history_user,
             histvestor.action_comment or "",
@@ -80,4 +80,7 @@ def sync_involvements(ids: list):
         inv.parent_relation = PARENTAL_RELATION_MAP[hist_involvement.parent_relation]
         inv.comment = hist_involvement.comment or ""
         inv.old_id = hist_involvement.pk
-        inv.save_revision(hist_involvement.fk_status_id == 1)
+
+        status = STATUS_MAP[hist_involvement.fk_status_id]
+
+        inv.save_revision(status)

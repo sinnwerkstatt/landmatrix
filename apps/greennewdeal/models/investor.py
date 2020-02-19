@@ -6,10 +6,11 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.greennewdeal.models.country import Country
+from apps.greennewdeal.models.mixins import ReversionSaveMixin
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
-class Investor(models.Model):
+class Investor(models.Model, ReversionSaveMixin):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
@@ -79,26 +80,9 @@ class Investor(models.Model):
     def __str__(self):
         return f"{self.name} (#{self.id})"
 
-    def save_revision(self, draft=False, date=None, user=None, comment=None):
-        if draft:
-            status = 3 if self.pk else 1
-        else:
-            status = 2
-
-        with reversion.create_revision():
-            self.status = status
-            reversion.add_to_revision(self)
-            reversion.set_date_created(date)
-            reversion.set_user(user)
-            reversion.set_comment(comment)
-
-            if not draft:
-                self.save()
-        self.__class__.objects.filter(pk=self.pk).update(status=status)
-
 
 @reversion.register(ignore_duplicates=True)
-class InvestorVentureInvolvement(models.Model):
+class InvestorVentureInvolvement(models.Model, ReversionSaveMixin):
     investor = models.ForeignKey(
         Investor,
         verbose_name=_("Investor"),
@@ -186,17 +170,3 @@ class InvestorVentureInvolvement(models.Model):
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
-
-    def save_revision(self, draft=False, date=None, user=None, comment=None):
-        if draft:
-            status = 3 if self.pk else 1
-        else:
-            status = 2
-
-        with reversion.create_revision():
-            self.status = status
-            reversion.add_to_revision(self)
-
-            if not draft:
-                self.save()
-        self.__class__.objects.filter(pk=self.pk).update(status=status)

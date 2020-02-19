@@ -19,3 +19,5 @@ ELASTICSEARCH_INDEX_NAMES = {
     "search_indexes.documents.deals": "test_deal",
     "search_indexes.documents.locations": "test_location",
 }
+
+CELERY_ENABLED = False

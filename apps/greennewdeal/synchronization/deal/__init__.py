@@ -3,13 +3,17 @@ from apps.greennewdeal.synchronization.deal import base, submodels
 from apps.greennewdeal.synchronization.helpers import MetaActivity
 from apps.landmatrix.models import HistoricalActivity
 
+#              1        2           3           4       5          6
+# Stati old: Pending, Active, Overwritten,  Deleted, Rejected, To_delete
+# Stati new: Draft,   Live,   Live+Draft,   Deleted, Rejected, To_delete
+STATUS_MAP = {1: 1, 2: 2, 3: 2, 4: 4, 5: 5, 6: 6}
+
 
 def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
     if activity_pk and activity_identifier:
         raise AttributeError("just specify one")
     elif activity_pk:
         activity_versions = HistoricalActivity.objects.filter(pk=activity_pk)
-        print(activity_versions)
     elif activity_identifier:
         activity_versions = HistoricalActivity.objects.filter(
             activity_identifier=activity_identifier
@@ -45,8 +49,9 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         base.parse_water(deal, meta_activity.group_water)
         base.parse_remaining(deal, meta_activity.group_remaining)
 
+        status = STATUS_MAP[histivity.fk_status_id]
         deal.save_revision(
-            histivity.fk_status_id == 1,
+            status,
             histivity.history_date,
             histivity.history_user,
             histivity.comment or "",
