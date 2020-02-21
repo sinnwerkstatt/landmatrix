@@ -15,23 +15,29 @@ from apps.landmatrix.models import (
     Country,
     HistoricalActivity,
     HistoricalInvestor,
+    ActivityChangeset,
 )
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin, ActivitiesFixtureMixin
 
 
-class GridUtilsTestCase(BaseDealTestCase):
+class GridUtilsTestCase(
+    ActivitiesFixtureMixin, InvestorsFixtureMixin, BaseDealTestCase
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
     ]
+
+    inv_fixtures = [{"id": 1, "investor_identifier": 1, "name": "Test Investor #1"}]
 
     def test_get_display_value_without_value(self):
         self.assertEqual("", get_display_value(CharField(), []))
 
     def test_get_display_value_with_investor_choice_field(self):
         field = ModelChoiceField(queryset=HistoricalInvestor.objects.all())
-        self.assertEqual("1", get_display_value(field, ["10"]))
+        self.assertEqual("1", get_display_value(field, ["1"]))
 
     def test_get_display_value_with_user_choice_field(self):
         field = ModelChoiceField(queryset=Country.objects.all())
@@ -147,10 +153,13 @@ class GridUtilsTestCase(BaseDealTestCase):
 
     def test_has_perm_approve_reject_with_editor(self):
         user = get_user_model().objects.get(username="editor")
-        activity = HistoricalActivity.objects.get(id=21)
+        activity = HistoricalActivity.objects.get(id=1)
         self.assertEqual(True, has_perm_approve_reject(user, object=activity))
 
     def test_has_perm_approve_reject_with_editor_reviewed(self):
+        ActivityChangeset.objects.create(
+            fk_activity_id=2, fk_user_id=3, comment="Test changeset"
+        )
         user = get_user_model().objects.get(username="editor")
-        activity = HistoricalActivity.objects.get(id=70)
+        activity = HistoricalActivity.objects.get(id=2)
         self.assertEqual(False, has_perm_approve_reject(user, object=activity))

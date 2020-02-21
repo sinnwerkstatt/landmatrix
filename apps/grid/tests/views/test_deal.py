@@ -6,29 +6,24 @@ from django.test import TestCase, override_settings
 
 from apps.api.elasticsearch import es_save
 from apps.grid.views.deal import *
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    ActivitiesFixtureMixin,
+    ElasticSearchFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+)
 from .base import BaseDealTestCase
 
 
-class DealListViewTestCase(TestCase):
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
+class DealListViewTestCase(ElasticSearchFixtureMixin, TestCase):
 
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "crops",
-            "animals",
-            "minerals",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
+        {"id": 3, "activity_identifier": 3, "fk_status_id": 1, "attributes": {}},
+    ]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1, "name": "Test Investor #1"}]
+    act_inv_fixtures = {"1": "1", "2": "1", "3": "1"}
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_without_group(self):
@@ -40,10 +35,9 @@ class DealListViewTestCase(TestCase):
         self.assertEqual([1], items[0].get("activity_identifier"))
         self.assertEqual(["Myanmar"], items[0].get("target_country"))
         self.assertEqual(
-            [{"id": "6", "name": "Test Investor 6"}], items[0].get("top_investors", [])
+            [{"id": "1", "name": "Test Investor 1"}], items[0].get("top_investors", [])
         )
-        self.assertEqual(3, len(items[0].get("intention", [None])[0]))
-        self.assertEqual([1000], items[0].get("deal_size"))
+        self.assertEqual([200], items[0].get("deal_size"))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_with_group(self):
@@ -56,9 +50,8 @@ class DealListViewTestCase(TestCase):
         self.assertEqual(1, len(items))
         self.assertEqual("Myanmar", items[0].get("target_country", {}).get("display"))
         self.assertEqual(["Asia"], items[0].get("target_region"))
-        self.assertGreater(len(items[0].get("intention", [])), 0)
         self.assertGreater(items[0].get("deal_count")[0], 0)
-        self.assertEqual([3000], items[0].get("deal_size"))
+        self.assertEqual([400], items[0].get("deal_size"))
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_with_group_value(self):
@@ -76,13 +69,15 @@ class DealListViewTestCase(TestCase):
         self.assertEqual([1], items[0].get("activity_identifier"))
         self.assertEqual(["Myanmar"], items[0].get("target_country"))
         self.assertEqual(
-            [{"id": "6", "name": "Test Investor 6"}], items[0].get("top_investors", [])
+            [{"id": "1", "name": "Test Investor 1"}], items[0].get("top_investors", [])
         )
-        self.assertEqual(3, len(items[0].get("intention", [None])[0]))
-        self.assertEqual([1000], items[0].get("deal_size"))
+        self.assertEqual([200], items[0].get("deal_size"))
 
 
-class DealCreateViewTestCase(BaseDealTestCase):
+class DealCreateViewTestCase(InvestorsFixtureMixin, BaseDealTestCase):
+
+    inv_fixtures = [{"id": 1, "investor_identifier": 1, "name": "Test Investor #1"}]
+
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
         self.client.login(username="reporter", password="test")
@@ -160,14 +155,20 @@ class DealCreateViewTestCase(BaseDealTestCase):
         self.assertEqual(HistoricalActivity.STATUS_REJECTED, activity.fk_status_id)
 
 
-class DealUpdateViewTestCase(BaseDealTestCase):
+class DealUpdateViewTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
+        {"id": 3, "activity_identifier": 2, "fk_status_id": 1, "attributes": {}},
     ]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
+    act_inv_fixtures = {"1": "1", "2": "1", "3": "1"}
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
@@ -256,11 +257,11 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         data.update({"tg_action_comment": "Test change deal"})
         self.client.login(username="reporter", password="test")
         response = self.client.post(
-            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 21}), data
+            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 3}), data
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
-        self.assertEqual("/deal/2/21/", response.url)
+        self.assertEqual("/deal/2/3/", response.url)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_does_not_exist(self):
@@ -274,7 +275,7 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         data.update({"tg_action_comment": "Test change deal"})
         self.client.login(username="editor", password="test")
         response = self.client.post(
-            reverse("change_deal", kwargs={"deal_id": 1, "history_id": 10}), data
+            reverse("change_deal", kwargs={"deal_id": 1, "history_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(302, response.status_code, msg="Change deal does not redirect")
@@ -286,7 +287,7 @@ class DealUpdateViewTestCase(BaseDealTestCase):
     def test_not_editable(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 20})
+            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 2})
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
@@ -297,17 +298,17 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         data.update({"tg_action_comment": "Test change deal", "reject_btn": "on"})
         self.client.login(username="administrator", password="test")
         response = self.client.post(
-            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 21}), data
+            reverse("change_deal", kwargs={"deal_id": 2, "history_id": 3}), data
         )
         self.client.logout()
         self.assertEqual(302, response.status_code, msg="Change deal does not redirect")
-        activity = HistoricalActivity.objects.get(id=21)
+        activity = HistoricalActivity.objects.get(id=3)
         self.assertEqual(2, activity.activity_identifier)
         self.assertEqual(HistoricalActivity.STATUS_REJECTED, activity.fk_status_id)
 
     def test_with_country_specific_form(self):
         # Overwrite target country with Mongolia
-        activity = HistoricalActivity.objects.get(id=10)
+        activity = HistoricalActivity.objects.get(id=1)
         activity.attributes.filter(name="target_country").update(value="496")
 
         data = self.DEAL_DATA.copy()
@@ -322,14 +323,19 @@ class DealUpdateViewTestCase(BaseDealTestCase):
         self.assertEqual(HistoricalActivity.STATUS_PENDING, activity.fk_status_id)
 
 
-class DealDetailViewTestCase(BaseDealTestCase):
+class DealDetailViewTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "fk_status_id": 4, "attributes": {}},
     ]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
+    act_inv_fixtures = {"1": "1", "2": "1"}
 
     def test_with_anonymous(self):
         response = self.client.get(reverse("deal_detail", kwargs={"deal_id": 1}))
@@ -337,7 +343,7 @@ class DealDetailViewTestCase(BaseDealTestCase):
         self.assertEqual(1, response.context.get("activity").activity_identifier)
 
     def test_with_anonymous_not_public(self):
-        response = self.client.get(reverse("deal_detail", kwargs={"deal_id": 4}))
+        response = self.client.get(reverse("deal_detail", kwargs={"deal_id": 2}))
         self.assertEqual(404, response.status_code)
 
     def test_with_reporter(self):
@@ -349,7 +355,7 @@ class DealDetailViewTestCase(BaseDealTestCase):
 
     def test_deleted(self):
         self.client.login(username="editor", password="test")
-        response = self.client.get(reverse("deal_detail", kwargs={"deal_id": 4}))
+        response = self.client.get(reverse("deal_detail", kwargs={"deal_id": 2}))
         self.client.logout()
         self.assertEqual(404, response.status_code)
 
@@ -372,20 +378,26 @@ class DealDetailViewTestCase(BaseDealTestCase):
     def test_with_history_id(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("deal_detail", kwargs={"deal_id": 1, "history_id": 10})
+            reverse("deal_detail", kwargs={"deal_id": 1, "history_id": 1})
         )
         self.client.logout()
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.context.get("activity").activity_identifier)
 
 
-class DealDeleteViewTestCase(BaseDealTestCase):
+class DealDeleteViewTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "fk_status_id": 4, "attributes": {}},
     ]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
+    act_inv_fixtures = {"1": "1", "2": "1"}
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
@@ -447,23 +459,29 @@ class DealDeleteViewTestCase(BaseDealTestCase):
         data = self.DEAL_DATA.copy()
         data.update({"tg_action_comment": "Test delete deal"})
         self.client.login(username="editor", password="test")
-        response = self.client.post(reverse("delete_deal", kwargs={"deal_id": 4}), data)
+        response = self.client.post(reverse("delete_deal", kwargs={"deal_id": 2}), data)
         self.client.logout()
         self.assertEqual(404, response.status_code)
 
 
-class DealRecoverViewTestCase(BaseDealTestCase):
+class DealRecoverViewTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "fk_status_id": 4, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
     ]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
+    act_inv_fixtures = {"1": "1", "2": "1"}
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
         self.client.login(username="editor", password="test")
-        response = self.client.get(reverse("recover_deal", kwargs={"deal_id": 4}))
+        response = self.client.get(reverse("recover_deal", kwargs={"deal_id": 1}))
         self.client.logout()
         self.assertEqual(302, response.status_code)
 
@@ -473,7 +491,7 @@ class DealRecoverViewTestCase(BaseDealTestCase):
         data.update({"tg_action_comment": "Test recover deal"})
         self.client.login(username="editor", password="test")
         response = self.client.post(
-            reverse("recover_deal", kwargs={"deal_id": 4}), data
+            reverse("recover_deal", kwargs={"deal_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(
@@ -489,14 +507,14 @@ class DealRecoverViewTestCase(BaseDealTestCase):
         data.update({"tg_action_comment": "Test recover deal", "approve_btn": True})
         self.client.login(username="administrator", password="test")
         response = self.client.post(
-            reverse("recover_deal", kwargs={"deal_id": 4}), data
+            reverse("recover_deal", kwargs={"deal_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(
             302, response.status_code, msg="Recover deal does not redirect"
         )
         activity = HistoricalActivity.objects.latest_only().public().latest()
-        self.assertEqual(4, activity.activity_identifier)
+        self.assertEqual(1, activity.activity_identifier)
         # self.assertEqual('Test recover deal', activity.comment)
         self.assertEqual(HistoricalActivity.STATUS_OVERWRITTEN, activity.fk_status_id)
 
@@ -510,18 +528,21 @@ class DealRecoverViewTestCase(BaseDealTestCase):
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_not_deleted(self):
         self.client.login(username="editor", password="test")
-        response = self.client.get(reverse("recover_deal", kwargs={"deal_id": 1}))
+        response = self.client.get(reverse("recover_deal", kwargs={"deal_id": 2}))
         self.client.logout()
         self.assertEqual(404, response.status_code)
 
 
-class DealTestCase(TestCase):
+class DealTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-    ]
+    act_fixtures = [{"id": 1, "activity_identifier": 1, "attributes": {}}]
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
+    act_inv_fixtures = {"1": "1"}
 
     def test_get_forms(self):
         activity = HistoricalActivity.objects.latest_only().public().latest()
@@ -536,4 +557,4 @@ class DealTestCase(TestCase):
         form_tuple = (DealActionCommentForm.Meta.name, DealActionCommentForm)
         form = get_form(activity, form_tuple)
         self.assertIsInstance(form, DealActionCommentForm)
-        self.assertEqual({"tg_action_comment": ["Mining"]}, form.initial)
+        self.assertEqual("", form.initial.get("tg_action_comment"))

@@ -14,15 +14,17 @@ from apps.grid.tests.views.base import BaseInvestorTestCase
 from apps.grid.views.export import ExportView
 from apps.grid.views.investor import InvestorDetailView, InvestorUpdateView
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorUpdate(BaseInvestorTestCase):
+class TestInvestorUpdate(InvestorsFixtureMixin,
+                         BaseInvestorTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {"id": 3, "investor_identifier": 2, "fk_status_id": 1, "name": "Test Investor #2"},
     ]
 
     @override_settings(

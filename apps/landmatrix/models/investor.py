@@ -242,8 +242,8 @@ class InvestorBase(models.Model):
         Right now, this is determined based on if any relations exist.
         It probably makes more sense to have this as a flag on the model.
         """
-        if hasattr(self, "venture_involvements"):
-            queryset = self.venture_involvements.all()
+        if hasattr(self, "investors"):
+            queryset = self.investors.all()
             queryset = queryset.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
             return queryset.exists()
         else:  # pragma: no cover
@@ -251,8 +251,8 @@ class InvestorBase(models.Model):
 
     @property
     def is_parent_investor(self):
-        if hasattr(self, "venture_involvements"):
-            queryset = self.venture_involvements.all()
+        if hasattr(self, "investors"):
+            queryset = self.investors.all()
             queryset = queryset.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
             return queryset.exists()
         else:  # pragma: no cover

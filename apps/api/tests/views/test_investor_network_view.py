@@ -1,25 +1,25 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.landmatrix.tests.mixins import InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 
 
-class APIDealInvestorNetworkViewTestCase(InvestorsFixtureMixin,
-                                         InvestorVentureInvolvementsFixtureMixin,
-                                         TestCase):
+class APIDealInvestorNetworkViewTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
+):
 
     inv_fixtures = [
         {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
         {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
-    inv_inv_fixtures = [
-        {"fk_venture_id": "10", "fk_investor_id": "20"}
-    ]
-
+    inv_inv_fixtures = [{"fk_venture_id": "10", "fk_investor_id": "20"}]
 
     def test(self):
         response = self.client.get(
-            reverse("api_deal_investor_network"), data={"investor_id": 7}
+            reverse("api_deal_investor_network"), data={"investor_id": 1}
         )
         self.assertEqual(200, response.status_code)
         investor_network = response.data
@@ -31,7 +31,7 @@ class APIDealInvestorNetworkViewTestCase(InvestorsFixtureMixin,
         self.assertEqual("/investor/1/", investor_network.get("url"))
         investors = investor_network.get("investors")
         self.assertIsInstance(investors, (tuple, list))
-        self.assertEqual(2, len(investors))
+        self.assertEqual(1, len(investors))
         self.assertEqual("I2", investors[0].get("id"))
         self.assertEqual(2, investors[0].get("identifier"))
         self.assertEqual("Test Investor #2", investors[0].get("name"))

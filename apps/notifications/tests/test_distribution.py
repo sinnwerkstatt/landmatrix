@@ -2,14 +2,17 @@ from django.core import mail
 from django.test import RequestFactory, TestCase
 
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.notifications.distribution import *
 from apps.public_comments.models import ThreadedComment
 
 
-class DistributionTestCase(TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+class DistributionTestCase(ActivitiesFixtureMixin, TestCase):
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def setUp(self):
+        super().setUp()
         user = get_user_model().objects.get(username="reporter")
         self.activity = HistoricalActivity.objects.get(id=10)
         self.comment = ThreadedComment.objects.create(

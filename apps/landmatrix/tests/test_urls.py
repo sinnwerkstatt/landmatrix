@@ -9,10 +9,13 @@ from django.conf import settings
 import importlib
 
 from apps.api.elasticsearch import ElasticSearch, es_save
+from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 from apps.wagtailcms.models import WagtailRootPage
 
 
-class UrlsTest(TestCase):
+class UrlsTest(ElasticSearchFixtureMixin, TestCase):
+
+    inv_fixtures = [{"id": 1, "investor_identifier": 1}]
 
     default_kwargs = {
         "app_label": "sites",
@@ -25,29 +28,8 @@ class UrlsTest(TestCase):
     }
     skip_regex = r"^.*_pdf$"
 
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
-
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "animals",
-            "crops",
-            "filters",
-            "languages",
-            "minerals",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
-
     def setUp(self):
+        super().setUp()
         WagtailRootPage.objects.create(title="Root", path="/", depth=0)
 
     def assert_urls_available(

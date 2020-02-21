@@ -1,41 +1,33 @@
 from decimal import Decimal
 
-from django.core.management import call_command
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from apps.api.elasticsearch import es_save
-from apps.grid.forms.choices import INTENTION_MINING, NATURE_CONCESSION, NATURE_CONTRACT_FARMING, intention_choices, \
-    INTENTION_BIOFUELS, intention_agriculture_choices, intention_forestry_choices, INTENTION_TIMBER_PLANTATION
+from apps.grid.forms.choices import (
+    INTENTION_MINING,
+    NATURE_CONCESSION,
+    NATURE_CONTRACT_FARMING,
+    intention_choices,
+    INTENTION_BIOFUELS,
+    intention_agriculture_choices,
+    intention_forestry_choices,
+    INTENTION_TIMBER_PLANTATION,
+)
 from apps.landmatrix.models import Region, AgriculturalProduce, Crop, Animal, Mineral
 from apps.landmatrix.models.activity import ActivityBase
-from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin, \
-    InvestorActivityInvolvementsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, ElasticSearchFixtureMixin
+from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 
 
-class ChartViewTestCase(ElasticSearchFixtureMixin,
-                        TestCase,
-                        ActivitiesFixtureMixin,
-                        InvestorsFixtureMixin,
-                        InvestorActivityInvolvementsFixtureMixin,
-                        InvestorVentureInvolvementsFixtureMixin):
+class ChartViewTestCase(ElasticSearchFixtureMixin, TestCase):
 
-    act_fixtures = [
-    ]
-    inv_fixtures = [
-        {"id": 1},
-        {"id": 2}
-    ]
-    act_inv_fixtures = {
-    }
-    inv_inv_fixtures = [
-        {"fk_venture_id": "1", "fk_investor_id": "2"}
-    ]
+    act_fixtures = []
+    inv_fixtures = [{"id": 1}, {"id": 2}]
+    act_inv_fixtures = {}
+    inv_inv_fixtures = [{"fk_venture_id": "1", "fk_investor_id": "2"}]
 
 
 class NegotiationStatusChartViewTestCase(ChartViewTestCase):
-
     @classmethod
     def create_fixture(cls):
         cls.act_fixtures = []
@@ -44,22 +36,28 @@ class NegotiationStatusChartViewTestCase(ChartViewTestCase):
             if not value:
                 continue
             id = len(cls.act_fixtures) + 1
-            cls.act_fixtures.append({
-                "id": id,
-                "attributes": {
-                    "target_country": {"value": "104"},
-                    "intended_size": {"value": "1000"},
-                    "contract_size": {"value": "1000"},
-                    "production_size": {"value": "1000"},
-                    "type": {"value": "Media report"},
-                    "negotiation_status": {"value": value},  # Negotiation status tests
-                    "intention": {"value": INTENTION_MINING},  # Mining tests
-                    "nature": [
-                        {"value": NATURE_CONCESSION},  # Logging tests
-                        {"value": NATURE_CONTRACT_FARMING}  # Contract farming tests
-                    ]
+            cls.act_fixtures.append(
+                {
+                    "id": id,
+                    "attributes": {
+                        "target_country": {"value": "104"},
+                        "intended_size": {"value": "1000"},
+                        "contract_size": {"value": "1000"},
+                        "production_size": {"value": "1000"},
+                        "type": {"value": "Media report"},
+                        "negotiation_status": {
+                            "value": value
+                        },  # Negotiation status tests
+                        "intention": {"value": INTENTION_MINING},  # Mining tests
+                        "nature": [
+                            {"value": NATURE_CONCESSION},  # Logging tests
+                            {
+                                "value": NATURE_CONTRACT_FARMING
+                            },  # Contract farming tests
+                        ],
+                    },
                 }
-            })
+            )
             cls.act_inv_fixtures[str(id)] = "1"
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -108,7 +106,6 @@ class NegotiationStatusChartViewTestCase(ChartViewTestCase):
 
 
 class ImplementationStatusChartViewTestCase(ChartViewTestCase):
-
     @classmethod
     def create_fixture(cls):
         cls.act_fixtures = []
@@ -117,18 +114,22 @@ class ImplementationStatusChartViewTestCase(ChartViewTestCase):
             if not value:
                 continue
             id = len(cls.act_fixtures) + 1
-            cls.act_fixtures.append({
-                "id": id,
-                "attributes": {
-                    "target_country": {"value": "104"},
-                    "intended_size": {"value": "1000"},
-                    "contract_size": {"value": "1000"},
-                    "production_size": {"value": "1000"},
-                    "type": {"value": "Media report"},
-                    "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
-                    "implementation_status": {"value": value},
+            cls.act_fixtures.append(
+                {
+                    "id": id,
+                    "attributes": {
+                        "target_country": {"value": "104"},
+                        "intended_size": {"value": "1000"},
+                        "contract_size": {"value": "1000"},
+                        "production_size": {"value": "1000"},
+                        "type": {"value": "Media report"},
+                        "negotiation_status": {
+                            "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                        },
+                        "implementation_status": {"value": value},
+                    },
                 }
-            })
+            )
             cls.act_inv_fixtures[str(id)] = "1"
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -144,7 +145,6 @@ class ImplementationStatusChartViewTestCase(ChartViewTestCase):
 
 
 class InvestmentIntentionChartViewTestCase(ChartViewTestCase):
-
     @classmethod
     def create_fixture(cls):
         cls.act_fixtures = []
@@ -153,7 +153,27 @@ class InvestmentIntentionChartViewTestCase(ChartViewTestCase):
             if not value:
                 continue
             id = len(cls.act_fixtures) + 1
-            cls.act_fixtures.append({
+            cls.act_fixtures.append(
+                {
+                    "id": id,
+                    "attributes": {
+                        "target_country": {"value": "104"},
+                        "intended_size": {"value": "1000"},
+                        "contract_size": {"value": "1000"},
+                        "production_size": {"value": "1000"},
+                        "type": {"value": "Media report"},
+                        "negotiation_status": {
+                            "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                        },
+                        "intention": {"value": value},
+                    },
+                }
+            )
+            cls.act_inv_fixtures[str(id)] = "1"
+        # Multiple intentions
+        id = len(cls.act_fixtures) + 1
+        cls.act_fixtures.append(
+            {
                 "id": id,
                 "attributes": {
                     "target_country": {"value": "104"},
@@ -161,28 +181,16 @@ class InvestmentIntentionChartViewTestCase(ChartViewTestCase):
                     "contract_size": {"value": "1000"},
                     "production_size": {"value": "1000"},
                     "type": {"value": "Media report"},
-                    "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
-                    "intention": {"value": value},
-                }
-            })
-            cls.act_inv_fixtures[str(id)] = "1"
-        # Multiple intentions
-        id = len(cls.act_fixtures) + 1
-        cls.act_fixtures.append({
-            "id": id,
-            "attributes": {
-                "target_country": {"value": "104"},
-                "intended_size": {"value": "1000"},
-                "contract_size": {"value": "1000"},
-                "production_size": {"value": "1000"},
-                "type": {"value": "Media report"},
-                "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
-                "intention": [
-                    {"value": INTENTION_BIOFUELS},
-                    {"value": INTENTION_TIMBER_PLANTATION},
-                ],
+                    "negotiation_status": {
+                        "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                    },
+                    "intention": [
+                        {"value": INTENTION_BIOFUELS},
+                        {"value": INTENTION_TIMBER_PLANTATION},
+                    ],
+                },
             }
-        })
+        )
         cls.act_inv_fixtures[str(id)] = "1"
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -234,23 +242,26 @@ class InvestmentIntentionChartViewTestCase(ChartViewTestCase):
 
 
 class CountriesChartViewTestCase(ChartViewTestCase):
-
     @classmethod
     def create_fixture(cls):
         cls.act_fixtures = []
         cls.act_inv_fixtures = {}
         id = len(cls.act_fixtures) + 1
-        cls.act_fixtures.append({
-            "id": id,
-            "attributes": {
-                "target_country": {"value": "104"},
-                "intended_size": {"value": "1000"},
-                "contract_size": {"value": "1000"},
-                "production_size": {"value": "1000"},
-                "type": {"value": "Media report"},
-                "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
+        cls.act_fixtures.append(
+            {
+                "id": id,
+                "attributes": {
+                    "target_country": {"value": "104"},
+                    "intended_size": {"value": "1000"},
+                    "contract_size": {"value": "1000"},
+                    "production_size": {"value": "1000"},
+                    "type": {"value": "Media report"},
+                    "negotiation_status": {
+                        "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                    },
+                },
             }
-        })
+        )
         cls.act_inv_fixtures[str(id)] = "1"
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -512,7 +523,6 @@ class CountriesChartViewTestCase(ChartViewTestCase):
 
 
 class AgriculturalProduceChartViewTestCase(ChartViewTestCase):
-
     @classmethod
     def create_fixture(cls):
         cls.act_fixtures = []
@@ -522,7 +532,27 @@ class AgriculturalProduceChartViewTestCase(ChartViewTestCase):
             for ap in AgriculturalProduce.objects.all():
                 id = len(cls.act_fixtures) + 1
                 crop_id = ap.crop_set.first().id
-                cls.act_fixtures.append({
+                cls.act_fixtures.append(
+                    {
+                        "id": id,
+                        "attributes": {
+                            "target_country": {"value": target_country_id},
+                            "intended_size": {"value": "1000"},
+                            "contract_size": {"value": "1000"},
+                            "production_size": {"value": "1000"},
+                            "type": {"value": "Media report"},
+                            "negotiation_status": {
+                                "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                            },
+                            "crops": [{"value": crop_id}],
+                        },
+                    }
+                )
+                cls.act_inv_fixtures[str(id)] = "1"
+            # Multiple use
+            id = len(cls.act_fixtures) + 1
+            cls.act_fixtures.append(
+                {
                     "id": id,
                     "attributes": {
                         "target_country": {"value": target_country_id},
@@ -530,30 +560,16 @@ class AgriculturalProduceChartViewTestCase(ChartViewTestCase):
                         "contract_size": {"value": "1000"},
                         "production_size": {"value": "1000"},
                         "type": {"value": "Media report"},
-                        "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
+                        "negotiation_status": {
+                            "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                        },
                         "crops": [
-                            {"value": crop_id},
-                        ]
-                    }
-                })
-                cls.act_inv_fixtures[str(id)] = "1"
-            # Multiple use
-            id = len(cls.act_fixtures) + 1
-            cls.act_fixtures.append({
-                "id": id,
-                "attributes": {
-                    "target_country": {"value": target_country_id},
-                    "intended_size": {"value": "1000"},
-                    "contract_size": {"value": "1000"},
-                    "production_size": {"value": "1000"},
-                    "type": {"value": "Media report"},
-                    "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
-                    "crops": [
-                        {"value": ap.crop_set.first().id}
-                        for ap in AgriculturalProduce.objects.all()
-                    ]
+                            {"value": ap.crop_set.first().id}
+                            for ap in AgriculturalProduce.objects.all()
+                        ],
+                    },
                 }
-            })
+            )
             cls.act_inv_fixtures[str(id)] = "1"
 
     def slugify(self, ap):
@@ -573,7 +589,9 @@ class AgriculturalProduceChartViewTestCase(ChartViewTestCase):
                 self.assertEqual(ap_ratio, region_dict["agricultural_produce"][slug])
                 self.assertEqual(1000, region_dict["hectares"][slug])
             # Multiple use
-            self.assertEqual(ap_ratio, region_dict["agricultural_produce"]["multiple_use"])
+            self.assertEqual(
+                ap_ratio, region_dict["agricultural_produce"]["multiple_use"]
+            )
             self.assertEqual(1000, region_dict["hectares"]["multiple_use"])
         # Overall
         overall_dict = response_dict["overall"]
@@ -597,7 +615,7 @@ class ProduceInfoChartViewTestCase(ChartViewTestCase):
         cls.produce_info = {
             "crops": Crop.objects.first(),
             "animals": Animal.objects.first(),
-            "minerals": Mineral.objects.first()
+            "minerals": Mineral.objects.first(),
         }
         for key, value in cls.produce_info.items():
             id = len(cls.act_fixtures) + 1
@@ -607,16 +625,15 @@ class ProduceInfoChartViewTestCase(ChartViewTestCase):
                 "contract_size": {"value": "1000"},
                 "production_size": {"value": "1000"},
                 "type": {"value": "Media report"},
-                "negotiation_status": {"value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED},
+                "negotiation_status": {
+                    "value": ActivityBase.NEGOTIATION_STATUS_CONTRACT_SIGNED
+                },
                 "crops": None,
                 "animals": None,
                 "minerals": None,
                 key: {"value": value.id},
             }
-            cls.act_fixtures.append({
-                "id": id,
-                "attributes": attributes
-            })
+            cls.act_fixtures.append({"id": id, "attributes": attributes})
             cls.act_inv_fixtures[str(id)] = "1"
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")

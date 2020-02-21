@@ -66,6 +66,9 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Comment on data source"), widget=CommentInput
     )
 
+    class Meta:
+        name = "data_source"
+
     # def clean_date(self):
     #    date = self.cleaned_data["date"]
     #    try:

@@ -4,15 +4,21 @@ from django.core.management.base import OutputWrapper
 from django.test import TestCase
 
 from apps.api.elasticsearch import *
-from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin, \
-    InvestorActivityInvolvementsFixtureMixin, InvestorVentureInvolvementsFixtureMixin
+from apps.landmatrix.tests.mixins import (
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 
 
-class APIElasticsearchTestCase(ActivitiesFixtureMixin,
-                               InvestorsFixtureMixin,
-                               InvestorActivityInvolvementsFixtureMixin,
-                               InvestorVentureInvolvementsFixtureMixin,
-                               TestCase):
+class APIElasticsearchTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+    TestCase,
+):
 
     act_fixtures = [
         {"id": 10, "activity_identifier": 1, "attributes": {}},
@@ -24,14 +30,8 @@ class APIElasticsearchTestCase(ActivitiesFixtureMixin,
         {"id": 20, "investor_identifier": 2},
         {"id": 21, "investor_identifier": 2, "fk_status_id": 1},
     ]
-    act_inv_fixtures = {
-        "10": "10",
-        "20": "20",
-        "21": "20",
-    }
-    inv_inv_fixtures = [
-        {"fk_venture_id": "10", "fk_investor_id": "20"}
-    ]
+    act_inv_fixtures = {"10": "10", "20": "20", "21": "20"}
+    inv_inv_fixtures = [{"fk_venture_id": "10", "fk_investor_id": "20"}]
 
     es_delay = 1
 

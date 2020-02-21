@@ -6,6 +6,7 @@ from django.test import RequestFactory, TestCase
 from apps.grid.forms.deal_data_source_form import *
 from apps.grid.tests.views.base import BaseDealTestCase
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 
 
 class DealDataSourceFormTestCase(BaseDealTestCase):
@@ -57,11 +58,12 @@ class DealDataSourceFormTestCase(BaseDealTestCase):
         self.assertNotIn("phone", fields_dict.keys())
 
 
-class AddDealDataSourceFormSetTestCase(TestCase):
+class AddDealDataSourceFormSetTestCase(ActivitiesFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    act_fixtures = [{"id": 1, "activity_identifier": 1, "attributes": {}}]
 
     def setUp(self):
+        super().setUp()
         self.formset = AddDealDataSourceFormSet
         self.request = RequestFactory()
         self.file = SimpleUploadedFile(
@@ -100,7 +102,7 @@ class AddDealDataSourceFormSetTestCase(TestCase):
         self.assertGreater(len(attributes[0]["file"].get("value")), 0)
 
     def test_get_data(self):
-        activity = HistoricalActivity.objects.get(id=10)
+        activity = HistoricalActivity.objects.get(id=1)
         data = self.formset.get_data(activity)
         self.assertEqual(1, len(data))
         self.assertIn("Media report", data[0].get("type"))

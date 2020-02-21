@@ -96,7 +96,7 @@ class InvestorNetworkView(DealInvestorNetworkView):
                 location="query",
                 description="Investor version ID",
                 schema=coreschema.Integer(),
-                example="10",
+                example="1",
             ),
             coreapi.Field(
                 "depth",

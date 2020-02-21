@@ -6,7 +6,11 @@ from rest_framework_gis.fields import GeoJsonDict
 
 from apps.api.serializers import *
 from apps.landmatrix.models import Activity
-from apps.landmatrix.tests.mixins import InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+    ActivitiesFixtureMixin,
+)
 from apps.wagtailcms.models import RegionPage
 
 
@@ -108,9 +112,11 @@ class DealSerializerTestCase(TestCase):
         )
 
 
-class DealDetailSerializerTestCase(TestCase):
+class DealDetailSerializerTestCase(ActivitiesFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def test_get_attributes(self):
         activity = Activity.objects.get(activity_identifier=1)
@@ -121,17 +127,15 @@ class DealDetailSerializerTestCase(TestCase):
             self.assertEqual(value, result.get(key))
 
 
-class HistoricalInvestorNetworkSerializerTestCase(InvestorsFixtureMixin,
-                                                  InvestorVentureInvolvementsFixtureMixin,
-                                                  TestCase):
+class HistoricalInvestorNetworkSerializerTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
+):
 
     inv_fixtures = [
         {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
         {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
-    inv_inv_fixtures = [
-        {"fk_venture_id": "10", "fk_investor_id": "20"}
-    ]
+    inv_inv_fixtures = [{"fk_venture_id": "10", "fk_investor_id": "20"}]
 
     def test_to_representation(self):
         investor = HistoricalInvestor.objects.get(id=10)

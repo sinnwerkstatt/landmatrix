@@ -3,20 +3,26 @@ from django.test import TestCase
 
 from apps.grid.forms.parent_investor_formset import *
 from apps.landmatrix.models import HistoricalInvestor, InvestorVentureInvolvement
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 
 
-class InvestorVentureInvolvementFormTestCase(TestCase):
+class InvestorVentureInvolvementFormTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
 
     def setUp(self):
+        super().setUp()
         self.data = {
-            "fk_venture": "10",
-            "fk_investor": "20",
+            "fk_venture": "1",
+            "fk_investor": "2",
             "percentage": 100,
             "loans_amount": 0,
             "loans_date": None,
@@ -49,27 +55,29 @@ class InvestorVentureInvolvementFormTestCase(TestCase):
         self.assertEqual(True, self.form.is_valid())
         hinvestor = self.form.clean_fk_venture()
         self.assertIsInstance(hinvestor, HistoricalInvestor)
-        self.assertEqual(10, hinvestor.id)
+        self.assertEqual(1, hinvestor.id)
 
     def test_clean_fk_investor(self):
         self.assertEqual(True, self.form.is_valid())
         hinvestor = self.form.clean_fk_investor()
         self.assertIsInstance(hinvestor, HistoricalInvestor)
-        self.assertEqual(20, hinvestor.id)
+        self.assertEqual(2, hinvestor.id)
 
 
-class ParentCompanyFormTestCase(TestCase):
+class ParentCompanyFormTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
 
     def setUp(self):
+        super().setUp()
         self.data = {
-            "fk_venture": "10",
-            "fk_investor": "20",
+            "fk_venture": "1",
+            "fk_investor": "2",
             "percentage": 100,
             "loans_amount": 0,
             "loans_date": None,
@@ -80,27 +88,27 @@ class ParentCompanyFormTestCase(TestCase):
 
     def test_init(self):
         investor_field = self.form.fields["fk_investor"]
+        self.assertEqual({2}, set(investor_field.queryset.values_list("pk", flat=True)))
+        self.assertEqual({"2"}, set(investor_field.widget.data.keys()))
         self.assertEqual(
-            {20}, set(investor_field.queryset.values_list("pk", flat=True))
-        )
-        self.assertEqual({"20"}, set(investor_field.widget.data.keys()))
-        self.assertEqual(
-            {"investor-identifier": 2}, investor_field.widget.data.get("20")
+            {"investor-identifier": 2}, investor_field.widget.data.get("2")
         )
 
 
-class ParentInvestorFormTestCase(TestCase):
+class ParentInvestorFormTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
 
     def setUp(self):
+        super().setUp()
         self.data = {
-            "fk_venture": "10",
-            "fk_investor": "20",
+            "fk_venture": "1",
+            "fk_investor": "2",
             "percentage": 100,
             "loans_amount": 0,
             "loans_date": None,
@@ -111,41 +119,54 @@ class ParentInvestorFormTestCase(TestCase):
 
     def test_init(self):
         investor_field = self.form.fields["fk_investor"]
+        self.assertEqual({2}, set(investor_field.queryset.values_list("pk", flat=True)))
+        self.assertEqual({"2"}, set(investor_field.widget.data.keys()))
         self.assertEqual(
-            {20}, set(investor_field.queryset.values_list("pk", flat=True))
-        )
-        self.assertEqual({"20"}, set(investor_field.widget.data.keys()))
-        self.assertEqual(
-            {"investor-identifier": 2}, investor_field.widget.data.get("20")
+            {"investor-identifier": 2}, investor_field.widget.data.get("2")
         )
 
 
-class BaseInvolvementFormSetTestCase(TestCase):
+class BaseInvolvementFormSetTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+    ]
+
+    inv_inv_fixtures = [
+        {
+            "id": 1,
+            "fk_venture_id": "1",
+            "fk_investor_id": "2",
+            "percentage": 100,
+            "comment": "Test comment",
+            "fk_status_id": 1,
+        }
     ]
 
     def setUp(self):
+        super().setUp()
         self.data = {
             "involvement-TOTAL_FORMS": 2,
             "involvement-INITIAL_FORMS": 1,
             "involvement-MIN_NUM_FORMS": 1,
             "involvement-MAX_NUM_FORMS": 1,
-            "involvement-0-fk_venture": "10",
-            "involvement-0-fk_investor": "20",
+            "involvement-0-fk_venture": "1",
+            "involvement-0-fk_investor": "2",
             "involvement-0-percentage": 100,
             "involvement-0-loans_amount": 0,
             "involvement-0-loans_date": None,
             "involvement-0-comment": "Test comment",
             "involvement-0-role": InvestorVentureInvolvement.STAKEHOLDER_ROLE,
             "involvement-0-fk_status": InvestorVentureInvolvement.STATUS_PENDING,
-            "involvement-0-id": "60",
+            "involvement-0-id": "1",
             "involvement-0-DELETE": "on",
-            "involvement-1-fk_venture": "10",
-            "involvement-1-fk_investor": "20",
+            "involvement-1-fk_venture": "1",
+            "involvement-1-fk_investor": "2",
             "involvement-1-percentage": 100,
             "involvement-1-loans_amount": 0,
             "involvement-1-loans_date": None,
@@ -168,7 +189,7 @@ class BaseInvolvementFormSetTestCase(TestCase):
 
     def test_save(self):
         self.assertEqual(True, self.formset.is_valid())
-        hinvestor = HistoricalInvestor.objects.get(pk=10)
+        hinvestor = HistoricalInvestor.objects.get(pk=1)
 
         involvements = self.formset.save(fk_venture=hinvestor)
         self.assertGreater(len(involvements), 0)

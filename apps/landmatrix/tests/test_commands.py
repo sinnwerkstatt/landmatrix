@@ -3,11 +3,7 @@ from django.test import TestCase
 
 class PopulateActivitiesCommandTestCase(TestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-    ]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
         pass
@@ -21,11 +17,7 @@ class PopulateActivitiesCommandTestCase(TestCase):
 
 class SearchIndexCommandTestCase(TestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-    ]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
         pass

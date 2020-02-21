@@ -1,5 +1,6 @@
 from io import BytesIO
 
+from datetime import datetime
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import override_settings, tag
@@ -16,10 +17,26 @@ from apps.grid.tests.views.base import BaseDealTestCase
 from apps.grid.views.deal import DealCreateView, DealDetailView
 from apps.grid.views.export import ExportView
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import InvestorActivityInvolvementsFixtureMixin, InvestorsFixtureMixin, \
+    ActivitiesFixtureMixin
 
 
 @tag("integration")
-class TestDealCreate(BaseDealTestCase):
+class TestDealCreate(ActivitiesFixtureMixin,
+                     InvestorsFixtureMixin,
+                     InvestorActivityInvolvementsFixtureMixin,
+                     BaseDealTestCase):
+
+    act_fixtures = [
+    ]
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {"id": 3, "investor_identifier": 2, "fk_status_id": 1, "name": "Test Investor #2"},
+    ]
+    act_inv_fixtures = {
+    }
+
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
     )
@@ -207,7 +224,6 @@ class TestDealCreate(BaseDealTestCase):
         request.user = self.users["editor"]
         response = DealCreateView.as_view()(request)
         self.assertEqual(302, response.status_code, msg="Add deal does not redirect")
-
         activity = HistoricalActivity.objects.latest_only().pending().latest()
 
         # Check if deal appears in manage section of administrator
@@ -302,6 +318,5 @@ class TestDealCreate(BaseDealTestCase):
         self.assertEqual(302, response.status_code, msg="Add deal does not redirect")
 
         activity = HistoricalActivity.objects.latest_only().public().latest()
-
         self.assert_deal_created(activity, self.users["administrator"])
-        self.assert_investors_not_approved(activity)
+        self.assert_investors_approved(activity)

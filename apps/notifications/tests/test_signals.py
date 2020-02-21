@@ -4,12 +4,14 @@ from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 
 from apps.landmatrix.models import Activity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.notifications.models import NotificationEmail
 from apps.public_comments.forms import PublicCommentForm
 
 
-class SignalsTestCase(TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+class SignalsTestCase(ActivitiesFixtureMixin, TestCase):
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     @override_settings(DEBUG=True)
     def test_handle_comment_on_activity_posted(self):

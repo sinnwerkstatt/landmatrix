@@ -7,35 +7,30 @@ from django.test import RequestFactory, TestCase, override_settings
 
 from apps.api.elasticsearch import es_save
 from apps.grid.views.base import TableGroupView
+from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 from apps.wagtailcms.models import WagtailRootPage
 
 
-class TableGroupViewTestCase(TestCase):
+class TableGroupViewTestCase(ElasticSearchFixtureMixin, TestCase):
+
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
+    ]
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1},
+        {"id": 2, "investor_identifier": 1},
+    ]
+    act_inv_fixtures = {"1": "1", "2": "2"}
+
     @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
-
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "crops",
-            "animals",
-            "minerals",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
-
+    def create_fixture(cls):
         WagtailRootPage.objects.create(
             title="Root", path="/", depth=0, data_introduction="Data introduction"
         )
 
     def setUp(self):
+        super().setUp()
         self.view = TableGroupView()
         self.view.group = "all"
         self.view.request = RequestFactory()

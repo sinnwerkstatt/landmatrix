@@ -14,12 +14,12 @@ class PermissionsTestCaseMixin:
 
     fixtures = ["countries_and_regions", "users_and_groups"]
 
+    @classmethod
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
     )
-    def setUp(self):
-        super().setUp()
-        self.users = {
+    def create_permissions(cls):
+        cls.users = {
             "reporter": User.objects.get(username="reporter"),
             "editor": User.objects.get(username="editor"),
             "editor-myanmar": User.objects.get(username="editor-myanmar"),
@@ -28,7 +28,7 @@ class PermissionsTestCaseMixin:
             "administrator-myanmar": User.objects.get(username="administrator-myanmar"),
             "administrator-asia": User.objects.get(username="administrator-asia"),
         }
-        self.groups = {
+        cls.groups = {
             "reporter": Group.objects.get(name="Reporters"),
             "editor": Group.objects.get(name="Editors"),
             "administrator": Group.objects.get(name="Administrators"),
@@ -38,34 +38,34 @@ class PermissionsTestCaseMixin:
         # This not possible in fixtures, because permissions and content types are created on run-time
         perm_review_activity = Permission.objects.get(codename="review_activity")
         perm_review_investor = Permission.objects.get(codename="review_investor")
-        self.groups["editor"].permissions.add(perm_review_activity)
-        self.groups["editor"].permissions.add(perm_review_investor)
+        cls.groups["editor"].permissions.add(perm_review_activity)
+        cls.groups["editor"].permissions.add(perm_review_investor)
         perm_add_activity = Permission.objects.get(codename="add_activity")
         perm_change_activity = Permission.objects.get(codename="change_activity")
         perm_delete_activity = Permission.objects.get(codename="delete_activity")
         perm_add_investor = Permission.objects.get(codename="add_investor")
         perm_change_investor = Permission.objects.get(codename="change_investor")
         perm_delete_investor = Permission.objects.get(codename="delete_investor")
-        self.groups["administrator"].permissions.add(perm_review_activity)
-        self.groups["administrator"].permissions.add(perm_review_investor)
-        self.groups["administrator"].permissions.add(perm_add_activity)
-        self.groups["administrator"].permissions.add(perm_change_activity)
-        self.groups["administrator"].permissions.add(perm_delete_activity)
-        self.groups["administrator"].permissions.add(perm_add_investor)
-        self.groups["administrator"].permissions.add(perm_change_investor)
-        self.groups["administrator"].permissions.add(perm_delete_investor)
+        cls.groups["administrator"].permissions.add(perm_review_activity)
+        cls.groups["administrator"].permissions.add(perm_review_investor)
+        cls.groups["administrator"].permissions.add(perm_add_activity)
+        cls.groups["administrator"].permissions.add(perm_change_activity)
+        cls.groups["administrator"].permissions.add(perm_delete_activity)
+        cls.groups["administrator"].permissions.add(perm_add_investor)
+        cls.groups["administrator"].permissions.add(perm_change_investor)
+        cls.groups["administrator"].permissions.add(perm_delete_investor)
+
+    @override_settings(
+        ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
+    )
+    def setUp(self):
+        super().setUp()
+        self.create_permissions()
 
 
 class BaseDealTestCase(PermissionsTestCaseMixin, MockRequestMixin, TestCase):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "venture_involvements",
-    ]
+    fixtures = ["languages", "countries_and_regions", "users_and_groups", "status"]
 
     DEAL_DATA = MultiValueDict(
         {
@@ -96,11 +96,11 @@ class BaseDealTestCase(PermissionsTestCaseMixin, MockRequestMixin, TestCase):
             "data_source-MAX_NUM_FORMS": ["1"],
             "data_source-0-type": ["Media report"],
             # Investor
-            "operational_stakeholder": ["10"],
+            "operational_stakeholder": ["1"],
         }
     )
-    INVESTOR_CREATED = 20
-    INVESTOR_UPDATED = 31
+    INVESTOR_CREATED = 1
+    INVESTOR_UPDATED = 3
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
@@ -247,7 +247,7 @@ class BaseInvestorTestCase(BaseDealTestCase):
             "parent-company-form-INITIAL_FORMS": ["0"],
             "parent-company-form-MIN_NUM_FORMS": ["0"],
             "parent-company-form-MAX_NUM_FORMS": ["1"],
-            "parent-company-form-0-fk_investor": ["10"],
+            "parent-company-form-0-fk_investor": ["1"],
             "parent-company-form-0-percentage": ["100"],
             "parent-company-form-0-loans_amount": ["0"],
             "parent-company-form-0-loans_date": [],

@@ -97,7 +97,11 @@ def get_display_value(field, values, attributes=None, formset=None):
                 elif values_count > 1:
                     output.append(
                         delimiters[1].join(
-                            [attribute.get("date") or "", is_current, attribute["value"]]
+                            [
+                                attribute.get("date") or "",
+                                is_current,
+                                attribute["value"],
+                            ]
                         )
                     )
                 # Value:Value2 (e.g. Actors field)
