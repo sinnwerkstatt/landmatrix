@@ -17,25 +17,33 @@ from apps.grid.tests.views.base import BaseDealTestCase
 from apps.grid.views.deal import DealCreateView, DealDetailView
 from apps.grid.views.export import ExportView
 from apps.landmatrix.models import HistoricalActivity
-from apps.landmatrix.tests.mixins import InvestorActivityInvolvementsFixtureMixin, InvestorsFixtureMixin, \
-    ActivitiesFixtureMixin
+from apps.landmatrix.tests.mixins import (
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorsFixtureMixin,
+    ActivitiesFixtureMixin,
+)
 
 
 @tag("integration")
-class TestDealCreate(ActivitiesFixtureMixin,
-                     InvestorsFixtureMixin,
-                     InvestorActivityInvolvementsFixtureMixin,
-                     BaseDealTestCase):
+class TestDealCreate(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    act_fixtures = [
-    ]
+    act_fixtures = []
     inv_fixtures = [
         {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
         {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
-        {"id": 3, "investor_identifier": 2, "fk_status_id": 1, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
     ]
-    act_inv_fixtures = {
-    }
+    act_inv_fixtures = {}
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True

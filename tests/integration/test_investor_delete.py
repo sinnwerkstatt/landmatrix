@@ -19,12 +19,16 @@ from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorDelete(InvestorsFixtureMixin,
-                         BaseInvestorTestCase):
+class TestInvestorDelete(InvestorsFixtureMixin, BaseInvestorTestCase):
 
     inv_fixtures = [
         {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
-        {"id": 2, "investor_identifier": 2, "fk_status_id": 6, "name": "Test Investor #2"},
+        {
+            "id": 2,
+            "investor_identifier": 2,
+            "fk_status_id": 6,
+            "name": "Test Investor #2",
+        },
     ]
 
     def setUp(self):

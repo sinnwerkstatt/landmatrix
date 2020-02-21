@@ -21,12 +21,9 @@ from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorCreate(InvestorsFixtureMixin,
-                         BaseInvestorTestCase):
+class TestInvestorCreate(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    inv_fixtures = [
-        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
-    ]
+    inv_fixtures = [{"id": 100, "investor_identifier": 1, "name": "Test Investor #1"}]
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
@@ -82,9 +79,9 @@ class TestInvestorCreate(InvestorsFixtureMixin,
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
-                "parent-company-form-0-fk_investor": ["10"],
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
-                "action_comment": "Test add investor"
+                "action_comment": "Test add investor",
             }
         )
         request = self.factory.post(reverse("investor_add"), data)
@@ -210,9 +207,9 @@ class TestInvestorCreate(InvestorsFixtureMixin,
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
-                "parent-company-form-0-fk_investor": ["10"],
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
-                "action_comment": "Test add investor"
+                "action_comment": "Test add investor",
             }
         )
         request = self.factory.post(reverse("investor_add"), data)
@@ -272,7 +269,7 @@ class TestInvestorCreate(InvestorsFixtureMixin,
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
-                "parent-company-form-0-fk_investor": ["10"],
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
                 "action_comment": "Test add investor",
                 "approve_btn": True,

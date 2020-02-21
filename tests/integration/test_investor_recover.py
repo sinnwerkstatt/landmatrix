@@ -11,11 +11,15 @@ from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorRecover(InvestorsFixtureMixin,
-                          BaseInvestorTestCase):
+class TestInvestorRecover(InvestorsFixtureMixin, BaseInvestorTestCase):
 
     inv_fixtures = [
-        {"id": 1, "investor_identifier": 1, "fk_status_id": 4, "name": "Test Investor #1"},
+        {
+            "id": 1,
+            "investor_identifier": 1,
+            "fk_status_id": 4,
+            "name": "Test Investor #1",
+        }
     ]
 
     @override_settings(
