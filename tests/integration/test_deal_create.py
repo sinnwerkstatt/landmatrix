@@ -1,6 +1,5 @@
 from io import BytesIO
 
-from datetime import datetime
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import override_settings, tag
