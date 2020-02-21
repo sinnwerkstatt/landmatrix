@@ -151,14 +151,11 @@ class ActivityBaseTestCase(
             "activity_identifier": 1,
             "fully_updated": True,
             "attributes": {
-                "negotiation_status": {
-                    "value": "Contract signed",
-                    "date": "2000",
-                },
+                "negotiation_status": {"value": "Contract signed", "date": "2000"},
                 "implementation_status": {
                     "value": ActivityBase.IMPLEMENTATION_STATUS_IN_OPERATION,
                     "date": "2000",
-                }
+                },
             },
         },
         {"id": 20, "activity_identifier": 2, "attributes": {}},
@@ -555,14 +552,11 @@ class ActivityTestCase(
             "activity_identifier": 1,
             "fully_updated": True,
             "attributes": {
-                "negotiation_status": {
-                    "value": "Contract signed",
-                    "date": "2000",
-                },
+                "negotiation_status": {"value": "Contract signed", "date": "2000"},
                 "implementation_status": {
                     "value": ActivityBase.IMPLEMENTATION_STATUS_IN_OPERATION,
                     "date": "2000",
-                }
+                },
             },
         }
     ]
