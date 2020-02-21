@@ -4,7 +4,7 @@ from apps.grid.forms.public_user_information_form import PublicUserInformationFo
 
 
 class PublicUserInformationFormTestCase(TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "investors"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
         self.data = {

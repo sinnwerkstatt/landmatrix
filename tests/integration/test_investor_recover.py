@@ -7,19 +7,19 @@ from django.urls import reverse
 from apps.grid.tests.views.base import BaseInvestorTestCase
 from apps.grid.views.investor import InvestorDetailView, RecoverInvestorView
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorRecover(BaseInvestorTestCase):
+class TestInvestorRecover(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    inv_fixtures = [
+        {
+            "id": 1,
+            "investor_identifier": 1,
+            "fk_status_id": 4,
+            "name": "Test Investor #1",
+        }
     ]
 
     @override_settings(

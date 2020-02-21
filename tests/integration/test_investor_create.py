@@ -1,4 +1,5 @@
 from io import BytesIO
+from datetime import datetime
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -16,10 +17,14 @@ from apps.grid.tests.views.base import BaseInvestorTestCase
 from apps.grid.views.export import ExportView
 from apps.grid.views.investor import InvestorCreateView, InvestorDetailView
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorCreate(BaseInvestorTestCase):
+class TestInvestorCreate(InvestorsFixtureMixin, BaseInvestorTestCase):
+
+    inv_fixtures = [{"id": 100, "investor_identifier": 1, "name": "Test Investor #1"}]
+
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
     )
@@ -74,8 +79,9 @@ class TestInvestorCreate(BaseInvestorTestCase):
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
-                "action_comment": "Test add investor"
+                "action_comment": "Test add investor",
             }
         )
         request = self.factory.post(reverse("investor_add"), data)
@@ -201,8 +207,9 @@ class TestInvestorCreate(BaseInvestorTestCase):
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
-                "action_comment": "Test add investor"
+                "action_comment": "Test add investor",
             }
         )
         request = self.factory.post(reverse("investor_add"), data)
@@ -262,6 +269,7 @@ class TestInvestorCreate(BaseInvestorTestCase):
         data = self.INVESTOR_DATA.copy()
         data.update(
             {
+                "parent-company-form-0-fk_investor": ["100"],
                 # Action comment
                 "action_comment": "Test add investor",
                 "approve_btn": True,

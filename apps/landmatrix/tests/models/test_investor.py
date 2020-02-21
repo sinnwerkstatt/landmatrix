@@ -1,17 +1,72 @@
+from datetime import datetime
 from unittest.mock import patch
 
+import pytz
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from apps.grid.tests.views.base import BaseDealTestCase
 from apps.landmatrix.models.investor import *
+from apps.landmatrix.tests.mixins import (
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 
 
-class InvestorQuerySetTestCase(TestCase):
+class InvestorQuerySetTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "investors"]
+    inv_fixtures = [
+        {
+            "id": 1,
+            "investor_identifier": 1,
+            "fk_status_id": 1,
+            "name": "Test Investor #1",
+        },
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 3,
+            "name": "Test Investor #2",
+        },
+        {
+            "id": 4,
+            "investor_identifier": 3,
+            "fk_status_id": 4,
+            "name": "Test Investor #3",
+        },
+        {
+            "id": 5,
+            "investor_identifier": 4,
+            "fk_status_id": 5,
+            "name": "Test Investor #4",
+        },
+        {
+            "id": 6,
+            "investor_identifier": 5,
+            "fk_status_id": 6,
+            "name": "Test Investor #5",
+        },
+        {
+            "id": 7,
+            "investor_identifier": 6,
+            "fk_status_id": 2,
+            "name": "Test Investor #6",
+        },
+        {
+            "id": 8,
+            "investor_identifier": 6,
+            "fk_status_id": 1,
+            "name": "Test Investor #6",
+        },
+    ]
+
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
+        super().setUp()
         self.qs = HistoricalInvestor.objects
 
     def test_public_with_user(self):
@@ -33,7 +88,7 @@ class InvestorQuerySetTestCase(TestCase):
         for status in set(qs.values_list("fk_status_id", flat=True)):
             self.assertIn(status, statuses)
 
-    def test_public_or_deleted(self):
+    def test_public_or_deleted_with_reporter(self):
         user = get_user_model().objects.get(username="reporter-2")
         qs = self.qs.public_or_deleted(user=user)
         self.assertGreater(qs.count(), 0)
@@ -113,17 +168,68 @@ class InvestorQuerySetTestCase(TestCase):
         )
 
 
-class InvestorBaseTestCase(BaseDealTestCase):
+class InvestorBaseTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "crops",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "attributes": {}},
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {"id": 21, "activity_identifier": 2, "fk_status_id": 1, "attributes": {}},
+    ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 21,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+        {
+            "id": 31,
+            "investor_identifier": 3,
+            "fk_status_id": 6,
+            "name": "Test Investor #3",
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "investor_identifier": 4, "name": "Test Investor #4"},
+        {
+            "id": 50,
+            "investor_identifier": 5,
+            "fk_status_id": 5,
+            "name": "Test Investor #5",
+        },
+        {
+            "id": 60,
+            "investor_identifier": 6,
+            "fk_status_id": 6,
+            "name": "Test Investor #6",
+        },
+        {
+            "id": 70,
+            "investor_identifier": 7,
+            "fk_status_id": 2,
+            "name": "Test Investor #7",
+        },
+        {
+            "id": 80,
+            "investor_identifier": 8,
+            "fk_status_id": 2,
+            "name": "Test Investor #8",
+        },
+    ]
+    act_inv_fixtures = {"10": "10", "20": "20", "21": "20"}
+    inv_inv_fixtures = [
+        {"fk_venture_id": "10", "fk_investor_id": "30"},
+        {"fk_venture_id": "40", "fk_investor_id": "40"},
+        {"fk_venture_id": "10", "fk_investor_id": "70"},
+        {"fk_venture_id": "10", "fk_investor_id": "80", "role": "IN"},
     ]
 
     def test_get_next_investor_identifier(self):
@@ -135,7 +241,7 @@ class InvestorBaseTestCase(BaseDealTestCase):
 
     def test_save(self):
         investor = Investor(
-            fk_status_id=Investor.STATUS_ACTIVE, investor_identifier=None
+            id=90, fk_status_id=Investor.STATUS_ACTIVE, investor_identifier=None
         )
         investor.save()
         self.assertIsNotNone(investor.investor_identifier)
@@ -145,7 +251,7 @@ class InvestorBaseTestCase(BaseDealTestCase):
         self.assertEqual(f"Unknown (#{investor.investor_identifier})", investor.name)
 
     def test_save_with_operating_company(self):
-        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
+        investor = Investor.objects.create(id=90, fk_status_id=Investor.STATUS_ACTIVE)
         investor.involvements.create(
             fk_activity_id=10, fk_status_id=InvestorActivityInvolvement.STATUS_ACTIVE
         )
@@ -160,9 +266,9 @@ class InvestorBaseTestCase(BaseDealTestCase):
         )
 
     def test_save_with_parent_company(self):
-        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
-        investor.venture_involvements.create(
-            fk_investor_id=10, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE
+        investor = Investor.objects.create(id=90, fk_status_id=Investor.STATUS_ACTIVE)
+        investor.investors.create(
+            fk_venture_id=10, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE
         )
         investor.save()
         self.assertIsNotNone(investor.investor_identifier)
@@ -174,9 +280,9 @@ class InvestorBaseTestCase(BaseDealTestCase):
         )
 
     def test_save_with_tertiary_investor_lender(self):
-        investor = Investor.objects.create(fk_status_id=Investor.STATUS_ACTIVE)
-        investor.venture_involvements.create(
-            fk_investor_id=10, role=InvestorVentureInvolvement.INVESTOR_ROLE
+        investor = Investor.objects.create(id=90, fk_status_id=Investor.STATUS_ACTIVE)
+        investor.investors.create(
+            fk_venture_id=10, role=InvestorVentureInvolvement.INVESTOR_ROLE
         )
         investor.save()
         self.assertIsNotNone(investor.investor_identifier)
@@ -198,21 +304,21 @@ class InvestorBaseTestCase(BaseDealTestCase):
         self.assertEqual(True, investor.is_operating_company)
 
     def test_is_parent_company(self):
-        investor = HistoricalInvestor.objects.get(id=20)
+        investor = HistoricalInvestor.objects.get(id=70)
         self.assertEqual(True, investor.is_parent_company)
 
     def test_is_parent_company_without_involvements(self):
-        investor = HistoricalInvestor.objects.get(id=20)
-        investor.venture_involvements.all().delete()
+        investor = HistoricalInvestor.objects.get(id=30)
+        investor.investors.all().delete()
         self.assertEqual(False, investor.is_parent_company)
 
     def test_is_parent_investor(self):
-        investor = HistoricalInvestor.objects.get(id=70)
+        investor = HistoricalInvestor.objects.get(id=80)
         self.assertEqual(True, investor.is_parent_investor)
 
     def test_is_parent_investor_without_involvements(self):
-        investor = HistoricalInvestor.objects.get(id=70)
-        investor.venture_involvements.all().delete()
+        investor = HistoricalInvestor.objects.get(id=80)
+        investor.investors.all().delete()
         self.assertEqual(False, investor.is_parent_investor)
 
     def test_get_latest_investor(self):
@@ -225,11 +331,11 @@ class InvestorBaseTestCase(BaseDealTestCase):
 
     def test_get_top_investors(self):
         investor = Investor.objects.get(id=10)
-        top_investor = Investor.objects.get(id=60)
+        top_investor = Investor.objects.get(id=70)
         self.assertEqual({top_investor}, set(investor.get_top_investors()))
 
     def test_get_top_investors_with_self_reference(self):
-        investor = Investor.objects.get(id=140)
+        investor = Investor.objects.get(id=40)
         self.assertEqual({investor}, set(investor.get_top_investors()))
 
     def test_format_investors(self):
@@ -244,7 +350,7 @@ class InvestorBaseTestCase(BaseDealTestCase):
 
     def test_get_roles(self):
         investor = HistoricalInvestor.objects.get(id=10)
-        roles = {InvestorBase.ROLE_OPERATING_COMPANY, InvestorBase.ROLE_PARENT_COMPANY}
+        roles = {InvestorBase.ROLE_OPERATING_COMPANY}
         self.assertEqual(roles, set(investor.get_roles()))
 
     def test_get_latest(self):
@@ -290,11 +396,23 @@ class InvestorBaseTestCase(BaseDealTestCase):
         self.assertEqual(False, investor.is_editable(user=None))
 
 
-class HistoricalInvestorQuerySetTestCase(TestCase):
+class HistoricalInvestorQuerySetTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "investors"]
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+    ]
+
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
+        super().setUp()
         self.qs = HistoricalInvestor.objects
 
     def test_get_for_user(self):
@@ -328,63 +446,90 @@ class HistoricalInvestorQuerySetTestCase(TestCase):
         self.assertGreater(qs.count(), 0)
 
 
-class HistoricalInvestorTestCase(BaseDealTestCase):
+class HistoricalInvestorTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, BaseDealTestCase
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 21,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+        {
+            "id": 31,
+            "investor_identifier": 3,
+            "fk_status_id": 6,
+            "name": "Test Investor #3",
+        },
+        {"id": 40, "investor_identifier": 4, "name": "Test Investor #4"},
+        {
+            "id": 50,
+            "investor_identifier": 5,
+            "fk_status_id": 5,
+            "name": "Test Investor #5",
+        },
+        {
+            "id": 60,
+            "investor_identifier": 6,
+            "fk_status_id": 6,
+            "name": "Test Investor #6",
+        },
+    ]
+    inv_inv_fixtures = [
+        {"fk_venture_id": "10", "fk_investor_id": "30"},
+        {"fk_venture_id": "40", "fk_investor_id": "40"},
     ]
 
     def test_approve_change(self):
-        investor = HistoricalInvestor.objects.get(id=31)
+        investor = HistoricalInvestor.objects.get(id=21)
         user = get_user_model().objects.get(username="administrator")
         investor.approve_change(user=user, comment="Test approve change")
         self.assertEqual(HistoricalInvestor.STATUS_OVERWRITTEN, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=3)
+        public_investor = Investor.objects.filter(investor_identifier=2)
         self.assertEqual(1, public_investor.count())
-        self.assertEqual("20", public_investor.first().classification)
+        self.assertEqual("10", public_investor.first().classification)
 
     def test_reject_change(self):
-        investor = HistoricalInvestor.objects.get(id=31)
+        investor = HistoricalInvestor.objects.get(id=21)
         user = get_user_model().objects.get(username="administrator")
         investor.reject_change(user=user, comment="Test reject change")
         self.assertEqual(HistoricalInvestor.STATUS_REJECTED, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=3)
+        public_investor = Investor.objects.filter(investor_identifier=2)
         self.assertEqual(1, public_investor.count())
         self.assertEqual("10", public_investor.first().classification)
 
     def test_approve_delete(self):
-        investor = HistoricalInvestor.objects.get(id=91)
+        investor = HistoricalInvestor.objects.get(id=31)
         user = get_user_model().objects.get(username="administrator")
         investor.approve_delete(user=user, comment="Test approve delete")
         self.assertEqual(HistoricalInvestor.STATUS_DELETED, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=9)
+        public_investor = Investor.objects.filter(investor_identifier=3)
         self.assertEqual(0, public_investor.count())
 
     def test_reject_delete(self):
-        investor = HistoricalInvestor.objects.get(id=91)
+        investor = HistoricalInvestor.objects.get(id=31)
         user = get_user_model().objects.get(username="administrator")
         investor.reject_delete(user=user, comment="Test reject delete")
         self.assertEqual(HistoricalInvestor.STATUS_REJECTED, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=9)
+        public_investor = Investor.objects.filter(investor_identifier=3)
         self.assertEqual(1, public_investor.count())
 
     def test_get_top_investors(self):
         investor = HistoricalInvestor.objects.get(id=10)
-        top_investor = HistoricalInvestor.objects.get(id=60)
+        top_investor = HistoricalInvestor.objects.get(id=30)
         self.assertEqual({top_investor}, set(investor.get_top_investors()))
 
     def test_get_top_investors_with_self_reference(self):
-        investor = HistoricalInvestor.objects.get(id=140)
+        investor = HistoricalInvestor.objects.get(id=40)
         self.assertEqual({investor}, set(investor.get_top_investors()))
 
     def test_update_public_investor_with_pending(self):
@@ -394,27 +539,27 @@ class HistoricalInvestorTestCase(BaseDealTestCase):
 
         public_investor = Investor.objects.filter(investor_identifier=3)
         self.assertEqual(1, public_investor.count())
-        self.assertEqual("20", public_investor.first().classification)
+        self.assertEqual("10", public_investor.first().classification)
 
     def test_update_public_investor_with_to_delete(self):
-        investor = HistoricalInvestor.objects.get(id=170)
+        investor = HistoricalInvestor.objects.get(id=60)
         investor.update_public_investor()
         self.assertEqual(HistoricalInvestor.STATUS_DELETED, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=17)
+        public_investor = Investor.objects.filter(investor_identifier=6)
         self.assertEqual(0, public_investor.count())
 
     def test_update_public_investor_with_rejected(self):
-        investor = HistoricalInvestor.objects.get(id=110)
+        investor = HistoricalInvestor.objects.get(id=50)
         investor.update_public_investor()
         self.assertEqual(HistoricalInvestor.STATUS_REJECTED, investor.fk_status_id)
 
-        public_investor = Investor.objects.filter(investor_identifier=11)
+        public_investor = Investor.objects.filter(investor_identifier=5)
         self.assertEqual(0, public_investor.count())
 
     def test_update_current_involvements(self):
         hinvestor = HistoricalInvestor.objects.get(id=31)
-        investor = Investor.objects.get(id=30)
+        investor = Investor.objects.get(id=31)
         hinvestor.update_current_involvements(investor)
 
         hinvolvements = (
@@ -435,24 +580,37 @@ class HistoricalInvestorTestCase(BaseDealTestCase):
 
     @patch("django.db.transaction.on_commit")
     def test_save(self, mock_on_commit):
-        investor = HistoricalInvestor.objects.get(id=31)
+        investor = HistoricalInvestor.objects.get(id=30)
         investor.save(update_elasticsearch=True)
         mock_on_commit.assert_called_once()
 
 
-class InvestorVentureQuerySetTestCase(TestCase):
+class InvestorVentureQuerySetTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+    ]
+    inv_inv_fixtures = [
+        {
+            "fk_venture_id": "10",
+            "fk_investor_id": "20",
+            "role": "ST",
+            "fk_status_id": 2,
+        },
+        {
+            "fk_venture_id": "10",
+            "fk_investor_id": "20",
+            "role": "IN",
+            "fk_status_id": 2,
+        },
     ]
 
     def setUp(self):
+        super().setUp()
         self.qs = InvestorVentureInvolvement.objects
 
     def test_active(self):
@@ -501,19 +659,19 @@ class InvestorVentureQuerySetTestCase(TestCase):
         )
 
 
-class InvestorActivityInvolvementManagerTestCase(TestCase):
+class InvestorActivityInvolvementManagerTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    TestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "activities",
-        "investors",
-        "activity_involvements",
-        "venture_involvements",
-    ]
+    act_fixtures = [{"id": 10, "activity_identifier": 1, "attributes": {}}]
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "name": "Test Investor #1"}]
+    act_inv_fixtures = {"10": "10"}
 
     def setUp(self):
+        super().setUp()
         self.qs = HistoricalInvestorActivityInvolvement.objects
 
     def test_get_involvements_for_activity(self):

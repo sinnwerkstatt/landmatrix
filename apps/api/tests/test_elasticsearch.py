@@ -4,23 +4,34 @@ from django.core.management.base import OutputWrapper
 from django.test import TestCase
 
 from apps.api.elasticsearch import *
+from apps.landmatrix.tests.mixins import (
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 
 
-class APIElasticsearchTestCase(TestCase):
+class APIElasticsearchTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+    TestCase,
+):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "crops",
-        "animals",
-        "minerals",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "attributes": {}},
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {"id": 21, "activity_identifier": 2, "fk_status_id": 1, "attributes": {}},
     ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1},
+        {"id": 20, "investor_identifier": 2},
+        {"id": 21, "investor_identifier": 2, "fk_status_id": 1},
+    ]
+    act_inv_fixtures = {"10": "10", "20": "20", "21": "20"}
+    inv_inv_fixtures = [{"fk_venture_id": "10", "fk_investor_id": "20"}]
 
     es_delay = 1
 
@@ -82,6 +93,7 @@ class APIElasticsearchTestCase(TestCase):
     }
 
     def setUp(self):
+        super().setUp()
         stdnull = OutputWrapper(open(os.devnull, "w"))
         self.elasticsearch = ElasticSearch(
             index_name="landmatrix_test", stdout=stdnull, stderr=stdnull
@@ -318,7 +330,7 @@ class APIElasticsearchTestCase(TestCase):
                 )
 
     def test_get_investor_versions_with_pending(self):
-        versions = self.elasticsearch.get_investor_versions(3)
+        versions = self.elasticsearch.get_investor_versions(2)
         status = [v.fk_status_id for v in versions]
         self.assertEqual(len(versions), 2)
         self.assertIn(1, status)

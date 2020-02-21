@@ -5,20 +5,39 @@ from django.test import TestCase
 
 from apps.feeds.activity_changes import ActivityChangesList
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import (
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+)
 
 
-class FeedsActivityChangesTestCase(TestCase):
+class FeedsActivityChangesTestCase(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    TestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "activities",
-        "investors",
-        "activity_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fully_updated": True, "attributes": {}},
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+            "fk_status_id": 1,
+            "attributes": {"production_size": {"value": 200}},
+        },
     ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+    ]
+    act_inv_fixtures = {"10": "10", "20": "20"}
 
     def setUp(self):
+        super().setUp()
         self.changes = ActivityChangesList(2)
 
     def test_iter(self):
@@ -50,14 +69,12 @@ class FeedsActivityChangesTestCase(TestCase):
         changes.sort(key=sort_key)
 
         expected = [
-            (1, "production_size", "2000", None),
-            (1, "intention", "Mining", "Forest logging / management"),
-            (1, "intended_size", None, "1000"),
+            (1, "production_size", "200", "3"),
             (
                 None,
                 "operational_stakeholder",
                 None,
-                HistoricalInvestor.objects.get(id=10),
+                HistoricalInvestor.objects.get(id=20),
             ),
         ]
         expected.sort(key=sort_key)

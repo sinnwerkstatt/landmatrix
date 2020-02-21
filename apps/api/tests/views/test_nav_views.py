@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from apps.api.elasticsearch import es_save
 from apps.landmatrix.models import Country
+from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 from apps.wagtailcms.models import CountryPage, RegionPage
 
 
@@ -55,26 +56,9 @@ class RegionListViewTestCase(TestCase):
         self.assertEqual(expected, response.data[0])
 
 
-class InvestorListViewTestCase(TestCase):
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
+class InvestorListViewTestCase(ElasticSearchFixtureMixin, TestCase):
 
-        fixtures = [
-            "status",
-            "countries_and_regions",
-            "users_and_groups",
-            "investors",
-            "venture_involvements",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-
-        es_save.create_index(delete=True)
-        # es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "name": "Test Investor #1"}]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test(self):

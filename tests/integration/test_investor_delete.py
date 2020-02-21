@@ -15,20 +15,25 @@ from apps.grid.tests.views.base import BaseInvestorTestCase
 from apps.grid.views.export import ExportView
 from apps.grid.views.investor import DeleteInvestorView, InvestorDetailView
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
 @tag("integration")
-class TestInvestorDelete(BaseInvestorTestCase):
+class TestInvestorDelete(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {
+            "id": 2,
+            "investor_identifier": 2,
+            "fk_status_id": 6,
+            "name": "Test Investor #2",
+        },
     ]
+
+    def setUp(self):
+        super().setUp()
+        self.create_permissions()
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True

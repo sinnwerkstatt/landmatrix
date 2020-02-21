@@ -7,20 +7,35 @@ from django.urls import reverse
 from apps.grid.tests.views.base import BaseDealTestCase
 from apps.grid.views.deal import DealDetailView, DealRecoverView
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import (
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+)
 
 
 @tag("integration")
-class TestDealRecover(BaseDealTestCase):
+class TestDealRecover(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "fk_status_id": 4, "attributes": {}}
     ]
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+    ]
+    act_inv_fixtures = {"1": "1"}
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True

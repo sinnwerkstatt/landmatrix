@@ -6,6 +6,11 @@ from rest_framework_gis.fields import GeoJsonDict
 
 from apps.api.serializers import *
 from apps.landmatrix.models import Activity
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+    ActivitiesFixtureMixin,
+)
 from apps.wagtailcms.models import RegionPage
 
 
@@ -107,9 +112,11 @@ class DealSerializerTestCase(TestCase):
         )
 
 
-class DealDetailSerializerTestCase(TestCase):
+class DealDetailSerializerTestCase(ActivitiesFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def test_get_attributes(self):
         activity = Activity.objects.get(activity_identifier=1)
@@ -120,32 +127,32 @@ class DealDetailSerializerTestCase(TestCase):
             self.assertEqual(value, result.get(key))
 
 
-class HistoricalInvestorNetworkSerializerTestCase(TestCase):
+class HistoricalInvestorNetworkSerializerTestCase(
+    InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
+):
 
-    fixtures = [
-        "status",
-        "countries_and_regions",
-        "users_and_groups",
-        "investors",
-        "venture_involvements",
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
+    inv_inv_fixtures = [{"fk_venture_id": "10", "fk_investor_id": "20"}]
 
     def test_to_representation(self):
-        investor = HistoricalInvestor.objects.get(id=70)
+        investor = HistoricalInvestor.objects.get(id=10)
         serializer = DealInvestorNetworkSerializer(user=AnonymousUser())
         investor_network = serializer.to_representation(investor)
-        self.assertEqual("I7", investor_network.get("id"))
-        self.assertEqual(7, investor_network.get("identifier"))
-        self.assertEqual("Test Investor #7", investor_network.get("name"))
+        self.assertEqual("I1", investor_network.get("id"))
+        self.assertEqual(1, investor_network.get("identifier"))
+        self.assertEqual("Test Investor #1", investor_network.get("name"))
         self.assertEqual("Cambodia", investor_network.get("country"))
         self.assertEqual("Private company", investor_network.get("classification"))
-        self.assertEqual("/investor/7/", investor_network.get("url"))
+        self.assertEqual("/investor/1/", investor_network.get("url"))
         investors = investor_network.get("investors")
         self.assertIsInstance(investors, (tuple, list))
         self.assertEqual(1, len(investors))
-        self.assertEqual("I1", investors[0].get("id"))
-        self.assertEqual(1, investors[0].get("identifier"))
-        self.assertEqual("Test Investor #1", investors[0].get("name"))
+        self.assertEqual("I2", investors[0].get("id"))
+        self.assertEqual(2, investors[0].get("identifier"))
+        self.assertEqual("Test Investor #2", investors[0].get("name"))
         self.assertEqual("Cambodia", investors[0].get("country"))
         self.assertEqual("Private company", investors[0].get("classification"))
-        self.assertEqual("/investor/1/", investors[0].get("url"))
+        self.assertEqual("/investor/2/", investors[0].get("url"))

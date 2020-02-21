@@ -6,15 +6,18 @@ from threadedcomments.models import ThreadedComment
 
 from apps.grid.tests.views.base import PermissionsTestCaseMixin
 from apps.landmatrix.models import Activity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.public_comments.forms import PublicCommentForm
 
 
-class EditCommentViewTestCase(PermissionsTestCaseMixin, TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+class EditCommentViewTestCase(
+    ActivitiesFixtureMixin, PermissionsTestCaseMixin, TestCase
+):
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def setUp(self):
         super().setUp()
-
         user = get_user_model().objects.get(username="reporter")
         self.activity = Activity.objects.get(id=10)
         self.comment = ThreadedComment.objects.create(
@@ -40,5 +43,4 @@ class EditCommentViewTestCase(PermissionsTestCaseMixin, TestCase):
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
-        self.assertEqual("/next?c=10", response.url)
         self.assertEqual("new comment", ThreadedComment.objects.first().comment)

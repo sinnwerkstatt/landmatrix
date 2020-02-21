@@ -2,52 +2,62 @@ from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.core.management import call_command
 from django.http import QueryDict
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
-from apps.api.elasticsearch import es_save
 from apps.api.filters import Filter, PresetFilter
 from apps.api.views import ElasticSearchMixin
 from apps.grid.tests.views.base import PermissionsTestCaseMixin
 from apps.landmatrix.models.activity import ActivityBase
 from apps.landmatrix.models.investor import InvestorBase
+from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 
 
-class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
+class ElasticSearchMixinTestCase(
+    ElasticSearchFixtureMixin, PermissionsTestCaseMixin, TestCase
+):
 
-    fixtures = []
-
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
-
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "filters",
-            "crops",
-            "animals",
-            "minerals",
-            "status",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "attributes": {}},
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {"id": 21, "activity_identifier": 2, "fk_status_id": 1, "attributes": {}},
+        {"id": 30, "activity_identifier": 3, "fk_status_id": 2, "attributes": {}},
+        {
+            "id": 31,
+            "activity_identifier": 3,
+            "fk_status_id": 3,
+            "attributes": {
+                "contract_area": {
+                    "value": None,
+                    "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40",
+                }
+            },
+        },
+    ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 21,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+    ]
+    act_inv_fixtures = {"10": "10", "20": "20", "21": "20"}
+    inv_inv_fixtures = [
+        {"fk_venture_id": "20", "fk_investor_id": "10", "role": "ST"},
+        {"fk_venture_id": "30", "fk_investor_id": "20", "role": "IN"},
+    ]
 
     def setUp(self):
-        super().setUp()
         self.mixin = ElasticSearchMixin()
+
+    @classmethod
+    def create_fixture(cls):
+        cls.create_permissions()
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_filter_doc_type(self):
@@ -134,7 +144,7 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        expected = [{"match_phrase": {"operating_company_id": "70"}}]
+        expected = [{"match_phrase": {"operating_company_id": "20"}}]
         self.assertEqual(expected, formatted_filters.get("must"))
         self.assertEqual([], formatted_filters.get("filter"))
         self.assertEqual([], formatted_filters.get("must_not"))
@@ -158,7 +168,7 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
         self.mixin.request = request
 
         formatted_filters = self.mixin.load_filters()
-        expected = [{"match_phrase": {"operating_company_id": "70"}}]
+        expected = [{"match_phrase": {"operating_company_id": "30"}}]
         self.assertEqual(expected, formatted_filters.get("must"))
         self.assertEqual([], formatted_filters.get("filter"))
         self.assertEqual([], formatted_filters.get("must_not"))
@@ -538,31 +548,49 @@ class ElasticSearchMixinTestCase(PermissionsTestCaseMixin, TestCase):
         self.assertEqual(False, session.get("deal:set_default_filters"))
 
 
-class ListViewsTestCase(TestCase):
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
+class ListViewsTestCase(ElasticSearchFixtureMixin, TestCase):
 
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "investors",
-            "crops",
-            "minerals",
-            "animals",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
+    act_fixtures = [
+        {
+            "id": 10,
+            "activity_identifier": 1,
+            "attributes": {
+                "contract_size": {"value": "200"},
+                "implementation_status": {
+                    "value": ActivityBase.IMPLEMENTATION_STATUS_IN_OPERATION,
+                    "date": "2000",
+                },
+            },
+        },
+        {"id": 20, "activity_identifier": 2, "attributes": {}},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "fk_status_id": 1,
+            "attributes": {
+                "contract_area": {
+                    "value": None,
+                    "polygon": "0106000020E6100000010000000103000000010000000C0000009A2D2EC012915E40E41DB6BEC8F41E409EF5FB4160915E4076D1079C83FB1E403D7B93A709925E4057EED6779DF61E40F2F9D2A3BC925E40D1AB285076E81E40BE2C035376925E40E08E756779E21E4064B4A98CBA915E40D8EC297FB3E41E4031F66D755F915E401D9D120467E91E4084165EB632915E40B7D9B3BAA3EA1E40E23A6C5F00915E40D1AB285076E81E40E45894D2D6905E4046C1FE6264EA1E4091F1DDD965915E4003AEA649F9F01E409A2D2EC012915E40E41DB6BEC8F41E40",
+                }
+            },
+        },
+    ]
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 20, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 21,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+        {"id": 30, "investor_identifier": 3, "name": "Test Investor #3"},
+    ]
+    act_inv_fixtures = {"10": "10", "20": "20", "21": "20"}
+    inv_inv_fixtures = [
+        {"fk_venture_id": "10", "fk_investor_id": "20", "role": "ST"},
+        {"fk_venture_id": "10", "fk_investor_id": "30", "role": "IN"},
+    ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_user_list_view(self):
@@ -576,7 +604,7 @@ class ListViewsTestCase(TestCase):
     def test_statistics_view(self):
         response = self.client.get(reverse("statistics_api"))
         self.assertEqual(200, response.status_code)
-        expected = [["Contract signed", 3, 3000]]
+        expected = [["Contract signed", 2, 400]]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -584,7 +612,7 @@ class ListViewsTestCase(TestCase):
         data = QueryDict("country=104")
         response = self.client.get(reverse("statistics_api"), data)
         self.assertEqual(200, response.status_code)
-        expected = [["Contract signed", 3, 3000]]
+        expected = [["Contract signed", 2, 400]]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -592,7 +620,7 @@ class ListViewsTestCase(TestCase):
         data = QueryDict("region=142")
         response = self.client.get(reverse("statistics_api"), data)
         self.assertEqual(200, response.status_code)
-        expected = [["Contract signed", 3, 3000]]
+        expected = [["Contract signed", 2, 400]]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -600,7 +628,7 @@ class ListViewsTestCase(TestCase):
         data = QueryDict("disable_filters=1")
         response = self.client.get(reverse("statistics_api"), data)
         self.assertEqual(200, response.status_code)
-        expected = [["Contract signed", 3, 3000]]
+        expected = [["Contract signed", 2, 400]]
         self.assertEqual(expected, response.data)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -610,24 +638,12 @@ class ListViewsTestCase(TestCase):
         expected = [
             {
                 "action": "add",
-                "deal_id": 11,
-                "change_date": "2000-01-01T01:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "add",
                 "deal_id": 1,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
             },
             {
-                "action": "change",
-                "deal_id": 3,
-                "change_date": "2000-01-01T00:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "change",
+                "action": "add",
                 "deal_id": 2,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
@@ -643,24 +659,12 @@ class ListViewsTestCase(TestCase):
         expected = [
             {
                 "action": "add",
-                "deal_id": 11,
-                "change_date": "2000-01-01T01:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "add",
                 "deal_id": 1,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
             },
             {
-                "action": "change",
-                "deal_id": 3,
-                "change_date": "2000-01-01T00:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "change",
+                "action": "add",
                 "deal_id": 2,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
@@ -676,24 +680,12 @@ class ListViewsTestCase(TestCase):
         expected = [
             {
                 "action": "add",
-                "deal_id": 11,
-                "change_date": "2000-01-01T01:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "add",
                 "deal_id": 1,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
             },
             {
-                "action": "change",
-                "deal_id": 3,
-                "change_date": "2000-01-01T00:00:00+00:00",
-                "target_country": "Myanmar",
-            },
-            {
-                "action": "change",
+                "action": "add",
                 "deal_id": 2,
                 "change_date": "2000-01-01T00:00:00+00:00",
                 "target_country": "Myanmar",
@@ -708,61 +700,31 @@ class ListViewsTestCase(TestCase):
         self.assertEqual("FeatureCollection", response.data.get("type"))
         features = [
             {
-                "geometry": {"coordinates": [0.0, 0.0], "type": "Point"},
+                "geometry": {"coordinates": [4.0, 3.0], "type": "Point"},
                 "properties": {
-                    "contract_size": None,
-                    "identifier": 11,
-                    "implementation": "Unknown",
-                    "intended_size": None,
-                    "intention": ["Mining"],
-                    "investor": None,
-                    "level_of_accuracy": "Unknown",
-                    "production_size": None,
-                    "url": "/deal/11/",
-                },
-                "type": "Feature",
-            },
-            {
-                "geometry": {"coordinates": [0.0, 0.0], "type": "Point"},
-                "properties": {
-                    "contract_size": "1000",
+                    "contract_size": "200",
                     "identifier": 1,
                     "implementation": ["In operation (production)"],
-                    "intended_size": None,
-                    "intention": ["Mining", "Agriculture", "Forestry"],
-                    "investor": None,
+                    "intended_size": "1",
+                    "intention": ["Agriculture"],
+                    "investor": "10",
                     "level_of_accuracy": "Country",
-                    "production_size": None,
+                    "production_size": "3",
                     "url": "/deal/1/",
                 },
                 "type": "Feature",
             },
             {
-                "geometry": {"coordinates": [0.0, 0.0], "type": "Point"},
+                "geometry": {"coordinates": [4.0, 3.0], "type": "Point"},
                 "properties": {
-                    "contract_size": "1000",
-                    "identifier": 3,
-                    "implementation": "Unknown",
-                    "intended_size": None,
-                    "intention": ["Agriculture"],
-                    "investor": None,
-                    "level_of_accuracy": "Unknown",
-                    "production_size": None,
-                    "url": "/deal/3/",
-                },
-                "type": "Feature",
-            },
-            {
-                "geometry": {"coordinates": [0.0, 0.0], "type": "Point"},
-                "properties": {
-                    "contract_size": "1000",
+                    "contract_size": "200",
                     "identifier": 2,
-                    "implementation": ["Startup phase (no production)"],
-                    "intended_size": "1000",
-                    "intention": ["Forestry"],
-                    "investor": None,
-                    "level_of_accuracy": "Unknown",
-                    "production_size": None,
+                    "implementation": ["Project not started"],
+                    "intended_size": "1",
+                    "intention": ["Agriculture"],
+                    "investor": "10",
+                    "level_of_accuracy": "Country",
+                    "production_size": "3",
                     "url": "/deal/2/",
                 },
                 "type": "Feature",
@@ -783,19 +745,18 @@ class ListViewsTestCase(TestCase):
             "id": "MMR",
             "properties": {
                 "name": "Myanmar",
-                "deals": 4,
+                "deals": 2,
                 "url": "/country/myanmar/",
                 "centre_coordinates": [
                     Decimal("95.956223000000"),
                     Decimal("21.913965000000"),
                 ],
-                "intention": {"Mining": 2, "Agriculture": 2, "Forestry": 2},
+                "intention": {"Agriculture": 2},
                 "implementation": {
                     "In operation (production)": 1,
-                    "Unknown": 2,
-                    "Startup phase (no production)": 1,
+                    "Project not started": 1,
                 },
-                "level_of_accuracy": {"Country": 1, "Unknown": 3},
+                "level_of_accuracy": {"Country": 2},
             },
         }
         self.assertIsInstance(response.data.get("features"), (tuple, list))

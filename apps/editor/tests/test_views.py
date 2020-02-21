@@ -1,22 +1,21 @@
+from datetime import datetime
+
+import pytz
 from django.contrib.auth import get_user_model
 from django.http import QueryDict
 from django.test import RequestFactory
 
 from apps.editor.views import *
 from apps.grid.tests.views.base import BaseDealTestCase, BaseInvestorTestCase
+from apps.landmatrix.models import ActivityChangeset
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin, InvestorsFixtureMixin
 
 
-class FilteredQuerySetMixinTestCase(BaseDealTestCase):
-
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
-    ]
+class FilteredQuerySetMixinTestCase(
+    ActivitiesFixtureMixin, InvestorsFixtureMixin, BaseDealTestCase
+):
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
+    inv_fixtures = [{"id": 10, "investor_identifier": 1}]
 
     def setUp(self):
         self.mixin = FilteredQuerySetMixin()
@@ -93,16 +92,25 @@ class FilteredQuerySetMixinTestCase(BaseDealTestCase):
         self.assertGreater(queryset.count(), 0)
 
 
-class LatestQuerySetMixinTestCase(BaseDealTestCase):
+class LatestQuerySetMixinTestCase(ActivitiesFixtureMixin, BaseDealTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1},
+        {"id": 20, "activity_identifier": 2},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "fk_status_id": 3,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 30, "activity_identifier": 3},
+        {
+            "id": 31,
+            "activity_identifier": 3,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "activity_identifier": 4, "fk_status_id": 4},
     ]
 
     def setUp(self):
@@ -135,25 +143,61 @@ class LatestQuerySetMixinTestCase(BaseDealTestCase):
         self.assertEqual({4}, set(statuses))
 
 
-class PendingChangesMixinTestCase(BaseDealTestCase):
+class PendingChangesMixinTestCase(
+    ActivitiesFixtureMixin, InvestorsFixtureMixin, BaseDealTestCase
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fk_status_id": 1},
+        {"id": 20, "activity_identifier": 2},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "fk_status_id": 3,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 30, "activity_identifier": 3},
+        {
+            "id": 31,
+            "activity_identifier": 3,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "activity_identifier": 4, "fk_status_id": 4},
+        {"id": 50, "activity_identifier": 5, "fk_status_id": 5},
+        {"id": 60, "activity_identifier": 6, "fk_status_id": 6},
+        {"id": 70, "activity_identifier": 7, "fk_status_id": 2, "history_user_id": 2},
+    ]
+
+    inv_fixtures = [
+        {"id": 10, "investor_identifier": 1, "fk_status_id": 1},
+        {"id": 20, "investor_identifier": 2},
+        {
+            "id": 21,
+            "investor_identifier": 2,
+            "fk_status_id": 3,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 30, "investor_identifier": 3},
+        {
+            "id": 31,
+            "investor_identifier": 3,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "investor_identifier": 4, "fk_status_id": 4},
+        {"id": 50, "investor_identifier": 5, "fk_status_id": 5},
+        {"id": 60, "investor_identifier": 6, "fk_status_id": 6},
+        {"id": 70, "investor_identifier": 7, "fk_status_id": 2, "history_user_id": 2},
     ]
 
     def setUp(self):
+        super().setUp()
         self.mixin = PendingChangesMixin()
         request = RequestFactory()
         request.user = get_user_model().objects.get(username="editor")
         request.GET = QueryDict()
         self.mixin.request = request
-        super().setUp()
 
     def test_get_permitted_activities_for_reporter(self):
         self.mixin.request.user = get_user_model().objects.get(username="reporter")
@@ -207,10 +251,19 @@ class PendingChangesMixinTestCase(BaseDealTestCase):
         self.assertEqual({6}, set(statuses))
 
     def test_get_feedback_queryset(self):
+        ActivityFeedback.objects.create(
+            fk_activity_id=10,
+            fk_user_assigned_id=2,
+            fk_user_created_id=1,
+            comment="Test feedback",
+        )
         results = self.mixin.get_feedback_queryset()
         self.assertGreater(len(results), 0)
 
     def test_get_rejected_queryset(self):
+        ActivityChangeset.objects.create(
+            fk_activity_id=50, fk_user_id=2, comment="Test changeset"
+        )
         results = self.mixin.get_rejected_queryset()
         self.assertGreater(len(results), 0)
         self.assertGreaterEqual(results[0].history_date, results[-1].history_date)
@@ -223,19 +276,34 @@ class PendingChangesMixinTestCase(BaseDealTestCase):
         self.assertGreaterEqual(results[0].history_date, results[-1].history_date)
 
 
-class DashboardViewTestCase(BaseDealTestCase):
+class DashboardViewTestCase(ActivitiesFixtureMixin, BaseDealTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1},
+        {"id": 20, "activity_identifier": 2},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "fk_status_id": 3,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 30, "activity_identifier": 3},
+        {
+            "id": 31,
+            "activity_identifier": 3,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "activity_identifier": 4, "fk_status_id": 4},
     ]
 
     def test(self):
+        ActivityFeedback.objects.create(
+            fk_activity_id=10,
+            fk_user_assigned_id=2,
+            fk_user_created_id=1,
+            comment="Test feedback",
+        )
         self.client.login(username="editor", password="test")
         response = self.client.get(reverse("editor"))
         self.client.logout()
@@ -247,16 +315,28 @@ class DashboardViewTestCase(BaseDealTestCase):
         self.assertGreater(len(response.context.get("feedbacks", {}).get("feeds")), 0)
 
 
-class ManageItemsTestCaseMixin:
+class ManageItemsTestCaseMixin(ActivitiesFixtureMixin):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fk_status_id": 1},
+        {"id": 20, "activity_identifier": 2},
+        {
+            "id": 21,
+            "activity_identifier": 2,
+            "fk_status_id": 3,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 30, "activity_identifier": 3},
+        {
+            "id": 31,
+            "activity_identifier": 3,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+        },
+        {"id": 40, "activity_identifier": 4, "fk_status_id": 4},
+        {"id": 50, "activity_identifier": 5, "fk_status_id": 5},
+        {"id": 60, "activity_identifier": 6, "fk_status_id": 6},
+        {"id": 70, "activity_identifier": 7, "fk_status_id": 2, "history_user_id": 2},
     ]
 
     url = None
@@ -286,15 +366,7 @@ class LogDeletedViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
 
 class ManageRootViewTestCase(BaseDealTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
-    ]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def test_with_reporter(self):
         self.client.login(username="reporter", password="test")
@@ -312,6 +384,14 @@ class ManageRootViewTestCase(BaseDealTestCase):
 
 
 class ManageFeedbackViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
+    def setUp(self):
+        super().setUp()
+        ActivityFeedback.objects.create(
+            fk_activity_id=10,
+            fk_user_assigned_id=2,
+            fk_user_created_id=1,
+            comment="Test feedback",
+        )
 
     url = reverse("manage_feedback")
 
@@ -319,6 +399,12 @@ class ManageFeedbackViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
 class ManageRejectedViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
 
     url = reverse("manage_rejected")
+
+    def setUp(self):
+        super().setUp()
+        ActivityChangeset.objects.create(
+            fk_activity_id=50, fk_user_id=2, comment="Test changeset"
+        )
 
 
 class ManageAddsViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
@@ -343,15 +429,7 @@ class ManageForUserViewTestCase(ManageItemsTestCaseMixin, BaseDealTestCase):
 
 class ManageItemTestCaseMixin:
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
-    ]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     url = None
     object_class = HistoricalActivity
@@ -379,70 +457,107 @@ class ManageItemTestCaseMixin:
         self.assert_object_updated()
 
 
-class ApproveActivityChangeViewTestCase(ManageItemTestCaseMixin, BaseDealTestCase):
+class ApproveActivityChangeViewTestCase(
+    ActivitiesFixtureMixin, ManageItemTestCaseMixin, BaseDealTestCase
+):
 
-    url = reverse("manage_approve_change_deal", kwargs={"id": 21})
-    object_id = 21
-    object_status = 3
-
-
-class RejectActivityChangeViewTestCase(ManageItemTestCaseMixin, BaseDealTestCase):
-
-    url = reverse("manage_reject_change_deal", kwargs={"id": 21})
-    object_id = 21
-    object_status = 5
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fk_status_id": 1, "attributes": {}}
     ]
 
-
-class ApproveActivityDeleteViewTestCase(ManageItemTestCaseMixin, BaseDealTestCase):
-
-    url = reverse("manage_approve_delete_deal", kwargs={"id": 61})
-    object_id = 61
-    object_status = 4
+    url = reverse("manage_approve_change_deal", kwargs={"id": 10})
+    object_id = 10
+    object_status = 2
 
 
-class RejectActivityDeleteViewTestCase(ManageItemTestCaseMixin, BaseDealTestCase):
+class RejectActivityChangeViewTestCase(
+    ActivitiesFixtureMixin, ManageItemTestCaseMixin, BaseDealTestCase
+):
 
-    url = reverse("manage_reject_delete_deal", kwargs={"id": 61})
-    object_id = 61
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fk_status_id": 1, "attributes": {}}
+    ]
+
+    url = reverse("manage_reject_change_deal", kwargs={"id": 10})
+    object_id = 10
     object_status = 5
 
 
-class ApproveInvestorChangeViewTestCase(ManageItemTestCaseMixin, BaseInvestorTestCase):
+class ApproveActivityDeleteViewTestCase(
+    ActivitiesFixtureMixin, ManageItemTestCaseMixin, BaseDealTestCase
+):
 
-    url = reverse("manage_approve_change_investor", kwargs={"id": 31})
-    object_class = HistoricalInvestor
-    object_id = 31
-    object_status = 3
+    act_fixtures = [
+        {
+            "id": 10,
+            "activity_identifier": 1,
+            "fk_status_id": 6,
+            "history_user_id": 2,
+            "attributes": {},
+        }
+    ]
 
-
-class RejectInvestorChangeViewTestCase(ManageItemTestCaseMixin, BaseInvestorTestCase):
-
-    url = reverse("manage_reject_change_investor", kwargs={"id": 31})
-    object_class = HistoricalInvestor
-    object_id = 31
-    object_status = 5
-
-
-class ApproveInvestorDeleteViewTestCase(ManageItemTestCaseMixin, BaseInvestorTestCase):
-
-    url = reverse("manage_approve_delete_investor", kwargs={"id": 91})
-    object_class = HistoricalInvestor
-    object_id = 91
+    url = reverse("manage_approve_delete_deal", kwargs={"id": 10})
+    object_id = 10
     object_status = 4
 
 
-class RejectInvestorDeleteViewTestCase(ManageItemTestCaseMixin, BaseInvestorTestCase):
+class RejectActivityDeleteViewTestCase(
+    ActivitiesFixtureMixin, ManageItemTestCaseMixin, BaseDealTestCase
+):
 
-    url = reverse("manage_reject_delete_investor", kwargs={"id": 91})
+    act_fixtures = [
+        {"id": 10, "activity_identifier": 1, "fk_status_id": 6, "attributes": {}}
+    ]
+
+    url = reverse("manage_reject_delete_deal", kwargs={"id": 10})
+    object_id = 10
+    object_status = 5
+
+
+class ApproveInvestorChangeViewTestCase(
+    InvestorsFixtureMixin, ManageItemTestCaseMixin, BaseInvestorTestCase
+):
+
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 1}]
+
+    url = reverse("manage_approve_change_investor", kwargs={"id": 10})
     object_class = HistoricalInvestor
-    object_id = 91
+    object_id = 10
+    object_status = 2
+
+
+class RejectInvestorChangeViewTestCase(
+    InvestorsFixtureMixin, ManageItemTestCaseMixin, BaseInvestorTestCase
+):
+
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 1}]
+
+    url = reverse("manage_reject_change_investor", kwargs={"id": 10})
+    object_class = HistoricalInvestor
+    object_id = 10
+    object_status = 5
+
+
+class ApproveInvestorDeleteViewTestCase(
+    InvestorsFixtureMixin, ManageItemTestCaseMixin, BaseInvestorTestCase
+):
+
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 6}]
+
+    url = reverse("manage_approve_delete_investor", kwargs={"id": 10})
+    object_class = HistoricalInvestor
+    object_id = 10
+    object_status = 4
+
+
+class RejectInvestorDeleteViewTestCase(
+    InvestorsFixtureMixin, ManageItemTestCaseMixin, BaseInvestorTestCase
+):
+
+    inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 6}]
+
+    url = reverse("manage_reject_delete_investor", kwargs={"id": 10})
+    object_class = HistoricalInvestor
+    object_id = 10
     object_status = 5

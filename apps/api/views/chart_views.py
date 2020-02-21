@@ -703,6 +703,19 @@ class TransnationalDealsByCountryView(BaseChartView):
     Used within the charts section.
     """
 
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country",
+                required=False,
+                location="query",
+                description="Country ID",
+                schema=coreschema.Integer(),
+                example="104",
+            )
+        ]
+    )
+
     def get_query(self):
         query = super().get_query()
         query["bool"]["filter"].append({"term": {"deal_scope": "transnational"}})

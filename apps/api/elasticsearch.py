@@ -6,12 +6,12 @@ from collections import OrderedDict
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import ForeignKey, Q
-from django.forms import BooleanField, ChoiceField, ModelChoiceField
+from django.forms import BooleanField, ChoiceField, ModelChoiceField, MultiValueField
 from django.utils.translation import ugettext_lazy as _
 from pyelasticsearch import ElasticSearch as PyElasticSearch
 from pyelasticsearch.exceptions import BulkError, ElasticHttpNotFoundError
 
-from apps.grid.fields import YearBasedField
+from apps.grid.fields import YearBasedField, MultiCharField
 from apps.grid.forms.investor_form import ExportInvestorForm
 from apps.grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from apps.grid.utils import get_spatial_properties
@@ -182,7 +182,7 @@ def get_elasticsearch_properties(doc_type=None):
                 ):
                     field_mappings["%s_display" % name] = field_type
                 # Additionally save complete attribute (including value2, date, is_current) for all YearBasedField
-                if isinstance(field, YearBasedField):
+                if isinstance(field, (YearBasedField, MultiValueField, MultiCharField)):
                     field_mappings["%s_attr" % name] = {
                         "type": "nested",
                         "properties": {

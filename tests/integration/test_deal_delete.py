@@ -17,20 +17,36 @@ from apps.grid.tests.views.base import BaseDealTestCase
 from apps.grid.views.deal import DealDeleteView, DealDetailView
 from apps.grid.views.export import ExportView
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    ActivitiesFixtureMixin,
+)
 
 
 @tag("integration")
-class TestDealDelete(BaseDealTestCase):
+class TestDealDelete(
+    ActivitiesFixtureMixin,
+    InvestorsFixtureMixin,
+    InvestorActivityInvolvementsFixtureMixin,
+    BaseDealTestCase,
+):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "fk_status_id": 6, "attributes": {}},
     ]
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+    ]
+    act_inv_fixtures = {"1": "1", "2": "2"}
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True
@@ -312,7 +328,6 @@ class TestDealDelete(BaseDealTestCase):
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg="Delete deal does not redirect")
-
         activity = HistoricalActivity.objects.latest_only().deleted().latest()
 
         self.assert_deal_deleted(activity, self.users["administrator"])

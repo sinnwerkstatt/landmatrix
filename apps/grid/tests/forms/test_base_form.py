@@ -189,7 +189,7 @@ class FieldsDisplayFormMixinTestCase(TestCase):
 
 class BaseFormTestCase(TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
         self.form = BaseForm

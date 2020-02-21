@@ -7,11 +7,16 @@ from apps.grid.fields import YearBasedIntegerField
 from apps.grid.forms.deal_spatial_form import DealSpatialForm
 from apps.grid.templatetags.custom_tags import *
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin, ActivitiesFixtureMixin
 
 
-class CustomTagsTestCase(TestCase):
+class CustomTagsTestCase(ActivitiesFixtureMixin, InvestorsFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    act_fixtures = [{"id": 1, "activity_identifier": 1, "attributes": {}}]
+
+    inv_fixtures = [{"id": 1, "investor_identifier": 1, "name": "Test Investor #1"}]
 
     def test_ensure_list(self):
         self.assertEqual(["a"], ensure_list("a"))
@@ -115,22 +120,22 @@ class CustomTagsTestCase(TestCase):
         self.assertEqual("No role", get_user_role(user))
 
     def test_history(self):
-        item = HistoricalActivity.objects.get(id=10)
+        item = HistoricalActivity.objects.get(id=1)
         user = get_user_model().objects.get(username="editor")
         self.assertGreater(len(history(item, user)), 0)
 
     def test_history_count(self):
-        item = HistoricalActivity.objects.get(id=10)
+        item = HistoricalActivity.objects.get(id=1)
         user = get_user_model().objects.get(username="editor")
         self.assertGreater(history_count(item, user), 0)
 
     def test_is_editable(self):
-        item = HistoricalActivity.objects.get(id=10)
+        item = HistoricalActivity.objects.get(id=1)
         user = get_user_model().objects.get(username="editor")
         self.assertEqual(True, is_editable(item, user))
 
     def test_get_latest(self):
-        item = HistoricalActivity.objects.get(id=10)
+        item = HistoricalActivity.objects.get(id=1)
         user = get_user_model().objects.get(username="editor")
         self.assertEqual(item, get_latest(item, user))
 

@@ -3,13 +3,17 @@ from django.test import TestCase
 
 from apps.grid.forms.investor_form import *
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.tests.mixins import InvestorsFixtureMixin
 
 
-class BaseInvestorFormTestCase(TestCase):
+class BaseInvestorFormTestCase(InvestorsFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "investors"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [{"id": 2, "investor_identifier": 1, "name": "Test Investor #1"}]
 
     def setUp(self):
+        super().setUp()
         self.initial = {
             "name": "Testinvestor",
             "fk_country": "104",
@@ -43,7 +47,7 @@ class BaseInvestorFormTestCase(TestCase):
 
     def test_get_data(self):
         self.assertEqual(True, self.form.is_valid())
-        investor = HistoricalInvestor.objects.get(id=10)
+        investor = HistoricalInvestor.objects.get(id=2)
         data = self.form.get_data(investor)
         self.assertEqual({}, data)
 
@@ -56,7 +60,7 @@ class BaseInvestorFormTestCase(TestCase):
 
 class ExportInvestorFormTestCase(TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "investors"]
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     def setUp(self):
         self.initial = {

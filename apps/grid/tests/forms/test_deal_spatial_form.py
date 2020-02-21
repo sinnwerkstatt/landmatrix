@@ -5,13 +5,15 @@ from django.utils.datastructures import MultiValueDict
 
 from apps.grid.forms.deal_spatial_form import *
 from apps.landmatrix.models import HistoricalActivity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 
 
-class DealSpatialFormTestCase(TestCase):
+class DealSpatialFormTestCase(ActivitiesFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    act_fixtures = [{"id": 1, "activity_identifier": 1, "attributes": {}}]
 
     def setUp(self):
+        super().setUp()
         self.form_class = DealSpatialForm
         self.initial = {
             "level_of_accuracy": "Country",
@@ -111,7 +113,7 @@ class DealSpatialFormTestCase(TestCase):
         self.assertIsInstance(attributes["contract_area"].get("polygon"), MultiPolygon)
 
     def test_get_data(self):
-        activity = HistoricalActivity.objects.get(id=10)
+        activity = HistoricalActivity.objects.get(id=1)
         data = self.form.get_data(activity)
         self.assertEqual("104", data.get("target_country"))
 
@@ -141,11 +143,12 @@ class PublicDealSpatialFormTestCase(TestCase):
         self.assertEqual(True, attrs.get("disable_drawing"))
 
 
-class DealSpatialBaseFormSetTestCase(TestCase):
+class DealSpatialBaseFormSetTestCase(ActivitiesFixtureMixin, TestCase):
 
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+    act_fixtures = [{"id": 1, "activity_identifier": 1, "attributes": {}}]
 
     def setUp(self):
+        super().setUp()
         self.formset_class = formset_factory(
             DealSpatialForm,
             min_num=1,
@@ -178,7 +181,7 @@ class DealSpatialBaseFormSetTestCase(TestCase):
         self.formset = self.formset_class(data=self.data, prefix="location")
 
     def test_get_data(self):
-        activity = HistoricalActivity.objects.get(id=10)
+        activity = HistoricalActivity.objects.get(id=1)
         data = self.formset.get_data(activity)
         self.assertIsInstance(data, (list, tuple))
         self.assertGreater(len(data), 0)

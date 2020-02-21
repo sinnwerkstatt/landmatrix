@@ -339,6 +339,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         exclude = []
 
         headers = [
+            # FIXME: Use ExportActivityForm.base_fields instead
             str(_("Deal ID")),
             str(_("Is public")),
             str(_("Deal scope")),
@@ -400,6 +401,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         # Get deals
         rows = []
         for item in results["deals"]:
+            # FIXME: Use ExportActivityForm.base_fields instead
             row = [
                 item.get("activity_identifier"),
                 item.get("is_public_display"),

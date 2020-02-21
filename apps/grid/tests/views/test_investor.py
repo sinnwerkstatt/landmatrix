@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.management import call_command
@@ -6,33 +9,47 @@ from django.test import RequestFactory, TestCase, override_settings
 
 from apps.api.elasticsearch import es_save
 from apps.grid.views.investor import *
+from apps.landmatrix.tests.mixins import (
+    InvestorsFixtureMixin,
+    ElasticSearchFixtureMixin,
+    InvestorVentureInvolvementsFixtureMixin,
+)
 from .base import BaseInvestorTestCase, PermissionsTestCaseMixin
 
 
-class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
-    @classmethod
-    @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
-    def setUpClass(cls):
-        super().setUpClass()
+class InvestorListViewTestCase(
+    ElasticSearchFixtureMixin, PermissionsTestCaseMixin, TestCase
+):
 
-        fixtures = [
-            "countries_and_regions",
-            "users_and_groups",
-            "status",
-            "crops",
-            "minerals",
-            "animals",
-            "investors",
-            "activities",
-            "activity_involvements",
-            "venture_involvements",
-        ]
-        for fixture in fixtures:
-            call_command("loaddata", fixture, **{"verbosity": 0})
-        es_save.create_index(delete=True)
-        es_save.index_activity_documents()
-        es_save.index_investor_documents()
-        es_save.refresh_index()
+    act_fixtures = [
+        {"id": 1, "activity_identifier": 1, "attributes": {}},
+        {"id": 2, "activity_identifier": 2, "attributes": {}},
+        {"id": 3, "activity_identifier": 3, "attributes": {}},
+        {"id": 4, "activity_identifier": 4, "attributes": {}},
+        {"id": 5, "activity_identifier": 5, "attributes": {}},
+    ]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "name": "Test Investor #2",
+        },
+        {"id": 4, "investor_identifier": 3, "name": "Test Investor #3"},
+        {"id": 5, "investor_identifier": 4, "name": "Test Investor #4"},
+        {"id": 6, "investor_identifier": 5, "name": "Test Investor #5"},
+        {"id": 7, "investor_identifier": 6, "name": "Test Investor #6"},
+    ]
+
+    act_inv_fixtures = {"1": "1", "2": "2", "4": "4", "5": "6"}
+
+    inv_inv_fixtures = [
+        {"fk_venture_id": "4", "fk_investor_id": "5", "role": "IN"},
+        {"fk_venture_id": "6", "fk_investor_id": "7", "role": "ST"},
+    ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_without_group(self):
@@ -56,7 +73,7 @@ class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
         self.assertEqual("fk_country", response.context.get("group_slug"))
         items = response.context.get("data", {}).get("items")
         self.assertGreater(len(items), 0)
-        expected = {"display": "Andorra", "value": "20"}
+        expected = {"display": "Cambodia", "value": "116"}
         self.assertEqual(expected, items[0].get("fk_country"))
         self.assertGreater(items[0].get("investor_count")[0], 0)
 
@@ -110,20 +127,11 @@ class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
                     "name": "filter_1",
                     "variable": "parent_stakeholder_name",
                     "operator": "is",
-                    "value": "Test investor #3",
+                    "value": "Test Investor #6",
                     "label": "Parent company Name",
                     "key": None,
-                    "display_value": "Test investor #3",
-                },
-                "filter_2": {
-                    "name": "filter_2",
-                    "variable": "tertiary_investor_name",
-                    "operator": "is",
-                    "value": "Test investor #10",
-                    "label": "Tertiary investor Name",
-                    "key": None,
-                    "display_value": "Test investor #10",
-                },
+                    "display_value": "Test Investor #6",
+                }
             }
         }
         response = InvestorListView.as_view()(request)
@@ -132,8 +140,8 @@ class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
         self.assertEqual("all", response.context_data.get("group"))
         items = response.context_data.get("data", {}).get("items")
         self.assertGreater(len(items), 0)
-        self.assertEqual([1], items[0].get("investor_identifier"))
-        self.assertEqual(["Test Investor #1"], items[0].get("name"))
+        self.assertEqual([5], items[0].get("investor_identifier"))
+        self.assertEqual(["Test Investor #5"], items[0].get("name"))
         self.assertEqual(["Cambodia"], items[0].get("fk_country"))
         self.assertEqual(["Private company"], items[0].get("classification"))
         self.assertGreater(items[0].get("deal_count")[0], 0)
@@ -157,7 +165,10 @@ class InvestorListViewTestCase(PermissionsTestCaseMixin, TestCase):
         self.assertGreater(items[0].get("deal_count")[0], 0)
 
 
-class InvestorCreateViewTestCase(BaseInvestorTestCase):
+class InvestorCreateViewTestCase(InvestorsFixtureMixin, BaseInvestorTestCase):
+
+    inv_fixtures = [{"id": 1, "investor_identifier": 1, "name": "Test Investor #1"}]
+
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
         self.client.login(username="reporter", password="test")
@@ -238,7 +249,7 @@ class InvestorCreateViewTestCase(BaseInvestorTestCase):
         data = self.INVESTOR_DATA.copy()
         request = RequestFactory().post(reverse("investor_add"), data)
         request.user = get_user_model().objects.get(username="reporter")
-        request.GET = QueryDict("parent_id=10")
+        request.GET = QueryDict("parent_id=2")
         request.POST = data
         request.session = {}
         request._messages = FallbackStorage(request)
@@ -282,17 +293,20 @@ class InvestorCreateViewTestCase(BaseInvestorTestCase):
         self.assertEqual(302, response.status_code)
 
 
-class InvestorUpdateViewTestCase(BaseInvestorTestCase):
+class InvestorUpdateViewTestCase(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    fixtures = ["languages", "countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
+        {
+            "id": 3,
+            "investor_identifier": 2,
+            "fk_status_id": 1,
+            "history_date": datetime(2000, 1, 2, 0, 0, tzinfo=pytz.utc),
+            "name": "Test Investor #2",
+        },
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -344,15 +358,14 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test change investor", "reject_btn": "on"})
         self.client.login(username="administrator", password="test")
         response = self.client.post(
-            reverse("investor_update", kwargs={"investor_id": 3, "history_id": 31}),
-            data,
+            reverse("investor_update", kwargs={"investor_id": 2, "history_id": 3}), data
         )
         self.client.logout()
         self.assertEqual(
             302, response.status_code, msg="Change investor does not redirect"
         )
-        investor = HistoricalInvestor.objects.get(id=31)
-        self.assertEqual(3, investor.investor_identifier)
+        investor = HistoricalInvestor.objects.get(id=3)
+        self.assertEqual(2, investor.investor_identifier)
         self.assertEqual(HistoricalInvestor.STATUS_REJECTED, investor.fk_status_id)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -393,12 +406,11 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test change investor"})
         self.client.login(username="reporter", password="test")
         response = self.client.post(
-            reverse("investor_update", kwargs={"investor_id": 2, "history_id": 20}),
-            data,
+            reverse("investor_update", kwargs={"investor_id": 2, "history_id": 3}), data
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
-        self.assertEqual("/investor/2/20/", response.url)
+        self.assertEqual("/investor/2/3/", response.url)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_does_not_exist(self):
@@ -414,8 +426,7 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test change investor"})
         self.client.login(username="editor", password="test")
         response = self.client.post(
-            reverse("investor_update", kwargs={"investor_id": 1, "history_id": 10}),
-            data,
+            reverse("investor_update", kwargs={"investor_id": 1, "history_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(
@@ -429,7 +440,7 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
     def test_not_editable(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("investor_update", kwargs={"investor_id": 3, "history_id": 30})
+            reverse("investor_update", kwargs={"investor_id": 2, "history_id": 2})
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
@@ -451,17 +462,18 @@ class InvestorUpdateViewTestCase(BaseInvestorTestCase):
         self.assertIn(b"opener.dismissChangeInvestorPopup", response.content)
 
 
-class InvestorDetailViewTestCase(BaseInvestorTestCase):
+class InvestorDetailViewTestCase(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "languages",
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    fixtures = ["languages", "countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {
+            "id": 2,
+            "investor_identifier": 2,
+            "fk_status_id": 4,
+            "name": "Test Investor #2",
+        },
     ]
 
     def test_with_anonymous(self):
@@ -473,7 +485,7 @@ class InvestorDetailViewTestCase(BaseInvestorTestCase):
 
     def test_with_anonymous_not_public(self):
         response = self.client.get(
-            reverse("investor_detail", kwargs={"investor_id": 4})
+            reverse("investor_detail", kwargs={"investor_id": 2})
         )
         self.assertEqual(404, response.status_code)
 
@@ -489,7 +501,7 @@ class InvestorDetailViewTestCase(BaseInvestorTestCase):
     def test_deleted(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("investor_detail", kwargs={"investor_id": 4})
+            reverse("investor_detail", kwargs={"investor_id": 2})
         )
         self.client.logout()
         self.assertEqual(404, response.status_code)
@@ -506,23 +518,25 @@ class InvestorDetailViewTestCase(BaseInvestorTestCase):
     def test_with_history_id(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("investor_detail", kwargs={"investor_id": 1, "history_id": 10})
+            reverse("investor_detail", kwargs={"investor_id": 1, "history_id": 1})
         )
         self.client.logout()
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.context.get("investor").investor_identifier)
 
 
-class InvestorDeleteViewTestCase(BaseInvestorTestCase):
+class InvestorDeleteViewTestCase(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {"id": 1, "investor_identifier": 1, "name": "Test Investor #1"},
+        {
+            "id": 2,
+            "investor_identifier": 2,
+            "fk_status_id": 4,
+            "name": "Test Investor #2",
+        },
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
@@ -602,29 +616,31 @@ class InvestorDeleteViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test delete investor"})
         self.client.login(username="editor", password="test")
         response = self.client.post(
-            reverse("investor_delete", kwargs={"investor_id": 4}), data
+            reverse("investor_delete", kwargs={"investor_id": 2}), data
         )
         self.client.logout()
         self.assertEqual(404, response.status_code)
 
 
-class InvestorRecoverViewTestCase(BaseInvestorTestCase):
+class InvestorRecoverViewTestCase(InvestorsFixtureMixin, BaseInvestorTestCase):
 
-    fixtures = [
-        "countries_and_regions",
-        "users_and_groups",
-        "status",
-        "investors",
-        "activities",
-        "activity_involvements",
-        "venture_involvements",
+    fixtures = ["countries_and_regions", "users_and_groups", "status"]
+
+    inv_fixtures = [
+        {
+            "id": 1,
+            "investor_identifier": 1,
+            "fk_status_id": 4,
+            "name": "Test Investor #1",
+        },
+        {"id": 2, "investor_identifier": 2, "name": "Test Investor #2"},
     ]
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_get(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("investor_recover", kwargs={"investor_id": 4})
+            reverse("investor_recover", kwargs={"investor_id": 1})
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
@@ -635,7 +651,7 @@ class InvestorRecoverViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test recover investor"})
         self.client.login(username="editor", password="test")
         response = self.client.post(
-            reverse("investor_recover", kwargs={"investor_id": 4}), data
+            reverse("investor_recover", kwargs={"investor_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(
@@ -652,14 +668,14 @@ class InvestorRecoverViewTestCase(BaseInvestorTestCase):
         data.update({"action_comment": "Test recover investor", "approve_btn": True})
         self.client.login(username="administrator", password="test")
         response = self.client.post(
-            reverse("investor_recover", kwargs={"investor_id": 4}), data
+            reverse("investor_recover", kwargs={"investor_id": 1}), data
         )
         self.client.logout()
         self.assertEqual(
             302, response.status_code, msg="Recover investor does not redirect"
         )
         investor = HistoricalInvestor.objects.latest_only().public().latest()
-        self.assertEqual(4, investor.investor_identifier)
+        self.assertEqual(1, investor.investor_identifier)
         # self.assertEqual('Test recover investor', investor.action_comment)
         self.assertEqual(HistoricalInvestor.STATUS_OVERWRITTEN, investor.fk_status_id)
 
@@ -676,7 +692,7 @@ class InvestorRecoverViewTestCase(BaseInvestorTestCase):
     def test_not_deleted(self):
         self.client.login(username="editor", password="test")
         response = self.client.get(
-            reverse("investor_recover", kwargs={"investor_id": 1})
+            reverse("investor_recover", kwargs={"investor_id": 2})
         )
         self.client.logout()
         self.assertEqual(404, response.status_code)

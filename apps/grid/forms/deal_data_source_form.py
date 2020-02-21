@@ -16,6 +16,7 @@ from apps.landmatrix.storage import data_source_storage
 
 class DealDataSourceForm(BaseForm):
     form_title = "Data source"
+    exclude_in_export = ("file_not_public", "includes_in_country_verified_information")
 
     tg_data_source = TitleField(required=False, label="", initial=_("Data source"))
     type = forms.ChoiceField(
@@ -64,6 +65,9 @@ class DealDataSourceForm(BaseForm):
     tg_data_source_comment = forms.CharField(
         required=False, label=_("Comment on data source"), widget=CommentInput
     )
+
+    class Meta:
+        name = "data_source"
 
     # def clean_date(self):
     #    date = self.cleaned_data["date"]

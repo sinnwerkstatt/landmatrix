@@ -1,13 +1,16 @@
 from django.test import TestCase
 
 from apps.landmatrix.models import Activity
+from apps.landmatrix.tests.mixins import ActivitiesFixtureMixin
 from apps.public_comments.forms import EditCommentForm, PublicCommentForm
 
 
-class PublicCommentFormTestCase(TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+class PublicCommentFormTestCase(ActivitiesFixtureMixin, TestCase):
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def setUp(self):
+        super().setUp()
         self.activity = Activity.objects.get(id=10)
         self.form = PublicCommentForm(self.activity)
 
@@ -24,10 +27,12 @@ class PublicCommentFormTestCase(TestCase):
         self.assertNotIn("other", self.form.security_errors().keys())
 
 
-class EditCommentFormTestCase(TestCase):
-    fixtures = ["countries_and_regions", "users_and_groups", "status", "activities"]
+class EditCommentFormTestCase(ActivitiesFixtureMixin, TestCase):
+
+    act_fixtures = [{"id": 10, "activity_identifier": 1}]
 
     def setUp(self):
+        super().setUp()
         self.activity = Activity.objects.get(id=10)
         self.form = EditCommentForm(self.activity)
 
