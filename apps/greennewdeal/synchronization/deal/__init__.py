@@ -1,3 +1,5 @@
+import reversion
+
 from apps.greennewdeal.models import Deal
 from apps.greennewdeal.synchronization.deal import base, submodels
 from apps.greennewdeal.synchronization.helpers import MetaActivity
@@ -31,28 +33,27 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
 
     for histivity in activity_versions:
         meta_activity = MetaActivity(histivity)
+        with reversion.create_revision():
+            submodels.create_locations(deal, meta_activity.loc_groups)
+            submodels.create_contracts(deal, meta_activity.con_groups)
+            submodels.create_data_sources(deal, meta_activity.ds_groups)
 
-        # TODO: what to do here if no deal is created?
-        submodels.create_locations(deal, meta_activity.loc_groups)
-        submodels.create_contracts(deal, meta_activity.con_groups)
-        submodels.create_data_sources(deal, meta_activity.ds_groups)
+            base.parse_general(deal, meta_activity.group_general)
+            base.parse_employment(deal, meta_activity.group_employment)
 
-        base.parse_general(deal, meta_activity.group_general)
-        base.parse_employment(deal, meta_activity.group_employment)
+            base.connect_investor_to_deal(deal, histivity)
 
-        base.connect_investor_to_deal(deal, histivity)
+            base.parse_investor_info(deal, meta_activity.group_investor_info)
+            base.parse_local_communities(deal, meta_activity.group_local_communities)
+            base.parse_former_use(deal, meta_activity.group_former_use)
+            base.parse_produce_info(deal, meta_activity.group_produce_info)
+            base.parse_water(deal, meta_activity.group_water)
+            base.parse_remaining(deal, meta_activity.group_remaining)
 
-        base.parse_investor_info(deal, meta_activity.group_investor_info)
-        base.parse_local_communities(deal, meta_activity.group_local_communities)
-        base.parse_former_use(deal, meta_activity.group_former_use)
-        base.parse_produce_info(deal, meta_activity.group_produce_info)
-        base.parse_water(deal, meta_activity.group_water)
-        base.parse_remaining(deal, meta_activity.group_remaining)
-
-        status = STATUS_MAP[histivity.fk_status_id]
-        deal.save_revision(
-            status,
-            histivity.history_date,
-            histivity.history_user,
-            histivity.comment or "",
-        )
+            status = STATUS_MAP[histivity.fk_status_id]
+            deal.save_revision(
+                status,
+                histivity.history_date,
+                histivity.history_user,
+                histivity.comment or "",
+            )

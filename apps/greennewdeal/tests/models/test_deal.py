@@ -1,12 +1,13 @@
 import pytest
 from reversion.models import Version
 
-from apps.greennewdeal.models import Deal, Country
+from apps.greennewdeal.models import Deal
 from apps.landmatrix.models import (
+    ActivityAttributeGroup,
     HistoricalActivity,
-    Status,
     HistoricalActivityAttribute,
 )
+
 
 # TODO: erzeuge revision,
 #  stelle sicher, dass die location, datasource und dings auch versioniert werden
@@ -25,7 +26,7 @@ from apps.landmatrix.models import (
 def test_all_status_options():
     ID = 1  # Draft (Pending)
     HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
@@ -38,7 +39,7 @@ def test_all_status_options():
 
     ID = 2  # Live (Active)
     HistoricalActivity(activity_identifier=ID, fk_status_id=2).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
@@ -51,7 +52,7 @@ def test_all_status_options():
 
     ID = 3  # Live (this time with Overwritten)
     HistoricalActivity(activity_identifier=ID, fk_status_id=3).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
@@ -65,7 +66,7 @@ def test_all_status_options():
     # Stati: Deleted, Rejected, To Delete
     for status in [4, 5, 6]:
         HistoricalActivity(activity_identifier=status, fk_status_id=status).save(
-            update_elasticsearch=False
+            update_elasticsearch=False, trigger_gnd=True
         )
         assert (
             HistoricalActivity.objects.filter(activity_identifier=status).count() == 1
@@ -84,11 +85,11 @@ def test_updated_activity():
     ID = 5
     # create first draft
     HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     # create live version
     HistoricalActivity(activity_identifier=ID, fk_status_id=2).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 2
 
@@ -103,7 +104,7 @@ def test_updated_activity():
 
     # create another draft
     HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     deal.refresh_from_db()
     assert deal.status == deal.STATUS_LIVE_AND_DRAFT
@@ -115,7 +116,7 @@ def test_updated_activity():
 
     # and set it live again
     HistoricalActivity(activity_identifier=ID, fk_status_id=3).save(
-        update_elasticsearch=False
+        update_elasticsearch=False, trigger_gnd=True
     )
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 4
 
@@ -134,27 +135,55 @@ def test_activity_with_attributes():
     ID = 10  # Draft (Pending)
     histact = HistoricalActivity(activity_identifier=ID, fk_status_id=2)
     histact.save(update_elasticsearch=False)
+
+    fk_group = ActivityAttributeGroup.objects.create(id=2, name="testgroup")
+
     HistoricalActivityAttribute.objects.create(
-        fk_activity=histact, name="target_country", value=288
+        fk_activity=histact, name="target_country", value=288, fk_group=fk_group
     )
     HistoricalActivityAttribute.objects.create(
-        fk_activity=histact, name="point_lat", value="52.1", fk_group_id=2
+        fk_activity=histact,
+        name="location_description",
+        value="Loc1",
+        fk_group=fk_group,
     )
     HistoricalActivityAttribute.objects.create(
-        fk_activity=histact, name="point_lon", value="12.322", fk_group_id=2
+        fk_activity=histact, name="point_lon", value=10.0123, fk_group=fk_group
     )
-    histact.save(update_elasticsearch=False)
+    HistoricalActivityAttribute.objects.create(
+        fk_activity=histact, name="point_lat", value=5.0123, fk_group=fk_group
+    )
+    histact.save(update_elasticsearch=False, trigger_gnd=True)
 
     d1 = Deal.objects.get(id=ID)
     loc1 = d1.locations.get()
-    assert loc1.point.x == 12.322
-    assert loc1.point.y == 52.1
+    assert loc1.point.coords == (10.0123, 5.0123)
     loc_versions = Version.objects.get_for_object(loc1)
     assert len(loc_versions) == 1
+
+    histact2 = HistoricalActivity(activity_identifier=ID, fk_status_id=3)
+    histact2.save(update_elasticsearch=False)
+    assert histact.id + 1 == histact2.id
+
     HistoricalActivityAttribute.objects.create(
-        fk_activity=histact, name="point_lon", value="12.3", fk_group_id=2
+        fk_activity=histact2,
+        name="location_description",
+        value="Loc1.a",
+        fk_group=fk_group,
     )
-    histact.save(update_elasticsearch=False)
-    loc1.refresh_from_db()
+    HistoricalActivityAttribute.objects.create(
+        fk_activity=histact2, name="point_lon", value=10.456, fk_group=fk_group
+    )
+    HistoricalActivityAttribute.objects.create(
+        fk_activity=histact2, name="point_lat", value=5.456, fk_group=fk_group
+    )
+    histact2.save(update_elasticsearch=False, trigger_gnd=True)
+
+    d1.refresh_from_db()
+    loc1 = d1.locations.get()
+    assert loc1.point.coords == (10.456, 5.456)
+    assert loc1.description == "Loc1.a"
     loc_versions = Version.objects.get_for_object(loc1)
     assert len(loc_versions) == 2
+    assert loc_versions[0].field_dict["point"].coords == (10.456, 5.456)
+    assert loc_versions[1].field_dict["point"].coords == (10.0123, 5.0123)

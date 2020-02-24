@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 from django.utils import timezone
 
@@ -24,7 +22,7 @@ def test_all_status_options():
         opencorporates_link="http://closed.com",
     )
 
-    histvestor.save(update_elasticsearch=False)
+    histvestor.save(trigger_gnd=True)
 
     assert HistoricalInvestor.objects.filter(investor_identifier=ID).count() == 1
     inv1 = Investor.objects.get()

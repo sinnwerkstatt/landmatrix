@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from apps.greennewdeal.models.country import Country
+from apps.greennewdeal.models import Currency, Country
 from apps.greennewdeal.models.mixins import ReversionSaveMixin
 
 
@@ -126,7 +126,7 @@ class InvestorVentureInvolvement(models.Model, ReversionSaveMixin):
     )
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
-        "Currency",
+        Currency,
         verbose_name=_("Loan currency"),
         blank=True,
         null=True,

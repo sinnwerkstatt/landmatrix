@@ -15,10 +15,12 @@ def create_locations(deal, groups):
         "Coordinates": 10,
     }
     for group_id, attrs in sorted(groups.items()):
-        loc_name = attrs.get("location") or ""
-        location = Location.objects.get_or_create(
-            deal=deal, name=loc_name, old_group_id=group_id,
-        )[0]
+        try:
+            location = Location.objects.get(deal=deal, old_group_id=group_id)
+        except Location.DoesNotExist:
+            location = Location(deal=deal, old_group_id=group_id)
+
+        location.name = attrs.get("location") or ""
         if attrs.get("point_lat") and attrs.get("point_lon"):
             loc_point_lat = float(attrs.get("point_lat"))
             loc_point_lon = float(attrs.get("point_lon"))
@@ -36,9 +38,12 @@ def create_locations(deal, groups):
 
 def create_contracts(deal, groups):
     for group_id, attrs in sorted(groups.items()):
-        contract = Contract.objects.get_or_create(deal=deal, old_group_id=group_id,)[0]
-        contract.number = attrs.get("contract_number") or ""
+        try:
+            contract = Contract.objects.get(deal=deal, old_group_id=group_id)
+        except Contract.DoesNotExist:
+            contract = Contract(deal=deal, old_group_id=group_id)
 
+        contract.number = attrs.get("contract_number") or ""
         if attrs.get("contract_date"):
             contract.date = datetime.strptime(attrs.get("contract_date"), "%Y-%m-%d")
         if attrs.get("contract_expiration_date"):
@@ -65,9 +70,10 @@ def create_data_sources(deal, groups):
         "Other": 90,
     }
     for group_id, attrs in sorted(groups.items()):
-        data_source = DataSource.objects.get_or_create(
-            deal=deal, old_group_id=group_id,
-        )[0]
+        try:
+            data_source = DataSource.objects.get(deal=deal, old_group_id=group_id)
+        except DataSource.DoesNotExist:
+            data_source = DataSource(deal=deal, old_group_id=group_id)
 
         data_source.type = TYPE_MAP[attrs.get("type")]
         data_source.url = attrs.get("url")

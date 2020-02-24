@@ -1003,6 +1003,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
 
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
+        trigger_gnd = kwargs.pop("trigger_gnd", False)
         super().save(*args, **kwargs)
         if update_elasticsearch:
             from apps.landmatrix.tasks import index_activity, delete_historicalactivity
@@ -1015,6 +1016,13 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
                 transaction.on_commit(
                     lambda: index_activity.delay(self.activity_identifier)
                 )
+        if trigger_gnd:
+            from apps.greennewdeal.tasks import task_propagate_save_to_gnd_deal
+
+            if settings.CELERY_ENABLED:
+                task_propagate_save_to_gnd_deal.delay(self.pk)
+            else:
+                task_propagate_save_to_gnd_deal(self.pk)
 
     class Meta:
         verbose_name = _("Historical activity")

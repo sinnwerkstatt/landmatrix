@@ -10,3 +10,4 @@ def django_db_setup(django_db_setup, django_db_blocker):
             "loaddata", "apps/greennewdeal/fixtures/countries_and_regions.json"
         )
         call_command("loaddata", "apps/landmatrix/fixtures/status.json")
+        call_command("loaddata", "apps/landmatrix/fixtures/languages.json")

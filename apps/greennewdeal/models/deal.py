@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from apps.greennewdeal.models import Investor
 from apps.greennewdeal.models.country import Country
 from apps.greennewdeal.models.mixins import (
     OldContractMixin,
@@ -302,11 +303,7 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "Investor",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="deals",
+        Investor, on_delete=models.PROTECT, blank=True, null=True, related_name="deals",
     )
     involved_actors = JSONField(
         _("Actors involved in the negotiation / admission process"),
