@@ -132,7 +132,7 @@ class DealBaseView(TemplateView):
                 hactivity.fully_updated = self.get_fully_updated(form)
             else:  # pragma: no cover
                 hactivity.fully_updated = False
-            hactivity.save(update_elasticsearch=False)
+            hactivity.save()
             self.create_involvement(hactivity, investor_form)
 
             if not is_admin:
