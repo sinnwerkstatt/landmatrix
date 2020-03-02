@@ -56,7 +56,7 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
         )
 
 
-def sync_involvements(ids: list):
+def histvolvements_to_involvements(ids: list):
     histvolvement_versions = HistoricalInvestorVentureInvolvement.objects.filter(
         fk_venture__investor_identifier=ids[0], fk_investor__investor_identifier=ids[1]
     )

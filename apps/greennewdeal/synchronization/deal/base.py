@@ -15,6 +15,7 @@ def parse_general(deal, attrs):
         "Concession": 30,
         "Exploitation permit / license / concession (for mineral resources)": 40,
         "Exploitation permit / license / concession": 40,
+        "Resource exploitation license / concession": 40,
         "Pure contract farming": 50,
     }
     HA_AREA_MAP = {None: None, "per ha": 10, "for specified area": 20}
@@ -45,8 +46,15 @@ def parse_general(deal, attrs):
     deal.purchase_price_area = attrs.get("purchase_price_area")
     deal.purchase_price_comment = attrs.get("tg_purchase_price_comment") or ""
 
-    deal.annual_leasing_fee = attrs.get("annual_leasing_fee")
-    deal.annual_leasing_fee_currency_id = attrs.get("annual_leasing_fee_currency")
+    annual_leasing_fee = attrs.get("annual_leasing_fee")
+    # FIXME Fixes for broken data
+    if annual_leasing_fee == "9 USD per year per ha":
+        annual_leasing_fee = 9
+    deal.annual_leasing_fee = annual_leasing_fee
+    annual_leasing_fee_currency = attrs.get("annual_leasing_fee_currency")
+    if annual_leasing_fee_currency == "Uruguay Peso en Unidades Indexadas":
+        annual_leasing_fee_currency = 154
+    deal.annual_leasing_fee_currency_id = annual_leasing_fee_currency
     deal.annual_leasing_fee_type = HA_AREA_MAP[attrs.get("annual_leasing_fee_type")]
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
     deal.annual_leasing_fees_comment = attrs.get("tg_leasing_fees_comment") or ""
@@ -142,6 +150,7 @@ def parse_local_communities(deal, attrs):
         "Limited consultation": 20,
         "Free prior and informed consent": 30,
         "Free, Prior and Informed Consent (FPIC)": 30,
+        "Certified Free, Prior and Informed Consent (FPIC)": 30,
         "Other": 50,
     }
     RECOGNITION_STATUS_MAP = {v: k for k, v in Deal.RECOGNITION_STATUS_CHOICES}
@@ -166,10 +175,9 @@ def parse_local_communities(deal, attrs):
             "#"
         )
     deal.people_affected_comment = attrs.get("tg_affected_comment") or ""
-    if attrs.get("recognition_status"):
-        deal.recognition_status = RECOGNITION_STATUS_MAP[
-            attrs.get("recognition_status")
-        ]
+    deal.recognition_status = _extras_to_list(
+        attrs, "recognition_status", RECOGNITION_STATUS_MAP
+    )
     deal.recognition_status_comment = attrs.get("tg_recognition_status_comment") or ""
     deal.community_consultation = COMMUNITY_CONSULTATION_MAP[
         attrs.get("community_consultation")
@@ -282,16 +290,63 @@ def parse_produce_info(deal, attrs):
     )
 
     deal.has_domestic_use = attrs.get("has_domestic_use") == "True"
-    deal.domestic_use = attrs.get("domestic_use")
+
+    # FIXME Fixes for broken data
+    domestic_use = attrs.get("domestic_use")
+    broken_domestic_use = {"20%": 20, "over 70% of the production will be exported": 30}
+    try:
+        domestic_use = broken_domestic_use[domestic_use]
+    except KeyError:
+        pass
+    deal.domestic_use = domestic_use
+
     deal.has_export = attrs.get("has_export") == "True"
-    if attrs.get("export_country1"):
-        deal.export_country1 = Country.objects.get(name=attrs.get("export_country1"))
+
+    export_country1 = attrs.get("export_country1")
+    export_country2 = attrs.get("export_country2")
+    export_country3 = attrs.get("export_country3")
+
+    # FIXME Fixes for broken data
+    broken_countries = {
+        "Democratic People's Republic of Korea": "Korea, Dem. People's Rep.",
+        "Democratic Republic of the Congo": "Congo, Dem. Rep.",
+        "Egypt": "Egypt, Arab Rep.",
+        "Iran (Islamic Republic of)": "Iran, Islamic Rep.",
+        "United Republic of Tanzania": "Tanzania",
+        "Viet Nam": "Vietnam",
+        "Yemen": "Yemen, Rep.",
+    }
+
+    try:
+        export_country1 = broken_countries[export_country1]
+    except KeyError:
+        pass
+    try:
+        export_country2 = broken_countries[export_country2]
+    except KeyError:
+        pass
+    try:
+        export_country3 = broken_countries[export_country3]
+    except KeyError:
+        pass
+
+    if export_country1:
+        try:
+            deal.export_country1 = Country.objects.get(name=export_country1)
+        except Country.DoesNotExist:
+            deal.export_country1 = Country.objects.get(id=export_country1)
     deal.export_country1_ratio = attrs.get("export_country1_ratio")
-    if attrs.get("export_country2"):
-        deal.export_country2 = Country.objects.get(name=attrs.get("export_country2"))
+    if export_country2:
+        try:
+            deal.export_country2 = Country.objects.get(name=export_country2)
+        except Country.DoesNotExist:
+            deal.export_country2 = Country.objects.get(id=export_country2)
     deal.export_country2_ratio = attrs.get("export_country2_ratio")
-    if attrs.get("export_country3"):
-        deal.export_country3 = Country.objects.get(name=attrs.get("export_country3"))
+    if export_country3:
+        try:
+            deal.export_country3 = Country.objects.get(name=export_country3)
+        except Country.DoesNotExist:
+            deal.export_country3 = Country.objects.get(id=export_country3)
     deal.export_country3_ratio = attrs.get("export_country3_ratio")
     deal.use_of_produce_comment = attrs.get("tg_use_of_produce_comment") or ""
     if attrs.get("in_country_processing"):
@@ -324,7 +379,23 @@ def parse_water(deal, attrs):
     deal.how_much_do_investors_pay_comment = (
         attrs.get("tg_how_much_do_investors_pay_comment") or ""
     )
-    deal.water_extraction_amount = attrs.get("water_extraction_amount")
+
+    # FIXME Fixes for broken data
+    water_extraction_amount = attrs.get("water_extraction_amount")
+    broken_water_ex_amounts = {
+        "150 billion litres": 150_000_000,  # billion / 1000 for m3 instead of litres
+        "75m m3/year": 75_000_000,
+        "1 cubic meter of water per second to process one ton of gold. In 15-25 years between 9.5 and 23 billion cubic meters of water can be captured": 31_540_000,
+        "80% of annual flow": -1,  # TODO
+        "108bn gal/yr": 408_800_000,
+        "3.07": 96_820,
+    }
+    try:
+        water_extraction_amount = broken_water_ex_amounts[water_extraction_amount]
+    except KeyError:
+        pass
+
+    deal.water_extraction_amount = water_extraction_amount
     deal.water_extraction_amount_comment = (
         attrs.get("tg_water_extraction_amount_comment") or ""
     )

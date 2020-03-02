@@ -21,6 +21,8 @@ pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", bra
 django-reversion = "*"
 elasticsearch-dsl = ">=7.0.0,<8.0.0"
 django-elasticsearch-dsl = { git = "git@github.com:django-elasticsearch/django-elasticsearch-dsl.git", branch = "master" }
+#ariadne = "^0.10.0"
+graphene-django = "^2.8.2"
 
 psycopg2-binary = "*"
 redis = "*"
@@ -64,7 +66,6 @@ libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 raven = { version = "*", optional = true }
-ariadne = "^0.10.0"
 
 
 [tool.poetry.dev-dependencies]

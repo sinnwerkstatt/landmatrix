@@ -1,5 +1,6 @@
-from datetime import datetime
+import re
 
+from dateutil import parser
 from django.contrib.gis.geos import Point
 
 from apps.greennewdeal.models import Contract, DataSource, Location
@@ -22,9 +23,23 @@ def create_locations(deal, groups):
 
         location.name = attrs.get("location") or ""
         if attrs.get("point_lat") and attrs.get("point_lon"):
-            loc_point_lat = float(attrs.get("point_lat"))
-            loc_point_lon = float(attrs.get("point_lon"))
-            location.point = Point(loc_point_lon, loc_point_lat)
+            # FIXME Fixes for broken data
+            try:
+                point_lat = attrs.get("point_lat").replace(",", ".").replace("°", "")
+                point_lat = float(point_lat)
+            except ValueError:
+                print(f"ValueError on point_loc: {attrs.get('point_lat')}")
+            try:
+                point_lon = attrs.get("point_lon").replace(",", ".").replace("°", "")
+                point_lon = float(point_lon)
+            except ValueError:
+                print(f"ValueError on point_loc: {attrs.get('point_lon')}")
+            try:
+                location.point = Point(point_lon, point_lat)
+            except UnboundLocalError:
+                pass
+            except Exception as e:
+                print(e, point_lon, point_lat)
         location.description = attrs.get("location_description") or ""
         location.facility_name = attrs.get("facility_name") or ""
 
@@ -45,12 +60,15 @@ def create_contracts(deal, groups):
 
         contract.number = attrs.get("contract_number") or ""
         if attrs.get("contract_date"):
-            contract.date = datetime.strptime(attrs.get("contract_date"), "%Y-%m-%d")
+            contract.date = parser.parse(attrs.get("contract_date")).date()
         if attrs.get("contract_expiration_date"):
-            contract.date = datetime.strptime(
-                attrs.get("contract_expiration_date"), "%Y-%m-%d"
-            )
-        contract.agreement_duration = attrs.get("agreement_duration")
+            contract.expiration_date = parser.parse(
+                attrs.get("contract_expiration_date")
+            ).date()
+        agreement_duration = attrs.get("agreement_duration")
+        if agreement_duration == "99 years":
+            agreement_duration = 99
+        contract.agreement_duration = agreement_duration
         contract.comment = attrs.get("tg_contract_comment") or ""
         contract.save()
 
@@ -81,7 +99,33 @@ def create_data_sources(deal, groups):
             data_source.file.name = f"uploads/{attrs.get('file')}"
         data_source.file_not_public = attrs.get("file_not_public") == "True"
         data_source.publication_title = attrs.get("publication_title") or ""
-        data_source.date = attrs.get("date")
+        ds_date = attrs.get("date")
+        if ds_date:
+            print(ds_date)
+            # FIXME Fixes for broken data
+            if ":" in ds_date:
+                ds_date = re.sub(
+                    r"([0-9]{2}):([0-9]{2}):([0-9]{4})", r"\1.\2.\3", ds_date
+                )
+            broken_ds_dates = {
+                "2009/2010-01-01": "2010.01.01",
+                "2009,2011-01-01": "2011.01.01",
+                "2000-2001-01-01": "2001.01.01",
+                "Infinita Renovables websites-01-01": "1970.01.01",
+                "2012_01_31-01-01": "2012.01.31",
+                "2019-18-02": "2019-02-18",
+                "2014-29-09": "2014-09-29",
+                "2017-02-29": "2017-02-28",
+                "2018-11-31": "2018-11-30",
+                "2019-28-05": "2019-05-28",
+                "2019-04-31": "2019-04-30",
+            }
+            try:
+                ds_date = broken_ds_dates[ds_date]
+            except KeyError:
+                pass
+            data_source.date = parser.parse(ds_date).date()
+
         data_source.name = attrs.get("name") or ""
         data_source.company = attrs.get("company") or ""
         data_source.email = attrs.get("email") or ""

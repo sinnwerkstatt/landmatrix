@@ -736,10 +736,10 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
 
 @reversion.register(ignore_duplicates=True)
 class Location(models.Model, OldLocationMixin):
-    name = models.CharField(max_length=255, blank=True)
-    description = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=2000, blank=True)
+    description = models.CharField(max_length=2000, blank=True)
     point = gismodels.PointField(blank=True, null=True)
-    facility_name = models.CharField(max_length=255, blank=True)
+    facility_name = models.CharField(max_length=2000, blank=True)
     ACCURACY_CHOICES = (
         (50, _("Country")),
         (40, _("Administrative region")),
@@ -758,7 +758,7 @@ class Location(models.Model, OldLocationMixin):
 
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="locations")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.name}"
@@ -776,7 +776,7 @@ class Contract(models.Model, OldContractMixin):
 
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="contracts")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.number}"
@@ -796,32 +796,32 @@ class DataSource(models.Model, OldDataSourceMixin):
         (90, _("Other (Please specify in comment field)")),
     )
     type = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
-    url = models.URLField(max_length=1000, blank=True, null=True)
+    url = models.URLField(max_length=5000, blank=True, null=True)
     file = models.FileField(
         _("File"),
         upload_to="uploads",
-        max_length=500,
+        max_length=5000,
         help_text=_("Maximum file size: 10MB"),
         blank=True,
         null=True,
     )
     file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)
-    publication_title = models.CharField(max_length=255, blank=True)
-    date = models.CharField(max_length=255, blank=True, null=True)
-    name = models.CharField(_("Name"), max_length=255, blank=True)
-    company = models.CharField(_("Company"), max_length=255, blank=True)
+    publication_title = models.CharField(max_length=5000, blank=True)
+    date = models.DateField(blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=500, blank=True)
+    company = models.CharField(_("Company"), max_length=500, blank=True)
     email = models.EmailField(_("Email"), blank=True)
-    phone = models.CharField(_("Phone"), max_length=255, blank=True)
+    phone = models.CharField(_("Phone"), max_length=500, blank=True)
 
     includes_in_country_verified_information = models.BooleanField(
         _("Includes in-country-verified information"), default=False
     )
-    open_land_contracts_id = models.CharField(max_length=255, blank=True)
+    open_land_contracts_id = models.CharField(max_length=500, blank=True)
     comment = models.TextField(_("Comment on data source"), blank=True)
 
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="datasources")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.get_type_display()}"

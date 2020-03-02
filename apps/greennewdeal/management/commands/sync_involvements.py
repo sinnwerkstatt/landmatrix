@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.greennewdeal.synchronization.investor import sync_involvements
+from apps.greennewdeal.synchronization.investor import histvolvements_to_involvements
 from apps.landmatrix.models import HistoricalInvestorVentureInvolvement
 
 
@@ -17,5 +17,5 @@ class Command(BaseCommand):
         )
         for ids in ids_groups:
             print(f"  Sync Involvement {ids}... ", end="", flush=True)
-            sync_involvements(ids)
+            histvolvements_to_involvements(ids)
             print("\033[92m" + "OK" + "\033[0m")

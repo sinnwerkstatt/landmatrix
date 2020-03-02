@@ -1,28 +1,32 @@
-import pathlib
+import graphene
+from graphene_django import DjangoObjectType
 
-from ariadne import ObjectType, load_schema_from_path, make_executable_schema
+from apps.greennewdeal.models import Deal
 
-from apps.graphql.deal import resolve_deal, resolve_deals
 
-schema_file = pathlib.Path(__file__).parent.joinpath("schema.graphql")
-type_defs = load_schema_from_path(schema_file)
+class DealType(DjangoObjectType):
+    class Meta:
+        model = Deal
 
-query = ObjectType("Query")
 
-query.set_field("deal", resolve_deal)
-query.set_field("deals", resolve_deals)
-# query.set_field("userSector", resolve_user_sector)
-# query.set_field("userSectors", resolve_user_sectors)
-# query.set_field("userGroups", resolve_user_groups)
-# query.set_field("userSubGroups", resolve_user_subgroups)
-#
-# query.set_field("technologies", resolve_technologies)
-# query.set_field("listOptStrategies", resolve_list_opt_strategies)
-# query.set_field("listSzenarios", resolve_list_scenarios)
-#
-# query.set_field("kpiSections", resolve_kpi_sections)
-# query.set_field("recommendations", resolve_recommendations)
-#
-# query.set_field("energyCarriers", resolve_energy_carriers)
+class Query(graphene.ObjectType):
+    deals = graphene.List(DealType)
+    deal = graphene.Field(DealType, id=graphene.Int(), name=graphene.String())
 
-schema = make_executable_schema(type_defs, query)
+    def resolve_deals(self, info):
+        return Deal.objects.all()
+
+    def resolve_deal(self, info, **kwargs):
+        id = kwargs.get("id")
+        name = kwargs.get("name")
+
+        if id is not None:
+            return Deal.objects.get(pk=id)
+
+        if name is not None:
+            return Deal.objects.get(name=name)
+
+        return None
+
+
+schema = graphene.Schema(query=Query)

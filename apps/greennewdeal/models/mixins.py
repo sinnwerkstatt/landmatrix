@@ -17,9 +17,12 @@ class ReversionSaveMixin:
             self.status = status
 
             reversion.add_to_revision(self)
-            reversion.set_date_created(date)
-            reversion.set_user(user)
-            reversion.set_comment(comment)
+            if date:
+                reversion.set_date_created(date)
+            if user:
+                reversion.set_user(user)
+            if comment:
+                reversion.set_comment(comment)
 
             if not live_and_draft:
                 self.save()

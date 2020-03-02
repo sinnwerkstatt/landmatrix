@@ -91,7 +91,8 @@ INSTALLED_APPS = [
     "apps.greennewdeal",
     "reversion",
     "django_elasticsearch_dsl",
-    "ariadne.contrib.django",
+    # "ariadne.contrib.django",
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -206,6 +207,7 @@ ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
 )
 # ELASTICSEARCH_DSL_PARALLEL ...
 CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
+GRAPHENE = {"SCHEMA": "apps.graphql.schema.schema"}
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

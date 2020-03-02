@@ -1,4 +1,5 @@
 import reversion
+from django.contrib.auth import get_user_model
 
 from apps.greennewdeal.models import Deal
 from apps.greennewdeal.synchronization.deal import base, submodels
@@ -54,6 +55,6 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             deal.save_revision(
                 status,
                 histivity.history_date,
-                histivity.history_user,
+                get_user_model().objects.filter(id=histivity.history_user_id).first(),
                 histivity.comment or "",
             )
