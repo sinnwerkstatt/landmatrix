@@ -382,11 +382,11 @@ def parse_water(deal, attrs):
 
     # FIXME Fixes for broken data
     water_extraction_amount = attrs.get("water_extraction_amount")
+    water_extraction_amount_comment = attrs.get("tg_water_extraction_amount_comment")
     broken_water_ex_amounts = {
         "150 billion litres": 150_000_000,  # billion / 1000 for m3 instead of litres
         "75m m3/year": 75_000_000,
         "1 cubic meter of water per second to process one ton of gold. In 15-25 years between 9.5 and 23 billion cubic meters of water can be captured": 31_540_000,
-        "80% of annual flow": -1,  # TODO
         "108bn gal/yr": 408_800_000,
         "3.07": 96_820,
     }
@@ -394,11 +394,12 @@ def parse_water(deal, attrs):
         water_extraction_amount = broken_water_ex_amounts[water_extraction_amount]
     except KeyError:
         pass
-
+    if water_extraction_amount == "80% of annual flow":
+        deal.water_extraction_amount = None
+        water_extraction_amount_comment = "80% of annual flow"
     deal.water_extraction_amount = water_extraction_amount
-    deal.water_extraction_amount_comment = (
-        attrs.get("tg_water_extraction_amount_comment") or ""
-    )
+    deal.water_extraction_amount_comment = water_extraction_amount_comment or ""
+
     if attrs.get("use_of_irrigation_infrastructure"):
         deal.use_of_irrigation_infrastructure = (
             attrs.get("use_of_irrigation_infrastructure") == "Yes"

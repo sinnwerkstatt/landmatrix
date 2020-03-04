@@ -122,7 +122,7 @@ class LocationDocument(Document):
 
     class Django:
         model = Location
-        exclude = ["old_group_id"]
+        exclude = ["old_group_id", "timestamp"]
         # ignore_signals = True
 
     class Index:

@@ -4,9 +4,9 @@ from .investor import InvestorDocument, InvolvementDocument
 
 """
 landmatrix indices/doctypes:
-- deal
-- location
+X deal
+X location
 - involvement_size
-- investor
-- involvement
+X investor
+X involvement
 """

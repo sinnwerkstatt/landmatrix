@@ -101,7 +101,6 @@ def create_data_sources(deal, groups):
         data_source.publication_title = attrs.get("publication_title") or ""
         ds_date = attrs.get("date")
         if ds_date:
-            print(ds_date)
             # FIXME Fixes for broken data
             if ":" in ds_date:
                 ds_date = re.sub(

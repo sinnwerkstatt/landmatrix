@@ -1016,7 +1016,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
                 transaction.on_commit(
                     lambda: index_activity.delay(self.activity_identifier)
                 )
-        if trigger_gnd:
+        if trigger_gnd and settings.GND_ENABLED:
             from apps.greennewdeal.tasks import task_propagate_save_to_gnd_deal
 
             if settings.CELERY_ENABLED:

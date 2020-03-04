@@ -91,8 +91,6 @@ INSTALLED_APPS = [
     "apps.greennewdeal",
     "reversion",
     "django_elasticsearch_dsl",
-    # "ariadne.contrib.django",
-    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -197,17 +195,18 @@ print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
 
 # GreenNewDeal
-ELASTICSEARCH_DSL = {
-    "default": {"hosts": "localhost:9201"},
-}
-ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
-# ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = 'django_elasticsearch_dsl.signals.CelerySignalProcessor'
-ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
-    "apps.greennewdeal.documents.signals.DoNothingProcessor"
-)
-# ELASTICSEARCH_DSL_PARALLEL ...
-CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
-GRAPHENE = {"SCHEMA": "apps.graphql.schema.schema"}
+GND_ENABLED = env("GND_ENABLED", default=False)
+if GND_ENABLED:
+    ELASTICSEARCH_DSL = {
+        "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},
+    }
+    ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
+    ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
+        "apps.greennewdeal.documents.signals.DoNothingProcessor"
+        # "django_elasticsearch_dsl.signals.CelerySignalProcessor"
+    )
+    # ELASTICSEARCH_DSL_PARALLEL ...
+    CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

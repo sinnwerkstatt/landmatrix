@@ -4,6 +4,7 @@ from django_elasticsearch_dsl.registries import registry
 from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
 
 
+# noinspection PyMethodMayBeStatic
 @registry.register_document
 class InvestorDocument(Document):
     investor_identifier = fields.IntegerField(attr="id")
@@ -13,10 +14,11 @@ class InvestorDocument(Document):
         exclude = ["involvements"]
 
     def prepare_country(self, instance: Investor):
-        return {
-            "id": instance.country.id,
-            "name": instance.country.name,
-        }
+        if instance.country:
+            return {
+                "id": instance.country.id,
+                "name": instance.country.name,
+            }
 
     class Index:
         name = "investor"
