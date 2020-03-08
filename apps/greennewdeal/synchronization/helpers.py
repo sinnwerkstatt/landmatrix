@@ -53,6 +53,7 @@ class OldGroup:
         self.attrs = {}
 
     def update(self, attrs):
+        self.activity_id = attrs.fk_activity_id
         if attrs.name in self.attrs.keys():
             try:
                 self.attrs[attrs.name]["extras"] += [attrs.to_dict()]
@@ -131,4 +132,6 @@ class MetaActivity:
             elif attr.name in ["old_reliability_ranking", "timestamp"]:
                 pass
             else:
-                print(f"Unknown key {attr.name}: {attr}!")
+                print(
+                    f"{activity.activity_identifier}/{activity.id} : Unknown key {attr.name}: {attr}!"
+                )

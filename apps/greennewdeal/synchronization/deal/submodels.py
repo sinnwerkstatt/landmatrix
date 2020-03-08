@@ -28,12 +28,16 @@ def create_locations(deal, groups):
                 point_lat = attrs.get("point_lat").replace(",", ".").replace("°", "")
                 point_lat = float(point_lat)
             except ValueError:
-                print(f"ValueError on point_loc: {attrs.get('point_lat')}")
+                print(
+                    f"ValueError on {deal.id}\tpoint_lat\t{attrs.get('point_lat')}\t\thttps://landmatrix.org/deal/{deal.id}/{attrs.activity_id}/"
+                )
             try:
                 point_lon = attrs.get("point_lon").replace(",", ".").replace("°", "")
                 point_lon = float(point_lon)
             except ValueError:
-                print(f"ValueError on point_loc: {attrs.get('point_lon')}")
+                print(
+                    f"ValueError on {deal.id}\tpoint_lon\t{attrs.get('point_lon')}\t\thttps://landmatrix.org/deal/{deal.id}/{attrs.activity_id}/"
+                )
             try:
                 location.point = Point(point_lon, point_lat)
             except UnboundLocalError:

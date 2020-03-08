@@ -395,7 +395,7 @@ def parse_water(deal, attrs):
     except KeyError:
         pass
     if water_extraction_amount == "80% of annual flow":
-        deal.water_extraction_amount = None
+        water_extraction_amount = None
         water_extraction_amount_comment = "80% of annual flow"
     deal.water_extraction_amount = water_extraction_amount
     deal.water_extraction_amount_comment = water_extraction_amount_comment or ""
