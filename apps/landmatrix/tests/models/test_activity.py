@@ -538,6 +538,7 @@ class ActivityBaseTestCase(
         activity = HistoricalActivity.objects.get(id=10)
         self.assertEqual(1, activity.get_fully_updated_user())
 
+
 class HistoricalActivityQuerySetTestCase(
     ActivitiesFixtureMixin,
     InvestorsFixtureMixin,

@@ -241,7 +241,9 @@ class InvestorBaseTestCase(
 
     def test_save(self):
         investor = HistoricalInvestor(
-            id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE, investor_identifier=None
+            id=90,
+            fk_status_id=HistoricalInvestor.STATUS_ACTIVE,
+            investor_identifier=None,
         )
         investor.save()
         self.assertIsNotNone(investor.investor_identifier)
@@ -251,7 +253,9 @@ class InvestorBaseTestCase(
         self.assertEqual(f"Unknown (#{investor.investor_identifier})", investor.name)
 
     def test_save_with_operating_company(self):
-        investor = HistoricalInvestor.objects.create(id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE)
+        investor = HistoricalInvestor.objects.create(
+            id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE
+        )
         investor.involvements.create(
             fk_activity_id=10,
             fk_status_id=HistoricalInvestorActivityInvolvement.STATUS_ACTIVE,
@@ -267,7 +271,9 @@ class InvestorBaseTestCase(
         )
 
     def test_save_with_parent_company(self):
-        investor = HistoricalInvestor.objects.create(id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE)
+        investor = HistoricalInvestor.objects.create(
+            id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE
+        )
         investor.investors.create(
             fk_venture_id=10, role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
         )
@@ -281,7 +287,9 @@ class InvestorBaseTestCase(
         )
 
     def test_save_with_tertiary_investor_lender(self):
-        investor = HistoricalInvestor.objects.create(id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE)
+        investor = HistoricalInvestor.objects.create(
+            id=90, fk_status_id=HistoricalInvestor.STATUS_ACTIVE
+        )
         investor.investors.create(
             fk_venture_id=10, role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE
         )

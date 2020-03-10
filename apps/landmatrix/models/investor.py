@@ -244,7 +244,9 @@ class InvestorBase(models.Model):
         """
         if hasattr(self, "investors"):
             queryset = self.investors.all()
-            queryset = queryset.filter(role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
+            queryset = queryset.filter(
+                role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
+            )
             return queryset.exists()
         else:  # pragma: no cover
             return False
@@ -253,7 +255,9 @@ class InvestorBase(models.Model):
     def is_parent_investor(self):
         if hasattr(self, "investors"):
             queryset = self.investors.all()
-            queryset = queryset.filter(role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
+            queryset = queryset.filter(
+                role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE
+            )
             return queryset.exists()
         else:  # pragma: no cover
             return False
@@ -739,7 +743,6 @@ class InvestorVentureInvolvementBase(models.Model):
         abstract = True
 
 
-
 class HistoricalInvestorVentureInvolvement(
     ExportModelOperationsMixin("investor_venture_involvement"),
     InvestorVentureInvolvementBase,
@@ -822,7 +825,6 @@ class InvestorActivityInvolvementBase(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class HistoricalInvestorActivityInvolvement(
