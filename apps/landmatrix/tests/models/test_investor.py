@@ -228,7 +228,7 @@ class InvestorBaseTestCase(
     inv_inv_fixtures = [
         {"fk_venture_id": "10", "fk_investor_id": "30"},
         {"fk_venture_id": "40", "fk_investor_id": "40"},
-        {"fk_venture_id": "10", "fk_investor_id": "70"},
+        {"fk_venture_id": "30", "fk_investor_id": "70"},
         {"fk_venture_id": "10", "fk_investor_id": "80", "role": "IN"},
     ]
 
@@ -305,7 +305,7 @@ class InvestorBaseTestCase(
         self.assertEqual(True, investor.is_operating_company)
 
     def test_is_parent_company(self):
-        investor = HistoricalInvestor.objects.get(id=70)
+        investor = HistoricalInvestor.objects.get(id=30)
         self.assertEqual(True, investor.is_parent_company)
 
     def test_is_parent_company_without_involvements(self):
