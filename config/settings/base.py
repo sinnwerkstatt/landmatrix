@@ -87,11 +87,6 @@ INSTALLED_APPS = [
     "impersonate",
     "celery",
     "django_prometheus",
-    # GreenNewDeal
-    "apps.greennewdeal",
-    "reversion",
-    "django_elasticsearch",
-    "webpack_loader",
 ]
 
 MIDDLEWARE = [
@@ -201,6 +196,12 @@ sys.stdout.flush()
 # GreenNewDeal
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
+    INSTALLED_APPS += [
+        "apps.greennewdeal",
+        "reversion",
+        "django_elasticsearch",
+        "webpack_loader",
+    ]
     ELASTICSEARCH_DSL = {
         "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},
     }
@@ -211,15 +212,15 @@ if GND_ENABLED:
     )
     # ELASTICSEARCH_DSL_PARALLEL ...
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "BUNDLE_DIR_NAME": "/",  # must end with slash
-        "STATS_FILE": BASE_DIR("webpack-stats.json"),
-        "POLL_INTERVAL": 0.1,
-        "TIMEOUT": None,
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    WEBPACK_LOADER = {
+        "DEFAULT": {
+            "BUNDLE_DIR_NAME": "/",  # must end with slash
+            "STATS_FILE": BASE_DIR("webpack-stats.json"),
+            "POLL_INTERVAL": 0.1,
+            "TIMEOUT": None,
+            "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+        }
     }
-}
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"
