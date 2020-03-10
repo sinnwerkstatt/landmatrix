@@ -49,22 +49,22 @@ urlpatterns = [
     path(
         "manage/investor/approve_change/<int:id>/",
         views.ApproveInvestorChangeView.as_view(),
-        name="manage_approve_change_investor",
+        name="manage_approve_change_historicalinvestor",
     ),
     path(
         "manage/investor/reject_change/<int:id>/",
         views.RejectInvestorChangeView.as_view(),
-        name="manage_reject_change_investor",
+        name="manage_reject_change_historicalinvestor",
     ),
     path(
         "manage/investor/approve_delete/<int:id>/",
         views.ApproveInvestorDeleteView.as_view(),
-        name="manage_approve_delete_investor",
+        name="manage_approve_delete_historicalinvestor",
     ),
     path(
         "manage/investor/reject_delete/<int:id>/",
         views.RejectInvestorDeleteView.as_view(),
-        name="manage_reject_delete_investor",
+        name="manage_reject_delete_historicalinvestor",
     ),
     path("manage/", views.ManageRootView.as_view(), name="manage"),
     path("log/latest_added/", views.LogAddedView.as_view(), name="log_added"),

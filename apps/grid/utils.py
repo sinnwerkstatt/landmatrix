@@ -1,7 +1,7 @@
 from django import forms
 from django.core.cache import cache
 
-from apps.landmatrix.models import HistoricalInvestor, Investor
+from apps.landmatrix.models import HistoricalInvestor
 
 
 def get_display_value(field, values, attributes=None, formset=None):
@@ -16,7 +16,7 @@ def get_display_value(field, values, attributes=None, formset=None):
         queryset = field.queryset.model.objects.all()
         choices = cache.get("%s_choices" % model_name)
         if not choices:
-            if field.queryset.model in (HistoricalInvestor, Investor):
+            if field.queryset.model == HistoricalInvestor:
                 choices = dict(
                     ((str(o.pk), str(o.investor_identifier)) for o in queryset)
                 )
@@ -146,19 +146,19 @@ def has_perm_approve_reject(user, object=None):
     :return:
     """
     # Superuser or Admin?
-    if user.is_superuser or user.has_perm("landmatrix.change_activity"):
+    if user.is_superuser or user.has_perm("landmatrix.change_historicalactivity"):
         return True
     # Editor
-    elif user.has_perm("landmatrix.review_activity") and object:
+    elif user.has_perm("landmatrix.review_historicalactivity") and object:
         # for editors:
         # only activites that have been added/changed by public users
         # and not been reviewed by another editor yet
         if not object.history_user or not object.history_user.has_perm(
-            "landmatrix.review_activity"
+            "landmatrix.review_historicalactivity"
         ):
             for changeset in object.changesets.exclude(fk_user=user):
                 if changeset.fk_user and changeset.fk_user.has_perm(
-                    "landmatrix.review_activity"
+                    "landmatrix.review_historicalactivity"
                 ):
                     return False
         return True

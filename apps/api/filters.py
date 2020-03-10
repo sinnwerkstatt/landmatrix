@@ -12,7 +12,7 @@ from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 
 # We can't import from landmatrix.models as FilterCondition imports from here
-from apps.landmatrix.models.activity import Activity
+from apps.landmatrix.models.activity import HistoricalActivity
 from apps.landmatrix.models.country import Country
 
 FILTER_FORMATS_SQL = 0
@@ -242,7 +242,7 @@ class Filter(BaseFilter):
             (for multiple matches) dictionary object.
             Example: ('must', {'match': {'intention__value': 3},
                                          '_filter_name': 'intention__value__is'})
-            Example2: ('must_not', {'bool': 
+            Example2: ('must_not', {'bool':
                           {'should': [
                               {'match': {'intention__value': 3}},
                               {'match': {'intention__value': 3}}
@@ -333,9 +333,11 @@ def load_statuses_from_url(request):
         statuses = []
         if request.user.is_authenticated and request.user.is_staff:
             # Staff can view all statuses
-            allowed = set(map(operator.itemgetter(0), Activity.STATUS_CHOICES))
+            allowed = set(
+                map(operator.itemgetter(0), HistoricalActivity.STATUS_CHOICES)
+            )
         else:
-            allowed = set(Activity.PUBLIC_STATUSES)
+            allowed = set(HistoricalActivity.PUBLIC_STATUSES)
 
         for status in request.GET.getlist("status"):
             try:
@@ -347,7 +349,7 @@ def load_statuses_from_url(request):
                 statuses.append(status)
 
     else:
-        statuses = Activity.PUBLIC_STATUSES
+        statuses = HistoricalActivity.PUBLIC_STATUSES
 
     return statuses
 

@@ -343,7 +343,7 @@ class ElasticSearchMixin:
         )
         if request_status_list and (
             self.request.user.is_superuser
-            or self.request.user.has_perm("landmatrix.review_activity")
+            or self.request.user.has_perm("landmatrix.review_historicalactivity")
         ):
             status_list_get = [
                 int(status)
@@ -471,8 +471,8 @@ class ElasticSearchMixin:
     def disable_filters(self):
         """
         Disable current filters temporarily and set default filters
-        :param request: 
-        :return: 
+        :param request:
+        :return:
         """
         # Backup
         self.request.session[

@@ -1,7 +1,7 @@
 from django.dispatch import receiver
 from django_comments.signals import comment_was_posted
 
-from apps.landmatrix.models.activity import Activity
+from apps.landmatrix.models.activity import HistoricalActivity
 from .distribution import send_notifications_for_comment_on_activity
 
 
@@ -12,5 +12,5 @@ def handle_comment_on_activity_posted(comment, request, **kwargs):
     send any notifications required.
     """
     activity = comment.content_object
-    if isinstance(activity, Activity):
+    if isinstance(activity, HistoricalActivity):
         send_notifications_for_comment_on_activity(comment, request, activity)

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='investor',
-            options={'ordering': ('name',), 'permissions': (('review_investor', 'Can review investor changes'),), 'verbose_name': 'Investor', 'verbose_name_plural': 'Investors'},
+            options={'ordering': ('name',), 'permissions': (('review_historicalinvestor', 'Can review investor changes'),), 'verbose_name': 'Investor', 'verbose_name_plural': 'Investors'},
         ),
         migrations.RemoveField(
             model_name='historicalinvestor',

@@ -17,7 +17,7 @@ from apps.grid.forms.choices import (
     NATURE_CONTRACT_FARMING,
 )
 from apps.landmatrix.models import (
-    Activity,
+    HistoricalActivity,
     AgriculturalProduce,
     Animal,
     Country,
@@ -134,7 +134,7 @@ class NegotiationStatusListView(BaseChartView):
 
     aggregation_field = "current_negotiation_status"
     exclude_filters = []
-    choices = Activity.NEGOTIATION_STATUS_CHOICES
+    choices = HistoricalActivity.NEGOTIATION_STATUS_CHOICES
 
 
 class ResourceExtractionView(NegotiationStatusListView):
@@ -205,7 +205,7 @@ class ImplementationStatusListView(BaseChartView):
 
     aggregation_field = "current_implementation_status"
     exclude_filters = []
-    choices = Activity.IMPLEMENTATION_STATUS_CHOICES
+    choices = HistoricalActivity.IMPLEMENTATION_STATUS_CHOICES
 
 
 class InvestmentIntentionListView(BaseChartView):

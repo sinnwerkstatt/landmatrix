@@ -521,7 +521,7 @@ class ApproveInvestorChangeViewTestCase(
 
     inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 1}]
 
-    url = reverse("manage_approve_change_investor", kwargs={"id": 10})
+    url = reverse("manage_approve_change_historicalinvestor", kwargs={"id": 10})
     object_class = HistoricalInvestor
     object_id = 10
     object_status = 2
@@ -533,7 +533,7 @@ class RejectInvestorChangeViewTestCase(
 
     inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 1}]
 
-    url = reverse("manage_reject_change_investor", kwargs={"id": 10})
+    url = reverse("manage_reject_change_historicalinvestor", kwargs={"id": 10})
     object_class = HistoricalInvestor
     object_id = 10
     object_status = 5
@@ -545,7 +545,7 @@ class ApproveInvestorDeleteViewTestCase(
 
     inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 6}]
 
-    url = reverse("manage_approve_delete_investor", kwargs={"id": 10})
+    url = reverse("manage_approve_delete_historicalinvestor", kwargs={"id": 10})
     object_class = HistoricalInvestor
     object_id = 10
     object_status = 4
@@ -557,7 +557,7 @@ class RejectInvestorDeleteViewTestCase(
 
     inv_fixtures = [{"id": 10, "investor_identifier": 1, "fk_status_id": 6}]
 
-    url = reverse("manage_reject_delete_investor", kwargs={"id": 10})
+    url = reverse("manage_reject_delete_historicalinvestor", kwargs={"id": 10})
     object_class = HistoricalInvestor
     object_id = 10
     object_status = 5

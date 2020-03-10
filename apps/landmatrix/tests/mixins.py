@@ -20,10 +20,6 @@ from apps.landmatrix.models import (
     HistoricalInvestorActivityInvolvement,
     HistoricalInvestorVentureInvolvement,
     ActivityAttributeGroup,
-    InvestorActivityInvolvement,
-    Investor,
-    Activity,
-    InvestorVentureInvolvement,
     Country,
 )
 
@@ -174,22 +170,11 @@ class ActivitiesFixtureMixin:
             for attr in cls._historical_attributes:
                 dact_fixture.pop(attr, None)
             dact_fixtures[str(activity.activity_identifier)] = dact_fixture
-        # Deprecated soon...
-        cls._activity_ids = [str(a.get("id")) for a in dact_fixtures.values()]
-        for id, fixture in dact_fixtures.items():
-            activity = Activity.objects.create(**fixture)
-            for name, attribute in cls._attr_fixtures[i].items():
-                if not isinstance(attribute, (list, tuple)):
-                    attribute = [attribute]
-                for attr in attribute:
-                    if attr:
-                        activity.attributes.create(name=name, **attr)
 
     @classmethod
     def unload_activity_fixtures(cls):
         ActivityAttributeGroup.objects.all().delete()
         HistoricalActivity.objects.all().delete()
-        Activity.objects.all().delete()
 
     def setUp(self):
         self.load_activity_fixtures()
@@ -246,15 +231,10 @@ class InvestorsFixtureMixin:
             for attr in cls._historical_attributes:
                 inv_fixture.pop(attr, None)
             inv_fixtures[str(investor.investor_identifier)] = inv_fixture
-        # Deprecated soon..
-        cls._investor_ids = [str(i.get("id")) for i in inv_fixtures.values()]
-        for id, fixture in inv_fixtures.items():
-            Investor.objects.create(**fixture)
 
     @classmethod
     def unload_investor_fixtures(cls):
         HistoricalInvestor.objects.all().delete()
-        Investor.objects.all().delete()
 
     def setUp(self):
         self.load_investor_fixtures()
@@ -291,18 +271,10 @@ class InvestorActivityInvolvementsFixtureMixin:
         cls._create_activity_involvement_fixtures()
         for fixture in cls._act_inv_fixtures:
             HistoricalInvestorActivityInvolvement.objects.create(**fixture)
-            # Deprecated soon...
-            if (
-                str(fixture.get("fk_activity_id")) in cls._activity_ids
-                and str(fixture.get("fk_investor_id")) in cls._investor_ids
-            ):
-                involvement = InvestorActivityInvolvement.objects.create(**fixture)
-                involvement.fk_activity.refresh_cached_attributes()
 
     @classmethod
     def unload_activity_involvement_fixtures(cls):
         HistoricalInvestorActivityInvolvement.objects.all().delete()
-        InvestorActivityInvolvement.objects.all().delete()
 
     def setUp(self):
         self.load_activity_involvement_fixtures()
@@ -348,17 +320,10 @@ class InvestorVentureInvolvementsFixtureMixin:
         cls._create_investor_involvement_fixtures()
         for fixture in cls._inv_inv_fixtures:
             HistoricalInvestorVentureInvolvement.objects.create(**fixture)
-            # Deprecated soon...
-            if (
-                str(fixture.get("fk_venture_id")) in cls._investor_ids
-                and str(fixture.get("fk_investor_id")) in cls._investor_ids
-            ):
-                InvestorVentureInvolvement.objects.create(**fixture)
 
     @classmethod
     def unload_investor_involvement_fixtures(cls):
         HistoricalInvestorVentureInvolvement.objects.all().delete()
-        InvestorVentureInvolvement.objects.all().delete()
 
     def setUp(self):
         self.load_investor_involvement_fixtures()

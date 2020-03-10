@@ -36,24 +36,40 @@ class PermissionsTestCaseMixin:
 
         # Create group permissions
         # This not possible in fixtures, because permissions and content types are created on run-time
-        perm_review_activity = Permission.objects.get(codename="review_activity")
-        perm_review_investor = Permission.objects.get(codename="review_investor")
-        cls.groups["editor"].permissions.add(perm_review_activity)
-        cls.groups["editor"].permissions.add(perm_review_investor)
-        perm_add_activity = Permission.objects.get(codename="add_activity")
-        perm_change_activity = Permission.objects.get(codename="change_activity")
-        perm_delete_activity = Permission.objects.get(codename="delete_activity")
-        perm_add_investor = Permission.objects.get(codename="add_investor")
-        perm_change_investor = Permission.objects.get(codename="change_investor")
-        perm_delete_investor = Permission.objects.get(codename="delete_investor")
-        cls.groups["administrator"].permissions.add(perm_review_activity)
-        cls.groups["administrator"].permissions.add(perm_review_investor)
-        cls.groups["administrator"].permissions.add(perm_add_activity)
-        cls.groups["administrator"].permissions.add(perm_change_activity)
-        cls.groups["administrator"].permissions.add(perm_delete_activity)
-        cls.groups["administrator"].permissions.add(perm_add_investor)
-        cls.groups["administrator"].permissions.add(perm_change_investor)
-        cls.groups["administrator"].permissions.add(perm_delete_investor)
+        perm_review_historicalactivity = Permission.objects.get(
+            codename="review_historicalactivity"
+        )
+        perm_review_historicalinvestor = Permission.objects.get(
+            codename="review_historicalinvestor"
+        )
+        cls.groups["editor"].permissions.add(perm_review_historicalactivity)
+        cls.groups["editor"].permissions.add(perm_review_historicalinvestor)
+        perm_add_historicalactivity = Permission.objects.get(
+            codename="add_historicalactivity"
+        )
+        perm_change_historicalactivity = Permission.objects.get(
+            codename="change_historicalactivity"
+        )
+        perm_delete_historicalactivity = Permission.objects.get(
+            codename="delete_historicalactivity"
+        )
+        perm_add_historicalinvestor = Permission.objects.get(
+            codename="add_historicalinvestor"
+        )
+        perm_change_historicalinvestor = Permission.objects.get(
+            codename="change_historicalinvestor"
+        )
+        perm_delete_historicalinvestor = Permission.objects.get(
+            codename="delete_historicalinvestor"
+        )
+        cls.groups["administrator"].permissions.add(perm_review_historicalactivity)
+        cls.groups["administrator"].permissions.add(perm_review_historicalinvestor)
+        cls.groups["administrator"].permissions.add(perm_add_historicalactivity)
+        cls.groups["administrator"].permissions.add(perm_change_historicalactivity)
+        cls.groups["administrator"].permissions.add(perm_delete_historicalactivity)
+        cls.groups["administrator"].permissions.add(perm_add_historicalinvestor)
+        cls.groups["administrator"].permissions.add(perm_change_historicalinvestor)
+        cls.groups["administrator"].permissions.add(perm_delete_historicalinvestor)
 
     @override_settings(
         ELASTICSEARCH_INDEX_NAME="landmatrix_test", CELERY_ALWAYS_EAGER=True

@@ -29,7 +29,7 @@
             <ul class="manage nav navbar-nav" id="manage-sections">
                 <li{% if action == 'for_user' %} class="active"{% endif %}><a href="{% url 'manage_for_user' %}"><i class="icon-chevron-down"></i>
                     {% trans "My deals/investors" %}{% if for_user_count %} <small><span class="label label-default">{{ for_user_count }}</span></small>{% endif %}</a></li>
-                {% if perms.landmatrix.review_activity %}
+                {% if perms.landmatrix.review_historicalactivity %}
                     <li{% if action == 'feedback' %} class="active"{% endif %}><a href="{% url 'manage_feedback' %}"><i class="icon-chevron-down icon-white"></i>
                         {% trans "Feedback" %}{% if feedback_count %} <small><span class="label label-default">{{ feedback_count }}</span></small>{% endif %}</a></li>
                     <li{% if action == 'pending_updates' %} class="active"{% endif %}><a href="{% url 'manage_pending_updates' %}"><i class="icon-chevron-down"></i>

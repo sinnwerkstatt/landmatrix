@@ -167,7 +167,7 @@
                 {{ form.action_comment }}
 
                 {% if investor.fk_status_id == 4 %}
-                    {% if perms.landmatrix.change_activity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-investor" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this investor" %}</a>{% endif %}
+                    {% if perms.landmatrix.change_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-investor" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this investor" %}</a>{% endif %}
                 {% else %}
                     <p>
                         <input type="checkbox" required name="terms">
@@ -184,7 +184,7 @@
                     </button>
                     {% endif %}
                     or <a href="{% url "investor_detail" investor_id=investor.id %}">{% trans 'Cancel' %}</a>
-                    {% if investor %}{% if perms.landmatrix.review_activity or perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-investor" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this investor" %}</a>{% endif %}{% endif %}
+                    {% if investor %}{% if perms.landmatrix.review_historicalactivity or perms.landmatrix.delete_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-investor" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this investor" %}</a>{% endif %}{% endif %}
                 {% endif %}
             </div>
         </div>

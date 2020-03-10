@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from django.core.management import BaseCommand
 
-from apps.landmatrix.models import Activity
+from apps.landmatrix.models import HistoricalActivity
 
 
 class Command(BaseCommand):
@@ -11,7 +11,7 @@ class Command(BaseCommand):
         parser.add_argument("activity_identifier", nargs="+", type=str)
 
     def handle(self, *args, **options):
-        activity = Activity.objects.get(
+        activity = HistoricalActivity.objects.get(
             activity_identifier=options["activity_identifier"][0]
         )
         self.stdout.write(activity.get_not_public_reason())

@@ -3,7 +3,7 @@
                     <div class="panel-heading">
                         <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
                             <h5 class="panel-title">
-                                {% trans "History" %} 
+                                {% trans "History" %}
                                 <small>({{ activity|history_count:user }} versions)</small>
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
@@ -22,7 +22,7 @@
                                                 <p>{{ item.history_date }}</p>
                                                 {% if forloop.counter == 1 %}</strong>{% endif %}
                                             </td>
-                                            {% if user.is_authenticated and perms.landmatrix.review_activity %}
+                                            {% if user.is_authenticated and perms.landmatrix.review_historicalactivity %}
                                             <td>
                                                 <p>{% if item.history_user %}{{ item.history_user.get_full_name }}{% else %}{% trans "Unknown user" %}{% endif %}</p>
                                             </td>
