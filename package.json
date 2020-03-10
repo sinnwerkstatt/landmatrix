@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "repository": "https://github.com/sinnwerkstatt/landmatrix",
   "license": "AGPL-3.0-only",
+    "scripts": {
+    "watch": "webpack --progress --watch --mode=development",
+    "build": "webpack --mode=production",
+    "dev": "webpack-dev-server --open --mode=development",
+    "lint": "eslint --ext .js,.vue frontend/src"
+  },
   "dependencies": {
     "bootstrap": "3.3.6",
     "bootstrap-switch": "3.3.2",
@@ -25,6 +31,35 @@
     "select2": "4.0.2"
   },
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "bootstrap-vue": "^2.0.0",
+    "chart.js": "^2.9.3",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-vue": "^6.0.1",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "leaflet": "^1.6.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "vue": "^2.6.10",
+    "vue-chartjs": "^3.4.2",
+    "vue-eslint-parser": "^7.0.0",
+    "vue-headful": "^2.0.1",
+    "vue2-leaflet": "^2.5.2",
+    "vue-loader": "^15.7.2",
+    "vue-resource": "^1.5.1",
+    "vue-router": "^3.0.3",
+    "vue-select": "^3.1.0",
+    "vue-template-compiler": "^2.6.10",
+    "vuex": "^3.0.1",
+    "webpack": "^4.41.2",
+    "webpack-bundle-tracker": "^0.4.3",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0",
+    "webpack-livereload-plugin": "^2.2.0"
   }
 }

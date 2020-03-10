@@ -23,7 +23,7 @@ __pycache__/
 /node_modules/
 webpack-stats.json
 package-lock.json
-/frontend/dist/
+#/frontend/dist/
 /yarn-error.log
 
 # IDEs

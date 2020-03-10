@@ -1,5 +1,8 @@
+import json
+
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
+from geojson_rewind import rewind
 
 from apps.greennewdeal.models import Contract, DataSource, Deal, Investor, Location
 
@@ -96,6 +99,51 @@ class DealDocument(Document):
             "id": instance.export_country3.id,
             "name": instance.export_country3.name,
         }
+
+    locations = fields.NestedField(
+        properties={
+            "name": fields.TextField(),
+            "point": fields.GeoPointField(),
+            "intended_area": fields.GeoShapeField(),
+            "production_area": fields.GeoShapeField(),
+            "contract_area": fields.GeoShapeField(),
+        }
+    )
+    geojson = fields.ObjectField()
+
+    def prepare_geojson(self, instance: Deal):
+        features = []
+        for loc in instance.locations.all():  # type: Location
+            if loc.point:
+                point = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.point.geojson)),
+                    "properties": {"name": loc.name, "type": "point"},
+                }
+                features += [point]
+            if loc.contract_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.contract_area.geojson)),
+                    "properties": {"name": loc.name, "type": "contract_area"},
+                }
+                features += [rewind(contract_area)]
+            if loc.intended_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.intended_area.geojson)),
+                    "properties": {"name": loc.name, "type": "intended_area"},
+                }
+                features += [rewind(contract_area)]
+            if loc.production_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.production_area.geojson)),
+                    "properties": {"name": loc.name, "type": "production_area"},
+                }
+                features += [rewind(contract_area)]
+
+        return {"type": "FeatureCollection", "features": features}
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, Location):

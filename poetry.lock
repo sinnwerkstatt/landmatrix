@@ -518,6 +518,14 @@ Django = ">=1.8"
 
 [[package]]
 category = "main"
+description = "Transparently use webpack with django"
+name = "django-webpack-loader"
+optional = false
+python-versions = "*"
+version = "0.7.0"
+
+[[package]]
+category = "main"
 description = "Converts HTML to PDF using wkhtmltopdf."
 name = "django-wkhtmltopdf"
 optional = false
@@ -644,6 +652,14 @@ name = "geojson"
 optional = false
 python-versions = "*"
 version = "1.3.5"
+
+[[package]]
+category = "main"
+description = "A Python library for enforcing polygon ring winding order in GeoJSON"
+name = "geojson-rewind"
+optional = false
+python-versions = ">=3.5,<4.0"
+version = "0.2.0"
 
 [[package]]
 category = "main"
@@ -1663,7 +1679,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "5a812f0522447cfd007d756b95096c9b51c6cf954b03c73fff443c3e72b3baaa"
+content-hash = "3e58232c1d73ba416db8c2f37ce69b82c2e3cae7f14b140c97bfac933a7e2781"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1863,6 +1879,10 @@ django-threadedcomments = [
 django-treebeard = [
     {file = "django-treebeard-4.3.1.tar.gz", hash = "sha256:83aebc34a9f06de7daaec330d858d1c47887e81be3da77e3541fe7368196dd8a"},
 ]
+django-webpack-loader = [
+    {file = "django-webpack-loader-0.7.0.tar.gz", hash = "sha256:7a3c88201aa54481f9399465615cbe7b9aece8081496a6d0287b7cb8e232f447"},
+    {file = "django_webpack_loader-0.7.0-py2.py3-none-any.whl", hash = "sha256:d28a276ed3d89e97a313b74967e373693f8b86afe629f4c91eea91c5b4f2ec20"},
+]
 django-wkhtmltopdf = [
     {file = "django-wkhtmltopdf-3.3.0.tar.gz", hash = "sha256:e4c42d771c7a1ef85faa0591e3c1fa7da3ef0d39a636baea4a1ec89bf7119a71"},
     {file = "django_wkhtmltopdf-3.3.0-py2.py3-none-any.whl", hash = "sha256:add8cbf6266a28bcc3691775dbe2f2eff7934f2c7fe9995b320270f3679f12b4"},
@@ -1898,6 +1918,10 @@ et-xmlfile = [
 geojson = [
     {file = "geojson-1.3.5-py2.py3-none-any.whl", hash = "sha256:b0748d3ca9c95866cbaf063147a168508e0945eae33b41b978fe72cb8937322b"},
     {file = "geojson-1.3.5.tar.gz", hash = "sha256:09be78fcc24bea204973f827e619becd6d46cf97498ccb86426524768ae60dc5"},
+]
+geojson-rewind = [
+    {file = "geojson-rewind-0.2.0.tar.gz", hash = "sha256:212c10e8b675dd09749d837eef3d1fc958063f039836476d5266497302166ca9"},
+    {file = "geojson_rewind-0.2.0-py3-none-any.whl", hash = "sha256:8d802b07dc211df0f826c18dfcbcdc4303ad02fbc98a5216ee7330d22aba0888"},
 ]
 gunicorn = [
     {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},

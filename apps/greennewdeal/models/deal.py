@@ -1,5 +1,4 @@
 import reversion
-from django.contrib.gis.db import models as gismodels
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -9,10 +8,7 @@ from django.utils.translation import ugettext as _
 from apps.greennewdeal.models import Investor
 from apps.greennewdeal.models.country import Country
 from apps.greennewdeal.models.mixins import (
-    OldContractMixin,
-    OldDataSourceMixin,
     OldDealMixin,
-    OldLocationMixin,
     ReversionSaveMixin,
 )
 
@@ -71,6 +67,31 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         _("Comment on nature of the deal"), blank=True
     )
 
+    NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST = "Expression of interest"
+    NEGOTIATION_STATUS_UNDER_NEGOTIATION = "Under negotiation"
+    NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING = "Memorandum of understanding"
+    NEGOTIATION_STATUS_ORAL_AGREEMENT = "Oral agreement"
+    NEGOTIATION_STATUS_CONTRACT_SIGNED = "Contract signed"
+    NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = "Negotiations failed"
+    NEGOTIATION_STATUS_CONTRACT_CANCELLED = "Contract canceled"
+    NEGOTIATION_STATUS_CONTRACT_EXPIRED = "Contract expired"
+    NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = "Change of ownership"
+
+    # These groupings are used for determining filter behaviour
+    NEGOTIATION_STATUSES_INTENDED = (
+        NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
+        NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+        NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
+    )
+    NEGOTIATION_STATUSES_CONCLUDED = (
+        NEGOTIATION_STATUS_ORAL_AGREEMENT,
+        NEGOTIATION_STATUS_CONTRACT_SIGNED,
+    )
+    NEGOTIATION_STATUSES_FAILED = (
+        NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+        NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+        NEGOTIATION_STATUS_CONTRACT_EXPIRED,
+    )
     negotiation_status = JSONField(_("Negotiation status"), blank=True, null=True)
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
@@ -733,95 +754,54 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     def __str__(self):
         return f"#{self.id} in {self.target_country}"
 
-
-@reversion.register(ignore_duplicates=True)
-class Location(models.Model, OldLocationMixin):
-    name = models.CharField(max_length=2000, blank=True)
-    description = models.CharField(max_length=2000, blank=True)
-    point = gismodels.PointField(blank=True, null=True)
-    facility_name = models.CharField(max_length=2000, blank=True)
-    ACCURACY_CHOICES = (
-        (50, _("Country")),
-        (40, _("Administrative region")),
-        (30, _("Approximate location")),
-        (20, _("Exact location")),
-        (10, _("Coordinates")),
-    )
-    level_of_accuracy = models.IntegerField(
-        choices=ACCURACY_CHOICES, blank=True, null=True
-    )
-    comment = models.TextField(blank=True)
-
-    contract_area = gismodels.MultiPolygonField(blank=True, null=True)
-    intended_area = gismodels.MultiPolygonField(blank=True, null=True)
-    production_area = gismodels.MultiPolygonField(blank=True, null=True)
-
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="locations")
-    old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
-
-    def __str__(self):
-        return f"(#{self.deal_id}) {self.name}"
-
-
-@reversion.register(ignore_duplicates=True)
-class Contract(models.Model, OldContractMixin):
-    number = models.CharField(_("Contract number"), max_length=255, blank=True)
-    date = models.DateField(blank=True, null=True)
-    expiration_date = models.DateField(blank=True, null=True)
-    agreement_duration = models.IntegerField(
-        _("Duration of the agreement (in years)"), blank=True, null=True
-    )
-    comment = models.TextField(blank=True)
-
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="contracts")
-    old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
-
-    def __str__(self):
-        return f"(#{self.deal_id}) {self.number}"
-
-
-@reversion.register(ignore_duplicates=True)
-class DataSource(models.Model, OldDataSourceMixin):
-    TYPE_CHOICES = (
-        (10, _("Media report")),
-        (20, _("Research Paper / Policy Report")),
-        (30, _("Government sources")),
-        (40, _("Company sources")),
-        (50, _("Contract")),
-        (60, _("Contract (contract farming agreement)")),
-        (70, _("Personal information")),
-        (80, _("Crowdsourcing")),
-        (90, _("Other (Please specify in comment field)")),
-    )
-    type = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
-    url = models.URLField(max_length=5000, blank=True, null=True)
-    file = models.FileField(
-        _("File"),
-        upload_to="uploads",
-        max_length=5000,
-        help_text=_("Maximum file size: 10MB"),
-        blank=True,
-        null=True,
-    )
-    file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)
-    publication_title = models.CharField(max_length=5000, blank=True)
-    date = models.DateField(blank=True, null=True)
-    name = models.CharField(_("Name"), max_length=500, blank=True)
-    company = models.CharField(_("Company"), max_length=500, blank=True)
-    email = models.EmailField(_("Email"), blank=True)
-    phone = models.CharField(_("Phone"), max_length=500, blank=True)
-
-    includes_in_country_verified_information = models.BooleanField(
-        _("Includes in-country-verified information"), default=False
-    )
-    open_land_contracts_id = models.CharField(max_length=500, blank=True)
-    comment = models.TextField(_("Comment on data source"), blank=True)
-
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="datasources")
-    old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
-
-    def __str__(self):
-        return f"(#{self.deal_id}) {self.get_type_display()}"
+    # def get_deal_size(self):
+    #     intended_size = self.intended_size
+    #     contract_size = self.contract_size
+    #     production_size = self.production_size
+    #
+    #     negotiation_status = self.negotiation_status
+    #     if negotiation_status:
+    #         latest_status = sorted(
+    #             Deal.objects.get(id=138).negotiation_status,
+    #             key=lambda x: x["date"],
+    #             reverse=True,
+    #         )[0]
+    #         negotiation_status = latest_status["value"]
+    #
+    #     # 1) IF Negotiation status IS Intended
+    #     if negotiation_status in self.NEGOTIATION_STATUSES_INTENDED:
+    #         # USE Intended size OR Contract size OR Production size (in the given order)
+    #         value = intended_size or contract_size or production_size or 0
+    #     # 2) IF Negotiation status IS Concluded
+    #     elif negotiation_status in self.NEGOTIATION_STATUSES_CONCLUDED:
+    #         # USE Contract size or Production size (in the given order)
+    #         value = contract_size or production_size or 0
+    #     # 3) IF Negotiation status IS Failed (Negotiations failed)
+    #     elif negotiation_status == self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+    #         # USE Intended size OR Contract size OR Production size (in the given order)
+    #         value = intended_size or contract_size or production_size or 0
+    #     # 4) IF Negotiation status IS Failed (Contract canceled)
+    #     elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+    #         # USE Contract size OR Production size (in the given order)
+    #         value = contract_size or production_size or 0
+    #     # 5) IF Negotiation status IS Contract expired
+    #     elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+    #         # USE Contract size OR Production size (in the given order)
+    #         value = contract_size or production_size or 0
+    #     # 6) IF Negotiation status IS Change of ownership
+    #     elif negotiation_status == self.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+    #         # USE Contract size OR Production size (in the given order)
+    #         value = contract_size or production_size or 0
+    #     else:
+    #         value = 0
+    #
+    #     if value:
+    #         # Legacy: There shouldn't be any comma separated values anymore in the database
+    #         if "," in value:
+    #             return int(value.split(",")[0])
+    #         elif "." in value:
+    #             return int(value.split(".")[0])
+    #         else:
+    #             return int(value)
+    #     else:
+    #         return 0

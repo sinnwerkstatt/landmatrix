@@ -13,7 +13,6 @@ x = {
 "intended_area": [7393,7395]
 }
 [Location.objects.filter(deal_id__in=v).update(**{k:None}) for k,v in x.items()]
-
 EOF
 
 ./manage.py search_index --rebuild -f

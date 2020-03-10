@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     "apps.greennewdeal",
     "reversion",
     "django_elasticsearch_dsl",
+    "webpack_loader",
 ]
 
 MIDDLEWARE = [
@@ -149,7 +150,10 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'compressor.finders.CompressorFinder',
 ]
-STATICFILES_DIRS = [BASE_DIR("node_modules")]
+STATICFILES_DIRS = [
+    BASE_DIR("node_modules"),
+    BASE_DIR("frontend", "dist"),
+]
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
@@ -207,6 +211,15 @@ if GND_ENABLED:
     )
     # ELASTICSEARCH_DSL_PARALLEL ...
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "/",  # must end with slash
+        "STATS_FILE": BASE_DIR("webpack-stats.json"),
+        "POLL_INTERVAL": 0.1,
+        "TIMEOUT": None,
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    }
+}
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

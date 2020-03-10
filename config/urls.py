@@ -38,6 +38,7 @@ urlpatterns = [
     path("charts/", include("apps.charts.urls")),
     path("deal/comments/", include("apps.public_comments.urls")),
     path("deal/", include("apps.grid.urls.deal")),
+    path("newdeal/", include("apps.greennewdeal.urls")),
     path(
         "compare/<int:activity_1>/<int:activity_2>/",
         DealComparisonView.as_view(),

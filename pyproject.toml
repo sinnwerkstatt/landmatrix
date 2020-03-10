@@ -64,6 +64,8 @@ libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 raven = { version = "*", optional = true }
+django-webpack-loader = "^0.7.0"
+geojson-rewind = "^0.2.0"
 
 
 [tool.poetry.dev-dependencies]
