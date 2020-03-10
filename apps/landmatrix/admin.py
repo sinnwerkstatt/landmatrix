@@ -59,3 +59,8 @@ class CropAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Currency)
+
+
+@admin.register(models.HistoricalInvestor)
+class InvestorAdmin(admin.ModelAdmin):
+    search_fields = ["investor_identifier", "name"]

@@ -14,7 +14,7 @@ class Command(BaseCommand):
         )
 
         print(f"running index update on {settings.ELASTICSEARCH_INDEX_NAME}")
-        call_command("search_index", "--rebuild")
+        call_command("lm_search_index", "--rebuild")
 
         # switch the index after the new one has been built
         open(".es_index_ab_switch", "w").write(new_index)

@@ -317,6 +317,18 @@ version = "1.8.1"
 
 [[package]]
 category = "main"
+description = "Wrapper around elasticsearch-dsl for django models"
+name = "django-elasticsearch-ng"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "7.0.1"
+
+[package.dependencies]
+django = ">=1.11"
+elasticsearch-dsl = ">=7.0.0,<8.0.0"
+
+[[package]]
+category = "main"
 description = "Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application."
 name = "django-environ"
 optional = false
@@ -393,7 +405,7 @@ description = "Translates Django models using a registration approach."
 name = "django-modeltranslation"
 optional = false
 python-versions = "*"
-version = "0.14.3"
+version = "0.14.4"
 
 [package.dependencies]
 Django = ">=1.11"
@@ -446,6 +458,17 @@ confusable-homoglyphs = ">=3.0,<4.0"
 
 [[package]]
 category = "main"
+description = "An extension to the Django web framework that provides version control for model instances."
+name = "django-reversion"
+optional = false
+python-versions = ">=3.6"
+version = "3.0.7"
+
+[package.dependencies]
+django = ">=1.11"
+
+[[package]]
+category = "main"
 description = "Store model history and view/revert changes from admin site."
 name = "django-simple-history"
 optional = false
@@ -487,6 +510,14 @@ version = "4.3.1"
 
 [package.dependencies]
 Django = ">=1.8"
+
+[[package]]
+category = "main"
+description = "Transparently use webpack with django"
+name = "django-webpack-loader"
+optional = false
+python-versions = "*"
+version = "0.7.0"
 
 [[package]]
 category = "main"
@@ -571,6 +602,38 @@ validation = ["swagger-spec-validator (>=2.1.0)"]
 
 [[package]]
 category = "main"
+description = "Python client for Elasticsearch"
+name = "elasticsearch"
+optional = false
+python-versions = "*"
+version = "7.5.1"
+
+[package.dependencies]
+urllib3 = ">=1.21.1"
+
+[package.extras]
+develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyaml", "nosexcover", "sphinx (<1.7)", "sphinx-rtd-theme", "black", "jinja2"]
+docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
+
+[[package]]
+category = "main"
+description = "Python client for Elasticsearch"
+name = "elasticsearch-dsl"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "7.1.0"
+
+[package.dependencies]
+elasticsearch = ">=7.0.0,<8.0.0"
+python-dateutil = "*"
+six = "*"
+
+[package.extras]
+develop = ["mock", "pytest (>=3.0.0)", "pytest-cov", "pytest-mock", "pytz", "coverage (<5.0.0)", "sphinx", "sphinx-rtd-theme"]
+
+[[package]]
+category = "main"
 description = "An implementation of lxml.xmlfile for the standard library"
 name = "et-xmlfile"
 optional = false
@@ -584,6 +647,14 @@ name = "geojson"
 optional = false
 python-versions = "*"
 version = "1.3.5"
+
+[[package]]
+category = "main"
+description = "A Python library for enforcing polygon ring winding order in GeoJSON"
+name = "geojson-rewind"
+optional = false
+python-versions = ">=3.5,<4.0"
+version = "0.2.0"
 
 [[package]]
 category = "main"
@@ -1109,6 +1180,7 @@ urllib3 = ">=1.8,<2.0"
 reference = "3ff807e0da747bac3ec6ef1035511d98223d6d5b"
 type = "git"
 url = "https://github.com/sinnwerkstatt/pyelasticsearch"
+
 [[package]]
 category = "dev"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1592,17 +1664,17 @@ marker = "python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
-version = "2.2.0"
+version = "3.0.0"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["jaraco.itertools"]
+testing = ["jaraco.itertools", "func-timeout"]
 
 [extras]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "bade385c17160cd1815b2114b8144d7bdbb5239d0e3f8212b02ec885bb2afbcc"
+content-hash = "c609bc8a8b8b8854957ad6f7af8fc55ede37c5957b6c6c18955bb84695386d45"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1738,6 +1810,10 @@ django-crispy-forms = [
     {file = "django-crispy-forms-1.8.1.tar.gz", hash = "sha256:0afc0ba730f52a13c02bfbd0e1423af4577a337d73a8a0ef96f2cbbc5f345ffa"},
     {file = "django_crispy_forms-1.8.1-py2.py3-none-any.whl", hash = "sha256:2db711ce31f6f9ef42c16829cc3636e3819f97c1b22a3b706afed679bc417e88"},
 ]
+django-elasticsearch-ng = [
+    {file = "django-elasticsearch-ng-7.0.1.tar.gz", hash = "sha256:fdef6f8fdc4983a2e78580ba901d5fd28ca18ccb1619f90ea0b5cbae7a86aadb"},
+    {file = "django_elasticsearch_ng-7.0.1-py3-none-any.whl", hash = "sha256:7cc4e2e91b10339bc6c5e6a27e380522cb1f372829d5eb7b3333c891fef5c279"},
+]
 django-environ = [
     {file = "django-environ-0.4.5.tar.gz", hash = "sha256:6c9d87660142608f63ec7d5ce5564c49b603ea8ff25da595fd6098f6dc82afde"},
     {file = "django_environ-0.4.5-py2.py3-none-any.whl", hash = "sha256:c57b3c11ec1f319d9474e3e5a79134f40174b17c7cc024bbb2fad84646b120c4"},
@@ -1765,7 +1841,7 @@ django-modelcluster = [
     {file = "django_modelcluster-5.0.1-py2.py3-none-any.whl", hash = "sha256:09e4242119f04e81bfab25c77b09cb6e9d469dc14b14e71f04cd358c7256bc2a"},
 ]
 django-modeltranslation = [
-    {file = "django-modeltranslation-0.14.3.tar.gz", hash = "sha256:a27d1763f027ab1def67bb3e70d21419feb22eb9a4390b9efe67cc4c2cddcfc3"},
+    {file = "django-modeltranslation-0.14.4.tar.gz", hash = "sha256:ceb3d6058b79ea29db575c711b080316a4c023c06992a290d651c0fc0cbcdf15"},
 ]
 django-multiselectfield = [
     {file = "django-multiselectfield-0.1.11.tar.gz", hash = "sha256:043fa1aaddceb9b170c64c0745dc3a059165dcbc74946a434340778f63efa3c2"},
@@ -1782,6 +1858,10 @@ django-registration = [
     {file = "django-registration-3.1.tar.gz", hash = "sha256:2437a098e6e06983e4b4b442680b1c49a2e979f1a0ef3a504beb3a84ff36131d"},
     {file = "django_registration-3.1-py3-none-any.whl", hash = "sha256:071dce4f4348ff1da338a0a09bda8e34d44c001ab569777e4c88ee21ce5c499e"},
 ]
+django-reversion = [
+    {file = "django-reversion-3.0.7.tar.gz", hash = "sha256:72fc53580a6b538f0cfff10f27f42333f67d79c406399289c94ec5a193cfb3e1"},
+    {file = "django_reversion-3.0.7-py3-none-any.whl", hash = "sha256:ecab4703ecc0871dc325c3e100139def84eb153622df3413fbcd9de7d3503c78"},
+]
 django-simple-history = [
     {file = "django-simple-history-2.8.0.tar.gz", hash = "sha256:831cfc3f1164627428be3cd38fb7268eb7a979f97f11018e55813a3ce23b1173"},
     {file = "django_simple_history-2.8.0-py2.py3-none-any.whl", hash = "sha256:3d56ca81de5a960b293dd8be31af991b976f319940e01c68ed10652dbd86aa58"},
@@ -1796,6 +1876,10 @@ django-threadedcomments = [
 ]
 django-treebeard = [
     {file = "django-treebeard-4.3.1.tar.gz", hash = "sha256:83aebc34a9f06de7daaec330d858d1c47887e81be3da77e3541fe7368196dd8a"},
+]
+django-webpack-loader = [
+    {file = "django-webpack-loader-0.7.0.tar.gz", hash = "sha256:7a3c88201aa54481f9399465615cbe7b9aece8081496a6d0287b7cb8e232f447"},
+    {file = "django_webpack_loader-0.7.0-py2.py3-none-any.whl", hash = "sha256:d28a276ed3d89e97a313b74967e373693f8b86afe629f4c91eea91c5b4f2ec20"},
 ]
 django-wkhtmltopdf = [
     {file = "django-wkhtmltopdf-3.3.0.tar.gz", hash = "sha256:e4c42d771c7a1ef85faa0591e3c1fa7da3ef0d39a636baea4a1ec89bf7119a71"},
@@ -1818,12 +1902,24 @@ drf-yasg = [
     {file = "drf-yasg-1.17.1.tar.gz", hash = "sha256:5572e9d5baab9f6b49318169df9789f7399d0e3c7bdac8fdb8dfccf1d5d2b1ca"},
     {file = "drf_yasg-1.17.1-py2.py3-none-any.whl", hash = "sha256:7d7af27ad16e18507e9392b2afd6b218fbffc432ec8dbea053099a2241e184ff"},
 ]
+elasticsearch = [
+    {file = "elasticsearch-7.5.1-py2.py3-none-any.whl", hash = "sha256:1815ee1377e7d3cf32770738a70785fe4ab1f05be28336a330ed71cb295a7c6c"},
+    {file = "elasticsearch-7.5.1.tar.gz", hash = "sha256:2a0ca516378ae9b87ac840e7bb529ec508f3010360dd9feed605dff2a898aff5"},
+]
+elasticsearch-dsl = [
+    {file = "elasticsearch-dsl-7.1.0.tar.gz", hash = "sha256:3f860e0304d703f63b458fea3782f09a823ab07da7ee84ae4bff1aa63e22aedb"},
+    {file = "elasticsearch_dsl-7.1.0-py2.py3-none-any.whl", hash = "sha256:3e3a5dbec143b8142c3db3710610306fc6294ba0d7a14403694b2dbc2d3ed641"},
+]
 et-xmlfile = [
     {file = "et_xmlfile-1.0.1.tar.gz", hash = "sha256:614d9722d572f6246302c4491846d2c393c199cfa4edc9af593437691683335b"},
 ]
 geojson = [
     {file = "geojson-1.3.5-py2.py3-none-any.whl", hash = "sha256:b0748d3ca9c95866cbaf063147a168508e0945eae33b41b978fe72cb8937322b"},
     {file = "geojson-1.3.5.tar.gz", hash = "sha256:09be78fcc24bea204973f827e619becd6d46cf97498ccb86426524768ae60dc5"},
+]
+geojson-rewind = [
+    {file = "geojson-rewind-0.2.0.tar.gz", hash = "sha256:212c10e8b675dd09749d837eef3d1fc958063f039836476d5266497302166ca9"},
+    {file = "geojson_rewind-0.2.0-py3-none-any.whl", hash = "sha256:8d802b07dc211df0f826c18dfcbcdc4303ad02fbc98a5216ee7330d22aba0888"},
 ]
 gunicorn = [
     {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
@@ -2407,6 +2503,6 @@ wrapt = [
     {file = "wrapt-1.11.2.tar.gz", hash = "sha256:565a021fd19419476b9362b05eeaa094178de64f8361e44468f9e9d7843901e1"},
 ]
 zipp = [
-    {file = "zipp-2.2.0-py36-none-any.whl", hash = "sha256:d65287feb793213ffe11c0f31b81602be31448f38aeb8ffc2eb286c4f6f6657e"},
-    {file = "zipp-2.2.0.tar.gz", hash = "sha256:5c56e330306215cd3553342cfafc73dda2c60792384117893f3a83f8a1209f50"},
+    {file = "zipp-3.0.0-py3-none-any.whl", hash = "sha256:12248a63bbdf7548f89cb4c7cda4681e537031eda29c02ea29674bc6854460c2"},
+    {file = "zipp-3.0.0.tar.gz", hash = "sha256:7c0f8e91abc0dc07a5068f315c52cb30c66bfbc581e5b50704c8a2f6ebae794a"},
 ]

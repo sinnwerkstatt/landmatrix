@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block title %}
+  Deal #{{ deal_id }}
+{% endblock %}
+
+{% block content %}
+  <noscript>
+    <strong>Entschuldigung. Die FlexGeber-App funktioniert leider nicht, so lange in
+      deinem Browser JavaScript deaktiviert ist. Bitte aktiviere es um
+      fortzufahren.</strong>
+  </noscript>
+  <div id="app"></div>
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    var deal_id = {{ deal_id }};
+  </script>
+  {% render_bundle 'main' 'js' %}
+{% endblock %}
