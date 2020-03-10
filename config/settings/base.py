@@ -90,7 +90,7 @@ INSTALLED_APPS = [
     # GreenNewDeal
     "apps.greennewdeal",
     "reversion",
-    "django_elasticsearch_dsl",
+    "django_elasticsearch",
     "webpack_loader",
 ]
 
@@ -207,7 +207,7 @@ if GND_ENABLED:
     ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
     ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
         "apps.greennewdeal.documents.signals.DoNothingProcessor"
-        # "django_elasticsearch_dsl.signals.CelerySignalProcessor"
+        # "apps.greennewdeal.documents.signals.CelerySignalProcessor"
     )
     # ELASTICSEARCH_DSL_PARALLEL ...
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)

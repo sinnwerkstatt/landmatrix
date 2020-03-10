@@ -1,7 +1,7 @@
 import json
 
-from django_elasticsearch_dsl import Document, fields
-from django_elasticsearch_dsl.registries import registry
+from django_elasticsearch import Document, fields
+from django_elasticsearch.registries import registry
 from geojson_rewind import rewind
 
 from apps.greennewdeal.models import Contract, DataSource, Deal, Investor, Location

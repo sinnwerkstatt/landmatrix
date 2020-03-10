@@ -1,5 +1,5 @@
-from django_elasticsearch_dsl import Document, fields
-from django_elasticsearch_dsl.registries import registry
+from django_elasticsearch import Document, fields
+from django_elasticsearch.registries import registry
 
 from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
 

@@ -1,8 +1,8 @@
 from celery import shared_task
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django_elasticsearch_dsl.registries import registry
-from django_elasticsearch_dsl.signals import BaseSignalProcessor
+from django_elasticsearch.registries import registry
+from django_elasticsearch.signals import BaseSignalProcessor
 
 
 @shared_task

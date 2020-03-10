@@ -317,20 +317,15 @@ version = "1.8.1"
 
 [[package]]
 category = "main"
-description = ""
-name = "django-elasticsearch-dsl"
+description = "Wrapper around elasticsearch-dsl for django models"
+name = "django-elasticsearch-ng"
 optional = false
-python-versions = "^3.6"
-version = "7.0.0"
+python-versions = ">=3.6,<4.0"
+version = "7.0.1"
 
 [package.dependencies]
 django = ">=1.11"
 elasticsearch-dsl = ">=7.0.0,<8.0.0"
-
-[package.source]
-reference = "49ae50672debc07a14174ff07e64d47af3c1ba12"
-type = "git"
-url = "git@github.com:django-elasticsearch/django-elasticsearch-dsl.git"
 
 [[package]]
 category = "main"
@@ -1679,7 +1674,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "3e58232c1d73ba416db8c2f37ce69b82c2e3cae7f14b140c97bfac933a7e2781"
+content-hash = "c609bc8a8b8b8854957ad6f7af8fc55ede37c5957b6c6c18955bb84695386d45"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1815,7 +1810,10 @@ django-crispy-forms = [
     {file = "django-crispy-forms-1.8.1.tar.gz", hash = "sha256:0afc0ba730f52a13c02bfbd0e1423af4577a337d73a8a0ef96f2cbbc5f345ffa"},
     {file = "django_crispy_forms-1.8.1-py2.py3-none-any.whl", hash = "sha256:2db711ce31f6f9ef42c16829cc3636e3819f97c1b22a3b706afed679bc417e88"},
 ]
-django-elasticsearch-dsl = []
+django-elasticsearch-ng = [
+    {file = "django-elasticsearch-ng-7.0.1.tar.gz", hash = "sha256:fdef6f8fdc4983a2e78580ba901d5fd28ca18ccb1619f90ea0b5cbae7a86aadb"},
+    {file = "django_elasticsearch_ng-7.0.1-py3-none-any.whl", hash = "sha256:7cc4e2e91b10339bc6c5e6a27e380522cb1f372829d5eb7b3333c891fef5c279"},
+]
 django-environ = [
     {file = "django-environ-0.4.5.tar.gz", hash = "sha256:6c9d87660142608f63ec7d5ce5564c49b603ea8ff25da595fd6098f6dc82afde"},
     {file = "django_environ-0.4.5-py2.py3-none-any.whl", hash = "sha256:c57b3c11ec1f319d9474e3e5a79134f40174b17c7cc024bbb2fad84646b120c4"},

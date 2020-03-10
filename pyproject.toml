@@ -20,7 +20,9 @@ pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", bra
 # greennewdeal
 django-reversion = "*"
 elasticsearch-dsl = ">=7.0.0,<8.0.0"
-django-elasticsearch-dsl = { git = "git@github.com:django-elasticsearch/django-elasticsearch-dsl.git", branch = "master" }
+django-elasticsearch-ng = "^7.0.1"
+django-webpack-loader = "^0.7.0"
+geojson-rewind = "^0.2.0"
 
 psycopg2-binary = "*"
 redis = "*"
@@ -64,8 +66,7 @@ libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 raven = { version = "*", optional = true }
-django-webpack-loader = "^0.7.0"
-geojson-rewind = "^0.2.0"
+
 
 
 [tool.poetry.dev-dependencies]
