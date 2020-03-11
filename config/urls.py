@@ -11,7 +11,6 @@ from apps.grid.views.investor_comparison import InvestorComparisonView
 from apps.landmatrix.forms import CustomRegistrationForm
 from apps.landmatrix.views import CountryView, RegionView, SwitchLanguageView
 
-
 handler500 = "apps.landmatrix.views.handler500"
 
 CACHE_TIMEOUT = 24 * 3600
@@ -68,12 +67,10 @@ urlpatterns = [
         exports.ExportToDjangoView,
         name="prometheus-django-metrics",
     ),
-    path("", include("wagtail.core.urls")),
 ]
 
 if settings.GND_ENABLED:
     urlpatterns += [path("newdeal/", include("apps.greennewdeal.urls"))]
-
 
 if settings.DEBUG:
     # Non i18n patterns
@@ -85,3 +82,5 @@ if settings.DEBUG:
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
     except ImportError:
         pass
+
+urlpatterns += [path("", include("wagtail.core.urls"))]

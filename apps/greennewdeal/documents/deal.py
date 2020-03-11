@@ -142,8 +142,23 @@ class DealDocument(Document):
                     "properties": {"name": loc.name, "type": "production_area"},
                 }
                 features += [rewind(contract_area)]
-
+        if not features:
+            return None
         return {"type": "FeatureCollection", "features": features}
+
+    deal_size = fields.IntegerField()
+
+    def prepare_deal_size(self, instance: Deal):
+        return instance.get_deal_size()
+
+    top_investors = fields.ArrayField()
+    top_investors.set_type("text")
+
+    def prepare_top_investors(self, instance: Deal):
+        investors = instance.get_top_investors()
+        if not investors:
+            return None
+        return [inv.name for inv in investors]
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, Location):

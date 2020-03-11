@@ -321,7 +321,7 @@ description = "Wrapper around elasticsearch-dsl for django models"
 name = "django-elasticsearch-ng"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "7.0.1"
+version = "7.0.2"
 
 [package.dependencies]
 django = ">=1.11"
@@ -1811,8 +1811,8 @@ django-crispy-forms = [
     {file = "django_crispy_forms-1.8.1-py2.py3-none-any.whl", hash = "sha256:2db711ce31f6f9ef42c16829cc3636e3819f97c1b22a3b706afed679bc417e88"},
 ]
 django-elasticsearch-ng = [
-    {file = "django-elasticsearch-ng-7.0.1.tar.gz", hash = "sha256:fdef6f8fdc4983a2e78580ba901d5fd28ca18ccb1619f90ea0b5cbae7a86aadb"},
-    {file = "django_elasticsearch_ng-7.0.1-py3-none-any.whl", hash = "sha256:7cc4e2e91b10339bc6c5e6a27e380522cb1f372829d5eb7b3333c891fef5c279"},
+    {file = "django-elasticsearch-ng-7.0.2.tar.gz", hash = "sha256:ae99f1a6ead1b97874c3dac58b660df0e040a8cb46f960cf67ef93b4da9f247e"},
+    {file = "django_elasticsearch_ng-7.0.2-py3-none-any.whl", hash = "sha256:a8809e8287c6519038a4bca05ea0db3e0bacda7a0b7b5da84544a3f8ffda1210"},
 ]
 django-environ = [
     {file = "django-environ-0.4.5.tar.gz", hash = "sha256:6c9d87660142608f63ec7d5ce5564c49b603ea8ff25da595fd6098f6dc82afde"},

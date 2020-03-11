@@ -1,17 +1,12 @@
-import json
-
-from django.core.serializers import serialize
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from apps.greennewdeal.documents import DealDocument
 from apps.greennewdeal.documents.deal import LocationDocument
-from apps.greennewdeal.models import Deal
 
 
-def deal_detail(request, deal_id):
-    ctx = {"deal_id": deal_id}
-    return render(request, template_name="greennewdeal/deal_detail.html", context=ctx)
+def vuedeal(request, path=None):
+    return render(request, template_name="greennewdeal/vuedeal.html", context={})
 
 
 def api_deal_detail(request, deal_id):
@@ -19,36 +14,24 @@ def api_deal_detail(request, deal_id):
     return JsonResponse(deal.to_dict())
 
 
-# def api_deal_detail(request, deal_id):
-#     deal = Deal.objects.get(id=deal_id)
-#     res = {
-#         "id": deal.id,
-#         "general_info": {
-#             "Land Area": {"intended_size": deal.intended_size},
-#             "Intention of investment": {
-#                 "intention_of_investment": deal.intention_of_investment,
-#                 "intention_of_investment_comment": deal.intention_of_investment_comment,
-#             },
-#         },
-#         "overall_comment": deal.overall_comment,
-#     }
-#     res["locations"] = []
-#     res["geojson"] = json.loads(serialize(
-#         "geojson",
-#         deal.locations.all(),
-#         geometry_field="intended_area",
-#         fields=("name",),
-#     ))
-#     for location in deal.locations.all():
-#         res["locations"] += [
-#             {
-#                 "point": location.point.coords,
-#                 "intended_area": location.intended_area.json
-#                 if location.intended_area
-#                 else None,
-#             }
-#         ]
-#     return JsonResponse(res)
+def api_deal_list(request):
+    fields = [
+        "id",
+        "target_country",
+        "top_investors",
+        "intention_of_investment",
+        "negotiation_status",
+        "implementation_status",
+        "deal_size",
+    ]
+    deals = [
+        d.to_dict()
+        for d in DealDocument.search()
+        .filter("terms", status=[2, 3])
+        .sort("id")
+        .source(fields)[:100]
+    ]
+    return JsonResponse({"deals": deals})
 
 
 def api_deal_map(request):

@@ -45,7 +45,7 @@ def task_reset_db():
 
 #############################
 def task_yarn_install():
-    return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install --prod"]}
+    return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install"]}
 
 
 def task_convert_scss():

@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from apps.greennewdeal.models import Currency, Country
+from apps.greennewdeal.models import Country, Currency
 from apps.greennewdeal.models.mixins import ReversionSaveMixin
 
 
@@ -79,6 +79,30 @@ class Investor(models.Model, ReversionSaveMixin):
 
     def __str__(self):
         return f"{self.name} (#{self.id})"
+
+    def get_top_investors(self, seen_investors=None):
+        """
+        Get list of highest parent companies
+        (all right-hand side parent companies of the network visualisation)
+        """
+        investors = set()
+        if seen_investors is None:
+            seen_investors = {self}
+
+        investor_involvements = self.investors.filter(
+            investor__status__in=[self.STATUS_LIVE, self.STATUS_LIVE_AND_DRAFT],
+            venture__status__in=[self.STATUS_LIVE, self.STATUS_LIVE_AND_DRAFT],
+            role=InvestorVentureInvolvement.STAKEHOLDER_ROLE,
+        ).exclude(investor__in=seen_investors)
+
+        if not investor_involvements:
+            investors.add(self)
+        for involvement in investor_involvements:
+            if involvement.investor in seen_investors:
+                continue
+            seen_investors.add(involvement.investor)
+            investors.update(involvement.investor.get_top_investors(seen_investors))
+        return investors
 
 
 @reversion.register(ignore_duplicates=True)
