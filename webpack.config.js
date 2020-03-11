@@ -1,7 +1,6 @@
 // webpack.config.js
 const path = require("path");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleTracker = require("webpack-bundle-tracker");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
 
@@ -15,8 +14,10 @@ module.exports = {
   },
   resolve: {
     alias: {
+      // 'vue$': isDev ? 'vue/dist/vue.runtime.js' : 'vue/dist/vue.runtime.min.js',
       '@': path.resolve(__dirname, './frontend/src'),
-    }
+    },
+    extensions: ['.js', '.vue'],
   },
   module: {
     rules: [
@@ -78,11 +79,7 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'frontend', 'index.html'),
-
-    }),
-    new BundleTracker({ filename: "./webpack-stats.json" }),
+    new BundleTracker({filename: "./webpack-stats.json"}),
     new LiveReloadPlugin({
       appendScriptTag: true
     })

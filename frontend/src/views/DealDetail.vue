@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-if="deal">
+  <div v-if="deal">
     <b-tabs content-class="mt-3">
       <b-tab title="Location" active>
         <div style="height: 500px; width: 100%">
@@ -15,10 +15,10 @@
             />
 
             <l-feature-group>
-              <l-geo-json
-                  :geojson="geojson"
-                  :options="geojson_options"
-                  :optionsStyle="geojson_styleFunction"
+              <l-geo-json v-if="geojson"
+                          :geojson="geojson"
+                          :options="geojson_options"
+                          :optionsStyle="geojson_styleFunction"
               />
             </l-feature-group>
           </l-map>
@@ -36,9 +36,6 @@
         <p></p></b-tab>
     </b-tabs>
   </div>
-  <div v-else>
-    Loading deal ...
-  </div>
 </template>
 
 <style lang="scss">
@@ -48,14 +45,13 @@
   }
 </style>
 <script>
+  import store from '../store';
+
   export default {
-    name: 'Deal',
+    // name: 'Deal',
+    props: ['deal_id'],
     data() {
       return {
-        dealid: deal_id,
-        deal: null,
-        geojson: null,
-        bounds: null,
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         attribution:
             '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -65,6 +61,15 @@
       };
     },
     computed: {
+      deal() {
+        return this.$store.state.current_deal
+      },
+      geojson() {
+        return this.deal.geojson;
+      },
+      bounds() {
+        return L.latLngBounds(L.geoJSON(this.deal.geojson).getBounds()).pad(1.5);
+      },
       geojson_options() {
         return {
           onEachFeature: this.onEachFeatureFunction
@@ -105,14 +110,15 @@
         };
       }
     },
-    created: function () {
-      this.$http.get(`/newdeal/api/deal/${deal_id}`)
-          .then(response => {
-            this.deal = response.data;
-            this.geojson = this.deal.geojson;
-            this.bounds = L.latLngBounds(L.geoJSON(this.deal.geojson).getBounds()).pad(1.5);
-          });
-    }
+    beforeRouteEnter(to, from, next) {
+      store.dispatch('setTitle', `Deal #${to.params.deal_id}`);
+      store.dispatch('setCurrentDeal', to.params.deal_id);
+      next()
+    },
+    beforeRouteLeave(to, from, next) {
+      store.dispatch('setCurrentDeal', null);
+      next()
+    },
   }
   ;
 </script>
