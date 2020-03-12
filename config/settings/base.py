@@ -201,6 +201,7 @@ if GND_ENABLED:
         "reversion",
         "django_elasticsearch",
         "webpack_loader",
+        "ariadne.contrib.django",
     ]
     ELASTICSEARCH_DSL = {
         "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},

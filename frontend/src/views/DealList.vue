@@ -16,7 +16,7 @@
       <tr v-for="deal in deals" :key="deal.id">
         <td><a :href="deal.id">{{deal.id}}</a></td>
         <td>{{deal.target_country.name}}</td>
-        <td v-html="deal.top_investors.join('<br>')"></td>
+        <td v-html="parseTopInvestors(deal)"></td>
         <td class="intention">
           <ul class="list-unstyled">
             <li v-for="intention in parseIntentionOfInvestment(deal)"
@@ -58,13 +58,10 @@
         return this.$store.state.deals;
       }
     },
-    // created: function () {
-    //   this.$http.get(`/newdeal/api/deals/`)
-    //       .then(response => {
-    //         this.deals = response.data.deals;
-    //       });
-    // },
     methods: {
+      parseTopInvestors(deal) {
+        return deal.top_investors.map((int) => {return int.name}).join('<br>')
+      },
       parseIntentionOfInvestment(deal) {
         if (!deal.intention_of_investment) return "";
         return deal.intention_of_investment.map((int) => {

@@ -151,14 +151,13 @@ class DealDocument(Document):
     def prepare_deal_size(self, instance: Deal):
         return instance.get_deal_size()
 
-    top_investors = fields.ArrayField()
-    top_investors.set_type("text")
+    top_investors = fields.ObjectField()
 
     def prepare_top_investors(self, instance: Deal):
         investors = instance.get_top_investors()
         if not investors:
             return None
-        return [inv.name for inv in investors]
+        return [{"id": inv.id, "name": inv.name} for inv in investors]
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, Location):

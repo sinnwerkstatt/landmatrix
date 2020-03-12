@@ -1,0 +1,34 @@
+type Query {
+    deal(id: Int!): Deal!
+    deals(sort: String = "id"): [Deal]
+
+    investor(id: Int!): Investor!
+    investors(sort: String = "id"): [Investor]
+}
+
+type Investor {
+    id: Int
+    name: String
+    country: Country
+    classification_display: String
+}
+
+type Deal {
+    id: Int
+    target_country: Country
+    top_investors: [Investor]
+    intention_of_investment: [DateValuePair]
+    negotiation_status: [DateValuePair]
+    implementation_status: [DateValuePair]
+    deal_size: Float
+}
+
+type Country {
+    id: Int
+    name: String
+}
+
+type DateValuePair {
+    date: String
+    value: String
+}

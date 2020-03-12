@@ -70,7 +70,10 @@ urlpatterns = [
 ]
 
 if settings.GND_ENABLED:
-    urlpatterns += [path("newdeal/", include("apps.greennewdeal.urls"))]
+    urlpatterns += [
+        path("newdeal/", include("apps.greennewdeal.urls")),
+        path("graphql/", include("apps.graphql.urls")),
+    ]
 
 if settings.DEBUG:
     # Non i18n patterns
