@@ -19,7 +19,8 @@ def resolve_investor(obj: Any, info: GraphQLResolveInfo, id):
     if fields:
         investor.source(fields)
 
-    return list(investor)[0]
+    investor = investor.execute()[0]
+    return investor.to_dict()
 
 
 def resolve_investors(obj: Any, info: GraphQLResolveInfo, sort):
@@ -29,4 +30,5 @@ def resolve_investors(obj: Any, info: GraphQLResolveInfo, sort):
     if fields:
         investors.source(fields)
 
-    return list(investors[:100])
+    investors = [d.to_dict() for d in investors[:20].execute()]
+    return investors

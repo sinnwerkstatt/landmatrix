@@ -9,11 +9,6 @@ def vuedeal(request, path=None):
     return render(request, template_name="greennewdeal/vuedeal.html", context={})
 
 
-def api_deal_detail(request, deal_id):
-    deal = list(DealDocument.search().filter("term", id=deal_id))[0]
-    return JsonResponse(deal.to_dict())
-
-
 def api_deal_list(request):
     fields = [
         "id",
@@ -23,13 +18,14 @@ def api_deal_list(request):
         "negotiation_status",
         "implementation_status",
         "deal_size",
+        "geojson",
     ]
     deals = [
         d.to_dict()
         for d in DealDocument.search()
         .filter("terms", status=[2, 3])
         .sort("id")
-        .source(fields)[:100]
+        .source(fields)[:3]
     ]
     return JsonResponse({"deals": deals})
 

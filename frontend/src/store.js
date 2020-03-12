@@ -24,15 +24,38 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchDeals(context, options) {
-      this._vm.$http.get(`/newdeal/api/deals/`)
+      let query = `{
+        deals {
+          id
+          target_country { id name }
+          top_investors { id name }
+          intention_of_investment { date value }
+          negotiation_status { date value }
+          implementation_status { date value }
+          deal_size
+        }
+      }`;
+      this._vm.$http.post("/graphql/", {query:query})
         .then(response => {
-          context.commit('setDeals', response.data.deals);
+          context.commit('setDeals', response.data.data.deals);
         });
     },
     setCurrentDeal(context, deal_id) {
-      this._vm.$http.get(`/newdeal/api/deal/${deal_id}`)
+      let query = `{
+        deal(id:${deal_id}) {
+          id
+          target_country { id name }
+          top_investors { id name }
+          intention_of_investment { date value }
+          negotiation_status { date value }
+          implementation_status { date value }
+          deal_size
+          geojson
+        }
+      }`;
+      this._vm.$http.post("/graphql/", {query:query})
         .then(response => {
-          context.commit('setCurrentDeal', response.data);
+          context.commit('setCurrentDeal', response.data.data.deal);
         });
     },
     setTitle(context, title) {

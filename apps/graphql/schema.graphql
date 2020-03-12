@@ -21,7 +21,11 @@ type Deal {
     negotiation_status: [DateValuePair]
     implementation_status: [DateValuePair]
     deal_size: Float
+    geojson: GeoJSON
 }
+
+"GeoJSON combined from all the deals' locations"
+scalar GeoJSON
 
 type Country {
     id: Int

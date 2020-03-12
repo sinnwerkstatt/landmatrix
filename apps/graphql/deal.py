@@ -19,14 +19,15 @@ def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
     if fields:
         deal = deal.source(fields)
 
-    return list(deal)[0]
+    deal = deal.execute()[0]
+    return deal.to_dict()
 
 
-def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort):
+def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort, limit=None):
     deals = DealDocument.search().filter("terms", status=[2, 3]).sort(sort)
 
     fields = get_fields(info)
     if fields:
         deals = deals.source(fields)
-
-    return list(deals[:100])
+    deals = [d.to_dict() for d in deals[:20].execute()]
+    return deals

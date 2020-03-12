@@ -1,6 +1,11 @@
 import pathlib
 
-from ariadne import ObjectType, load_schema_from_path, make_executable_schema
+from ariadne import (
+    ObjectType,
+    ScalarType,
+    load_schema_from_path,
+    make_executable_schema,
+)
 
 from apps.graphql.deal import resolve_deal, resolve_deals
 from apps.graphql.investor import resolve_investor, resolve_investors
