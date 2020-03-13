@@ -8,7 +8,7 @@ def migrate_comments(apps, schema_editor):
     # ThreadedComment = apps.get_model("threadedcomments", "ThreadedComment")
     Activity = apps.get_model("landmatrix", "Activity")
     HistoricalActivity = apps.get_model("landmatrix", "HistoricalActivity")
-    queryset = ThreadedComment.objects.filter(content_type_id=42)
+    queryset = ThreadedComment.objects.filter(content_type_id=24)
     for comment in queryset:
         activity_identifier = Activity.objects.get(pk=comment.object_pk).activity_identifier
         hactivity = HistoricalActivity.objects.activity_for_comments(activity_identifier)
