@@ -389,6 +389,7 @@ def parse_water(deal, attrs):
         "1 cubic meter of water per second to process one ton of gold. In 15-25 years between 9.5 and 23 billion cubic meters of water can be captured": 31_540_000,
         "108bn gal/yr": 408_800_000,
         "3.07": 96_820,
+        "23 549": 23_549,
     }
     try:
         water_extraction_amount = broken_water_ex_amounts[water_extraction_amount]

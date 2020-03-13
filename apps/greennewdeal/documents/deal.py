@@ -104,9 +104,12 @@ class DealDocument(Document):
         properties={
             "name": fields.TextField(),
             "point": fields.GeoPointField(),
-            "intended_area": fields.GeoShapeField(),
-            "production_area": fields.GeoShapeField(),
-            "contract_area": fields.GeoShapeField(),
+            "intended_area": fields.ObjectField(),
+            "production_area": fields.ObjectField(),
+            "contract_area": fields.ObjectField(),
+            # "intended_area": fields.GeoShapeField(),
+            # "production_area": fields.GeoShapeField(),
+            # "contract_area": fields.GeoShapeField(),
         }
     )
     geojson = fields.ObjectField()
@@ -173,6 +176,20 @@ class DealDocument(Document):
 
 @registry.register_document
 class LocationDocument(Document):
+    class Django:
+        model = Location
+        exclude = [
+            "old_group_id",
+            "timestamp",
+            "intended_area",
+            "production_area",
+            "contract_area",
+        ]
+        # ignore_signals = True
+
+    class Index:
+        name = "location"
+
     def prepare_deal(self, instance: Location):
         deal = instance.deal
         return {
@@ -182,10 +199,8 @@ class LocationDocument(Document):
             "implementation_status": deal.implementation_status,
         }
 
-    class Django:
-        model = Location
-        exclude = ["old_group_id", "timestamp"]
-        # ignore_signals = True
-
-    class Index:
-        name = "location"
+    # GeoShapeField() is not parsing all of the fields at the moment
+    # use ObjectField instead
+    intended_area = fields.ObjectField()
+    production_area = fields.ObjectField()
+    contract_area = fields.ObjectField()

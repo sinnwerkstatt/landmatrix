@@ -770,8 +770,11 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         for fieldname in fields:
             field = self.__getattribute__(fieldname)
             if field:
-                sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
-                self.__setattr__(fieldname, sorted_field)
+                try:
+                    sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
+                    self.__setattr__(fieldname, sorted_field)
+                except KeyError:
+                    pass
 
     def get_deal_size(self):
         if not self.negotiation_status:
