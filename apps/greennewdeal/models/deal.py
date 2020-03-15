@@ -1,3 +1,5 @@
+from typing import Optional
+
 import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -758,6 +760,12 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         self._sort_json_fields()
         super(Deal, self).save(*args, **kwargs)
 
+    def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
+        attribute = self.__getattribute__(name)
+        if attribute:
+            return attribute[0]["value"]
+        return None
+
     def _sort_json_fields(self):
         fields = [
             "contract_size",
@@ -777,16 +785,14 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
                     pass
 
     def get_deal_size(self):
-        if not self.negotiation_status:
+        negotiation_status = self.get_value_from_datevalueobject("negotiation_status")
+        if negotiation_status:
             return 0
-        negotiation_status = self.negotiation_status[0]["value"]
 
         intended_size = float(self.intended_size) if self.intended_size else 0
-        contract_size = (
-            float(self.contract_size[0]["value"]) if self.contract_size else 0
-        )
-        production_size = (
-            float(self.production_size[0]["value"]) if self.production_size else 0
+        contract_size = float(self.get_value_from_datevalueobject("contract_size") or 0)
+        production_size = float(
+            self.get_value_from_datevalueobject("production_size") or 0
         )
 
         # 1) IF Negotiation status IS Intended
