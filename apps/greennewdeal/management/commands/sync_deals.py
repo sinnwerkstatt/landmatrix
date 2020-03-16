@@ -8,8 +8,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         deal_ids = (
             HistoricalActivity.objects.values_list("activity_identifier", flat=True)
-            .distinct()
-            .order_by("activity_identifier")
+            # .filter(activity_identifier__gt=7700)
+            .distinct().order_by("activity_identifier")
         )
         for histivity_identifier in deal_ids:
             print(f"  Sync Deal {histivity_identifier}... ", end="", flush=True)

@@ -15,16 +15,8 @@ class DealDocument(Document):
         related_models = [Location, Contract, DataSource]
         exclude = ["timestamp"]
 
-        # ignore_signals = True
-
         # Don't perform an index refresh after every update (overrides global setting):
         # auto_refresh = False
-
-        # Paginate the django queryset used to populate the index with the specified size
-        # (by default it uses the database driver's default setting)
-        # queryset_pagination = 5000
-
-    activity_identifier = fields.IntegerField(attr="id")
 
     def prepare_target_country(self, instance: Deal):
         if not instance.target_country:
@@ -68,8 +60,7 @@ class DealDocument(Document):
             "country": country_ret,
             "region": region_ret,
             "classification": oc.classification,
-            # "operating_company_classification": "10",
-            # "operating_company_classification_display": "Private company",
+            "classification_display": oc.get_classification_display(),
             "homepage": oc.homepage,
             "comment": oc.comment,
             "timestamp": oc.timestamp,
@@ -100,15 +91,21 @@ class DealDocument(Document):
             "name": instance.export_country3.name,
         }
 
+    activity_identifier = fields.IntegerField(attr="id")
+
     locations = fields.NestedField(
         properties={
             "name": fields.TextField(),
             "point": fields.GeoPointField(),
-            "intended_area": fields.GeoShapeField(),
-            "production_area": fields.GeoShapeField(),
-            "contract_area": fields.GeoShapeField(),
+            "intended_area": fields.ObjectField(),
+            "production_area": fields.ObjectField(),
+            "contract_area": fields.ObjectField(),
+            # "intended_area": fields.GeoShapeField(),
+            # "production_area": fields.GeoShapeField(),
+            # "contract_area": fields.GeoShapeField(),
         }
     )
+
     geojson = fields.ObjectField()
 
     def prepare_geojson(self, instance: Deal):
@@ -142,8 +139,22 @@ class DealDocument(Document):
                     "properties": {"name": loc.name, "type": "production_area"},
                 }
                 features += [rewind(contract_area)]
-
+        if not features:
+            return None
         return {"type": "FeatureCollection", "features": features}
+
+    deal_size = fields.IntegerField()
+
+    def prepare_deal_size(self, instance: Deal):
+        return instance.get_deal_size()
+
+    top_investors = fields.ObjectField()
+
+    def prepare_top_investors(self, instance: Deal):
+        investors = instance.get_top_investors()
+        if not investors:
+            return None
+        return [{"id": inv.id, "name": inv.name} for inv in investors]
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, Location):
@@ -157,21 +168,73 @@ class DealDocument(Document):
         name = "deal"
 
 
+# noinspection PyMethodMayBeStatic
 @registry.register_document
 class LocationDocument(Document):
-    def prepare_deal(self, instance: Location):
-        deal = instance.deal
-        return {
-            "id": deal.id,
-            "intended_size": deal.intended_size,
-            # "contract_size": deal.contract_size,
-            "implementation_status": deal.implementation_status,
-        }
-
     class Django:
         model = Location
-        exclude = ["old_group_id", "timestamp"]
+        exclude = [
+            "deal",
+            "old_group_id",
+            "timestamp",
+            "intended_area",
+            "production_area",
+            "contract_area",
+        ]
         # ignore_signals = True
 
     class Index:
         name = "location"
+
+    deal = fields.ObjectField(
+        properties={
+            "id": fields.IntegerField(),
+            "status": fields.IntegerField(),
+            "intended_size": fields.TextField(),
+            "contract_size": fields.ObjectField(
+                properties={"date": fields.TextField(), "value": fields.TextField()}
+            ),
+            "production_size": fields.ObjectField(
+                properties={"date": fields.TextField(), "value": fields.TextField()}
+            ),
+            "implementation_status": fields.ObjectField(
+                properties={"date": fields.TextField(), "value": fields.TextField()}
+            ),
+            "intention_of_investment": fields.ObjectField(
+                properties={"date": fields.TextField(), "value": fields.TextField()}
+            ),
+            "operating_company": fields.ObjectField(),
+        }
+    )
+
+    def prepare_deal(self, instance: Location):
+        deal = instance.deal
+        ret = {
+            "id": deal.id,
+            "status": deal.status,
+            "intended_size": deal.intended_size,
+            "contract_size": deal.contract_size,
+            "production_size": deal.production_size,
+            "implementation_status": deal.implementation_status,
+            "intention_of_investment": deal.intention_of_investment,
+        }
+        oc = deal.operating_company
+        if oc:
+            ret["operating_company"] = {
+                "id": oc.id,
+                "investor_identifier": oc.id,
+                "name": oc.name,
+                "classification": oc.classification,
+                "classification_display": oc.get_classification_display(),
+                "homepage": oc.homepage,
+                "comment": oc.comment,
+                "timestamp": oc.timestamp,
+                "opencorporates": oc.opencorporates,
+            }
+        return ret
+
+    # GeoShapeField() is not parsing all of the fields at the moment
+    # use ObjectField instead
+    intended_area = fields.ObjectField()
+    production_area = fields.ObjectField()
+    contract_area = fields.ObjectField()

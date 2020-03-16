@@ -1,3 +1,5 @@
+from typing import Optional
+
 import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -754,54 +756,79 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     def __str__(self):
         return f"#{self.id} in {self.target_country}"
 
-    # def get_deal_size(self):
-    #     intended_size = self.intended_size
-    #     contract_size = self.contract_size
-    #     production_size = self.production_size
-    #
-    #     negotiation_status = self.negotiation_status
-    #     if negotiation_status:
-    #         latest_status = sorted(
-    #             Deal.objects.get(id=138).negotiation_status,
-    #             key=lambda x: x["date"],
-    #             reverse=True,
-    #         )[0]
-    #         negotiation_status = latest_status["value"]
-    #
-    #     # 1) IF Negotiation status IS Intended
-    #     if negotiation_status in self.NEGOTIATION_STATUSES_INTENDED:
-    #         # USE Intended size OR Contract size OR Production size (in the given order)
-    #         value = intended_size or contract_size or production_size or 0
-    #     # 2) IF Negotiation status IS Concluded
-    #     elif negotiation_status in self.NEGOTIATION_STATUSES_CONCLUDED:
-    #         # USE Contract size or Production size (in the given order)
-    #         value = contract_size or production_size or 0
-    #     # 3) IF Negotiation status IS Failed (Negotiations failed)
-    #     elif negotiation_status == self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
-    #         # USE Intended size OR Contract size OR Production size (in the given order)
-    #         value = intended_size or contract_size or production_size or 0
-    #     # 4) IF Negotiation status IS Failed (Contract canceled)
-    #     elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
-    #         # USE Contract size OR Production size (in the given order)
-    #         value = contract_size or production_size or 0
-    #     # 5) IF Negotiation status IS Contract expired
-    #     elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
-    #         # USE Contract size OR Production size (in the given order)
-    #         value = contract_size or production_size or 0
-    #     # 6) IF Negotiation status IS Change of ownership
-    #     elif negotiation_status == self.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
-    #         # USE Contract size OR Production size (in the given order)
-    #         value = contract_size or production_size or 0
-    #     else:
-    #         value = 0
-    #
-    #     if value:
-    #         # Legacy: There shouldn't be any comma separated values anymore in the database
-    #         if "," in value:
-    #             return int(value.split(",")[0])
-    #         elif "." in value:
-    #             return int(value.split(".")[0])
-    #         else:
-    #             return int(value)
-    #     else:
-    #         return 0
+    def save(self, *args, **kwargs):
+        self._sort_json_fields()
+        super(Deal, self).save(*args, **kwargs)
+
+    def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
+        attribute = self.__getattribute__(name)
+        if attribute:
+            return attribute[0]["value"]
+        return None
+
+    def _sort_json_fields(self):
+        fields = [
+            "contract_size",
+            "production_size",
+            "intention_of_investment",
+            "negotiation_status",
+            "implementation_status",
+            # TODO: complete this list?
+        ]
+        for fieldname in fields:
+            field = self.__getattribute__(fieldname)
+            if field:
+                try:
+                    sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
+                    self.__setattr__(fieldname, sorted_field)
+                except KeyError:
+                    pass
+
+    def get_deal_size(self):
+        negotiation_status = self.get_value_from_datevalueobject("negotiation_status")
+        if not negotiation_status:
+            return 0
+
+        intended_size = int(self.intended_size) if self.intended_size else 0
+        contract_size = int(
+            float(self.get_value_from_datevalueobject("contract_size") or 0)
+        )
+        production_size = int(
+            float(self.get_value_from_datevalueobject("production_size") or 0)
+        )
+
+        # 1) IF Negotiation status IS Intended
+        if negotiation_status in self.NEGOTIATION_STATUSES_INTENDED:
+            # USE Intended size OR Contract size OR Production size (in the given order)
+            value = intended_size or contract_size or production_size or 0
+        # 2) IF Negotiation status IS Concluded
+        elif negotiation_status in self.NEGOTIATION_STATUSES_CONCLUDED:
+            # USE Contract size or Production size (in the given order)
+            value = contract_size or production_size or 0
+        # 3) IF Negotiation status IS Failed (Negotiations failed)
+        elif negotiation_status == self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+            # USE Intended size OR Contract size OR Production size (in the given order)
+            value = intended_size or contract_size or production_size or 0
+        # 4) IF Negotiation status IS Failed (Contract canceled)
+        elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+            # USE Contract size OR Production size (in the given order)
+            value = contract_size or production_size or 0
+        # 5) IF Negotiation status IS Contract expired
+        elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+            # USE Contract size OR Production size (in the given order)
+            value = contract_size or production_size or 0
+        # 6) IF Negotiation status IS Change of ownership
+        elif negotiation_status == self.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+            # USE Contract size OR Production size (in the given order)
+            value = contract_size or production_size or 0
+        else:
+            value = 0
+        return value
+
+    def get_top_investors(self):
+        """
+        Get list of highest parent companies
+        (all right-hand side parent companies of the network visualisation)
+        """
+        if self.operating_company:
+            return self.operating_company.get_top_investors()

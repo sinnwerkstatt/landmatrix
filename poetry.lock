@@ -27,6 +27,22 @@ python-versions = "*"
 version = "0.1.0"
 
 [[package]]
+category = "main"
+description = "Ariadne is a Python library for implementing GraphQL servers."
+name = "ariadne"
+optional = false
+python-versions = "*"
+version = "0.10.0"
+
+[package.dependencies]
+graphql-core = ">=3.0.0"
+starlette = "<0.14"
+typing-extensions = ">=3.6.0"
+
+[package.extras]
+asgi-file-uploads = ["python-multipart (>=0.0.5)"]
+
+[[package]]
 category = "dev"
 description = "An abstract syntax tree for Python with inference support."
 name = "astroid"
@@ -321,7 +337,7 @@ description = "Wrapper around elasticsearch-dsl for django models"
 name = "django-elasticsearch-ng"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "7.0.1"
+version = "7.0.2"
 
 [package.dependencies]
 django = ">=1.11"
@@ -655,6 +671,14 @@ name = "geojson-rewind"
 optional = false
 python-versions = ">=3.5,<4.0"
 version = "0.2.0"
+
+[[package]]
+category = "main"
+description = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
+name = "graphql-core"
+optional = false
+python-versions = ">=3.6,<4"
+version = "3.0.3"
 
 [[package]]
 category = "main"
@@ -1464,6 +1488,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.3.0"
 
 [[package]]
+category = "main"
+description = "The little ASGI library that shines."
+name = "starlette"
+optional = false
+python-versions = ">=3.6"
+version = "0.13.2"
+
+[package.extras]
+full = ["aiofiles", "graphene", "itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests", "ujson"]
+
+[[package]]
 category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
@@ -1519,7 +1554,7 @@ python-versions = "*"
 version = "1.4.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 name = "typing-extensions"
 optional = false
@@ -1674,7 +1709,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "c609bc8a8b8b8854957ad6f7af8fc55ede37c5957b6c6c18955bb84695386d45"
+content-hash = "e9d9da881dfac98c80c2b787daf03b25813114fa1236cd1df94459d3fa4aef05"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1689,6 +1724,10 @@ appdirs = [
 appnope = [
     {file = "appnope-0.1.0-py2.py3-none-any.whl", hash = "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0"},
     {file = "appnope-0.1.0.tar.gz", hash = "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"},
+]
+ariadne = [
+    {file = "ariadne-0.10.0-py3-none-any.whl", hash = "sha256:e916a50cef728d578f5401a5a5d7175e63fc2ae3c10291e09b8d1898c0b9603e"},
+    {file = "ariadne-0.10.0.tar.gz", hash = "sha256:0254de02664139e25acd3f7939d072cdcb49ac9c0bbbad71f5bf4b9d4a963d3c"},
 ]
 astroid = [
     {file = "astroid-2.3.3-py3-none-any.whl", hash = "sha256:840947ebfa8b58f318d42301cf8c0a20fd794a33b61cc4638e28e9e61ba32f42"},
@@ -1811,8 +1850,8 @@ django-crispy-forms = [
     {file = "django_crispy_forms-1.8.1-py2.py3-none-any.whl", hash = "sha256:2db711ce31f6f9ef42c16829cc3636e3819f97c1b22a3b706afed679bc417e88"},
 ]
 django-elasticsearch-ng = [
-    {file = "django-elasticsearch-ng-7.0.1.tar.gz", hash = "sha256:fdef6f8fdc4983a2e78580ba901d5fd28ca18ccb1619f90ea0b5cbae7a86aadb"},
-    {file = "django_elasticsearch_ng-7.0.1-py3-none-any.whl", hash = "sha256:7cc4e2e91b10339bc6c5e6a27e380522cb1f372829d5eb7b3333c891fef5c279"},
+    {file = "django-elasticsearch-ng-7.0.2.tar.gz", hash = "sha256:ae99f1a6ead1b97874c3dac58b660df0e040a8cb46f960cf67ef93b4da9f247e"},
+    {file = "django_elasticsearch_ng-7.0.2-py3-none-any.whl", hash = "sha256:a8809e8287c6519038a4bca05ea0db3e0bacda7a0b7b5da84544a3f8ffda1210"},
 ]
 django-environ = [
     {file = "django-environ-0.4.5.tar.gz", hash = "sha256:6c9d87660142608f63ec7d5ce5564c49b603ea8ff25da595fd6098f6dc82afde"},
@@ -1920,6 +1959,10 @@ geojson = [
 geojson-rewind = [
     {file = "geojson-rewind-0.2.0.tar.gz", hash = "sha256:212c10e8b675dd09749d837eef3d1fc958063f039836476d5266497302166ca9"},
     {file = "geojson_rewind-0.2.0-py3-none-any.whl", hash = "sha256:8d802b07dc211df0f826c18dfcbcdc4303ad02fbc98a5216ee7330d22aba0888"},
+]
+graphql-core = [
+    {file = "graphql-core-3.0.3.tar.gz", hash = "sha256:31e9e62967cc3cb1afc0d4752e2576633adebbdcb14b4c62b9055413c239a48d"},
+    {file = "graphql_core-3.0.3-py3-none-any.whl", hash = "sha256:e586db99173ffbfbc520a468246c2e1af83267f01ae6ee8a0ed9112453fa3a32"},
 ]
 gunicorn = [
     {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
@@ -2406,6 +2449,10 @@ six = [
 sqlparse = [
     {file = "sqlparse-0.3.0-py2.py3-none-any.whl", hash = "sha256:40afe6b8d4b1117e7dff5504d7a8ce07d9a1b15aeeade8a2d10f130a834f8177"},
     {file = "sqlparse-0.3.0.tar.gz", hash = "sha256:7c3dca29c022744e95b547e867cee89f4fce4373f3549ccd8797d8eb52cdb873"},
+]
+starlette = [
+    {file = "starlette-0.13.2-py3-none-any.whl", hash = "sha256:6169ee78ded501095d1dda7b141a1dc9f9934d37ad23196e180150ace2c6449b"},
+    {file = "starlette-0.13.2.tar.gz", hash = "sha256:a9bb130fa7aa736eda8a814b6ceb85ccf7a209ed53843d0d61e246b380afa10f"},
 ]
 toml = [
     {file = "toml-0.10.0-py2.7.egg", hash = "sha256:f1db651f9657708513243e61e6cc67d101a39bad662eaa9b5546f789338e07a3"},

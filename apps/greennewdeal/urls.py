@@ -1,10 +1,5 @@
-from django.urls import path
+from django.urls import path, re_path
 
-from apps.greennewdeal.views import deal_detail, api_deal_map, api_deal_detail
+from apps.greennewdeal.views import vuedeal
 
-urlpatterns = [
-    path("<int:deal_id>/", deal_detail),
-    path("<int:deal_id>.pdf", deal_detail, {"format": "PDF"}),
-    path("api/map", api_deal_map),
-    path("api/deal/<int:deal_id>/", api_deal_detail),
-]
+urlpatterns = [re_path(r"^(?P<path>.*)/$", vuedeal), path("", vuedeal)]
