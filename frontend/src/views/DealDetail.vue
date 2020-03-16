@@ -142,8 +142,12 @@
       }
     },
     beforeRouteEnter(to, from, next) {
-      store.dispatch('setTitle', `Deal #${to.params.deal_id}`);
+      let title = `Deal #${to.params.deal_id}`;
       store.dispatch('setCurrentDeal', to.params.deal_id);
+      store.dispatch('setPageContext', {
+        title: title,
+        breadcrumbs: [{href: "/newdeal/", name: "Data"}, {name: title}]
+      });
       next()
     },
     beforeRouteLeave(to, from, next) {

@@ -7,8 +7,8 @@ const store = new Vuex.Store({
   state: {
     deals: null,
     current_deal: null,
-    current_deal_id: null,
     title: "All Deals",
+    breadcrumbs: [],
   },
   mutations: {
     setDeals(state, deals) {
@@ -16,11 +16,13 @@ const store = new Vuex.Store({
     },
     setCurrentDeal(state, deal) {
       state.current_deal = deal;
-      state.current_deal_id = deal.id;
     },
     setTitle(state, title) {
       state.title = title;
-    }
+    },
+    setBreadcrumbs(state, breadcrumbs) {
+      state.breadcrumbs = breadcrumbs;
+    },
   },
   actions: {
     fetchDeals(context, options) {
@@ -41,6 +43,11 @@ const store = new Vuex.Store({
         });
     },
     setCurrentDeal(context, deal_id) {
+      if (!deal_id) {
+        context.commit('setCurrentDeal', null);
+        return
+      }
+
       let query = `{
         deal(id:${deal_id}) {
           id
@@ -50,6 +57,9 @@ const store = new Vuex.Store({
           negotiation_status { date value }
           implementation_status { date value }
           deal_size
+          intended_size
+          contract_size { date value }
+          production_size { date value }
           geojson
         }
       }`;
@@ -58,9 +68,10 @@ const store = new Vuex.Store({
           context.commit('setCurrentDeal', response.data.data.deal);
         });
     },
-    setTitle(context, title) {
-      context.commit('setTitle', title);
-    }
+    setPageContext(context, page_context) {
+      context.commit('setTitle', page_context.title);
+      context.commit('setBreadcrumbs', page_context.breadcrumbs);
+    },
   },
   getters: {}
 });

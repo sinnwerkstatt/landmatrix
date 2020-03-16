@@ -32,7 +32,8 @@
       <tbody v-else>
       <tr>
         <td colspan="10">
-          <div style="text-align: center; font-size: 1.4em;">Loading deals ...<span class="lm-spinner"></span> </div>
+          <div style="text-align: center; font-size: 1.4em;">Loading deals ...<span
+              class="lm-spinner"></span></div>
         </td>
       </tr>
       </tbody>
@@ -60,7 +61,9 @@
     },
     methods: {
       parseTopInvestors(deal) {
-        return deal.top_investors.map((int) => {return int.name}).join('<br>')
+        return deal.top_investors.map((int) => {
+          return int.name
+        }).join('<br>')
       },
       parseIntentionOfInvestment(deal) {
         if (!deal.intention_of_investment) return "";
@@ -95,8 +98,11 @@
       }
     },
     beforeRouteEnter(to, from, next) {
-      store.dispatch('setTitle', "All Deals");
       store.dispatch('fetchDeals', {"offset": 0});
+      store.dispatch('setPageContext', {
+        title: "All Deals",
+        breadcrumbs: [{name: "Data"}]
+      });
       next()
     },
   };

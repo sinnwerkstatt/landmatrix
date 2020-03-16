@@ -3,75 +3,53 @@
 {% load render_bundle from webpack_loader %}
 {% load static i18n filter_tags wagtailcore_tags custom_tags landmatrix_tags message_tags %}
 
-<div class="container">
-    {% block navutils %}
-      {% block messages %}
-        {% custom_messages as custommessages %}
-        {% for message in custommessages %}
-          <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
-            {% if message.title %}<strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
-          </p>
-        {% endfor %}
-        {% for message in messages %}
-          <p class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}{% else %} alert-info{% endif %}">
-            {{ message|safe }}
-          </p>
-        {% endfor %}
-        {% block extra_messages %}{% endblock %}
-      {% endblock %}
+  {% block css %}
+    <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.min.css" %}">
+    <!-- <link rel="stylesheet" href="{% static "css/content.css" %}"> -->
+    <link rel="stylesheet" href="{% static "select2/dist/css/select2.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.css" %}">
+    <link rel="stylesheet" href="{% static "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/icons.css" %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="icon" href="{% static "img/favicon.ico" %}">
 
-      <div class="row">
-        <div class="col-md-4">
-          {% block breadcrumb %}
-            <ul class="breadcrumb">
-              <li><a href="/">{% trans 'Home' %}</a></li>
-              {% block breadcrumb_inner %}
-              {% endblock %}
-            </ul>
-          {% endblock %}
-        </div>
-        <div class="col-md-6 col-md-offset-2">
+    {% if is_pdf_export %}
+    <script src="{% static "js/wkhtml.js" %}"></script>
+    <script src="{% static "js/vendor/requestAnimationFrame-polyfill.js" %}"></script>
+    {% endif %}
+    <script src="{% static "jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "select2/dist/js/select2.full.js" %}"></script>
 
-          {% block subnav %}
-            <ul class="subnav nav nav-pills pull-right">
-              {% block subnav_inner %}
-                <li role="presentation"><a href="{% url 'map' %}{% list_params %}">
-                  <i class="fa fa-map-marker"></i> {% trans "Map" %}
-                </a></li>
-                <li role="presentation"><a href="{% url 'data' %}{% list_params %}">
-                  <i class="fa fa-table"></i> {% trans "Data" %}
-                </a></li>
-                <li role="presentation"><a href="{% url 'charts' %}{% list_params %}">
-                  <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
-                </a></li>
-                <li class="divider"></li>
-                <li role="presentation">
-                  {% include "export.html" %}
-                </li>
-              {% endblock %}
-              <li role="presentation">
-                {% include "share.html" %}
-              </li>
-            </ul>
-          {% endblock %}
-        </div>
-      </div>
+    {% if is_pdf_export %}
+      <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css">
+    {% endif %}
+  {% endblock %}
 
-    {% endblock %}
+{% block navutils %}
+  {% block messages %}
+    {% custom_messages as custommessages %}
+    {% for message in custommessages %}
+      <p class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
+        {% if message.title %}
+          <strong>{{ message.title }}</strong> {% endif %}{{ message.text|safe|urlize }}
+      </p>
+    {% endfor %}
+    {% for message in messages %}
+      <p class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}{% else %} alert-info{% endif %}">
+        {{ message|safe }}
+      </p>
+    {% endfor %}
+    {% block extra_messages %}{% endblock %}
+  {% endblock %}
+{% endblock %}
 
-    <noscript>
-      <div id="javascriptwarning" class="alert alert-danger" role="alert">Please <a href="http://www.enable-javascript.com/" target="_blank">enable
-        Javascript</a> to use all features of the Landmatrix!
-      </div>
-    </noscript>
+{% block title_section %}
+{% endblock %}
 
-    {% block title_section %}
-    {% endblock %}
-
-    {% block content %}  <div id="app"></div>{% endblock %}
-
-  </div>
-
+{% block content %}
+  <div id="app"></div>
+{% endblock %}
 
 {% block javascript %}
   {% render_bundle 'main' 'js' %}

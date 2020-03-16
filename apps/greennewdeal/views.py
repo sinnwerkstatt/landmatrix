@@ -1,23 +1,18 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from apps.greennewdeal.documents import DealDocument
 from apps.greennewdeal.documents.deal import LocationDocument
+from apps.greennewdeal.models import Country
 
 
 def vuedeal(request, path=None):
     return render(request, template_name="greennewdeal/vuedeal.html", context={})
 
 
-def get_value_from_datevaluedict(obj):
-    if obj:
-        return obj[0]["value"]
-    return None
-
-
 # @cache_page(5)
-def api_deal_map(request):
-    s = [
+def old_api_deals_json(request):
+    # print(load_filters(request))  # TODO: Filters are a big thing
+    locations = [
         loc.to_dict()
         for loc in LocationDocument.search()[:5000]
         .filter("terms", deal__status=[2, 3])
@@ -26,7 +21,7 @@ def api_deal_map(request):
         .execute()
     ]
     features = []
-    for location in s:
+    for location in locations:
         if not location.get("point"):
             continue
         deal = location["deal"]
@@ -42,11 +37,13 @@ def api_deal_map(request):
                     intention.get("value")
                     for intention in deal.get("intention_of_investment", [])
                 ]
-                or "Unknown",  # FIXME: srsly? not just empty array or null??
+                or "Unknown",
+                # FIXME: srsly? not just empty array or null??
                 "implementation": [
                     impl.get("value") for impl in deal.get("implementation_status", [])
                 ]
-                or "Unknown",  # FIXME: srsly? not just empty array or null??
+                or "Unknown",
+                # FIXME: srsly? not just empty array or null??
                 "intended_size": deal.get("intended_size"),
                 "contract_size": deal.get("contract_size", [{}])[0].get("value"),
                 "production_size": deal.get("production_size", [{}])[0].get("value"),
@@ -56,5 +53,45 @@ def api_deal_map(request):
             },
         }
         features += [feat]
+    ret = {"type": "FeatureCollection", "features": features}
+    return JsonResponse(ret)
+
+
+def old_api_country_deals_json(request):
+    return JsonResponse({})
+    # features = []
+    #
+    # target_countries = collections.defaultdict(PropertyCounter)
+    #
+    # for result in result_list:
+    #     if result.get("target_country"):
+    #         target_countries[str(result["target_country"])].increment(**result)
+    #
+    features = []
+    for country in Country.objects.defer("geom").all():  # .filter(id__in=ids):
+        properties = {
+            "name": country.name,
+            "deals": 100,
+            # len(target_countries[str(country.id)].activity_identifiers),
+            "url": country.get_absolute_url(),
+            "centre_coordinates": [country.point_lon, country.point_lat],
+        }
+        properties.update(
+            {
+                "intention": "intention",
+                "implementation": "implementation_status",
+                "level_of_accuracy": "level_of_accuracy",
+            }
+        )
+        # properties.update(target_countries[str(country.id)].get_properties())
+        # properties["intention"] = self.get_intentions(properties.get("intention"))
+        features.append(
+            {
+                "type": "Feature",
+                "id": country.code_alpha3,
+                # 'geometry': json.loads(country.geom) if country.geom else None,
+                "properties": properties,
+            }
+        )
     ret = {"type": "FeatureCollection", "features": features}
     return JsonResponse(ret)

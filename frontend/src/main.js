@@ -1,13 +1,13 @@
 import Vue from "vue";
 import VueResource from "vue-resource";
+import BootstrapVue from "bootstrap-vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 
-import BootstrapVue from "bootstrap-vue";
 
-// import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
+// import "bootstrap4/dist/css/bootstrap.css";
+// import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { LMap, LTileLayer, LGeoJson, LControlLayers } from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,11 +20,8 @@ L.Icon.Default.mergeOptions({
 
 // require('@/styles/style.scss');
 
-// Vue.config.productionTip = false;
-Vue.use(BootstrapVue);
-
 Vue.use(VueResource);
-
+Vue.use(BootstrapVue);
 
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);

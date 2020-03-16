@@ -168,6 +168,7 @@ class DealDocument(Document):
         name = "deal"
 
 
+# noinspection PyMethodMayBeStatic
 @registry.register_document
 class LocationDocument(Document):
     class Django:

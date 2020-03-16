@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import DealDetail from "./views/DealDetail";
 import DealList from "./views/DealList";
+import DealEdit from "./views/DealEdit";
+import DealDetail from "./views/DealDetail";
 
 Vue.use(Router);
 
@@ -15,12 +16,24 @@ const router = new Router({
       component: DealList,
     },
     {
+      path: '/add',
+      name: 'deal_create',
+      component: DealEdit,
+      props: true,
+    },
+    {
+      path: '/edit/:deal_id',
+      name: 'deal_edit',
+      component: DealEdit,
+      props: true,
+    },
+    {
       path: '/:deal_id',
       name: 'deal_detail',
       component: DealDetail,
       props: true,
     },
-    ]
+  ]
   //   {
   //     // catch requests not mapping any path and redirect to home
   //     path: '*',

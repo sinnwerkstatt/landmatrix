@@ -786,13 +786,15 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
 
     def get_deal_size(self):
         negotiation_status = self.get_value_from_datevalueobject("negotiation_status")
-        if negotiation_status:
+        if not negotiation_status:
             return 0
 
-        intended_size = float(self.intended_size) if self.intended_size else 0
-        contract_size = float(self.get_value_from_datevalueobject("contract_size") or 0)
-        production_size = float(
-            self.get_value_from_datevalueobject("production_size") or 0
+        intended_size = int(self.intended_size) if self.intended_size else 0
+        contract_size = int(
+            float(self.get_value_from_datevalueobject("contract_size") or 0)
+        )
+        production_size = int(
+            float(self.get_value_from_datevalueobject("production_size") or 0)
         )
 
         # 1) IF Negotiation status IS Intended

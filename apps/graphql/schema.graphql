@@ -21,6 +21,9 @@ type Deal {
     negotiation_status: [DateValuePair]
     implementation_status: [DateValuePair]
     deal_size: Float
+    intended_size: Float
+    contract_size: [DateValuePair]
+    production_size: [DateValuePair]
     geojson: GeoJSON
 }
 
