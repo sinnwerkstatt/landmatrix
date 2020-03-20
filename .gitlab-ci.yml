@@ -47,10 +47,7 @@ deploy to staging:
       ssh $STAGING_USER@$STAGING_HOST << E=O=F
       mv maintenance.html_ maintenance.html
       cd ~/htdocs
-      git checkout master
-      git pull
-      poetry install -E production
-      poetry run doit update
+      poetry run doit full_update dev=True production=True
       sudo /bin/systemctl restart django-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
@@ -67,10 +64,7 @@ deploy to production:
       ssh $PRODUCTION_USER@$PRODUCTION_HOST << E=O=F
       mv maintenance.html_ maintenance.html
       cd ~/htdocs
-      git checkout production
-      git pull
-      poetry install --no-dev -E production
-      poetry run doit update
+      poetry run doit full_update production=True branch=production
       sudo /bin/systemctl restart django-landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
