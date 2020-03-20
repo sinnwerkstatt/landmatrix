@@ -6,16 +6,16 @@ const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
   mode: 'development',
-  entry: './frontend/src/main.js',
+  entry: './src/main.js',
   output: {
     filename: "[name].js",
-    path: path.resolve("./frontend/dist/"),
+    path: path.resolve("./dist/"),
     publicPath: ""
   },
   resolve: {
     alias: {
       // 'vue$': isDev ? 'vue/dist/vue.runtime.js' : 'vue/dist/vue.runtime.min.js',
-      '@': path.resolve(__dirname, './frontend/src'),
+      '@': path.resolve(__dirname, './src'),
     },
     extensions: ['.js', '.vue'],
   },
@@ -65,7 +65,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(woff|woff2)$/,
+        test: /\.(ttf|woff|woff2|eot)$/,
         loader: "file-loader",
         options: {
           name: "[name].[ext]",

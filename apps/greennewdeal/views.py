@@ -1,20 +1,16 @@
 from django.http import JsonResponse
-from django.shortcuts import render
 
 from apps.greennewdeal.documents.deal import LocationDocument
+from apps.greennewdeal.filters import load_filters
 from apps.greennewdeal.models import Country
-
-
-def vuedeal(request, path=None):
-    return render(request, template_name="greennewdeal/vuedeal.html", context={})
-
 
 # @cache_page(5)
 def old_api_deals_json(request):
-    # print(load_filters(request))  # TODO: Filters are a big thing
+    filters = load_filters(request)
+    print(filters)
     locations = [
         loc.to_dict()
-        for loc in LocationDocument.search()[:5000]
+        for loc in LocationDocument.search()[:10_000]
         .filter("terms", deal__status=[2, 3])
         .source(["id", "point", "deal", "level_of_accuracy_display"])
         .sort("deal.id")

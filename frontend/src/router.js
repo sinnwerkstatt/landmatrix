@@ -3,20 +3,26 @@ import Router from 'vue-router';
 import DealList from "./views/DealList";
 import DealEdit from "./views/DealEdit";
 import DealDetail from "./views/DealDetail";
+import GlobalMap from "./views/GlobalMap";
 
 Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
-  base: 'newdeal', //process.env.BASE_URL,
+  base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
+      path: '/newdeal/',
       name: 'deal_list',
       component: DealList,
     },
     {
-      path: '/add',
+      path: '/newdeal/map',
+      name: 'map',
+      component: GlobalMap
+    },
+    {
+      path: '/newdeal/add',
       name: 'deal_create',
       component: DealEdit,
       props: true,
@@ -28,7 +34,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: '/:deal_id',
+      path: '/newdeal/:deal_id',
       name: 'deal_detail',
       component: DealDetail,
       props: true,

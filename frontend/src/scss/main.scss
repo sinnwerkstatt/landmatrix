@@ -1,0 +1,41 @@
+@import "colors";
+@import "fonts";
+
+h1 {
+  position: relative;
+  text-align: center;
+  color: $primary;
+  font-family: Unit, sans-serif;
+  text-transform: uppercase;
+  font-weight: 700 !important;
+  margin-bottom: 20px;
+  font-size: 28px;
+  line-height: 32px;
+
+  &:before {
+    background: #c1c1c1;
+    content: "";
+    display: block;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+  }
+
+  > span {
+    background: #ffffff;
+    padding: 0 15px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.container {
+  max-width: 86vw;
+  width: auto;
+}
+.container-fluid {
+  max-width: 86vw;
+  min-width: 70vw;
+  width: auto;
+}

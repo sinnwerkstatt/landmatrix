@@ -107,3 +107,12 @@
     },
   };
 </script>
+
+<style lang="scss">
+  @import "../scss/colors";
+  @import "../scss/fonts";
+  td {
+    font-family: "landmatrix";
+  }
+
+</style>
