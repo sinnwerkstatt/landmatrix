@@ -420,7 +420,7 @@ h3,
 }
 
 .container > .block > h3 {
-  text-align: center;  
+  text-align: center;
 }
 
 .block-heading {
@@ -956,6 +956,8 @@ div#investor-network {
   display: block;
   width: 900px;
   height: 460px;
+  cursor: all-scroll;
+  overflow: hidden;
 
   .node {
     text-align: center;

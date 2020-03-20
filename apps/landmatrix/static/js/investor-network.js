@@ -439,7 +439,11 @@ function renderChartCollapsibleNetwork(params) {
 
         // Make new nodes to appear near the parents
         nodesArr.forEach(function (d, i) {
-          if (clickedNode && clickedNode.id === (d.parent && d.parent.id)) {
+          if (clickedNode && clickedNode.data.id === d.data.id) {
+            d.fx = clickedNode.x;
+            d.fy = clickedNode.y;
+          }
+          if (clickedNode && clickedNode.parent.id === (d.parent && d.parent.data.id)) {
             d.x = d.parent.x;
             d.y = d.parent.y;
           }
@@ -656,16 +660,19 @@ function renderChartCollapsibleNetwork(params) {
 
         // Set nodes position
         invSvg.selectAll('.node').attr("transform", function (d) {
-          return `translate(${d.x},${d.y}) scale(${1 / (attrs.lastTransform ? attrs.lastTransform.k : 1)})`;
+          if (d.fx && d.fy) {
+            return `translate(${d.fx},${d.fy})`;
+          } else {
+            return `translate(${d.x},${d.y}) scale(${1 / (attrs.lastTransform ? attrs.lastTransform.k : 1)})`;
+          }
         });
 
       }
 
       // Handler drag start event
       function dragstarted(d) {
-
         // Disable node fixing
-        nodes.each(d => { d.fx = null; d.fy = null })
+        // nodes.each(d => { d.fx = null; d.fy = null })
       }
 
 
@@ -676,6 +683,24 @@ function renderChartCollapsibleNetwork(params) {
         d.fx = d3.event.x;
         d.fy = d3.event.y;
 
+        var diffX = d.fx - d.x;
+        var diffY = d.fy - d.y;
+        var moved = [d.id];
+        function moveChildren(node) {
+          if (!node.children) {
+            return;
+          }
+          for (var c of node.children) {
+            if (moved.indexOf(c.id) > -1) {
+              continue;
+            }
+            moved.push(c.id);
+            c.fx = c.x + diffX;
+            c.fy = c.y + diffY;
+            moveChildren(c);
+          }
+        }
+        moveChildren(d);
       }
 
       // -------------------- handle drag end event ---------------
@@ -736,6 +761,14 @@ function renderChartCollapsibleNetwork(params) {
       // --------------- handle node click event ---------------
       function nodeClick(d) {
 
+        function restartSimulation(simulation) {
+          simulation.restart();
+          simulation.alphaTarget(0.15);
+          simulation.alphaDecay(0.005);
+          simulation.velocityDecay(0.6);
+          simulation.restartAlpha(0.1)
+        }
+
         // Free fixed nodes
         nodes.each(d => { d.fx = null; d.fy = null });
         d.children = null;
@@ -749,8 +782,7 @@ function renderChartCollapsibleNetwork(params) {
           data._deals = data.deals;
           data.deals = null;
           update();
-          force.simulation.restart();
-          force.simulation.alphaTarget(0.15);
+          restartSimulation(force.simulation);
         } else if ((data._investors && Object.keys(data._investors).length > 0) ||
           (data._deals && Object.keys(data._deals).length > 0)) {
           data.investors = data._investors;
@@ -758,12 +790,11 @@ function renderChartCollapsibleNetwork(params) {
           data.deals = data._deals;
           data._deals = null;
           update(d);
-          force.simulation.restart();
-          force.simulation.alphaTarget(0.15);
+          restartSimulation(force.simulation);
         } else {
           // Nothing is to collapse or expand
         }
-        freeNodes();
+        // freeNodes();
       }
 
       // #########################################  UTIL FUNCS ##################################
