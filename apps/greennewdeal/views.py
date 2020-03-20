@@ -1,8 +1,31 @@
+import json
+
 from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from apps.greennewdeal.documents.deal import LocationDocument
 from apps.greennewdeal.filters import load_filters
-from apps.greennewdeal.models import Country
+from apps.greennewdeal.models import Country, Region
+from apps.wagtailcms.models import RegionPage, CountryPage, WagtailRootPage
+
+
+@cache_page(60)
+def vuebase(request, path=None):
+    regions = list(
+        RegionPage.objects.filter(live=True, region__isnull=False)
+        .order_by("title")
+        .values("region_id", "slug", "title")
+    )
+    countries = [{'title': r.name, 'slug': r.slug} for r in Country.objects.all()]
+    ctx = {"regions": json.dumps(regions), "countries": json.dumps(countries)}
+
+    root = WagtailRootPage.objects.first()
+    if root.map_introduction:
+        ctx["map_introduction"] = root.map_introduction
+
+    return render(request, template_name="greennewdeal/vuebase.html", context=ctx)
+
 
 # @cache_page(5)
 def old_api_deals_json(request):

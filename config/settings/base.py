@@ -216,7 +216,7 @@ if GND_ENABLED:
     WEBPACK_LOADER = {
         "DEFAULT": {
             "BUNDLE_DIR_NAME": "/",  # must end with slash
-            "STATS_FILE": BASE_DIR("webpack-stats.json"),
+            "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
             "POLL_INTERVAL": 0.1,
             "TIMEOUT": None,
             "IGNORE": [r".+\.hot-update.js", r".+\.map"],

@@ -16,12 +16,12 @@
             <a class="nav-link" href="/global/">Global</a>
           </li>
           <li class="nav-item">
-            <v-select class="nav-link" :options="regions" label="name"
-                      placeholder="Region" />
+            <v-select class="nav-link" :options="regions" label="title"
+                      placeholder="Region"/>
           </li>
           <li class="nav-item">
-            <v-select class="nav-link" :options="countries" label="name"
-                      placeholder="Countries" />
+            <v-select class="nav-link" :options="countries" label="title"
+                      placeholder="Countries"/>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/stay-informed/" role="button">
@@ -50,17 +50,11 @@
 </template>
 <script>
   export default {
-    props: ['deal_id'],
+    // props: ['deal_id'],
     data() {
       return {
-        regions: [
-          {slug: "asia", name: "Asia"},
-          {slug: "europe", name: "Europe"},
-        ],
-        countries: [
-          {slug: "asia", name: "Asia"},
-          {slug: "europe", name: "Europe"},
-        ],
+        regions: REGIONS,
+        countries: COUNTRIES,
       }
     }
   }
@@ -85,7 +79,6 @@
 
   .navbar {
     border-bottom: 1px solid #bebebe;
-
   }
 
   .navbar-brand {
@@ -106,6 +99,7 @@
 </style>
 
 <style lang="scss">
+  /* this needs to be here, in an unscoped style block */
   .vs--searchable {
     min-width: 80%;
 
@@ -113,6 +107,4 @@
       border: none !important;
     }
   }
-
-
 </style>

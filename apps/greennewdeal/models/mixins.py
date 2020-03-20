@@ -55,7 +55,7 @@ class OldDealMixin:
     def old_attribute_names(key: str = None):
         old_values = {
             "general": [
-                "target_country",
+                "target_country",  # TODO: move to Location?
                 "intended_size",
                 "contract_size",
                 "production_size",

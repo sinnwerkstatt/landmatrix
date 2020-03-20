@@ -7,23 +7,18 @@
   <title>LAND MATRIX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  {% block css %}
-    {% render_bundle 'main' 'css' %}
-    {#    <link rel="stylesheet" href="{% static "select2/dist/css/select2.min.css" %}"/>#}
-    {#    <link rel="stylesheet" href="{% static 'css/main.css' %}">#}
-    {#    <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.min.css" %}">#}
-
-    {#    <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.css" %}">#}
-    {#    <link rel="stylesheet" href="{% static "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">#}
-    {#    <link rel="stylesheet" href="{% static "css/icons.css" %}">#}
-  {% endblock %}
+  {% render_bundle 'main' 'css' %}
 </head>
 
 <body>
 <div id="app"></div>
-{% block javascript %}
-  {% render_bundle 'main' 'js' %}
-{% endblock %}
+
+<script>
+  const REGIONS = JSON.parse("{{ regions|escapejs }}");
+  const COUNTRIES = JSON.parse("{{ countries|escapejs }}");
+  const MAP_DESC = "{{ map_introduction|escapejs }}";
+</script>
+{% render_bundle 'main' 'js' %}
 
 </body>
 </html>
