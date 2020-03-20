@@ -359,6 +359,22 @@ $(document).ready(function () {
                 return $('#download').html();
             },
             template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
+        }).on("click", "a.btn-media", function() {
+          // track downloads as events in matomo
+          var category = "Downloads";
+          var action = "";
+          var name = $( this ).attr("data-action-type");
+          var value = $( this ).attr("href");
+          if ($( this ).hasClass('xml')) {
+            action = 'xml';
+          } else if ($( this ).hasClass('xls')) {
+            action = 'xls';
+          } else if ($( this ).hasClass('csv')) {
+            action = 'csv';
+          } else if ($( this ).hasClass('pdf')) {
+            action = 'pdf';
+          }
+          _paq.push(['trackEvent', category, action, name, value]);
         });
 
         $(document).click(function (event) {

@@ -145,7 +145,10 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'compressor.finders.CompressorFinder',
 ]
-STATICFILES_DIRS = [BASE_DIR("node_modules")]
+STATICFILES_DIRS = [
+    BASE_DIR("node_modules"),
+    BASE_DIR("frontend", "dist"),
+]
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
@@ -189,6 +192,36 @@ ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatr
 ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
 print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
+
+# GreenNewDeal
+GND_ENABLED = env("GND_ENABLED", default=False)
+if GND_ENABLED:
+    INSTALLED_APPS += [
+        "apps.greennewdeal",
+        "reversion",
+        "django_elasticsearch",
+        "webpack_loader",
+        "ariadne.contrib.django",
+    ]
+    ELASTICSEARCH_DSL = {
+        "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},
+    }
+    ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
+    ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
+        "apps.greennewdeal.documents.signals.DoNothingProcessor"
+        # "apps.greennewdeal.documents.signals.CelerySignalProcessor"
+    )
+    # ELASTICSEARCH_DSL_PARALLEL ...
+    CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
+    WEBPACK_LOADER = {
+        "DEFAULT": {
+            "BUNDLE_DIR_NAME": "/",  # must end with slash
+            "STATS_FILE": BASE_DIR("webpack-stats.json"),
+            "POLL_INTERVAL": 0.1,
+            "TIMEOUT": None,
+            "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+        }
+    }
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

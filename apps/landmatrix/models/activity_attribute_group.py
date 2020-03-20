@@ -51,21 +51,6 @@ class ActivityAttributeBase(geomodels.Model):
         abstract = True
 
 
-class ActivityAttribute(ActivityAttributeBase):
-    """Just the attributes for most recent approved version of activites"""
-
-    fk_activity = models.ForeignKey(
-        "Activity",
-        verbose_name=_("Activity"),
-        related_name="attributes",
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = _("Activity attribute")
-        verbose_name_plural = _("Activity attributes")
-
-
 class HistoricalActivityAttribute(
     ExportModelOperationsMixin("activity_attribute"), ActivityAttributeBase
 ):
@@ -84,3 +69,15 @@ class HistoricalActivityAttribute(
         verbose_name = _("Historical activity attribute")
         verbose_name_plural = _("Historical activity attributes")
         get_latest_by = "history_date"
+
+    def to_dict(self):
+        return {
+            "activity_id": self.fk_activity_id,
+            "group_id": self.fk_group_id,
+            "name": self.name,
+            "value": self.value,
+            "value2": self.value2,
+            "date": self.date,
+            "is_current": self.is_current,
+            "polygon": self.polygon,
+        }

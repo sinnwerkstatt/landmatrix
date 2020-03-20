@@ -2,15 +2,14 @@ from django.forms import modelformset_factory
 from django.test import TestCase
 
 from apps.grid.forms.parent_investor_formset import *
-from apps.landmatrix.models import HistoricalInvestor, InvestorVentureInvolvement
+from apps.landmatrix.models import HistoricalInvestor
 from apps.landmatrix.tests.mixins import (
-    InvestorsFixtureMixin,
     InvestorVentureInvolvementsFixtureMixin,
+    InvestorsFixtureMixin,
 )
 
 
 class InvestorVentureInvolvementFormTestCase(InvestorsFixtureMixin, TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     inv_fixtures = [
@@ -27,8 +26,8 @@ class InvestorVentureInvolvementFormTestCase(InvestorsFixtureMixin, TestCase):
             "loans_amount": 0,
             "loans_date": None,
             "comment": "Test comment",
-            "role": InvestorVentureInvolvement.STAKEHOLDER_ROLE,
-            "fk_status": InvestorVentureInvolvement.STATUS_PENDING,
+            "role": HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE,
+            "fk_status": HistoricalInvestorVentureInvolvement.STATUS_PENDING,
         }
         self.form = InvestorVentureInvolvementForm(data=self.data)
 
@@ -65,7 +64,6 @@ class InvestorVentureInvolvementFormTestCase(InvestorsFixtureMixin, TestCase):
 
 
 class ParentCompanyFormTestCase(InvestorsFixtureMixin, TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     inv_fixtures = [
@@ -96,7 +94,6 @@ class ParentCompanyFormTestCase(InvestorsFixtureMixin, TestCase):
 
 
 class ParentInvestorFormTestCase(InvestorsFixtureMixin, TestCase):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     inv_fixtures = [
@@ -129,7 +126,6 @@ class ParentInvestorFormTestCase(InvestorsFixtureMixin, TestCase):
 class BaseInvolvementFormSetTestCase(
     InvestorsFixtureMixin, InvestorVentureInvolvementsFixtureMixin, TestCase
 ):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status"]
 
     inv_fixtures = [
@@ -161,8 +157,8 @@ class BaseInvolvementFormSetTestCase(
             "involvement-0-loans_amount": 0,
             "involvement-0-loans_date": None,
             "involvement-0-comment": "Test comment",
-            "involvement-0-role": InvestorVentureInvolvement.STAKEHOLDER_ROLE,
-            "involvement-0-fk_status": InvestorVentureInvolvement.STATUS_PENDING,
+            "involvement-0-role": HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE,
+            "involvement-0-fk_status": HistoricalInvestorVentureInvolvement.STATUS_PENDING,
             "involvement-0-id": "1",
             "involvement-0-DELETE": "on",
             "involvement-1-fk_venture": "1",
@@ -171,8 +167,8 @@ class BaseInvolvementFormSetTestCase(
             "involvement-1-loans_amount": 0,
             "involvement-1-loans_date": None,
             "involvement-1-comment": "Test comment",
-            "involvement-1-role": InvestorVentureInvolvement.STAKEHOLDER_ROLE,
-            "involvement-1-fk_status": InvestorVentureInvolvement.STATUS_PENDING,
+            "involvement-1-role": HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE,
+            "involvement-1-fk_status": HistoricalInvestorVentureInvolvement.STATUS_PENDING,
             "involvement-1-id": "",
             "involvement-1-DELETE": None,
         }

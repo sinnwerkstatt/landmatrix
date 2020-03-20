@@ -12,12 +12,8 @@ from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.investor import (
     HistoricalInvestorVentureInvolvement,
-    Investor,
-    InvestorActivityInvolvement,
-    InvestorBase,
     HistoricalInvestor,
 )
-from apps.landmatrix.models.activity_attribute_group import ActivityAttribute
 
 
 class ActivityQuerySet(models.QuerySet):
@@ -265,7 +261,7 @@ class ActivityBase(models.Model):
                     return True
                 return False
             else:
-                is_editor = user.has_perm("landmatrix.review_activity")
+                is_editor = user.has_perm("landmatrix.review_historicalactivity")
                 # Only Editors and Administrators are allowed to edit pending deals
                 if is_editor:
                     return True
@@ -313,8 +309,8 @@ class ActivityBase(models.Model):
         # Operating company
         queryset = self.involvements.filter(
             fk_investor__fk_status_id__in=(
-                Investor.STATUS_ACTIVE,
-                Investor.STATUS_OVERWRITTEN,
+                HistoricalInvestor.STATUS_ACTIVE,
+                HistoricalInvestor.STATUS_OVERWRITTEN,
             )
         )
         queryset = queryset.select_related(
@@ -333,8 +329,8 @@ class ActivityBase(models.Model):
         # Operating company
         queryset = self.involvements.filter(
             fk_investor__fk_status_id__in=(
-                Investor.STATUS_ACTIVE,
-                Investor.STATUS_OVERWRITTEN,
+                HistoricalInvestor.STATUS_ACTIVE,
+                HistoricalInvestor.STATUS_OVERWRITTEN,
             )
         )
         queryset = queryset.select_related(
@@ -345,8 +341,8 @@ class ActivityBase(models.Model):
         if len(operating_companies) > 0:
             queryset = operating_companies[0].venture_involvements.filter(
                 fk_investor__fk_status__in=(
-                    InvestorBase.STATUS_ACTIVE,
-                    InvestorBase.STATUS_OVERWRITTEN,
+                    HistoricalInvestor.STATUS_ACTIVE,
+                    HistoricalInvestor.STATUS_OVERWRITTEN,
                 ),
                 role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE,
             )
@@ -374,29 +370,41 @@ class ActivityBase(models.Model):
         contract_size = self.get_current("contract_size")
         production_size = self.get_current("production_size")
 
+        # TODO The following code seems to be doing the same thing in most cases?
         negotiation_status = self.get_negotiation_status()
         # 1) IF Negotiation status IS Intended
-        if negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
+        if negotiation_status in HistoricalActivity.NEGOTIATION_STATUSES_INTENDED:
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
         # 2) IF Negotiation status IS Concluded
-        elif negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
+        elif negotiation_status in HistoricalActivity.NEGOTIATION_STATUSES_CONCLUDED:
             # USE Contract size or Production size (in the given order)
             value = contract_size or production_size or 0
         # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+        elif (
+            negotiation_status
+            == HistoricalActivity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED
+        ):
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+        elif (
+            negotiation_status
+            == HistoricalActivity.NEGOTIATION_STATUS_CONTRACT_CANCELLED
+        ):
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 5) IF Negotiation status IS Contract expired
-        elif negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+        elif (
+            negotiation_status == HistoricalActivity.NEGOTIATION_STATUS_CONTRACT_EXPIRED
+        ):
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 6) IF Negotiation status IS Change of ownership
-        elif negotiation_status == Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+        elif (
+            negotiation_status
+            == HistoricalActivity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP
+        ):
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         else:
@@ -631,8 +639,8 @@ class ActivityBase(models.Model):
             investor_identifiers = investor.venture_involvements.stakeholders()
             investor_identifiers = investor_identifiers.filter(
                 fk_investor__fk_status_id__in=(
-                    Investor.STATUS_ACTIVE,
-                    Investor.STATUS_OVERWRITTEN,
+                    HistoricalInvestor.STATUS_ACTIVE,
+                    HistoricalInvestor.STATUS_OVERWRITTEN,
                 )
             )
             investor_identifiers = investor_identifiers.values_list(
@@ -736,95 +744,6 @@ class ActivityBase(models.Model):
             return None
 
 
-class Activity(ActivityBase):
-    """
-    Just the most recent approved version of an activity
-    (for simple queries in the public interface).
-
-    There should only be one activity per activity_identifier.
-    """
-
-    is_public = models.BooleanField(_("Is public"), default=False, db_index=True)
-    deal_scope = models.CharField(
-        _("Deal scope"),
-        max_length=16,
-        choices=ActivityBase.DEAL_SCOPE_CHOICES,
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    negotiation_status = models.CharField(
-        _("Negotiation status"),
-        max_length=64,
-        choices=ActivityBase.NEGOTIATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    implementation_status = models.CharField(
-        verbose_name=_("Implementation status"),
-        max_length=64,
-        choices=ActivityBase.IMPLEMENTATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    contract_size = models.IntegerField(
-        verbose_name=_("Current size under contract"),
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    production_size = models.IntegerField(
-        verbose_name=_("Current size in operation (production)"),
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    deal_size = models.IntegerField(
-        verbose_name=_("Deal size"), blank=True, null=True, db_index=True
-    )
-    init_date = models.CharField(
-        verbose_name=_("Initiation year or date"),
-        max_length=10,
-        blank=True,
-        null=True,
-        db_index=True,
-    )
-    fully_updated_date = models.DateField(
-        _("Fully updated date"), blank=True, null=True
-    )
-    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
-    forest_concession = models.BooleanField(_("Forest concession"), default=False)
-
-    def refresh_cached_attributes(self):
-        self.implementation_status = self.get_implementation_status()
-        self.negotiation_status = self.get_negotiation_status()
-        self.contract_size = self.get_contract_size()
-        self.production_size = self.get_production_size()
-        self.deal_size = self.get_deal_size()
-        self.deal_scope = self.get_deal_scope()
-        self.init_date = self.get_init_date()
-        self.fully_updated_date = self.get_fully_updated_date()
-        self.is_public = self.is_public_deal()
-        top_investors = self.get_top_investors()
-        self.top_investors = self.format_investors(top_investors)
-        self.availability = self.get_availability()
-        self.forest_concession = self.get_forest_concession()
-        self.save()
-
-    class Meta:
-        verbose_name = _("Activity")
-        verbose_name_plural = _("Activities")
-        index_together = [
-            ["is_public", "deal_scope"],
-            ["is_public", "deal_scope", "negotiation_status"],
-            ["is_public", "deal_scope", "implementation_status"],
-            ["is_public", "deal_scope", "negotiation_status", "implementation_status"],
-        ]
-        permissions = (("review_activity", "Can review activity changes"),)
-
-
 class HistoricalActivityQuerySet(ActivityQuerySet):
     def get_for_user(self, user):
         qs = self.filter(history_user=user).values_list(
@@ -883,6 +802,12 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
     def latest_only(self, status=None):
         return self.filter(id__in=self.latest_ids(status))
 
+    def activity_for_comments(self, activity_identifier):
+        # Return first activity version, since comments are not version specific
+        return (
+            self.filter(activity_identifier=activity_identifier).order_by("id").first()
+        )
+
 
 class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
     """
@@ -891,13 +816,6 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
     Only the current historical activity should have a public version set.
     """
 
-    public_version = models.OneToOneField(
-        Activity,
-        blank=True,
-        null=True,
-        related_name="historical_version",
-        on_delete=models.SET_NULL,
-    )
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey(
         "auth.User", blank=True, null=True, on_delete=models.SET_NULL
@@ -912,7 +830,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             return
 
         # Only approvals of administrators should go public
-        if user.has_perm("landmatrix.change_activity"):
+        if user.has_perm("landmatrix.change_historicalactivity"):
             # TODO: this logic is taken from changeset protocol
             # but it won't really work properly. We need to determine behaviour
             # when updates happen out of order. There can easily be many edits,
@@ -942,7 +860,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             return
 
         # Only rejections of administrators should go public
-        if user.has_perm("landmatrix.change_activity"):
+        if user.has_perm("landmatrix.change_historicalactivity"):
             self.fk_status_id = HistoricalActivity.STATUS_REJECTED
             self.save(update_fields=["fk_status"])
             # self.update_public_activity() - don't update public activity
@@ -961,7 +879,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             return
 
         # Only approvals of administrators should be deleted
-        if user.has_perm("landmatrix.delete_activity"):
+        if user.has_perm("landmatrix.delete_historicalactivity"):
             self.fk_status_id = HistoricalActivity.STATUS_DELETED
             self.save(update_fields=["fk_status"])
             self.update_public_activity()
@@ -973,7 +891,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             return
 
         # Only approvals of administrators should be deleted
-        if user.has_perm("landmatrix.delete_activity"):
+        if user.has_perm("landmatrix.delete_historicalactivity"):
             self.fk_status_id = HistoricalActivity.STATUS_REJECTED
             self.save(update_fields=["fk_status"])
 
@@ -1047,50 +965,11 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
         # if self.public_version:
         #    return False
 
-        activity = (
-            Activity.objects.filter(activity_identifier=self.activity_identifier)
-            .order_by("-id")
-            .first()
-        )
-
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
-            if activity:
-                activity.delete()
             return
         elif self.fk_status_id == self.STATUS_REJECTED:
-            # Activity add has been rejected?
-            activities = HistoricalActivity.objects.filter(
-                activity_identifier=self.activity_identifier
-            )
-            if activity and len(activities) == 1:
-                activity.delete()
             return
-
-        if not activity:
-            activity = Activity.objects.create(
-                activity_identifier=self.activity_identifier
-            )
-
-        activity.fully_updated = self.fully_updated
-        activity.fk_status_id = self.fk_status_id
-        activity.save()
-
-        # Delete old and create new activity attributes
-        activity.attributes.all().delete()
-
-        for hattribute in self.attributes.all():
-            ActivityAttribute.objects.create(
-                fk_activity_id=activity.id,
-                fk_group_id=hattribute.fk_group_id,
-                fk_language_id=hattribute.fk_language_id,
-                name=hattribute.name,
-                value=hattribute.value,
-                value2=hattribute.value2,
-                date=hattribute.date,
-                is_current=hattribute.is_current,
-                polygon=hattribute.polygon,
-            )
 
         # Confirm pending investors and involvement
         hinvolvement = self.involvements.all()
@@ -1104,25 +983,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             hinvestor = hinvolvement.fk_investor
             investor = hinvestor.update_public_investor()
 
-            # Update public involvement
-            InvestorActivityInvolvement.objects.filter(
-                fk_activity__activity_identifier=self.activity_identifier
-            ).delete()
-            InvestorActivityInvolvement.objects.create(
-                fk_activity=activity,
-                fk_investor=investor,
-                fk_status_id=InvestorActivityInvolvement.STATUS_OVERWRITTEN,
-            )
-        activity.refresh_cached_attributes()
-
-        # Keep public version relation up to date
-        HistoricalActivity.objects.filter(public_version=activity).update(
-            public_version=None
-        )
-        self.public_version = activity
-        self.save(update_fields=["public_version"], update_elasticsearch=True)
-
-        return activity
+        self.save(update_elasticsearch=True)
 
     @property
     def changeset_comment(self):
@@ -1142,22 +1003,30 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
 
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
+        trigger_gnd = kwargs.pop("trigger_gnd", False)
         super().save(*args, **kwargs)
         if update_elasticsearch:
-            from ..tasks import index_activity, delete_activity
+            from apps.landmatrix.tasks import index_activity, delete_historicalactivity
 
             if self.fk_status_id == self.STATUS_DELETED:
                 transaction.on_commit(
-                    lambda: delete_activity.delay(self.activity_identifier)
+                    lambda: delete_historicalactivity.delay(self.activity_identifier)
                 )
             else:
                 transaction.on_commit(
                     lambda: index_activity.delay(self.activity_identifier)
                 )
+        if trigger_gnd and settings.GND_ENABLED:
+            from apps.greennewdeal.tasks import task_propagate_save_to_gnd_deal
+
+            if settings.CELERY_ENABLED:
+                task_propagate_save_to_gnd_deal.delay(self.pk)
+            else:
+                task_propagate_save_to_gnd_deal(self.pk)
 
     class Meta:
         verbose_name = _("Historical activity")
         verbose_name_plural = _("Historical activities")
-        get_latest_by = "history_date"
         ordering = ("-history_date",)
         get_latest_by = "id"
+        permissions = (("review_historicalactivity", "Can review activity changes"),)

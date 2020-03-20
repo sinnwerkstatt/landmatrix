@@ -385,18 +385,18 @@ class APIElasticsearchTestCase(
             "buckets", []
         )
         activity_identifiers = set([b["key"] for b in activity_identifiers])
-        self.assertEqual(activity_identifiers, set([1, 2]))
+        self.assertEqual(activity_identifiers, {1, 2})
 
     def test_delete_activity(self):
         self.elasticsearch.index_activity(activity_identifier=1)
         self.elasticsearch.refresh_index()
-        self.elasticsearch.delete_activity(1)
+        self.elasticsearch.delete_historicalactivity(1)
         self.elasticsearch.refresh_index()
         self.assert_activity_not_indexed(activity_identifier=1)
 
     def test_delete_investor(self):
         self.elasticsearch.index_investor(investor_identifier=1)
         self.elasticsearch.refresh_index()
-        self.elasticsearch.delete_investor(1)
+        self.elasticsearch.delete_historicalinvestor(1)
         self.elasticsearch.refresh_index()
         self.assert_investor_not_indexed(investor_identifier=1)

@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('init_date', models.CharField(blank=True, db_index=True, max_length=10, null=True, verbose_name='Initiation year or date')),
             ],
             options={
-                'permissions': (('review_activity', 'Can review activity changes'),),
+                'permissions': (('review_historicalactivity', 'Can review activity changes'),),
                 'verbose_name': 'Activity',
                 'verbose_name_plural': 'Activities',
             },

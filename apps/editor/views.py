@@ -141,12 +141,12 @@ class PendingChangesMixin(FilteredQuerySetMixin):
             queryset = HistoricalActivity.objects.all()
 
         # for public users:
-        if not self.request.user.has_perm("landmatrix.review_activity"):
+        if not self.request.user.has_perm("landmatrix.review_historicalactivity"):
             queryset = queryset.none()
         # for editors:
         # show only activites that have been added/changed by public users
         # and not been reviewed by another editor yet
-        elif not self.request.user.has_perm("landmatrix.change_activity"):
+        elif not self.request.user.has_perm("landmatrix.change_historicalactivity"):
             queryset = queryset.filter(history_user__groups__name="Reporters")
             queryset = queryset.exclude(changesets__fk_user__groups__name="Editors")
         # for admins:
@@ -164,12 +164,12 @@ class PendingChangesMixin(FilteredQuerySetMixin):
             queryset = HistoricalInvestor.objects.all()
 
         # for public users:
-        if not self.request.user.has_perm("landmatrix.review_activity"):
+        if not self.request.user.has_perm("landmatrix.review_historicalactivity"):
             queryset = queryset.none()
         # for editors:
         # show only activites that have been added/changed by public users
         # and not been reviewed by another editor yet
-        elif not self.request.user.has_perm("landmatrix.change_activity"):
+        elif not self.request.user.has_perm("landmatrix.change_historicalactivity"):
             queryset = queryset.filter(history_user__groups__name="Reporters")
             # queryset = queryset.exclude(changesets__fk_user__groups__name='Editors')
         # for admins:
@@ -395,7 +395,7 @@ class ManageRootView(RedirectView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.has_perm("landmatrix.review_activity"):
+        if self.request.user.has_perm("landmatrix.review_historicalactivity"):
             url = reverse("manage_feedback")
         else:
             url = reverse("manage_for_user")
@@ -443,7 +443,7 @@ class BaseManageView(PendingChangesMixin, ListView):
 class ManageFeedbackView(BaseManageView):
     action = "feedback"
 
-    @method_decorator(permission_required("landmatrix.review_activity"))
+    @method_decorator(permission_required("landmatrix.review_historicalactivity"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -465,7 +465,7 @@ class ManageRejectedView(BaseManageView):
 class ManageAddsView(BaseManageView):
     action = "pending_adds"
 
-    @method_decorator(permission_required("landmatrix.review_activity"))
+    @method_decorator(permission_required("landmatrix.review_historicalactivity"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -476,7 +476,7 @@ class ManageAddsView(BaseManageView):
 class ManageUpdatesView(BaseManageView):
     action = "pending_updates"
 
-    @method_decorator(permission_required("landmatrix.review_activity"))
+    @method_decorator(permission_required("landmatrix.review_historicalactivity"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -487,7 +487,7 @@ class ManageUpdatesView(BaseManageView):
 class ManageDeletesView(BaseManageView):
     action = "pending_deletes"
 
-    @method_decorator(permission_required("landmatrix.review_activity"))
+    @method_decorator(permission_required("landmatrix.review_historicalactivity"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -509,7 +509,7 @@ class BaseManageDealView(FormView, DetailView):
     pk_url_kwarg = "id"
     context_object_name = "item"
 
-    @method_decorator(permission_required("landmatrix.review_activity"))
+    @method_decorator(permission_required("landmatrix.review_historicalactivity"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

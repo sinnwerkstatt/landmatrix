@@ -7,51 +7,51 @@
   {# FIXME: EXPORT_FORMATS available in the context would make this much cleaner #}
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug group_value=group_value format="xml" %}{% list_params %}" class="btn-media xml">
+    <a href="{% url "export" group=group_slug group_value=group_value format="xml" %}{% list_params %}" class="btn-media xml" data-action-type="{{ group_slug }}">
     {% else %}
-    <a href="{% url "export" group=group_slug format="xml" %}{% list_params %}" class="btn-media xml">
+    <a href="{% url "export" group=group_slug format="xml" %}{% list_params %}" class="btn-media xml" data-action-type="{{ group_slug }}">
     {% endif %}
   {% else %}
     {% if activity %}
-    <a href="{% url "export" deal_id=activity.activity_identifier format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml">
+    <a href="{% url "export" deal_id=activity.activity_identifier format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml" data-action-type="deal">
     {% else %}
-    <a href="{% url "export" format="xml" %}{% list_params %}" class="btn-media xml">
+    <a href="{% url "export" format="xml" %}{% list_params %}" class="btn-media xml" data-action-type="all">
     {% endif %}
   {% endif %}
     <i class=""></i>XML
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug group_value=group_value format="csv" %}{% list_params %}" class="btn-media csv">
+    <a href="{% url "export" group=group_slug group_value=group_value format="csv" %}{% list_params %}" class="btn-media csv" data-action-type="{{ group_slug }}">
     {% else %}
-    <a href="{% url "export" group=group_slug format="csv" %}{% list_params %}" class="btn-media csv">
+    <a href="{% url "export" group=group_slug format="csv" %}{% list_params %}" class="btn-media csv" data-action-type="{{ group_slug }}">
     {% endif %}
   {% else %}
     {% if activity %}
-    <a href="{% url "export" deal_id=activity.activity_identifier format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
+    <a href="{% url "export" deal_id=activity.activity_identifier format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv" data-action-type="deal">
     {% else %}
-    <a href="{% url "export" format="csv" %}{% list_params %}" class="btn-media csv">
+    <a href="{% url "export" format="csv" %}{% list_params %}" class="btn-media csv" data-action-type="all">
     {% endif %}
   {% endif %}
     <i class=""></i>CSV
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug group_value=group_value format="xls" %}{% list_params %}" class="btn-media xls">
+    <a href="{% url "export" group=group_slug group_value=group_value format="xls" %}{% list_params %}" class="btn-media xls" data-action-type="{{ group_slug }}">
     {% else %}
-    <a href="{% url "export" group=group_slug format="xls" %}{% list_params %}" class="btn-media xls">
+    <a href="{% url "export" group=group_slug format="xls" %}{% list_params %}" class="btn-media xls" data-action-type="{{ group_slug }}">
     {% endif %}
   {% else %}
     {% if activity %}
-    <a href="{% url "export" deal_id=activity.activity_identifier format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
+    <a href="{% url "export" deal_id=activity.activity_identifier format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls" data-action-type="deal">
     {% else %}
-    <a href="{% url "export" format="xls" %}{% list_params %}" class="btn-media xls">
+    <a href="{% url "export" format="xls" %}{% list_params %}" class="btn-media xls" data-action-type="all">
     {% endif %}
   {% endif %}
     <i class=""></i>XLS
   </a>
   {% if activity and 'PDF' in export_formats %}
-  <a class="btn-media pdf" href="{% if activity %}{% url 'deal_detail_pdf' deal_id=activity.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}">
+  <a class="btn-media pdf" href="{% if activity %}{% url 'deal_detail_pdf' deal_id=activity.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}" data-action-type="deal">
       <i class=""></i>PDF
   </a>
   {% endif %}

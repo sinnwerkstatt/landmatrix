@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-
 from glob import glob
 
 import environ
+from doit import get_var
 
 env = environ.Env()
 env.read_env(".env")
@@ -12,6 +12,10 @@ DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 def task_update():
     return {"task_dep": ["collectstatic", "compilemessages", "migrate"], "actions": []}
+
+
+def task_full_update():
+    return {"task_dep": ["git_pull", "poetry_install", "update"], "actions": []}
 
 
 def task_initial_setup():
@@ -46,17 +50,17 @@ def task_reset_db():
 
 #############################
 def task_yarn_install():
-    return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install --prod"]}
+    return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install"]}
 
 
 def task_convert_scss():
     for scss in glob("apps/landmatrix/static/css/[a-z]*.scss", recursive=True):
         css = scss[:-4] + "css"
         yield {
-            "name": scss,
+            "name": f"pysassc {scss} {css}",
             "file_dep": [scss],
             "targets": [css],
-            "actions": [f"pysassc {scss} > {css}"],
+            "actions": [f"pysassc {scss} {css}"],
             "clean": True,
         }
 
@@ -82,3 +86,14 @@ def task_compilemessages():
 
 def task_migrate():
     return {"actions": ["./manage.py migrate --noinput"]}
+
+
+def task_git_pull():
+    branch = get_var("branch", "master")
+    return {"actions": [f"git checkout {branch}", "git pull"]}
+
+
+def task_poetry_install():
+    dev = "--no-dev" if not get_var("dev", False) else ""
+    prod = "-E production" if get_var("production", False) else ""
+    return {"actions": [f"poetry install {dev} {prod}"]}

@@ -26,8 +26,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("impersonate/", include("impersonate.urls")),
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
-    # path('api/docs/', include('rest_framework_docs.urls')),
-    path("api/", include("apps.api.urls")),
     # Wagtail
     path("cms/", include("wagtail.admin.urls")),
     path("news/", include("blog.urls", namespace="news")),
@@ -60,15 +58,18 @@ urlpatterns = [
     ),
     path("editor/", include("apps.editor.urls")),
     path(
-        "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
-    ),
-    path(
         "prometheus/metrics/",
         exports.ExportToDjangoView,
         name="prometheus-django-metrics",
     ),
-    path("", include("wagtail.core.urls")),
 ]
+
+if settings.GND_ENABLED:
+    urlpatterns += [
+        path("newdeal/", include("apps.greennewdeal.urls")),
+        path("graphql/", include("apps.graphql.urls")),
+        path("api/", include("apps.greennewdeal.urlsapi")),
+    ]
 
 if settings.DEBUG:
     # Non i18n patterns
@@ -80,3 +81,12 @@ if settings.DEBUG:
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
     except ImportError:
         pass
+
+urlpatterns += [
+    # path('api/docs/', include('rest_framework_docs.urls')),
+    path("api/", include("apps.api.urls")),
+    path(
+        "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
+    ),
+    path("", include("wagtail.core.urls")),
+]

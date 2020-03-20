@@ -19,7 +19,6 @@ from apps.grid.utils import has_perm_approve_reject
 from apps.grid.views.base import TableGroupView
 from apps.grid.views.utils import DEAL_FORMS, PUBLIC_FORMS, USER_FORMS
 from apps.landmatrix.models import (
-    Activity,
     ActivityAttributeGroup,
     ActivityChangeset,
     ActivityFeedback,
@@ -103,8 +102,8 @@ class DealBaseView(TemplateView):
         investor_form = list(
             filter(lambda f: isinstance(f, OperationalStakeholderForm), forms)
         )[0]
-        is_admin = self.request.user.has_perm("landmatrix.change_activity")
-        is_editor = self.request.user.has_perm("landmatrix.review_activity")
+        is_admin = self.request.user.has_perm("landmatrix.change_historicalactivity")
+        is_editor = self.request.user.has_perm("landmatrix.review_historicalactivity")
 
         if old_hactivity.fk_status_id == HistoricalActivity.STATUS_PENDING:
             # Only editors and administrators are allowed to edit pending versions - already handled by get_object()
@@ -132,7 +131,7 @@ class DealBaseView(TemplateView):
                 hactivity.fully_updated = self.get_fully_updated(form)
             else:  # pragma: no cover
                 hactivity.fully_updated = False
-            hactivity.save()
+            hactivity.save(trigger_gnd=True)
             self.create_involvement(hactivity, investor_form)
 
             if not is_admin:
@@ -295,7 +294,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         queryset = HistoricalActivity.objects
         if not self.request.user.is_authenticated:
             a = self._get_public_activity()
-            if not a or not a.is_public:
+            if not a or not a.is_public_deal():
                 raise Http404("Activity %s is not public" % deal_id)
             queryset = queryset.public_or_deleted(self.request.user)
         try:
@@ -308,7 +307,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         # Status: Deleted
         if activity.fk_status_id == HistoricalActivity.STATUS_DELETED:
             # Only Administrators are allowed to edit (recover) deleted deals
-            if not self.request.user.has_perm("landmatrix.change_activity"):
+            if not self.request.user.has_perm("landmatrix.change_historicalactivity"):
                 raise Http404("Activity %s has been deleted" % deal_id)
         # Status: Rejected
         # if activity.fk_status_id == HistoricalActivity.STATUS_REJECTED:
@@ -320,15 +319,20 @@ class DealDetailView(PDFViewMixin, TemplateView):
 
     def _get_public_activity(self):
         # TODO: Cache result for user
-        return Activity.objects.filter(
-            activity_identifier=self.kwargs.get("deal_id")
-        ).first()
+        return (
+            HistoricalActivity.objects.public()
+            .filter(activity_identifier=self.kwargs.get("deal_id"))
+            .order_by("-id")
+            .first()
+        )
 
     def get_context_data(self, deal_id, history_id=None):
         context = super(DealDetailView, self).get_context_data()
         activity = self.get_object()
         context["activity"] = activity
-        context["public_activity"] = self._get_public_activity()
+        context["comment_activity"] = HistoricalActivity.objects.activity_for_comments(
+            activity.activity_identifier
+        )
         context["forms"] = get_forms(activity, user=self.request.user)
         context["investor"] = activity.stakeholders
         context["history_id"] = history_id
@@ -370,7 +374,7 @@ class DealCreateView(DealBaseView):
         hactivity = HistoricalActivity(
             activity_identifier=activity_identifier, history_user=self.request.user
         )
-        is_admin = self.request.user.has_perm("landmatrix.add_activity")
+        is_admin = self.request.user.has_perm("landmatrix.add_historicalactivity")
         hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
 
@@ -526,7 +530,7 @@ class DealDeleteView(DealBaseView):
         deal_id = self.kwargs.get("deal_id")
         history_id = self.kwargs.get("history_id", None)
         queryset = HistoricalActivity.objects
-        if not self.request.user.has_perm("landmatrix.review_activity"):
+        if not self.request.user.has_perm("landmatrix.review_historicalactivity"):
             queryset = queryset.public()
         try:
             if history_id:  # pragma: no cover
@@ -535,7 +539,7 @@ class DealDeleteView(DealBaseView):
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404("Activity %s does not exist (%s)" % (deal_id, str(e)))
-        if not self.request.user.has_perm("landmatrix.change_activity"):
+        if not self.request.user.has_perm("landmatrix.change_historicalactivity"):
             if activity.fk_status_id == activity.STATUS_DELETED:
                 raise Http404("Activity %s has already been deleted" % deal_id)
         return activity
@@ -547,7 +551,7 @@ class DealDeleteView(DealBaseView):
         attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
-        if self.request.user.has_perm("landmatrix.delete_activity"):
+        if self.request.user.has_perm("landmatrix.delete_historicalactivity"):
             hactivity.fk_status_id = hactivity.STATUS_DELETED
         else:
             hactivity.fk_status_id = hactivity.STATUS_TO_DELETE
@@ -564,11 +568,11 @@ class DealDeleteView(DealBaseView):
             involvement.fk_activity = hactivity
             involvement.save()
 
-        if self.request.user.has_perm("landmatrix.delete_activity"):
+        if self.request.user.has_perm("landmatrix.delete_historicalactivity"):
             hactivity.update_public_activity()
 
         # Create success message
-        if self.request.user.has_perm("landmatrix.delete_activity"):
+        if self.request.user.has_perm("landmatrix.delete_historicalactivity"):
             messages.success(
                 self.request,
                 self.success_message_admin.format(hactivity.activity_identifier),
@@ -601,7 +605,7 @@ class DealRecoverView(DealBaseView):
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404("Activity %s does not exist (%s)" % (deal_id, str(e)))
-        if not self.request.user.has_perm("landmatrix.change_activity"):
+        if not self.request.user.has_perm("landmatrix.change_historicalactivity"):
             if activity.fk_status_id != activity.STATUS_DELETED:
                 raise Http404("Activity %s is already active" % deal_id)
         return activity
@@ -615,7 +619,7 @@ class DealRecoverView(DealBaseView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hactivity = self.get_object()
-        if not self.request.user.has_perm("landmatrix.change_activity"):
+        if not self.request.user.has_perm("landmatrix.change_historicalactivity"):
             return HttpResponseRedirect(
                 reverse(
                     "deal_detail", kwargs={"deal_id": hactivity.activity_identifier}

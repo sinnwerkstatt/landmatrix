@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
 from apps.landmatrix.models import (
-    Activity,
+    HistoricalActivity,
     FilterPreset,
     HistoricalInvestorVentureInvolvement,
     HistoricalActivity,
@@ -104,30 +104,6 @@ class DealSerializer(serializers.Serializer):
         return super().to_representation(obj)
 
 
-class DealDetailSerializer(serializers.ModelSerializer):
-    """
-    Returns deal attributes.
-    """
-
-    attributes = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Activity
-        fields = (
-            "activity_identifier",
-            "fk_status",
-            "is_public",
-            "deal_scope",
-            "negotiation_status",
-            "implementation_status",
-            "deal_size",
-            "attributes",
-        )
-
-    def get_attributes(self, obj):
-        return obj.attributes_as_dict
-
-
 class DealInvestorNetworkSerializer(serializers.BaseSerializer):
     """
     This serializer takes an investor and outputs a list of involvements
@@ -144,7 +120,7 @@ class DealInvestorNetworkSerializer(serializers.BaseSerializer):
             {
                 "id": 345,
                 "name": "",
-                [...] 
+                [...]
                 "involvement": [
                     "parent_type": "stakeholder" // or "investor"
                     "percentage": "",

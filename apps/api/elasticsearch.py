@@ -16,7 +16,7 @@ from apps.grid.forms.investor_form import ExportInvestorForm
 from apps.grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from apps.grid.utils import get_spatial_properties
 from apps.grid.views.deal import DealUpdateView
-from apps.landmatrix.models.activity import Activity, HistoricalActivity
+from apps.landmatrix.models.activity import HistoricalActivity
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.investor import (
     HistoricalInvestor,
@@ -510,9 +510,6 @@ class ElasticSearch(object):
                 "status": activity.fk_status_id,
             }
             # TODO: Prevent extra Activity query
-            # e.g. move these attributes to BaseActivity
-            # public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
-            # if public_activity:
             top_investors = activity.get_top_investors()
             # parent_companies = activity.get_parent_companies()
             investor_countries = activity.get_investor_countries()
@@ -729,7 +726,7 @@ class ElasticSearch(object):
             # A) Operating company with no parent companies gets assigned complete deal size
             # B) All Parent companies with no parents get assigned the complete deal size each
             # Exception: Parent company multiple roles, assign deal size only once.
-            # public_activity = Activity.objects.filter(
+            # public_activity = HistoricalActivity.objects.filter(
             #    activity_identifier=activity.activity_identifier).order_by('-id').first()
             # if public_activity:
             country = activity.target_country
@@ -816,12 +813,14 @@ class ElasticSearch(object):
         elif doc_type == "involvement":
             return InvestorVentureInvolvementForm.get_display_properties(doc)
         elif doc_type in ("deal", "location"):
-            NEGOTIATION_STATUS_MAP = dict(Activity.NEGOTIATION_STATUS_CHOICES)
+            NEGOTIATION_STATUS_MAP = dict(HistoricalActivity.NEGOTIATION_STATUS_CHOICES)
             current_negotiation_status = doc.get("current_negotiation_status")
             current_negotiation_status = NEGOTIATION_STATUS_MAP.get(
                 current_negotiation_status
             )
-            IMPLEMENTATION_STATUS_MAP = dict(Activity.IMPLEMENTATION_STATUS_CHOICES)
+            IMPLEMENTATION_STATUS_MAP = dict(
+                HistoricalActivity.IMPLEMENTATION_STATUS_CHOICES
+            )
             current_implementation_status = doc.get("current_implementation_status")
             current_implementation_status = IMPLEMENTATION_STATUS_MAP.get(
                 current_implementation_status
@@ -982,7 +981,7 @@ class ElasticSearch(object):
         self.conn.refresh(self.index_name)
 
     def search(self, query, doc_type="deal", sort=[], aggs={}):
-        """ Executes paginated queries until all results have been retrieved. 
+        """ Executes paginated queries until all results have been retrieved.
             @return: The full list of hits. """
         results = []
 
@@ -1023,7 +1022,7 @@ class ElasticSearch(object):
 
         return results
 
-    def delete_activity(self, activity_identifier):
+    def delete_historicalactivity(self, activity_identifier):
         query = {"term": {"activity_identifier": activity_identifier}}
         # Collect activity IDs (required for routing)
         activity_ids = self.conn.search(
@@ -1049,7 +1048,7 @@ class ElasticSearch(object):
             except ElasticHttpNotFoundError as e:  # pragma: no cover
                 pass
 
-    def delete_investor(self, investor_identifier):
+    def delete_historicalinvestor(self, investor_identifier):
         query = {"term": {"investor_identifier": investor_identifier}}
         # Collect investor IDs (required for routing)
         activity_ids = self.conn.search(

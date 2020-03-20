@@ -45,6 +45,18 @@
                                 form.find('.point_lat :input,.point_lon :input').attr('readonly', 'readonly');
                             }
                         });
+                        form.find('.point_lat :input').attr('placeholder', "format: -23.23123");
+                        form.find('.point_lon :input').attr('placeholder', "format: 123.23123");
+
+                        form.find('.point_lat :input,.point_lon :input').change(function () {
+                          let val = this.value;
+                          let range = this.id.includes("point_lon") ? 180 : 90;
+                          this.setCustomValidity(`Value must be between -${range} and ${range} and use . as delimiter.`);
+                          if (/^[+-]?\d+(?:\.\d*?)?$/.test(val) && (-1 * range < parseFloat(val)) && (parseFloat(val) < range)) {
+                            this.setCustomValidity("");
+                          }
+                        });
+
                         // Init map
                         var maps = form.find('.map-serialized-data');
                         maps.each(function(index) {

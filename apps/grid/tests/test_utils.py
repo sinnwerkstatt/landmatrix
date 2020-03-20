@@ -11,7 +11,6 @@ from apps.grid.fields import (
 from apps.grid.tests.views.base import BaseDealTestCase
 from apps.grid.utils import *
 from apps.landmatrix.models import (
-    Activity,
     Country,
     HistoricalActivity,
     HistoricalInvestor,
@@ -23,7 +22,6 @@ from apps.landmatrix.tests.mixins import InvestorsFixtureMixin, ActivitiesFixtur
 class GridUtilsTestCase(
     ActivitiesFixtureMixin, InvestorsFixtureMixin, BaseDealTestCase
 ):
-
     fixtures = ["countries_and_regions", "users_and_groups", "status"]
     act_fixtures = [
         {"id": 1, "activity_identifier": 1, "attributes": {}},
@@ -57,7 +55,9 @@ class GridUtilsTestCase(
         self.assertEqual("", get_display_value(AreaField(), []))
 
     def test_get_display_value_with_year_based_choice_field(self):
-        field = YearBasedChoiceField(choices=Activity.NEGOTIATION_STATUS_CHOICES)
+        field = YearBasedChoiceField(
+            choices=HistoricalActivity.NEGOTIATION_STATUS_CHOICES
+        )
         attributes = [
             dict(
                 name="negotiation_status",
@@ -98,7 +98,7 @@ class GridUtilsTestCase(
 
     def test_get_display_value_with_year_based_multiple_choice_integer_field(self):
         field = YearBasedMultipleChoiceIntegerField(
-            choices=Activity.NEGOTIATION_STATUS_CHOICES
+            choices=HistoricalActivity.NEGOTIATION_STATUS_CHOICES
         )
         attributes = [
             dict(

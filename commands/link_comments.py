@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 from django.core.management import BaseCommand
-from django.contrib.contenttypes.models import ContentType
-
-from threadedcomments import get_model
-
-from apps.landmatrix.models import HistoricalActivity, Activity
 
 
 class Command(BaseCommand):
     help = "Replace historical activity IDs with activity IDs within Threaded comments"
 
     def handle(self, *args, **options):
+        pass
+        """
         ThreadedComment = get_model()
         passed, failed = 0, 0
         for comment in ThreadedComment.objects.filter(content_type_id=42):
@@ -30,3 +27,4 @@ class Command(BaseCommand):
             except HistoricalActivity.DoesNotExist:
                 failed += 1
         self.stdout.write("%i passed, %i failed" % (passed, failed))
+        """

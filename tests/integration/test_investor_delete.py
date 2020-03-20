@@ -179,7 +179,9 @@ class TestInvestorDelete(InvestorsFixtureMixin, BaseInvestorTestCase):
             # Action comment
             "tg_action_comment": "Test approve by Editor"
         }
-        url = reverse("manage_approve_delete_investor", kwargs={"id": investor.id})
+        url = reverse(
+            "manage_approve_delete_historicalinvestor", kwargs={"id": investor.id}
+        )
         request = self.mock_request("post", url, "editor", data=data)
         response = ApproveInvestorDeleteView.as_view()(request, id=investor.id)
         # if response.status_code == 200:
@@ -227,7 +229,9 @@ class TestInvestorDelete(InvestorsFixtureMixin, BaseInvestorTestCase):
             # Action comment
             "tg_action_comment": "Test approve by Administrator"
         }
-        url = reverse("manage_approve_delete_investor", kwargs={"id": investor.id})
+        url = reverse(
+            "manage_approve_delete_historicalinvestor", kwargs={"id": investor.id}
+        )
         request = self.mock_request("post", url, "administrator", data=data)
         response = ApproveInvestorDeleteView.as_view()(request, id=investor.id)
         # if response.status_code == 200:
@@ -303,7 +307,9 @@ class TestInvestorDelete(InvestorsFixtureMixin, BaseInvestorTestCase):
             # Action comment
             "tg_action_comment": "Test approve by Administrator"
         }
-        url = reverse("manage_approve_delete_investor", kwargs={"id": investor.id})
+        url = reverse(
+            "manage_approve_delete_historicalinvestor", kwargs={"id": investor.id}
+        )
         request = self.mock_request("post", url, "administrator", data=data)
         response = ApproveInvestorDeleteView.as_view()(request, id=investor.id)
         # if response.status_code == 200:

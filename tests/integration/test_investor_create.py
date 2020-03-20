@@ -148,7 +148,10 @@ class TestInvestorCreate(InvestorsFixtureMixin, BaseInvestorTestCase):
             "tg_action_comment": "Test approve by Editor"
         }
         request = self.factory.post(
-            reverse("manage_approve_change_investor", kwargs={"id": investor.id}), data
+            reverse(
+                "manage_approve_change_historicalinvestor", kwargs={"id": investor.id}
+            ),
+            data,
         )
         # Mock messages framework (not available for unit tests)
         setattr(request, "session", {})
@@ -183,7 +186,10 @@ class TestInvestorCreate(InvestorsFixtureMixin, BaseInvestorTestCase):
             "tg_action_comment": "Test approve by Administrator"
         }
         request = self.factory.post(
-            reverse("manage_approve_change_investor", kwargs={"id": investor.id}), data
+            reverse(
+                "manage_approve_change_historicalinvestor", kwargs={"id": investor.id}
+            ),
+            data,
         )
         # Mock messages framework (not available for unit tests)
         setattr(request, "session", {})
@@ -245,7 +251,10 @@ class TestInvestorCreate(InvestorsFixtureMixin, BaseInvestorTestCase):
             "tg_action_comment": "Test approve by Administrator"
         }
         request = self.factory.post(
-            reverse("manage_approve_change_investor", kwargs={"id": investor.id}), data
+            reverse(
+                "manage_approve_change_historicalinvestor", kwargs={"id": investor.id}
+            ),
+            data,
         )
         # Mock messages framework (not available for unit tests)
         setattr(request, "session", {})
