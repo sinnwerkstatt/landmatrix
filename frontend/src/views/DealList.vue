@@ -1,56 +1,60 @@
 <template>
   <div>
     <div v-html="data_introduction"></div>
-    <FilterBar/>
+    <FilterBar />
     <table id="summary" class="table table-striped">
       <thead>
-      <tr>
-        <th>#</th>
-        <th>Target country</th>
-        <th style="width:183px">Top investors</th>
-        <th>Intention of investment</th>
-        <th>Negotiation status</th>
-        <th>Implementation status</th>
-        <th>Deal size in ha</th>
-      </tr>
+        <tr>
+          <th>#</th>
+          <th>Target country</th>
+          <th style="width: 183px;">Top investors</th>
+          <th>Intention of investment</th>
+          <th>Negotiation status</th>
+          <th>Implementation status</th>
+          <th>Deal size in ha</th>
+        </tr>
       </thead>
       <tbody v-if="deals">
-      <tr v-for="deal in deals" :key="deal.id">
-        <td><a :href="deal.id">{{deal.id}}</a></td>
-        <td>{{deal.target_country.name}}</td>
-        <td v-html="parseTopInvestors(deal)"></td>
-        <td class="intention">
-          <ul class="list-unstyled">
-            <li v-for="intention in parseIntentionOfInvestment(deal)"
-                v-html="intention"/>
-          </ul>
-        </td>
-        <td>{{parseNegotiationStatus(deal)}}</td>
-        <td>{{parseImplementationStatus(deal)}}</td>
-        <td class="deal_size number">{{new Intl.NumberFormat().format(deal.deal_size)}}
-        </td>
-      </tr>
+        <tr v-for="deal in deals" :key="deal.id">
+          <td>
+            <a :href="deal.id">{{ deal.id }}</a>
+          </td>
+          <td>{{ deal.target_country.name }}</td>
+          <td v-html="parseTopInvestors(deal)"></td>
+          <td class="intention">
+            <ul class="list-unstyled">
+              <li
+                v-for="intention in parseIntentionOfInvestment(deal)"
+                v-html="intention"
+              />
+            </ul>
+          </td>
+          <td>{{ parseNegotiationStatus(deal) }}</td>
+          <td>{{ parseImplementationStatus(deal) }}</td>
+          <td class="deal_size number">
+            {{ new Intl.NumberFormat().format(deal.deal_size) }}
+          </td>
+        </tr>
       </tbody>
       <tbody v-else>
-      <tr>
-        <td colspan="10">
-          <div style="text-align: center; font-size: 1.4em;">Loading deals ...<span
-              class="lm-spinner"></span></div>
-        </td>
-      </tr>
+        <tr>
+          <td colspan="10">
+            <div style="text-align: center; font-size: 1.4em;">
+              Loading deals ...<span class="lm-spinner"></span>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
-
   </div>
 </template>
 
 <script>
-
   import FilterBar from "../components/FilterBar";
   const slugify = require("slugify");
 
   export default {
-    components: {FilterBar},
+    components: { FilterBar },
     // name: 'Deal',
     data() {
       return {
@@ -60,23 +64,27 @@
     computed: {
       deals() {
         return this.$store.state.deals;
-      }
+      },
     },
     methods: {
       parseTopInvestors(deal) {
-        return deal.top_investors.map((int) => {
-          return int.name
-        }).join('<br>')
+        return deal.top_investors
+          .map((int) => {
+            return int.name;
+          })
+          .join("<br>");
       },
       parseIntentionOfInvestment(deal) {
         if (!deal.intention_of_investment) return "";
-        return deal.intention_of_investment.map((int) => {
-          let intention = int.value;
-          let slug = slugify(intention, {lower: true});
-          return `<a href="/data/by-intention/${intention}/"
+        return deal.intention_of_investment
+          .map((int) => {
+            let intention = int.value;
+            let slug = slugify(intention, { lower: true });
+            return `<a href="/data/by-intention/${intention}/"
                       class="toggle-tooltip intention-icon ${slug}" title=""
-                      data-original-title="${intention}"><span>${intention}</span></a>`
-        }).sort();
+                      data-original-title="${intention}"><span>${intention}</span></a>`;
+          })
+          .sort();
       },
       parseNegotiationStatus(deal) {
         if (!deal.negotiation_status) return "";
@@ -97,8 +105,8 @@
       },
       parseImplementationStatus(deal) {
         if (!deal.implementation_status) return "";
-        return deal.implementation_status[0]['value'];
-      }
+        return deal.implementation_status[0]["value"];
+      },
     },
   };
 </script>
@@ -110,5 +118,4 @@
   td {
     font-family: "landmatrix";
   }
-
 </style>

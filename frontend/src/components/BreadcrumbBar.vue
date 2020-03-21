@@ -5,26 +5,22 @@
         <ul class="breadcrumb">
           <li><a href="/">Home</a></li>
           <li v-for="bcrumb in this.$store.state.breadcrumbs" :key="bcrumb.name">
-            <a v-if="bcrumb.href" :href="bcrumb.href">{{bcrumb.name}}</a>
-            <template v-else>{{bcrumb.name}}</template>
+            <a v-if="bcrumb.href" :href="bcrumb.href">{{ bcrumb.name }}</a>
+            <template v-else>{{ bcrumb.name }}</template>
           </li>
         </ul>
       </div>
       <div class="col-auto">
         <ul class="subnav nav nav-pills">
           <li class="nav-item" v-for="nav in this.$store.state.breadNav">
-            <router-link v-if="!isCurrentRoute(nav.route)" :to="{name: nav.route}">
-              <i :class="nav.icon"></i> {{nav.name}}
+            <router-link v-if="!isCurrentRoute(nav.route)" :to="{ name: nav.route }">
+              <i :class="nav.icon"></i> {{ nav.name }}
             </router-link>
-            <span v-else>
-            <i :class="nav.icon"></i> {{nav.name}}
-            </span>
+            <span v-else> <i :class="nav.icon"></i> {{ nav.name }} </span>
           </li>
           <li class="divider"></li>
-          <li role="presentation">
-          </li>
-          <li role="presentation">
-          </li>
+          <li role="presentation"></li>
+          <li role="presentation"></li>
         </ul>
       </div>
     </div>
@@ -35,12 +31,11 @@
   export default {
     methods: {
       isCurrentRoute(route) {
-        return this.$route.name.startsWith(route)
+        return this.$route.name.startsWith(route);
       },
-    }
+    },
   };
 </script>
-
 
 <style lang="scss" scoped>
   @import "../scss/colors";
@@ -57,7 +52,7 @@
     > li {
       text-shadow: none !important;
       display: inline-block;
-      font-family: 'Open Sans', sans-serif;
+      font-family: "Open Sans", sans-serif;
       color: $lm_dark;
       font-weight: 400;
 
@@ -83,5 +78,4 @@
       color: $lm_dark;
     }
   }
-
 </style>

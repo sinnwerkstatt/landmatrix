@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import store from '../store';
+  import store from "../store";
 
   export default {
     name: "WagtailPage",
@@ -11,10 +11,8 @@
       wagtailPage() {
         return this.$store.state.wagtailPage;
       },
-    }
-  }
+    },
+  };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

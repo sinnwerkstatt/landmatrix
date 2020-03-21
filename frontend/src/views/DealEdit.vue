@@ -4,21 +4,27 @@
       <b-tab title="General Info" active>
         <div>
           <h3>Land area</h3>
-          <b-row :class="formfield.class" v-for="formfield in formfields"
-                 :key="formfield.class">
+          <b-row
+            :class="formfield.class"
+            v-for="formfield in formfields"
+            :key="formfield.class"
+          >
             <b-col md="3">
               <label :for="`type-${formfield.class}`">{{ formfield.label }}:</label>
             </b-col>
             <b-col md="9">
               <keep-alive>
-                <component :is="formfield.component" :formfield="formfield" v-model="deal"></component>
+                <component
+                  :is="formfield.component"
+                  :formfield="formfield"
+                  v-model="deal"
+                ></component>
               </keep-alive>
             </b-col>
           </b-row>
         </div>
       </b-tab>
-      <b-tab title="Other">
-      </b-tab>
+      <b-tab title="Other"> </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -30,19 +36,19 @@
   }
 </style>
 <script>
-  import store from '../store';
+  import store from "../store";
   import TextField from "@/components/TextField";
   import ValueDateField from "@/components/ValueDateField";
 
   export default {
-    components:{ TextField, ValueDateField },
-    name: 'DealEdit',
-    props: ['deal_id'],
+    components: { TextField, ValueDateField },
+    name: "DealEdit",
+    props: ["deal_id"],
     data() {
       return {
         formfields: [
           {
-            class: 'intended_size',
+            class: "intended_size",
             component: "TextField",
             label: "Intended size (in ha)",
             placeholder: "Size",
@@ -54,9 +60,9 @@
             label: "Size under contract (leased or purchased area, in ha)",
             placeholder: "Size",
             unit: "ha",
-          }
-        ]
-      }
+          },
+        ],
+      };
     },
     computed: {
       deal: {
@@ -65,23 +71,24 @@
         },
         set(val) {
           console.log(val);
-        }
-      }
+        },
+      },
     },
     beforeRouteEnter(to, from, next) {
-      let title = (to.params.deal_id) ? `Change Deal #${to.params.deal_id}` : `Add a Deal`;
+      let title = to.params.deal_id
+        ? `Change Deal #${to.params.deal_id}`
+        : `Add a Deal`;
 
-      store.dispatch('setCurrentDeal', to.params.deal_id);
-      store.dispatch('setPageContext', {
+      store.dispatch("setCurrentDeal", to.params.deal_id);
+      store.dispatch("setPageContext", {
         title: title,
-        breadcrumbs: [{href: "/newdeal/", name: "Data"}, {name: title}],
+        breadcrumbs: [{ href: "/newdeal/", name: "Data" }, { name: title }],
       });
-      next()
+      next();
     },
     beforeRouteLeave(to, from, next) {
-      store.dispatch('setCurrentDeal', null);
-      next()
+      store.dispatch("setCurrentDeal", null);
+      next();
     },
-
   };
 </script>

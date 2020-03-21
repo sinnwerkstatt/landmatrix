@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <Navbar/>
-    <BreadcrumbBar/>
+    <Navbar />
+    <BreadcrumbBar />
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1><span>{{this.$store.state.title}}</span></h1>
+          <h1>
+            <span>{{ this.$store.state.title }}</span>
+          </h1>
         </div>
       </div>
-      <router-view/>
+      <router-view />
     </div>
-    <Footer/>
+    <Footer />
   </div>
 </template>
 
@@ -20,15 +22,11 @@
   import Footer from "./components/Footer";
 
   export default {
-    components: {Navbar, BreadcrumbBar, Footer},
-    data() {
-      return {}
-    }
-  }
+    components: { Navbar, BreadcrumbBar, Footer },
+  };
 </script>
 
 <style lang="scss">
   @import "scss/colors";
   @import "scss/fonts";
-
 </style>

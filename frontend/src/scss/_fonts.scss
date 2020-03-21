@@ -2,55 +2,55 @@ $fa-font-path: "/static/fonts";
 @import "node_modules/font-awesome/scss/font-awesome";
 
 @font-face {
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   src: url(/static/fonts/OpenSans-Regular.ttf);
   font-weight: normal;
 }
 
 @font-face {
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   src: url(/static/fonts/OpenSans-Semibold.ttf);
   font-weight: bold;
 }
 
 @font-face {
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   src: url(/static/fonts/OpenSans-Bold.ttf);
   font-weight: 600;
 }
 
 @font-face {
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   src: url(/static/fonts/OpenSans-Light.ttf);
   font-weight: 200;
 }
 
 @font-face {
-  font-family: 'Open Sans Condensed';
+  font-family: "Open Sans Condensed";
   src: url(/static/fonts/OpenSansCondensed-Light.ttf);
   font-weight: 200;
 }
 
 @font-face {
-  font-family: 'Open Sans Condensed';
+  font-family: "Open Sans Condensed";
   src: url(/static/fonts/OpenSansCondensed-Bold.ttf);
   font-weight: 600;
 }
 
 @font-face {
-  font-family: 'Unit';
-  src: url('/static/fonts/unit-bold-webfont.woff') format('woff'),
-  url('/static/fonts/unit-bold-webfont.ttf') format('truetype'),
-  url('/static/fonts/unit-bold-webfont.svg#unit-boldregular') format('svg');
+  font-family: "Unit";
+  src: url("/static/fonts/unit-bold-webfont.woff") format("woff"),
+    url("/static/fonts/unit-bold-webfont.ttf") format("truetype"),
+    url("/static/fonts/unit-bold-webfont.svg#unit-boldregular") format("svg");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Unit';
-  src: url('/static/fonts/unit-regular-webfont.woff') format('woff'),
-  url('/static/fonts/unit-regular-webfont.ttf') format('truetype'),
-  url('/static/fonts/unit-regular-webfont.svg#unit-regularregular') format('svg');
+  font-family: "Unit";
+  src: url("/static/fonts/unit-regular-webfont.woff") format("woff"),
+    url("/static/fonts/unit-regular-webfont.ttf") format("truetype"),
+    url("/static/fonts/unit-regular-webfont.svg#unit-regularregular") format("svg");
   font-weight: normal;
   font-style: normal;
 }

@@ -2,12 +2,17 @@
   <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
-        <img src="/static/img/lm-logo.png" alt="Landmatrix Logo">
+        <img src="/static/img/lm-logo.png" alt="Landmatrix Logo" />
       </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse"
-              data-target="#main-navbar-collapse"
-              aria-controls="main-navbar-collapse" aria-expanded="false"
-              aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#main-navbar-collapse"
+        aria-controls="main-navbar-collapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
@@ -16,24 +21,35 @@
             <a class="nav-link" href="/global/">Global</a>
           </li>
           <li class="nav-item">
-            <v-select class="nav-link" :options="regions" label="title"
-                      placeholder="Region"/>
+            <v-select
+              class="nav-link"
+              :options="regions"
+              label="title"
+              placeholder="Region"
+            />
           </li>
           <li class="nav-item">
-            <v-select class="nav-link" :options="countries" label="title"
-                      placeholder="Countries"/>
+            <v-select
+              class="nav-link"
+              :options="countries"
+              label="title"
+              placeholder="Countries"
+            />
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/stay-informed/" role="button">
-              <span class="nav-text">Stay informed</span></a>
+              <span class="nav-text">Stay informed</span>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/get-involved/" role="button"><span
-                class="nav-text">Get involved</span></a>
+            <a class="nav-link" href="/get-involved/" role="button">
+              <span class="nav-text">Get involved</span>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/faq/" role="button"><span
-                class="nav-text">FAQ</span></a>
+            <a class="nav-link" href="/faq/" role="button">
+              <span class="nav-text">FAQ</span>
+            </a>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -45,7 +61,6 @@
         </ul>
       </div>
     </div>
-
   </nav>
 </template>
 <script>
@@ -55,9 +70,9 @@
       return {
         regions: REGIONS,
         countries: COUNTRIES,
-      }
-    }
-  }
+      };
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -93,7 +108,7 @@
     margin-bottom: 15px;
 
     > img {
-      width: 100%
+      width: 100%;
     }
   }
 </style>
