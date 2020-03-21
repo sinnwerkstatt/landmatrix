@@ -6,7 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>LAND MATRIX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
   {% render_bundle 'main' 'css' %}
 </head>
 
@@ -16,7 +15,9 @@
 <script>
   const REGIONS = JSON.parse("{{ regions|escapejs }}");
   const COUNTRIES = JSON.parse("{{ countries|escapejs }}");
-  const MAP_DESC = "{{ map_introduction|escapejs }}";
+  const MAP_INTRODUCTION = "{{ map_introduction|escapejs }}";
+  const DATA_INTRODUCTION = "{{ data_introduction|escapejs }}";
+  const FOOTER_COLUMNS = JSON.parse("{{ footer_columns|escapejs }}");
 </script>
 {% render_bundle 'main' 'js' %}
 

@@ -1,8 +1,10 @@
 from blog.models import BlogPage
 from django.db import models
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.api import APIField
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
+from wagtail.images.api.fields import ImageRenditionField
 
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
@@ -18,6 +20,7 @@ from apps.wagtailcms.blocks import (
 
 
 class WagtailRootPage(Page):
+    is_creatable = False
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     map_introduction = RichTextField(blank=True)
     data_introduction = RichTextField(blank=True)
@@ -37,11 +40,13 @@ class WagtailRootPage(Page):
         FieldPanel("footer_column_3"),
         FieldPanel("footer_column_4"),
     ]
+    api_fields = [APIField("body")]
 
 
 class WagtailPage(Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    api_fields = [APIField("body")]
 
 
 class RegionIndex(Page):
@@ -56,6 +61,8 @@ class RegionIndex(Page):
         context.update(get_country_or_region(request))
         return context
 
+    api_fields = [APIField("body")]
+
 
 class RegionPage(Page):
     region = models.ForeignKey(
@@ -66,6 +73,8 @@ class RegionPage(Page):
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
     promote_panels = [FieldPanel("region")] + Page.promote_panels
     parent_page_types = ["wagtailcms.RegionIndex"]
+
+    api_fields = [APIField("body")]
 
 
 class CountryIndex(Page):
@@ -80,6 +89,8 @@ class CountryIndex(Page):
         context.update(get_country_or_region(request))
         return context
 
+    api_fields = [APIField("body")]
+
 
 class CountryPage(Page):
     country = models.ForeignKey(
@@ -92,3 +103,5 @@ class CountryPage(Page):
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
     promote_panels = [FieldPanel("country")] + Page.promote_panels
     parent_page_types = ["wagtailcms.CountryIndex"]
+
+    api_fields = [APIField("body")]

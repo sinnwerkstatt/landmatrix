@@ -79,22 +79,22 @@
 
   .navbar {
     border-bottom: 1px solid #bebebe;
+    padding: 0;
   }
 
   .navbar-brand {
     width: 180px;
-
-    > img {
-      width: 100%
-    }
-
+    height: 50px;
     display: block;
     padding: 5px;
     margin-left: 0 !important;
     margin-top: 8px;
     margin-right: 40px;
     margin-bottom: 15px;
-    //width: 180px;
+
+    > img {
+      width: 100%
+    }
   }
 </style>
 

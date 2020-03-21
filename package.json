@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "repository": "https://github.com/sinnwerkstatt/landmatrix",
   "license": "AGPL-3.0-only",
+  "scripts": {
+    "watch": "cd frontend; yarn run watch"
+  },
   "dependencies": {
     "bootstrap": "3.3.6",
     "bootstrap-switch": "3.3.2",

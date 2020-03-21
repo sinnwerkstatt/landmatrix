@@ -1,12 +1,9 @@
 <template>
-  <div class="container">
-    <div v-html="map_desc"></div>
-    <div>
-      <input type="text" placeholder="Filter snafoo" style="width: 100%">
-    </div>
+  <div>
+    <div v-html="map_introduction"></div>
+    <FilterBar/>
     <div class="map-container mt-4">
       <l-map
-          :bounds="bounds"
           :options="mapOptions"
           style="height: 80%"
           ref="dealMap"
@@ -22,22 +19,20 @@
             :maxZoom="tileProvider.maxZoom || 19"
             layer-type="base"/>
       </l-map>
-          <div class = "overlay">
-        <input type="radio" class = "someButton">Foo Bar
-    </div>
-
     </div>
   </div>
 </template>
 
 <script>
   import store from "../store";
+  import FilterBar from "../components/FilterBar";
 
   export default {
     name: "GlobalMap",
+    components: {FilterBar},
     data() {
       return {
-        map_desc: MAP_DESC,
+        map_introduction: MAP_INTRODUCTION,
         mapOptions: {
           zoomSnap: 0.5,
           minZoom: 1,

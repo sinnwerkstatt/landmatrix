@@ -3,11 +3,12 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
+from wagtail.core.rich_text import expand_db_html
 
 from apps.greennewdeal.documents.deal import LocationDocument
 from apps.greennewdeal.filters import load_filters
-from apps.greennewdeal.models import Country, Region
-from apps.wagtailcms.models import RegionPage, CountryPage, WagtailRootPage
+from apps.greennewdeal.models import Country
+from apps.wagtailcms.models import RegionPage, WagtailRootPage
 
 
 @cache_page(60)
@@ -17,12 +18,20 @@ def vuebase(request, path=None):
         .order_by("title")
         .values("region_id", "slug", "title")
     )
-    countries = [{'title': r.name, 'slug': r.slug} for r in Country.objects.all()]
+    countries = [{"title": r.name, "slug": r.slug} for r in Country.objects.all()]
     ctx = {"regions": json.dumps(regions), "countries": json.dumps(countries)}
 
     root = WagtailRootPage.objects.first()
-    if root.map_introduction:
-        ctx["map_introduction"] = root.map_introduction
+    ctx["map_introduction"] = root.map_introduction
+    ctx["data_introduction"] = root.data_introduction
+    ctx["footer_columns"] = json.dumps(
+        [
+            expand_db_html(root.footer_column_1),
+            expand_db_html(root.footer_column_2),
+            expand_db_html(root.footer_column_3),
+            expand_db_html(root.footer_column_4),
+        ]
+    )
 
     return render(request, template_name="greennewdeal/vuebase.html", context=ctx)
 

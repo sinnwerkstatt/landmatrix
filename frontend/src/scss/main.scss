@@ -1,19 +1,33 @@
 @import "colors";
 @import "fonts";
+@import "headings";
+@import "landmatrix_icons";
+
+body {
+  font-family: Open Sans, Arial, sans-serif;
+}
+
+a {
+  font-family: 'Open Sans', sans-serif;
+  color: $lm_dark;
+
+  &:hover {
+    color: $lm_orange;
+  }
+
+  &.lm-underline:hover {
+    text-decoration: none;
+    color: $lm_dark;
+    border-bottom: 3px solid $lm_orange;
+  }
+}
 
 h1 {
   position: relative;
   text-align: center;
-  color: $primary;
-  font-family: Unit, sans-serif;
-  text-transform: uppercase;
-  font-weight: 700 !important;
-  margin-bottom: 20px;
-  font-size: 28px;
-  line-height: 32px;
 
   &:before {
-    background: #c1c1c1;
+    background: $lm_grey;
     content: "";
     display: block;
     height: 1px;
@@ -23,7 +37,7 @@ h1 {
   }
 
   > span {
-    background: #ffffff;
+    background: white;
     padding: 0 15px;
     position: relative;
     z-index: 1;
@@ -33,9 +47,12 @@ h1 {
 .container {
   max-width: 86vw;
   width: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
+
 .container-fluid {
   max-width: 86vw;
-  min-width: 70vw;
-  width: auto;
+  //min-width: 70vw;
+  //width: auto;
 }

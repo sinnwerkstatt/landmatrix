@@ -1,0 +1,48 @@
+@import "colors";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Unit', sans-serif;
+  font-weight: bold;
+
+  a {
+    font-family: 'Unit', sans-serif;
+    font-weight: bold;
+    color: $lm_dark;
+
+    &:hover {
+      text-decoration: none;
+      color: $lm_dark;
+      border-bottom: 3px solid $lm_orange;
+    }
+  }
+}
+
+h1,
+h2 {
+  font-size: 28px;
+  line-height: 32px;
+
+}
+
+h1 {
+  text-transform: uppercase;
+  color: $lm_orange;
+  font-weight: 700 !important;
+  margin-bottom: 20px;
+
+  a:hover {
+    border-color: $lm_orange;
+  }
+}
+
+h3 {
+  color: $lm_dark;
+  font-size: 22px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

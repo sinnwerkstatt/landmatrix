@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-4">
+  <div class="container my-2">
     <div class="row">
       <div class="col-md-4 mr-auto">
         <ul class="breadcrumb">
@@ -12,19 +12,14 @@
       </div>
       <div class="col-auto">
         <ul class="subnav nav nav-pills">
-          <li class="nav-item" role="presentation">
-            <span>
-            <i class="fa fa-map-marker"></i> Map
+          <li class="nav-item" v-for="nav in this.$store.state.breadNav">
+            <router-link v-if="!isCurrentRoute(nav.route)" :to="{name: nav.route}">
+              <i :class="nav.icon"></i> {{nav.name}}
+            </router-link>
+            <span v-else>
+            <i :class="nav.icon"></i> {{nav.name}}
             </span>
           </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" href="/newdeal/">
-              <i class="fa fa-table"></i> Data
-            </a></li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" href="/charts/">
-              <i class="fa fa-bar-chart"></i> Charts
-            </a></li>
           <li class="divider"></li>
           <li role="presentation">
           </li>
@@ -35,6 +30,17 @@
     </div>
   </div>
 </template>
+
+<script>
+  export default {
+    methods: {
+      isCurrentRoute(route) {
+        return this.$route.name.startsWith(route)
+      },
+    }
+  };
+</script>
+
 
 <style lang="scss" scoped>
   @import "../scss/colors";
@@ -65,7 +71,7 @@
 
   ul.subnav {
     > li > span {
-      color: #fcfcfc;
+      color: $lm_offwhite;
       background-color: $lm_dark;
       border-radius: 4px;
     }

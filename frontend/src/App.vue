@@ -10,16 +10,17 @@
       </div>
       <router-view/>
     </div>
-
+    <Footer/>
   </div>
 </template>
 
 <script>
-  import Navbar from "@/components/Navbar";
-  import BreadcrumbBar from "@/components/BreadcrumbBar";
+  import Navbar from "./components/Navbar";
+  import BreadcrumbBar from "./components/BreadcrumbBar";
+  import Footer from "./components/Footer";
 
   export default {
-    components: {Navbar, BreadcrumbBar},
+    components: {Navbar, BreadcrumbBar, Footer},
     data() {
       return {}
     }

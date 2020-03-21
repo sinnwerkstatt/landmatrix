@@ -65,10 +65,13 @@ urlpatterns = [
 ]
 
 if settings.GND_ENABLED:
+    from apps.wagtailcms.api import api_router
+
     urlpatterns += [
         path("newdeal/", include("apps.greennewdeal.urls")),
         path("graphql/", include("apps.graphql.urls")),
         path("api/", include("apps.greennewdeal.urlsapi")),
+        path("wagtailapi/v2/", api_router.urls),
     ]
 
 if settings.DEBUG:

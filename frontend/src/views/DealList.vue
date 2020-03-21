@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div v-html="data_introduction"></div>
+    <FilterBar/>
     <table id="summary" class="table table-striped">
       <thead>
       <tr>
@@ -43,17 +45,18 @@
 </template>
 
 <script>
-  import store from "@/store";
 
+  import FilterBar from "../components/FilterBar";
   const slugify = require("slugify");
 
   export default {
+    components: {FilterBar},
     // name: 'Deal',
-    // data() {
-    //   return {
-    //     deals: ,
-    //   };
-    // },
+    data() {
+      return {
+        data_introduction: DATA_INTRODUCTION,
+      };
+    },
     computed: {
       deals() {
         return this.$store.state.deals;
@@ -97,20 +100,13 @@
         return deal.implementation_status[0]['value'];
       }
     },
-    beforeRouteEnter(to, from, next) {
-      store.dispatch('fetchDeals', {"offset": 0});
-      store.dispatch('setPageContext', {
-        title: "All Deals",
-        breadcrumbs: [{name: "Data"}]
-      });
-      next()
-    },
   };
 </script>
 
 <style lang="scss">
   @import "../scss/colors";
   @import "../scss/fonts";
+
   td {
     font-family: "landmatrix";
   }

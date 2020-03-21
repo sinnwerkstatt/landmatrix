@@ -1,45 +1,90 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from "vue";
+import Router from "vue-router";
+import GlobalMap from "./views/GlobalMap";
 import DealList from "./views/DealList";
 import DealEdit from "./views/DealEdit";
 import DealDetail from "./views/DealDetail";
-import GlobalMap from "./views/GlobalMap";
+import Charts from "./views/Charts";
+import WagtailPage from "./views/WagtailPage";
+import NotFound from "./views/NotFound";
+
+import store from "./store";
 
 Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
+  mode: "history",
+  base: "/newdeal/", //process.env.BASE_URL,
   routes: [
     {
-      path: '/newdeal/',
-      name: 'deal_list',
+      path: "/data/",
+      name: "deal_list",
       component: DealList,
+      beforeEnter(to, from, next) {
+        store.dispatch("fetchDeals", { offset: 0 });
+        store.dispatch("setPageContext", {
+          title: "All Deals",
+          breadcrumbs: [{ name: "Data" }],
+        });
+        next();
+      },
     },
     {
-      path: '/newdeal/map',
-      name: 'map',
-      component: GlobalMap
+      path: "/map/",
+      name: "map",
+      component: GlobalMap,
     },
     {
-      path: '/newdeal/add',
-      name: 'deal_create',
+      path: "/deal/add/",
+      name: "deal_create",
       component: DealEdit,
       props: true,
     },
     {
-      path: '/edit/:deal_id',
-      name: 'deal_edit',
+      path: "/deal/edit/:deal_id/",
+      name: "deal_edit",
       component: DealEdit,
       props: true,
     },
     {
-      path: '/newdeal/:deal_id',
-      name: 'deal_detail',
+      path: "/deal/:deal_id/",
+      name: "deal_detail",
       component: DealDetail,
       props: true,
     },
-  ]
+    {
+      path: "/charts/",
+      redirect: "/charts/web-of-transnational-deals/",
+    },
+    {
+      path: "/charts/web-of-transnational-deals/",
+      name: "charts",
+      component: Charts,
+      props: true,
+    },
+    {
+      path: "/404/",
+      name: "404",
+      component: NotFound,
+      beforeEnter(to, from, next) {
+        store.dispatch("setPageContext", {
+          title: "Page not found",
+          breadcrumbs: [],
+        });
+        next();
+      },
+    },
+    {
+      path: "*",
+      name: "wagtail",
+      component: WagtailPage,
+      beforeEnter: (to, from, next) => {
+        let target = to.path.replace("/newdeal", ""); // TODO: Remove this eventually
+        store.dispatch("fetchWagtailPage", target);
+        next();
+      },
+    },
+  ],
   //   {
   //     // catch requests not mapping any path and redirect to home
   //     path: '*',
@@ -57,6 +102,5 @@ const router = new Router({
   //   // }
   // ]
 });
-
 
 export default router;

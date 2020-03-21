@@ -2,15 +2,6 @@ $fa-font-path: "/static/fonts";
 @import "node_modules/font-awesome/scss/font-awesome";
 
 @font-face {
-  font-family: 'landmatrix';
-  src: url(/static/fonts/landmatrix.woff2) format('woff2');
-  src: url(/static/fonts/landmatrix.woff2) format('woff2'),
-       url(/static/fonts/landmatrix.woff) format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'Open Sans';
   src: url(/static/fonts/OpenSans-Regular.ttf);
   font-weight: normal;

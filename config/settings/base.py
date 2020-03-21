@@ -197,6 +197,7 @@ sys.stdout.flush()
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
     INSTALLED_APPS += [
+        "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
         "django_elasticsearch",
