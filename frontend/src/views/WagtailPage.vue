@@ -1,12 +1,13 @@
 <template>
-  <div v-html="wagtailPage"></div>
+  <Streamfield :content="wagtailPage" />
 </template>
 
 <script>
-  import store from "../store";
+  import Streamfield from "../components/Streamfield";
 
   export default {
     name: "WagtailPage",
+    components: { Streamfield },
     computed: {
       wagtailPage() {
         return this.$store.state.wagtailPage;

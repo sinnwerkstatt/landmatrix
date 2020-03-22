@@ -30,6 +30,26 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+import Title from "./components/Wagtail/Title";
+import Heading from "./components/Wagtail/Heading";
+import Image from "./components/Wagtail/Image";
+import Paragraph from "./components/Wagtail/Paragraph";
+import Columns1on1 from "./components/Wagtail/Columns1on1";
+import Columns3 from "./components/Wagtail/Columns3";
+import FullWidthContainer from "./components/Wagtail/FullWidthContainer";
+import Slider from "./components/Wagtail/Slider";
+import Gallery from "./components/Wagtail/Gallery";
+Vue.component("wagtail-title", Title);
+Vue.component("wagtail-heading", Heading);
+Vue.component("wagtail-image", Image);
+Vue.component("wagtail-slider", Slider);
+Vue.component("wagtail-gallery", Gallery);
+Vue.component("wagtail-linked_image", Image);
+Vue.component("wagtail-paragraph", Paragraph);
+Vue.component("wagtail-columns_1_1", Columns1on1);
+Vue.component("wagtail-columns_3", Columns3);
+Vue.component("wagtail-full_width_container", FullWidthContainer);
+
 export default new Vue({
   router,
   store,
