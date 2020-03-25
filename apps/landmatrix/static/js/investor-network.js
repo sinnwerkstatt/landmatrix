@@ -640,9 +640,9 @@ function renderChartCollapsibleNetwork(params) {
 
         function getDirNode(r, s, t) {
           if (r.data.involvement && r.data.involvement.dir === 'parent') {
-            return s;
-          } else {
             return t;
+          } else {
+            return s;
           }
         }
 
