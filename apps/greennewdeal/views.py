@@ -6,7 +6,6 @@ from django.views.decorators.cache import cache_page
 from wagtail.core.rich_text import expand_db_html
 
 from apps.greennewdeal.documents.deal import LocationDocument
-from apps.greennewdeal.filters import load_filters
 from apps.greennewdeal.models import Country
 from apps.wagtailcms.models import RegionPage, WagtailRootPage
 
@@ -38,8 +37,6 @@ def vuebase(request, path=None):
 
 # @cache_page(5)
 def old_api_deals_json(request):
-    filters = load_filters(request)
-    print(filters)
     locations = [
         loc.to_dict()
         for loc in LocationDocument.search()[:10_000]
