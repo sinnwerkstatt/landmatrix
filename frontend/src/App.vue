@@ -2,7 +2,7 @@
   <div id="app">
     <Navbar />
     <BreadcrumbBar />
-    <div class="container">
+    <div v-if="this.$store.state.title" class="container">
       <div class="row">
         <div class="col-md-12">
           <h1>
@@ -10,8 +10,8 @@
           </h1>
         </div>
       </div>
-      <router-view />
     </div>
+    <router-view />
     <Footer />
   </div>
 </template>

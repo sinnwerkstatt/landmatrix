@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div v-html="data_introduction"></div>
     <FilterBar />
     <table id="summary" class="table table-striped">
@@ -17,7 +17,8 @@
       <tbody v-if="deals">
         <tr v-for="deal in deals" :key="deal.id">
           <td>
-            <a :href="deal.id">{{ deal.id }}</a>
+            <router-link :to="{ name: 'deal_detail',params: { deal_id: deal.id } }">
+              {{deal.id}}</router-link>
           </td>
           <td>{{ deal.target_country.name }}</td>
           <td v-html="parseTopInvestors(deal)"></td>
@@ -51,6 +52,7 @@
 
 <script>
   import FilterBar from "../components/FilterBar";
+  import store from "../store";
   const slugify = require("slugify");
 
   export default {
@@ -108,6 +110,18 @@
         return deal.implementation_status[0]["value"];
       },
     },
+    beforeRouteEnter(to, from, next) {
+      store.dispatch("fetchDeals", { offset: 0 });
+      let title = "All Deals";
+      store.dispatch("setPageContext", {
+        title: title,
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { name: title },
+        ],
+      });
+      next();
+    },
   };
 </script>
 
@@ -116,6 +130,6 @@
   @import "../scss/fonts";
 
   td {
-    font-family: "landmatrix";
+    font-family: landmatrix;
   }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="container">
     <div v-html="map_introduction"></div>
     <FilterBar />
     <div class="map-container mt-4">
-      <l-map :options="mapOptions" style="height: 80%;" ref="dealMap">
+      <l-map :options="mapOptions" id="globalMap" ref="dealMap">
         <l-control-layers position="topright"></l-control-layers>
         <l-tile-layer
           v-for="tileProvider in tileProviders"
@@ -33,6 +33,7 @@
         mapOptions: {
           zoomSnap: 0.5,
           minZoom: 1,
+          zoom: 3,
         },
         tileProviders: [
           {
@@ -73,9 +74,10 @@
       };
     },
     beforeRouteEnter(to, from, next) {
+      let title = "Global: Map";
       store.dispatch("setPageContext", {
-        title: "Global: Map",
-        breadcrumbs: [{ name: "Map" }],
+        title,
+        breadcrumbs: [{ link: { name: "wagtail" }, name: "Home" }, { name: title }],
       });
       next();
     },
@@ -83,6 +85,10 @@
 </script>
 
 <style lang="scss" scoped>
+  #globalMap {
+    height: 75vh;
+    min-height: 500px;
+  }
   .map-container {
     height: 75vh;
     min-height: 500px;

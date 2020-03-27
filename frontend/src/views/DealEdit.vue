@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deal">
+  <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
       <b-tab title="General Info" active>
         <div>
@@ -37,8 +37,8 @@
 </style>
 <script>
   import store from "../store";
-  import TextField from "@/components/TextField";
-  import ValueDateField from "@/components/ValueDateField";
+  import TextField from "../components/Fields/TextField";
+  import ValueDateField from "../components/Fields/ValueDateField";
 
   export default {
     components: { TextField, ValueDateField },
@@ -82,7 +82,11 @@
       store.dispatch("setCurrentDeal", to.params.deal_id);
       store.dispatch("setPageContext", {
         title: title,
-        breadcrumbs: [{ href: "/newdeal/", name: "Data" }, { name: title }],
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "deal_list" }, name: "Data" },
+          { name: title },
+        ],
       });
       next();
     },

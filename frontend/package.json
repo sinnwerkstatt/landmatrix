@@ -31,6 +31,7 @@
     "vue": "^2.6.11",
     "vue-eslint-parser": "^7.0.0",
     "vue-loader": "^15.9.1",
+    "vue-meta": "^2.3.3",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.3",
     "vue-select": "^3.1.0",
@@ -42,5 +43,8 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "webpack-livereload-plugin": "^2.3.0"
+  },
+  "dependencies": {
+    "leaflet.markercluster": "^1.4.1"
   }
 }

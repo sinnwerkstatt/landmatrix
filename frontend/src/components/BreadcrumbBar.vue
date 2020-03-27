@@ -3,9 +3,10 @@
     <div class="row">
       <div class="col-md-4 mr-auto">
         <ul class="breadcrumb">
-          <li><a href="/">Home</a></li>
           <li v-for="bcrumb in this.$store.state.breadcrumbs" :key="bcrumb.name">
-            <a v-if="bcrumb.href" :href="bcrumb.href">{{ bcrumb.name }}</a>
+            <router-link v-if="bcrumb.link" :to="bcrumb.link">
+              {{ bcrumb.name }}
+            </router-link>
             <template v-else>{{ bcrumb.name }}</template>
           </li>
         </ul>
@@ -31,7 +32,10 @@
   export default {
     methods: {
       isCurrentRoute(route) {
-        return this.$route.name.startsWith(route);
+        if(this.$route.name !== undefined) {
+          return this.$route.name.startsWith(route);
+        }
+        return false;
       },
     },
   };

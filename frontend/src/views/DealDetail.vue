@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deal">
+  <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
       <b-tab title="Location" active>
         <div style="height: 500px; width: 100%;">
@@ -155,7 +155,11 @@
       store.dispatch("setCurrentDeal", to.params.deal_id);
       store.dispatch("setPageContext", {
         title: title,
-        breadcrumbs: [{ href: "/newdeal/", name: "Data" }, { name: title }],
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "deal_list" }, name: "Data" },
+          { name: title },
+        ],
       });
       next();
     },

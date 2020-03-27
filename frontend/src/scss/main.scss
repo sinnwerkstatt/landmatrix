@@ -22,28 +22,6 @@ a {
   }
 }
 
-h1 {
-  position: relative;
-  text-align: center;
-
-  &:before {
-    background: $lm_grey;
-    content: "";
-    display: block;
-    height: 1px;
-    position: absolute;
-    top: 50%;
-    width: 100%;
-  }
-
-  > span {
-    background: white;
-    padding: 0 15px;
-    position: relative;
-    z-index: 1;
-  }
-}
-
 .container {
   max-width: 86vw;
   width: auto;

@@ -119,11 +119,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
-                "django.template.context_processors.request",
-                "django.contrib.messages.context_processors.messages",
                 "apps.wagtailcms.context_processors.add_data_source_dir",
             ]
         },
@@ -197,6 +194,7 @@ sys.stdout.flush()
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
     INSTALLED_APPS += [
+        # "wagtailapiimagerendition",
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",

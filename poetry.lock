@@ -1636,6 +1636,18 @@ testing = ["python-dateutil (>=2.2)", "pytz (>=2014.7)", "elasticsearch (>=1.0.0
 
 [[package]]
 category = "main"
+description = ""
+name = "wagtail-apiimagerendition"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "0.1b0"
+
+[package.dependencies]
+Django = ">=2.2.0,<2.3"
+wagtail = ">=2.5"
+
+[[package]]
+category = "main"
 description = "A wordpress like blog app implemented in wagtail"
 name = "wagtail-blog"
 optional = false
@@ -1709,7 +1721,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "e9d9da881dfac98c80c2b787daf03b25813114fa1236cd1df94459d3fa4aef05"
+content-hash = "ad83d09683ef5e46cd247561146f7f567f8a8531fe7430e027a4097f542097e3"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -2052,6 +2064,7 @@ libsass = [
     {file = "libsass-0.19.4-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:81a013a4c2a614927fd1ef7a386eddabbba695cbb02defe8f31cf495106e974c"},
     {file = "libsass-0.19.4-cp35-cp35m-win32.whl", hash = "sha256:fcb7ab4dc81889e5fc99cafbc2017bc76996f9992fc6b175f7a80edac61d71df"},
     {file = "libsass-0.19.4-cp35-cp35m-win_amd64.whl", hash = "sha256:fc5f8336750f76f1bfae82f7e9e89ae71438d26fc4597e3ab4c05ca8fcd41d8a"},
+    {file = "libsass-0.19.4-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:53f87116e7441827878bd79bbad8debac23e1930423f61ab8d837ec4a4c36e0c"},
     {file = "libsass-0.19.4-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:9b59afa0d755089c4165516400a39a289b796b5612eeef5736ab7a1ebf96a67c"},
     {file = "libsass-0.19.4-cp36-cp36m-win32.whl", hash = "sha256:c93df526eeef90b1ea4799c1d33b6cd5aea3e9f4633738fb95c1287c13e6b404"},
     {file = "libsass-0.19.4-cp36-cp36m-win_amd64.whl", hash = "sha256:0fd8b4337b3b101c6e6afda9112cc0dc4bacb9133b59d75d65968c7317aa3272"},
@@ -2059,6 +2072,7 @@ libsass = [
     {file = "libsass-0.19.4-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:338e9ae066bf1fde874e335324d5355c52d2081d978b4f74fc59536564b35b08"},
     {file = "libsass-0.19.4-cp37-cp37m-win32.whl", hash = "sha256:e318f06f06847ff49b1f8d086ac9ebce1e63404f7ea329adab92f4f16ba0e00e"},
     {file = "libsass-0.19.4-cp37-cp37m-win_amd64.whl", hash = "sha256:a7e685466448c9b1bf98243339793978f654a1151eb5c975f09b83c7a226f4c1"},
+    {file = "libsass-0.19.4-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:0fb4399f7bbecab7b181f2c2d82c3a0ba2916bf9169714b96e425355a5b23b9f"},
     {file = "libsass-0.19.4-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:6a51393d75f6e3c812785b0fa0b7d67c54258c28011921f204643b55f7355ec0"},
     {file = "libsass-0.19.4.tar.gz", hash = "sha256:8b5b6d1a7c4ea1d954e0982b04474cc076286493f6af2d0a13c2e950fbe0be95"},
 ]
@@ -2526,6 +2540,10 @@ vine = [
 wagtail = [
     {file = "wagtail-2.7.1-py3-none-any.whl", hash = "sha256:580a75944f805a3686dbec97a3479e631cee2dc29fdea3d916055b1db36ad475"},
     {file = "wagtail-2.7.1.tar.gz", hash = "sha256:69d1b5ca5fcac0812f923fa900040a15768961942f76e71c92f7043f172ea7a3"},
+]
+wagtail-apiimagerendition = [
+    {file = "wagtail-apiimagerendition-0.1b0.tar.gz", hash = "sha256:55fbb7098d22c5f01c0377697b0e55e08c985bfede86475e9e816b33496b2f2a"},
+    {file = "wagtail_apiimagerendition-0.1b0-py3-none-any.whl", hash = "sha256:6815d29564fa95b880be0151abf24ea9c92d95ea40d79ce7e1b04d12b9544fc6"},
 ]
 wagtail-blog = [
     {file = "wagtail_blog-2.3.1-py3-none-any.whl", hash = "sha256:e1ef0419e23f553848c4ddff5ddac47c73ac5add197dffea688e134ca81ee5c0"},

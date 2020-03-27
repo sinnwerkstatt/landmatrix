@@ -20,14 +20,6 @@ const router = new Router({
       path: "/data/",
       name: "deal_list",
       component: DealList,
-      beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { offset: 0 });
-        store.dispatch("setPageContext", {
-          title: "All Deals",
-          breadcrumbs: [{ name: "Data" }],
-        });
-        next();
-      },
     },
     {
       path: "/map/",
@@ -36,7 +28,7 @@ const router = new Router({
     },
     {
       path: "/deal/add/",
-      name: "deal_create",
+      name: "deal_add",
       component: DealEdit,
       props: true,
     },
@@ -54,11 +46,12 @@ const router = new Router({
     },
     {
       path: "/charts/",
+      name: "charts",
       redirect: "/charts/web-of-transnational-deals/",
     },
     {
       path: "/charts/web-of-transnational-deals/",
-      name: "charts",
+      // name: "charts_web_o",
       component: Charts,
       props: true,
     },

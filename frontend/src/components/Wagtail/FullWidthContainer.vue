@@ -7,6 +7,7 @@
             v-for="x in value.content"
             :is="`wagtail-${x.type}`"
             :value="x.value"
+            :key="x.id"
           />
         </div>
       </div>
@@ -19,3 +20,9 @@
     props: ["value"],
   };
 </script>
+
+<style lang="scss">
+  .fullwidth-darkgrey {
+    background: #eee;
+  }
+</style>
