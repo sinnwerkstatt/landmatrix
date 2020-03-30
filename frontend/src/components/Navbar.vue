@@ -53,10 +53,55 @@
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <li>
+          <li v-if="user.is_authenticated" class="nav-item">
             <p class="navbar-text dropdown-header">
-              Hans
+              {{ user.full_name }}
+              <br />
+              <small>BOFH</small>
             </p>
+          </li>
+          <li v-if="user.is_authenticated" class="nav-item dropdown">
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="navbarDropdown"
+            >
+              <i
+                class="fa"
+                :class="user.is_impersonate ? 'fa-user-secret' : 'fa-user'"
+              ></i>
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-right"
+              aria-labelledby="#navbarDropdown"
+            >
+              <a
+                v-if="user.is_impersonate"
+                class="dropdown-item"
+                href="/impersonate/stop/"
+              >
+                Stop impersonation</a
+              >
+              <hr v-if="user.is_impersonate" />
+              <a class="dropdown-item" href="/editor/">Dashboard</a>
+              <a class="dropdown-item" href="/manage/">Manage</a>
+              <router-link class="dropdown-item" :to="{name:'deal_add'}">Add a deal</router-link>
+              <a class="dropdown-item" href="/logout/">Logout</a>
+            </div>
+          </li>
+          <li v-if="!user.is_authenticated" class="nav-item">
+            <a
+              href="/accounts/login/?next=/"
+              role="button"
+              title="Login/Register"
+              class="nav-link"
+            >
+              <i class="fa fa-user"></i>
+            </a>
           </li>
         </ul>
       </div>
@@ -70,6 +115,7 @@
       return {
         regions: REGIONS,
         countries: COUNTRIES,
+        user: DJANGO_USER,
       };
     },
   };

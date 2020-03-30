@@ -29,3 +29,9 @@ RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
 RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 LANDMATRIX_INVESTOR_GRAPH_ENABLED = True
+
+# CACHES["default"] = {
+#     "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+#     "LOCATION": "127.0.0.1:11211",
+# }
+# /etc/memcached.conf -> `-I 128M`

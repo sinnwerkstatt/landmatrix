@@ -9,7 +9,8 @@ const store = new Vuex.Store({
     wagtailPage: null,
     deals: null,
     current_deal: null,
-    title: "Landmatrix",
+    title: null,
+    searchDescription: null,
     breadcrumbs: [],
     breadNav: [
       { route: "map", icon: "fa fa-map-marker", name: "Map" },
@@ -30,6 +31,9 @@ const store = new Vuex.Store({
     setTitle(state, title) {
       state.title = title;
     },
+    setSearchDescription(state, description) {
+      state.searchDescription = description;
+    },
     setBreadcrumbs(state, breadcrumbs) {
       state.breadcrumbs = breadcrumbs;
     },
@@ -39,7 +43,14 @@ const store = new Vuex.Store({
       let url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
       this._vm.$http.get(url).then(
         (response) => {
-          context.commit("setTitle", response.body.title);
+          // if (response.body.meta.type === "wagtailcms.WagtailRootPage") {
+          //   context.commit("setTitle", null);
+          // }
+          let title = response.body.title;
+          context.commit("setTitle", title);
+          let breads = [{ link: { name: "wagtail" }, name: "Home" }, { name: title }];
+          context.commit("setBreadcrumbs", breads);
+          context.commit("setSearchDescription", response.body.meta.search_description);
           context.commit("setWagtailPage", response.body.body);
         },
         (response) => {

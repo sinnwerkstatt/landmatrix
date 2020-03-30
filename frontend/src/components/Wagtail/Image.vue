@@ -1,13 +1,22 @@
 <template>
   <div class="widget-image">
     <a v-if="link" :href="link" :target="external">
-      <img :src="path" class="image" :alt="alt" />
+      <img
+        :src="path"
+        class="image"
+        :alt="alt"
+        style="max-width: 100%; max-height: 100%;"
+      />
     </a>
-    <img v-else :src="path" class="image" :alt="alt" />
-
+    <img
+      v-else
+      :src="path"
+      class="image"
+      :alt="alt"
+      style="max-width: 100%; max-height: 100%;"
+    />
     <div v-if="caption" class="carousel-caption">{{ caption }}</div>
   </div>
-  <!-- widget-image -->
 </template>
 
 <script>

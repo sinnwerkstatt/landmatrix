@@ -1,5 +1,7 @@
 <template>
-  <div v-html="value"></div>
+  <div class="container">
+    <div class="paragraph" v-html="value"></div>
+  </div>
 </template>
 
 <script>
@@ -8,3 +10,12 @@
     props: ["value"],
   };
 </script>
+
+<style lang="scss">
+  @import "../../scss/colors";
+  .paragraph {
+    a {
+      color: $primary;
+    }
+  }
+</style>

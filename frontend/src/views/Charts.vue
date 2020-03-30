@@ -77,9 +77,14 @@
   export default {
     name: "Charts",
     beforeRouteEnter(to, from, next) {
+      let title = "Web of transnational deals";
       store.dispatch("setPageContext", {
-        title: "Web of transnational deals",
-        breadcrumbs: [{ href: "/charts/", name: "Data" }, { name: "Charts" }],
+        title: title,
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "charts" }, name: "Charts" },
+          { name: title },
+        ],
       });
       next();
     },

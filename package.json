@@ -24,7 +24,12 @@
     "ol3-google-maps": "~0.12",
     "openlayers": "~3.19",
     "openlayers4": "npm:openlayers@~4.0.1",
+    "prettier": "^2.0.1",
     "raphael": "~2.1.4",
     "select2": "4.0.2"
+  },
+  "prettier": {
+    "vueIndentScriptAndStyle": true,
+    "printWidth": 88
   }
 }

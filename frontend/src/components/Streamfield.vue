@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="streamfield">
     <div v-for="block in content">
       <component :is="`wagtail-${block.type}`" :value="block.value" />
     </div>
@@ -13,4 +13,8 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  h3 {
+    text-align: center;
+  }
+</style>
