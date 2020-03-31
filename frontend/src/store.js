@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    user: null,
     wagtailPage: null,
     deals: null,
     current_deal: null,
@@ -19,6 +20,9 @@ const store = new Vuex.Store({
     ],
   },
   mutations: {
+    setUser(state, user) {
+      state.user = user;
+    },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
@@ -39,6 +43,37 @@ const store = new Vuex.Store({
     },
   },
   actions: {
+    fetchUser(context) {
+      console.log("fetching user");
+      let query = `{ me
+      { first_name last_name username is_authenticated is_impersonate }
+      }`;
+      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+        context.commit("setUser", response.data.data.me);
+      });
+    },
+    login(context, { username, password }) {
+      let query = `mutation {
+        login(username: "${username}", password: "${password}") {
+          status
+          error
+          user { first_name last_name username is_authenticated is_impersonate }
+        }
+      }`;
+      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+        if(response.data.data.login.status===true) {
+          context.commit("setUser", response.data.data.login.user);
+        }
+      });
+    },
+    logout(context) {
+      let query = "mutation { logout }";
+      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+        if (response.data.data.logout === true) {
+          context.commit("setUser", null);
+        }
+      });
+    },
     fetchWagtailPage(context, path) {
       let url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
       this._vm.$http.get(url).then(

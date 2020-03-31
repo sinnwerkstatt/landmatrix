@@ -53,14 +53,14 @@
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <li v-if="user.is_authenticated" class="nav-item">
+          <li v-if="user" class="nav-item">
             <p class="navbar-text dropdown-header">
-              {{ user.full_name }}
+              {{ user.first_name }} {{ user.last_name }}
               <br />
               <small>BOFH</small>
             </p>
           </li>
-          <li v-if="user.is_authenticated" class="nav-item dropdown">
+          <li v-if="user" class="nav-item dropdown">
             <a
               href="#"
               role="button"
@@ -86,22 +86,63 @@
               >
                 Stop impersonation</a
               >
-              <hr v-if="user.is_impersonate" />
+              <div v-if="user.is_impersonate" class="dropdown-divider"></div>
               <a class="dropdown-item" href="/editor/">Dashboard</a>
               <a class="dropdown-item" href="/manage/">Manage</a>
-              <router-link class="dropdown-item" :to="{name:'deal_add'}">Add a deal</router-link>
-              <a class="dropdown-item" href="/logout/">Logout</a>
+              <router-link class="dropdown-item" :to="{ name: 'deal_add' }"
+                >Add a deal
+              </router-link>
+              <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
             </div>
           </li>
-          <li v-if="!user.is_authenticated" class="nav-item">
+          <li v-else class="nav-item dropdown">
             <a
-              href="/accounts/login/?next=/"
+              href="#"
               role="button"
               title="Login/Register"
-              class="nav-link"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="navbarDropdownAnonymous"
             >
               <i class="fa fa-user"></i>
             </a>
+            <div
+              class="dropdown-menu dropdown-menu-right"
+              aria-labelledby="#navbarDropdownAnonymous"
+            >
+              <form class="px-4 py-3">
+                <div class="form-group">
+                  <input
+                    v-model="login_username"
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    placeholder="username"
+                  />
+                </div>
+                <div class="form-group">
+                  <input
+                    v-model="login_password"
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  @click.prevent="dispatchLogin"
+                  class="btn btn-secondary"
+                >
+                  Login
+                </button>
+              </form>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/accounts/register/">New around here? Sign up</a>
+              <a class="dropdown-item" href="/accounts/password_reset/">Forgot password?</a>
+            </div>
           </li>
         </ul>
       </div>
@@ -110,13 +151,31 @@
 </template>
 <script>
   export default {
-    // props: ['deal_id'],
     data() {
       return {
         regions: REGIONS,
         countries: COUNTRIES,
-        user: DJANGO_USER,
+        login_username: null,
+        login_password: null,
+        login_remember: false,
       };
+    },
+    computed: {
+      user() {
+        return this.$store.state.user;
+      },
+    },
+    methods: {
+      dispatchLogout() {
+        this.$store.dispatch("logout");
+      },
+      dispatchLogin() {
+        this.$store.dispatch("login", {
+          username: this.login_username,
+          password: this.login_password,
+        });
+        // TODO: handle error here.
+      },
     },
   };
 </script>

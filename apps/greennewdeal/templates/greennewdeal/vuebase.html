@@ -1,4 +1,3 @@
-{% load vuehelper %}
 {% load render_bundle from webpack_loader %}
 <!doctype html>
 <html lang="en">
@@ -14,7 +13,6 @@
 <div id="app"></div>
 
 <script>
-  const DJANGO_USER = JSON.parse("{% user_json %}");
   const REGIONS = JSON.parse("{{ regions|escapejs }}");
   const COUNTRIES = JSON.parse("{{ countries|escapejs }}");
   const MAP_INTRODUCTION = "{{ map_introduction|escapejs }}";
