@@ -177,6 +177,7 @@ IMPERSONATE = {
     "REDIRECT_URL": "/editor/",
     "REQUIRE_SUPERUSER": True,
     "ALLOW_SUPERUSER": True,
+    "REDIRECT_FIELD_NAME": "next",
 }
 
 ELASTICSEARCH_URL = env("ELASTICSEARCH_URL", default="http://localhost")

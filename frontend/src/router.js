@@ -7,6 +7,7 @@ import DealDetail from "./views/DealDetail";
 import Charts from "./views/Charts";
 import WagtailPage from "./views/WagtailPage";
 import NotFound from "./views/NotFound";
+import Dashboard from "./views/Dashboard";
 
 import store from "./store";
 
@@ -25,6 +26,11 @@ const router = new Router({
       path: "/map/",
       name: "map",
       component: GlobalMap,
+    },
+    {
+      path: "/dashboard/",
+      name: "dashboard",
+      component: Dashboard,
     },
     {
       path: "/deal/add/",

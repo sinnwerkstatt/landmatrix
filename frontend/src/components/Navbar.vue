@@ -21,7 +21,7 @@
             <a class="nav-link" href="/global/">Global</a>
           </li>
           <li class="nav-item">
-            <v-select
+            <multiselect
               class="nav-link"
               :options="regions"
               label="title"
@@ -29,7 +29,7 @@
             />
           </li>
           <li class="nav-item">
-            <v-select
+            <multiselect
               class="nav-link"
               :options="countries"
               label="title"
@@ -55,7 +55,7 @@
         <ul class="navbar-nav ml-auto">
           <li v-if="user" class="nav-item">
             <p class="navbar-text dropdown-header">
-              {{ user.first_name }} {{ user.last_name }}
+              {{ user.full_name }}
               <br />
               <small>BOFH</small>
             </p>
@@ -82,12 +82,12 @@
               <a
                 v-if="user.is_impersonate"
                 class="dropdown-item"
-                href="/impersonate/stop/"
+                href="/impersonate/stop/?next=/newdeal/dashboard/"
               >
                 Stop impersonation</a
               >
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/editor/">Dashboard</a>
+              <router-link class="dropdown-item" :to="{name:'dashboard'}">Dashboard</router-link>
               <a class="dropdown-item" href="/manage/">Manage</a>
               <router-link class="dropdown-item" :to="{ name: 'deal_add' }"
                 >Add a deal

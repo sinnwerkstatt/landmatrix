@@ -5,7 +5,7 @@ import BootstrapVue from "bootstrap-vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import vSelect from "vue-select";
+import Multiselect from "vue-multiselect";
 
 // Vue.use(VueMeta, {
 //   // optional pluginOptions
@@ -21,8 +21,8 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import "./scss/main.scss";
 
-Vue.component("v-select", vSelect);
-import "vue-select/dist/vue-select.css";
+Vue.component("multiselect", Multiselect);
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import { LMap, LTileLayer, LGeoJson, LControlLayers } from "vue2-leaflet";
 Vue.component("l-map", LMap);
@@ -63,5 +63,4 @@ export default new Vue({
   render: (h) => h(App),
 }).$mount("#app");
 
-
-store.dispatch('fetchUser');
+store.dispatch("fetchUser");

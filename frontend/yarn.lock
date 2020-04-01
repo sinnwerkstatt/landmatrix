@@ -6497,6 +6497,11 @@ vue-meta@^2.3.3:
   dependencies:
     deepmerge "^4.2.2"
 
+vue-multiselect@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-2.1.6.tgz#5be5d811a224804a15c43a4edbb7485028a89c7f"
+  integrity sha512-s7jmZPlm9FeueJg1RwJtnE9KNPtME/7C8uRWSfp9/yEN4M8XcS/d+bddoyVwVnvFyRh9msFo0HWeW0vTL8Qv+w==
+
 vue-resource@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/vue-resource/-/vue-resource-1.5.1.tgz#0f3d685e3254d21800bebd966edcf56c34b3b6e4"
@@ -6508,11 +6513,6 @@ vue-router@^3.0.3:
   version "3.1.6"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.1.6.tgz#45f5a3a3843e31702c061dd829393554e4328f89"
   integrity sha512-GYhn2ynaZlysZMkFE5oCHRUTqE8BWs/a9YbKpNLi0i7xD6KG1EzDqpHQmv1F5gXjr8kL5iIVS8EOtRaVUEXTqA==
-
-vue-select@^3.1.0:
-  version "3.9.3"
-  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.9.3.tgz#124093b60f28d742b62ec4f4801266a0f6889590"
-  integrity sha512-+yVyPr+2lbzLjbdnXQ8pJ/MEH1aA2PO6iDjdIQajlUTd1Z1F+2ET21BcHpbJpRxmyzogqZQgAOUGugvsLG0sDQ==
 
 vue-style-loader@^4.1.0:
   version "4.1.2"

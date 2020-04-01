@@ -4,10 +4,9 @@
 
 <script>
   import Streamfield from "../components/Streamfield";
-  import store from "../store";
 
   export default {
-    name: "WagtailPage",
+    // name: "WagtailPage",
     components: { Streamfield },
     computed: {
       wagtailPage() {

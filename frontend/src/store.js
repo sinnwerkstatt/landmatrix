@@ -44,9 +44,8 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchUser(context) {
-      console.log("fetching user");
       let query = `{ me
-      { first_name last_name username is_authenticated is_impersonate }
+      { full_name username is_authenticated is_impersonate }
       }`;
       this._vm.$http.post("/graphql/", { query: query }).then((response) => {
         context.commit("setUser", response.data.data.me);
@@ -57,7 +56,7 @@ const store = new Vuex.Store({
         login(username: "${username}", password: "${password}") {
           status
           error
-          user { first_name last_name username is_authenticated is_impersonate }
+          user { full_name username is_authenticated is_impersonate }
         }
       }`;
       this._vm.$http.post("/graphql/", { query: query }).then((response) => {
