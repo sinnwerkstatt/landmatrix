@@ -18,7 +18,7 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/global/">Global</a>
+            <router-link class="nav-link" to="/global/">Global</router-link>
           </li>
           <li class="nav-item">
             <multiselect
@@ -37,19 +37,19 @@
             />
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/stay-informed/" role="button">
+            <router-link class="nav-link" to="/stay-informed/" role="button">
               <span class="nav-text">Stay informed</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/get-involved/" role="button">
+            <router-link class="nav-link" to="/get-involved/" role="button">
               <span class="nav-text">Get involved</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/faq/" role="button">
+            <router-link class="nav-link" to="/faq/" role="button">
               <span class="nav-text">FAQ</span>
-            </a>
+            </router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
