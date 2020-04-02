@@ -62,6 +62,12 @@ const router = new Router({
       props: true,
     },
     {
+      path: "/charts/web-of-transnational-deals/",
+      // name: "charts_web_o",
+      component: Charts,
+      props: true,
+    },
+    {
       path: "/404/",
       name: "404",
       component: NotFound,
@@ -77,20 +83,9 @@ const router = new Router({
       path: "*",
       name: "wagtail",
       component: WagtailPage,
-      beforeEnter: (to, from, next) => {
-        let target = to.path.replace("/newdeal", ""); // TODO: Remove this eventually
-        store.dispatch("fetchWagtailPage", target);
-        next();
-      },
     },
   ],
-  //   {
-  //     // catch requests not mapping any path and redirect to home
-  //     path: '*',
-  //     redirect: {
-  //       name: 'home'
-  //     }
-  //   },
+
   //   // {
   //     // path: '/about',
   //     // name: 'about',

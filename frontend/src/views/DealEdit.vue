@@ -1,27 +1,27 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
+      {{deal}}
       <b-tab title="General Info" active>
         <div>
           <h3>Land area</h3>
-          <b-row
+          <div
+            class="row mt-3"
             :class="formfield.class"
             v-for="formfield in formfields"
             :key="formfield.class"
           >
-            <b-col md="3">
+            <div class="col-md-3">
               <label :for="`type-${formfield.class}`">{{ formfield.label }}:</label>
-            </b-col>
-            <b-col md="9">
-              <keep-alive>
-                <component
-                  :is="formfield.component"
-                  :formfield="formfield"
-                  v-model="deal"
-                ></component>
-              </keep-alive>
-            </b-col>
-          </b-row>
+            </div>
+            <div class="col-md-9">
+              <component
+                :is="formfield.component"
+                :formfield="formfield"
+                v-model="deal"
+              ></component>
+            </div>
+          </div>
         </div>
       </b-tab>
       <b-tab title="Other"> </b-tab>

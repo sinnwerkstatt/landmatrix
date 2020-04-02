@@ -18,7 +18,7 @@
           return this.value[this.formfield.class];
         },
         set(value) {
-          this.$emit("input", value);
+          this.value[this.formfield.class] = value;
         },
       },
     },

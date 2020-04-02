@@ -1,5 +1,5 @@
 <template>
-  <Streamfield :content="wagtailPage" />
+  <Streamfield :content="content" />
 </template>
 
 <script>
@@ -7,16 +7,19 @@
   import store from "../store";
 
   export default {
-    // name: "WagtailPage",
     components: { Streamfield },
     computed: {
-      wagtailPage() {
-        return this.$store.state.wagtailPage;
+      content() {
+        let page = this.$store.state.wagtailPage;
+        return page ? page.body : null;
       },
     },
+    beforeRouteEnter: (to, from, next) => {
+      store.dispatch("fetchWagtailPage", to.path);
+      next();
+    },
     beforeRouteUpdate(to, from, next) {
-      let target = to.path.replace("/newdeal", ""); // TODO: Remove this eventually
-      store.dispatch("fetchWagtailPage", target);
+      store.dispatch("fetchWagtailPage", to.path);
       next();
     },
   };

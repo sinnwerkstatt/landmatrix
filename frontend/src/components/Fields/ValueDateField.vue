@@ -1,30 +1,37 @@
 <template>
   <div>
-    <div v-for="val in vals">
+    <div v-for="(val, i) in vals" :key="i" class="my-1">
       <!--  <div>-->
       <!--    {{formfield}}-->
       <!--  </div>-->
-      <b-input-group :append="formfield.unit">
+      <div class="input-group">
         <b-form-input
-          :id="`type-${formfield.class}`"
           :type="formfield.type || `text`"
           :placeholder="formfield.placeholder"
           class="year-based"
+          v-model="val.value"
         />
         <b-form-input
-          :id="`type-${formfield.class}_date`"
           type="text"
           class="year-based-year"
           placeholder="YYYY-MM-DD"
+          v-model="val.date"
         />
-      </b-input-group>
-      <a class="btn add-ybd add-row" :click="addSet">
-        <i class="lm lm-plus"></i> Add more</a
-      >
-      <a class="btn remove-ybd delete-row" style="display: none;">
-        <i class="lm lm-minus"></i> Remove</a
-      >
+        <div class="input-group-append">
+          <div class="input-group-text">{{ formfield.unit }}</div>
+        </div>
+        <a
+          :class="{ disabled: vals.length <= 1 }"
+          class="btn remove-ybd delete-row"
+          @click.prevent="removeSet(i)"
+        >
+          <i class="lm lm-minus"></i> Remove</a
+        >
+      </div>
     </div>
+    <a class="btn add-ybd add-row" @click.prevent="addSet">
+      <i class="lm lm-plus"></i> Add more</a
+    >
   </div>
 </template>
 
@@ -32,25 +39,19 @@
   export default {
     props: ["formfield", "value"],
     data() {
-      return {
-        sets: [{ date: null, value: null }],
-      };
+      return {};
     },
     computed: {
-      //   vals: {
-      //     get() {
-      //       console.log(this.value[this.formfield.class]);
-      //       return this.value[this.formfield.class];
-      //     },
-      //     set(value) {
-      //       console.log(value);
-      //       // this.$emit('input', value)
-      //     }
-      //   }
+      vals() {
+        return this.value[this.formfield.class];
+      },
     },
     methods: {
       addSet() {
-        this.sets.append({ date: null, value: null });
+        this.vals.push({ date: null, value: null });
+      },
+      removeSet(index) {
+        this.vals.splice(index, 1);
       },
     },
   };

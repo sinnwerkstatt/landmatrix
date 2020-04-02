@@ -77,15 +77,19 @@ const store = new Vuex.Store({
       let url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
       this._vm.$http.get(url).then(
         (response) => {
-          // if (response.body.meta.type === "wagtailcms.WagtailRootPage") {
-          //   context.commit("setTitle", null);
-          // }
-          let title = response.body.title;
+          let breadcrumbs;
+          let title;
+          if (response.body.meta.type === "wagtailcms.WagtailRootPage") {
+            title = null;
+            breadcrumbs = [];
+          } else {
+            title = response.body.title;
+            breadcrumbs = [{ link: { name: "wagtail" }, name: "Home" }, { name: title }]
+          }
           context.commit("setTitle", title);
-          let breads = [{ link: { name: "wagtail" }, name: "Home" }, { name: title }];
-          context.commit("setBreadcrumbs", breads);
+          context.commit("setBreadcrumbs", breadcrumbs);
           context.commit("setSearchDescription", response.body.meta.search_description);
-          context.commit("setWagtailPage", response.body.body);
+          context.commit("setWagtailPage", response.body);
         },
         (response) => {
           router.push({ name: "404" });
