@@ -195,7 +195,6 @@ sys.stdout.flush()
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
     INSTALLED_APPS += [
-        # "wagtailapiimagerendition",
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
@@ -238,3 +237,14 @@ WKHTMLTOPDF_CMD = env("DJANGO_WKHTMLTOPDF_CMD", default="wkhtmltopdf")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 LANDMATRIX_INVESTOR_GRAPH_ENABLED = True
+
+TWITTER_TIMELINE = (
+    {
+        "consumer_key": env("DJANGO_TWITTER_CONSUMER_KEY"),
+        "consumer_secret": env("DJANGO_TWITTER_CONSUMER_SECRET"),
+        "access_token": env("DJANGO_TWITTER_ACCESS_TOKEN"),
+        "access_token_secret": env("DJANGO_TWITTER_ACCESS_TOKEN_SECRET"),
+    }
+    if env("DJANGO_TWITTER_CONSUMER_KEY", default="")
+    else None
+)

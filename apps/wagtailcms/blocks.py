@@ -114,6 +114,14 @@ class TwitterBlock(StructBlock):
         )  # context['timeline'][0]['screen_name']
         return context
 
+    def get_api_representation(self, value, context=None):
+        timeline = TwitterTimeline(count=(value.get("count")))
+        val = {
+            "username": value.get("username"),
+            "timeline": timeline.get_timeline(value.get("username")),
+        }
+        return val
+
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
@@ -155,6 +163,12 @@ class ImageBlock(ImageChooserBlock):
         context["name"] = value.title
         return context
 
+    def get_api_representation(self, value, context=None):
+        url = value.get_rendition("max-1200x1200").url
+        prep_val = self.get_prep_value(value)
+        ret = {"id": prep_val, "url": url}
+        return ret
+
 
 class SectionDivider(StructBlock):
     class Meta:
@@ -184,6 +198,14 @@ class LinkedImageBlock(ExternalLinkMixin, StructBlock):
         context["name"] = image.title
         context["caption"] = value.get("caption")
         return context
+
+    def get_api_representation(self, value, context=None):
+        url = value["image"].get_rendition("max-1200x1200").url
+        prep_val = self.get_prep_value(value)
+        image_id = prep_val["image"]
+        prep_val["image"] = {"id": image_id, "url": url}
+        prep_val["external"] = self._is_external_link(prep_val["url"])
+        return prep_val
 
 
 class SliderBlock(StructBlock):

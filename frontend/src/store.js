@@ -92,7 +92,7 @@ const store = new Vuex.Store({
           context.commit("setSearchDescription", response.data.meta.search_description);
           context.commit("setWagtailPage", response.data);
         },
-        (response) => {
+        () => {
           router.push({ name: "404" });
         }
       );

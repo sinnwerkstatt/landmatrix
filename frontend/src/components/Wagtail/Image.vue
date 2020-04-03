@@ -1,6 +1,6 @@
 <template>
   <div class="widget-image">
-    <a v-if="link" :href="link" :target="external">
+    <a v-if="link" :href="link" :target="{ _blank: external }">
       <img
         :src="path"
         class="image"
@@ -15,31 +15,31 @@
       :alt="alt"
       style="max-width: 100%; max-height: 100%;"
     />
-    <div v-if="caption" class="carousel-caption">{{ caption }}</div>
+    <div v-if="caption" class="carousel-caption" v-html="caption" />
   </div>
 </template>
 
 <script>
-  import axios from 'axios';
   export default {
     props: ["value"],
     data() {
       return {
-        path: null,
-        link: null,
         alt: null,
-        external: false,
-        caption: null,
       };
     },
-    created() {
-      let image_id = this.value.image ? this.value.image : this.value;
-      this.link = this.value.url;
-      let url = `/wagtailapi/v2/images/${image_id}`;
-      axios.get(url).then((response) => {
-        let meta = response.data.meta;
-        this.path = meta.download_url;
-      });
+    computed: {
+      link() {
+        return this.value.image ? this.value.url : null;
+      },
+      path() {
+        return this.value.image ? this.value.image.url : this.value.url;
+      },
+      caption() {
+        return this.value.image ? this.value.caption : null;
+      },
+      external() {
+        return this.value.image ? this.value.external : false;
+      },
     },
   };
 </script>
@@ -52,4 +52,16 @@
   .widget-image {
     margin-bottom: 20px;
   }
+  .carousel-caption {
+  bottom: 0;
+  padding: 0 !important;
+  text-shadow: none !important;
+  p {
+    background-color: rgba(0, 0, 0, .75);
+    color: white;
+    display: inline-block;
+    padding: .2em .6em .3em;
+  }
+}
+
 </style>

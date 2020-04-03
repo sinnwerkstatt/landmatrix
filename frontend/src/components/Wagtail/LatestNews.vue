@@ -1,7 +1,7 @@
 <template>
-  <h3>latest news:
+  <div>latest news:
     {{value}}
-  </h3>
+  </div>
 </template>
 
 <script>

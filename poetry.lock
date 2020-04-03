@@ -1608,7 +1608,7 @@ description = "Backported and Experimental Type Hints for Python 3.5+"
 name = "typing-extensions"
 optional = false
 python-versions = "*"
-version = "3.7.4.1"
+version = "3.7.4.2"
 
 [[package]]
 category = "main"
@@ -1685,18 +1685,6 @@ testing = ["python-dateutil (>=2.2)", "pytz (>=2014.7)", "elasticsearch (>=1.0.0
 
 [[package]]
 category = "main"
-description = "Add renditions parameters in cms for images serve through the api"
-name = "wagtail-apiimagerendition"
-optional = false
-python-versions = ">=3.6,<4.0"
-version = "0.1b1"
-
-[package.dependencies]
-Django = ">=2.2.0,<2.3"
-wagtail = ">=2.5"
-
-[[package]]
-category = "main"
 description = "A wordpress like blog app implemented in wagtail"
 name = "wagtail-blog"
 optional = false
@@ -1770,7 +1758,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "raven"]
 
 [metadata]
-content-hash = "88ba12a0f67cb8cc30fdccb960a20e4107d112692befb3d33a9101346d9eb1b7"
+content-hash = "1f2ad944f57222fffe6267c0dcbed0d9f61ab496618028490d80f15c23c8355b"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -2576,9 +2564,9 @@ typed-ast = [
     {file = "typed_ast-1.4.1.tar.gz", hash = "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b"},
 ]
 typing-extensions = [
-    {file = "typing_extensions-3.7.4.1-py2-none-any.whl", hash = "sha256:910f4656f54de5993ad9304959ce9bb903f90aadc7c67a0bef07e678014e892d"},
-    {file = "typing_extensions-3.7.4.1-py3-none-any.whl", hash = "sha256:cf8b63fedea4d89bab840ecbb93e75578af28f76f66c35889bd7065f5af88575"},
-    {file = "typing_extensions-3.7.4.1.tar.gz", hash = "sha256:091ecc894d5e908ac75209f10d5b4f118fbdb2eb1ede6a63544054bb1edb41f2"},
+    {file = "typing_extensions-3.7.4.2-py2-none-any.whl", hash = "sha256:f8d2bd89d25bc39dabe7d23df520442fa1d8969b82544370e03d88b5a591c392"},
+    {file = "typing_extensions-3.7.4.2-py3-none-any.whl", hash = "sha256:6e95524d8a547a91e08f404ae485bbb71962de46967e1b71a0cb89af24e761c5"},
+    {file = "typing_extensions-3.7.4.2.tar.gz", hash = "sha256:79ee589a3caca649a9bfd2a8de4709837400dfa00b6cc81962a1e6a1815969ae"},
 ]
 unicodecsv = [
     {file = "unicodecsv-0.14.1.tar.gz", hash = "sha256:018c08037d48649a0412063ff4eda26eaa81eff1546dbffa51fa5293276ff7fc"},
@@ -2602,10 +2590,6 @@ vine = [
 wagtail = [
     {file = "wagtail-2.7.1-py3-none-any.whl", hash = "sha256:580a75944f805a3686dbec97a3479e631cee2dc29fdea3d916055b1db36ad475"},
     {file = "wagtail-2.7.1.tar.gz", hash = "sha256:69d1b5ca5fcac0812f923fa900040a15768961942f76e71c92f7043f172ea7a3"},
-]
-wagtail-apiimagerendition = [
-    {file = "wagtail-apiimagerendition-0.1b1.tar.gz", hash = "sha256:b5bb57d06b4eb9514365990253245cf6a3c11c467bb4128b5b0d3dfcda7b3d6b"},
-    {file = "wagtail_apiimagerendition-0.1b1-py3-none-any.whl", hash = "sha256:d6b83047aea94a6fd3e6d7cb9466c805a28692629edbd242dda4d8d1c1519930"},
 ]
 wagtail-blog = [
     {file = "wagtail_blog-2.3.5-py3-none-any.whl", hash = "sha256:d3d7de2846ebc8ece992e8276bbacfb1f64973210caba1aadb59d823d3b1587c"},

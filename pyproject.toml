@@ -24,7 +24,6 @@ django-elasticsearch = "^7.0.2"
 django-webpack-loader = "^0.7.0"
 geojson-rewind = "^0.2.0"
 ariadne = "^0.10.0"
-wagtail-apiimagerendition = "^0.1b0"
 
 psycopg2-binary = "*"
 redis = "*"
