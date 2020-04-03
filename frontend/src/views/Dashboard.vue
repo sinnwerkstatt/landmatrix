@@ -97,6 +97,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   import store from "../store";
 
   export default {
@@ -108,21 +109,9 @@
     },
     created() {
       let query = `{ users(sort:"full_name") { id full_name } }`;
-      this.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         this.users = response.data.data.users;
       });
-    },
-    methods: {
-      impersonate() {
-        this.$http.get(`/impersonate/${this.userToImpersonate.id}/?next=/newdeal/`).then(
-          (response) => {
-            console.log(response);
-          },
-          (response) => {
-            console.warn("Could not impersonate!");
-          }
-        );
-      },
     },
     beforeRouteEnter(to, from, next) {
       let title = "Dashboard";

@@ -1,6 +1,5 @@
 import Vue from "vue";
 // import VueMeta from "vue-meta";
-import VueResource from "vue-resource";
 import BootstrapVue from "bootstrap-vue";
 import App from "./App.vue";
 import router from "./router";
@@ -12,7 +11,6 @@ import Multiselect from "vue-multiselect";
 //   refreshOnceOnNavigation: true,
 // });
 
-Vue.use(VueResource);
 
 Vue.use(BootstrapVue);
 import "bootstrap";

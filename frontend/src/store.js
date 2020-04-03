@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import router from "./router";
+import axios from 'axios';
 
 Vue.use(Vuex);
 
@@ -47,7 +48,7 @@ const store = new Vuex.Store({
       let query = `{ me
       { full_name username is_authenticated is_impersonate }
       }`;
-      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setUser", response.data.data.me);
       });
     },
@@ -59,7 +60,7 @@ const store = new Vuex.Store({
           user { full_name username is_authenticated is_impersonate }
         }
       }`;
-      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         if(response.data.data.login.status===true) {
           context.commit("setUser", response.data.data.login.user);
         }
@@ -67,7 +68,7 @@ const store = new Vuex.Store({
     },
     logout(context) {
       let query = "mutation { logout }";
-      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         if (response.data.data.logout === true) {
           context.commit("setUser", null);
         }
@@ -75,21 +76,21 @@ const store = new Vuex.Store({
     },
     fetchWagtailPage(context, path) {
       let url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
-      this._vm.$http.get(url).then(
+      axios.get(url).then(
         (response) => {
           let breadcrumbs;
           let title;
-          if (response.body.meta.type === "wagtailcms.WagtailRootPage") {
+          if (response.data.meta.type === "wagtailcms.WagtailRootPage") {
             title = null;
             breadcrumbs = [];
           } else {
-            title = response.body.title;
+            title = response.data.title;
             breadcrumbs = [{ link: { name: "wagtail" }, name: "Home" }, { name: title }]
           }
           context.commit("setTitle", title);
           context.commit("setBreadcrumbs", breadcrumbs);
-          context.commit("setSearchDescription", response.body.meta.search_description);
-          context.commit("setWagtailPage", response.body);
+          context.commit("setSearchDescription", response.data.meta.search_description);
+          context.commit("setWagtailPage", response.data);
         },
         (response) => {
           router.push({ name: "404" });
@@ -108,7 +109,7 @@ const store = new Vuex.Store({
           deal_size
         }
       }`;
-      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setDeals", response.data.data.deals);
       });
     },
@@ -133,7 +134,7 @@ const store = new Vuex.Store({
           geojson
         }
       }`;
-      this._vm.$http.post("/graphql/", { query: query }).then((response) => {
+      axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setCurrentDeal", response.data.data.deal);
       });
     },

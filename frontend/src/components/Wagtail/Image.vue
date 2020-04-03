@@ -20,6 +20,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   export default {
     props: ["value"],
     data() {
@@ -35,8 +36,8 @@
       let image_id = this.value.image ? this.value.image : this.value;
       this.link = this.value.url;
       let url = `/wagtailapi/v2/images/${image_id}`;
-      this.$http.get(url).then((response) => {
-        let meta = response.body.meta;
+      axios.get(url).then((response) => {
+        let meta = response.data.meta;
         this.path = meta.download_url;
       });
     },
