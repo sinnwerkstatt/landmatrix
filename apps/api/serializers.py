@@ -365,8 +365,10 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         processed["investors"].add(investor_identifier)
 
         # Get parent investors (where current investor is "parent" or "child")
-        status = None
-        if self.user and not self.user.is_authenticated:
+        if self.user and self.user.is_authenticated:
+            status = HistoricalInvestor.PUBLIC_STATUSES + \
+                     (HistoricalInvestor.STATUS_PENDING,)
+        else:
             status = HistoricalInvestor.PUBLIC_STATUSES
         involvements = HistoricalInvestorVentureInvolvement.objects.latest_only(status)
         involvements = involvements.filter(
@@ -406,9 +408,6 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         if show_deals:
             deals = []
             # Create deal node and links
-            status = None
-            if self.user and not self.user.is_authenticated:
-                status = HistoricalActivity.PUBLIC_STATUSES
             activities = HistoricalActivity.objects.latest_only(status)
             activities = activities.filter(
                 involvements__fk_investor__investor_identifier=investor_identifier
