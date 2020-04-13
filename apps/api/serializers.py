@@ -366,8 +366,9 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
 
         # Get parent investors (where current investor is "parent" or "child")
         if self.user and self.user.is_authenticated:
-            status = HistoricalInvestor.PUBLIC_STATUSES + \
-                     (HistoricalInvestor.STATUS_PENDING,)
+            status = HistoricalInvestor.PUBLIC_STATUSES + (
+                HistoricalInvestor.STATUS_PENDING,
+            )
         else:
             status = HistoricalInvestor.PUBLIC_STATUSES
         involvements = HistoricalInvestorVentureInvolvement.objects.latest_only(status)

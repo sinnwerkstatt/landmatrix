@@ -50,7 +50,10 @@ def task_reset_db():
 
 #############################
 def task_yarn_install():
-    return {"targets": ["node_modules/"], "actions": ["/usr/bin/yarn install"]}
+    actions = ["yarn install"]
+    if get_var("production", False):
+        actions += ["yarn build"]
+    return {"targets": ["node_modules/"], "actions": actions}
 
 
 def task_convert_scss():

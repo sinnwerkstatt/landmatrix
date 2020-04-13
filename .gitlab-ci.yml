@@ -45,6 +45,7 @@ deploy to staging:
     - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - |
       ssh $STAGING_USER@$STAGING_HOST << E=O=F
+      set -e
       mv maintenance.html_ maintenance.html
       cd ~/htdocs
       poetry run doit full_update dev=True production=True
@@ -62,6 +63,7 @@ deploy to production:
     - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - |
       ssh $PRODUCTION_USER@$PRODUCTION_HOST << E=O=F
+      set -e
       mv maintenance.html_ maintenance.html
       cd ~/htdocs
       poetry run doit full_update production=True branch=production
