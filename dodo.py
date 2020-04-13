@@ -52,7 +52,7 @@ def task_reset_db():
 def task_yarn_install():
     actions = ["yarn install"]
     if get_var("production", False):
-        actions += ["yarn build"]
+        actions += ["yarn build_frontend"]
     return {"targets": ["node_modules/"], "actions": actions}
 
 
