@@ -5,12 +5,12 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from wagtail.core.rich_text import expand_db_html
 
-from apps.greennewdeal.documents.deal import LocationDocument
+from apps.greennewdeal.documents.deal import DealDocument, LocationDocument
 from apps.greennewdeal.models import Country
 from apps.wagtailcms.models import RegionPage, WagtailRootPage
 
 
-@cache_page(60)
+@cache_page(5)
 def vuebase(request, path=None):
     regions = list(
         RegionPage.objects.filter(live=True, region__isnull=False)
@@ -120,3 +120,32 @@ def old_api_country_deals_json(request):
         )
     ret = {"type": "FeatureCollection", "features": features}
     return JsonResponse(ret)
+
+
+def old_api_latest_changes(request):
+    """
+    solve this directly via graphql in the future:
+    {
+      deals(sort:"-timestamp"){
+        id
+        timestamp
+        target_country {
+          name
+        }
+      }
+    }
+    """
+    deals = [
+        {
+            "action": "TODO",  # TODO: Map an action here
+            "deal_id": deal.id,
+            "change_date": deal.timestamp,
+            "target_country": deal.target_country.name if deal.target_country else None,
+        }
+        for deal in DealDocument.search()[:20]
+        .filter("terms", status=[2, 3])
+        .source(["id", "timestamp", "target_country", "status"])
+        .sort("-timestamp")
+        .execute()
+    ]
+    return JsonResponse(deals, safe=False)

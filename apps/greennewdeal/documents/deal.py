@@ -13,7 +13,7 @@ class DealDocument(Document):
     class Django:
         model = Deal
         related_models = [Location, Contract, DataSource]
-        exclude = ["timestamp"]
+        fields = "__all__"
 
         # Don't perform an index refresh after every update (overrides global setting):
         # auto_refresh = False

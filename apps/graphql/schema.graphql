@@ -44,6 +44,7 @@ type Deal {
     contract_size: [DateValuePair]
     production_size: [DateValuePair]
     geojson: GeoJSON
+    timestamp: DateTime
 }
 
 type Country {

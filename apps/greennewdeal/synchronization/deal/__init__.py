@@ -52,6 +52,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             base.parse_remaining(deal, meta_activity.group_remaining)
 
             status = STATUS_MAP[histivity.fk_status_id]
+            deal.timestamp = histivity.history_date
             deal.save_revision(
                 status,
                 histivity.history_date,
