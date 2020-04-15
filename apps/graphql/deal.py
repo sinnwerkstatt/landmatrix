@@ -2,14 +2,8 @@ from typing import Any
 
 from graphql import GraphQLResolveInfo
 
+from apps.graphql.tools import get_fields
 from apps.greennewdeal.documents import DealDocument
-
-
-def get_fields(info: GraphQLResolveInfo):
-    fields = set()
-    for fnode in info.field_nodes:
-        fields.update({f.name.value for f in fnode.selection_set.selections})
-    return list(fields)
 
 
 def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
@@ -23,11 +17,14 @@ def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
     return deal.to_dict()
 
 
-def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort, limit=None):
+def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):
+    limit = max(1, min(limit, 500))
     deals = DealDocument.search().filter("terms", status=[2, 3]).sort(sort)
 
     fields = get_fields(info)
     if fields:
         deals = deals.source(fields)
-    deals = [d.to_dict() for d in deals[:20].execute()]
+    # if after:
+    #     deals = deals.filter('range', id={'gt': after})
+    deals = [d.to_dict() for d in deals[:limit].execute()]
     return deals

@@ -105,6 +105,25 @@ class DealDocument(Document):
             # "contract_area": fields.GeoShapeField(),
         }
     )
+    # datasources = fields.NestedField(
+    #     properties={
+    #         "type": fields.ObjectField(),
+    #         "type_display": fields.ObjectField(),
+    #         "url": fields.ObjectField(),
+    #         "file": fields.ObjectField(),
+    #         "file_not_public": fields.ObjectField(),
+    #         "publication_title": fields.ObjectField(),
+    #         "date": fields.ObjectField(),
+    #         "name": fields.ObjectField(),
+    #         "company": fields.ObjectField(),
+    #         "email": fields.ObjectField(),
+    #         "phone": fields.ObjectField(),
+    #         "includes_in_country_verified_information": fields.ObjectField(),
+    #         "open_land_contracts_id": fields.ObjectField(),
+    #         "comment": fields.ObjectField(),
+    #         "timestamp": fields.ObjectField(),
+    #     }
+    # )
 
     geojson = fields.ObjectField()
 

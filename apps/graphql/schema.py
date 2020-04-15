@@ -5,7 +5,7 @@ from ariadne import (
     load_schema_from_path,
     make_executable_schema,
 )
-from ariadne.contrib.django.scalars import datetime_scalar
+from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
 
 from apps.graphql.deal import resolve_deal, resolve_deals
 from apps.graphql.investor import resolve_investor, resolve_investors
@@ -27,4 +27,6 @@ mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 
-schema = make_executable_schema(type_defs, [datetime_scalar], query, mutation)
+schema = make_executable_schema(
+    type_defs, [datetime_scalar, date_scalar], query, mutation
+)

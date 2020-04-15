@@ -4,10 +4,18 @@ type Query {
     users(sort: String = "id"): [User]
 
     deal(id: Int!): Deal!
-    deals(sort: String = "id"): [Deal]
+    deals(
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        sort: String = "id",
+        "A limit between 1 and 500. If you need more, please contact us"
+        limit: Int = 20): [Deal]
 
     investor(id: Int!): Investor!
-    investors(sort: String = "id"): [Investor]
+    investors(
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        sort: String = "id",
+        "A limit between 1 and 500. If you need more, please contact us"
+        limit: Int = 20): [Investor]
 }
 
 type User {
@@ -26,24 +34,206 @@ type User {
 
 
 type Investor {
-    id: Int
-    name: String
+    id: Int!
+    name: String!
     country: Country
+    classification: Int
     classification_display: String
+    homepage: String
+    opencorporates: String
+    comment: String
+    involvements: [Investor]
+
+    status: Int
+    status_display: String
+    timestamp: DateTime
 }
 
 type Deal {
-    id: Int
+    id: Int!
+    # General Info
+    ## Land area
     target_country: Country
-    top_investors: [Investor]
-    intention_of_investment: [DateValuePair]
-    negotiation_status: [DateValuePair]
-    implementation_status: [DateValuePair]
-    deal_size: Float
     intended_size: Float
     contract_size: [DateValuePair]
     production_size: [DateValuePair]
+    land_area_comment: String
+    ## Intention of investment
+    intention_of_investment: [DateValuePair]
+    intention_of_investment_comment: String
+    ## Nature of the deal
+    nature_of_deal: [Int]
+    nature_of_deal_display: [String]
+    nature_of_deal_comment: String
+    negotiation_status: [DateValuePair]
+    negotiation_status_comment: String
+    implementation_status: [DateValuePair]
+    implementation_status_comment: String
+    ## Purchase price
+    purchase_price: Float
+    purchase_price_currency: Currency
+    purchase_price_type: Int
+    purchase_price_type_display: String
+    purchase_price_area: Float
+    purchase_price_comment: String
+    ## Leasing fees
+    annual_leasing_fee: Float
+    annual_leasing_fee_currency: Currency
+    annual_leasing_fee_type: Int
+    annual_leasing_fee_type_display: String
+    annual_leasing_fee_area: Float
+    annual_leasing_fee_comment: String
+    ## Contract farming
+    contract_farming: Boolean
+    on_the_lease: Boolean
+    on_the_lease_area: [DateValuePair]
+    on_the_lease_farmers: [DateValuePair]
+    on_the_lease_households: [DateValuePair]
+    off_the_lease: Boolean
+    off_the_lease_area: [DateValuePair]
+    off_the_lease_farmers: [DateValuePair]
+    off_the_lease_households: [DateValuePair]
+    contract_farming_comment: String
+    # Employment
+    total_jobs_created: Boolean
+    total_jobs_planned: Int
+    total_jobs_planned_employees: Int
+    total_jobs_planned_daily_workers: Int
+    total_jobs_current: [DateValuePair]
+    total_jobs_current_employees: [DateValuePair]
+    total_jobs_current_daily_workers: [DateValuePair]
+    total_jobs_created_comment: String
+    foreign_jobs_created: Boolean
+    foreign_jobs_planned: Int
+    foreign_jobs_planned_employees: Int
+    foreign_jobs_planned_daily_workers: Int
+    foreign_jobs_current: [DateValuePair]
+    foreign_jobs_current_employees: [DateValuePair]
+    foreign_jobs_current_daily_workers: [DateValuePair]
+    foreign_jobs_created_comment: String
+    domestic_jobs_created: Boolean
+    domestic_jobs_planned: Int
+    domestic_jobs_planned_employees: Int
+    domestic_jobs_planned_daily_workers: Int
+    domestic_jobs_current: [DateValuePair]
+    domestic_jobs_current_employees: [DateValuePair]
+    domestic_jobs_current_daily_workers: [DateValuePair]
+    domestic_jobs_created_comment: String
+    # Investor info
+    operating_company: Investor
+    #    involved_actors: String
+    project_name: String
+    investment_chain_comment: String
+    # Local communities / indigenous peoples
+    name_of_community: [String]
+    name_of_indigenous_people: [String]
+    people_affected_comment: String
+    recognition_status: [String]
+    recognition_status_comment: String
+    community_consultation: Int
+    community_consultation_display: String
+    community_consultation_comment: String
+    community_reaction: Int
+    community_reaction_display: String
+    community_reaction_comment: String
+    land_conflicts: Boolean
+    land_conflicts_comment: String
+    displacement_of_people: Boolean
+    displaced_people: Int
+    displaced_households: Int
+    displaced_people_from_community_land: Int
+    displaced_people_within_community_land: Int
+    displaced_households_from_fields: Int
+    displaced_people_on_completion: Int
+    displacement_of_people_comment: String
+    negative_impacts: [Int]
+    negative_impacts_display: [String]
+    negative_impacts_comment: String
+    promised_compensation: String
+    received_compensation: String
+    promised_benefits: [Int]
+    promised_benefits_display: [String]
+    promised_benefits_comment: String
+    materialized_benefits: [Int]
+    materialized_benefits_display: [String]
+    materialized_benefits_comment: String
+    presence_of_organizations: String
+    # Former user
+    former_land_owner: [Int]
+    former_land_owner_display: [String]
+    former_land_owner_comment: String
+    former_land_use: [Int]
+    former_land_use_display: [String]
+    former_land_use_comment: String
+    former_land_cover: [Int]
+    former_land_cover_display: [String]
+    former_land_cover_comment: String
+    # Produce info
+    crops: [DateValuePair]
+    crops_yield: [DateValuePair]
+    crops_export: [DateValuePair]
+    crops_comment: String
+    animal: [DateValuePair]
+    animal_yield: [DateValuePair]
+    animal_export: [DateValuePair]
+    animal_comment: String
+    resources: [DateValuePair]
+    resources_yield: [DateValuePair]
+    resources_export: [DateValuePair]
+    resources_comment: String
+    contract_farming_crops: [DateValuePair]
+    contract_farming_crops_comment: String
+    contract_farming_animals: [DateValuePair]
+    contract_farming_animals_comment: String
+    has_domestic_use: Boolean
+    domestic_use: Float
+    has_export: Boolean
+    export_country1: Country
+    export_country1_ratio: Float
+    export_country2: Country
+    export_country2_ratio: Float
+    export_country3: Country
+    export_country3_ratio: Float
+    use_of_produce_comment: String
+    in_country_processing: Boolean
+    in_country_processing_comment: String
+    in_country_processing_facilities: String
+    in_country_end_products: String
+    # Water
+    water_extraction_envisaged: Boolean
+    water_extraction_envisaged_comment: String
+    source_of_water_extraction: [Int]
+    source_of_water_extraction_display: [String]
+    source_of_water_extraction_comment: String
+    how_much_do_investors_pay_comment: String
+    water_extraction_amount: Int
+    water_extraction_amount_comment: String
+    use_of_irrigation_infrastructure: Boolean
+    use_of_irrigation_infrastructure_comment: String
+    water_footprint: String
+    # Gender-related info
+    gender_related_information: String
+    # Guidelines & Principles
+    vggt_applied: Int
+    vggt_applied_display: String
+    vggt_applied_comment: String
+    prai_applied: Int
+    prai_applied_display: String
+    prai_applied_comment: String
+
+    # Foreign Keys
+    locations: [Location]
+    contracts: [Contract]
+    datasources: [DataSource]
+
+    #### Calculated fields
+    top_investors: [Investor]
+    deal_size: Float
+
+    "GeoJSON combined from all the deals' locations"
     geojson: GeoJSON
+    status: Int
+    status_display: String
     timestamp: DateTime
 }
 
@@ -52,16 +242,59 @@ type Country {
     name: String
 }
 
+type Currency {
+    id: Int
+    name: String
+}
+
 type DateValuePair {
     date: String
     value: String
+    value2: String
 }
 
-"GeoJSON combined from all the deals' locations"
+type Location {
+    name: String
+    description: String
+    #    point:
+    facility_name: String
+    level_of_accuracy: Int
+    level_of_accuracy_display: String
+    comment: String
+    #    contract_area: String
+    #    intended_area: String
+    #    production_area: String
+    timestamp: DateTime
+}
+type Contract {
+    number: String
+    date: Date
+    expiration_date: Date
+    agreement_duration: Int
+    comment: String
+    timestamp: DateTime
+}
+type DataSource {
+    type: Int
+    type_display: String
+    url: String
+    file: String
+    file_not_public: Boolean
+    publication_title: String
+    date: Date
+    name: String
+    company: String
+    email: String
+    phone: String
+    includes_in_country_verified_information: Boolean
+    open_land_contracts_id: String
+    comment: String
+    timestamp: DateTime
+}
+
 scalar GeoJSON
-
 scalar DateTime
-
+scalar Date
 
 
 type Mutation {

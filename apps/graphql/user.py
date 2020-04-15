@@ -1,5 +1,6 @@
 from typing import Any
 
+from ariadne.exceptions import HttpError
 from django.contrib import auth
 from graphql import GraphQLResolveInfo
 
@@ -23,7 +24,7 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
 def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     current_user = info.context.user
     if not current_user.is_staff:
-        return
+        raise HttpError(message="Not allowed")
 
     users = User.objects.exclude(id=current_user.id)
     for user in users:
@@ -33,6 +34,7 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
             else user.username
         )
 
+    # this is implemented in Python, not in SQL, to support the "full_name"
     reverse = False
     if sort[0] == "-":
         reverse = True

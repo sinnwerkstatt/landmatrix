@@ -9,4 +9,6 @@ class Currency(models.Model):
     ranking = models.IntegerField("Ranking")
 
     def __str__(self):
-        return str("%s%s" % (self.name, self.symbol and " (%s)" % self.symbol or ""))
+        if self.symbol:
+            return f"{self.name} ({self.symbol})"
+        return self.name
