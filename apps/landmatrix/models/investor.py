@@ -644,6 +644,12 @@ class InvestorVentureQuerySet(models.QuerySet):
         latest_ids = HistoricalInvestor.objects.latest_ids(status=status)
         return self.filter(fk_venture_id__in=latest_ids, fk_investor_id__in=latest_ids)
 
+    def latest_only_public_status(self):
+        latest_ids = HistoricalInvestor.objects.latest_ids(
+            status=HistoricalInvestor.PUBLIC_STATUSES
+        )
+        return self.filter(fk_venture_id__in=latest_ids, fk_investor_id__in=latest_ids)
+
     # deprecated
     def stakeholders(self):
         return self.parent_companies()
