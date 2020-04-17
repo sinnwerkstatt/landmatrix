@@ -11,6 +11,7 @@ import Multiselect from "vue-multiselect";
 //   refreshOnceOnNavigation: true,
 // });
 
+import '../node_modules/font-awesome/scss/font-awesome.scss';
 
 Vue.use(BootstrapVue);
 import "bootstrap";

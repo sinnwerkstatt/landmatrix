@@ -1,13 +1,15 @@
 <template>
   <div class="">
-    <big-map>
+    <big-map @ready="pinTheMap" :center="latlng">
       <l-circle
           :radius="radius"
           :lat-lng="latlng"
-          color="rgba(237, 136, 27, 1)"
-          fillColor="rgba(237, 136, 27, 0.8)"
-          @ready="mymethod"
-      />
+          color="#fc941f"
+          fillColor="#fc941f"
+          @ready="makeCircleDraggable"
+      >
+        <l-tooltip>{{hectares}} ha</l-tooltip>
+      </l-circle>
     </big-map>
   </div>
 </template>
@@ -15,14 +17,16 @@
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
-  import {LCircle} from "vue2-leaflet";
+  import {LCircle, LTooltip} from "vue2-leaflet";
 
+  let MAP;
 
   export default {
     name: "Charts",
     components: {
       BigMap,
-      LCircle
+      LCircle,
+      LTooltip
     },
     data: function () {
       return {
@@ -30,23 +34,31 @@
       }
     },
     computed: {
+      hectares() {
+        return 160168350;
+      },
       radius() {
-        let hectares = 160168350;
-        return Math.sqrt((hectares * 10000) / Math.PI);
+        return Math.sqrt((this.hectares * 10000) / Math.PI);
       }
     },
     methods: {
-      mymethod(x) {
-        // x.on({
-        //   mousedown: function () {
-        //     map.on('mousemove', function (e) {
-        //       circle.setLatLng(e.latlng);
-        //     });
-        //   }
-        // });
-        console.log(x);
-        console.log(this)
-      }
+      makeCircleDraggable(circle) {
+        circle.on({
+          mousedown: function () {
+            MAP.dragging.disable();
+            MAP.on('mousemove', function (e) {
+              circle.setLatLng(e.latlng);
+            });
+          }
+        });
+        MAP.on('mouseup', function (e) {
+          MAP.removeEventListener('mousemove');
+          MAP.dragging.enable();
+        })
+      },
+      pinTheMap(x) {
+        MAP = x;
+      },
     },
     beforeRouteEnter(to, from, next) {
       let title = "It's a big deal";

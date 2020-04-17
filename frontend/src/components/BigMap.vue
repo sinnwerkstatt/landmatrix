@@ -1,6 +1,6 @@
 <template>
   <div class="map-container mt-4">
-    <l-map :options="mapOptions" id="globalMap" ref="dealMap">
+    <l-map :options="mapOptions" :center="center || [0,0]" id="globalMap" ref="dealMap" @ready="emitUp">
       <l-control-layers position="topright"></l-control-layers>
       <l-tile-layer
           v-for="tileProvider in tileProviders"
@@ -21,9 +21,9 @@
 
   export default {
     name: "BigMap",
+    props: ['center'],
     data() {
       return {
-        map_introduction: MAP_INTRODUCTION,
         mapOptions: {
           zoomSnap: 0.5,
           minZoom: 1,
@@ -67,14 +67,17 @@
         ],
       };
     },
-
+  methods: {
+      emitUp(x) {
+        this.$emit('ready', x);
+      }
+  },
   }
 </script>
 
 <style lang="scss" scoped>
   #bigMap {
-    height: 75vh;
-    min-height: 500px;
+    height: 100%;
   }
 
   .map-container {
