@@ -36,8 +36,9 @@
 {% endblock %}
 
 {% block data %}
-  <div id="map" class="map" title='{% trans "It's a big deal" %}'></div>
-
+  <div class="map-container">
+    <div id="map" class="map" title='{% trans "It's a big deal" %}'></div>
+  </div>
   <div id="popup" class="ol-popup">
     <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
     <div id="popup-content"></div>
