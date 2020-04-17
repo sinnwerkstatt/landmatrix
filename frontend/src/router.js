@@ -4,12 +4,14 @@ import GlobalMap from "./views/GlobalMap";
 import DealList from "./views/DealList";
 import DealEdit from "./views/DealEdit";
 import DealDetail from "./views/DealDetail";
-import Charts from "./views/Charts";
+import Charts from "./views/Charts/Base";
+import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WagtailPage from "./views/WagtailPage";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Dashboard";
 
 import store from "./store";
+import ItsABigDeal from "./views/Charts/ItsABigDeal";
 
 Vue.use(Router);
 
@@ -52,20 +54,20 @@ const router = new Router({
     },
     {
       path: "/charts/",
-      name: "charts",
-      redirect: "/charts/web-of-transnational-deals/",
-    },
-    {
-      path: "/charts/web-of-transnational-deals/",
-      // name: "charts_web_o",
       component: Charts,
-      props: true,
-    },
-    {
-      path: "/charts/web-of-transnational-deals/",
-      // name: "charts_web_o",
-      component: Charts,
-      props: true,
+      children: [
+        {path: '', name: "charts", redirect: {name: "web-of-transnational-deals"}},
+        {
+          path: "web-of-transnational-deals/",
+          name: "web-of-transnational-deals",
+          component: WebOfTransnationalDeals,
+        },
+        {
+          path: "perspective/",
+          name: "its-a-big-deal",
+          component: ItsABigDeal,
+        },
+      ]
     },
     {
       path: "/404/",

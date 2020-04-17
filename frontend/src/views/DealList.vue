@@ -51,8 +51,8 @@
 </template>
 
 <script>
-  import FilterBar from "../components/FilterBar";
-  import store from "../store";
+  import FilterBar from "@/components/FilterBar";
+  import store from "@/store";
   const slugify = require("slugify");
 
   export default {

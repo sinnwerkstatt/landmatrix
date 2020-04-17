@@ -36,9 +36,9 @@
   }
 </style>
 <script>
-  import store from "../store";
-  import TextField from "../components/Fields/TextField";
-  import ValueDateField from "../components/Fields/ValueDateField";
+  import store from "@/store";
+  import TextField from "@/components/Fields/TextField";
+  import ValueDateField from "@/components/Fields/ValueDateField";
 
   export default {
     components: { TextField, ValueDateField },

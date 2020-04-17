@@ -217,14 +217,3 @@
     }
   }
 </style>
-
-<style lang="scss">
-  /* this needs to be here, in an unscoped style block */
-  .vs--searchable {
-    min-width: 80%;
-
-    .vs__dropdown-toggle {
-      border: none !important;
-    }
-  }
-</style>

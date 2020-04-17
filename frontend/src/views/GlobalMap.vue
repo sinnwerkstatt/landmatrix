@@ -21,8 +21,8 @@
 </template>
 
 <script>
-  import store from "../store";
-  import FilterBar from "../components/FilterBar";
+  import store from "@/store";
+  import FilterBar from "@/components/FilterBar";
 
   export default {
     name: "GlobalMap",
