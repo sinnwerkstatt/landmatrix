@@ -42,9 +42,9 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/charts/map-of-investments/">
+            <router-link class="nav-link" :to="{name:'global-map-of-investments'}">
               Global map of investments
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" :to="{name:'its-a-big-deal'}">

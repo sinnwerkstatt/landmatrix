@@ -12,6 +12,7 @@ import Dashboard from "./views/Dashboard";
 
 import store from "./store";
 import ItsABigDeal from "./views/Charts/ItsABigDeal";
+import GlobalMapOfInvestments from "@/views/Charts/GlobalMapOfInvestments";
 
 Vue.use(Router);
 
@@ -56,7 +57,7 @@ const router = new Router({
       path: "/charts/",
       component: Charts,
       children: [
-        {path: '', name: "charts", redirect: {name: "web-of-transnational-deals"}},
+        { path: "", name: "charts", redirect: { name: "web-of-transnational-deals" } },
         {
           path: "web-of-transnational-deals/",
           name: "web-of-transnational-deals",
@@ -67,7 +68,12 @@ const router = new Router({
           name: "its-a-big-deal",
           component: ItsABigDeal,
         },
-      ]
+        {
+          path: "map-of-investments/",
+          name: "global-map-of-investments",
+          component: GlobalMapOfInvestments,
+        },
+      ],
     },
     {
       path: "/404/",
