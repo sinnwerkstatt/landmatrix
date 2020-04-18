@@ -1,0 +1,15 @@
+type Investor {
+    id: Int!
+    name: String!
+    country: Country
+    classification: Int
+    classification_display: String
+    homepage: String
+    opencorporates: String
+    comment: String
+    involvements: [Investor]
+
+    status: Int
+    status_display: String
+    timestamp: DateTime
+}

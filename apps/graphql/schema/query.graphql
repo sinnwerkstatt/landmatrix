@@ -1,0 +1,46 @@
+type Query {
+    me: User
+    user(id: Int!): User
+    users(sort: String = "id"): [User]
+
+    deal(id: Int!): Deal!
+    deals(
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        sort: String = "id",
+        "A limit between 1 and 500. If you need more, please contact us"
+        limit: Int = 20): [Deal]
+
+    investor(id: Int!): Investor!
+    investors(
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        sort: String = "id",
+        "A limit between 1 and 500. If you need more, please contact us"
+        limit: Int = 20): [Investor]
+
+    aggregations: Aggregations
+}
+
+type Country {
+    id: Int
+    name: String
+}
+
+type Currency {
+    id: Int
+    name: String
+}
+
+type DateValuePair {
+    date: String
+    value: String
+    value2: String
+}
+
+type GeoPoint {
+    lat: Float!
+    lon: Float!
+}
+
+scalar Date
+scalar DateTime
+scalar GeoJSON

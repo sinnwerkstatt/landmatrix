@@ -1,0 +1,4 @@
+type Mutation {
+    login(username: String!, password: String!): LoginPayload
+    logout: Boolean!
+}

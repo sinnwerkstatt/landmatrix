@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 import reversion
@@ -6,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from geojson_rewind import rewind
 
 from apps.greennewdeal.models import Investor
 from apps.greennewdeal.models.country import Country
@@ -832,3 +834,38 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         """
         if self.operating_company:
             return self.operating_company.get_top_investors()
+
+    def get_geojson(self):
+        features = []
+        for loc in self.locations.all():  # type: Location
+            if loc.point:
+                point = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.point.geojson)),
+                    "properties": {"name": loc.name, "type": "point"},
+                }
+                features += [point]
+            if loc.contract_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.contract_area.geojson)),
+                    "properties": {"name": loc.name, "type": "contract_area"},
+                }
+                features += [rewind(contract_area)]
+            if loc.intended_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.intended_area.geojson)),
+                    "properties": {"name": loc.name, "type": "intended_area"},
+                }
+                features += [rewind(contract_area)]
+            if loc.production_area:
+                contract_area = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.production_area.geojson)),
+                    "properties": {"name": loc.name, "type": "production_area"},
+                }
+                features += [rewind(contract_area)]
+        if not features:
+            return None
+        return {"type": "FeatureCollection", "features": features}

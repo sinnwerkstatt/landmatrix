@@ -105,69 +105,41 @@ class DealDocument(Document):
             # "contract_area": fields.GeoShapeField(),
         }
     )
-    # datasources = fields.NestedField(
-    #     properties={
-    #         "type": fields.ObjectField(),
-    #         "type_display": fields.ObjectField(),
-    #         "url": fields.ObjectField(),
-    #         "file": fields.ObjectField(),
-    #         "file_not_public": fields.ObjectField(),
-    #         "publication_title": fields.ObjectField(),
-    #         "date": fields.ObjectField(),
-    #         "name": fields.ObjectField(),
-    #         "company": fields.ObjectField(),
-    #         "email": fields.ObjectField(),
-    #         "phone": fields.ObjectField(),
-    #         "includes_in_country_verified_information": fields.ObjectField(),
-    #         "open_land_contracts_id": fields.ObjectField(),
-    #         "comment": fields.ObjectField(),
-    #         "timestamp": fields.ObjectField(),
-    #     }
-    # )
+    datasources = fields.NestedField(
+        properties={
+            "type": fields.IntegerField(),
+            "type_display": fields.TextField(attr="get_type_display"),
+            "url": fields.TextField(),
+            "file": fields.FileField(),
+            "file_not_public": fields.BooleanField(),
+            "publication_title": fields.TextField(),
+            "date": fields.DateField(),
+            "name": fields.TextField(),
+            "company": fields.TextField(),
+            "email": fields.TextField(),
+            "phone": fields.TextField(),
+            "includes_in_country_verified_information": fields.BooleanField(),
+            "open_land_contracts_id": fields.TextField(),
+            "comment": fields.TextField(),
+            "timestamp": fields.DateField(),
+        }
+    )
+    contracts = fields.NestedField(
+        properties={
+            "number": fields.TextField(),
+            "date": fields.DateField(),
+            "expiration_date": fields.DateField(),
+            "agreement_duration": fields.IntegerField(),
+            "comment": fields.TextField(),
+            "timestamp": fields.DateField(),
+        }
+    )
 
-    geojson = fields.ObjectField()
+    geojson = fields.ObjectField(attr="get_geojson")
 
-    def prepare_geojson(self, instance: Deal):
-        features = []
-        for loc in instance.locations.all():  # type: Location
-            if loc.point:
-                point = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.point.geojson)),
-                    "properties": {"name": loc.name, "type": "point"},
-                }
-                features += [point]
-            if loc.contract_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.contract_area.geojson)),
-                    "properties": {"name": loc.name, "type": "contract_area"},
-                }
-                features += [rewind(contract_area)]
-            if loc.intended_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.intended_area.geojson)),
-                    "properties": {"name": loc.name, "type": "intended_area"},
-                }
-                features += [rewind(contract_area)]
-            if loc.production_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.production_area.geojson)),
-                    "properties": {"name": loc.name, "type": "production_area"},
-                }
-                features += [rewind(contract_area)]
-        if not features:
-            return None
-        return {"type": "FeatureCollection", "features": features}
+    deal_size = fields.IntegerField(attr="get_deal_size")
 
-    deal_size = fields.IntegerField()
-
-    def prepare_deal_size(self, instance: Deal):
-        return instance.get_deal_size()
-
-    top_investors = fields.ObjectField()
+    top_investors = fields.NestedField()
 
     def prepare_top_investors(self, instance: Deal):
         investors = instance.get_top_investors()
@@ -176,11 +148,7 @@ class DealDocument(Document):
         return [{"id": inv.id, "name": inv.name} for inv in investors]
 
     def get_instances_from_related(self, related_instance):
-        if isinstance(related_instance, Location):
-            return related_instance.deal
-        if isinstance(related_instance, Contract):
-            return related_instance.deal
-        if isinstance(related_instance, DataSource):
+        if isinstance(related_instance, (Location, Contract, DataSource)):
             return related_instance.deal
 
     class Index:
@@ -195,7 +163,8 @@ class LocationDocument(Document):
         exclude = [
             "deal",
             "old_group_id",
-            "timestamp",
+            # GeoShapeField() is not parsing all of the fields at the moment
+            # use ObjectField instead, see below
             "intended_area",
             "production_area",
             "contract_area",
@@ -204,6 +173,12 @@ class LocationDocument(Document):
 
     class Index:
         name = "location"
+
+    # GeoShapeField() is not parsing all of the fields at the moment
+    # use ObjectField instead
+    intended_area = fields.ObjectField()
+    production_area = fields.ObjectField()
+    contract_area = fields.ObjectField()
 
     deal = fields.ObjectField(
         properties={
@@ -251,9 +226,3 @@ class LocationDocument(Document):
                 "opencorporates": oc.opencorporates,
             }
         return ret
-
-    # GeoShapeField() is not parsing all of the fields at the moment
-    # use ObjectField instead
-    intended_area = fields.ObjectField()
-    production_area = fields.ObjectField()
-    contract_area = fields.ObjectField()
