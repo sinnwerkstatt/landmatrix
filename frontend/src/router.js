@@ -1,9 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
 import GlobalMap from "./views/GlobalMap";
-import DealList from "./views/DealList";
-import DealEdit from "./views/DealEdit";
-import DealDetail from "./views/DealDetail";
+import DealList from "./views/Deal/List";
+import DealEdit from "./views/Deal/Edit";
+import DealDetail from "./views/Deal/Detail";
 import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WagtailPage from "./views/WagtailPage";
@@ -13,6 +13,7 @@ import Dashboard from "./views/Dashboard";
 import store from "./store";
 import ItsABigDeal from "./views/Charts/ItsABigDeal";
 import GlobalMapOfInvestments from "@/views/Charts/GlobalMapOfInvestments";
+import DynamicsOverview from "@/views/Charts/DynamicsOverview";
 
 Vue.use(Router);
 
@@ -72,6 +73,11 @@ const router = new Router({
           path: "map-of-investments/",
           name: "global-map-of-investments",
           component: GlobalMapOfInvestments,
+        },
+        {
+          path: "dynamics/",
+          name: "dynamics-overview",
+          component: DynamicsOverview,
         },
       ],
     },

@@ -1,43 +1,74 @@
 <template>
   <div class="">
-    <div>
-      <p>Choose between investor or target countries using the menu below. Click on the
-        bubbles to visualise the selected country's involvement in the global land
-        acquisition phenomenon.</p>
-      <div class="current-country" style="display:none">
-        <p><strong>Country</strong></p>
+    <div class="row">
+      <div class="col-6">
         <p>
-          <span class="total-deals">0 acquisitions/targets</span>
-          <span class="related-country">to/from Country</span>
-          <span class="self-deals">whereof 0 with itself</span>
-          <br/>
-          <b><a href="#">Go to Table</a></b>
+          Choose between investor or target countries using the menu below. Click on the
+          bubbles to visualise the selected country's involvement in the global land
+          acquisition phenomenon.
         </p>
+        <div class="current-country" style="display: none;">
+          <p><strong>Country</strong></p>
+          <p>
+            <span class="total-deals">0 acquisitions/targets</span>
+            <span class="related-country">to/from Country</span>
+            <span class="self-deals">whereof 0 with itself</span>
+            <br/>
+            <b><a href="#">Go to Table</a></b>
+          </p>
+        </div>
+        <div class="btn-group views">
+          <a class="btn show-all disabled" href="#">Reset</a>
+          <a class="btn active" href="?filter=investor">Investor&nbsp;Countries</a>
+          <a class="btn" href="?filter=target">Target&nbsp;Countries</a>
+        </div>
       </div>
-      <div class="btn-group views">
-        <a class="btn show-all" href="#" class="disabled">Reset</a>
-        <a class="btn active" href="?filter=investor">Investor&nbsp;Countries</a>
-        <a class="btn" href="?filter=target">Target&nbsp;Countries</a>
+      <div class="col-6">
+        <ul class="legend media-list">
+          <li>
+            <i class="icon icon-none" style="background-color: #44b7b6;"></i>
+            Investor Countries
+          </li>
+          <li>
+            <i class="icon icon-none" style="background-color: #ed881b;"></i>
+            Target Countries
+          </li>
+        </ul>
       </div>
     </div>
 
-    <ul class="legend media-list">
-      <li><i class="icon icon-none" style="background-color: #44b7b6;"></i>
-        Investor Countries
-      </li>
-      <li><i class="icon icon-none" style="background-color: #ed881b;"></i>
-        Target Countries
-      </li>
-    </ul>
-
-    <big-map/>
+    <big-map @ready="pinTheMap">
+      <l-geo-json
+              v-if="mapGeojson"
+              :geojson="mapGeojson"
+            />
+    </big-map>
   </div>
 </template>
 
 <script>
   import store from "@/store";
+  import BigMap from "@/components/BigMap";
+  // import vectors from "@/assets/world.min";
+
+  let MAP;
 
   export default {
+    components: {
+      BigMap,
+    },
+    data: function() {
+      return {
+        mapGeojson: null,
+      }
+    },
+    methods: {
+      pinTheMap(x) {
+        MAP = x;
+        console.log(MAP);
+        this.mapGeojson = require('@/assets/countries.geo.json');
+      },
+    },
     beforeRouteEnter(to, from, next) {
       let title = "Global Map of Investments";
       store.dispatch("setPageContext", {
@@ -54,7 +85,6 @@
 </script>
 
 <style scoped></style>
-
 
 <!--  <script type="text/javascript" src="{% static "raphael/raphael-min.js" %}"></script>-->
 <!--  <script src="{% static "js/vendor/raphael-svg-import.js" %}" type="text/javascript" charset="utf-8"></script>-->

@@ -126,8 +126,8 @@
 </script>
 
 <style lang="scss">
-  @import "../scss/colors";
-  @import "../scss/fonts";
+  @import "../../scss/colors";
+  @import "../../scss/fonts";
 
   td {
     font-family: landmatrix;

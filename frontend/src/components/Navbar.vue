@@ -195,6 +195,9 @@
     &:hover {
       color: $primary;
     }
+    &.active {
+      background: $primary;
+    }
   }
 
   .navbar {

@@ -2,13 +2,14 @@
   <div class="">
     <big-map @ready="pinTheMap" :center="latlng">
       <l-circle
+        v-if="hectares"
         :radius="radius"
         :lat-lng="latlng"
         color="#fc941f"
         fillColor="#fc941f"
         @ready="makeCircleDraggable"
       >
-        <l-tooltip>{{ hectares }} ha</l-tooltip>
+        <l-tooltip>{{ hectares.toLocaleString() }} ha</l-tooltip>
       </l-circle>
     </big-map>
   </div>
@@ -18,6 +19,7 @@
   import store from "@/store";
   import BigMap from "@/components/BigMap";
   import { LCircle, LTooltip } from "vue2-leaflet";
+  import axios from "axios";
 
   let MAP;
 
@@ -31,13 +33,12 @@
     data: function () {
       return {
         latlng: [40.416775, -3.70379],
+        hectares: null,
       };
     },
     computed: {
-      hectares() {
-        return 160168350;
-      },
       radius() {
+        if (!this.hectares) return null;
         return Math.sqrt((this.hectares * 10000) / Math.PI);
       },
     },
@@ -59,6 +60,12 @@
       pinTheMap(x) {
         MAP = x;
       },
+    },
+    created() {
+      let query = `{ aggregations { deal_size_sum } }`;
+      axios.post("/graphql/", { query: query }).then((response) => {
+        this.hectares = response.data.data.aggregations.deal_size_sum;
+      });
     },
     beforeRouteEnter(to, from, next) {
       let title = "It's a big deal";
