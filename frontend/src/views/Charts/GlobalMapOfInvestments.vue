@@ -13,7 +13,7 @@
             <span class="total-deals">0 acquisitions/targets</span>
             <span class="related-country">to/from Country</span>
             <span class="self-deals">whereof 0 with itself</span>
-            <br/>
+            <br />
             <b><a href="#">Go to Table</a></b>
           </p>
         </div>
@@ -38,10 +38,7 @@
     </div>
 
     <big-map @ready="pinTheMap">
-      <l-geo-json
-              v-if="mapGeojson"
-              :geojson="mapGeojson"
-            />
+      <l-geo-json v-if="mapGeojson" :geojson="mapGeojson" />
     </big-map>
   </div>
 </template>
@@ -49,7 +46,6 @@
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
-  // import vectors from "@/assets/world.min";
 
   let MAP;
 
@@ -57,16 +53,18 @@
     components: {
       BigMap,
     },
-    data: function() {
+    data: function () {
       return {
         mapGeojson: null,
-      }
+      };
     },
     methods: {
       pinTheMap(x) {
         MAP = x;
         console.log(MAP);
-        this.mapGeojson = require('@/assets/countries.geo.json');
+        // import vectors from "@/assets/world.min";
+
+        // this.mapGeojson = require('@/assets/countries.geo.json');
       },
     },
     beforeRouteEnter(to, from, next) {
@@ -74,9 +72,9 @@
       store.dispatch("setPageContext", {
         title: title,
         breadcrumbs: [
-          {link: {name: "wagtail"}, name: "Home"},
-          {link: {name: "charts"}, name: "Charts"},
-          {name: title},
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "charts" }, name: "Charts" },
+          { name: title },
         ],
       });
       next();

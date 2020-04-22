@@ -17,7 +17,7 @@ stages:
   - test
   - deploy
 
-formatting and linting:
+django formatting and linting:
   stage: test
   script:
     - poetry install
@@ -25,6 +25,13 @@ formatting and linting:
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     - poetry run pylint apps --exit-zero
+
+frontend formatting and linting:
+  stage: test
+  script:
+    - cd frontend
+    - yarn install --frozen-lockfile
+    - yarn build
 
 tests and coverage:
   stage: test
