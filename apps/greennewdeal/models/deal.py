@@ -1,5 +1,4 @@
 import json
-from typing import Optional
 
 import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -18,7 +17,7 @@ from apps.greennewdeal.models.mixins import (
 
 
 @reversion.register(
-    follow=["locations", "contracts", "datasources"], ignore_duplicates=True
+    follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
 )
 class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     """ Deal """
@@ -71,30 +70,16 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         _("Comment on nature of the deal"), blank=True
     )
 
-    NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST = "Expression of interest"
-    NEGOTIATION_STATUS_UNDER_NEGOTIATION = "Under negotiation"
-    NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING = "Memorandum of understanding"
-    NEGOTIATION_STATUS_ORAL_AGREEMENT = "Oral agreement"
-    NEGOTIATION_STATUS_CONTRACT_SIGNED = "Contract signed"
-    NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = "Negotiations failed"
-    NEGOTIATION_STATUS_CONTRACT_CANCELLED = "Contract canceled"
-    NEGOTIATION_STATUS_CONTRACT_EXPIRED = "Contract expired"
-    NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = "Change of ownership"
-
-    # These groupings are used for determining filter behaviour
-    NEGOTIATION_STATUSES_INTENDED = (
-        NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
-        NEGOTIATION_STATUS_UNDER_NEGOTIATION,
-        NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
-    )
-    NEGOTIATION_STATUSES_CONCLUDED = (
-        NEGOTIATION_STATUS_ORAL_AGREEMENT,
-        NEGOTIATION_STATUS_CONTRACT_SIGNED,
-    )
-    NEGOTIATION_STATUSES_FAILED = (
-        NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
-        NEGOTIATION_STATUS_CONTRACT_CANCELLED,
-        NEGOTIATION_STATUS_CONTRACT_EXPIRED,
+    NEGOTIATION_STATUS_CHOICES = (
+        (10, "Expression of interest"),
+        (11, "Under negotiation"),
+        (12, "Memorandum of understanding"),
+        (20, "Oral agreement"),
+        (21, "Contract signed"),
+        (30, "Negotiations failed"),
+        (31, "Contract canceled"),
+        (32, "Contract expired"),
+        (40, "Change of ownership"),
     )
     negotiation_status = JSONField(_("Negotiation status"), blank=True, null=True)
     negotiation_status_comment = models.TextField(
@@ -102,6 +87,16 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     )
 
     # # Implementation status
+    IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED = "Project not started"
+    IMPLEMENTATION_STATUS_STARTUP_PHASE = "Startup phase (no production)"
+    IMPLEMENTATION_STATUS_IN_OPERATION = "In operation (production)"
+    IMPLEMENTATION_STATUS_PROJECT_ABANDONED = "Project abandoned"
+    IMPLEMENTATION_STATUS_CHOICES = (
+        (10, "Project not started"),
+        (20, "Startup phase (no production)"),
+        (30, "In operation (production)"),
+        (40, "Project abandoned"),
+    )
     implementation_status = JSONField(_("Implementation status"), blank=True, null=True)
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
@@ -734,15 +729,38 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     """ Overall comment """
     overall_comment = models.TextField(_("Overall comment"), blank=True)
 
+    """ Meta Info """
+    fully_updated = models.BooleanField(default=False)
+    private = models.BooleanField(default=False)
+    PRIVATE_REASON_CHOICES = (
+        (10, "Temporary removal from PI after criticism"),
+        (20, "Research in progress"),
+        (30, "Land Observatory Import"),
+    )
+    private_reason = models.IntegerField(
+        choices=PRIVATE_REASON_CHOICES, null=True, blank=True
+    )
+    private_comment = models.TextField(
+        _("Comment why this deal is private"), blank=True
+    )
+
     # Meta info
-    "fully_updated"
-    "not_public"
-    "not_public_reason"
-    "tg_not_public_comment"
     "previous_identifier"
     "assign_to_user"
     "tg_feedback_comment"
     "terms"
+
+    """ # CALCULATED FIELDS # """
+    deal_size = models.IntegerField(blank=True, null=True)
+    current_negotiation_status = models.IntegerField(
+        choices=NEGOTIATION_STATUS_CHOICES, blank=True, null=True
+    )
+    current_implementation_status = models.IntegerField(
+        choices=IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True
+    )
+    current_contract_size = models.FloatField(blank=True, null=True)
+    current_production_size = models.FloatField(blank=True, null=True)
+    geojson = JSONField(blank=True, null=True)
 
     STATUS_CHOICES = [
         (1, _("Draft")),
@@ -759,70 +777,68 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         return f"#{self.id} in {self.target_country}"
 
     def save(self, *args, **kwargs):
-        self._sort_json_fields()
+        # self._sort_json_fields()
+        self.current_contract_size = self._get_current("contract_size")
+        self.current_production_size = self._get_current("production_size")
+        self.current_negotiation_status = self._get_current("negotiation_status")
+        self.current_implementation_status = self._get_current("implementation_status")
+        self.deal_size = self._calculate_deal_size()
+        self.geojson = self._combine_geojson()
         super(Deal, self).save(*args, **kwargs)
 
-    def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
-        attribute = self.__getattribute__(name)
-        if attribute:
-            return attribute[0]["value"]
-        return None
+    def _get_current(self, attribute):
+        attributes: list = self.__getattribute__(attribute)
+        if not attributes:
+            return None
+        # prioritize "current" checkbox if present
+        current = [x for x in attributes if x.get("current")]
+        if current:
+            return current[0].get("value")
+        # last given entry, if no it has no date
+        most_recent = attributes[-1]
+        if not most_recent.get("date"):
+            return most_recent.get("value")
+        # most recent year/date given
+        most_recent = sorted(
+            [a for a in attributes if a.get("date")],
+            key=lambda x: x.get("date"),
+            reverse=True,
+        )[0]
+        return most_recent.get("value")
 
-    def _sort_json_fields(self):
-        fields = [
-            "contract_size",
-            "production_size",
-            "intention_of_investment",
-            "negotiation_status",
-            "implementation_status",
-            # TODO: complete this list?
-        ]
-        for fieldname in fields:
-            field = self.__getattribute__(fieldname)
-            if field:
-                try:
-                    sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
-                    self.__setattr__(fieldname, sorted_field)
-                except KeyError:
-                    pass
-
-    def get_deal_size(self):
-        negotiation_status = self.get_value_from_datevalueobject("negotiation_status")
+    def _calculate_deal_size(self):
+        negotiation_status = self.current_negotiation_status
         if not negotiation_status:
             return 0
 
-        intended_size = int(self.intended_size) if self.intended_size else 0
-        contract_size = int(
-            float(self.get_value_from_datevalueobject("contract_size") or 0)
-        )
-        production_size = int(
-            float(self.get_value_from_datevalueobject("production_size") or 0)
-        )
+        intended_size = int(self.intended_size or 0)
+        contract_size = int(self.current_contract_size or 0)
+        production_size = int(self.current_production_size or 0)
 
         # 1) IF Negotiation status IS Intended
-        if negotiation_status in self.NEGOTIATION_STATUSES_INTENDED:
+        if negotiation_status in (10, 11, 12):
             # USE Intended size OR Contract size OR Production size (in the given order)
-            value = intended_size or contract_size or production_size or 0
+            value = intended_size or contract_size or production_size
         # 2) IF Negotiation status IS Concluded
-        elif negotiation_status in self.NEGOTIATION_STATUSES_CONCLUDED:
+        elif negotiation_status in (20, 21):
             # USE Contract size or Production size (in the given order)
-            value = contract_size or production_size or 0
+            value = contract_size or production_size
         # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif negotiation_status == self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+        elif negotiation_status == 30:
             # USE Intended size OR Contract size OR Production size (in the given order)
-            value = intended_size or contract_size or production_size or 0
+            value = intended_size or contract_size or production_size
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+        elif negotiation_status == 31:
             # USE Contract size OR Production size (in the given order)
-            value = contract_size or production_size or 0
+            value = contract_size or production_size
         # 5) IF Negotiation status IS Contract expired
-        elif negotiation_status == self.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+        elif negotiation_status == 32:
             # USE Contract size OR Production size (in the given order)
-            value = contract_size or production_size or 0
+            value = contract_size or production_size
         # 6) IF Negotiation status IS Change of ownership
-        elif negotiation_status == self.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+        elif negotiation_status == 40:
             # USE Contract size OR Production size (in the given order)
-            value = contract_size or production_size or 0
+            value = contract_size or production_size
         else:
             value = 0
         return value
@@ -835,7 +851,23 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         if self.operating_company:
             return self.operating_company.get_top_investors()
 
-    def get_geojson(self):
+    def __getattribute__(self, attr):
+        if attr.endswith("_display") and not attr.startswith("get_"):
+            if hasattr(self, f"get_{attr}"):
+                field = self.__getattribute__(f"get_{attr}")
+                return field() if field else None
+            else:
+                return self.get_arrayfield_display(attr[:-8])
+        return super().__getattribute__(attr)
+
+    def get_arrayfield_display(self, name):
+        choices = self._meta.get_field(name).base_field.choices
+        vals = self.__getattribute__(name)
+        if vals:
+            return [dict(choices)[v] for v in vals]
+        return
+
+    def _combine_geojson(self):
         features = []
         for loc in self.locations.all():  # type: Location
             if loc.point:
@@ -869,3 +901,27 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         if not features:
             return None
         return {"type": "FeatureCollection", "features": features}
+
+    # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
+    #     attribute = self.__getattribute__(name)
+    #     if attribute:
+    #         return attribute[0]["value"]
+    #     return None
+
+    # def _sort_json_fields(self):
+    #     fields = [
+    #         "contract_size",
+    #         "production_size",
+    #         "negotiation_status",
+    #         "implementation_status",
+    #         "intention_of_investment",
+    #         # TODO: complete this list?
+    #     ]
+    #     for fieldname in fields:
+    #         field = self.__getattribute__(fieldname)
+    #         if field:
+    #             try:
+    #                 sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
+    #                 self.__setattr__(fieldname, sorted_field)
+    #             except KeyError:
+    #                 pass

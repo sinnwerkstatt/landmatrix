@@ -30,11 +30,12 @@ type Currency {
     name: String
 }
 
-type DateValuePair {
-    date: String
-    value: String
-    value2: String
-}
+scalar DateValuePair
+#type DateValuePair {
+#    date: String
+#    value: String
+#    value2: String
+#}
 
 type GeoPoint {
     lat: Float!

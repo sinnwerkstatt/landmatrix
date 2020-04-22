@@ -21,9 +21,12 @@ def parse_general(deal, attrs):
     HA_AREA_MAP = {None: None, "per ha": 10, "for specified area": 20}
 
     deal.target_country_id = attrs.get("target_country")
-    deal.intended_size = attrs.get("intended_size")
-    deal.contract_size = _extras_to_json(attrs, "contract_size")
-    deal.production_size = _extras_to_json(attrs, "production_size")
+    if attrs.get("intended_size"):
+        deal.intended_size = float(attrs.get("intended_size"))
+    deal.contract_size = _extras_to_json(attrs, "contract_size", expected_type=float)
+    deal.production_size = _extras_to_json(
+        attrs, "production_size", expected_type=float
+    )
     deal.land_area_comment = attrs.get("tg_land_area_comment") or ""
 
     deal.intention_of_investment = _extras_to_json(attrs, "intention", "size")
@@ -32,10 +35,32 @@ def parse_general(deal, attrs):
     deal.nature_of_deal = _extras_to_list(attrs, "nature", NATURE_OF_DEAL_MAP)
     deal.nature_of_deal_comment = attrs.get("tg_nature_comment") or ""
 
-    deal.negotiation_status = _extras_to_json(attrs, "negotiation_status")
+    NEG_STATUS_MAP = {
+        "Expression of interest": 10,
+        "Under negotiation": 11,
+        "Memorandum of understanding": 12,
+        "Oral agreement": 20,
+        "Contract signed": 21,
+        "Negotiations failed": 30,
+        "Contract canceled": 31,
+        "Contract cancelled": 31,
+        "Contract expired": 32,
+        "Change of ownership": 40,
+    }
+    deal.negotiation_status = _extras_to_json(
+        attrs, "negotiation_status", fieldmap=NEG_STATUS_MAP
+    )
     deal.negotiation_status_comment = attrs.get("tg_negotiation_status_comment") or ""
 
-    deal.implementation_status = _extras_to_json(attrs, "implementation_status")
+    IMP_STATUS_MAP = {
+        "Project not started": 0,
+        "Startup phase (no production)": 0,
+        "In operation (production)": 0,
+        "Project abandoned": 0,
+    }
+    deal.implementation_status = _extras_to_json(
+        attrs, "implementation_status", fieldmap=IMP_STATUS_MAP
+    )
     deal.implementation_status_comment = (
         attrs.get("tg_implementation_status_comment") or ""
     )
@@ -422,3 +447,14 @@ def parse_remaining(deal, attrs):
         deal.prai_applied = YPN_MAP[attrs.get("prai_applied")]
     deal.prai_applied_comment = attrs.get("tg_prai_applied_comment") or ""
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
+
+    deal.fully_updated = attrs.get("fully_updated") == "True"
+    deal.private = attrs.get("not_public") == "True"
+    PRIVATE_REASON_MAP = {
+        None: None,
+        "Temporary removal from PI after criticism": 10,
+        "Research in progress": 20,
+        "Land Observatory Import": 30,
+    }
+    deal.private_reason = PRIVATE_REASON_MAP[attrs.get("not_public_reason")]
+    deal.private_comment = attrs.get("tg_not_public_comment") or ""

@@ -135,11 +135,11 @@ class DealDocument(Document):
         }
     )
 
-    geojson = fields.ObjectField()
-    def prepare_geojson(self, instance: Deal):
-        return instance.get_geojson()
+    # geojson = fields.ObjectField()
+    # def prepare_geojson(self, instance: Deal):
+    #     return instance.get_geojson()
 
-    deal_size = fields.IntegerField(attr="get_deal_size")
+    # deal_size = fields.IntegerField(attr="get_deal_size")
 
     top_investors = fields.NestedField()
 

@@ -3,13 +3,22 @@ from collections import defaultdict
 from apps.greennewdeal.models import Contract, DataSource, Deal, Location
 
 
-def _extras_to_json(attr, field, val2name: str = None):
+def _extras_to_json(
+    attr, field, val2name: str = None, expected_type=str, fieldmap=None
+):
     adict = attr.get_dict(field)
 
     if not adict or not adict["value"]:
         return None
 
-    ret = [{"value": adict["value"]}]
+    # FIXME Fixes for broken data
+    if expected_type == float and adict["value"] in ("7,8", "101171,5"):
+        adict["value"] = adict["value"].replace(",", ".")
+
+    if fieldmap:
+        ret = [{"value": fieldmap[adict["value"]], "value_display": adict["value"]}]
+    else:
+        ret = [{"value": expected_type(adict["value"])}]
 
     if adict["date"]:
         ret[0]["date"] = adict["date"]
@@ -22,7 +31,13 @@ def _extras_to_json(attr, field, val2name: str = None):
 
     if adict.get("extras"):
         for extra in adict["extras"]:
-            extra_ret = {"value": extra["value"]}
+            if fieldmap:
+                extra_ret = {
+                    "value": fieldmap[extra["value"]],
+                    "value_display": extra["value"],
+                }
+            else:
+                extra_ret = {"value": expected_type(extra["value"])}
             if extra["date"]:
                 extra_ret["date"] = extra["date"]
             if extra["is_current"]:
@@ -30,7 +45,6 @@ def _extras_to_json(attr, field, val2name: str = None):
             if val2name and extra["value2"]:
                 extra_ret[val2name] = extra["value2"]
             ret += [extra_ret]
-
     return ret
 
 

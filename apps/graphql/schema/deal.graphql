@@ -77,7 +77,8 @@ type Deal {
     name_of_community: [String]
     name_of_indigenous_people: [String]
     people_affected_comment: String
-    recognition_status: [String]
+    recognition_status: [Int]
+    recognition_status_display: [String]
     recognition_status_comment: String
     community_consultation: Int
     community_consultation_display: String
@@ -236,4 +237,7 @@ type Actor {
 type Aggregations {
     deal_size_sum: Int
     deal_count: Int
+    by_negotiation_status: Dict
 }
+
+scalar Dict

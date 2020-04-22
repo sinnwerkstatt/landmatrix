@@ -198,7 +198,7 @@ if GND_ENABLED:
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
-        "django_elasticsearch",
+        # "django_elasticsearch",
         "webpack_loader",
         "ariadne.contrib.django",
     ]

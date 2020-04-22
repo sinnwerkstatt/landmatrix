@@ -33,14 +33,16 @@ def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
     s = DealDocument.search().filter("terms", status=[2, 3])[:0]
     s.aggs.metric("deal_size_sum", "sum", field="deal_size")
-    aggs = s.execute().aggregations.to_dict()
-    aggs = {k: v["value"] for k, v in aggs.items()}
-    aggs["deal_count"] = s.count()
+    # s.aggs.metric("current_negotiation_status")
+    s.aggs.bucket(
+        "by_negotiation_status", "terms", field="negotiation_status.value"
+    ).metric("deal_size", "sum", field="deal_size.value")
+
+    aggs_dict = s.execute().aggregations.to_dict()
+    aggs = {
+        "deal_size_sum": aggs_dict["deal_size_sum"]["value"],
+        "deal_count": s.count(),
+        "by_negotiation_status": aggs_dict["by_negotiation_status"]["buckets"],
+    }
+    # aggs = {k: v["value"] for k, v in aggs.items()}
     return aggs
-
-
-def aggregations_no_es(obj: Any, info: GraphQLResolveInfo):
-    from apps.greennewdeal.models import Deal
-
-    size = sum([d.get_deal_size() for d in Deal.objects.filter(status__in=[2, 3])])
-    deal_count = Deal.objects.filter(status__in=[2, 3]).count()
