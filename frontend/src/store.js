@@ -65,7 +65,7 @@ const store = new Vuex.Store({
       });
     },
     fetchCountriesAndRegions(context) {
-      let query = `{ countries { id name } regions { id name } }`;
+      let query = `{ countries { id name slug } regions { id name slug } }`;
       axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setCountries", response.data.data.countries);
         context.commit("setRegions", response.data.data.regions);
@@ -137,7 +137,7 @@ const store = new Vuex.Store({
           context.commit("setWagtailPage", response.data);
         },
         () => {
-          router.push({ name: "404" });
+          router.replace({ name: "404" });
         }
       );
     },

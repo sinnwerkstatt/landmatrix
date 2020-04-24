@@ -20,24 +20,16 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/global/">Global</router-link>
           </li>
-          <li class="nav-item">
-            <multiselect
-              v-if="regions"
-              class="nav-link"
-              :options="regions"
-              label="name"
-              placeholder="Region"
-            />
-          </li>
-          <li class="nav-item">
-            <multiselect
-              v-if="countries"
-              class="nav-link"
-              :options="countries"
-              label="name"
-              placeholder="Countries"
-            />
-          </li>
+          <navbar-select
+            title="Regions"
+            :options="regions"
+            @select="openLink('region', $event)"
+          ></navbar-select>
+          <navbar-select
+            title="Countries"
+            :options="countries"
+            @select="openLink('country', $event)"
+          ></navbar-select>
           <li class="nav-item">
             <router-link class="nav-link" to="/stay-informed/" role="button">
               <span class="nav-text">Stay informed</span>
@@ -161,7 +153,10 @@
   </nav>
 </template>
 <script>
+  import NavbarSelect from "@/components/NavbarSelect";
+
   export default {
+    components: { NavbarSelect },
     data() {
       return {
         username: null,
@@ -181,6 +176,9 @@
       },
     },
     methods: {
+      openLink(target_url, option) {
+        this.$router.push(`/${target_url}/${option.slug}/`);
+      },
       dispatchLogout() {
         this.$store.dispatch("logout");
       },
@@ -216,6 +214,7 @@
     &:hover {
       color: $primary;
     }
+
     &.active {
       background: $primary;
     }
