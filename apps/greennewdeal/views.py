@@ -1,38 +1,14 @@
-import json
-
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-from wagtail.core.rich_text import expand_db_html
 
 from apps.greennewdeal.documents.deal import DealDocument, LocationDocument
 from apps.greennewdeal.models import Country
-from apps.wagtailcms.models import RegionPage, WagtailRootPage
 
 
 @cache_page(5)
 def vuebase(request, path=None):
-    regions = list(
-        RegionPage.objects.filter(live=True, region__isnull=False)
-        .order_by("title")
-        .values("region_id", "slug", "title")
-    )
-    countries = [{"title": r.name, "slug": r.slug} for r in Country.objects.all()]
-    ctx = {"regions": json.dumps(regions), "countries": json.dumps(countries)}
-
-    root = WagtailRootPage.objects.first()
-    ctx["map_introduction"] = root.map_introduction
-    ctx["data_introduction"] = root.data_introduction
-    ctx["footer_columns"] = json.dumps(
-        [
-            expand_db_html(root.footer_column_1),
-            expand_db_html(root.footer_column_2),
-            expand_db_html(root.footer_column_3),
-            expand_db_html(root.footer_column_4),
-        ]
-    )
-
-    return render(request, template_name="greennewdeal/vuebase.html", context=ctx)
+    return render(request, template_name="greennewdeal/vuebase.html")
 
 
 # @cache_page(5)

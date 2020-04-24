@@ -4,7 +4,7 @@ from django.db.models import Sum
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields
-from apps.greennewdeal.models import Deal
+from apps.greennewdeal.models import Deal, Location
 
 
 def do_deals(obj: Any, info: GraphQLResolveInfo):
@@ -33,6 +33,22 @@ def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):
     limit = max(1, min(limit, 500))
     deals = deals[:limit]
     return deals
+
+
+def resolve_locations(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):
+    locations = Location.objects.all()  # .filter(deal__status__in=(2, 3))
+    # fields = get_fields(info)
+    location_dict = []
+    for location in locations.values():
+        loc = location
+        if location["point"]:
+            lon, lat = location["point"]
+            loc["point"] = {"lat": lat, "lon": lon}
+        else:
+            del loc["point"]
+        loc["deal"] = {"id": location["deal_id"]}
+        location_dict += [loc]
+    return location_dict
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):

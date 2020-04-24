@@ -17,8 +17,9 @@
       <tbody v-if="deals">
         <tr v-for="deal in deals" :key="deal.id">
           <td>
-            <router-link :to="{ name: 'deal_detail',params: { deal_id: deal.id } }">
-              {{deal.id}}</router-link>
+            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
+              {{ deal.id }}</router-link
+            >
           </td>
           <td>{{ deal.target_country.name }}</td>
           <td v-html="parseTopInvestors(deal)"></td>
@@ -53,19 +54,22 @@
 <script>
   import FilterBar from "@/components/FilterBar";
   import store from "@/store";
+  import axios from "axios";
   const slugify = require("slugify");
 
   export default {
     components: { FilterBar },
     // name: 'Deal',
     data() {
-      return {
-        data_introduction: DATA_INTRODUCTION,
-      };
+      return {};
     },
     computed: {
       deals() {
         return this.$store.state.deals;
+      },
+      data_introduction() {
+        if (this.$store.state.wagtailRootPage)
+          return this.$store.state.wagtailRootPage.data_introduction;
       },
     },
     methods: {
@@ -115,10 +119,7 @@
       let title = "All Deals";
       store.dispatch("setPageContext", {
         title: title,
-        breadcrumbs: [
-          { link: { name: "wagtail" }, name: "Home" },
-          { name: title },
-        ],
+        breadcrumbs: [{ link: { name: "wagtail" }, name: "Home" }, { name: title }],
       });
       next();
     },

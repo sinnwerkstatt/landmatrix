@@ -4,7 +4,7 @@
       <div id="footer-nav" class="row">
         <div
           class="col-md-3"
-          v-for="footerCol in footerColumns"
+          v-for="footerCol in footer_columns"
           v-html="footerCol"
         ></div>
       </div>
@@ -35,9 +35,14 @@
     name: "Footer",
     data() {
       return {
-        currentyear: "2020",
-        footerColumns: FOOTER_COLUMNS,
+        currentyear: new Date().getFullYear(),
       };
+    },
+    computed: {
+      footer_columns() {
+        if (this.$store.state.wagtailRootPage)
+          return this.$store.state.wagtailRootPage.footer_columns;
+      },
     },
   };
 </script>
@@ -52,6 +57,7 @@
     font-family: "Open Sans", sans-serif;
     color: $lm_dark;
     font-weight: 400 !important;
+
     hr {
       border-top: 1px solid #9b9b9b;
     }

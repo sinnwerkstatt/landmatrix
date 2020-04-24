@@ -189,6 +189,7 @@ type Deal {
 }
 
 type Location {
+    id: Int!
     name: String
     description: String
     point: GeoPoint
@@ -200,9 +201,11 @@ type Location {
     #    intended_area: String
     #    production_area: String
     timestamp: DateTime
+    deal: Deal
 }
 
 type Contract {
+    id: Int!
     number: String
     date: Date
     expiration_date: Date
@@ -212,6 +215,7 @@ type Contract {
 }
 
 type DataSource {
+    id: Int!
     type: Int
     type_display: String
     url: String

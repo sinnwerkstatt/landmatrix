@@ -11,7 +11,7 @@ import Multiselect from "vue-multiselect";
 //   refreshOnceOnNavigation: true,
 // });
 
-import '../node_modules/font-awesome/scss/font-awesome.scss';
+import "../node_modules/font-awesome/scss/font-awesome.scss";
 
 Vue.use(BootstrapVue);
 import "bootstrap";
@@ -68,10 +68,13 @@ Vue.component("wagtail-latest_database_modifications", LatestDatabaseModificatio
 Vue.component("wagtail-statistics", Statistics);
 // Vue.component("wagtail-", );
 
+store.dispatch("fetchUser");
+store.dispatch("fetchCountriesAndRegions");
+// This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
+store.dispatch("fetchWagtailRootPage");
+
 export default new Vue({
   router,
   store,
   render: (h) => h(App),
 }).$mount("#app");
-
-store.dispatch("fetchUser");

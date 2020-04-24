@@ -12,13 +12,6 @@
 <body>
 <div id="app"></div>
 
-<script>
-  const REGIONS = JSON.parse("{{ regions|escapejs }}");
-  const COUNTRIES = JSON.parse("{{ countries|escapejs }}");
-  const MAP_INTRODUCTION = "{{ map_introduction|escapejs }}";
-  const DATA_INTRODUCTION = "{{ data_introduction|escapejs }}";
-  const FOOTER_COLUMNS = JSON.parse("{{ footer_columns|escapejs }}");
-</script>
 {% render_bundle 'main' 'js' %}
 
 </body>

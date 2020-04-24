@@ -22,17 +22,19 @@
           </li>
           <li class="nav-item">
             <multiselect
+              v-if="regions"
               class="nav-link"
               :options="regions"
-              label="title"
+              label="name"
               placeholder="Region"
             />
           </li>
           <li class="nav-item">
             <multiselect
+              v-if="countries"
               class="nav-link"
               :options="countries"
-              label="title"
+              label="name"
               placeholder="Countries"
             />
           </li>
@@ -84,13 +86,15 @@
                 class="dropdown-item"
                 href="/impersonate/stop/?next=/newdeal/dashboard/"
               >
-                Stop impersonation</a
-              >
+                Stop impersonation
+              </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <router-link class="dropdown-item" :to="{name:'dashboard'}">Dashboard</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'dashboard' }">
+                Dashboard
+              </router-link>
               <a class="dropdown-item" href="/manage/">Manage</a>
-              <router-link class="dropdown-item" :to="{ name: 'deal_add' }"
-                >Add a deal
+              <router-link class="dropdown-item" :to="{ name: 'deal_add' }">
+                Add a deal
               </router-link>
               <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
             </div>
@@ -140,8 +144,12 @@
                 </button>
               </form>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/accounts/register/">New around here? Sign up</a>
-              <a class="dropdown-item" href="/accounts/password_reset/">Forgot password?</a>
+              <a class="dropdown-item" href="/accounts/register/"
+                >New around here? Sign up</a
+              >
+              <a class="dropdown-item" href="/accounts/password_reset/"
+                >Forgot password?</a
+              >
             </div>
           </li>
         </ul>
@@ -153,8 +161,6 @@
   export default {
     data() {
       return {
-        regions: REGIONS,
-        countries: COUNTRIES,
         login_username: null,
         login_password: null,
         login_remember: false,
@@ -163,6 +169,12 @@
     computed: {
       user() {
         return this.$store.state.user;
+      },
+      regions() {
+        if (this.$store.state.regions) return this.$store.state.regions;
+      },
+      countries() {
+        if (this.$store.state.countries) return this.$store.state.countries;
       },
     },
     methods: {

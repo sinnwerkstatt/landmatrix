@@ -1,13 +1,16 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import router from "./router";
-import axios from 'axios';
+import axios from "axios";
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
     user: null,
+    countries: null,
+    regions: null,
+    wagtailRootPage: null,
     wagtailPage: null,
     deals: null,
     current_deal: null,
@@ -23,6 +26,15 @@ const store = new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+    setCountries(state, countries) {
+      state.countries = countries;
+    },
+    setRegions(state, regions) {
+      state.regions = regions;
+    },
+    setWagtailRootPage(state, wagtailRootPage) {
+      state.wagtailRootPage = wagtailRootPage;
     },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
@@ -52,6 +64,28 @@ const store = new Vuex.Store({
         context.commit("setUser", response.data.data.me);
       });
     },
+    fetchCountriesAndRegions(context) {
+      let query = `{ countries { id name } regions { id name } }`;
+      axios.post("/graphql/", { query: query }).then((response) => {
+        context.commit("setCountries", response.data.data.countries);
+        context.commit("setRegions", response.data.data.regions);
+      });
+    },
+    fetchWagtailRootPage(context) {
+      let url = `/wagtailapi/v2/pages/find/?html_path=/`;
+      axios.get(url).then((response) => {
+        context.commit("setWagtailRootPage", {
+          map_introduction: response.data.map_introduction,
+          data_introduction: response.data.data_introduction,
+          footer_columns: [
+            response.data.footer_column_1,
+            response.data.footer_column_2,
+            response.data.footer_column_3,
+            response.data.footer_column_4,
+          ],
+        });
+      });
+    },
     login(context, { username, password }) {
       let query = `mutation {
         login(username: "${username}", password: "${password}") {
@@ -61,7 +95,7 @@ const store = new Vuex.Store({
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {
-        if(response.data.data.login.status===true) {
+        if (response.data.data.login.status === true) {
           context.commit("setUser", response.data.data.login.user);
         }
       });
@@ -85,7 +119,10 @@ const store = new Vuex.Store({
             breadcrumbs = [];
           } else {
             title = response.data.title;
-            breadcrumbs = [{ link: { name: "wagtail" }, name: "Home" }, { name: title }]
+            breadcrumbs = [
+              { link: { name: "wagtail" }, name: "Home" },
+              { name: title },
+            ];
           }
           context.commit("setTitle", title);
           context.commit("setBreadcrumbs", breadcrumbs);
@@ -103,12 +140,15 @@ const store = new Vuex.Store({
           id
           target_country { id name }
           top_investors { id name }
-          intention_of_investment { date value }
-          negotiation_status { date value }
-          implementation_status { date value }
+          intention_of_investment
+          negotiation_status
+          implementation_status
           deal_size
         }
       }`;
+      // intention_of_investment { date value }
+      // negotiation_status { date value }
+      // implementation_status { date value }
       axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setDeals", response.data.data.deals);
       });

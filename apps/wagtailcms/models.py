@@ -16,6 +16,7 @@ from apps.wagtailcms.blocks import (
     ThreeColumnsBlock,
     get_country_or_region,
 )
+from apps.wagtailcms.serializers import APIRichTextSerializer
 
 
 class WagtailRootPage(Page):
@@ -39,7 +40,15 @@ class WagtailRootPage(Page):
         FieldPanel("footer_column_3"),
         FieldPanel("footer_column_4"),
     ]
-    api_fields = [APIField("body")]
+    api_fields = [
+        APIField("body"),
+        APIField("map_introduction"),
+        APIField("data_introduction"),
+        APIField("footer_column_1", serializer=APIRichTextSerializer()),
+        APIField("footer_column_2", serializer=APIRichTextSerializer()),
+        APIField("footer_column_3", serializer=APIRichTextSerializer()),
+        APIField("footer_column_4", serializer=APIRichTextSerializer()),
+    ]
 
 
 class WagtailPage(Page):
