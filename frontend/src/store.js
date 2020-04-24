@@ -94,15 +94,22 @@ const store = new Vuex.Store({
           user { full_name username is_authenticated is_impersonate }
         }
       }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        if (response.data.data.login.status === true) {
-          context.commit("setUser", response.data.data.login.user);
-        }
+
+      return new Promise(function (resolve, reject) {
+        axios.post("/graphql/", { query: query }).then((response) => {
+          let login_data = response.data.data.login;
+          if (login_data.status === true) {
+            context.commit("setUser", login_data.user);
+            resolve(login_data);
+          } else {
+            reject(login_data);
+          }
+        });
       });
     },
     logout(context) {
       let query = "mutation { logout }";
-      axios.post("/graphql/", { query: query }).then((response) => {
+      return axios.post("/graphql/", { query: query }).then((response) => {
         if (response.data.data.logout === true) {
           context.commit("setUser", null);
         }

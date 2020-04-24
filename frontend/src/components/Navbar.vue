@@ -80,7 +80,9 @@
             <div
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="#navbarDropdown"
+              ref="userMenu"
             >
+              <!--suppress HtmlUnknownTarget -->
               <a
                 v-if="user.is_impersonate"
                 class="dropdown-item"
@@ -92,14 +94,14 @@
               <router-link class="dropdown-item" :to="{ name: 'dashboard' }">
                 Dashboard
               </router-link>
-              <a class="dropdown-item" href="/manage/">Manage</a>
+              <router-link class="dropdown-item" to="/manage/">Manage</router-link>
               <router-link class="dropdown-item" :to="{ name: 'deal_add' }">
                 Add a deal
               </router-link>
               <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
             </div>
           </li>
-          <li v-else class="nav-item dropdown">
+          <li v-if="!user" class="nav-item dropdown">
             <a
               href="#"
               role="button"
@@ -116,10 +118,10 @@
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="#navbarDropdownAnonymous"
             >
-              <form class="px-4 py-3">
+              <form class="px-4 pt-3">
                 <div class="form-group">
                   <input
-                    v-model="login_username"
+                    v-model="username"
                     type="text"
                     class="form-control"
                     id="username"
@@ -128,7 +130,7 @@
                 </div>
                 <div class="form-group">
                   <input
-                    v-model="login_password"
+                    v-model="password"
                     type="password"
                     class="form-control"
                     id="password"
@@ -142,6 +144,7 @@
                 >
                   Login
                 </button>
+                <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
               </form>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/accounts/register/"
@@ -161,9 +164,9 @@
   export default {
     data() {
       return {
-        login_username: null,
-        login_password: null,
-        login_remember: false,
+        username: null,
+        password: null,
+        login_failed_message: "",
       };
     },
     computed: {
@@ -182,11 +185,17 @@
         this.$store.dispatch("logout");
       },
       dispatchLogin() {
-        this.$store.dispatch("login", {
-          username: this.login_username,
-          password: this.login_password,
-        });
-        // TODO: handle error here.
+        this.$store
+          .dispatch("login", { username: this.username, password: this.password })
+          .then(() => {
+            this.login_failed_message = "";
+            if (this.$refs.userMenu) {
+              this.$refs.userMenu.classList.remove("show");
+            }
+          })
+          .catch((response) => {
+            this.login_failed_message = response.error;
+          });
       },
     },
   };

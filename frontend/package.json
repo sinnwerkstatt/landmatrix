@@ -12,6 +12,7 @@
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
+    "@types/leaflet": "^1.5.12",
     "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
@@ -26,9 +27,11 @@
     "font-awesome": "~4.7.0",
     "jquery": "^3.4.1",
     "leaflet": "^1.6.0",
+    "leaflet.markercluster": "^1.4.1",
     "node-sass": "^4.13.1",
     "popper.js": "^1.16.1",
     "prettier": "2.0.0",
+    "prunecluster-exportable": "^1.0.0",
     "sass-loader": "^8.0.2",
     "slugify": "^1.4.0",
     "vue": "^2.6.11",
@@ -45,8 +48,5 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "webpack-livereload-plugin": "^2.3.0"
-  },
-  "dependencies": {
-    "leaflet.markercluster": "^1.4.1"
   }
 }
