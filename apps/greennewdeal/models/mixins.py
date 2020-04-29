@@ -1,6 +1,26 @@
 import reversion
 
 
+class UnderscoreDisplayParseMixin:
+    """ This mixin will help to convert `_display` to the corresponding values """
+
+    def __getattribute__(self, attr):
+        if attr.endswith("_display") and not attr.startswith("get_"):
+            if hasattr(self, f"get_{attr}"):
+                field = self.__getattribute__(f"get_{attr}")
+                return field() if field else None
+            else:
+                return self.get_arrayfield_display(attr[:-8])
+        return super().__getattribute__(attr)
+
+    def get_arrayfield_display(self, name):
+        choices = self._meta.get_field(name).base_field.choices
+        vals = self.__getattribute__(name)
+        if vals:
+            return [dict(choices)[v] for v in vals]
+        return
+
+
 class ReversionSaveMixin:
     STATUS_DRAFT = 1
     STATUS_LIVE = 2

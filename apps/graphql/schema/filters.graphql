@@ -1,0 +1,26 @@
+input FilterSet {
+    filters: [Filter]
+}
+
+input Filter {
+    "Any field name from the corresponding model"
+    field: String!
+    "The default operation is the check on equality"
+    operation: FilterOperation
+    value: String!
+}
+
+enum FilterOperation {
+    "Equal"
+    EQ
+    "Not equal"
+    NE
+    "Less than"
+    LT
+    "Less than or equal"
+    LE
+    "Greater than or equal"
+    GE
+    "Greater than"
+    GT
+}

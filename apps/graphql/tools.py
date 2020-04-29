@@ -1,38 +1,22 @@
-from graphql import GraphQLResolveInfo
+from graphql import GraphQLResolveInfo, FieldNode
 
 
-def get_fields(info: GraphQLResolveInfo):
-    fields = set()
+def get_fields(info: GraphQLResolveInfo, recursive=False):
+    fields = []
     for fnode in info.field_nodes:
-        fields.update({f.name.value for f in fnode.selection_set.selections})
-    return list(fields)
+        for selection in fnode.selection_set.selections:
+            if recursive:
+                fields += _recursive_fieldnode(selection)
+            else:
+                fields += [selection.name.value]
+    return fields
 
 
-# from typing import List
-#
-# from graphql import GraphQLResolveInfo, FieldNode
-#
-#
-# def get_fields(info: GraphQLResolveInfo) -> list:
-#     fields = set()
-#     # fields = [x for x in recparse(info.field_nodes)]
-#     for fnode in info.field_nodes:
-#         print({f.name.value for f in fnode.selection_set.selections})
-#         for sel in fnode.selection_set.selections:
-#             print(parse_selection_set(sel.selection_set))
-#             print(sel.name.value)
-#         fields.update({f.name.value for f in fnode.selection_set.selections})
-#     print(fields)
-#     return list(fields)
-#
-#
-# def parse_selection_set(selection_set):
-#     if not selection_set:
-#         return []
-#     return [x.name.value for x in selection_set.selections]
-#
-# def recparse(field_nodes: List[FieldNode]):
-#     for node in field_nodes:
-#         for selection in node.selection_set.selections:
-#             yield selection.name.value
-#             yield list(recparse(selection))
+def _recursive_fieldnode(fnode: FieldNode):
+    if fnode.selection_set:
+        sel_set = []
+        for selection in fnode.selection_set.selections:
+            sel_set += _recursive_fieldnode(selection)
+        return [f"{fnode.name.value}__{sel}" for sel in sel_set]
+    else:
+        return [fnode.name.value]

@@ -9,11 +9,12 @@ from apps.greennewdeal.models.mixins import (
     OldContractMixin,
     OldDataSourceMixin,
     OldLocationMixin,
+    UnderscoreDisplayParseMixin,
 )
 
 
 @reversion.register(ignore_duplicates=True)
-class Location(models.Model, OldLocationMixin):
+class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
     name = models.CharField(max_length=2000, blank=True)
     description = models.CharField(max_length=2000, blank=True)
     point = gismodels.PointField(blank=True, null=True)
@@ -43,7 +44,7 @@ class Location(models.Model, OldLocationMixin):
 
 
 @reversion.register(ignore_duplicates=True)
-class Contract(models.Model, OldContractMixin):
+class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
     number = models.CharField(_("Contract number"), max_length=255, blank=True)
     date = models.DateField(blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
@@ -61,7 +62,7 @@ class Contract(models.Model, OldContractMixin):
 
 
 @reversion.register(ignore_duplicates=True)
-class DataSource(models.Model, OldDataSourceMixin):
+class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
     TYPE_CHOICES = (
         (10, _("Media report")),
         (20, _("Research Paper / Policy Report")),

@@ -6,11 +6,14 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.greennewdeal.models import Country, Currency
-from apps.greennewdeal.models.mixins import ReversionSaveMixin
+from apps.greennewdeal.models.mixins import (
+    ReversionSaveMixin,
+    UnderscoreDisplayParseMixin,
+)
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
-class Investor(models.Model, ReversionSaveMixin):
+class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
@@ -106,7 +109,9 @@ class Investor(models.Model, ReversionSaveMixin):
 
 
 @reversion.register(ignore_duplicates=True)
-class InvestorVentureInvolvement(models.Model, ReversionSaveMixin):
+class InvestorVentureInvolvement(
+    models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin
+):
     investor = models.ForeignKey(
         Investor,
         verbose_name=_("Investor"),

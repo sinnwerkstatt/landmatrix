@@ -1,48 +1,57 @@
 from typing import Any
 
+from ariadne import ObjectType
+from django.db.models import Sum
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields
-from apps.greennewdeal.documents import DealDocument
+from apps.greennewdeal.models import Deal, Location
 
 
-def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
-    deal = DealDocument.search().filter("term", id=id)
-
+def _resolve_deals_prefetching(obj: Any, info: GraphQLResolveInfo):
+    deals = Deal.objects.filter(status__in=(2, 3))
     fields = get_fields(info)
-    if fields:
-        deal = deal.source(fields)
-
-    deal = deal.execute()[0]
-    return deal.to_dict()
-
-
-def resolve_deals(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):
-    limit = max(1, min(limit, 500))
-    deals = DealDocument.search().filter("terms", status=[2, 3]).sort(sort)
-
-    fields = get_fields(info)
-    if fields:
-        deals = deals.source(fields)
-    # if after:
-    #     deals = deals.filter('range', id={'gt': after})
-    deals = [d.to_dict() for d in deals[:limit].execute()]
+    if "locations" in fields:
+        deals = deals.prefetch_related("locations")
+    if "contracts" in fields:
+        deals = deals.prefetch_related("contracts")
+    if "datasources" in fields:
+        deals = deals.prefetch_related("datasources")
     return deals
 
 
-def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
-    s = DealDocument.search().filter("terms", status=[2, 3])[:0]
-    s.aggs.metric("deal_size_sum", "sum", field="deal_size")
-    # s.aggs.metric("current_negotiation_status")
-    s.aggs.bucket(
-        "by_negotiation_status", "terms", field="negotiation_status.value"
-    ).metric("deal_size", "sum", field="deal_size.value")
+def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
+    deal = _resolve_deals_prefetching(obj, info)
+    return deal.get(id=id)
 
-    aggs_dict = s.execute().aggregations.to_dict()
-    aggs = {
-        "deal_size_sum": aggs_dict["deal_size_sum"]["value"],
-        "deal_count": s.count(),
-        "by_negotiation_status": aggs_dict["by_negotiation_status"]["buckets"],
-    }
-    # aggs = {k: v["value"] for k, v in aggs.items()}
-    return aggs
+
+def resolve_deals(
+    obj: Any, info: GraphQLResolveInfo, filters=None, sort="id", limit=20
+):
+    deals = _resolve_deals_prefetching(obj, info).order_by(sort)
+    # limit = max(1, min(limit, 500))
+    deals = deals[:limit]
+    return deals
+
+
+deal_type = ObjectType("Deal")
+deal_type.set_field("locations", lambda obj, info: obj.locations.all())
+deal_type.set_field("datasources", lambda obj, info: obj.datasources.all())
+deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
+
+
+def resolve_locations(
+    obj: Any, info: GraphQLResolveInfo, filters=None, sort="id", limit=20
+):
+    locations = Location.objects.filter(deal__status__in=(2, 3)).select_related("deal")
+    # fields = get_fields(info)
+    return locations[:limit]
+
+
+def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
+    from apps.greennewdeal.models import Deal
+
+    size = sum([d.get_deal_size() for d in Deal.objects.filter(status__in=[2, 3])])
+    deal_count = Deal.objects.filter(status__in=[2, 3]).count()
+
+    neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))

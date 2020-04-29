@@ -1,0 +1,28 @@
+type Country {
+    id: Int
+    name: String
+    slug: String
+}
+
+type Region {
+    id: Int
+    name: String
+    slug: String
+}
+
+type Currency {
+    id: Int
+    name: String
+}
+
+scalar DateValuePair
+#type DateValuePair {
+#    date: String
+#    value: String
+#    value2: String
+#}
+
+scalar Date
+scalar DateTime
+scalar GeoJSON
+scalar GeoPoint

@@ -13,13 +13,14 @@ from apps.greennewdeal.models.country import Country
 from apps.greennewdeal.models.mixins import (
     OldDealMixin,
     ReversionSaveMixin,
+    UnderscoreDisplayParseMixin,
 )
 
 
 @reversion.register(
     follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
 )
-class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
+class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDealMixin):
     """ Deal """
 
     """ Locations """
@@ -851,22 +852,6 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
         if self.operating_company:
             return self.operating_company.get_top_investors()
 
-    def __getattribute__(self, attr):
-        if attr.endswith("_display") and not attr.startswith("get_"):
-            if hasattr(self, f"get_{attr}"):
-                field = self.__getattribute__(f"get_{attr}")
-                return field() if field else None
-            else:
-                return self.get_arrayfield_display(attr[:-8])
-        return super().__getattribute__(attr)
-
-    def get_arrayfield_display(self, name):
-        choices = self._meta.get_field(name).base_field.choices
-        vals = self.__getattribute__(name)
-        if vals:
-            return [dict(choices)[v] for v in vals]
-        return
-
     def _combine_geojson(self):
         features = []
         for loc in self.locations.all():  # type: Location
@@ -907,21 +892,3 @@ class Deal(models.Model, ReversionSaveMixin, OldDealMixin):
     #     if attribute:
     #         return attribute[0]["value"]
     #     return None
-
-    # def _sort_json_fields(self):
-    #     fields = [
-    #         "contract_size",
-    #         "production_size",
-    #         "negotiation_status",
-    #         "implementation_status",
-    #         "intention_of_investment",
-    #         # TODO: complete this list?
-    #     ]
-    #     for fieldname in fields:
-    #         field = self.__getattribute__(fieldname)
-    #         if field:
-    #             try:
-    #                 sorted_field = sorted(field, key=lambda x: x["date"], reverse=True)
-    #                 self.__setattr__(fieldname, sorted_field)
-    #             except KeyError:
-    #                 pass

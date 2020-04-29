@@ -8,13 +8,15 @@ from ariadne import (
 from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
 
 from apps.graphql.country import resolve_countries, resolve_regions
-from apps.graphql.deal_no_es import (
+from apps.graphql.deal import (
     resolve_deal,
     resolve_deals,
     resolve_aggregations,
     resolve_locations,
+    deal_type,
 )
 from apps.graphql.investor import resolve_investor, resolve_investors
+from apps.graphql.scalars import geopoint_scalar
 from apps.graphql.user import resolve_user, resolve_login, resolve_logout, resolve_users
 
 schema_folder = pathlib.Path(__file__).parent.joinpath("schema")
@@ -38,5 +40,9 @@ mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 
 schema = make_executable_schema(
-    type_defs, [datetime_scalar, date_scalar], query, mutation
+    type_defs,
+    [datetime_scalar, date_scalar, geopoint_scalar],
+    query,
+    mutation,
+    deal_type,
 )

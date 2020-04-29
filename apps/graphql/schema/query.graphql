@@ -8,51 +8,22 @@ type Query {
         "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
-        limit: Int = 20): [Deal]
-    locations(limit: Int = 300): [Location]
+        limit: Int = 20,
+        filters: FilterSet
+    ): [Deal]
+    locations(limit: Int = 300, filters: FilterSet): [Location]
 
     investor(id: Int!): Investor!
     investors(
         "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
-        limit: Int = 20): [Investor]
+        limit: Int = 20,
+        filters: FilterSet
+    ): [Investor]
 
     countries: [Country]
     regions: [Region]
 
     aggregations: Aggregations
 }
-
-type Country {
-    id: Int
-    name: String
-    slug: String
-}
-
-type Region {
-    id: Int
-    name: String
-    slug: String
-}
-
-type Currency {
-    id: Int
-    name: String
-}
-
-scalar DateValuePair
-#type DateValuePair {
-#    date: String
-#    value: String
-#    value2: String
-#}
-
-type GeoPoint {
-    lat: Float
-    lon: Float
-}
-
-scalar Date
-scalar DateTime
-scalar GeoJSON
