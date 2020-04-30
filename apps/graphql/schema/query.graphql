@@ -9,11 +9,13 @@ type Query {
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
-        filters: FilterSet
+        "Filters are ANDed together"
+        filters: [Filter]
     ): [Deal]
     locations(
         limit: Int = 300,
-        filters: FilterSet
+        "Filters are ANDed together"
+        filters: [Filter]
     ): [Location]
 
     investor(id: Int!): Investor!
@@ -22,7 +24,8 @@ type Query {
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
-        filters: FilterSet
+        "Filters are ANDed together"
+        filters: [Filter]
     ): [Investor]
 
     countries: [Country]

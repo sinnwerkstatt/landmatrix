@@ -8,31 +8,36 @@ from apps.graphql.tools import get_fields, parse_filters
 from apps.greennewdeal.models import Deal, Location
 
 
-def _resolve_deals_prefetching(obj, info: GraphQLResolveInfo):
-    deals = Deal.objects.filter(status__in=(2, 3))
+def _resolve_deals_prefetching(info: GraphQLResolveInfo):
+    qs = Deal.objects.filter(status__in=(2, 3))
+
+    # default filters
+    qs = qs.filter(status__in=(2, 3), private=False)
+
     fields = get_fields(info)
     if "locations" in fields:
-        deals = deals.prefetch_related("locations")
+        qs = qs.prefetch_related("locations")
     if "contracts" in fields:
-        deals = deals.prefetch_related("contracts")
+        qs = qs.prefetch_related("contracts")
     if "datasources" in fields:
-        deals = deals.prefetch_related("datasources")
-    return deals
+        qs = qs.prefetch_related("datasources")
+    return qs
 
 
 def resolve_deal(obj, info: GraphQLResolveInfo, id):
-    deal = _resolve_deals_prefetching(obj, info)
+    deal = _resolve_deals_prefetching(info)
     return deal.get(id=id)
 
 
 def resolve_deals(obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20):
-    deals = _resolve_deals_prefetching(obj, info).order_by(sort)
-    # limit = max(1, min(limit, 500))
-    print(filters)
+    qs = _resolve_deals_prefetching(info).order_by(sort)
+    if filters:
+        qs = qs.filter(**parse_filters(filters))
 
+    # limit = max(1, min(limit, 500))
     if limit != 0:
-        deals = deals[:limit]
-    return deals
+        qs = qs[:limit]
+    return qs
 
 
 deal_type = ObjectType("Deal")
@@ -42,21 +47,21 @@ deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-    locations = Location.objects.all()
+    qs = Location.objects.all()
 
     # default filters
-    locations = locations.filter(deal__status__in=(2, 3), deal__private=False)
+    qs = qs.filter(deal__status__in=(2, 3), deal__private=False)
 
     fields = get_fields(info)
     if "deal" in fields:
-        locations = locations.select_related("deal")
+        qs = qs.select_related("deal")
 
     if filters:
-        locations = locations.filter(**parse_filters(filters))
+        qs = qs.filter(**parse_filters(filters))
 
     if limit != 0:
-        locations = locations[:limit]
-    return locations
+        qs = qs[:limit]
+    return qs
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):

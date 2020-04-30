@@ -1,28 +1,24 @@
-input FilterSet {
-    "Use Django ORM Syntax. E.g. deal_size__gte=200"
-    filters: [String]
+
+input Filter {
+    "Any field name from the corresponding model"
+    field: String!
+    "The default operation is the check on equality"
+    operation: FilterOperation!
+    "The value can be a string or a list of strings"
+    value: [String!]
 }
 
-#input Filter {
-#    expression: String!
-#    "Any field name from the corresponding model"
-#    field: String!
-#    "The default operation is the check on equality"
-#    operation: FilterOperation
-#    value: String!
-#}
-#
-#enum FilterOperation {
-#    "Equal"
-#    EQ
-#    "Not equal"
-#    NE
-#    "Less than"
-#    LT
-#    "Less than or equal"
-#    LTE
-#    "Greater than or equal"
-#    GTE
-#    "Greater than"
-#    GT
-#}
+enum FilterOperation {
+    "Equal"
+    EQ
+    "In Set"
+    IN
+    "Less than"
+    LT
+    "Less than or equal"
+    LE
+    "Greater than or equal"
+    GE
+    "Greater than"
+    GT
+}

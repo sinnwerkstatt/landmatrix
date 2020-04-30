@@ -20,7 +20,7 @@ stages:
 django formatting and linting:
   stage: test
   script:
-    - poetry install
+    - poetry install -E production
     - yarn install --frozen-lockfile
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import

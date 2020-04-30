@@ -22,14 +22,22 @@ def _recursive_fieldnode(fnode: FieldNode):
         return [fnode.name.value]
 
 
-def parse_filters(filterset):
+filter_ops = {
+    "EQ": "",
+    # Dont provide NE? Or do we have to? It's a "exclude" hassle
+    "IN": "__in",
+    "LT": "__lt",
+    "LE": "__lte",
+    "GE": "__gte",
+    "GT": "__gt",
+}
+
+
+def parse_filters(filters):
     ret = {}
-    for filter in filterset["filters"]:
-        k, v = filter.split("=")
-        ret[k] = v
-        # if not filter["operation"]:
-        #     ret[f"{filter['field']}"] = filter["value"]
-        # else:
-        #     ret[f"{filter['field']}__gt"] = filter["value"]
-    print(ret)
+    for filt in filters:
+        field = filt["field"].replace(".", "__")
+        value = filt["value"][0] if len(filt["value"]) == 1 else filt["value"]
+        operation = filter_ops[filt["operation"]]
+        ret[f"{field}{operation}"] = value
     return ret
