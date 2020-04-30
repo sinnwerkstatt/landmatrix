@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
         <img src="../images/lm-logo.png" alt="Landmatrix Logo" />

@@ -8,25 +8,44 @@
       ref="bigMap"
       @ready="emitUp"
     >
-      <l-control-layers position="topright"></l-control-layers>
-      <l-tile-layer
-        v-for="tileProvider in tileProviders"
-        :key="tileProvider.name"
-        :name="tileProvider.name"
-        :visible="tileProvider.visible || false"
-        :url="tileProvider.url"
-        :attribution="tileProvider.attribution"
-        :maxZoom="tileProvider.maxZoom || 19"
-        layer-type="base"
-      />
+      <l-control-layers position="bottomright"></l-control-layers>
+      <l-control-zoom position="topright"></l-control-zoom>
+      <slot name="layers">
+        <l-tile-layer
+          v-for="tileProvider in tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible || false"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          :maxZoom="tileProvider.maxZoom || 19"
+          layer-type="base"
+        />
+      </slot>
       <slot></slot>
     </l-map>
+    <slot name="overlay"></slot>
   </div>
 </template>
 
 <script>
+  import {
+    LControlLayers,
+    LControlZoom,
+    LGeoJson,
+    LMap,
+    LTileLayer,
+  } from "vue2-leaflet";
+
   export default {
     name: "BigMap",
+    components: {
+      LMap,
+      LTileLayer,
+      LControlLayers,
+      LGeoJson,
+      LControlZoom,
+    },
     props: ["center", "options", "bounds", "containerStyle"],
     data() {
       return {
@@ -74,6 +93,7 @@
           zoomSnap: 0.5,
           minZoom: 1,
           zoom: 3,
+          zoomControl: false,
           ...this.options,
         };
       },
@@ -97,13 +117,12 @@
 </script>
 
 <style lang="scss" scoped>
-  #bigMap {
-    height: 100%;
-  }
-
   .map-container {
-    .overlay {
-      position: absolute;
+    position: relative;
+
+    #bigMap {
+      height: 100%;
+      z-index: 1;
     }
   }
 

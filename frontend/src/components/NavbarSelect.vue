@@ -13,7 +13,7 @@
     <div
       class="dropdown-menu"
       aria-labelledby="navbarDropdown"
-      :class="{ hidden: !showDropdown }"
+      v-show="showDropdown"
     >
       <input
         v-model="filterText"
@@ -125,9 +125,6 @@
   }
 
   .dropdown-menu {
-    &.hidden {
-      display: none;
-    }
     display: inline-block;
   }
 </style>

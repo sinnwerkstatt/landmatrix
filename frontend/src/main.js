@@ -23,11 +23,6 @@ import "./scss/main.scss";
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import { LMap, LTileLayer, LGeoJson, LControlLayers } from "vue2-leaflet";
-Vue.component("l-map", LMap);
-Vue.component("l-tile-layer", LTileLayer);
-Vue.component("l-control-layers", LControlLayers);
-Vue.component("l-geo-json", LGeoJson);
 import "leaflet/dist/leaflet.css";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
