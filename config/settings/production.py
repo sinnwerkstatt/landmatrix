@@ -1,7 +1,9 @@
 import random
 import string
 
+import sentry_sdk
 from environ.environ import ImproperlyConfigured
+from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *
 
@@ -23,13 +25,11 @@ except ImproperlyConfigured:
     with open(".env", "a") as envfile:
         envfile.write("DJANGO_SECRET_KEY={}\n".format(SECRET_KEY))
 
-INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
-
-RAVEN_CONFIG = {
-    "dsn": env("DJANGO_RAVEN_DSN"),
-    "string_max_length": 12000,
-    "list_max_length": 1200,
-}
+sentry_sdk.init(
+    dsn=env("DJANGO_SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+    send_default_pii=True,
+)
 
 CELERY_TASK_ALWAYS_EAGER = True
 

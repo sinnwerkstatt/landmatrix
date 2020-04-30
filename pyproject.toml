@@ -23,6 +23,7 @@ elasticsearch-dsl = ">=7.0.0,<8.0.0"
 django-elasticsearch = "^7.0.2"
 django-webpack-loader = "^0.7.0"
 geojson-rewind = "^0.2.0"
+graphql-core = "<3.1"
 ariadne = "^0.10.0"
 
 psycopg2-binary = "*"
@@ -66,7 +67,7 @@ celery = "*"
 libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
-raven = { version = "*", optional = true }
+sentry_sdk = { version = "*", optional = true }
 
 
 
@@ -84,7 +85,7 @@ pygments = "*"
 mkdocs = "*"
 
 [tool.poetry.extras]
-production = ["gunicorn", "raven"]
+production = ["gunicorn", "sentry_sdk"]
 
 
 [tool.black]
