@@ -11,7 +11,10 @@ type Query {
         limit: Int = 20,
         filters: FilterSet
     ): [Deal]
-    locations(limit: Int = 300, filters: FilterSet): [Location]
+    locations(
+        limit: Int = 300,
+        filters: FilterSet
+    ): [Location]
 
     investor(id: Int!): Investor!
     investors(

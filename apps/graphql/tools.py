@@ -20,3 +20,16 @@ def _recursive_fieldnode(fnode: FieldNode):
         return [f"{fnode.name.value}__{sel}" for sel in sel_set]
     else:
         return [fnode.name.value]
+
+
+def parse_filters(filterset):
+    ret = {}
+    for filter in filterset["filters"]:
+        k, v = filter.split("=")
+        ret[k] = v
+        # if not filter["operation"]:
+        #     ret[f"{filter['field']}"] = filter["value"]
+        # else:
+        #     ret[f"{filter['field']}__gt"] = filter["value"]
+    print(ret)
+    return ret

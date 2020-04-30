@@ -4,11 +4,11 @@ from ariadne import ObjectType
 from django.db.models import Sum
 from graphql import GraphQLResolveInfo
 
-from apps.graphql.tools import get_fields
+from apps.graphql.tools import get_fields, parse_filters
 from apps.greennewdeal.models import Deal, Location
 
 
-def _resolve_deals_prefetching(obj: Any, info: GraphQLResolveInfo):
+def _resolve_deals_prefetching(obj, info: GraphQLResolveInfo):
     deals = Deal.objects.filter(status__in=(2, 3))
     fields = get_fields(info)
     if "locations" in fields:
@@ -20,17 +20,18 @@ def _resolve_deals_prefetching(obj: Any, info: GraphQLResolveInfo):
     return deals
 
 
-def resolve_deal(obj: Any, info: GraphQLResolveInfo, id):
+def resolve_deal(obj, info: GraphQLResolveInfo, id):
     deal = _resolve_deals_prefetching(obj, info)
     return deal.get(id=id)
 
 
-def resolve_deals(
-    obj: Any, info: GraphQLResolveInfo, filters=None, sort="id", limit=20
-):
+def resolve_deals(obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20):
     deals = _resolve_deals_prefetching(obj, info).order_by(sort)
     # limit = max(1, min(limit, 500))
-    deals = deals[:limit]
+    print(filters)
+
+    if limit != 0:
+        deals = deals[:limit]
     return deals
 
 
@@ -40,12 +41,22 @@ deal_type.set_field("datasources", lambda obj, info: obj.datasources.all())
 deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
 
 
-def resolve_locations(
-    obj: Any, info: GraphQLResolveInfo, filters=None, sort="id", limit=20
-):
-    locations = Location.objects.filter(deal__status__in=(2, 3)).select_related("deal")
-    # fields = get_fields(info)
-    return locations[:limit]
+def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
+    locations = Location.objects.all()
+
+    # default filters
+    locations = locations.filter(deal__status__in=(2, 3), deal__private=False)
+
+    fields = get_fields(info)
+    if "deal" in fields:
+        locations = locations.select_related("deal")
+
+    if filters:
+        locations = locations.filter(**parse_filters(filters))
+
+    if limit != 0:
+        locations = locations[:limit]
+    return locations
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):

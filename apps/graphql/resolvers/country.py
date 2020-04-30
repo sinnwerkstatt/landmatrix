@@ -2,7 +2,7 @@ from typing import Any
 
 from graphql import GraphQLResolveInfo
 
-from apps.greennewdeal.models import Country, Region
+from apps.greennewdeal.models import Country
 from apps.wagtailcms.models import RegionPage
 
 

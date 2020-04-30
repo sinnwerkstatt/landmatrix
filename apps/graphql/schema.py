@@ -7,17 +7,22 @@ from ariadne import (
 )
 from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
 
-from apps.graphql.country import resolve_countries, resolve_regions
-from apps.graphql.deal import (
+from apps.graphql.resolvers.country import resolve_countries, resolve_regions
+from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
     resolve_aggregations,
     resolve_locations,
     deal_type,
 )
-from apps.graphql.investor import resolve_investor, resolve_investors
+from apps.graphql.resolvers.investor import resolve_investor, resolve_investors
 from apps.graphql.scalars import geopoint_scalar
-from apps.graphql.user import resolve_user, resolve_login, resolve_logout, resolve_users
+from apps.graphql.resolvers.user import (
+    resolve_user,
+    resolve_login,
+    resolve_logout,
+    resolve_users,
+)
 
 schema_folder = pathlib.Path(__file__).parent.joinpath("schema")
 type_defs = load_schema_from_path(schema_folder)
