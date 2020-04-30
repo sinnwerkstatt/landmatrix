@@ -16,7 +16,7 @@ def _extras_to_json(
         adict["value"] = adict["value"].replace(",", ".")
 
     if fieldmap:
-        ret = [{"value": fieldmap[adict["value"]], "value_display": adict["value"]}]
+        ret = [{"value": fieldmap[adict["value"]]}]
     else:
         ret = [{"value": expected_type(adict["value"])}]
 
@@ -34,7 +34,6 @@ def _extras_to_json(
             if fieldmap:
                 extra_ret = {
                     "value": fieldmap[extra["value"]],
-                    "value_display": extra["value"],
                 }
             else:
                 extra_ret = {"value": expected_type(extra["value"])}

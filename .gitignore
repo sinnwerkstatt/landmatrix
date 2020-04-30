@@ -24,7 +24,7 @@ __pycache__/
 webpack-stats.json
 package-lock.json
 /frontend/node_modules/
-/yarn-error.log
+yarn-error.log
 
 # IDEs
 .idea/

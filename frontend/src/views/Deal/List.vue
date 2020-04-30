@@ -15,13 +15,13 @@
         </tr>
       </thead>
       <tbody v-if="deals">
-        <tr v-for="deal in deals" :key="deal.id">
+        <tr v-for="deal in deals.slice(20*currentPage,20*(currentPage+1))" :key="deal.id">
           <td>
             <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
               {{ deal.id }}</router-link
             >
           </td>
-          <td>{{ deal.target_country.name }}</td>
+          <td>{{ deal.target_country ? deal.target_country.name : "" }}</td>
           <td v-html="parseTopInvestors(deal)"></td>
           <td class="intention">
             <ul class="list-unstyled">
@@ -31,8 +31,8 @@
               />
             </ul>
           </td>
-          <td>{{ parseNegotiationStatus(deal) }}</td>
-          <td>{{ parseImplementationStatus(deal) }}</td>
+          <td>{{ mapNegotiationStatus(deal) }}</td>
+          <td>{{ mapImplementationStatus(deal) }}</td>
           <td class="deal_size number">
             {{ new Intl.NumberFormat().format(deal.deal_size) }}
           </td>
@@ -48,20 +48,25 @@
         </tr>
       </tbody>
     </table>
+    <div>
+      <button @click="currentPage-=1">Zurueck</button>
+      <button @click="currentPage+=1">Weiter</button>
+    </div>
   </div>
 </template>
 
 <script>
   import FilterBar from "@/components/FilterBar";
   import store from "@/store";
-  import axios from "axios";
+
   const slugify = require("slugify");
 
   export default {
     components: { FilterBar },
-    // name: 'Deal',
     data() {
-      return {};
+      return {
+        currentPage: 0,
+      };
     },
     computed: {
       deals() {
@@ -74,9 +79,10 @@
     },
     methods: {
       parseTopInvestors(deal) {
+        if (!deal.top_investors) return "";
         return deal.top_investors
-          .map((int) => {
-            return int.name;
+          .map((inv) => {
+            return inv.name;
           })
           .join("<br>");
       },
@@ -92,30 +98,29 @@
           })
           .sort();
       },
-      parseNegotiationStatus(deal) {
-        if (!deal.negotiation_status) return "";
-        let neg_status = deal.negotiation_status[0]["value"];
-        let category_map = {
-          "Expression of interest": "Intended",
-          "Under negotiation": "Intended",
-          "Memorandum of understanding": "Intended",
-          "Oral agreement": "Concluded",
-          "Contract signed": "Concluded",
-          "Negotiations failed": "Failed",
-          "Contract canceled": "Failed",
-          "Contract expired": "Failed",
-          "Change of ownership": "",
-        };
-        if (neg_status === "Change of ownership") return neg_status;
-        return `${category_map[neg_status]} (${neg_status})`;
+      mapNegotiationStatus(deal) {
+        return {
+          10: "Expression of interest (Intended)",
+          11: "Under negotiation (Intended)",
+          12: "Memorandum of understanding (Intended)",
+          20: "Oral agreement (Concluded)",
+          21: "Contract signed (Concluded)",
+          30: "Negotiations failed (Failed)",
+          31: "Contract canceled (Failed)",
+          32: "Contract expired (Failed)",
+          40: "Change of ownership",
+        }[deal.current_negotiation_status];
       },
-      parseImplementationStatus(deal) {
-        if (!deal.implementation_status) return "";
-        return deal.implementation_status[0]["value"];
+      mapImplementationStatus(deal) {
+        return {
+          10: "Project not started",
+          20: "Startup phase (no production)",
+          30: "In operation (production)",
+          40: "Project abandoned",
+        }[deal.current_implementation_status];
       },
     },
     beforeRouteEnter(to, from, next) {
-      store.dispatch("fetchDeals", { offset: 0 });
       let title = "All Deals";
       store.dispatch("setPageContext", {
         title: title,

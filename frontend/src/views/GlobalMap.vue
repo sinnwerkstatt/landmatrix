@@ -4,8 +4,8 @@
     <FilterBar />
     <big-map :options="{ zoom: 2 }" @ready="pinTheMap">
       <template v-slot:overlay>
-        <div class="overlay-header" v-if="locations">
-          {{ locations.length }} Locations
+        <div class="overlay-header" v-if="deals">
+          {{ deals.length }} Deals
         </div>
         <div class="map-overlay">
           <div v-show="overlayVisible" class="map-overlay-content">
@@ -607,7 +607,6 @@
     components: { BigMap, FilterBar },
     data() {
       return {
-        locations: null,
         bigmap: null,
         overlayVisible: false,
         overlayView: "deals",
@@ -619,20 +618,23 @@
         if (this.$store.state.wagtailRootPage)
           return this.$store.state.wagtailRootPage.map_introduction;
       },
+      deals() {
+        return this.$store.state.deals;
+      }
     },
     methods: {
       pinTheMap(x) {
         this.bigmap = x;
-        if (this.locations) this.addTheMarkers();
-        console.log(this.bigmap);
+        if (this.deals) this.addTheMarkers();
+        // console.log(this.bigmap);
         var layers = [];
         this.bigmap.eachLayer(function (layer) {
-          console.log(layer._url);
+          // console.log(layer._url);
           if (layer instanceof L.TileLayer)
             // console.log(layer._url);
             layers.push(layer);
         });
-        console.log(layers);
+        // console.log(layers);
       },
       addTheMarkers() {
         // var markers = L.markerClusterGroup();
@@ -645,12 +647,14 @@
         // this.bigmap.addLayer(markers);
         let pruneCluster = new PruneClusterForLeaflet();
 
-        this.locations.map((loc) => {
-          if (loc.point) {
-            let marker = new PruneCluster.Marker(loc.point.lat, loc.point.lng);
-            marker.category = loc.level_of_accuracy;
-            pruneCluster.RegisterMarker(marker);
-          }
+        this.deals.map((deal) => {
+          deal.locations.map((loc) => {
+            if (loc.point) {
+              let marker = new PruneCluster.Marker(loc.point.lat, loc.point.lng);
+              marker.category = loc.level_of_accuracy;
+              pruneCluster.RegisterMarker(marker);
+            }
+          })
         });
 
         this.bigmap.addLayer(pruneCluster);
@@ -661,18 +665,18 @@
       },
     },
     created() {
-      let query = `query MyLocations($filters: [Filter]) {
-       locations(limit: 0, filters: $filters) {
-         id point level_of_accuracy deal { id }
-       }
-      }`;
-      let variables = {
-        // filters: [{ field: "deal.deal_size", operation: "GE", value: "200" }],
-      };
-      axios.post("/graphql/", { query, variables }).then((response) => {
-        this.locations = response.data.data.locations;
-        if (this.bigmap) this.addTheMarkers();
-      });
+      // let query = `query MyLocations($filters: [Filter]) {
+      //  locations(limit: 0, filters: $filters) {
+      //    id point level_of_accuracy deal { id }
+      //  }
+      // }`;
+      // let variables = {
+      //   // filters: [{ field: "deal.deal_size", operation: "GE", value: "200" }],
+      // };
+      // axios.post("/graphql/", { query, variables }).then((response) => {
+      //   this.locations = response.data.data.locations;
+      //   if (this.bigmap) this.addTheMarkers();
+      // });
     },
     beforeRouteEnter(to, from, next) {
       let title = "Global: Map";

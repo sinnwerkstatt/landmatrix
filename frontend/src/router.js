@@ -25,11 +25,19 @@ const router = new Router({
       path: "/data/",
       name: "deal_list",
       component: DealList,
+      beforeEnter(to, from, next) {
+        store.dispatch("fetchDeals", { offset: 0 });
+        next();
+      },
     },
     {
       path: "/map/",
       name: "map",
       component: GlobalMap,
+      beforeEnter(to, from, next) {
+        store.dispatch("fetchDeals", { offset: 0 });
+        next();
+      },
     },
     {
       path: "/dashboard/",

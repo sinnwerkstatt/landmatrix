@@ -53,10 +53,10 @@ def parse_general(deal, attrs):
     deal.negotiation_status_comment = attrs.get("tg_negotiation_status_comment") or ""
 
     IMP_STATUS_MAP = {
-        "Project not started": 0,
-        "Startup phase (no production)": 0,
-        "In operation (production)": 0,
-        "Project abandoned": 0,
+        "Project not started": 10,
+        "Startup phase (no production)": 20,
+        "In operation (production)": 30,
+        "Project abandoned": 40,
     }
     deal.implementation_status = _extras_to_json(
         attrs, "implementation_status", fieldmap=IMP_STATUS_MAP

@@ -844,7 +844,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             value = 0
         return value
 
-    def get_top_investors(self):
+    @property
+    def top_investors(self):
         """
         Get list of highest parent companies
         (all right-hand side parent companies of the network visualisation)
