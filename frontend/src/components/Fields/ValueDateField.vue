@@ -10,12 +10,14 @@
           :placeholder="formfield.placeholder"
           class="year-based"
           v-model="val.value"
+          @input="emitVals"
         />
         <b-form-input
           type="text"
           class="year-based-year"
           placeholder="YYYY-MM-DD"
           v-model="val.date"
+          @input="emitVals"
         />
         <div class="input-group-append">
           <div class="input-group-text">{{ formfield.unit }}</div>
@@ -39,13 +41,11 @@
   export default {
     props: ["formfield", "value"],
     data() {
-      return {};
+      return {
+        vals: this.value || [{ date: null, value: null }],
+      };
     },
-    computed: {
-      vals() {
-        return this.value[this.formfield.class];
-      },
-    },
+    computed: {},
     methods: {
       addSet() {
         this.vals.push({ date: null, value: null });
@@ -53,6 +53,9 @@
       removeSet(index) {
         this.vals.splice(index, 1);
       },
+      emitVals() {
+        this.$emit("input", this.vals);
+      }
     },
   };
 </script>

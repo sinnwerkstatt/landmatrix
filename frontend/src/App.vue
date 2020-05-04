@@ -2,11 +2,11 @@
   <div id="app">
     <Navbar />
     <BreadcrumbBar />
-    <div v-if="this.$store.state.title" class="container">
+    <div v-if="this.$store.state.page.title" class="container">
       <div class="row">
         <div class="col-md-12">
           <h1>
-            <span>{{ this.$store.state.title }}</span>
+            <span>{{ this.$store.state.page.title }}</span>
           </h1>
         </div>
       </div>

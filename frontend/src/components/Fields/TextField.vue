@@ -1,25 +1,31 @@
 <template>
-  <b-input-group :append="formfield.unit">
-    <b-form-input
-      :id="`type-${formfield.class}`"
+  <div class="input-group">
+    <input
+      :id="`type-${formfield.name}`"
       :type="formfield.type || `text`"
+      class="form-control"
       :placeholder="formfield.placeholder"
+      :aria-label="formfield.placeholder"
       v-model="val"
+      @input="emitVal"
     />
-  </b-input-group>
+    <div class="input-group-append">
+      <span class="input-group-text">{{ formfield.unit }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
   export default {
     props: ["formfield", "value"],
-    computed: {
-      val: {
-        get() {
-          return this.value[this.formfield.class];
-        },
-        set(value) {
-          this.value[this.formfield.class] = value;
-        },
+    data() {
+      return {
+        val: this.value,
+      };
+    },
+    methods: {
+      emitVal() {
+        this.$emit("input", this.val);
       },
     },
   };

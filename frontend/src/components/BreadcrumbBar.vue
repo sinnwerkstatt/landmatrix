@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-4 mr-auto">
         <ul class="breadcrumb">
-          <li v-for="bcrumb in this.$store.state.breadcrumbs" :key="bcrumb.name">
+          <li v-for="bcrumb in this.$store.state.page.breadcrumbs" :key="bcrumb.name">
             <router-link v-if="bcrumb.link" :to="bcrumb.link">
               {{ bcrumb.name }}
             </router-link>
@@ -13,7 +13,7 @@
       </div>
       <div class="col-auto">
         <ul class="subnav nav nav-pills">
-          <li class="nav-item" v-for="nav in this.$store.state.breadNav">
+          <li class="nav-item" v-for="nav in this.$store.state.page.breadNav">
             <router-link :to="{ name: nav.route }">
               <i :class="nav.icon"></i> {{ nav.name }}
             </router-link>

@@ -1,20 +1,13 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import router from "./router";
 import axios from "axios";
+import router from "@/router";
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
-  state: {
+export const pageModule = {
+  state: () => ({
     user: null,
     countries: null,
     regions: null,
     wagtailRootPage: null,
     wagtailPage: null,
-    deals: [],
-    deals_uptodate: false,
-    current_deal: null,
     title: null,
     searchDescription: null,
     breadcrumbs: [],
@@ -23,7 +16,7 @@ const store = new Vuex.Store({
       { route: "deal_list", icon: "fa fa-table", name: "Data" },
       { route: "charts", icon: "fa fa-bar-chart", name: "Charts" },
     ],
-  },
+  }),
   mutations: {
     setUser(state, user) {
       state.user = user;
@@ -40,18 +33,7 @@ const store = new Vuex.Store({
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
-    setDeals(state, deals) {
-      state.deals = deals;
-      state.deals_uptodate = true;
-    },
-    updateDeals(state, payload) {
-      let {deals, finished} = payload;
-      state.deals = state.deals.concat(deals);
-      state.deals_uptodate = finished;
-    },
-    setCurrentDeal(state, deal) {
-      state.current_deal = deal;
-    },
+
     setTitle(state, title) {
       state.title = title;
     },
@@ -148,64 +130,9 @@ const store = new Vuex.Store({
         }
       );
     },
-    fetchDeals(context, options) {
-      let {limit, after} = options;
-      if(context.state.deals_uptodate) return;
-
-      let query = `{
-        deals(limit:${limit}, after: ${after || -1}){
-          id
-          deal_size
-          target_country { id name }
-          # top_investors { id name }
-          intention_of_investment
-          current_negotiation_status
-          current_implementation_status
-          locations { id point level_of_accuracy }
-        }
-      }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        let deals = response.data.data.deals;
-        if(deals.length === limit) {
-          context.commit("updateDeals", {deals, finished: false});
-          let last_deal = deals.slice(-1)[0];
-          context.dispatch('fetchDeals', {limit:limit, after:last_deal.id});
-        } else {
-          context.commit("updateDeals", {deals, finished: true});
-        }
-      });
-    },
-    setCurrentDeal(context, deal_id) {
-      if (!deal_id) {
-        context.commit("setCurrentDeal", null);
-        return;
-      }
-
-      let query = `{
-        deal(id:${deal_id}) {
-          id
-          target_country { id name }
-          top_investors { id name }
-          intention_of_investment { date value }
-          negotiation_status { date value }
-          implementation_status { date value }
-          deal_size
-          intended_size
-          contract_size { date value }
-          production_size { date value }
-          geojson
-        }
-      }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setCurrentDeal", response.data.data.deal);
-      });
-    },
     setPageContext(context, page_context) {
       context.commit("setTitle", page_context.title);
       context.commit("setBreadcrumbs", page_context.breadcrumbs);
     },
   },
-  getters: {},
-});
-
-export default store;
+};

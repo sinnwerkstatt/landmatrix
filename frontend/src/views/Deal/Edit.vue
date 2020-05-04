@@ -1,24 +1,22 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
-      {{deal}}
       <b-tab title="General Info" active>
         <div>
           <h3>Land area</h3>
           <div
-            class="row mt-3"
-            :class="formfield.class"
             v-for="formfield in formfields"
-            :key="formfield.class"
+            :key="formfield.name"
+            :class="['row', 'mt-3', formfield.name]"
           >
             <div class="col-md-3">
-              <label :for="`type-${formfield.class}`">{{ formfield.label }}:</label>
+              <label :for="`type-${formfield.name}`">{{ formfield.label }}:</label>
             </div>
             <div class="col-md-9">
               <component
                 :is="formfield.component"
                 :formfield="formfield"
-                v-model="deal"
+                v-model="deal[formfield.name]"
               ></component>
             </div>
           </div>
@@ -26,6 +24,8 @@
       </b-tab>
       <b-tab title="Other"> </b-tab>
     </b-tabs>
+    <button class="btn btn-primary" type="submit">Submit</button>
+
   </div>
 </template>
 
@@ -35,6 +35,7 @@
     text-align: center;
   }
 </style>
+
 <script>
   import store from "@/store";
   import TextField from "@/components/Fields/TextField";
@@ -48,16 +49,23 @@
       return {
         formfields: [
           {
-            class: "intended_size",
+            name: "intended_size",
             component: "TextField",
             label: "Intended size (in ha)",
             placeholder: "Size",
             unit: "ha",
           },
           {
-            class: "contract_size",
+            name: "contract_size",
             component: "ValueDateField",
             label: "Size under contract (leased or purchased area, in ha)",
+            placeholder: "Size",
+            unit: "ha",
+          },
+          {
+            name: "operation_size",
+            component: "ValueDateField",
+            label: "Size in operation (production, in ha)",
             placeholder: "Size",
             unit: "ha",
           },
@@ -65,13 +73,8 @@
       };
     },
     computed: {
-      deal: {
-        get() {
-          return this.$store.state.current_deal;
-        },
-        set(val) {
-          console.log(val);
-        },
+      deal() {
+        return this.$store.state.deal.current_deal;
       },
     },
     beforeRouteEnter(to, from, next) {

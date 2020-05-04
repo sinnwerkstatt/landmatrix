@@ -2,7 +2,7 @@
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
       <b-tab title="Location" active>
-        <div>
+        <div v-if="deal">
           <big-map
             :containerStyle="{'max-height':'300px', 'height': '300px'}"
             :bounds="bounds"
@@ -38,16 +38,17 @@
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
+  import { LGeoJson } from "vue2-leaflet";
 
   export default {
     props: ["deal_id"],
-    components: {BigMap},
+    components: {BigMap, LGeoJson},
     data() {
       return {}
     },
     computed: {
       deal() {
-        return this.$store.state.current_deal;
+        return this.$store.state.deal.current_deal;
       },
       bounds() {
         if (!this.deal) return null;
@@ -114,7 +115,7 @@
       next();
     },
     beforeRouteLeave(to, from, next) {
-      store.dispatch("setCurrentDeal", null);
+      store.dispatch("setCurrentDeal", {});
       next();
     },
   };

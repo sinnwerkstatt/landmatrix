@@ -4,7 +4,7 @@
       <div id="footer-nav" class="row">
         <div
           class="col-md-3"
-          v-for="footerCol in footer_columns"
+          v-for="footerCol in footerColumns"
           v-html="footerCol"
         ></div>
       </div>
@@ -39,9 +39,9 @@
       };
     },
     computed: {
-      footer_columns() {
-        if (this.$store.state.wagtailRootPage)
-          return this.$store.state.wagtailRootPage.footer_columns;
+      footerColumns() {
+        if (this.$store.state.page.wagtailRootPage)
+          return this.$store.state.page.wagtailRootPage.footer_columns;
       },
     },
   };

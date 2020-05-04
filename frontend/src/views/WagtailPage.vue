@@ -10,7 +10,7 @@
     components: { Streamfield },
     computed: {
       content() {
-        let page = this.$store.state.wagtailPage;
+        let page = this.$store.state.page.wagtailPage;
         return page ? page.body : null;
       },
     },

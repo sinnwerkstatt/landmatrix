@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-html="map_introduction"></div>
+    <div v-html="mapIntroduction"></div>
     <FilterBar />
     <big-map :options="{ zoom: 2 }" @ready="pinTheMap">
       <template v-slot:overlay>
@@ -614,12 +614,12 @@
       };
     },
     computed: {
-      map_introduction() {
-        if (this.$store.state.wagtailRootPage)
-          return this.$store.state.wagtailRootPage.map_introduction;
+      mapIntroduction() {
+        if (this.$store.state.page.wagtailRootPage)
+          return this.$store.state.page.wagtailRootPage.map_introduction;
       },
       deals() {
-        return this.$store.state.deals;
+        return this.$store.state.deal.deals;
       }
     },
     methods: {

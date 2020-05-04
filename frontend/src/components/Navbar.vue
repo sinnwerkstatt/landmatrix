@@ -166,13 +166,13 @@
     },
     computed: {
       user() {
-        return this.$store.state.user;
+        return this.$store.state.page.user;
       },
       regions() {
-        if (this.$store.state.regions) return this.$store.state.regions;
+        return this.$store.state.page.regions;
       },
       countries() {
-        if (this.$store.state.countries) return this.$store.state.countries;
+        return this.$store.state.page.countries;
       },
     },
     methods: {

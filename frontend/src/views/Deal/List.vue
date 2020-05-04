@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-html="data_introduction"></div>
+    <div v-html="dataIntroduction"></div>
     <FilterBar />
     <table id="summary" class="table table-striped">
       <thead>
@@ -70,11 +70,11 @@
     },
     computed: {
       deals() {
-        return this.$store.state.deals;
+        return this.$store.state.deal.deals;
       },
-      data_introduction() {
-        if (this.$store.state.wagtailRootPage)
-          return this.$store.state.wagtailRootPage.data_introduction;
+      dataIntroduction() {
+        if (this.$store.state.page.wagtailRootPage)
+          return this.$store.state.page.wagtailRootPage.data_introduction;
       },
     },
     methods: {
