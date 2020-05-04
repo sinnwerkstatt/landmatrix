@@ -12,7 +12,7 @@ const store = new Vuex.Store({
     regions: null,
     wagtailRootPage: null,
     wagtailPage: null,
-    deals: null,
+    deals: [],
     deals_uptodate: false,
     current_deal: null,
     title: null,
@@ -43,6 +43,11 @@ const store = new Vuex.Store({
     setDeals(state, deals) {
       state.deals = deals;
       state.deals_uptodate = true;
+    },
+    updateDeals(state, payload) {
+      let {deals, finished} = payload;
+      state.deals = state.deals.concat(deals);
+      state.deals_uptodate = finished;
     },
     setCurrentDeal(state, deal) {
       state.current_deal = deal;
@@ -144,9 +149,11 @@ const store = new Vuex.Store({
       );
     },
     fetchDeals(context, options) {
+      let {limit, after} = options;
       if(context.state.deals_uptodate) return;
+
       let query = `{
-        deals(limit:0){
+        deals(limit:${limit}, after: ${after || -1}){
           id
           deal_size
           target_country { id name }
@@ -158,7 +165,14 @@ const store = new Vuex.Store({
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setDeals", response.data.data.deals);
+        let deals = response.data.data.deals;
+        if(deals.length === limit) {
+          context.commit("updateDeals", {deals, finished: false});
+          let last_deal = deals.slice(-1)[0];
+          context.dispatch('fetchDeals', {limit:limit, after:last_deal.id});
+        } else {
+          context.commit("updateDeals", {deals, finished: true});
+        }
       });
     },
     setCurrentDeal(context, deal_id) {

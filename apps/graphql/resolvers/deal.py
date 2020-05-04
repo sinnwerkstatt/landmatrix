@@ -9,10 +9,11 @@ from apps.greennewdeal.models import Deal, Location
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
-    qs = Deal.objects.filter(status__in=(2, 3))
+    qs = Deal.objects
 
     # default filters
-    qs = qs.filter(status__in=(2, 3), private=False)
+    default_filters = {"status__in": (2, 3), "private": False}
+    qs = qs.filter(**default_filters)
 
     fields = get_fields(info)
     if "target_country" in fields:
@@ -31,10 +32,15 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id):
     return deal.get(id=id)
 
 
-def resolve_deals(obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20):
+def resolve_deals(
+    obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, after=None
+):
     qs = _resolve_deals_prefetching(info).order_by(sort)
     if filters:
         qs = qs.filter(**parse_filters(filters))
+
+    if after:
+        qs = qs.filter(**{f"{sort}__gt": after})
 
     # limit = max(1, min(limit, 500))
     if limit != 0:

@@ -9,6 +9,8 @@ type Query {
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
+
+        after: Int,
         "Filters are ANDed together"
         filters: [Filter]
     ): [Deal]

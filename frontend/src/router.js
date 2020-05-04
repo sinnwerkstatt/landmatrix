@@ -26,7 +26,7 @@ const router = new Router({
       name: "deal_list",
       component: DealList,
       beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { offset: 0 });
+        store.dispatch("fetchDeals", { limit: 1000 });
         next();
       },
     },
@@ -35,7 +35,7 @@ const router = new Router({
       name: "map",
       component: GlobalMap,
       beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { offset: 0 });
+        store.dispatch("fetchDeals", { limit: 1000 });
         next();
       },
     },
