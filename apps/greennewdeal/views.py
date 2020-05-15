@@ -2,8 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
-from apps.greennewdeal.documents.deal import DealDocument, LocationDocument
-from apps.greennewdeal.models import Country
+from apps.greennewdeal.models import Country, Deal, Location
 
 
 @cache_page(5)
@@ -11,11 +10,11 @@ def vuebase(request, path=None):
     return render(request, template_name="greennewdeal/vuebase.html")
 
 
-# @cache_page(5)
+# this is only used for the old global map
 def old_api_deals_json(request):
     locations = [
         loc.to_dict()
-        for loc in LocationDocument.search()[:10_000]
+        for loc in Location.search()[:10_000]  # FIXME broken
         .filter("terms", deal__status=[2, 3])
         .source(["id", "point", "deal", "level_of_accuracy_display"])
         .sort("deal.id")
@@ -100,7 +99,7 @@ def old_api_country_deals_json(request):
 
 def old_api_latest_changes(request):
     """
-    solve this directly via graphql in the future:
+    # FIXME: solve this directly via graphql in the future:
     {
       deals(sort:"-timestamp"){
         id
@@ -111,17 +110,17 @@ def old_api_latest_changes(request):
       }
     }
     """
+    default_filters = {"status__in": (2, 3), "confidential": False}
     deals = [
         {
-            "action": "TODO",  # TODO: Map an action here
-            "deal_id": deal.id,
-            "change_date": deal.timestamp,
-            "target_country": deal.target_country.name if deal.target_country else None,
+            "action": "add/change",  # TODO: Map an action here
+            "deal_id": deal["id"],
+            "change_date": deal["timestamp"],
+            "target_country": deal["target_country__name"],
         }
-        for deal in DealDocument.search()[:20]
-        .filter("terms", status=[2, 3])
-        .source(["id", "timestamp", "target_country", "status"])
-        .sort("-timestamp")
-        .execute()
+        for deal in Deal.objects.all()
+        .filter(**default_filters)
+        .values("id", "timestamp", "target_country__name", "status")
+        .order_by("-timestamp")[:20]
     ]
     return JsonResponse(deals, safe=False)
