@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
-from apps.grid.forms.country_specific_forms import get_country_specific_form_classes
+# from apps.grid.forms.country_specific_forms import get_country_specific_form_classes
 from apps.grid.forms.deal_action_comment_form import DealActionCommentForm
 from apps.grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from apps.grid.utils import has_perm_approve_reject
@@ -484,10 +484,10 @@ class DealUpdateView(DealBaseView):
         forms = []
         for form_class in self.FORMS:
             forms.append(self.get_form(form_class, data=data, files=files))
-        # Add country specific forms
-        country_forms = get_country_specific_form_classes(self.get_object())
-        for form_class in country_forms:
-            forms.append(self.get_form(form_class, data=data, files=files))
+        # # Add country specific forms
+        # country_forms = get_country_specific_form_classes(self.get_object())
+        # for form_class in country_forms:
+        #     forms.append(self.get_form(form_class, data=data, files=files))
         return forms
 
     def get_form(self, form_class, data=None, files=None):
@@ -658,11 +658,11 @@ def get_forms(activity, user, prefix=None):
     forms = [get_form(activity, form, prefix) for form in PUBLIC_FORMS]
     if user.is_authenticated:
         forms.extend([get_form(activity, form, prefix) for form in USER_FORMS])
-    if activity:
-        for form_class in get_country_specific_form_classes(activity):
-            form_tuple = (form_class.Meta.name, form_class)
-            country_specific_form = get_form(activity, form_tuple)
-            forms.append(country_specific_form)
+    # if activity:
+    #     for form_class in get_country_specific_form_classes(activity):
+    #         form_tuple = (form_class.Meta.name, form_class)
+    #         country_specific_form = get_form(activity, form_tuple)
+    #         forms.append(country_specific_form)
     return forms
 
 
