@@ -732,16 +732,16 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Meta Info """
     fully_updated = models.BooleanField(default=False)
-    private = models.BooleanField(default=False)
+    confidential = models.BooleanField(default=False)
     PRIVATE_REASON_CHOICES = (
         (10, "Temporary removal from PI after criticism"),
         (20, "Research in progress"),
         (30, "Land Observatory Import"),
     )
-    private_reason = models.IntegerField(
+    confidential_reason = models.IntegerField(
         choices=PRIVATE_REASON_CHOICES, null=True, blank=True
     )
-    private_comment = models.TextField(
+    confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True
     )
 

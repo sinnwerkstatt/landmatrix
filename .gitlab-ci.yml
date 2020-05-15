@@ -53,7 +53,7 @@ deploy to staging:
     - |
       ssh $STAGING_USER@$STAGING_HOST << E=O=F
       set -e
-      mv maintenance.html_ maintenance.html
+      mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update dev=True production=True
       sudo /bin/systemctl restart django-dev.landmatrix.org.service
@@ -71,7 +71,7 @@ deploy to production:
     - |
       ssh $PRODUCTION_USER@$PRODUCTION_HOST << E=O=F
       set -e
-      mv maintenance.html_ maintenance.html
+      mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update production=True branch=production
       sudo /bin/systemctl restart django-landmatrix.org.service

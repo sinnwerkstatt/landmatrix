@@ -449,12 +449,12 @@ def parse_remaining(deal, attrs):
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
 
     deal.fully_updated = attrs.get("fully_updated") == "True"
-    deal.private = attrs.get("not_public") == "True"
-    PRIVATE_REASON_MAP = {
+    deal.confidential = attrs.get("not_public") == "True"
+    CONFIDENTIAL_REASON_MAP = {
         None: None,
         "Temporary removal from PI after criticism": 10,
         "Research in progress": 20,
         "Land Observatory Import": 30,
     }
-    deal.private_reason = PRIVATE_REASON_MAP[attrs.get("not_public_reason")]
-    deal.private_comment = attrs.get("tg_not_public_comment") or ""
+    deal.confidential_reason = CONFIDENTIAL_REASON_MAP[attrs.get("not_public_reason")]
+    deal.confidential_comment = attrs.get("tg_not_public_comment") or ""

@@ -12,7 +12,7 @@ def _resolve_deals_prefetching(info: GraphQLResolveInfo):
     qs = Deal.objects
 
     # default filters
-    default_filters = {"status__in": (2, 3), "private": False}
+    default_filters = {"status__in": (2, 3), "confidential": False}
     qs = qs.filter(**default_filters)
 
     fields = get_fields(info)
@@ -58,7 +58,7 @@ def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
     qs = Location.objects.all()
 
     # default filters
-    qs = qs.filter(deal__status__in=(2, 3), deal__private=False)
+    qs = qs.filter(deal__status__in=(2, 3), deal__confidential=False)
 
     fields = get_fields(info)
     if "deal" in fields:
