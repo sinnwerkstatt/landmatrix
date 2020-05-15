@@ -162,6 +162,7 @@
                     buttonRow = $(this).parents('tr.' + options.formCssClass + '-add').get(0) || this;
                 applyExtraClasses(row, formCount);
                 row.insertBefore($(buttonRow)).show();
+                // row.find('input,select,textarea,label,div').each(function() {
                 row.find('input,select,textarea,label').each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
                 });

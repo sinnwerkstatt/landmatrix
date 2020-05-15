@@ -7,6 +7,6 @@ podman run --name es_five -p 9205:9200  -e "discovery.type=single-node" -e "xpac
 podman start -a es_five
 
 # Get Elastic 7 in a container (in userspace with podman)
-podman run --name es_seven -p 9207:9200 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xmx1g -Xms1g" elasticsearch:7.6.1
+podman run --name es_seven -p 9200:9200 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xmx1g -Xms1g" elasticsearch:7.7.0
 
 podman start -a es_seven
