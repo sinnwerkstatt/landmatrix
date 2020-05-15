@@ -94,7 +94,7 @@
       next();
     },
     beforeRouteLeave(to, from, next) {
-      store.dispatch("setCurrentDeal", null);
+      store.dispatch("setCurrentDeal", {});
       next();
     },
   };

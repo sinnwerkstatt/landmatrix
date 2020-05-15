@@ -8,12 +8,13 @@ import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WagtailPage from "./views/WagtailPage";
 import NotFound from "./views/NotFound";
-import Dashboard from "./views/Dashboard";
+import Dashboard from "./views/Manager/Dashboard";
 
 import store from "./store";
 import ItsABigDeal from "./views/Charts/ItsABigDeal";
 import GlobalMapOfInvestments from "@/views/Charts/GlobalMapOfInvestments";
 import DynamicsOverview from "@/views/Charts/DynamicsOverview";
+import CaseStatistics from "@/views/Manager/CaseStatistics";
 
 Vue.use(Router);
 
@@ -38,11 +39,6 @@ const router = new Router({
         store.dispatch("fetchDeals", { limit: 1000 });
         next();
       },
-    },
-    {
-      path: "/dashboard/",
-      name: "dashboard",
-      component: Dashboard,
     },
     {
       path: "/deal/add/",
@@ -88,6 +84,16 @@ const router = new Router({
           component: DynamicsOverview,
         },
       ],
+    },
+    {
+      path: "/dashboard/",
+      name: "dashboard",
+      component: Dashboard,
+    },
+    {
+      path: "/case_statistics/",
+      name: "case_statistics",
+      component: CaseStatistics,
     },
     {
       path: "/404/",

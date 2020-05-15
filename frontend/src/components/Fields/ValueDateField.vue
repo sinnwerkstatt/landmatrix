@@ -5,23 +5,40 @@
       <!--    {{formfield}}-->
       <!--  </div>-->
       <div class="input-group">
-        <b-form-input
+        <input
           :type="formfield.type || `text`"
           :placeholder="formfield.placeholder"
-          class="year-based"
+          class="form-control year-based"
+          :aria-label="formfield.placeholder"
           v-model="val.value"
-          @input="emitVals"
-        />
-        <b-form-input
-          type="text"
-          class="year-based-year"
-          placeholder="YYYY-MM-DD"
-          v-model="val.date"
           @input="emitVals"
         />
         <div class="input-group-append">
           <div class="input-group-text">{{ formfield.unit }}</div>
         </div>
+        <input
+          type="text"
+          class="form-control year-based-year"
+          :aria-label="formfield.placeholder"
+          placeholder="YYYY-MM-DD"
+          v-model="val.date"
+          @input="emitVals"
+        />
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="radio"
+            :name="`${formfield.name}_current`"
+            :id="`${formfield.name}_current_${i}`"
+            :value="i"
+            v-model="current"
+            @input="emitVals"
+          />
+          <label class="form-check-label" :for="`${formfield.name}_current_${i}`">
+            Current
+          </label>
+        </div>
+
         <a
           :class="{ disabled: vals.length <= 1 }"
           class="btn remove-ybd delete-row"
@@ -42,6 +59,7 @@
     props: ["formfield", "value"],
     data() {
       return {
+        current: null,
         vals: this.value || [{ date: null, value: null }],
       };
     },
@@ -54,8 +72,11 @@
         this.vals.splice(index, 1);
       },
       emitVals() {
-        this.$emit("input", this.vals);
-      }
+        let vals_with_current = this.vals;
+        if(this.current)
+          vals_with_current[this.current].current = true;
+        this.$emit("input", vals_with_current);
+      },
     },
   };
 </script>

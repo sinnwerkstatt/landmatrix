@@ -1,15 +1,10 @@
 import Vue from "vue";
-// import VueMeta from "vue-meta";
 import BootstrapVue from "bootstrap-vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Multiselect from "vue-multiselect";
-
-// Vue.use(VueMeta, {
-//   // optional pluginOptions
-//   refreshOnceOnNavigation: true,
-// });
+import VCalendar from 'v-calendar';
 
 import "../node_modules/font-awesome/scss/font-awesome.scss";
 
@@ -19,6 +14,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import "./scss/main.scss";
+
+Vue.use(VCalendar);
 
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
