@@ -1,6 +1,7 @@
 from typing import Any
 
 from ariadne import ObjectType
+from django.contrib.auth.models import User
 from django.db.models import Sum
 from graphql import GraphQLResolveInfo
 
@@ -12,8 +13,14 @@ def _resolve_deals_prefetching(info: GraphQLResolveInfo):
     qs = Deal.objects
 
     # default filters
-    default_filters = {"status__in": (2, 3), "confidential": False}
-    qs = qs.filter(**default_filters)
+    user: User = info.context.user
+    if user.is_staff or user.is_superuser:
+        # TODO: apply default filters if nothing else is set.
+        default_filters = {"status__in": (2, 3), "confidential": False}
+        qs = qs.filter(**default_filters)
+    else:
+        default_filters = {"status__in": (2, 3), "confidential": False}
+        qs = qs.filter(**default_filters)
 
     fields = get_fields(info)
     if "target_country" in fields:

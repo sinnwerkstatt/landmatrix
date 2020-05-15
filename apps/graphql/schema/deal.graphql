@@ -171,6 +171,15 @@ type Deal {
     prai_applied_display: String
     prai_applied_comment: String
 
+    # internal?
+    overall_comment: String
+    fully_updated: Boolean
+    confidential: Boolean
+    confidential_reason: Int
+    confidential_reason_display: String
+    confidential_comment: String
+
+
     # Foreign Keys
     locations: [Location]
     contracts: [Contract]
