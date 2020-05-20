@@ -121,7 +121,6 @@ For [up-to-date information](https://en.wikipedia.org/wiki/Self-documenting_code
 The Landmatrix API is available at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/) and provides deal as well as investor data sets.
 The API requires you to write your queries in [GraphQL syntax](https://graphql.org/learn/) and returns the matching data sets as a [JSON](https://www.json.org/json-en.html) formatted response.
 
-_API rate limiting?_
 
 ### Data types and fields
 #### Deals
@@ -188,7 +187,7 @@ Data on all deals available can be recieved by querying for `deals`.
   }
 }
 ```
-for example is going to return data of the _first_ 5 deals.
+for example is going to return data of the first 5 deals ordered by ID (asc).
 
 
 ```
@@ -198,7 +197,8 @@ for example is going to return data of the _first_ 5 deals.
   }
 }
 ```
-returns data for of the _first_ 5 deals sorted alphabetically by target country (asc).
+returns data for of the first 5 deals sorted alphabetically by target country (asc).
+Note that the response data sets are ordered first before the limitation is applied.
 
 #### Investor data by ID
 
@@ -240,58 +240,17 @@ Data on all investors available can be recieved by querying for `investors`.
   }
 }
 ```
-for example is going to return `id` and `name` of the _first_ 5 investors.
+for example is going to return `id` and `name` of the first 5 investors ordered ascending by ID.
 
 
 ### Filters
 
 In most use cases you may want to specify some fields and conditions you want to have your query results filtered by.
-You can pass a `filter` array to your query as an argument. More information on GraphQL filtering can be found [on GRANDstack](https://grandstack.io/docs/graphql-filtering/#filter-argument).
+You can pass a `filter` array to your query as an argument. More information on GraphQL filtering can be found on [GRANDstack](https://grandstack.io/docs/graphql-filtering/#filter-argument).
 
 #### Filter examples
 
-The query
-```
-query Size($timestamp: [Filter]) {
-  deals(filters: $timestamp, limit: 3) {
-    id
-    deal_size
-  }
-}
-```
-with the filter
-```
-{
-  "timestamp": [
-      {
-        "field": "timestamp", "operation": "GE", "value": "2020-03-02"
-      },
- 	 ]
-}
-```
-defined in the `Query Variables` section is going to return the following JSON:
-```
-{
-  "data": {
-    "deals": [
-      {
-        "id": 3,
-        "deal_size": 20234
-      },
-      {
-        "id": 4,
-        "deal_size": 0
-      },
-      {
-        "id": 8,
-        "deal_size": 0
-      }
-    ]
-  }
-}
-```
-
-If you want to apply a filter without using the sandbox provided at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/) you can directly incorporate the filter array into your query like this:
+If you want to apply a filter you can directly incorporate the filter array into your query like this:
 ```
 {
   deals(filters: { field: "timestamp", operation: GE, value: "2020-03-02" }) {
@@ -301,11 +260,40 @@ If you want to apply a filter without using the sandbox provided at [dev.landmat
 }
 ```
 
-You can also chain filters using `AND` or `OR` operators:
+You can also chain multiple filters by combining them into a filter array. The filters are treated as if combined with an `AND` operator.
 
 ```
-# TODO: figure out filter chaining...
+{
+  deals(
+    filters: [
+      { field: "timestamp", operation: GE, value: "2010-03-02" }
+      { field: "target_country.name", operation: EQ, value: "Myanmar" }
+    ]
+  ) {
+    id
+    target_country {
+      id
+      name
+    }
+  }
+}
 ```
+Note that you can filter on subfields like e.g. `target_country.name` by chaining them with a `.`.
+
+If you want to create a logical `OR` filter on a specific field you can use the `IN` operator in combination with an array of values:
+```
+{
+  deals(
+    filters: [
+      { field: "target_country.name", operation: IN, value: ["Myanmar", "Bangladesh"] }
+    ]
+  ) {
+    id
+	deal_size
+  }
+}
+```
+
 
 #### Logical operators
 
