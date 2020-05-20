@@ -114,3 +114,206 @@ For [up-to-date information](https://en.wikipedia.org/wiki/Self-documenting_code
 * `pyproject.toml`
 * `.coveragerc`
 * `.pylintrc`
+
+
+## Landmatrix API Documentation
+
+The Landmatrix API is available at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/) and provides deal as well as investor data sets.
+The API requires you to write your queries in [GraphQL syntax](https://graphql.org/learn/) and returns the matching data sets as a [JSON](https://www.json.org/json-en.html) formatted response.
+
+_API rate limiting?_
+
+### Data types and fields
+#### Deals
+_A deal is an transaction associated with a particular piece of land or area._
+
+The deal data schema including all available fields can be found in the `Schema` section at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/).
+
+#### Investors
+_Investors are people or associations who or which are associated with a land deal._
+
+The Investor data schema including all available fields can be found in the `Schema` section at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/).
+
+
+### Query examples
+
+#### Deal data by ID
+
+If you want to recieve a specific deal by ID you can pass the ID as an argument to the query. In this case you are querying for the data type `deal`.
+```
+{
+  deal(id: 3) {
+    geojson
+  }
+}
+``` 
+will return 
+```
+{
+  "data": {
+    "deal": {
+      "geojson": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                93.98784269999999,
+                19.810093
+              ]
+            },
+            "properties": {
+              "name": "Rakhine, Myanmar",
+              "type": "point"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+_Deal IDs can for example be found [in the data section](https://landmatrix.org/data/) of the Landmatrix web application._
+
+#### All deal data
+
+Data on all deals available can be recieved by querying for `deals`.
+```
+{
+  deals(limit: 5) {
+    geojson
+  }
+}
+```
+for example is going to return data of the _first_ 5 deals.
+
+
+```
+{
+  deals(limit: 5, sort: "target_country") {
+    geojson
+  }
+}
+```
+returns data for of the _first_ 5 deals sorted alphabetically by target country (asc).
+
+#### Investor data by ID
+
+To find a specific investor by ID simply pass the ID to the `investor` query:
+```
+{
+  investor(id: 1010) {
+    id
+    name
+    country {
+      name
+    }
+  }
+}
+```
+is going to return 
+```
+{
+  "data": {
+    "investor": {
+      "id": 1010,
+      "name": "I.D.C Investment",
+      "country": {
+        "name": "Denmark"
+      }
+    }
+  }
+}
+```
+
+#### All investor data
+
+Data on all investors available can be recieved by querying for `investors`.
+```
+{
+  investors(limit: 5) {
+    id
+    name
+  }
+}
+```
+for example is going to return `id` and `name` of the _first_ 5 investors.
+
+
+### Filters
+
+In most use cases you may want to specify some fields and conditions you want to have your query results filtered by.
+You can pass a `filter` array to your query as an argument. More information on GraphQL filtering can be found [on GRANDstack](https://grandstack.io/docs/graphql-filtering/#filter-argument).
+
+#### Filter examples
+
+The query
+```
+query Size($timestamp: [Filter]) {
+  deals(filters: $timestamp, limit: 3) {
+    id
+    deal_size
+  }
+}
+```
+with the filter
+```
+{
+  "timestamp": [
+      {
+        "field": "timestamp", "operation": "GE", "value": "2020-03-02"
+      },
+ 	 ]
+}
+```
+defined in the `Query Variables` section is going to return the following JSON:
+```
+{
+  "data": {
+    "deals": [
+      {
+        "id": 3,
+        "deal_size": 20234
+      },
+      {
+        "id": 4,
+        "deal_size": 0
+      },
+      {
+        "id": 8,
+        "deal_size": 0
+      }
+    ]
+  }
+}
+```
+
+If you want to apply a filter without using the sandbox provided at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/) you can directly incorporate the filter array into your query like this:
+```
+{
+  deals(filters: { field: "timestamp", operation: GE, value: "2020-03-02" }) {
+    id
+    deal_size
+  }
+}
+```
+
+You can also chain filters using `AND` or `OR` operators:
+
+```
+# TODO: figure out filter chaining...
+```
+
+#### Logical operators
+
+Available logical operators are:
+
+* `EQ`: equals
+* `IN`: in/part of
+* `LT`: less than
+* `LE`: less or equal than
+* `GT`: greater than
+* `GE`: greater or equal than
