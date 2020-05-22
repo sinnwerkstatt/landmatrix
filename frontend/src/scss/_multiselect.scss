@@ -1,0 +1,25 @@
+@import "colors";
+
+.multiselect__tag {
+  background: $primary;
+}
+
+.multiselect__option--selected {
+  background: rgba($primary, 0.1);
+}
+
+.multiselect__option--highlight {
+  background: $primary;
+
+  &:after {
+    background: $primary;
+  }
+}
+
+.multiselect__option--group {
+  background: #999 !important;
+  color: black !important;
+  text-transform: uppercase;
+  padding: 12px 6px;
+
+}

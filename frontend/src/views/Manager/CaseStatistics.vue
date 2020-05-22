@@ -1,21 +1,27 @@
 <template>
   <div class="container">
     <div class="row" v-if="countries">
-      <multiselect
-        v-model="selectedCountry"
-        :options="countries"
-        label="name"
-        placeholder="Pick a value"
-      ></multiselect>
-      <select v-model="selectedDateOption" @change="updateDateRange($event)">
-        <option v-for="option in date_pre_options" :value="option.value">{{option.name}}</option>
-      </select>
-      <v-date-picker
-        mode="range"
-        v-model="daterange"
-        :max-date="new Date()"
-        @input="updateStats"
-      />
+      <div class="col">
+        <multiselect
+          v-model="selectedCountry"
+          :options="countries"
+          label="name"
+          placeholder="Pick a value"
+        />
+      </div>
+      <div class="col">
+        <select v-model="selectedDateOption" @change="updateDateRange($event)">
+          <option v-for="option in date_pre_options" :value="option.value">
+            {{ option.name }}
+          </option>
+        </select>
+        <v-date-picker
+          mode="range"
+          v-model="daterange"
+          :max-date="new Date()"
+          @input="updateStats"
+        />
+      </div>
     </div>
     <div class="row">
       <h2>Number of deals</h2>
@@ -42,11 +48,11 @@
 
         selectedDateOption: null,
         date_pre_options: [
-          {name: "Last 30 days", value: 30},
-          {name: "Last 90 days", value: 90},
-          {name: "Last 180 days", value: 180},
-          {name: "Last 365 days", value: 365},
-        ]
+          { name: "Last 30 days", value: 30 },
+          { name: "Last 60 days", value: 60 },
+          { name: "Last 180 days", value: 180 },
+          { name: "Last 365 days", value: 365 },
+        ],
       };
     },
     computed: {
@@ -59,7 +65,10 @@
     },
     methods: {
       updateDateRange() {
-        this.daterange = {start: dayjs().subtract(this.selectedDateOption, "day").toDate(), end: new Date()};
+        this.daterange = {
+          start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
+          end: new Date(),
+        };
       },
       updateStats() {
         let query = `query Stats($filters: [Filter]) {

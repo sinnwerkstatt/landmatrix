@@ -1,7 +1,10 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
-      <b-tab title="General Info" active>
+      <b-tab title="Location" active>
+        <map-editor/>
+      </b-tab>
+      <b-tab title="General Info">
         <div>
           <h3>Land area</h3>
           <div
@@ -22,10 +25,9 @@
           </div>
         </div>
       </b-tab>
-      <b-tab title="Other"> </b-tab>
+      <b-tab title="Other"></b-tab>
     </b-tabs>
     <button class="btn btn-primary" type="submit">Submit</button>
-
   </div>
 </template>
 
@@ -40,36 +42,16 @@
   import store from "@/store";
   import TextField from "@/components/Fields/TextField";
   import ValueDateField from "@/components/Fields/ValueDateField";
+  import deal_fields from "./deal_fields";
+  import MapEditor from "@/components/MapEditor";
 
   export default {
-    components: { TextField, ValueDateField },
+    components: { MapEditor, TextField, ValueDateField },
     name: "DealEdit",
     props: ["deal_id"],
     data() {
       return {
-        formfields: [
-          {
-            name: "intended_size",
-            component: "TextField",
-            label: "Intended size (in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-          {
-            name: "contract_size",
-            component: "ValueDateField",
-            label: "Size under contract (leased or purchased area, in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-          {
-            name: "operation_size",
-            component: "ValueDateField",
-            label: "Size in operation (production, in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-        ],
+        formfields: deal_fields,
       };
     },
     computed: {

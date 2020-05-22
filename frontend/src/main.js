@@ -13,12 +13,11 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import "./scss/main.scss";
-
 Vue.use(VCalendar);
 
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
+
 
 import "leaflet/dist/leaflet.css";
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,6 +26,9 @@ L.Icon.Default.mergeOptions({
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
+import "leaflet-draw/dist/leaflet.draw.css";
+
+import "./scss/main.scss";
 
 // needs to be registered globally for streamfield loops
 import Title from "./components/Wagtail/Title";
