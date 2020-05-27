@@ -1,1 +1,8 @@
 site_name: Land Matrix
+nav:
+    - Home: index.md
+    - Installation: installation.md
+    - App Schema: schema.md
+    - Development: development.md
+    - API Documentation: api.md
+theme: readthedocs
