@@ -144,7 +144,7 @@ class DealGeneralForm(BaseForm):
     )
     annual_leasing_fee_area = forms.IntegerField(
         required=False,
-        label=_("Purchase price area"),
+        label=_("Annual leasing fee area"),
         help_text=_("ha"),
         widget=forms.NumberInput(attrs={"placeholder": _("Size")}),
     )
