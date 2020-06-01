@@ -4,6 +4,7 @@ from ariadne import ObjectType
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from graphql import GraphQLResolveInfo
+from reversion.models import Version
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.greennewdeal.models import Deal, Location
@@ -59,6 +60,12 @@ deal_type = ObjectType("Deal")
 deal_type.set_field("locations", lambda obj, info: obj.locations.all())
 deal_type.set_field("datasources", lambda obj, info: obj.datasources.all())
 deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
+
+
+@deal_type.field("reversions")
+def get_deal_reversions(obj, info: GraphQLResolveInfo):
+    versions = Version.objects.get_for_object(obj, model_db=None)
+    return [x.field_dict for x in versions]
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):

@@ -5,10 +5,10 @@
         <map-editor/>
       </b-tab>
       <b-tab title="General Info">
-        <div>
-          <h3>Land area</h3>
+        <div v-for="section in general_info">
+          <h3>{{section.name}}</h3>
           <div
-            v-for="formfield in formfields"
+            v-for="formfield in section.fields"
             :key="formfield.name"
             :class="['row', 'mt-3', formfield.name]"
           >
@@ -42,16 +42,17 @@
   import store from "@/store";
   import TextField from "@/components/Fields/TextField";
   import ValueDateField from "@/components/Fields/ValueDateField";
-  import deal_fields from "./deal_fields";
+  import { general_info } from "./deal_fields";
   import MapEditor from "@/components/MapEditor";
+  import CheckboxField from "@/components/Fields/CheckboxField";
 
   export default {
-    components: { MapEditor, TextField, ValueDateField },
+    components: { MapEditor, TextField, ValueDateField, CheckboxField },
     name: "DealEdit",
     props: ["deal_id"],
     data() {
       return {
-        formfields: deal_fields,
+        general_info: general_info,
       };
     },
     computed: {

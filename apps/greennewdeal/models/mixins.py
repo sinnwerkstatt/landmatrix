@@ -237,9 +237,9 @@ class OldDealMixin:
                 "not_public_reason",
                 "tg_not_public_comment",
                 "previous_identifier",
-                "assign_to_user",
-                "tg_feedback_comment",
-                "terms",
+                "assign_to_user",  # TODO?
+                "tg_feedback_comment",  # TODO?
+                "terms",  # TODO?
             ],
         }
         if key:

@@ -9,6 +9,8 @@ import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WagtailPage from "./views/WagtailPage";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
+import InvestorList from "./views/Investor/List";
+import InvestorDetail from "./views/Investor/Detail";
 
 import store from "./store";
 import ItsABigDeal from "./views/Charts/ItsABigDeal";
@@ -56,6 +58,17 @@ const router = new Router({
       path: "/deal/:deal_id/",
       name: "deal_detail",
       component: DealDetail,
+      props: true,
+    },
+    {
+      path: "/data/investors/",
+      name: "investor_list",
+      component: InvestorList,
+    },
+        {
+      path: "/investor/:investor_id/",
+      name: "investor_detail",
+      component: InvestorDetail,
       props: true,
     },
     {

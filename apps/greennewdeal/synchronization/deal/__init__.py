@@ -35,9 +35,15 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
     for histivity in activity_versions:
         meta_activity = MetaActivity(histivity)
         with reversion.create_revision():
-            submodels.create_locations(deal, meta_activity.loc_groups)
-            submodels.create_contracts(deal, meta_activity.con_groups)
-            submodels.create_data_sources(deal, meta_activity.ds_groups)
+            submodels.create_locations(
+                deal, meta_activity.loc_groups, timestamp=histivity.history_date
+            )
+            submodels.create_contracts(
+                deal, meta_activity.con_groups, timestamp=histivity.history_date
+            )
+            submodels.create_data_sources(
+                deal, meta_activity.ds_groups, timestamp=histivity.history_date
+            )
 
             base.parse_general(deal, meta_activity.group_general)
             base.parse_employment(deal, meta_activity.group_employment)

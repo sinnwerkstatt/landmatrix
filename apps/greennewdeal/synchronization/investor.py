@@ -6,13 +6,25 @@ from apps.landmatrix.models import (
 
 STATUS_MAP = {1: 1, 2: 2, 3: 2, 4: 4, 5: 5, 6: 6}
 
-ROLE_MAP = {"ST": 10, "IN": 20}
-
-PARENTAL_RELATION_MAP = {
-    None: None,
-    "Subsidiary": 10,
-    "Local branch": 20,
-    "Joint venture": 30,
+CLASSIFICATIONS_MAP = {
+    "10": "PRIVATE_COMPANY",
+    "20": "STOCK_EXCHANGE_LISTED_COMPANY",
+    "30": "INDIVIDUAL_ENTREPRENEUR",
+    "40": "INVESTMENT_FUND",
+    "50": "SEMI_STATE_OWNED_COMPANY",
+    "60": "STATE_OWNED_COMPANY",
+    "70": "OTHER",
+    "110": "GOVERNMENT",
+    "120": "GOVERNMENT_INSTITUTION",
+    "130": "MULTILATERAL_DEVELOPMENT_BANK",
+    "140": "BILATERAL_DEVELOPMENT_BANK",
+    "150": "COMMERCIAL_BANK",
+    "160": "INVESTMENT_BANK",
+    "170": "INVESTMENT_FUND",  # TODO: Check if this is wanted @ google spreadsheet
+    "180": "INSURANCE_FIRM",
+    "190": "PRIVATE_EQUITY_FIRM",
+    "200": "ASSET_MANAGEMENT_FIRM",
+    "210": "NON_PROFIT",
 }
 
 
@@ -40,7 +52,7 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
         investor.name = histvestor.name
         investor.country_id = histvestor.fk_country_id
         if histvestor.classification:
-            investor.classification = int(histvestor.classification)
+            investor.classification = CLASSIFICATIONS_MAP[histvestor.classification]
         investor.homepage = histvestor.homepage or ""
         investor.opencorporates = histvestor.opencorporates_link or ""
         investor.comment = histvestor.comment or ""
@@ -54,6 +66,16 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
             histvestor.history_user,
             histvestor.action_comment or "",
         )
+
+
+ROLE_MAP = {"ST": "STAKEHOLDER", "IN": "INVESTOR"}
+INVESTMENT_MAP = {"10": "EQUITY", "20": "DEBT_FINANCING"}
+PARENTAL_RELATION_MAP = {
+    None: None,
+    "Subsidiary": "SUBSIDIARY",
+    "Local branch": "LOCAL_BRANCH",
+    "Joint venture": "JOINT_VENTURE",
+}
 
 
 def histvolvements_to_involvements(ids: list):
@@ -72,6 +94,7 @@ def histvolvements_to_involvements(ids: list):
     for hist_involvement in histvolvement_versions.order_by("pk"):
         inv.role = ROLE_MAP[hist_involvement.role]
         if hist_involvement.investment_type:
+            print("investment type", hist_involvement.investment_type)
             inv.investment_type = list(hist_involvement.investment_type)
         inv.percentage = hist_involvement.percentage
         inv.loans_amount = hist_involvement.loans_amount

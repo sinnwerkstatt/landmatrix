@@ -1,5 +1,6 @@
 import reversion
 from django.contrib.gis.db import models as gismodels
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -20,20 +21,21 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
     point = gismodels.PointField(blank=True, null=True)
     facility_name = models.CharField(max_length=2000, blank=True)
     ACCURACY_CHOICES = (
-        (50, _("Country")),
-        (40, _("Administrative region")),
-        (30, _("Approximate location")),
-        (20, _("Exact location")),
-        (10, _("Coordinates")),
+        ("COUNTRY", _("Country")),
+        ("ADMINISTRATIVE_REGION", _("Administrative region")),
+        ("APPROXIMATE_LOCATION", _("Approximate location")),
+        ("EXACT_LOCATION", _("Exact location")),
+        ("COORDINATES", _("Coordinates")),
     )
-    level_of_accuracy = models.IntegerField(
-        choices=ACCURACY_CHOICES, blank=True, null=True
+    level_of_accuracy = models.CharField(
+        choices=ACCURACY_CHOICES, max_length=100, blank=True, null=True
     )
     comment = models.TextField(blank=True)
 
-    contract_area = gismodels.MultiPolygonField(blank=True, null=True)
-    intended_area = gismodels.MultiPolygonField(blank=True, null=True)
-    production_area = gismodels.MultiPolygonField(blank=True, null=True)
+    # contract_area = gismodels.MultiPolygonField(blank=True, null=True)
+    # intended_area = gismodels.MultiPolygonField(blank=True, null=True)
+    # production_area = gismodels.MultiPolygonField(blank=True, null=True)
+    geojson = JSONField(blank=True, null=True)
 
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="locations")
     old_group_id = models.IntegerField(null=True, blank=True)
@@ -64,17 +66,17 @@ class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
 @reversion.register(ignore_duplicates=True)
 class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
     TYPE_CHOICES = (
-        (10, _("Media report")),
-        (20, _("Research Paper / Policy Report")),
-        (30, _("Government sources")),
-        (40, _("Company sources")),
-        (50, _("Contract")),
-        (60, _("Contract (contract farming agreement)")),
-        (70, _("Personal information")),
-        (80, _("Crowdsourcing")),
-        (90, _("Other (Please specify in comment field)")),
+        ("MEDIA_REPORT", _("Media report")),
+        ("RESEARCH_PAPER_OR_POLICY_REPORT", _("Research Paper / Policy Report")),
+        ("GOVERNMENT_SOURCES", _("Government sources")),
+        ("COMPANY_SOURCES", _("Company sources")),
+        ("CONTRACT", _("Contract")),
+        ("CONTRACT_FARMING_AGREEMENT", _("Contract (contract farming agreement)")),
+        ("PERSONAL_INFORMATION", _("Personal information")),
+        ("CROWDSOURCING", _("Crowdsourcing")),
+        ("OTHER", _("Other (Please specify in comment field)")),
     )
-    type = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
+    type = models.CharField(choices=TYPE_CHOICES, max_length=100, blank=True, null=True)
     url = models.URLField(max_length=5000, blank=True, null=True)
     file = models.FileField(
         _("File"),

@@ -21,38 +21,36 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-    )  # fk_country
+    )
 
     STAKEHOLDER_CLASSIFICATIONS = (
-        (10, _("Private company")),
-        (20, _("Stock-exchange listed company")),
-        (30, _("Individual entrepreneur")),
-        (40, _("Investment fund")),
-        (50, _("Semi state-owned company")),
-        (60, _("State-/government (owned) company")),
-        (70, _("Other (please specify in comment field)")),
+        ("PRIVATE_COMPANY", _("Private company")),
+        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
+        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
+        ("INVESTMENT_FUND", _("Investment fund")),
+        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
+        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
+        ("OTHER", _("Other (please specify in comment field)")),
     )
     INVESTOR_CLASSIFICATIONS = (
-        (110, _("Government")),
-        (120, _("Government institution")),
-        (130, _("Multilateral Development Bank (MDB)")),
-        (140, _("Bilateral Development Bank / Development Finance Institution")),
-        (150, _("Commercial Bank")),
-        (160, _("Investment Bank")),
+        ("GOVERNMENT", _("Government")),
+        ("GOVERNMENT_INSTITUTION", _("Government institution")),
+        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
         (
-            170,
-            _(
-                "Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)"
-            ),
+            "BILATERAL_DEVELOPMENT_BANK",
+            _("Bilateral Development Bank / Development Finance Institution"),
         ),
-        (180, _("Insurance firm")),
-        (190, _("Private equity firm")),
-        (200, _("Asset management firm")),
-        (210, _("Non - Profit organization (e.g. Church, University etc.)")),
+        ("COMMERCIAL_BANK", _("Commercial Bank")),
+        ("INVESTMENT_BANK", _("Investment Bank")),
+        ("INSURANCE_FIRM", _("Insurance firm")),
+        ("PRIVATE_EQUITY_FIRM", _("Private equity firm")),
+        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
+        ("NON_PROFIT", _("Non - Profit organization (e.g. Church, University etc.)")),
     )
     CLASSIFICATION_CHOICES = STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
-    classification = models.IntegerField(
+    classification = models.CharField(
         verbose_name=_("Classification"),
+        max_length=100,
         choices=CLASSIFICATION_CHOICES,
         blank=True,
         null=True,
@@ -127,22 +125,22 @@ class InvestorVentureInvolvement(
         on_delete=models.PROTECT,
     )
 
-    STAKEHOLDER_ROLE = 10
-    INVESTOR_ROLE = 20
     ROLE_CHOICES = (
-        (STAKEHOLDER_ROLE, _("Parent company")),
-        (INVESTOR_ROLE, _("Tertiary investor/lender")),
+        ("STAKEHOLDER", _("Parent company")),
+        ("INVESTOR", _("Tertiary investor/lender")),
     )
-    role = models.IntegerField(verbose_name=_("Relation type"), choices=ROLE_CHOICES)
+    role = models.CharField(
+        verbose_name=_("Relation type"), max_length=100, choices=ROLE_CHOICES
+    )
 
-    EQUITY_INVESTMENT_TYPE = 10
-    DEBT_FINANCING_INVESTMENT_TYPE = 20
     INVESTMENT_TYPE_CHOICES = (
-        (EQUITY_INVESTMENT_TYPE, _("Shares/Equity")),
-        (DEBT_FINANCING_INVESTMENT_TYPE, _("Debt financing")),
+        ("EQUITY", _("Shares/Equity")),
+        ("DEBT_FINANCING", _("Debt financing")),
     )
     investment_type = ArrayField(
-        models.IntegerField(_("Investment type"), choices=INVESTMENT_TYPE_CHOICES),
+        models.CharField(
+            _("Investment type"), max_length=100, choices=INVESTMENT_TYPE_CHOICES
+        ),
         blank=True,
         null=True,
     )
@@ -161,15 +159,16 @@ class InvestorVentureInvolvement(
         null=True,
         on_delete=models.SET_NULL,
     )
-    loans_date = models.CharField(_("Loan date"), max_length=10, blank=True)
+    loans_date = models.CharField(_("Loan date"), max_length=20, blank=True)
 
     PARENT_RELATION_CHOICES = (
-        (10, _("Subsidiary of parent company")),  # Subsidiary
-        (20, _("Local branch of parent company")),  # Local branch
-        (30, _("Joint venture of parent companies")),  # Joint venture
+        ("SUBSIDIARY", _("Subsidiary of parent company")),  # Subsidiary
+        ("LOCAL_BRANCH", _("Local branch of parent company")),  # Local branch
+        ("JOINT_VENTURE", _("Joint venture of parent companies")),  # Joint venture
     )
-    parent_relation = models.IntegerField(
+    parent_relation = models.CharField(
         verbose_name=_("Parent relation"),
+        max_length=100,
         choices=PARENT_RELATION_CHOICES,
         blank=True,
         null=True,

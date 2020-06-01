@@ -11,8 +11,8 @@ type Deal {
     intention_of_investment: [DateValuePair]
     intention_of_investment_comment: String
     ## Nature of the deal
-    nature_of_deal: [Int]
-    nature_of_deal_display: [String]
+    nature_of_deal: [String]
+    #nature_of_deal_display: [String]
     nature_of_deal_comment: String
     negotiation_status: [DateValuePair]
     negotiation_status_comment: String
@@ -21,15 +21,15 @@ type Deal {
     ## Purchase price
     purchase_price: Float
     purchase_price_currency: Currency
-    purchase_price_type: Int
-    purchase_price_type_display: String
+    purchase_price_type: String
+    #purchase_price_type_display: String
     purchase_price_area: Float
     purchase_price_comment: String
     ## Leasing fees
     annual_leasing_fee: Float
     annual_leasing_fee_currency: Currency
-    annual_leasing_fee_type: Int
-    annual_leasing_fee_type_display: String
+    annual_leasing_fee_type: String
+    #annual_leasing_fee_type_display: String
     annual_leasing_fee_area: Float
     annual_leasing_fee_comment: String
     ## Contract farming
@@ -77,14 +77,14 @@ type Deal {
     name_of_community: [String]
     name_of_indigenous_people: [String]
     people_affected_comment: String
-    recognition_status: [Int]
-    recognition_status_display: [String]
+    recognition_status: [String]
+    #recognition_status_display: [String]
     recognition_status_comment: String
-    community_consultation: Int
-    community_consultation_display: String
+    community_consultation: String
+    #community_consultation_display: String
     community_consultation_comment: String
-    community_reaction: Int
-    community_reaction_display: String
+    community_reaction: String
+    #community_reaction_display: String
     community_reaction_comment: String
     land_conflicts: Boolean
     land_conflicts_comment: String
@@ -96,27 +96,27 @@ type Deal {
     displaced_households_from_fields: Int
     displaced_people_on_completion: Int
     displacement_of_people_comment: String
-    negative_impacts: [Int]
-    negative_impacts_display: [String]
+    negative_impacts: [String]
+    #negative_impacts_display: [String]
     negative_impacts_comment: String
     promised_compensation: String
     received_compensation: String
-    promised_benefits: [Int]
-    promised_benefits_display: [String]
+    promised_benefits: [String]
+    #promised_benefits_display: [String]
     promised_benefits_comment: String
-    materialized_benefits: [Int]
-    materialized_benefits_display: [String]
+    materialized_benefits: [String]
+    #materialized_benefits_display: [String]
     materialized_benefits_comment: String
     presence_of_organizations: String
     # Former user
-    former_land_owner: [Int]
-    former_land_owner_display: [String]
+    former_land_owner: [String]
+    #former_land_owner_display: [String]
     former_land_owner_comment: String
-    former_land_use: [Int]
-    former_land_use_display: [String]
+    former_land_use: [String]
+    #former_land_use_display: [String]
     former_land_use_comment: String
-    former_land_cover: [Int]
-    former_land_cover_display: [String]
+    former_land_cover: [String]
+    #former_land_cover_display: [String]
     former_land_cover_comment: String
     # Produce info
     crops: [DateValuePair]
@@ -152,8 +152,8 @@ type Deal {
     # Water
     water_extraction_envisaged: Boolean
     water_extraction_envisaged_comment: String
-    source_of_water_extraction: [Int]
-    source_of_water_extraction_display: [String]
+    source_of_water_extraction: [String]
+    #source_of_water_extraction_display: [String]
     source_of_water_extraction_comment: String
     how_much_do_investors_pay_comment: String
     water_extraction_amount: Int
@@ -164,19 +164,19 @@ type Deal {
     # Gender-related info
     gender_related_information: String
     # Guidelines & Principles
-    vggt_applied: Int
-    vggt_applied_display: String
+    vggt_applied: String
+    #vggt_applied_display: String
     vggt_applied_comment: String
-    prai_applied: Int
-    prai_applied_display: String
+    prai_applied: String
+    #prai_applied_display: String
     prai_applied_comment: String
 
     # internal?
     overall_comment: String
     fully_updated: Boolean
     confidential: Boolean
-    confidential_reason: Int
-    confidential_reason_display: String
+    confidential_reason: String
+    #confidential_reason_display: String
     confidential_comment: String
 
 
@@ -188,19 +188,20 @@ type Deal {
     #### Calculated fields
     top_investors: [Investor]
     deal_size: Float
-    current_negotiation_status: Int
-    current_negotiation_status_display: String
-    current_implementation_status: Int
-    current_implementation_status_display: String
+    current_negotiation_status: String
+    #current_negotiation_status_display: String
+    current_implementation_status: String
+    #current_implementation_status_display: String
     current_contract_size: Float
     current_production_size: Float
-
     "GeoJSON combined from all the deals' locations"
     geojson: GeoJSON
 
     status: Int
     status_display: String
     timestamp: DateTime
+
+    reversions: [Deal]
 }
 
 type Location {
