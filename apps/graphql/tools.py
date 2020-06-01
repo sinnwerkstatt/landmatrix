@@ -26,6 +26,7 @@ filter_ops = {
     "EQ": "",
     # Dont provide NE? Or do we have to? It's a "exclude" hassle
     "IN": "__in",
+    "CONTAINS": "__icontains",
     "LT": "__lt",
     "LE": "__lte",
     "GE": "__gte",
