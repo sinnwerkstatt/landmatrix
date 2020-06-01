@@ -1,4 +1,3 @@
-
 input Filter {
     "Any field name from the corresponding model"
     field: String!
@@ -13,6 +12,8 @@ enum FilterOperation {
     EQ
     "In Set"
     IN
+    "Contains (case insensitive)"
+    CONTAINS
     "Less than"
     LT
     "Less than or equal"
