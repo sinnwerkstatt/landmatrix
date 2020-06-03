@@ -67,15 +67,23 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         "self", through="InvestorVentureInvolvement", symmetrical=False,
     )
 
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         (1, _("Draft")),
         (2, _("Live")),
-        (3, _("Live + Draft")),
+        (3, _("Updated")),
         (4, _("Deleted")),
         (5, _("Rejected")),
         (6, _("To Delete?")),
-    ]
+    )
+    DRAFT_STATUS_CHOICES = (
+        (1, "Draft"),
+        (2, "Review"),
+        (3, "Activation"),
+    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    draft_status = models.IntegerField(
+        choices=DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):

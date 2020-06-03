@@ -24,17 +24,36 @@ class UnderscoreDisplayParseMixin:
 class ReversionSaveMixin:
     STATUS_DRAFT = 1
     STATUS_LIVE = 2
-    STATUS_LIVE_AND_DRAFT = 3
+    STATUS_UPDATED = 3
     STATUS_DELETED = 4
     STATUS_REJECTED = 5
     STATUS_TO_DELETE = 6
 
     def save_revision(self, status, date=None, user=None, comment=None):
-        already_in_db = self.__class__.objects.filter(pk=self.pk).exists()
-        live_and_draft = already_in_db and status == self.STATUS_DRAFT
+        # already_in_db = self.__class__.objects.filter(pk=self.pk).exists()
+        current_model = self.__class__.objects.filter(pk=self.pk).first()
+
+        new_draft_status = None
+        if not current_model:
+            new_status = status
+            if status == self.STATUS_DRAFT:
+                new_draft_status = 1
+            if status == self.STATUS_UPDATED:
+                new_status = self.STATUS_LIVE
+        else:
+            if status == self.STATUS_DRAFT:
+                new_status = current_model.status
+                new_draft_status = 1
+            else:
+                new_status = status
+                if current_model.status == self.STATUS_LIVE:
+                    new_status = self.STATUS_UPDATED
+
+        print(new_status, new_draft_status)
 
         with reversion.create_revision():
-            self.status = status
+            self.status = new_status
+            self.draft_status = new_draft_status
 
             reversion.add_to_revision(self)
             if date:
@@ -44,12 +63,20 @@ class ReversionSaveMixin:
             if comment:
                 reversion.set_comment(comment)
 
-            if not live_and_draft:
+            # save the actual model
+            # if: there is not a current_model
+            # or: there is a current model but it's a draft
+            # or: the new status is not DRAFT
+            if (
+                not current_model
+                or (current_model.status == self.STATUS_DRAFT)
+                or not status == self.STATUS_DRAFT
+            ):
                 self.save()
 
-        if live_and_draft:
+        if status == self.STATUS_DRAFT:
             self.__class__.objects.filter(pk=self.pk).update(
-                status=self.STATUS_LIVE_AND_DRAFT
+                draft_status=new_draft_status
             )
 
 

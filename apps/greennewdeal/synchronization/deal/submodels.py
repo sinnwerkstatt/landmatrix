@@ -82,7 +82,7 @@ def create_locations(deal, groups, timestamp):
             features += [rewind(area_feature)]
 
         if features:
-            location.geojson = {"type": "FeatureCollection", "features": features}
+            location.areas = {"type": "FeatureCollection", "features": features}
         location.timestamp = timestamp
         location.save()
 

@@ -4,7 +4,6 @@ from apps.landmatrix.models import (
     HistoricalInvestorVentureInvolvement,
 )
 
-STATUS_MAP = {1: 1, 2: 2, 3: 2, 4: 4, 5: 5, 6: 6}
 
 CLASSIFICATIONS_MAP = {
     "10": "PRIVATE_COMPANY",
@@ -57,7 +56,7 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
         investor.opencorporates = histvestor.opencorporates_link or ""
         investor.comment = histvestor.comment or ""
 
-        status = STATUS_MAP[histvestor.fk_status_id]
+        status = histvestor.fk_status_id
         investor.timestamp = histvestor.history_date
 
         investor.save_revision(

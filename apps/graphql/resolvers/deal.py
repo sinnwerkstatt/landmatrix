@@ -1,7 +1,6 @@
 from typing import Any
 
 from ariadne import ObjectType
-from django.contrib.auth.models import User
 from django.db.models import Sum
 from graphql import GraphQLResolveInfo
 from reversion.models import Version
@@ -11,17 +10,7 @@ from apps.greennewdeal.models import Deal, Location
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
-    qs = Deal.objects
-
-    # default filters
-    user: User = info.context.user
-    if user.is_staff or user.is_superuser:
-        # TODO: apply default filters if nothing else is set.
-        default_filters = {"status__in": (2, 3), "confidential": False}
-        qs = qs.filter(**default_filters)
-    else:
-        default_filters = {"status__in": (2, 3), "confidential": False}
-        qs = qs.filter(**default_filters)
+    qs = Deal.objects.visible(info.context.user)
 
     fields = get_fields(info)
     if "target_country" in fields:
@@ -69,10 +58,7 @@ def get_deal_reversions(obj, info: GraphQLResolveInfo):
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-    qs = Location.objects.all()
-
-    # default filters
-    qs = qs.filter(deal__status__in=(2, 3), deal__confidential=False)
+    qs = Location.objects.visible(info.context.user)
 
     fields = get_fields(info)
     if "deal" in fields:

@@ -16,6 +16,14 @@ from apps.greennewdeal.models.mixins import (
 )
 
 
+class DealManager(models.Manager):
+    def visible(self, user=None):
+        qs = self.get_queryset()
+        if user.is_staff or user.is_superuser:
+            return qs
+        return qs.filter(status__in=(2, 3), confidential=False)
+
+
 @reversion.register(
     follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
 )
@@ -833,26 +841,32 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     current_production_size = models.FloatField(blank=True, null=True)
     geojson = JSONField(blank=True, null=True)
 
-    # TODO: map this to a bunch of booleans? "has_draft" "pending_deletion" and such..
-    # live
-    # has_draft
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         (1, _("Draft")),
         (2, _("Live")),
-        (3, _("Live + Draft")),
+        (3, _("Updated")),
         (4, _("Deleted")),
         (5, _("Rejected")),
         (6, _("To Delete?")),
-    ]
+    )
+    DRAFT_STATUS_CHOICES = (
+        (1, "Draft"),
+        (2, "Review"),
+        (3, "Activation"),
+    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    draft_status = models.IntegerField(
+        choices=DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    objects = DealManager()
 
     def __str__(self):
         return f"#{self.id} in {self.target_country}"
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        # self._sort_json_fields()
         self.current_contract_size = self._get_current("contract_size")
         self.current_production_size = self._get_current("production_size")
         self.current_negotiation_status = self._get_current("negotiation_status")
@@ -891,27 +905,31 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         production_size = int(self.current_production_size or 0)
 
         # 1) IF Negotiation status IS Intended
-        if negotiation_status in (10, 11, 12):
+        if negotiation_status in (
+            "EXPRESSION_OF_INTEREST",
+            "UNDER_NEGOTIATION",
+            "MEMORANDUM_OF_UNDERSTANDING",
+        ):
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size
         # 2) IF Negotiation status IS Concluded
-        elif negotiation_status in (20, 21):
+        elif negotiation_status in ("ORAL_AGREEMENT", "CONTRACT_SIGNED"):
             # USE Contract size or Production size (in the given order)
             value = contract_size or production_size
         # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif negotiation_status == 30:
+        elif negotiation_status == "NEGOTIATIONS_FAILED":
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif negotiation_status == 31:
+        elif negotiation_status == "CONTRACT_CANCELED":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         # 5) IF Negotiation status IS Contract expired
-        elif negotiation_status == 32:
+        elif negotiation_status == "CONTRACT_EXPIRED":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         # 6) IF Negotiation status IS Change of ownership
-        elif negotiation_status == 40:
+        elif negotiation_status == "CHANGE_OF_OWNERSHIP":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         else:
@@ -937,8 +955,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
                     "properties": {"name": loc.name, "id": loc.id, "type": "point"},
                 }
                 features += [point]
-            if loc.geojson:
-                feats = loc.geojson["features"]
+            if loc.areas:
+                feats = loc.areas["features"]
                 for feat in feats:
                     feat["properties"]["name"] = loc.name
                     feat["properties"]["id"] = loc.id

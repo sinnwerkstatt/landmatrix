@@ -213,9 +213,7 @@ type Location {
     level_of_accuracy: Int
     level_of_accuracy_display: String
     comment: String
-    #    contract_area: String
-    #    intended_area: String
-    #    production_area: String
+    areas: GeoJSON
     timestamp: DateTime
     deal: Deal
 }

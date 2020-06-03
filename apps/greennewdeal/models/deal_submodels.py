@@ -14,6 +14,14 @@ from apps.greennewdeal.models.mixins import (
 )
 
 
+class DealSubmodelManager(models.Manager):
+    def visible(self, user=None):
+        qs = self.get_queryset()
+        if user.is_staff or user.is_superuser:
+            return qs.all()
+        return qs.filter(deal__status__in=(2, 3), deal__confidential=False)
+
+
 @reversion.register(ignore_duplicates=True)
 class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
     name = models.CharField(max_length=2000, blank=True)
@@ -35,11 +43,13 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
     # contract_area = gismodels.MultiPolygonField(blank=True, null=True)
     # intended_area = gismodels.MultiPolygonField(blank=True, null=True)
     # production_area = gismodels.MultiPolygonField(blank=True, null=True)
-    geojson = JSONField(blank=True, null=True)
+    areas = JSONField(blank=True, null=True)
 
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="locations")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    objects = DealSubmodelManager()
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.name}"
@@ -58,6 +68,8 @@ class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="contracts")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    objects = DealSubmodelManager()
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.number}"
@@ -103,6 +115,8 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="datasources")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    objects = DealSubmodelManager()
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.get_type_display()}"
