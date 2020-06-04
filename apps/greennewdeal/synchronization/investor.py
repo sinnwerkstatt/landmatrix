@@ -103,6 +103,6 @@ def histvolvements_to_involvements(ids: list):
         inv.comment = hist_involvement.comment or ""
         inv.old_id = hist_involvement.pk
 
-        status = STATUS_MAP[hist_involvement.fk_status_id]
+        status = hist_involvement.fk_status_id
 
         inv.save_revision(status)
