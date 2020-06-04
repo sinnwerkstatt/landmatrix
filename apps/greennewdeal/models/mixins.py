@@ -1,3 +1,5 @@
+import warnings
+
 import reversion
 
 
@@ -83,21 +85,23 @@ class ReversionSaveMixin:
                 )
 
 
-# TODO: Old Fields, delete after GND major upgrade
-# [x for x in HistoricalActivityAttribute.objects.values_list(
-# "name", flat=True).distinct().order_by("name")]
-
+# TODO: What are these fields doing here?
 unclear_fields = [
-    "old_contract_area",
-    "old_production_area",
-    "old_reliability_ranking",
-    "original_filename",
     "Remark (Benefits for local communities)",
     "Remark (Nature of the deal)",
     "Remark (Number of Jobs Created)",
+    "minerals_export",  # https://landmatrix.org/deal/6188/145156/  wert "17"
+    "old_contract_area",  # https://landmatrix.org/deal/4372/141302/
+    "old_production_area",  # https://landmatrix.org/deal/4372/141302/
+    "old_reliability_ranking",
+    "original_filename",
+    "previous_identifier",  # Land Observatory Import History
+    "purchase_price_comment",  # scheinbar unbenutzt. zB. https://landmatrix.org/deal/6227/139163/
     "timestamp",
-    "purchase_price_comment",  # ? ??
+    "terms",  # schmeissmer weg, denk ich.
 ]
+
+warnings.warn("GND Obsoletion Warning", FutureWarning)
 
 
 class OldDealMixin:
@@ -105,7 +109,7 @@ class OldDealMixin:
     def old_attribute_names(key: str = None):
         old_values = {
             "general": [
-                "target_country",  # TODO: move to Location?
+                "target_country",
                 "intended_size",
                 "contract_size",
                 "production_size",
@@ -259,17 +263,15 @@ class OldDealMixin:
                 "tg_vggt_applied_comment",
                 "prai_applied",
                 "tg_prai_applied_comment",
-                "tg_overall_comment",
+                "tg_overall_comment",  # TODO How is this different from deal.comment?
             ],
             "meta": [
                 "fully_updated",
                 "not_public",
                 "not_public_reason",
                 "tg_not_public_comment",
-                "previous_identifier",
                 "assign_to_user",  # TODO?
                 "tg_feedback_comment",  # TODO?
-                "terms",  # TODO?
             ],
         }
         if key:
@@ -322,6 +324,5 @@ class OldDataSourceMixin:
             "phone",
             "includes_in_country_verified_information",
             "open_land_contracts_id",
-            "comment",
             "tg_data_source_comment",
         ]

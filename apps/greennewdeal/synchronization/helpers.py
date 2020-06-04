@@ -170,11 +170,11 @@ class MetaActivity:
             elif attr.name in Deal.old_attribute_names("meta"):
                 self.group_remaining.update(attr)  # parse this in remaining.
 
-            elif attr.name in [
-                "old_reliability_ranking",
-                "timestamp",
-            ]:  # TODO: timestamp correct here?
-                pass
+            # elif attr.name in [
+            #     "old_reliability_ranking",
+            #     "timestamp",
+            # ]:  # TODO: timestamp correct here?
+            #     pass
             else:
                 print(
                     f"{activity.activity_identifier}/{activity.id} : Unknown key {attr.name}: {attr}!"

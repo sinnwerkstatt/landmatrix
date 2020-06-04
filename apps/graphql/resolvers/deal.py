@@ -73,9 +73,4 @@ def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
-    from apps.greennewdeal.models import Deal
-
-    size = sum([d.get_deal_size() for d in Deal.objects.filter(status__in=[2, 3])])
-    deal_count = Deal.objects.filter(status__in=[2, 3]).count()
-
     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))

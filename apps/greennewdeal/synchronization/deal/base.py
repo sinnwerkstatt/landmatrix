@@ -479,6 +479,7 @@ def parse_remaining(deal, attrs):
     deal.prai_applied_comment = attrs.get("tg_prai_applied_comment") or ""
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
 
+    # META!
     deal.fully_updated = attrs.get("fully_updated") == "True"
     deal.confidential = attrs.get("not_public") == "True"
     CONFIDENTIAL_REASON_MAP = {
