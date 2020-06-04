@@ -117,6 +117,7 @@
                     type="text"
                     class="form-control"
                     id="username"
+                    autocomplete="username"
                     placeholder="username"
                   />
                 </div>
@@ -126,6 +127,7 @@
                     type="password"
                     class="form-control"
                     id="password"
+                    autocomplete="current-password"
                     placeholder="password"
                   />
                 </div>

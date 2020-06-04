@@ -6,7 +6,8 @@
           v-model="selectedCountry"
           :options="countries"
           label="name"
-          placeholder="Pick a value"
+          placeholder="World"
+          @input="updateStats"
         />
       </div>
       <div class="col">
@@ -23,17 +24,57 @@
         />
       </div>
     </div>
-    <div class="row">
-      <h2>Number of deals</h2>
-      Added: {{ deals_added }}<br />
-      Updated: {{ deals_updated }}<br />
+    <h2>Number of deals</h2>
+
+    <div class="row" v-if="deals">
+      <table>
+        <thead>
+          <tr>
+            <th>Added</th>
+            <th>Updated</th>
+            <th>Published</th>
+            <th>Pending</th>
+            <th>Rejected</th>
+            <th>Pending deletions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ deals_added.length }}</td>
+            <td>{{ deals_updated.length }}</td>
+            <td>{{ deals_published.length }}</td>
+            <td>{{ deals_pending.length }}</td>
+            <td>{{ deals_rejected.length }}</td>
+            <td>{{ deals_pending_deletion.length }}</td>
+          </tr>
+          <tr>
+            <td>
+              <span v-for="deal in deals_added">{{ deal.id }} </span>
+            </td>
+            <td>
+              <span v-for="deal in deals_updated">{{ deal.id }} </span>
+            </td>
+            <td>
+              <span v-for="deal in deals_published">{{ deal.id }} </span>
+            </td>
+            <td>
+              <span v-for="deal in deals_pending">{{ deal.id }} </span>
+            </td>
+            <td>
+              <span v-for="deal in deals_rejected">{{ deal.id }} </span>
+            </td>
+            <td>
+              <span v-for="deal in deals_pending_deletion">{{ deal.id }} </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script>
   import axios from "axios";
-  import store from "@/store";
   import dayjs from "dayjs";
 
   export default {
@@ -43,10 +84,9 @@
         daterange: {},
         selectedCountry: null,
 
-        deals_added: null,
-        deals_updated: null,
+        deals: null,
 
-        selectedDateOption: null,
+        selectedDateOption: 30,
         date_pre_options: [
           { name: "Last 30 days", value: 30 },
           { name: "Last 60 days", value: 60 },
@@ -61,6 +101,42 @@
       },
       countries() {
         return this.$store.state.page.countries;
+      },
+      deals_added() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 3;
+          });
+      },
+      deals_updated() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 2;
+          });
+      },
+      deals_published() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 2 || d.status === 3;
+          });
+      },
+      deals_pending() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 3 || d.status === 1;
+          });
+      },
+      deals_rejected() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 5;
+          });
+      },
+      deals_pending_deletion() {
+        if (this.deals)
+          return this.deals.filter((d) => {
+            return d.status === 6;
+          });
       },
     },
     methods: {
@@ -88,8 +164,15 @@
             },
           ],
         };
+        if (this.selectedCountry) {
+          variables.filters.push({
+            field: "target_country.id",
+            operation: "EQ",
+            value: this.selectedCountry.id.toString(),
+          });
+        }
         axios.post("/graphql/", { query, variables }).then((response) => {
-          this.deals_added = response.data.data.deals;
+          this.deals = response.data.data.deals;
         });
       },
     },
