@@ -9,7 +9,7 @@ from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
 
 
 def _resolve_investors_prefetching(info: GraphQLResolveInfo):
-    qs = Investor.objects
+    qs = Investor.objects.visible(info.context.user)
 
     # default filters
     default_filters = {"status__in": (2, 3)}
@@ -43,7 +43,7 @@ investor_type.set_field("deals", lambda obj, info: obj.deals.all())
 
 @investor_type.field("involvements")
 def get_investor_involvements(obj, info: GraphQLResolveInfo):
-    involves = InvestorVentureInvolvement.objects
+    involves = InvestorVentureInvolvement.objects.visible(info.context.user)
 
     involves = involves.filter(Q(investor=obj) | Q(venture=obj))
     involves = involves.filter(investor__status__in=(2, 3)).filter(
@@ -56,7 +56,7 @@ def get_investor_involvements(obj, info: GraphQLResolveInfo):
 def resolve_involvements(
     obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20
 ):
-    qs = InvestorVentureInvolvement.objects
+    qs = InvestorVentureInvolvement.objects.visible(info.context.user)
 
     # default filters
     default_filters = {"status__in": (2, 3)}

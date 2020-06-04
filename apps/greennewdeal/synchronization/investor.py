@@ -86,15 +86,14 @@ def histvolvements_to_involvements(ids: list):
         inv = InvestorVentureInvolvement.objects.get(
             investor_id=ids[1], venture_id=ids[0],
         )
-        # TODO: is this the right way round?
     except InvestorVentureInvolvement.DoesNotExist:
         inv = InvestorVentureInvolvement(investor_id=ids[1], venture_id=ids[0])
 
     for hist_involvement in histvolvement_versions.order_by("pk"):
         inv.role = ROLE_MAP[hist_involvement.role]
         if hist_involvement.investment_type:
-            print("investment type", hist_involvement.investment_type)
-            inv.investment_type = list(hist_involvement.investment_type)
+            types = [INVESTMENT_MAP[x] for x in list(hist_involvement.investment_type)]
+            inv.investment_type = types
         inv.percentage = hist_involvement.percentage
         inv.loans_amount = hist_involvement.loans_amount
         inv.loans_currency_id = hist_involvement.loans_currency_id

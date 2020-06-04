@@ -17,7 +17,7 @@ from apps.greennewdeal.models.mixins import (
 class DealSubmodelManager(models.Manager):
     def visible(self, user=None):
         qs = self.get_queryset()
-        if user.is_staff or user.is_superuser:
+        if user and (user.is_staff or user.is_superuser):
             return qs.all()
         return qs.filter(deal__status__in=(2, 3), deal__confidential=False)
 

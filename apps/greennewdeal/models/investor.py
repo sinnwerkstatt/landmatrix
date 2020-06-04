@@ -12,6 +12,14 @@ from apps.greennewdeal.models.mixins import (
 )
 
 
+class InvestorManager(models.Manager):
+    def visible(self, user=None):
+        qs = self.get_queryset()
+        if user and (user.is_staff or user.is_superuser):
+            return qs
+        return qs.filter(status__in=(2, 3))
+
+
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
 class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     name = models.CharField(_("Name"), max_length=1024)
@@ -86,6 +94,8 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 
+    objects = InvestorManager()
+
     def __str__(self):
         return f"{self.name} (#{self.id})"
 
@@ -112,6 +122,14 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             seen_investors.add(involvement.investor)
             investors.update(involvement.investor.get_top_investors(seen_investors))
         return investors
+
+
+class InvolvementManager(models.Manager):
+    def visible(self, user=None):
+        qs = self.get_queryset()
+        if user and (user.is_staff or user.is_superuser):
+            return qs
+        return qs.filter(status__in=(2, 3))
 
 
 @reversion.register(ignore_duplicates=True)
@@ -183,17 +201,27 @@ class InvestorVentureInvolvement(
     )
     comment = models.TextField(_("Comment"), blank=True)
 
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         (1, _("Draft")),
         (2, _("Live")),
-        (3, _("Live + Draft")),
+        (3, _("Updated")),
         (4, _("Deleted")),
         (5, _("Rejected")),
         (6, _("To Delete?")),
-    ]
+    )
+    DRAFT_STATUS_CHOICES = (
+        (1, "Draft"),
+        (2, "Review"),
+        (3, "Activation"),
+    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    draft_status = models.IntegerField(
+        choices=DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
     old_id = models.IntegerField(null=True, blank=True)
+
+    objects = InvolvementManager()
 
     class Meta:
         verbose_name = _("Investor Venture Involvement")

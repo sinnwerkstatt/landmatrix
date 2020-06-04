@@ -170,3 +170,17 @@ def test_new_investor_deleted_directly():
     versions = Version.objects.get_for_object_reference(Investor, 1)
     v1 = versions.get()
     assert v1.revision.comment == ACTION_COMM
+
+
+def test_investor_live_then_delete(histvestor_draft_live):
+    histvestor_draft_live.fk_status_id = Investor.STATUS_DELETED
+    histvestor_draft_live.action_comment = "Delete this!"
+    histvestor_draft_live.save(update_elasticsearch=False, trigger_gnd=True)
+
+    inv1 = Investor.objects.get()
+    assert inv1.status == Investor.STATUS_DELETED
+    assert inv1.draft_status == None
+    versions = Version.objects.get_for_object_reference(Investor, 1)
+    assert versions.count() == 3
+    assert versions[0].revision.comment == "Delete this!"
+    assert versions[0].field_dict["status"] == Investor.STATUS_DELETED

@@ -30,26 +30,29 @@ class ReversionSaveMixin:
     STATUS_TO_DELETE = 6
 
     def save_revision(self, status, date=None, user=None, comment=None):
-        # already_in_db = self.__class__.objects.filter(pk=self.pk).exists()
-        current_model = self.__class__.objects.filter(pk=self.pk).first()
+        try:
+            current_model = self.__class__.objects.get(pk=self.pk)
+        except self.__class__.DoesNotExist:
+            current_model = None
 
-        new_draft_status = None
-        if not current_model:
-            new_status = status
+        # if the incoming status is "DRAFT", definitely set the new_draft_status
+        new_draft_status = 1 if (status == self.STATUS_DRAFT) else None
+
+        # the new_status should be the committing status, but look out for special conditions below
+        new_status = status
+        # if this is a new Model and the status is already "overwritten", just set it to "live"
+        if not current_model and status == self.STATUS_UPDATED:
+            new_status = self.STATUS_LIVE
+        # but if we already have a model!,
+        if current_model:
+            # and the committing status is "Draft":
             if status == self.STATUS_DRAFT:
-                new_draft_status = 1
-            if status == self.STATUS_UPDATED:
-                new_status = self.STATUS_LIVE
-        else:
-            if status == self.STATUS_DRAFT:
+                # don't change the new_status, set it to the old status.
                 new_status = current_model.status
-                new_draft_status = 1
-            else:
-                new_status = status
-                if current_model.status == self.STATUS_LIVE:
-                    new_status = self.STATUS_UPDATED
-
-        print(new_status, new_draft_status)
+            # or if the current status and the committing status is Live
+            elif current_model.status == status == self.STATUS_LIVE:
+                # set it to updated
+                new_status = self.STATUS_UPDATED
 
         with reversion.create_revision():
             self.status = new_status
@@ -73,11 +76,11 @@ class ReversionSaveMixin:
                 or not status == self.STATUS_DRAFT
             ):
                 self.save()
-
-        if status == self.STATUS_DRAFT:
-            self.__class__.objects.filter(pk=self.pk).update(
-                draft_status=new_draft_status
-            )
+            # otherwise update the draft_status of the current_model
+            else:
+                self.__class__.objects.filter(pk=self.pk).update(
+                    draft_status=new_draft_status
+                )
 
 
 # TODO: Old Fields, delete after GND major upgrade
