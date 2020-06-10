@@ -1,3 +1,5 @@
+import re
+
 from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
 from apps.landmatrix.models import (
     HistoricalInvestor,
@@ -10,6 +12,7 @@ CLASSIFICATIONS_MAP = {
     "20": "STOCK_EXCHANGE_LISTED_COMPANY",
     "30": "INDIVIDUAL_ENTREPRENEUR",
     "40": "INVESTMENT_FUND",
+    "170": "INVESTMENT_FUND",
     "50": "SEMI_STATE_OWNED_COMPANY",
     "60": "STATE_OWNED_COMPANY",
     "70": "OTHER",
@@ -19,12 +22,16 @@ CLASSIFICATIONS_MAP = {
     "140": "BILATERAL_DEVELOPMENT_BANK",
     "150": "COMMERCIAL_BANK",
     "160": "INVESTMENT_BANK",
-    "170": "INVESTMENT_FUND",  # TODO: Check if this is wanted @ google spreadsheet
     "180": "INSURANCE_FIRM",
     "190": "PRIVATE_EQUITY_FIRM",
     "200": "ASSET_MANAGEMENT_FIRM",
     "210": "NON_PROFIT",
 }
+
+
+invalid_name = re.compile(
+    r"^unknown ?(\(\))? $|^(unknown \()?unnamed (investor|company) ?[0-9]*(\))?$"
+)
 
 
 def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = None):
@@ -48,7 +55,9 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
         investor = Investor(id=histvestor_versions[0].investor_identifier)
 
     for histvestor in histvestor_versions.order_by("pk"):
-        investor.name = histvestor.name
+        if not invalid_name.match(histvestor.name.lower()):
+            investor.name = histvestor.name
+
         investor.country_id = histvestor.fk_country_id
         if histvestor.classification:
             investor.classification = CLASSIFICATIONS_MAP[histvestor.classification]

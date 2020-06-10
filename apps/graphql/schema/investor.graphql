@@ -9,6 +9,7 @@ type Investor {
     comment: String
 
     involvements: [Involvement]
+    involvements_network(depth: Int=10): InvolvementsNetwork
     deals: [Deal]
 
     status: Int
@@ -28,3 +29,5 @@ type Involvement {
     parent_relation: String
     comment: String
 }
+
+scalar InvolvementsNetwork

@@ -30,10 +30,10 @@ def parse_general(deal, attrs):
         "Timber plantation": "TIMBER_PLANTATION",
         "Forest logging / management": "FOREST_LOGGING",
         "For carbon sequestration/REDD": "CARBON",
-        # FIXME: "For wood and fiber"? 6226
         "Forestry unspecified": "FORESTRY_UNSPECIFIED",
         "Forestry": "FORESTRY_UNSPECIFIED",
         "For wood and fibre": "FORESTRY_UNSPECIFIED",
+        "For wood and fiber": "FORESTRY_UNSPECIFIED",
         # Other
         "Mining": "MINING",
         "Oil / Gas extraction": "OIL_GAS_EXTRACTION",
@@ -97,6 +97,11 @@ def parse_general(deal, attrs):
     deal.purchase_price_type = HA_AREA_MAP[attrs.get("purchase_price_type")]
     deal.purchase_price_area = attrs.get("purchase_price_area")
     deal.purchase_price_comment = attrs.get("tg_purchase_price_comment") or ""
+    if attrs.get("purchase_price_comment"):
+        if deal.purchase_price_comment:
+            print("WIR HABEN ZWEIERLEI!")
+        else:
+            deal.purchase_price_comment = attrs.get("purchase_price_comment")
 
     annual_leasing_fee = attrs.get("annual_leasing_fee")
     # FIXME Fixes for broken data

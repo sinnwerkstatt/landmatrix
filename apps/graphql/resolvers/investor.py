@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Any
 
 from ariadne import ObjectType
@@ -47,6 +48,48 @@ def get_investor_involvements(obj, info: GraphQLResolveInfo):
     )
 
     return involves
+
+
+def _get_network(investor_id, exclude=None, count=10):
+    values = [
+        "investor__id",
+        "investor__name",
+        "investor__deals__id",
+        "venture__id",
+        "venture__name",
+        "venture__deals__id",
+        "percentage",
+        "role",
+    ]
+    if count <= 0:
+        return
+    ret = defaultdict(list)
+
+    network_investors = (
+        InvestorVentureInvolvement.objects.filter(venture_id=investor_id)
+        .exclude(investor_id=exclude)
+        .values(*values)
+    )
+    for inv in network_investors:
+        inv["involvements"] = _get_network(inv["investor__id"], investor_id, count - 1)
+        ret["investors"] += [inv]
+
+    network_ventures = (
+        InvestorVentureInvolvement.objects.filter(investor_id=investor_id)
+        .exclude(venture_id=exclude)
+        .values(*values)
+    )
+    for inv in network_ventures:
+        inv["involvements"] = _get_network(inv["venture__id"], investor_id, count - 1)
+        ret["ventures"] += [inv]
+    return dict(ret)
+
+
+@investor_type.field("involvements_network")
+def resolve_involvements_network(obj: Any, info: GraphQLResolveInfo, depth):
+    investors = _get_network(obj.id, count=depth)
+    # print(dict(investors))
+    return investors
 
 
 def resolve_involvements(

@@ -23,6 +23,21 @@ class DealManager(models.Manager):
             return qs
         return qs.filter(status__in=(2, 3), confidential=False)
 
+    def public(self):
+        qs = self.get_queryset()
+        qs = qs.exclude(confidential=True)
+        qs = qs.exclude(target_country=None).exclude(target_country__high_income=True)
+        qs = qs.exclude(datasources=None)
+        qs = qs.exclude(operating_company=None)
+        return qs
+        # TODO what?
+        # # 4A. Invalid Operating company name?
+        # # 4B. Invalid Parent companies/investors?
+        # if self.has_invalid_operating_company(
+        #     involvements
+        # ) and self.has_invalid_parents(involvements):
+        #     return False
+
 
 @reversion.register(
     follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
@@ -355,7 +370,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        Investor, on_delete=models.PROTECT, blank=True, null=True, related_name="deals",
+        Investor,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="deals",
     )
     ACTOR_MAP = (
         (
@@ -936,15 +955,6 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             value = 0
         return value
 
-    @property
-    def top_investors(self):
-        """
-        Get list of highest parent companies
-        (all right-hand side parent companies of the network visualisation)
-        """
-        if self.operating_company:
-            return self.operating_company.get_top_investors()
-
     def _combine_geojson(self):
         features = []
         for loc in self.locations.all():  # type: Location
@@ -964,6 +974,39 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if not features:
             return None
         return {"type": "FeatureCollection", "features": features}
+
+    @property
+    def top_investors(self):
+        """
+        Get list of highest parent companies
+        (all right-hand side parent companies of the network visualisation)
+        """
+        if self.operating_company:
+            return self.operating_company.get_top_investors()
+
+    def is_public_deal(self):
+        # 1. Flag "confidential"
+        if self.confidential:
+            return False
+        # 2. Minimum information missing?
+        # No Target_Country or High Income Country?
+        if not self.target_country or self.target_country.high_income:
+            return False
+        # No DataSource?
+        if not self.datasources.exists():
+            return False
+
+        # 3. No operating company?
+        if not self.operating_company:
+            return False
+        # TODO wenn alle unknown: nicht public.
+        # # 4A. Invalid Operating company name?
+        # # 4B. Invalid Parent companies/investors?
+        # if self.has_invalid_operating_company(
+        #     involvements
+        # ) and self.has_invalid_parents(involvements):
+        #     return False
+        return True
 
     # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
     #     attribute = self.__getattribute__(name)

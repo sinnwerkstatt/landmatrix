@@ -22,7 +22,7 @@ class InvestorManager(models.Manager):
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
 class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
-    name = models.CharField(_("Name"), max_length=1024)
+    name = models.CharField(_("Name"), max_length=1024, blank=True, null=True)
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),

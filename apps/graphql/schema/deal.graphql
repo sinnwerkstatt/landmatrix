@@ -210,8 +210,8 @@ type Location {
     description: String
     point: GeoPoint
     facility_name: String
-    level_of_accuracy: Int
-    level_of_accuracy_display: String
+    level_of_accuracy: String
+    #level_of_accuracy_display: String
     comment: String
     areas: GeoJSON
     timestamp: DateTime
@@ -230,8 +230,8 @@ type Contract {
 
 type DataSource {
     id: Int!
-    type: Int
-    type_display: String
+    type: String
+    # type_display: String
     url: String
     file: String
     file_not_public: Boolean

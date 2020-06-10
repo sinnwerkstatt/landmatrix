@@ -85,20 +85,21 @@ class ReversionSaveMixin:
                 )
 
 
-# TODO: What are these fields doing here?
 unclear_fields = [
-    "Remark (Benefits for local communities)",
+    # TODO Hand these fields to Kurt
+    "Remark (Benefits for local communities)",  # an kurt geben
     "Remark (Nature of the deal)",
     "Remark (Number of Jobs Created)",
-    "minerals_export",  # https://landmatrix.org/deal/6188/145156/  wert "17"
-    "old_contract_area",  # https://landmatrix.org/deal/4372/141302/
-    "old_production_area",  # https://landmatrix.org/deal/4372/141302/
-    "old_reliability_ranking",
     "original_filename",
-    "previous_identifier",  # Land Observatory Import History
-    "purchase_price_comment",  # scheinbar unbenutzt. zB. https://landmatrix.org/deal/6227/139163/
-    "timestamp",
-    "terms",  # schmeissmer weg, denk ich.
+    "old_reliability_ranking",
+    # TODO Figure out what this is doing
+    "timestamp",  # schauen wir nochmal..
+    # Ignore these.
+    "minerals_export",  # weg. https://landmatrix.org/deal/6188/145156/
+    "old_contract_area",  # weg. https://landmatrix.org/deal/4372/141302/
+    "old_production_area",  # weg. https://landmatrix.org/deal/4372/141302/
+    "previous_identifier",  # weg. Land Observatory Import History
+    "terms",  # schmeissmer wir weg.
 ]
 
 warnings.warn("GND Obsoletion Warning", FutureWarning)
@@ -127,6 +128,7 @@ class OldDealMixin:
                 "purchase_price_type",
                 "purchase_price_area",
                 "tg_purchase_price_comment",
+                "purchase_price_comment",  # alternative fuer tg_purchase_price_comment
                 "annual_leasing_fee",
                 "annual_leasing_fee_currency",
                 "annual_leasing_fee_type",
