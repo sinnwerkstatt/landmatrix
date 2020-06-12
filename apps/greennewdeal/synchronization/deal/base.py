@@ -106,15 +106,6 @@ def parse_general(deal, attrs):
         or attrs.get("purchase_price_comment")
         or ""
     )
-    # TODO?
-    # if attrs.get("purchase_price_comment"):
-    #     deal.purchase_price_comment = attrs.get("purchase_price_comment")
-    #     if deal.purchase_price_comment:
-    #         if attrs.get("tg_purchase_price_comment").strip() != attrs.get('purchase_price_comment').strip():
-    #             print(f'UHOH! {attrs.get("tg_purchase_price_comment")} != {attrs.get("purchase_price_comment")}')
-    #     else:
-    #         deal.purchase_price_comment = attrs.get("purchase_price_comment")
-
     deal.annual_leasing_fees_comment = attrs.get("tg_leasing_fees_comment") or ""
 
     annual_leasing_fee = attrs.get("annual_leasing_fee")
