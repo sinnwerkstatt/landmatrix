@@ -58,7 +58,7 @@ $(document).ready(function () {
                 initialZoom: 12,
                 initialCenterLat: 0,
                 initialCenterLon: 0,
-                initialLayer: 'osm',
+                initialLayer: 'HERE',
                 disableDrawing: false,
                 showLayerSwitcher: true,
                 enableSearch: false,
@@ -178,9 +178,6 @@ $(document).ready(function () {
                     zoom: this.options.initialZoom
                 })
             });
-            // var olGM = new olgm.OLGoogleMaps({map: map});
-            // olGM.activate();
-
             return map;
         };
 
@@ -338,26 +335,27 @@ $(document).ready(function () {
         }
         var here_url = 'https://{1-4}.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8';
         MapWidget.prototype.getBaseLayers = function() {
-            var baseLayers = [
-                new ol.layer.Tile({
-                    title: 'OpenStreetMap',
-                    type: 'base',
-                    visible: this.options.initialLayer === 'osm' ? true : false,
-                    source: new ol.source.OSM(),
-                }),
-              new ol.layer.Tile({
-                title: 'HERE',
-                visible: true,
-                // preload: Infinity,
-                source: new ol.source.XYZ({
-                  url: here_url+'?apiKey='+'OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo',
-                  attributions: "Map Tiles &copy; " + new Date().getFullYear() + " " +
-                    "<a href=\"http://developer.here.com\">HERE</a>"
-                })
+          var baseLayers = [
+            new ol.layer.Tile({
+              title: "OpenStreetMap",
+              type: "base",
+              visible: false,
+              source: new ol.source.OSM()
+            }),
+            new ol.layer.Tile({
+              title: "HERE",
+              type: "base",
+              visible: true,
+              // preload: Infinity,
+              source: new ol.source.XYZ({
+                url: here_url + "?apiKey=" + "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo",
+                attributions: "Map Tiles &copy; " + new Date().getFullYear() + " " +
+                  "<a href=\"http://developer.here.com\">HERE</a>"
               })
-            ];
+            })
+          ];
 
-            return baseLayers;
+          return baseLayers;
         };
 
         MapWidget.prototype.getContextLayers = function() {
@@ -438,7 +436,7 @@ $(document).ready(function () {
                         font: 'normal 36px FontAwesome',
                         textBaseline: 'Bottom',
                         fill: new ol.style.Fill({
-                          color: '#4bbb87'
+                          color: '#ff6363'
                         })
                      })
                 });
