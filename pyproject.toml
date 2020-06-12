@@ -68,6 +68,7 @@ libsass = "*"
 django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 sentry_sdk = { version = "*", optional = true }
+#geopandas = "^0.7.0"
 
 
 

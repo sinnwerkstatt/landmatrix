@@ -1,5 +1,6 @@
 <template>
-  <div class="">
+  <div class="container">
+    <div>In total: {{ hectares.toLocaleString() }}ha in {{ deals_count }} deals.</div>
     <big-map @ready="pinTheMap" :center="latlng">
       <l-circle
         v-if="hectares"
@@ -34,6 +35,7 @@
       return {
         latlng: [40.416775, -3.70379],
         hectares: null,
+        deals_count: null,
       };
     },
     computed: {
@@ -62,9 +64,12 @@
       },
     },
     created() {
-      let query = `{ aggregations { deal_size_sum } }`;
+      let query = `{ deals(limit: 0) { deal_size } }`;
       axios.post("/graphql/", { query: query }).then((response) => {
-        this.hectares = response.data.data.aggregations.deal_size_sum;
+        this.deals_count = response.data.data.deals.length;
+        this.hectares = response.data.data.deals.reduce((num, d) => {
+          return d.deal_size + num;
+        }, 0);
       });
     },
     beforeRouteEnter(to, from, next) {

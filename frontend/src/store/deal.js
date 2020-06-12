@@ -212,7 +212,15 @@ export const dealModule = {
         vggt_applied_comment
         prai_applied
         prai_applied_comment
-        # locations { id point level_of_accuracy }
+        locations {
+          id
+          name
+          description
+          point
+          facility_name
+          level_of_accuracy
+          comment
+        }
         geojson
         }
       }`;

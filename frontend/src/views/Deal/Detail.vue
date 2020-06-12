@@ -1,23 +1,44 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
-      <b-tab title="Location">
-        <div>
-          <big-map
-            :containerStyle="{ 'max-height': '300px', height: '300px' }"
-            :bounds="bounds"
-          >
-            <l-geo-json
-              v-if="deal.geojson"
-              :geojson="deal.geojson"
-              :options="geojson_options"
-              :optionsStyle="geojson_styleFunction"
-            />
-          </big-map>
+      <b-tab title="Location" active>
+        <div class="row">
+          <div class="col">
+            <div v-for="loc in deal.locations">
+              <h3>Location #{{ loc.id }}</h3>
+              <dl>
+                <dt>Name</dt>
+                <dd>{{ loc.name }}</dd>
+                <dt>Description</dt>
+                <dd>{{ loc.description }}</dd>
+                <dt>Point</dt>
+                <dd>{{ loc.point }}</dd>
+                <dt>Facility name</dt>
+                <dd>{{ loc.facility_name }}</dd>
+                <dt>Level of accuracy</dt>
+                <dd>{{ loc.level_of_accuracy }}</dd>
+                <dt>Comment</dt>
+                <dd>{{ loc.comment }}</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="col">
+            <big-map
+              :containerStyle="{ 'max-height': '300px', height: '300px' }"
+              :bounds="bounds"
+            >
+              <l-geo-json
+                v-if="deal.geojson"
+                :geojson="deal.geojson"
+                :options="geojson_options"
+                :optionsStyle="geojson_styleFunction"
+              />
+            </big-map>
+          </div>
         </div>
       </b-tab>
 
-      <b-tab title="General Info" active>
+      <b-tab title="General Info">
         <div v-for="section in general_info" class="panel-body">
           <h3>{{ section.name }}</h3>
           <div
