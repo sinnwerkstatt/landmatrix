@@ -1,3 +1,5 @@
+import warnings
+
 import reversion
 
 
@@ -24,17 +26,39 @@ class UnderscoreDisplayParseMixin:
 class ReversionSaveMixin:
     STATUS_DRAFT = 1
     STATUS_LIVE = 2
-    STATUS_LIVE_AND_DRAFT = 3
+    STATUS_UPDATED = 3
     STATUS_DELETED = 4
     STATUS_REJECTED = 5
     STATUS_TO_DELETE = 6
 
     def save_revision(self, status, date=None, user=None, comment=None):
-        already_in_db = self.__class__.objects.filter(pk=self.pk).exists()
-        live_and_draft = already_in_db and status == self.STATUS_DRAFT
+        try:
+            current_model = self.__class__.objects.get(pk=self.pk)
+        except self.__class__.DoesNotExist:
+            current_model = None
+
+        # if the incoming status is "DRAFT", definitely set the new_draft_status
+        new_draft_status = 1 if (status == self.STATUS_DRAFT) else None
+
+        # the new_status should be the committing status, but look out for special conditions below
+        new_status = status
+        # if this is a new Model and the status is already "overwritten", just set it to "live"
+        if not current_model and status == self.STATUS_UPDATED:
+            new_status = self.STATUS_LIVE
+        # but if we already have a model!,
+        if current_model:
+            # and the committing status is "Draft":
+            if status == self.STATUS_DRAFT:
+                # don't change the new_status, set it to the old status.
+                new_status = current_model.status
+            # or if the current status and the committing status is Live
+            elif current_model.status == status == self.STATUS_LIVE:
+                # set it to updated
+                new_status = self.STATUS_UPDATED
 
         with reversion.create_revision():
-            self.status = status
+            self.status = new_status
+            self.draft_status = new_draft_status
 
             reversion.add_to_revision(self)
             if date:
@@ -44,30 +68,41 @@ class ReversionSaveMixin:
             if comment:
                 reversion.set_comment(comment)
 
-            if not live_and_draft:
+            # save the actual model
+            # if: there is not a current_model
+            # or: there is a current model but it's a draft
+            # or: the new status is not DRAFT
+            if (
+                not current_model
+                or (current_model.status == self.STATUS_DRAFT)
+                or not status == self.STATUS_DRAFT
+            ):
                 self.save()
+            # otherwise update the draft_status of the current_model
+            else:
+                self.__class__.objects.filter(pk=self.pk).update(
+                    draft_status=new_draft_status
+                )
 
-        if live_and_draft:
-            self.__class__.objects.filter(pk=self.pk).update(
-                status=self.STATUS_LIVE_AND_DRAFT
-            )
-
-
-# TODO: Old Fields, delete after GND major upgrade
-# [x for x in HistoricalActivityAttribute.objects.values_list(
-# "name", flat=True).distinct().order_by("name")]
 
 unclear_fields = [
-    "old_contract_area",
-    "old_production_area",
-    "old_reliability_ranking",
-    "original_filename",
-    "Remark (Benefits for local communities)",
+    # TODO Hand these fields to Kurt
+    "Remark (Benefits for local communities)",  # an kurt geben
     "Remark (Nature of the deal)",
     "Remark (Number of Jobs Created)",
-    "timestamp",
-    "purchase_price_comment",  # ? ??
+    "original_filename",
+    "old_reliability_ranking",
+    # TODO Figure out what this is doing
+    "timestamp",  # schauen wir nochmal..
+    # Ignore these.
+    "minerals_export",  # weg. https://landmatrix.org/deal/6188/145156/
+    "old_contract_area",  # weg. https://landmatrix.org/deal/4372/141302/
+    "old_production_area",  # weg. https://landmatrix.org/deal/4372/141302/
+    "previous_identifier",  # weg. Land Observatory Import History
+    "terms",  # schmeissmer wir weg.
 ]
+
+warnings.warn("GND Obsoletion Warning", FutureWarning)
 
 
 class OldDealMixin:
@@ -75,7 +110,7 @@ class OldDealMixin:
     def old_attribute_names(key: str = None):
         old_values = {
             "general": [
-                "target_country",  # TODO: move to Location?
+                "target_country",
                 "intended_size",
                 "contract_size",
                 "production_size",
@@ -93,6 +128,7 @@ class OldDealMixin:
                 "purchase_price_type",
                 "purchase_price_area",
                 "tg_purchase_price_comment",
+                "purchase_price_comment",  # alternative fuer tg_purchase_price_comment
                 "annual_leasing_fee",
                 "annual_leasing_fee_currency",
                 "annual_leasing_fee_type",
@@ -229,17 +265,15 @@ class OldDealMixin:
                 "tg_vggt_applied_comment",
                 "prai_applied",
                 "tg_prai_applied_comment",
-                "tg_overall_comment",
+                "tg_overall_comment",  # TODO How is this different from deal.comment?
             ],
             "meta": [
                 "fully_updated",
                 "not_public",
                 "not_public_reason",
                 "tg_not_public_comment",
-                "previous_identifier",
-                "assign_to_user",
-                "tg_feedback_comment",
-                "terms",
+                "assign_to_user",  # TODO?
+                "tg_feedback_comment",  # TODO?
             ],
         }
         if key:
@@ -292,6 +326,5 @@ class OldDataSourceMixin:
             "phone",
             "includes_in_country_verified_information",
             "open_land_contracts_id",
-            "comment",
             "tg_data_source_comment",
         ]

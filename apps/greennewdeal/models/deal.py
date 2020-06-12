@@ -3,10 +3,9 @@ import json
 import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from geojson_rewind import rewind
 
 from apps.greennewdeal.models import Investor
 from apps.greennewdeal.models.country import Country
@@ -15,6 +14,29 @@ from apps.greennewdeal.models.mixins import (
     ReversionSaveMixin,
     UnderscoreDisplayParseMixin,
 )
+
+
+class DealManager(models.Manager):
+    def visible(self, user=None):
+        qs = self.get_queryset()
+        if user and (user.is_staff or user.is_superuser):
+            return qs
+        return qs.filter(status__in=(2, 3), confidential=False)
+
+    def public(self):
+        qs = self.get_queryset()
+        qs = qs.exclude(confidential=True)
+        qs = qs.exclude(target_country=None).exclude(target_country__high_income=True)
+        qs = qs.exclude(datasources=None)
+        qs = qs.exclude(operating_company=None)
+        return qs
+        # TODO what?
+        # # 4A. Invalid Operating company name?
+        # # 4B. Invalid Parent companies/investors?
+        # if self.has_invalid_operating_company(
+        #     involvements
+        # ) and self.has_invalid_parents(involvements):
+        #     return False
 
 
 @reversion.register(
@@ -49,6 +71,29 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     land_area_comment = models.TextField(blank=True)
 
     # Intention of investment
+    INTENTION_CHOICES = (
+        # Agriculture
+        ("BIOFUELS", "Biofuels"),
+        ("FOOD_CROPS", "Food crops"),
+        ("FODDER", "Fodder"),
+        ("LIVESTOCK", "Livestock"),
+        ("NON_FOOD_AGRICULTURE", "Non-food agricultural commodities"),
+        ("AGRICULTURE_UNSPECIFIED", "Agriculture unspecified"),
+        # Forestry
+        ("TIMBER_PLANTATION", "Timber plantation"),
+        ("FOREST_LOGGING", "Forest logging / management"),
+        ("CARBON", "For carbon sequestration/REDD"),
+        ("FORESTRY_UNSPECIFIED", "Forestry unspecified"),
+        # Other
+        ("MINING", "Mining"),
+        ("OIL_GAS_EXTRACTION", "Oil / Gas extraction"),
+        ("TOURISM", "Tourism"),
+        ("INDUSTRY", "Industry"),
+        ("CONVERSATION", "Conservation"),
+        ("LAND_SPECULATION", "Land speculation"),
+        ("RENEWABLE_ENERGY", "Renewable Energy"),
+        ("OTHER", "Other"),
+    )
     intention_of_investment = JSONField(
         _("Intention of the investment"), blank=True, null=True
     )
@@ -56,14 +101,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     # Nature of the deal
     NATURE_OF_DEAL_CHOICES = (
-        (10, _("Outright Purchase")),
-        (20, _("Lease")),
-        (30, _("Concession")),
-        (40, _("Exploitation permit / license / concession (for mineral resources)")),
-        (50, _("Pure contract farming")),
+        ("OUTRIGHT_PURCHASE", _("Outright Purchase")),
+        ("LEASE", _("Lease")),
+        ("CONCESSION", _("Concession")),
+        (
+            "EXPLOITATION_PERMIT",
+            _("Exploitation permit / license / concession (for mineral resources)"),
+        ),
+        ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
     )
     nature_of_deal = ArrayField(
-        models.IntegerField(_("Nature of the deal"), choices=NATURE_OF_DEAL_CHOICES),
+        models.CharField(
+            _("Nature of the deal"), max_length=100, choices=NATURE_OF_DEAL_CHOICES
+        ),
         blank=True,
         null=True,
     )
@@ -72,15 +122,15 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     NEGOTIATION_STATUS_CHOICES = (
-        (10, "Expression of interest"),
-        (11, "Under negotiation"),
-        (12, "Memorandum of understanding"),
-        (20, "Oral agreement"),
-        (21, "Contract signed"),
-        (30, "Negotiations failed"),
-        (31, "Contract canceled"),
-        (32, "Contract expired"),
-        (40, "Change of ownership"),
+        ("EXPRESSION_OF_INTEREST", "Expression of interest"),
+        ("UNDER_NEGOTIATION", "Under negotiation"),
+        ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
+        ("ORAL_AGREEMENT", "Oral agreement"),
+        ("CONTRACT_SIGNED", "Contract signed"),
+        ("NEGOTIATIONS_FAILED", "Negotiations failed"),
+        ("CONTRACT_CANCELED", "Contract canceled"),
+        ("CONTRACT_EXPIRED", "Contract expired"),
+        ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
     )
     negotiation_status = JSONField(_("Negotiation status"), blank=True, null=True)
     negotiation_status_comment = models.TextField(
@@ -88,15 +138,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     # # Implementation status
-    IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED = "Project not started"
-    IMPLEMENTATION_STATUS_STARTUP_PHASE = "Startup phase (no production)"
-    IMPLEMENTATION_STATUS_IN_OPERATION = "In operation (production)"
-    IMPLEMENTATION_STATUS_PROJECT_ABANDONED = "Project abandoned"
     IMPLEMENTATION_STATUS_CHOICES = (
-        (10, "Project not started"),
-        (20, "Startup phase (no production)"),
-        (30, "In operation (production)"),
-        (40, "Project abandoned"),
+        ("PROJECT_NOT_STARTED", "Project not started"),
+        ("STARTUP_PHASE", "Startup phase (no production)"),
+        ("IN_OPERATION", "In operation (production)"),
+        ("PROJECT_ABANDONED", "Project abandoned"),
     )
     implementation_status = JSONField(_("Implementation status"), blank=True, null=True)
     implementation_status_comment = models.TextField(
@@ -115,11 +161,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         related_name="deal_purchase_price",
     )
     HA_AREA_CHOICES = (
-        (10, _("per ha")),
-        (20, _("for specified area")),
+        ("PER_HA", _("per ha")),
+        ("PER_AREA", _("for specified area")),
     )
-    purchase_price_type = models.IntegerField(
-        choices=HA_AREA_CHOICES, blank=True, null=True
+    purchase_price_type = models.CharField(
+        max_length=100, choices=HA_AREA_CHOICES, blank=True, null=True
     )
     purchase_price_area = models.DecimalField(
         _("Purchase price area"),
@@ -143,8 +189,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
         related_name="deal_annual_leasing_fee",
     )
-    annual_leasing_fee_type = models.IntegerField(
-        choices=HA_AREA_CHOICES, blank=True, null=True
+    annual_leasing_fee_type = models.CharField(
+        max_length=100, choices=HA_AREA_CHOICES, blank=True, null=True
     )
     annual_leasing_fee_area = models.DecimalField(
         _("Annual leasing fee area"),
@@ -324,7 +370,30 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        Investor, on_delete=models.PROTECT, blank=True, null=True, related_name="deals",
+        Investor,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="deals",
+    )
+    ACTOR_MAP = (
+        (
+            "GOVERNMENT_OR_STATE_INSTITUTIONS",
+            _(
+                "Government / State institutions (government, ministries, departments, agencies etc.)"
+            ),
+        ),
+        (
+            "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+            _("Traditional land-owners / communities"),
+        ),
+        (
+            "TRADITIONAL_LOCAL_AUTHORITY",
+            _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
+        ),
+        ("BROKER", _("Broker")),
+        ("INTERMEDIARY", _("Intermediary")),
+        ("OTHER", _("Other (please specify)")),
     )
     involved_actors = JSONField(
         _("Actors involved in the negotiation / admission process"),
@@ -354,33 +423,42 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     RECOGNITION_STATUS_CHOICES = (
         (
-            10,
+            "INDIGENOUS_RIGHTS_RECOGNIZED",
             "Indigenous Peoples traditional or customary rights recognized by government",
         ),
         (
-            20,
+            "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
             "Indigenous Peoples traditional or customary rights not recognized by government",
         ),
-        (30, "Community traditional or customary rights recognized by government"),
-        (40, "Community traditional or customary rights not recognized by government"),
+        (
+            "COMMUNITY_RIGHTS_RECOGNIZED",
+            "Community traditional or customary rights recognized by government",
+        ),
+        (
+            "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+            "Community traditional or customary rights not recognized by government",
+        ),
     )
     recognition_status = ArrayField(
-        models.IntegerField(_("Name of community"), choices=RECOGNITION_STATUS_CHOICES),
+        models.CharField(
+            _("Name of community"), max_length=100, choices=RECOGNITION_STATUS_CHOICES
+        ),
         blank=True,
         null=True,
     )
     recognition_status_comment = models.TextField(
         _("Comment on recognitions status of community land tenure"), blank=True
     )
+    # TODO: What's the status on Certified FPIC?
     COMMUNITY_CONSULTATION_CHOICES = (
-        (10, "Not consulted"),
-        (20, "Limited consultation"),
-        (30, "Free, Prior and Informed Consent (FPIC)"),
-        (40, "Certified Free, Prior and Informed Consent (FPIC)"),
-        (50, "Other"),
+        ("NOT_CONSULTED", "Not consulted"),
+        ("LIMITED_CONSULTATION", "Limited consultation"),
+        ("FPIC", "Free, Prior and Informed Consent (FPIC)"),
+        ("OTHER", "Other"),
     )
-    community_consultation = models.IntegerField(
+    community_consultation = models.CharField(
         _("Community consultation"),
+        max_length=100,
         choices=COMMUNITY_CONSULTATION_CHOICES,
         blank=True,
         null=True,
@@ -390,12 +468,13 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     COMMUNITY_REACTION_CHOICES = (
-        (10, "Consent"),
-        (20, "Mixed reaction"),
-        (30, "Rejection"),
+        ("CONSENT", "Consent"),
+        ("MIXED_REACTION", "Mixed reaction"),
+        ("REJECTION", "Rejection"),
     )
-    community_reaction = models.IntegerField(
+    community_reaction = models.CharField(
         _("Community reaction"),
+        max_length=100,
         choices=COMMUNITY_REACTION_CHOICES,
         blank=True,
         null=True,
@@ -439,17 +518,18 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     NEGATIVE_IMPACTS_CHOICES = (
-        (10, "Environmental degradation"),
-        (20, "Socio-economic"),
-        (30, "Cultural loss"),
-        (40, "Eviction"),
-        (50, "Displacement"),
-        (60, "Violence"),
-        (70, "Other"),
+        ("ENVIRONMENTAL_DEGRADATION", "Environmental degradation"),
+        ("SOCIO_ECONOMIC", "Socio-economic"),
+        ("CULTURAL_LOSS", "Cultural loss"),
+        ("EVICTION", "Eviction"),
+        ("DISPLACEMENT", "Displacement"),
+        ("VIOLENCE", "Violence"),
+        ("OTHER", "Other"),
     )
     negative_impacts = ArrayField(
-        models.IntegerField(
+        models.CharField(
             _("Negative impacts for local communities"),
+            max_length=100,
             choices=NEGATIVE_IMPACTS_CHOICES,
         ),
         blank=True,
@@ -467,18 +547,23 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     BENEFITS_CHOICES = (
-        (10, "Health"),
-        (20, "Education"),
-        (30, "Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
-        (40, "Roads"),
-        (50, "Capacity Building"),
-        (60, "Financial Support"),
-        (70, "Community shares in the investment project"),
-        (80, "Other"),
+        ("HEALTH", "Health"),
+        ("EDUCATION", "Education"),
+        (
+            "PRODUCTIVE_INFRASTRUCTURE",
+            "Productive infrastructure (e.g. irrigation, tractors, machinery...)",
+        ),
+        ("ROADS", "Roads"),
+        ("CAPACITY_BUILDING", "Capacity Building"),
+        ("FINANCIAL_SUPPORT", "Financial Support"),
+        ("COMMUNITY_SHARES", "Community shares in the investment project"),
+        ("OTHER", "Other"),
     )
     promised_benefits = ArrayField(
-        models.IntegerField(
-            _("Promised benefits for local communities"), choices=BENEFITS_CHOICES
+        models.CharField(
+            _("Promised benefits for local communities"),
+            max_length=100,
+            choices=BENEFITS_CHOICES,
         ),
         blank=True,
         null=True,
@@ -488,8 +573,10 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     materialized_benefits = ArrayField(
-        models.IntegerField(
-            _("Promised benefits for local communities"), choices=BENEFITS_CHOICES
+        models.CharField(
+            _("Promised benefits for local communities"),
+            max_length=100,
+            choices=BENEFITS_CHOICES,
         ),
         blank=True,
         null=True,
@@ -507,15 +594,17 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Former use """
     FORMER_LAND_OWNER_CHOICES = (
-        (10, "State"),
-        (20, "Private (smallholders)"),
-        (30, "Private (large-scale farm)"),
-        (40, "Community"),
-        (50, "Indigenous people"),
-        (60, "Other"),
+        ("STATE", "State"),
+        ("PRIVATE_SMALLHOLDERS", "Private (smallholders)"),
+        ("PRIVATE_LARGE_SCALE", "Private (large-scale farm)"),
+        ("COMMUNITY", "Community"),
+        ("INDIGENOUS_PEOPLE", "Indigenous people"),
+        ("OTHER", "Other"),
     )
     former_land_owner = ArrayField(
-        models.IntegerField(_("Former land owner"), choices=FORMER_LAND_OWNER_CHOICES),
+        models.CharField(
+            _("Former land owner"), max_length=100, choices=FORMER_LAND_OWNER_CHOICES
+        ),
         blank=True,
         null=True,
     )
@@ -524,18 +613,20 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     FORMER_LAND_USE_CHOICES = (
-        (10, "Commercial (large-scale) agriculture"),
-        (20, "Smallholder agriculture"),
-        (30, "Shifting cultivation"),
-        (40, "Pastoralism"),
-        (50, "Hunting/Gathering"),
-        (60, "Forestry"),
-        (70, "Conservation"),
-        (80, "Other"),
+        ("COMMERCIAL_AGRICULTURE", "Commercial (large-scale) agriculture"),
+        ("SMALLHOLDER_AGRICULTURE", "Smallholder agriculture"),
+        ("SHIFTING_CULTIVATION", "Shifting cultivation"),
+        ("PASTORALISM", "Pastoralism"),
+        ("HUNTING_GATHERING", "Hunting/Gathering"),
+        ("FORESTRY", "Forestry"),
+        ("CONSERVATION", "Conservation"),
+        ("OTHER", "Other"),
     )
 
     former_land_use = ArrayField(
-        models.IntegerField(_("Former land use"), choices=FORMER_LAND_USE_CHOICES),
+        models.CharField(
+            _("Former land use"), max_length=100, choices=FORMER_LAND_USE_CHOICES
+        ),
         blank=True,
         null=True,
     )
@@ -544,17 +635,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     FORMER_LAND_COVER_CHOICES = (
-        (10, "Cropland"),
-        (20, "Forest land"),
-        (30, "Pasture"),
-        (40, "Shrub land/Grassland (Rangeland)"),
-        (50, "Marginal land"),
-        (60, "Wetland"),
-        (70, "Other land (e.g. developed land – specify in comment field)"),
+        ("CROPLAND", "Cropland"),
+        ("FOREST_LAND", "Forest land"),
+        ("PASTURE", "Pasture"),
+        ("RANGELAND", "Shrub land/Grassland (Rangeland)"),
+        ("MARGINAL_LAND", "Marginal land"),
+        ("WETLAND", "Wetland"),
+        ("OTHER_LAND", "Other land (e.g. developed land – specify in comment field)"),
     )
 
     former_land_cover = ArrayField(
-        models.IntegerField(_("Former land cover"), choices=FORMER_LAND_COVER_CHOICES),
+        models.CharField(
+            _("Former land cover"), max_length=100, choices=FORMER_LAND_COVER_CHOICES
+        ),
         blank=True,
         null=True,
     )
@@ -666,14 +759,16 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     WATER_SOURCE_CHOICES = (
-        (10, "Groundwater"),
-        (20, "Surface water"),
-        (21, "River"),
-        (22, "Lake"),
+        ("GROUNDWATER", "Groundwater"),
+        ("SURFACE_WATER", "Surface water"),
+        ("RIVER", "River"),
+        ("LAKE", "Lake"),
     )
     source_of_water_extraction = ArrayField(
-        models.IntegerField(
-            _("Source of water extraction"), choices=WATER_SOURCE_CHOICES
+        models.CharField(
+            _("Source of water extraction"),
+            max_length=100,
+            choices=WATER_SOURCE_CHOICES,
         ),
         blank=True,
         null=True,
@@ -707,20 +802,22 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     """ Guidelines & Principles """
-    YPN_CHOICES = ((1, "Yes"), (2, "Partially"), (3, "No"))
+    YPN_CHOICES = (("YES", "Yes"), ("PARTIALLY", "Partially"), ("NO", "No"))
 
-    vggt_applied = models.IntegerField(
+    vggt_applied = models.CharField(
         _(
             "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
         ),
+        max_length=100,
         choices=YPN_CHOICES,
         blank=True,
         null=True,
     )
     vggt_applied_comment = models.TextField(_("Comment on VGGT"), blank=True)
 
-    prai_applied = models.IntegerField(
+    prai_applied = models.CharField(
         _("Application of Principles for Responsible Agricultural Investments (PRAI)"),
+        max_length=100,
         choices=YPN_CHOICES,
         blank=True,
         null=True,
@@ -732,16 +829,16 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Meta Info """
     fully_updated = models.BooleanField(default=False)
-    private = models.BooleanField(default=False)
+    confidential = models.BooleanField(default=False)
     PRIVATE_REASON_CHOICES = (
-        (10, "Temporary removal from PI after criticism"),
-        (20, "Research in progress"),
-        (30, "Land Observatory Import"),
+        ("TEMPORARY_REMOVAL", "Temporary removal from PI after criticism"),
+        ("RESEARCH_IN_PROGRESS", "Research in progress"),
+        ("LAND_OBSERVATORY_IMPORT", "Land Observatory Import"),
     )
-    private_reason = models.IntegerField(
-        choices=PRIVATE_REASON_CHOICES, null=True, blank=True
+    confidential_reason = models.CharField(
+        max_length=100, choices=PRIVATE_REASON_CHOICES, null=True, blank=True
     )
-    private_comment = models.TextField(
+    confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True
     )
 
@@ -753,32 +850,42 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ # CALCULATED FIELDS # """
     deal_size = models.IntegerField(blank=True, null=True)
-    current_negotiation_status = models.IntegerField(
-        choices=NEGOTIATION_STATUS_CHOICES, blank=True, null=True
+    current_negotiation_status = models.CharField(
+        choices=NEGOTIATION_STATUS_CHOICES, max_length=100, blank=True, null=True
     )
-    current_implementation_status = models.IntegerField(
-        choices=IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True
+    current_implementation_status = models.CharField(
+        choices=IMPLEMENTATION_STATUS_CHOICES, max_length=100, blank=True, null=True
     )
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     geojson = JSONField(blank=True, null=True)
 
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         (1, _("Draft")),
         (2, _("Live")),
-        (3, _("Live + Draft")),
+        (3, _("Updated")),
         (4, _("Deleted")),
         (5, _("Rejected")),
         (6, _("To Delete?")),
-    ]
+    )
+    DRAFT_STATUS_CHOICES = (
+        (1, "Draft"),
+        (2, "Review"),
+        (3, "Activation"),
+    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    draft_status = models.IntegerField(
+        choices=DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    objects = DealManager()
 
     def __str__(self):
         return f"#{self.id} in {self.target_country}"
 
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        # self._sort_json_fields()
         self.current_contract_size = self._get_current("contract_size")
         self.current_production_size = self._get_current("production_size")
         self.current_negotiation_status = self._get_current("negotiation_status")
@@ -817,32 +924,56 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         production_size = int(self.current_production_size or 0)
 
         # 1) IF Negotiation status IS Intended
-        if negotiation_status in (10, 11, 12):
+        if negotiation_status in (
+            "EXPRESSION_OF_INTEREST",
+            "UNDER_NEGOTIATION",
+            "MEMORANDUM_OF_UNDERSTANDING",
+        ):
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size
         # 2) IF Negotiation status IS Concluded
-        elif negotiation_status in (20, 21):
+        elif negotiation_status in ("ORAL_AGREEMENT", "CONTRACT_SIGNED"):
             # USE Contract size or Production size (in the given order)
             value = contract_size or production_size
         # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif negotiation_status == 30:
+        elif negotiation_status == "NEGOTIATIONS_FAILED":
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif negotiation_status == 31:
+        elif negotiation_status == "CONTRACT_CANCELED":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         # 5) IF Negotiation status IS Contract expired
-        elif negotiation_status == 32:
+        elif negotiation_status == "CONTRACT_EXPIRED":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         # 6) IF Negotiation status IS Change of ownership
-        elif negotiation_status == 40:
+        elif negotiation_status == "CHANGE_OF_OWNERSHIP":
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         else:
             value = 0
         return value
+
+    def _combine_geojson(self):
+        features = []
+        for loc in self.locations.all():  # type: Location
+            if loc.point:
+                point = {
+                    "type": "Feature",
+                    "geometry": (json.loads(loc.point.geojson)),
+                    "properties": {"name": loc.name, "id": loc.id, "type": "point"},
+                }
+                features += [point]
+            if loc.areas:
+                feats = loc.areas["features"]
+                for feat in feats:
+                    feat["properties"]["name"] = loc.name
+                    feat["properties"]["id"] = loc.id
+                    features += [feat]
+        if not features:
+            return None
+        return {"type": "FeatureCollection", "features": features}
 
     @property
     def top_investors(self):
@@ -853,40 +984,29 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.operating_company:
             return self.operating_company.get_top_investors()
 
-    def _combine_geojson(self):
-        features = []
-        for loc in self.locations.all():  # type: Location
-            if loc.point:
-                point = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.point.geojson)),
-                    "properties": {"name": loc.name, "type": "point"},
-                }
-                features += [point]
-            if loc.contract_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.contract_area.geojson)),
-                    "properties": {"name": loc.name, "type": "contract_area"},
-                }
-                features += [rewind(contract_area)]
-            if loc.intended_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.intended_area.geojson)),
-                    "properties": {"name": loc.name, "type": "intended_area"},
-                }
-                features += [rewind(contract_area)]
-            if loc.production_area:
-                contract_area = {
-                    "type": "Feature",
-                    "geometry": (json.loads(loc.production_area.geojson)),
-                    "properties": {"name": loc.name, "type": "production_area"},
-                }
-                features += [rewind(contract_area)]
-        if not features:
-            return None
-        return {"type": "FeatureCollection", "features": features}
+    def is_public_deal(self):
+        # 1. Flag "confidential"
+        if self.confidential:
+            return False
+        # 2. Minimum information missing?
+        # No Target_Country or High Income Country?
+        if not self.target_country or self.target_country.high_income:
+            return False
+        # No DataSource?
+        if not self.datasources.exists():
+            return False
+
+        # 3. No operating company?
+        if not self.operating_company:
+            return False
+        # TODO wenn alle unknown: nicht public.
+        # # 4A. Invalid Operating company name?
+        # # 4B. Invalid Parent companies/investors?
+        # if self.has_invalid_operating_company(
+        #     involvements
+        # ) and self.has_invalid_parents(involvements):
+        #     return False
+        return True
 
     # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
     #     attribute = self.__getattribute__(name)

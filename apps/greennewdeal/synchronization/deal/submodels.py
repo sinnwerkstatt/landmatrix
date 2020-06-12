@@ -1,19 +1,21 @@
+import json
 import re
 
 from dateutil import parser
 from django.contrib.gis.geos import Point
+from geojson_rewind import rewind
 
 from apps.greennewdeal.models import Contract, DataSource, Location
 
 
-def create_locations(deal, groups):
+def create_locations(deal, groups, timestamp):
     ACCURACY_MAP = {
         None: None,
-        "Country": 50,
-        "Administrative region": 40,
-        "Approximate location": 30,
-        "Exact location": 20,
-        "Coordinates": 10,
+        "Country": "COUNTRY",
+        "Administrative region": "ADMINISTRATIVE_REGION",
+        "Approximate location": "APPROXIMATE_LOCATION",
+        "Exact location": "EXACT_LOCATION",
+        "Coordinates": "COORDINATES",
     }
     for group_id, attrs in sorted(groups.items()):
         try:
@@ -22,6 +24,9 @@ def create_locations(deal, groups):
             location = Location(deal=deal, old_group_id=group_id)
 
         location.name = attrs.get("location") or ""
+        location.description = attrs.get("location_description") or ""
+
+        # location.point
         if attrs.get("point_lat") and attrs.get("point_lon"):
             # FIXME Fixes for broken data
             try:
@@ -41,21 +46,48 @@ def create_locations(deal, groups):
             try:
                 location.point = Point(point_lon, point_lat)
             except UnboundLocalError:
+                # TODO: Fix all of these before going live
                 pass
             except Exception as e:
                 print(e, point_lon, point_lat)
-        location.description = attrs.get("location_description") or ""
-        location.facility_name = attrs.get("facility_name") or ""
 
+        location.facility_name = attrs.get("facility_name") or ""
         location.level_of_accuracy = ACCURACY_MAP[attrs.get("level_of_accuracy")]
         location.comment = attrs.get("tg_location_comment") or ""
-        location.contract_area = attrs.get("contract_area", "polygon")
-        location.intended_area = attrs.get("intended_area", "polygon")
-        location.production_area = attrs.get("production_area", "polygon")
+
+        features = []
+        contract_area = attrs.get("contract_area", "polygon")
+        intended_area = attrs.get("intended_area", "polygon")
+        production_area = attrs.get("production_area", "polygon")
+        if contract_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(contract_area.geojson)),
+                "properties": {"type": "contract_area"},
+            }
+            features += [rewind(area_feature)]
+        if intended_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(intended_area.geojson)),
+                "properties": {"type": "intended_area"},
+            }
+            features += [rewind(area_feature)]
+        if production_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(production_area.geojson)),
+                "properties": {"type": "production_area"},
+            }
+            features += [rewind(area_feature)]
+
+        if features:
+            location.areas = {"type": "FeatureCollection", "features": features}
+        location.timestamp = timestamp
         location.save()
 
 
-def create_contracts(deal, groups):
+def create_contracts(deal, groups, timestamp):
     for group_id, attrs in sorted(groups.items()):
         try:
             contract = Contract.objects.get(deal=deal, old_group_id=group_id)
@@ -74,22 +106,23 @@ def create_contracts(deal, groups):
             agreement_duration = 99
         contract.agreement_duration = agreement_duration
         contract.comment = attrs.get("tg_contract_comment") or ""
+        contract.timestamp = timestamp
         contract.save()
 
 
-def create_data_sources(deal, groups):
+def create_data_sources(deal, groups, timestamp):
     TYPE_MAP = {
         None: None,
-        "Media report": 10,
-        "Research Paper / Policy Report": 20,
-        "Government sources": 30,
-        "Company sources": 40,
-        "Contract": 50,
-        "Contract (contract farming agreement)": 60,
-        "Personal information": 70,
-        "Crowdsourcing": 80,
-        "Other (Please specify in comment field)": 90,
-        "Other": 90,
+        "Media report": "MEDIA_REPORT",
+        "Research Paper / Policy Report": "RESEARCH_PAPER_OR_POLICY_REPORT",
+        "Government sources": "GOVERNMENT_SOURCES",
+        "Company sources": "COMPANY_SOURCES",
+        "Contract": "CONTRACT",
+        "Contract (contract farming agreement)": "CONTRACT_FARMING_AGREEMENT",
+        "Personal information": "PERSONAL_INFORMATION",
+        "Crowdsourcing": "CROWDSOURCING",
+        "Other (Please specify in comment field)": "OTHER",
+        "Other": "OTHER",
     }
     for group_id, attrs in sorted(groups.items()):
         try:
@@ -99,6 +132,7 @@ def create_data_sources(deal, groups):
 
         data_source.type = TYPE_MAP[attrs.get("type")]
         data_source.url = attrs.get("url")
+        # TODO check if this is working..
         if attrs.get("file"):
             data_source.file.name = f"uploads/{attrs.get('file')}"
         data_source.file_not_public = attrs.get("file_not_public") == "True"
@@ -123,6 +157,8 @@ def create_data_sources(deal, groups):
                 "2019-28-05": "2019-05-28",
                 "2019-04-31": "2019-04-30",
                 "2018-17-04": "2018-04-17",
+                "2020-15-11": "2020-11-15",
+                "2017-17-01": "2017-01-17",
             }
             try:
                 ds_date = broken_ds_dates[ds_date]
@@ -139,4 +175,5 @@ def create_data_sources(deal, groups):
         )
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
         data_source.comment = attrs.get("tg_data_source_comment") or ""
+        data_source.timestamp = timestamp
         data_source.save()

@@ -1,15 +1,10 @@
 import Vue from "vue";
-// import VueMeta from "vue-meta";
 import BootstrapVue from "bootstrap-vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Multiselect from "vue-multiselect";
-
-// Vue.use(VueMeta, {
-//   // optional pluginOptions
-//   refreshOnceOnNavigation: true,
-// });
+import VCalendar from 'v-calendar';
 
 import "../node_modules/font-awesome/scss/font-awesome.scss";
 
@@ -18,10 +13,11 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import "./scss/main.scss";
+Vue.use(VCalendar);
 
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
+
 
 import "leaflet/dist/leaflet.css";
 delete L.Icon.Default.prototype._getIconUrl;
@@ -30,6 +26,9 @@ L.Icon.Default.mergeOptions({
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
+import "leaflet-draw/dist/leaflet.draw.css";
+
+import "./scss/main.scss";
 
 // needs to be registered globally for streamfield loops
 import Title from "./components/Wagtail/Title";
@@ -46,6 +45,8 @@ import Twitter from "./components/Wagtail/Twitter";
 import LatestNews from "./components/Wagtail/LatestNews";
 import LatestDatabaseModifications from "./components/Wagtail/LatestDatabaseModifications";
 import Statistics from "./components/Wagtail/Statistics";
+import SectionDivider from "@/components/Wagtail/SectionDivider";
+import RawHTML from "@/components/Wagtail/RawHTML";
 Vue.component("wagtail-title", Title);
 Vue.component("wagtail-heading", Heading);
 Vue.component("wagtail-image", Image);
@@ -55,6 +56,8 @@ Vue.component("wagtail-linked_image", Image);
 Vue.component("wagtail-paragraph", Paragraph);
 Vue.component("wagtail-columns_1_1", Columns1on1);
 Vue.component("wagtail-columns_3", Columns3);
+Vue.component("wagtail-section_divider", SectionDivider);
+Vue.component("wagtail-html", RawHTML);
 Vue.component("wagtail-full_width_container", FullWidthContainer);
 Vue.component("wagtail-faqs_block", FaqsBlock);
 Vue.component("wagtail-twitter", Twitter);

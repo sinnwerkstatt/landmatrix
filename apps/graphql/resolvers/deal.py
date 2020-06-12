@@ -3,17 +3,14 @@ from typing import Any
 from ariadne import ObjectType
 from django.db.models import Sum
 from graphql import GraphQLResolveInfo
+from reversion.models import Version
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.greennewdeal.models import Deal, Location
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
-    qs = Deal.objects
-
-    # default filters
-    default_filters = {"status__in": (2, 3), "private": False}
-    qs = qs.filter(**default_filters)
+    qs = Deal.objects.visible(info.context.user)
 
     fields = get_fields(info)
     if "target_country" in fields:
@@ -54,11 +51,14 @@ deal_type.set_field("datasources", lambda obj, info: obj.datasources.all())
 deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
 
 
-def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-    qs = Location.objects.all()
+@deal_type.field("reversions")
+def get_deal_reversions(obj, info: GraphQLResolveInfo):
+    versions = Version.objects.get_for_object(obj, model_db=None)
+    return [x.field_dict for x in versions]
 
-    # default filters
-    qs = qs.filter(deal__status__in=(2, 3), deal__private=False)
+
+def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
+    qs = Location.objects.visible(info.context.user)
 
     fields = get_fields(info)
     if "deal" in fields:
@@ -73,9 +73,4 @@ def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
-    from apps.greennewdeal.models import Deal
-
-    size = sum([d.get_deal_size() for d in Deal.objects.filter(status__in=[2, 3])])
-    deal_count = Deal.objects.filter(status__in=[2, 3]).count()
-
     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))

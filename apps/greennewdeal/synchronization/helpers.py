@@ -4,7 +4,12 @@ from apps.greennewdeal.models import Contract, DataSource, Deal, Location
 
 
 def _extras_to_json(
-    attr, field, val2name: str = None, expected_type=str, fieldmap=None
+    attr,
+    field,
+    val2name: str = None,
+    expected_type=str,
+    fieldmap=None,
+    multi_value=False,
 ):
     adict = attr.get_dict(field)
 
@@ -31,6 +36,9 @@ def _extras_to_json(
 
     if adict.get("extras"):
         for extra in adict["extras"]:
+            # FIXME Fixes for broken data # deal 618 contract_size
+            if expected_type == float and extra["value"] == "":
+                continue
             if fieldmap:
                 extra_ret = {
                     "value": fieldmap[extra["value"]],
@@ -44,6 +52,26 @@ def _extras_to_json(
             if val2name and extra["value2"]:
                 extra_ret[val2name] = extra["value2"]
             ret += [extra_ret]
+    if multi_value:
+        mret = {}
+        for x in ret:
+
+            try:
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] += [x["value"]]
+            except KeyError:
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] = [x["value"]]
+        fret = []
+        for keys, values in mret.items():
+            date, val2, current = keys
+            add_entry = {"value": values}
+            if date:
+                add_entry["date"] = date
+            if val2:
+                add_entry[val2name] = val2
+            if current:
+                add_entry["current"] = True
+            fret += [add_entry]
+        ret = fret
     return ret
 
 
@@ -139,10 +167,17 @@ class MetaActivity:
                 self.group_water.update(attr)
             elif attr.name in Deal.old_attribute_names("remaining"):
                 self.group_remaining.update(attr)
-
             elif attr.name in Deal.old_attribute_names("meta"):
-                pass
-            elif attr.name in ["old_reliability_ranking", "timestamp"]:
+                self.group_remaining.update(attr)  # parse this in remaining.
+
+            elif attr.name in [
+                "minerals_export",
+                "old_contract_area",
+                "old_production_area",
+                "previous_identifier",
+                "terms",
+            ]:
+                """ Ignore these. We don't care for these anymore. """
                 pass
             else:
                 print(

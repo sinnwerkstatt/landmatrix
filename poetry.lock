@@ -32,10 +32,10 @@ description = "Ariadne is a Python library for implementing GraphQL servers."
 name = "ariadne"
 optional = false
 python-versions = "*"
-version = "0.10.0"
+version = "0.11.0"
 
 [package.dependencies]
-graphql-core = ">=3.0.0"
+graphql-core = "<3.1.0"
 starlette = "<0.14"
 typing-extensions = ">=3.6.0"
 
@@ -333,18 +333,6 @@ version = "1.9.0"
 
 [[package]]
 category = "main"
-description = "Wrapper around elasticsearch-dsl for django models"
-name = "django-elasticsearch"
-optional = false
-python-versions = ">=3.6,<4.0"
-version = "7.0.2"
-
-[package.dependencies]
-django = ">=1.11"
-elasticsearch-dsl = ">=7.0.0,<8.0.0"
-
-[[package]]
-category = "main"
 description = "Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application."
 name = "django-environ"
 optional = false
@@ -615,38 +603,6 @@ uritemplate = ">=3.0.0"
 
 [package.extras]
 validation = ["swagger-spec-validator (>=2.1.0)"]
-
-[[package]]
-category = "main"
-description = "Python client for Elasticsearch"
-name = "elasticsearch"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
-version = "7.6.0"
-
-[package.dependencies]
-urllib3 = ">=1.21.1"
-
-[package.extras]
-develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyyaml", "nosexcover", "sphinx (<1.7)", "sphinx-rtd-theme", "black", "jinja2"]
-docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
-requests = ["requests (>=2.4.0,<3.0.0)"]
-
-[[package]]
-category = "main"
-description = "Python client for Elasticsearch"
-name = "elasticsearch-dsl"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "7.1.0"
-
-[package.dependencies]
-elasticsearch = ">=7.0.0,<8.0.0"
-python-dateutil = "*"
-six = "*"
-
-[package.extras]
-develop = ["mock", "pytest (>=3.0.0)", "pytest-cov", "pytest-mock", "pytz", "coverage (<5.0.0)", "sphinx", "sphinx-rtd-theme"]
 
 [[package]]
 category = "main"
@@ -1265,6 +1221,7 @@ urllib3 = ">=1.8,<2.0"
 reference = "3ff807e0da747bac3ec6ef1035511d98223d6d5b"
 type = "git"
 url = "https://github.com/sinnwerkstatt/pyelasticsearch"
+
 [[package]]
 category = "dev"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1794,7 +1751,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 production = ["gunicorn", "sentry_sdk"]
 
 [metadata]
-content-hash = "c66390098dded63cdfeee16043d576faf5510ce77d0a121873f0067f0f6fd86e"
+content-hash = "4aed97d56175021d3be35a3112a08d30c6a1057a4d044b9fee9c1ecc9b77a6c7"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1811,8 +1768,8 @@ appnope = [
     {file = "appnope-0.1.0.tar.gz", hash = "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"},
 ]
 ariadne = [
-    {file = "ariadne-0.10.0-py3-none-any.whl", hash = "sha256:e916a50cef728d578f5401a5a5d7175e63fc2ae3c10291e09b8d1898c0b9603e"},
-    {file = "ariadne-0.10.0.tar.gz", hash = "sha256:0254de02664139e25acd3f7939d072cdcb49ac9c0bbbad71f5bf4b9d4a963d3c"},
+    {file = "ariadne-0.11.0-py3-none-any.whl", hash = "sha256:40de53740d7e1ba81df94bc0acd7fa571f31d58029c3f5a6dfcc9fa1bc5ad224"},
+    {file = "ariadne-0.11.0.tar.gz", hash = "sha256:79f275b09535bc869db04e76b559be7fca0133fe41a8fb124adcca9ac4a6197e"},
 ]
 astroid = [
     {file = "astroid-2.3.3-py3-none-any.whl", hash = "sha256:840947ebfa8b58f318d42301cf8c0a20fd794a33b61cc4638e28e9e61ba32f42"},
@@ -1934,10 +1891,6 @@ django-crispy-forms = [
     {file = "django-crispy-forms-1.9.0.tar.gz", hash = "sha256:67e73ac863d3159500029fbbcdcb788f287a3fd357becebc1a0b51f73896dce3"},
     {file = "django_crispy_forms-1.9.0-py2.py3-none-any.whl", hash = "sha256:50032184708ce351e3c9f0008ac35d659d9d5973fa2db218066f2e0a76eb41d9"},
 ]
-django-elasticsearch = [
-    {file = "django-elasticsearch-7.0.2.tar.gz", hash = "sha256:70f5eb6773731286a4311c889dbc19c2000619d83daf2f2f7487619534f110c5"},
-    {file = "django_elasticsearch-7.0.2-py3-none-any.whl", hash = "sha256:6c9c9a0f4d274aa6a7e1be363b02dae90a929b3bb931f4b84867d411ccd4ad72"},
-]
 django-environ = [
     {file = "django-environ-0.4.5.tar.gz", hash = "sha256:6c9d87660142608f63ec7d5ce5564c49b603ea8ff25da595fd6098f6dc82afde"},
     {file = "django_environ-0.4.5-py2.py3-none-any.whl", hash = "sha256:c57b3c11ec1f319d9474e3e5a79134f40174b17c7cc024bbb2fad84646b120c4"},
@@ -2025,14 +1978,6 @@ draftjs-exporter = [
 drf-yasg = [
     {file = "drf-yasg-1.17.1.tar.gz", hash = "sha256:5572e9d5baab9f6b49318169df9789f7399d0e3c7bdac8fdb8dfccf1d5d2b1ca"},
     {file = "drf_yasg-1.17.1-py2.py3-none-any.whl", hash = "sha256:7d7af27ad16e18507e9392b2afd6b218fbffc432ec8dbea053099a2241e184ff"},
-]
-elasticsearch = [
-    {file = "elasticsearch-7.6.0-py2.py3-none-any.whl", hash = "sha256:f4bb05cfe55cf369bdcb4d86d0129d39d66a91fd9517b13cd4e4231fbfcf5c81"},
-    {file = "elasticsearch-7.6.0.tar.gz", hash = "sha256:d228b2d37ac0865f7631335268172dbdaa426adec1da3ed006dddf05134f89c8"},
-]
-elasticsearch-dsl = [
-    {file = "elasticsearch-dsl-7.1.0.tar.gz", hash = "sha256:3f860e0304d703f63b458fea3782f09a823ab07da7ee84ae4bff1aa63e22aedb"},
-    {file = "elasticsearch_dsl-7.1.0-py2.py3-none-any.whl", hash = "sha256:3e3a5dbec143b8142c3db3710610306fc6294ba0d7a14403694b2dbc2d3ed641"},
 ]
 et-xmlfile = [
     {file = "et_xmlfile-1.0.1.tar.gz", hash = "sha256:614d9722d572f6246302c4491846d2c393c199cfa4edc9af593437691683335b"},

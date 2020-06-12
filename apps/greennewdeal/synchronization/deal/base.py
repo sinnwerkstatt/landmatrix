@@ -8,18 +8,6 @@ from apps.landmatrix.models import (
 
 
 def parse_general(deal, attrs):
-    NATURE_OF_DEAL_MAP = {
-        None: None,
-        "Outright Purchase": 10,
-        "Lease": 20,
-        "Concession": 30,
-        "Exploitation permit / license / concession (for mineral resources)": 40,
-        "Exploitation permit / license / concession": 40,
-        "Resource exploitation license / concession": 40,
-        "Pure contract farming": 50,
-    }
-    HA_AREA_MAP = {None: None, "per ha": 10, "for specified area": 20}
-
     deal.target_country_id = attrs.get("target_country")
     if attrs.get("intended_size"):
         deal.intended_size = float(attrs.get("intended_size"))
@@ -29,23 +17,61 @@ def parse_general(deal, attrs):
     )
     deal.land_area_comment = attrs.get("tg_land_area_comment") or ""
 
-    deal.intention_of_investment = _extras_to_json(attrs, "intention", "size")
+    INTENTION_MAP = {
+        # Agriculture
+        "Biofuels": "BIOFUELS",
+        "Food crops": "FOOD_CROPS",
+        "Fodder": "FODDER",
+        "Livestock": "LIVESTOCK",
+        "Non-food agricultural commodities": "NON_FOOD_AGRICULTURE",
+        "Agriculture unspecified": "AGRICULTURE_UNSPECIFIED",
+        "Agriculture": "AGRICULTURE_UNSPECIFIED",
+        # Forestry
+        "Timber plantation": "TIMBER_PLANTATION",
+        "Forest logging / management": "FOREST_LOGGING",
+        "For carbon sequestration/REDD": "CARBON",
+        "Forestry unspecified": "FORESTRY_UNSPECIFIED",
+        "Forestry": "FORESTRY_UNSPECIFIED",
+        "For wood and fibre": "FORESTRY_UNSPECIFIED",
+        "For wood and fiber": "FORESTRY_UNSPECIFIED",
+        # Other
+        "Mining": "MINING",
+        "Oil / Gas extraction": "OIL_GAS_EXTRACTION",
+        "Tourism": "TOURISM",
+        "Industry": "INDUSTRY",
+        "Conservation": "CONVERSATION",
+        "Land speculation": "LAND_SPECULATION",
+        "Renewable Energy": "RENEWABLE_ENERGY",
+        "Other": "OTHER",
+    }
+    deal.intention_of_investment = _extras_to_json(
+        attrs, "intention", "size", fieldmap=INTENTION_MAP, multi_value=True
+    )
     deal.intention_of_investment_comment = attrs.get("tg_intention_comment") or ""
-
+    NATURE_OF_DEAL_MAP = {
+        None: None,
+        "Outright Purchase": "OUTRIGHT_PURCHASE",
+        "Lease": "LEASE",
+        "Concession": "CONCESSION",
+        "Exploitation permit / license / concession (for mineral resources)": "EXPLOITATION_PERMIT",
+        "Exploitation permit / license / concession": "EXPLOITATION_PERMIT",
+        "Resource exploitation license / concession": "EXPLOITATION_PERMIT",
+        "Pure contract farming": "PURE_CONTRACT_FARMING",
+    }
     deal.nature_of_deal = _extras_to_list(attrs, "nature", NATURE_OF_DEAL_MAP)
     deal.nature_of_deal_comment = attrs.get("tg_nature_comment") or ""
 
     NEG_STATUS_MAP = {
-        "Expression of interest": 10,
-        "Under negotiation": 11,
-        "Memorandum of understanding": 12,
-        "Oral agreement": 20,
-        "Contract signed": 21,
-        "Negotiations failed": 30,
-        "Contract canceled": 31,
-        "Contract cancelled": 31,
-        "Contract expired": 32,
-        "Change of ownership": 40,
+        "Expression of interest": "EXPRESSION_OF_INTEREST",
+        "Under negotiation": "UNDER_NEGOTIATION",
+        "Memorandum of understanding": "MEMORANDUM_OF_UNDERSTANDING",
+        "Oral agreement": "ORAL_AGREEMENT",
+        "Contract signed": "CONTRACT_SIGNED",
+        "Negotiations failed": "NEGOTIATIONS_FAILED",
+        "Contract canceled": "CONTRACT_CANCELED",
+        "Contract cancelled": "CONTRACT_CANCELED",
+        "Contract expired": "CONTRACT_EXPIRED",
+        "Change of ownership": "CHANGE_OF_OWNERSHIP",
     }
     deal.negotiation_status = _extras_to_json(
         attrs, "negotiation_status", fieldmap=NEG_STATUS_MAP
@@ -53,10 +79,10 @@ def parse_general(deal, attrs):
     deal.negotiation_status_comment = attrs.get("tg_negotiation_status_comment") or ""
 
     IMP_STATUS_MAP = {
-        "Project not started": 10,
-        "Startup phase (no production)": 20,
-        "In operation (production)": 30,
-        "Project abandoned": 40,
+        "Project not started": "PROJECT_NOT_STARTED",
+        "Startup phase (no production)": "STARTUP_PHASE",
+        "In operation (production)": "IN_OPERATION",
+        "Project abandoned": "PROJECT_ABANDONED",
     }
     deal.implementation_status = _extras_to_json(
         attrs, "implementation_status", fieldmap=IMP_STATUS_MAP
@@ -65,11 +91,17 @@ def parse_general(deal, attrs):
         attrs.get("tg_implementation_status_comment") or ""
     )
 
+    HA_AREA_MAP = {None: None, "per ha": "PER_HA", "for specified area": "PER_AREA"}
     deal.purchase_price = attrs.get("purchase_price")
     deal.purchase_price_currency_id = attrs.get("purchase_price_currency")
     deal.purchase_price_type = HA_AREA_MAP[attrs.get("purchase_price_type")]
     deal.purchase_price_area = attrs.get("purchase_price_area")
     deal.purchase_price_comment = attrs.get("tg_purchase_price_comment") or ""
+    if attrs.get("purchase_price_comment"):
+        if deal.purchase_price_comment:
+            print("WIR HABEN ZWEIERLEI!")
+        else:
+            deal.purchase_price_comment = attrs.get("purchase_price_comment")
 
     annual_leasing_fee = attrs.get("annual_leasing_fee")
     # FIXME Fixes for broken data
@@ -84,8 +116,7 @@ def parse_general(deal, attrs):
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
     deal.annual_leasing_fees_comment = attrs.get("tg_leasing_fees_comment") or ""
 
-    if attrs.get("contract_farming"):
-        deal.contract_farming = attrs.get("contract_farming") == "Yes"
+    deal.contract_farming = attrs.get("contract_farming") == "Yes"
     deal.on_the_lease = attrs.get("on_the_lease") == "True"
     deal.on_the_lease_area = _extras_to_json(attrs, "on_the_lease_area")
     deal.on_the_lease_farmers = _extras_to_json(attrs, "on_the_lease_farmers")
@@ -151,6 +182,7 @@ def parse_employment(deal, attrs):
 
 
 def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
+    # TODO: Is this logic sound?
     involvements = HistoricalInvestorActivityInvolvement.objects.filter(
         fk_activity=act_version
     ).order_by("-id")
@@ -161,7 +193,7 @@ def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
 
 def parse_investor_info(deal, attrs):
     # deal.operating_company see above "_connect_investor_to_deal"
-    deal.involved_actors = _extras_to_json(attrs, "actors", "role")
+    deal.involved_actors = _extras_to_json(attrs, "actors", val2name="role")
     deal.project_name = attrs.get("project_name") or ""
     deal.investment_chain_comment = (
         attrs.get("tg_operational_stakeholder_comment") or ""
@@ -169,30 +201,6 @@ def parse_investor_info(deal, attrs):
 
 
 def parse_local_communities(deal, attrs):
-    COMMUNITY_CONSULTATION_MAP = {
-        None: None,
-        "Not consulted": 10,
-        "Limited consultation": 20,
-        "Free prior and informed consent": 30,
-        "Free, Prior and Informed Consent (FPIC)": 30,
-        "Certified Free, Prior and Informed Consent (FPIC)": 30,
-        "Other": 50,
-    }
-    RECOGNITION_STATUS_MAP = {v: k for k, v in Deal.RECOGNITION_STATUS_CHOICES}
-    COMMUNITY_REACTION_MAP = {v: k for k, v in Deal.COMMUNITY_REACTION_CHOICES}
-    NEGATIVE_IMPACTS_MAP = {v: k for k, v in Deal.NEGATIVE_IMPACTS_CHOICES}
-    BENEFITS_MAP = {
-        "Health": 10,
-        "Education": 20,
-        "Productive infrastructure (e.g. irrigation, tractors, machinery...)": 30,
-        "Productive infrastructure": 30,
-        "Roads": 40,
-        "Capacity Building": 50,
-        "Financial Support": 60,
-        "Community shares in the investment project": 70,
-        "Other": 80,
-    }
-
     if attrs.get("name_of_community"):
         deal.name_of_community = attrs.get("name_of_community").split("#")
     if attrs.get("name_of_indigenous_people"):
@@ -200,16 +208,30 @@ def parse_local_communities(deal, attrs):
             "#"
         )
     deal.people_affected_comment = attrs.get("tg_affected_comment") or ""
+
+    RECOGNITION_STATUS_MAP = {v: k for k, v in Deal.RECOGNITION_STATUS_CHOICES}
     deal.recognition_status = _extras_to_list(
         attrs, "recognition_status", RECOGNITION_STATUS_MAP
     )
     deal.recognition_status_comment = attrs.get("tg_recognition_status_comment") or ""
+
+    COMMUNITY_CONSULTATION_MAP = {
+        None: None,
+        "Not consulted": "NOT_CONSULTED",
+        "Limited consultation": "LIMITED_CONSULTATION",
+        "Free prior and informed consent": "FPIC",
+        "Free, Prior and Informed Consent (FPIC)": "FPIC",
+        "Certified Free, Prior and Informed Consent (FPIC)": "FPIC",
+        "Other": "OTHER",
+    }
     deal.community_consultation = COMMUNITY_CONSULTATION_MAP[
         attrs.get("community_consultation")
     ]
     deal.community_consultation_comment = (
         attrs.get("tg_community_consultation_comment") or ""
     )
+
+    COMMUNITY_REACTION_MAP = {v: k for k, v in Deal.COMMUNITY_REACTION_CHOICES}
     if attrs.get("community_reaction"):
         deal.community_reaction = COMMUNITY_REACTION_MAP[
             attrs.get("community_reaction")
@@ -238,6 +260,7 @@ def parse_local_communities(deal, attrs):
         attrs.get("tg_number_of_displaced_people_comment") or ""
     )
 
+    NEGATIVE_IMPACTS_MAP = {v: k for k, v in Deal.NEGATIVE_IMPACTS_CHOICES}
     deal.negative_impacts = _extras_to_list(
         attrs, "negative_impacts", NEGATIVE_IMPACTS_MAP
     )
@@ -245,6 +268,17 @@ def parse_local_communities(deal, attrs):
     deal.promised_compensation = attrs.get("promised_compensation") or ""
     deal.received_compensation = attrs.get("received_compensation") or ""
 
+    BENEFITS_MAP = {
+        "Health": "HEALTH",
+        "Education": "EDUCATION",
+        "Productive infrastructure (e.g. irrigation, tractors, machinery...)": "PRODUCTIVE_INFRASTRUCTURE",
+        "Productive infrastructure": "PRODUCTIVE_INFRASTRUCTURE",
+        "Roads": "ROADS",
+        "Capacity Building": "CAPACITY_BUILDING",
+        "Financial Support": "FINANCIAL_SUPPORT",
+        "Community shares in the investment project": "COMMUNITY_SHARES",
+        "Other": "OTHER",
+    }
     deal.promised_benefits = _extras_to_list(attrs, "promised_benefits", BENEFITS_MAP)
     deal.promised_benefits_comment = attrs.get("tg_promised_benefits_comment") or ""
     deal.materialized_benefits = _extras_to_list(
@@ -258,31 +292,32 @@ def parse_local_communities(deal, attrs):
 
 def parse_former_use(deal, attrs):
     FORMER_LAND_OWNER_MAP = {
-        "State": 10,
-        "Private (smallholders)": 20,
-        "Private (large-scale farm)": 30,
-        "Private (large-scale)": 30,
-        "Community": 40,
-        "Indigenous people": 50,
-        "Other": 60,
+        "State": "STATE",
+        "Private (smallholders)": "PRIVATE_SMALLHOLDERS",
+        "Private (large-scale farm)": "PRIVATE_LARGE_SCALE",
+        "Private (large-scale)": "PRIVATE_LARGE_SCALE",
+        "Community": "COMMUNITY",
+        "Indigenous people": "INDIGENOUS_PEOPLE",
+        "Other": "OTHER",
     }
-    FORMER_LAND_USE_MAP = {v: k for k, v in Deal.FORMER_LAND_USE_CHOICES}
-    FORMER_LAND_COVER_MAP = {
-        "Cropland": 10,
-        "Forest land": 20,
-        "Pasture": 30,
-        "Shrub land/Grassland (Rangeland)": 40,
-        "Shrub land/Grassland": 40,
-        "Marginal land": 50,
-        "Wetland": 60,
-        "Other land (e.g. developed land – specify in comment field)": 70,
-        "Other land": 70,
-    }
-
     deal.former_land_owner = _extras_to_list(attrs, "land_owner", FORMER_LAND_OWNER_MAP)
     deal.former_land_owner_comment = attrs.get("tg_land_owner_comment") or ""
+
+    FORMER_LAND_USE_MAP = {v: k for k, v in Deal.FORMER_LAND_USE_CHOICES}
     deal.former_land_use = _extras_to_list(attrs, "land_use", FORMER_LAND_USE_MAP)
     deal.former_land_use_comment = attrs.get("tg_land_use_comment") or ""
+
+    FORMER_LAND_COVER_MAP = {
+        "Cropland": "CROPLAND",
+        "Forest land": "FOREST_LAND",
+        "Pasture": "PASTURE",
+        "Shrub land/Grassland (Rangeland)": "RANGELAND",
+        "Shrub land/Grassland": "RANGELAND",
+        "Marginal land": "MARGINAL_LAND",
+        "Wetland": "WETLAND",
+        "Other land (e.g. developed land – specify in comment field)": "OTHER_LAND",
+        "Other land": "OTHER_LAND",
+    }
     deal.former_land_cover = _extras_to_list(attrs, "land_cover", FORMER_LAND_COVER_MAP)
     deal.former_land_cover_comment = attrs.get("tg_land_cover_comment") or ""
 
@@ -415,6 +450,7 @@ def parse_water(deal, attrs):
         "108bn gal/yr": 408_800_000,
         "3.07": 96_820,
         "23 549": 23_549,
+        "40Millions de m3/mois": 40_000_000 * 12,
     }
     try:
         water_extraction_amount = broken_water_ex_amounts[water_extraction_amount]
@@ -448,13 +484,14 @@ def parse_remaining(deal, attrs):
     deal.prai_applied_comment = attrs.get("tg_prai_applied_comment") or ""
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
 
+    # META!
     deal.fully_updated = attrs.get("fully_updated") == "True"
-    deal.private = attrs.get("not_public") == "True"
-    PRIVATE_REASON_MAP = {
+    deal.confidential = attrs.get("not_public") == "True"
+    CONFIDENTIAL_REASON_MAP = {
         None: None,
-        "Temporary removal from PI after criticism": 10,
-        "Research in progress": 20,
-        "Land Observatory Import": 30,
+        "Temporary removal from PI after criticism": "TEMPORARY_REMOVAL",
+        "Research in progress": "RESEARCH_IN_PROGRESS",
+        "Land Observatory Import": "LAND_OBSERVATORY_IMPORT",
     }
-    deal.private_reason = PRIVATE_REASON_MAP[attrs.get("not_public_reason")]
-    deal.private_comment = attrs.get("tg_not_public_comment") or ""
+    deal.confidential_reason = CONFIDENTIAL_REASON_MAP[attrs.get("not_public_reason")]
+    deal.confidential_comment = attrs.get("tg_not_public_comment") or ""

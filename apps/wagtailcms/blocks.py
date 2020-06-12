@@ -7,6 +7,7 @@ from django.utils.html import format_html_join
 from wagtail.core import blocks
 from wagtail.core.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
 from wagtail.core.fields import StreamField
+from wagtail.core.rich_text import expand_db_html
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -306,10 +307,16 @@ class TitleWithIconBlock(StructBlock):
         template = "widgets/title.html"
 
 
+class RichTextBlock(blocks.RichTextBlock):
+    def get_api_representation(self, value, context=None):
+        prep_val = self.get_prep_value(value)
+        return expand_db_html(prep_val)
+
+
 CONTENT_BLOCKS = [
     ("heading", TitleBlock()),
     ("title", TitleWithIconBlock()),
-    ("paragraph", blocks.RichTextBlock()),
+    ("paragraph", RichTextBlock()),
     ("image", ImageBlock()),
     ("linked_image", LinkedImageBlock()),
     ("media", EmbedBlock(icon="media")),

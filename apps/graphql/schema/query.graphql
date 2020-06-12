@@ -29,6 +29,14 @@ type Query {
         "Filters are ANDed together"
         filters: [Filter]
     ): [Investor]
+    involvements(
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        sort: String = "id",
+        "A limit between 1 and 500. If you need more, please contact us"
+        limit: Int = 20,
+        "Filters are ANDed together"
+        filters: [Filter]
+    ): [Involvement]
 
     countries: [Country]
     regions: [Region]

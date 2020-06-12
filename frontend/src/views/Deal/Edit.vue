@@ -1,11 +1,14 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
-      <b-tab title="General Info" active>
-        <div>
-          <h3>Land area</h3>
+      <b-tab title="Location" active>
+        <map-editor/>
+      </b-tab>
+      <b-tab title="General Info">
+        <div v-for="section in general_info">
+          <h3>{{section.name}}</h3>
           <div
-            v-for="formfield in formfields"
+            v-for="formfield in section.fields"
             :key="formfield.name"
             :class="['row', 'mt-3', formfield.name]"
           >
@@ -22,10 +25,9 @@
           </div>
         </div>
       </b-tab>
-      <b-tab title="Other"> </b-tab>
+      <b-tab title="Other"></b-tab>
     </b-tabs>
     <button class="btn btn-primary" type="submit">Submit</button>
-
   </div>
 </template>
 
@@ -40,36 +42,17 @@
   import store from "@/store";
   import TextField from "@/components/Fields/TextField";
   import ValueDateField from "@/components/Fields/ValueDateField";
+  import { general_info } from "./deal_fields";
+  import MapEditor from "@/components/MapEditor";
+  import CheckboxField from "@/components/Fields/CheckboxField";
 
   export default {
-    components: { TextField, ValueDateField },
+    components: { MapEditor, TextField, ValueDateField, CheckboxField },
     name: "DealEdit",
     props: ["deal_id"],
     data() {
       return {
-        formfields: [
-          {
-            name: "intended_size",
-            component: "TextField",
-            label: "Intended size (in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-          {
-            name: "contract_size",
-            component: "ValueDateField",
-            label: "Size under contract (leased or purchased area, in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-          {
-            name: "operation_size",
-            component: "ValueDateField",
-            label: "Size in operation (production, in ha)",
-            placeholder: "Size",
-            unit: "ha",
-          },
-        ],
+        general_info: general_info,
       };
     },
     computed: {
@@ -94,7 +77,7 @@
       next();
     },
     beforeRouteLeave(to, from, next) {
-      store.dispatch("setCurrentDeal", null);
+      store.dispatch("setCurrentDeal", {});
       next();
     },
   };

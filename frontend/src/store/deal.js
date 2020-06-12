@@ -69,7 +69,6 @@ export const dealModule = {
         intention_of_investment_comment
         ## Nature of the deal
         nature_of_deal
-        nature_of_deal_display
         nature_of_deal_comment
         negotiation_status
         negotiation_status_comment
@@ -79,14 +78,12 @@ export const dealModule = {
         purchase_price
         purchase_price_currency {id}
         purchase_price_type
-        purchase_price_type_display
         purchase_price_area
         purchase_price_comment
         ## Leasing fees
         annual_leasing_fee
         annual_leasing_fee_currency {id}
         annual_leasing_fee_type
-        annual_leasing_fee_type_display
         annual_leasing_fee_area
         annual_leasing_fee_comment
         ## Contract farming
@@ -135,13 +132,10 @@ export const dealModule = {
         name_of_indigenous_people
         people_affected_comment
         recognition_status
-        recognition_status_display
         recognition_status_comment
         community_consultation
-        community_consultation_display
         community_consultation_comment
         community_reaction
-        community_reaction_display
         community_reaction_comment
         land_conflicts
         land_conflicts_comment
@@ -154,26 +148,20 @@ export const dealModule = {
         displaced_people_on_completion
         displacement_of_people_comment
         negative_impacts
-        negative_impacts_display
         negative_impacts_comment
         promised_compensation
         received_compensation
         promised_benefits
-        promised_benefits_display
         promised_benefits_comment
         materialized_benefits
-        materialized_benefits_display
         materialized_benefits_comment
         presence_of_organizations
         # Former user
         former_land_owner
-        former_land_owner_display
         former_land_owner_comment
         former_land_use
-        former_land_use_display
         former_land_use_comment
         former_land_cover
-        former_land_cover_display
         former_land_cover_comment
         # Produce info
         crops
@@ -210,7 +198,6 @@ export const dealModule = {
         water_extraction_envisaged
         water_extraction_envisaged_comment
         source_of_water_extraction
-        source_of_water_extraction_display
         source_of_water_extraction_comment
         how_much_do_investors_pay_comment
         water_extraction_amount
@@ -222,10 +209,8 @@ export const dealModule = {
         gender_related_information
         # Guidelines & Principles
         vggt_applied
-        vggt_applied_display
         vggt_applied_comment
         prai_applied
-        prai_applied_display
         prai_applied_comment
         # locations { id point level_of_accuracy }
         geojson

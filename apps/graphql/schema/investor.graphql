@@ -2,14 +2,32 @@ type Investor {
     id: Int!
     name: String!
     country: Country
-    classification: Int
-    classification_display: String
+    classification: String
+    # classification_display: String
     homepage: String
     opencorporates: String
     comment: String
-    involvements: [Investor]
+
+    involvements: [Involvement]
+    involvements_network(depth: Int=10): InvolvementsNetwork
+    deals: [Deal]
 
     status: Int
     status_display: String
     timestamp: DateTime
 }
+
+type Involvement {
+    investor: Investor
+    venture: Investor
+    role: String
+    investment_type: [String]
+    percentage: Float
+    loans_amount: Float
+    loans_currency: Currency
+    loans_date: String
+    parent_relation: String
+    comment: String
+}
+
+scalar InvolvementsNetwork

@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12">
           <h1>
-            <span>{{ this.$store.state.page.title }}</span>
+            <span v-html="this.$store.state.page.title"></span>
           </h1>
         </div>
       </div>

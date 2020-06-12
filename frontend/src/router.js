@@ -8,12 +8,15 @@ import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WagtailPage from "./views/WagtailPage";
 import NotFound from "./views/NotFound";
-import Dashboard from "./views/Dashboard";
+import Dashboard from "./views/Manager/Dashboard";
+import InvestorList from "./views/Investor/List";
+import InvestorDetail from "./views/Investor/Detail";
 
 import store from "./store";
 import ItsABigDeal from "./views/Charts/ItsABigDeal";
 import GlobalMapOfInvestments from "@/views/Charts/GlobalMapOfInvestments";
 import DynamicsOverview from "@/views/Charts/DynamicsOverview";
+import CaseStatistics from "@/views/Manager/CaseStatistics";
 
 Vue.use(Router);
 
@@ -40,11 +43,6 @@ const router = new Router({
       },
     },
     {
-      path: "/dashboard/",
-      name: "dashboard",
-      component: Dashboard,
-    },
-    {
       path: "/deal/add/",
       name: "deal_add",
       component: DealEdit,
@@ -60,6 +58,17 @@ const router = new Router({
       path: "/deal/:deal_id/",
       name: "deal_detail",
       component: DealDetail,
+      props: true,
+    },
+    {
+      path: "/data/investors/",
+      name: "investor_list",
+      component: InvestorList,
+    },
+        {
+      path: "/investor/:investor_id/",
+      name: "investor_detail",
+      component: InvestorDetail,
       props: true,
     },
     {
@@ -88,6 +97,16 @@ const router = new Router({
           component: DynamicsOverview,
         },
       ],
+    },
+    {
+      path: "/dashboard/",
+      name: "dashboard",
+      component: Dashboard,
+    },
+    {
+      path: "/case_statistics/",
+      name: "case_statistics",
+      component: CaseStatistics,
     },
     {
       path: "/404/",

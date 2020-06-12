@@ -2736,10 +2736,10 @@ ol-layerswitcher@^3.3.0:
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.5.0.tgz#303b48dc06bb25eb555bbe120f3606281e592ad6"
   integrity sha512-V5mVvw0s3XPHAi8HB9fQxreEwcwjUSsY+C5Ye6MtjXCi6peFbBg2HksxONQT+bdGwXQkXlmGdk8Dx315s+ob1g==
 
-ol3-google-maps@~0.12:
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/ol3-google-maps/-/ol3-google-maps-0.12.4.tgz#1ea1cb655c85c03087490eb1f92953758b1a0ce7"
-  integrity sha512-JsGbZqhT/XPlEpgCqHD54pD22PEB0cF216aN/CEUGCmzqAhH7mCc0wiV0CSiRrsr6O4dVXlQfmPBNfQxgiWTCw==
+ol3-google-maps@0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/ol3-google-maps/-/ol3-google-maps-0.12.3.tgz#ba90dcbd9a314734dceda082137c6daa8d495d27"
+  integrity sha1-upDcvZoxRzTc7aCCE3xtqo1JXSc=
   dependencies:
     async "~0.2.10"
     htmlparser2 "~3.7.1"
@@ -2782,7 +2782,7 @@ once@^1.3.0:
     vector-tile "1.3.0"
     walk "2.3.9"
 
-openlayers@~3.19:
+openlayers@3.19.1:
   version "3.19.1"
   resolved "https://registry.yarnpkg.com/openlayers/-/openlayers-3.19.1.tgz#abb7f798871787a8b34b59a0de0ff2b599667c43"
   integrity sha1-q7f3mIcXh6izS1mg3g/ytZlmfEM=
