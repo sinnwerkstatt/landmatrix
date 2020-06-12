@@ -132,3 +132,49 @@ export const general_info = [
     ],
   },
 ];
+
+export const employment = [
+  {
+    name: "Number of total jobs created",
+    fields: [
+      {
+        name: "total_jobs_created",
+        component: "TextField",
+        label: "Jobs created (total)",
+      },
+    ],
+  },
+  {
+    name: "Number of jobs for foreigners created",
+    fields: [
+      {
+        name: "foreign_jobs_created",
+        component: "TextField",
+        label: "Jobs created (foreign)",
+      },
+    ],
+  },
+];
+
+export const produce_info = [
+  {
+    name: "Detailed crop, animal and mineral information",
+    fields: [
+      {
+        name: "crops",
+        component: "TextField",
+        label: "Crops area/yield/export",
+      },
+      {
+        name: "animals",
+        component: "TextField",
+        label: "Animals area/yield/export",
+      },
+      {
+        name: "resources",
+        component: "TextField",
+        label: "Resources area/yield/export",
+      },
+    ],
+  },
+];

@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
-      <b-tab title="Location" active>
+      <b-tab title="Location">
         <div class="row">
           <div class="col">
             <div v-for="loc in deal.locations">
@@ -39,30 +39,50 @@
       </b-tab>
 
       <b-tab title="General Info">
-        <div v-for="section in general_info" class="panel-body">
-          <h3>{{ section.name }}</h3>
-          <div
-            v-for="formfield in section.fields"
-            :key="formfield.name"
-            :class="['row', 'mt-3', formfield.name]"
-            v-if="deal[formfield.name]"
-          >
-            <div class="col-md-3">
-              {{ formfield.label }}
-            </div>
-            <div class="col-md-9">
-              <component
-                :is="formfield.component"
-                :formfield="formfield"
-                :readonly="true"
-                v-model="deal[formfield.name]"
-              ></component>
-            </div>
-          </div>
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
+
+      <b-tab title="Contracts" active>
+        <div v-for="contract in deal.contracts">
+          <h3>Contract #{{ contract.id }}</h3>
+          <dl>
+            <dt>Number</dt>
+            <dd>{{ contract.number }}</dd>
+            <dt>Date</dt>
+            <dd>{{ contract.date }}</dd>
+            <dt>Expiration Date</dt>
+            <dd>{{ contract.expiration_date }}</dd>
+            <dt>Agreement duration</dt>
+            <dd>{{ contract.agreement_duration }}</dd>
+            <dt>Comment</dt>
+            <dd>{{ contract.comment }}</dd>
+          </dl>
+        </div>
+      </b-tab>
+      <b-tab title="Employment">
+        <DealSection :deal="deal" :sections="employment" :readonly="true" />
+      </b-tab>
+      <b-tab title="Data sources">
+        <div v-for="datasource in deal.datasources">
+          <h3>Data source #{{ datasource.id }}</h3>
+          <dl>
+            <dt>Type</dt>
+            <dd>{{ datasource.type }}</dd>
+            <dt>URL</dt>
+            <dd>{{ datasource.url }}</dd>
+            <dt>file</dt>
+            <dd>{{ datasource.file }}</dd>
+            <dt>Date</dt>
+            <dd>{{ datasource.date }}</dd>
+            <dt>Comment</dt>
+            <dd>{{ datasource.comment }}</dd>
+          </dl>
         </div>
       </b-tab>
 
-      <b-tab title="Employment"><p></p></b-tab>
+      <b-tab title="Produce info">
+        <DealSection :deal="deal" :sections="produce_info" :readonly="true" />
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -76,19 +96,19 @@
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
-  import TextField from "@/components/Fields/TextField";
-  import ValueDateField from "@/components/Fields/ValueDateField";
 
   import { LGeoJson } from "vue2-leaflet";
-  import { general_info } from "./deal_fields";
-  import CheckboxField from "@/components/Fields/CheckboxField";
+  import { employment, general_info, produce_info } from "./deal_fields";
+  import DealSection from "@/components/Deal/DealSection";
 
   export default {
     props: ["deal_id"],
-    components: { BigMap, LGeoJson, TextField, ValueDateField, CheckboxField },
+    components: { DealSection, BigMap, LGeoJson },
     data() {
       return {
-        general_info: general_info,
+        general_info,
+        employment,
+        produce_info,
       };
     },
     computed: {
@@ -97,8 +117,18 @@
       },
       bounds() {
         if (!this.deal) return null;
-        console.log(this.deal);
-        return L.latLngBounds(L.geoJSON(this.deal.geojson).getBounds()).pad(1.5);
+        let mybounds = L.geoJSON(this.deal.geojson).getBounds();
+
+        let ne = mybounds.getNorthEast();
+        let sw = mybounds.getSouthWest();
+        if (ne.equals(sw)) {
+          ne.lat += 10;
+          ne.lng += 10;
+          sw.lat -= 10;
+          sw.lng -= 10;
+          return L.latLngBounds(ne, sw);
+        }
+        return mybounds.pad(1.5);
       },
       geojson_options() {
         return {

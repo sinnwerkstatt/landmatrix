@@ -2,30 +2,11 @@
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3">
       <b-tab title="Location" active>
-        <map-editor/>
+        <map-editor />
       </b-tab>
       <b-tab title="General Info">
-        <div v-for="section in general_info">
-          <h3>{{section.name}}</h3>
-          <div
-            v-for="formfield in section.fields"
-            :key="formfield.name"
-            :class="['row', 'mt-3', formfield.name]"
-          >
-            <div class="col-md-3">
-              <label :for="`type-${formfield.name}`">{{ formfield.label }}:</label>
-            </div>
-            <div class="col-md-9">
-              <component
-                :is="formfield.component"
-                :formfield="formfield"
-                v-model="deal[formfield.name]"
-              ></component>
-            </div>
-          </div>
-        </div>
+        <DealSection :deal="deal" :sections="general_info" />
       </b-tab>
-      <b-tab title="Other"></b-tab>
     </b-tabs>
     <button class="btn btn-primary" type="submit">Submit</button>
   </div>
@@ -40,14 +21,12 @@
 
 <script>
   import store from "@/store";
-  import TextField from "@/components/Fields/TextField";
-  import ValueDateField from "@/components/Fields/ValueDateField";
   import { general_info } from "./deal_fields";
   import MapEditor from "@/components/MapEditor";
-  import CheckboxField from "@/components/Fields/CheckboxField";
+  import DealSection from "@/components/Deal/DealSection";
 
   export default {
-    components: { MapEditor, TextField, ValueDateField, CheckboxField },
+    components: { MapEditor, DealSection },
     name: "DealEdit",
     props: ["deal_id"],
     data() {

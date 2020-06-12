@@ -21,7 +21,7 @@
     "chart.js": "^2.9.3",
     "css-loader": "^3.5.3",
     "dayjs": "^1.8.27",
-    "eslint": "^7.1.0",
+    "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
     "file-loader": "^6.0.0",
     "font-awesome": "~4.7.0",

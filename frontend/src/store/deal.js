@@ -221,6 +221,30 @@ export const dealModule = {
           level_of_accuracy
           comment
         }
+        contracts {
+          id
+          number
+          date
+          expiration_date
+          agreement_duration
+          comment
+        }
+        datasources {
+          id
+          type
+          url
+          file
+          file_not_public
+          publication_title
+          date
+          name
+          company
+          email
+          phone
+          includes_in_country_verified_information
+          open_land_contracts_id
+          comment
+        }
         geojson
         }
       }`;

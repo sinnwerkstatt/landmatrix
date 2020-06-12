@@ -152,8 +152,12 @@ def create_data_sources(deal, groups, timestamp):
             }
             try:
                 ds_date = broken_ds_dates[ds_date]
-                data_source.date = parser.parse(ds_date).date()
             except KeyError:
+                pass
+
+            try:
+                data_source.date = parser.parse(ds_date).date()
+            except:
                 data_source.comment += f"\n\nOld Date value: {ds_date}"
 
         data_source.name = attrs.get("name") or ""
