@@ -86,15 +86,13 @@ class ReversionSaveMixin:
 
 
 unclear_fields = [
-    # TODO Hand these fields to Kurt
+    # Ingore these.
     "Remark (Benefits for local communities)",  # an kurt geben
     "Remark (Nature of the deal)",
     "Remark (Number of Jobs Created)",
     "original_filename",
     "old_reliability_ranking",
-    # TODO Figure out what this is doing
-    "timestamp",  # schauen wir nochmal..
-    # Ignore these.
+    "timestamp",
     "minerals_export",  # weg. https://landmatrix.org/deal/6188/145156/
     "old_contract_area",  # weg. https://landmatrix.org/deal/4372/141302/
     "old_production_area",  # weg. https://landmatrix.org/deal/4372/141302/
@@ -265,7 +263,7 @@ class OldDealMixin:
                 "tg_vggt_applied_comment",
                 "prai_applied",
                 "tg_prai_applied_comment",
-                "tg_overall_comment",  # TODO How is this different from deal.comment?
+                "tg_overall_comment",
             ],
             "meta": [
                 "fully_updated",

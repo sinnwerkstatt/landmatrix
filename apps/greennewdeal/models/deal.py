@@ -29,14 +29,9 @@ class DealManager(models.Manager):
         qs = qs.exclude(target_country=None).exclude(target_country__high_income=True)
         qs = qs.exclude(datasources=None)
         qs = qs.exclude(operating_company=None)
+        qs = qs.exclude(operating_company__name="")
+        # TODO: Unknown operating company parents
         return qs
-        # TODO what?
-        # # 4A. Invalid Operating company name?
-        # # 4B. Invalid Parent companies/investors?
-        # if self.has_invalid_operating_company(
-        #     involvements
-        # ) and self.has_invalid_parents(involvements):
-        #     return False
 
 
 @reversion.register(
@@ -449,7 +444,6 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     recognition_status_comment = models.TextField(
         _("Comment on recognitions status of community land tenure"), blank=True
     )
-    # TODO: What's the status on Certified FPIC?
     COMMUNITY_CONSULTATION_CHOICES = (
         ("NOT_CONSULTED", "Not consulted"),
         ("LIMITED_CONSULTATION", "Limited consultation"),
@@ -656,29 +650,13 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     """ Produce info """
-    crops = JSONField(_("Crops area"), help_text=_("ha"), blank=True, null=True)
-    crops_yield = JSONField(
-        _("Crops yield"), help_text=_("tons"), blank=True, null=True
-    )
-    crops_export = JSONField(_("Crops export"), help_text=_("%"), blank=True, null=True)
+    crops = JSONField(_("Crops"), blank=True, null=True)
     crops_comment = models.TextField(blank=True)
 
-    animals = JSONField(_("Livestock area"), help_text=_("ha"), blank=True, null=True)
-    animals_yield = JSONField(
-        _("Livestock yield"), help_text=_("tons"), blank=True, null=True
-    )
-    animals_export = JSONField(
-        _("Livestock export"), help_text=_("%"), blank=True, null=True
-    )
+    animals = JSONField(_("Livestock"), blank=True, null=True)
     animals_comment = models.TextField(blank=True)
 
-    resources = JSONField(_("Resources area"), help_text=_("ha"), blank=True, null=True)
-    resources_yield = JSONField(
-        _("Resources yield"), help_text=_("tons"), blank=True, null=True
-    )
-    resources_export = JSONField(
-        _("Resources export"), help_text=_("%"), blank=True, null=True
-    )
+    resources = JSONField(_("Resources"), blank=True, null=True)
     resources_comment = models.TextField(blank=True)
 
     contract_farming_crops = JSONField(
@@ -999,12 +977,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         # 3. No operating company?
         if not self.operating_company:
             return False
-        # TODO wenn alle unknown: nicht public.
-        # # 4A. Invalid Operating company name?
-        # # 4B. Invalid Parent companies/investors?
-        # if self.has_invalid_operating_company(
-        #     involvements
-        # ) and self.has_invalid_parents(involvements):
+        # 4A. Unknown operating company
+        if not self.operating_company.name:
+            return False
+        # TODO: Unknown operating company parents
+        # 4B. Unknown operating company parents
+        # if not self.operating_company.name:
         #     return False
         return True
 

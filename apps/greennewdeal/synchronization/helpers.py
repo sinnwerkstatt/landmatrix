@@ -16,7 +16,7 @@ def _extras_to_json(
     if not adict or not adict["value"]:
         return None
 
-    # FIXME Fixes for broken data
+    # NOTE Fixes for broken data
     if expected_type == float and adict["value"] in ("7,8", "101171,5"):
         adict["value"] = adict["value"].replace(",", ".")
 
@@ -36,7 +36,7 @@ def _extras_to_json(
 
     if adict.get("extras"):
         for extra in adict["extras"]:
-            # FIXME Fixes for broken data # deal 618 contract_size
+            # NOTE Fixes for broken data # deal 618 contract_size
             if expected_type == float and extra["value"] == "":
                 continue
             if fieldmap:
@@ -55,7 +55,6 @@ def _extras_to_json(
     if multi_value:
         mret = {}
         for x in ret:
-
             try:
                 mret[(x.get("date"), x.get(val2name), x.get("current"))] += [x["value"]]
             except KeyError:
@@ -174,12 +173,18 @@ class MetaActivity:
                 "minerals_export",
                 "old_contract_area",
                 "old_production_area",
+                "old_reliability_ranking",
                 "previous_identifier",
                 "terms",
+                "Remark (Benefits for local communities)",
+                "Remark (Nature of the deal)",
+                "Remark (Number of Jobs Created)",
+                "original_filename",
+                "old_reliability_ranking",
+                "timestamp",
             ]:
                 """ Ignore these. We don't care for these anymore. """
                 pass
             else:
-                print(
-                    f"{activity.activity_identifier}/{activity.id} : Unknown key {attr.name}: {attr}!"
-                )
+                # pass
+                print(f"{activity.activity_identifier}/{activity.id} >> {attr}")

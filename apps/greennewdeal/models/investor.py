@@ -22,7 +22,7 @@ class InvestorManager(models.Manager):
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
 class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
-    name = models.CharField(_("Name"), max_length=1024, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=1024, blank=True)
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -31,31 +31,28 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         on_delete=models.SET_NULL,
     )
 
-    STAKEHOLDER_CLASSIFICATIONS = (
-        ("PRIVATE_COMPANY", _("Private company")),
-        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
-        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
-        ("INVESTMENT_FUND", _("Investment fund")),
-        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
-        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
-        ("OTHER", _("Other (please specify in comment field)")),
-    )
-    INVESTOR_CLASSIFICATIONS = (
+    CLASSIFICATION_CHOICES = (
         ("GOVERNMENT", _("Government")),
         ("GOVERNMENT_INSTITUTION", _("Government institution")),
-        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
+        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
+        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
+        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
         (
             "BILATERAL_DEVELOPMENT_BANK",
             _("Bilateral Development Bank / Development Finance Institution"),
         ),
+        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
         ("COMMERCIAL_BANK", _("Commercial Bank")),
-        ("INVESTMENT_BANK", _("Investment Bank")),
         ("INSURANCE_FIRM", _("Insurance firm")),
+        ("INVESTMENT_BANK", _("Investment Bank")),
+        ("INVESTMENT_FUND", _("Investment fund")),
+        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
+        ("PRIVATE_COMPANY", _("Private company")),
         ("PRIVATE_EQUITY_FIRM", _("Private equity firm")),
-        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
+        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
         ("NON_PROFIT", _("Non - Profit organization (e.g. Church, University etc.)")),
+        ("OTHER", _("Other (please specify in comment field)")),
     )
-    CLASSIFICATION_CHOICES = STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     classification = models.CharField(
         verbose_name=_("Classification"),
         max_length=100,

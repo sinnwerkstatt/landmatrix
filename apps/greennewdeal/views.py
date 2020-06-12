@@ -31,7 +31,7 @@ def vuebase(request, path=None):
 def old_api_deals_json(request):
     locations = [
         loc.to_dict()
-        for loc in Location.search()[:10_000]  # FIXME broken
+        for loc in Location.search()[:10_000]
         .filter("terms", deal__status=[2, 3])
         .source(["id", "point", "deal", "level_of_accuracy_display"])
         .sort("deal.id")
@@ -55,12 +55,10 @@ def old_api_deals_json(request):
                     for intention in deal.get("intention_of_investment", [])
                 ]
                 or "Unknown",
-                # FIXME: srsly? not just empty array or null??
                 "implementation": [
                     impl.get("value") for impl in deal.get("implementation_status", [])
                 ]
                 or "Unknown",
-                # FIXME: srsly? not just empty array or null??
                 "intended_size": deal.get("intended_size"),
                 "contract_size": deal.get("contract_size", [{}])[0].get("value"),
                 "production_size": deal.get("production_size", [{}])[0].get("value"),
