@@ -45,7 +45,7 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
     # production_area = gismodels.MultiPolygonField(blank=True, null=True)
     areas = JSONField(blank=True, null=True)
 
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="locations")
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="locations")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 
@@ -65,7 +65,7 @@ class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
     )
     comment = models.TextField(blank=True)
 
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="contracts")
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="contracts")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 
@@ -112,7 +112,7 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
     open_land_contracts_id = models.CharField(max_length=500, blank=True)
     comment = models.TextField(_("Comment on data source"), blank=True)
 
-    deal = models.ForeignKey(Deal, on_delete=models.PROTECT, related_name="datasources")
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="datasources")
     old_group_id = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 

@@ -1,11 +1,9 @@
 import re
 
-from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
-from apps.landmatrix.models import (
-    HistoricalInvestor,
-    HistoricalInvestorVentureInvolvement,
-)
+import reversion
 
+from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models import HistoricalInvestorVentureInvolvement
 
 CLASSIFICATIONS_MAP = {
     "10": "PRIVATE_COMPANY",
@@ -28,45 +26,40 @@ CLASSIFICATIONS_MAP = {
     "210": "NON_PROFIT",
 }
 
-
 invalid_name = re.compile(
     r"^unknown ?(\(\))? $|^(unknown \()?unnamed (investor|company) ?[0-9]*(\))?$"
 )
 
 
-def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = None):
-    if investor_pk and investor_identifier:
-        raise AttributeError("just specify one")
-    elif investor_pk:
-        histvestor_versions = HistoricalInvestor.objects.filter(pk=investor_pk)
-    elif investor_identifier:
-        histvestor_versions = HistoricalInvestor.objects.filter(
-            investor_identifier=investor_identifier
-        ).order_by("pk")
-    else:
-        raise AttributeError("specify investor_pk or investor_identifier")
+def hist_to_inv(histvestor):
+    investor, created = Investor.objects.get_or_create(
+        id=histvestor.investor_identifier
+    )
 
-    if not histvestor_versions:
-        return
+    if not invalid_name.match(histvestor.name.lower()):
+        investor.name = histvestor.name
 
-    try:
-        investor = Investor.objects.get(id=histvestor_versions[0].investor_identifier)
-    except Investor.DoesNotExist:
-        investor = Investor(id=histvestor_versions[0].investor_identifier)
+    investor.country_id = histvestor.fk_country_id
+    if histvestor.classification:
+        investor.classification = CLASSIFICATIONS_MAP[histvestor.classification]
+    investor.homepage = histvestor.homepage or ""
+    investor.opencorporates = histvestor.opencorporates_link or ""
+    investor.comment = histvestor.comment or ""
 
-    for histvestor in histvestor_versions.order_by("pk"):
-        if not invalid_name.match(histvestor.name.lower()):
-            investor.name = histvestor.name
+    status = histvestor.fk_status_id
+    investor.timestamp = histvestor.history_date
+    investor.old_id = histvestor.id
 
-        investor.country_id = histvestor.fk_country_id
-        if histvestor.classification:
-            investor.classification = CLASSIFICATIONS_MAP[histvestor.classification]
-        investor.homepage = histvestor.homepage or ""
-        investor.opencorporates = histvestor.opencorporates_link or ""
-        investor.comment = histvestor.comment or ""
+    # check involvements
+    involvs = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=histvestor)
+    for involve in involvs:
+        try:
+            Investor.objects.get(id=involve.fk_investor.investor_identifier)
+        except Investor.DoesNotExist:
+            hist_to_inv(involve.fk_investor)
 
-        status = histvestor.fk_status_id
-        investor.timestamp = histvestor.history_date
+    with reversion.create_revision():
+        _create_involvements_for_investor(investor, histvestor)
 
         investor.save_revision(
             status,
@@ -74,6 +67,32 @@ def histvestor_to_investor(investor_pk: int = None, investor_identifier: int = N
             histvestor.history_user,
             histvestor.action_comment or "",
         )
+
+
+def _create_involvements_for_investor(investor, histvestor):
+    InvestorVentureInvolvement.objects.filter(venture=investor).delete()
+
+    involves = HistoricalInvestorVentureInvolvement.objects.filter(
+        fk_venture=histvestor
+    )
+
+    for histvolvement in involves:
+        ivi = InvestorVentureInvolvement.objects.create(
+            investor_id=histvolvement.fk_investor.investor_identifier,
+            venture_id=investor.id,
+            role=ROLE_MAP[histvolvement.role],
+            status=histvolvement.fk_status_id,
+        )
+        if histvolvement.investment_type:
+            types = [INVESTMENT_MAP[x] for x in list(histvolvement.investment_type)]
+            ivi.investment_type = types
+        ivi.percentage = histvolvement.percentage
+        ivi.loans_amount = histvolvement.loans_amount
+        ivi.loans_currency_id = histvolvement.loans_currency_id
+        ivi.loans_date = histvolvement.loans_date or ""
+        ivi.parent_relation = PARENTAL_RELATION_MAP[histvolvement.parent_relation]
+        ivi.comment = histvolvement.comment or ""
+        ivi.old_id = histvolvement.pk
 
 
 ROLE_MAP = {"ST": "STAKEHOLDER", "IN": "INVESTOR"}
@@ -84,33 +103,3 @@ PARENTAL_RELATION_MAP = {
     "Local branch": "LOCAL_BRANCH",
     "Joint venture": "JOINT_VENTURE",
 }
-
-
-def histvolvements_to_involvements(ids: list):
-    histvolvement_versions = HistoricalInvestorVentureInvolvement.objects.filter(
-        fk_venture__investor_identifier=ids[0], fk_investor__investor_identifier=ids[1]
-    )
-
-    try:
-        inv = InvestorVentureInvolvement.objects.get(
-            investor_id=ids[1], venture_id=ids[0],
-        )
-    except InvestorVentureInvolvement.DoesNotExist:
-        inv = InvestorVentureInvolvement(investor_id=ids[1], venture_id=ids[0])
-
-    for hist_involvement in histvolvement_versions.order_by("pk"):
-        inv.role = ROLE_MAP[hist_involvement.role]
-        if hist_involvement.investment_type:
-            types = [INVESTMENT_MAP[x] for x in list(hist_involvement.investment_type)]
-            inv.investment_type = types
-        inv.percentage = hist_involvement.percentage
-        inv.loans_amount = hist_involvement.loans_amount
-        inv.loans_currency_id = hist_involvement.loans_currency_id
-        inv.loans_date = hist_involvement.loans_date or ""
-        inv.parent_relation = PARENTAL_RELATION_MAP[hist_involvement.parent_relation]
-        inv.comment = hist_involvement.comment or ""
-        inv.old_id = hist_involvement.pk
-
-        status = hist_involvement.fk_status_id
-
-        inv.save_revision(status)

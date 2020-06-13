@@ -17,7 +17,7 @@ class InvestorManager(models.Manager):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
             return qs
-        return qs.filter(status__in=(2, 3))
+        return qs.filter(status__in=(2, 3)).exclude(name="")
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
@@ -69,7 +69,10 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     comment = models.TextField(_("Comment"), blank=True)
 
     involvements = models.ManyToManyField(
-        "self", through="InvestorVentureInvolvement", symmetrical=False,
+        "self",
+        through="InvestorVentureInvolvement",
+        through_fields=("venture", "investor"),
+        symmetrical=False,
     )
 
     STATUS_CHOICES = (
@@ -90,6 +93,8 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    old_id = models.IntegerField(null=True, blank=True)
 
     objects = InvestorManager()
 
@@ -120,6 +125,14 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             investors.update(involvement.investor.get_top_investors(seen_investors))
         return investors
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "deals": list(self.deals.visible().values_list("id", flat=True)),
+        }
+
 
 class InvolvementManager(models.Manager):
     def visible(self, user=None):
@@ -137,7 +150,7 @@ class InvestorVentureInvolvement(
         Investor,
         verbose_name=_("Investor"),
         db_index=True,
-        related_name="venture_involvements",
+        related_name="ventures",
         on_delete=models.PROTECT,
     )
     venture = models.ForeignKey(
@@ -231,3 +244,16 @@ class InvestorVentureInvolvement(
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "role": self.role,
+            "investment_type": self.investment_type,
+            "percentage": self.percentage,
+            "loans_amount": self.loans_amount,
+            "loans_currency": self.loans_currency,
+            "loans_date": self.loans_date,
+            "parent_relation": self.parent_relation,
+            "comment": self.comment,
+        }
