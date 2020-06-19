@@ -199,6 +199,8 @@ type Deal {
 
     status: Int
     status_display: String
+    draft_status: Int
+    draft_status_display: String
     timestamp: DateTime
 
     reversions: [Deal]

@@ -2,6 +2,7 @@ type Country {
     id: Int
     name: String
     slug: String
+    high_income: Boolean
 }
 
 type Region {

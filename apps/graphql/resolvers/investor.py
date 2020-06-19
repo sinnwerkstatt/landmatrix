@@ -53,7 +53,7 @@ def _get_network(investor_id, exclude=None, depth=10):
     network_investors = qs.filter(venture_id=investor_id).exclude(investor_id=exclude)
     for inv in network_investors:
         involvement = inv.to_dict()
-        involvement["investment_type"] = "INVESTOR"
+        involvement["involvement_type"] = "INVESTOR"
         investor = inv.investor.to_dict()
         investor["involvements"] = _get_network(inv.investor_id, investor_id, depth - 1)
         involvement["investor"] = investor
@@ -62,7 +62,7 @@ def _get_network(investor_id, exclude=None, depth=10):
     network_ventures = qs.filter(investor_id=investor_id).exclude(venture_id=exclude)
     for inv in network_ventures:
         involvement = inv.to_dict()
-        involvement["investment_type"] = "VENTURE"
+        involvement["involvement_type"] = "VENTURE"
         venture = inv.venture.to_dict()
         venture["involvements"] = _get_network(inv.venture_id, investor_id, depth - 1)
         involvement["investor"] = venture

@@ -7,7 +7,11 @@ from apps.landmatrix.models import HistoricalInvestor
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        histvestor_versions = HistoricalInvestor.objects.all().order_by("pk")
+        histvestor_versions = (
+            HistoricalInvestor.objects.all()
+            # .filter(investor_identifier=204)
+            .order_by("pk")
+        )
         total = histvestor_versions.count()
         i = 1
         for histvestor in histvestor_versions:

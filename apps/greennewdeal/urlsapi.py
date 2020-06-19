@@ -1,10 +1,6 @@
 from django.urls import path
 
-from apps.greennewdeal.views import (
-    old_api_deals_json,
-    old_api_country_deals_json,
-    old_api_latest_changes,
-)
+from apps.greennewdeal.views import old_api_latest_changes
 
 urlpatterns = [
     # path("deals.json", old_api_deals_json),

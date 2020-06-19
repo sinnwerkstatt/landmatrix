@@ -99,7 +99,9 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     objects = InvestorManager()
 
     def __str__(self):
-        return f"{self.name} (#{self.id})"
+        if self.name:
+            return f"{self.name} (#{self.id})"
+        return f"s#{self.id}"
 
     def get_top_investors(self, seen_investors=None):
         """
