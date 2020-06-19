@@ -13,8 +13,8 @@ def _resolve_deals_prefetching(info: GraphQLResolveInfo):
     qs = Deal.objects.visible(info.context.user)
 
     fields = get_fields(info)
-    if "target_country" in fields:
-        qs = qs.prefetch_related("target_country")
+    if "country" in fields:
+        qs = qs.prefetch_related("country")
     if "locations" in fields:
         qs = qs.prefetch_related("locations")
     if "contracts" in fields:

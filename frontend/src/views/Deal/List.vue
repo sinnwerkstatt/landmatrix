@@ -14,7 +14,7 @@
     data() {
       return {
         tableFields: [
-          "target_country",
+          "country",
           "top_investors",
           "intention_of_investment",
           "current_negotiation_status",
@@ -26,7 +26,7 @@
     computed: {
       deals() {
         return this.$store.state.deal.deals.map((deal) => {
-          let target_country = deal.target_country ? deal.target_country.name : "";
+          let country = deal.country ? deal.country.name : "";
           let current_implementation_status = {
             PROJECT_NOT_STARTED: "Project not started",
             STARTUP_PHASE: "Startup phase (no production)",
@@ -47,7 +47,7 @@
 
           return {
             ...deal,
-            target_country,
+            country,
             current_negotiation_status,
             current_implementation_status,
           };

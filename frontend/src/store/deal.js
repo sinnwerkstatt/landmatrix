@@ -29,7 +29,7 @@ export const dealModule = {
         deals(limit:${limit}, after: ${after || -1}){
           id
           deal_size
-          target_country { id name }
+          country { id name }
           # top_investors { id name }
           intention_of_investment
           current_negotiation_status
@@ -59,7 +59,7 @@ export const dealModule = {
           id
         # General Info
         ## Land area
-        target_country { id }
+        country { id }
         intended_size
         contract_size
         production_size

@@ -15,6 +15,8 @@ type Investor {
 
     status: Int
     status_display: String
+    draft_status: Int
+    draft_status_display: String
     timestamp: DateTime
 }
 

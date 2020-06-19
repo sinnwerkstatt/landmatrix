@@ -55,9 +55,6 @@
       });
       next();
     },
-    beforeRouteLeave(to, from, next) {
-      store.dispatch("setCurrentDeal", {});
-      next();
-    },
+
   };
 </script>

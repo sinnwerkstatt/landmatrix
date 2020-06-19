@@ -1,6 +1,6 @@
 <template>
-  <div class="deal-table">
-    <nav aria-label="Deal table navigation">
+  <div class="investor-table">
+    <nav aria-label="Investor table navigation">
       <ul class="pagination justify-content-center" v-if="pages > 1">
         <li
           v-for="(n, i) in pages"
@@ -32,13 +32,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="deal in dt_deals" :key="deal.id">
+        <tr v-for="data in dt_data" :key="data.id">
           <td>
-            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
-              {{ deal.id }}
+            <router-link
+              :to="{ name: 'investor_detail', params: { investor_id: data.id } }"
+            >
+              {{ data.id }}
             </router-link>
           </td>
-          <td v-for="field in fields" :key="field" v-html="deal[field]"></td>
+          <td v-for="field in fields" :key="field" v-html="data[field]"></td>
         </tr>
       </tbody>
     </table>
@@ -49,7 +51,7 @@
   const slugify = require("slugify");
 
   export default {
-    props: ["deals", "fields", "pageSize"],
+    props: ["investors", "fields", "pageSize"],
     data() {
       return {
         currentPage: 0,
@@ -69,12 +71,12 @@
     },
     computed: {
       pages() {
-        if (this.deals.length > 0) {
-          return Math.ceil(this.deals.length / parseInt(this.pageSize));
+        if (this.investors.length > 0) {
+          return Math.ceil(this.investors.length / parseInt(this.pageSize));
         }
         return 0;
       },
-      dt_deals() {
+      dt_data() {
         let sfield = this.sortField;
         let sasc = this.sortAscending;
         function sortAnything(a, b) {
@@ -87,42 +89,21 @@
           }
           return fieldy - fieldx;
         }
-        let deals = this.deals.sort(sortAnything);
+        let investors = this.investors.sort(sortAnything);
 
         if (this.pageSize) {
-          return deals.slice(
+          return investors.slice(
             this.pageSize * this.currentPage,
             this.pageSize * (this.currentPage + 1)
           );
         }
-        return deals;
+        return investors;
       },
     },
     methods: {
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
-      },
-      parseTopInvestors(deal) {
-        if (!deal.top_investors) return "";
-        return deal.top_investors
-          .map((inv) => {
-            return inv.name;
-          })
-          .join("<br>");
-      },
-      parseIntentionOfInvestment(deal) {
-        if (!deal.intention_of_investment) return "";
-        return deal.intention_of_investment
-          .map((int) => {
-            let intention = int.value;
-            console.log(int);
-            let slug = intention; //slugify(intention, { lower: true });
-            return `<a href="/data/by-intention/${intention}/"
-                      class="toggle-tooltip intention-icon ${slug}" title=""
-                      data-original-title="${intention}"><span>${intention}</span></a>`;
-          })
-          .sort();
       },
     },
   };
@@ -131,8 +112,9 @@
 <style scoped lang="scss">
   @import "../../scss/colors";
 
+
   a.page-link:not([href]) {
-    color: var(--primary);
+    color: $lm_investor;
   }
   .page-item.disabled .page-link {
     color: #6c757d;
@@ -140,7 +122,7 @@
 
   th.selected {
     font-weight: 600;
-    color: var(--primary);
+    color: $lm_investor;
 
     &.asc:before {
       content: "\f078";

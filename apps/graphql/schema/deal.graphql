@@ -2,7 +2,7 @@ type Deal {
     id: Int!
     # General Info
     ## Land area
-    target_country: Country
+    country: Country
     intended_size: Float
     contract_size: [DateValuePair]
     production_size: [DateValuePair]

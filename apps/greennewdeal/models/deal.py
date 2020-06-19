@@ -26,7 +26,7 @@ class DealManager(models.Manager):
     def public(self):
         qs = self.get_queryset()
         qs = qs.exclude(confidential=True)
-        qs = qs.exclude(target_country=None).exclude(target_country__high_income=True)
+        qs = qs.exclude(country=None).exclude(country__high_income=True)
         qs = qs.exclude(datasources=None)
         qs = qs.exclude(operating_company=None)
         qs = qs.exclude(operating_company__name="")
@@ -45,7 +45,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ General info """
     # Land area
-    target_country = models.ForeignKey(
+    country = models.ForeignKey(
         Country, on_delete=models.SET_NULL, blank=True, null=True
     )
     intended_size = models.DecimalField(
@@ -860,7 +860,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     objects = DealManager()
 
     def __str__(self):
-        return f"#{self.id} in {self.target_country}"
+        return f"#{self.id} in {self.country}"
 
     @transaction.atomic
     def save(self, *args, **kwargs):
@@ -967,8 +967,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.confidential:
             return False
         # 2. Minimum information missing?
-        # No Target_Country or High Income Country?
-        if not self.target_country or self.target_country.high_income:
+        # No Country or High Income Country?
+        if not self.country or self.country.high_income:
             return False
         # No DataSource?
         if not self.datasources.exists():

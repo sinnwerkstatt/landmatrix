@@ -13,7 +13,7 @@ from apps.landmatrix.models import (
 
 
 def parse_general(deal, attrs):
-    deal.target_country_id = attrs.get("target_country")
+    deal.country_id = attrs.get("target_country")
     if attrs.get("intended_size"):
         deal.intended_size = float(attrs.get("intended_size"))
     deal.contract_size = _extras_to_json(attrs, "contract_size", expected_type=float)

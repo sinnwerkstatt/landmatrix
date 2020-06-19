@@ -4,8 +4,8 @@ import router from "@/router";
 export const pageModule = {
   state: () => ({
     user: null,
-    countries: null,
-    regions: null,
+    countries: [],
+    regions: [],
     wagtailRootPage: null,
     wagtailPage: null,
     title: null,

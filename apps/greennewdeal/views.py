@@ -41,9 +41,7 @@ def old_api_latest_changes(request):
       deals(sort:"-timestamp"){
         id
         timestamp
-        target_country {
-          name
-        }
+        country { name }
       }
     }
     """
@@ -55,7 +53,7 @@ def old_api_latest_changes(request):
             "target_country": deal["target_country__name"],
         }
         for deal in Deal.objects.visible()
-        .values("id", "timestamp", "target_country__name", "status")
+        .values("id", "timestamp", "country__name", "status")
         .order_by("-timestamp")[:20]
     ]
     return JsonResponse(deals, safe=False)

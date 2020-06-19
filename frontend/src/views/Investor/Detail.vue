@@ -168,9 +168,6 @@
       store.dispatch("setCurrentInvestor", to.params.investor_id);
       next();
     },
-    beforeRouteLeave(to, from, next) {
-      store.dispatch("setCurrentDeal", {});
-      next();
-    },
+
   };
 </script>
