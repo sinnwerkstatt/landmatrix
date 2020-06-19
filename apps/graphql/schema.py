@@ -21,13 +21,14 @@ from apps.graphql.resolvers.investor import (
     investor_type,
     resolve_involvements,
 )
-from apps.graphql.scalars import geopoint_scalar
 from apps.graphql.resolvers.user import (
     resolve_user,
     resolve_login,
     resolve_logout,
     resolve_users,
+    user_regional_info_type,
 )
+from apps.graphql.scalars import geopoint_scalar
 
 schema_folder = pathlib.Path(__file__).parent.joinpath("schema")
 type_defs = load_schema_from_path(schema_folder)
@@ -57,4 +58,5 @@ schema = make_executable_schema(
     mutation,
     deal_type,
     investor_type,
+    user_regional_info_type,
 )

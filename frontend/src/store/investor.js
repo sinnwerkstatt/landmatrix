@@ -30,12 +30,7 @@ export const investorModule = {
           status
           timestamp
           deals { id }
-          involvements {
-            investor { id name }
-            venture  { id name }
-            role
-            percentage
-          }
+          involvements(depth:3)
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {

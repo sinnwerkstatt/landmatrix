@@ -11,7 +11,7 @@ class CountryManager(models.Manager):
 
 
 class Country(models.Model):
-    fk_region = models.ForeignKey(
+    region = models.ForeignKey(
         "Region", verbose_name=_("Region"), on_delete=models.PROTECT
     )
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)

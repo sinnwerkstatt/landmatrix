@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div v-html="mapIntroduction"></div>
-    <FilterBar />
     <big-map :options="{ zoom: 2 }" @ready="pinTheMap">
       <template v-slot:overlay>
         <div class="overlay-header" v-if="deals">
@@ -596,7 +595,6 @@
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
-  import FilterBar from "@/components/FilterBar";
   import axios from "axios";
 
   import "leaflet";
@@ -604,7 +602,7 @@
 
   export default {
     name: "GlobalMap",
-    components: { BigMap, FilterBar },
+    components: { BigMap },
     data() {
       return {
         bigmap: null,

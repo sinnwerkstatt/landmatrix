@@ -1,9 +1,18 @@
+$theme-colors: (
+  "primary": #fc941f,
+  "secondary": #fcfcfc,
+);
+
+
+@import "node_modules/bootstrap/scss/bootstrap";
+@import "node_modules/bootstrap-vue/src/index.scss";
+
 @import "colors";
 @import "fonts";
 @import "headings";
 @import "landmatrix_icons";
 
-@import 'multiselect';
+@import "multiselect";
 
 body {
   font-family: Open Sans, Arial, sans-serif;
@@ -14,13 +23,13 @@ a {
   color: $lm_dark;
 
   &:hover {
-    color: $lm_orange;
+    color: var(--primary);
   }
 
   &.lm-underline:hover {
     text-decoration: none;
     color: $lm_dark;
-    border-bottom: 3px solid $lm_orange;
+    border-bottom: 3px solid var(--primary);
   }
 }
 

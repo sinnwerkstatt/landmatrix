@@ -47,7 +47,13 @@ export const pageModule = {
   actions: {
     fetchUser(context) {
       let query = `{ me
-      { full_name username is_authenticated is_impersonate }
+        {
+          full_name
+          username
+          is_authenticated
+          is_impersonate
+          userregionalinfo { country { id name } region { id name } }
+        }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setUser", response.data.data.me);

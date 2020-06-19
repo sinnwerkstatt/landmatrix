@@ -35,7 +35,27 @@
         </div>
         {{  }}
       </b-tab>
-      <b-tab title="Tertiary investors/lenders"></b-tab>
+      <b-tab :title="`Tertiary investors/lenders (${tertiary.length})`">
+        <div v-for="(involvement, i) in tertiary">
+          <h3>
+            Involvement <small>#{{(i+1)}}</small>
+          </h3>
+          <div class="row">
+            <div class="col-md-3">Investor</div>
+            <div class="col-md-9">
+              <a :href="`/investor/${involvement.investor.id}/`">
+                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
+              </a>
+            </div>
+          </div>
+          <div class="row" v-if="involvement.percentage">
+            <div class="col-md-3">Ownership share</div>
+            <div class="col-md-9">
+                {{ involvement.percentage }}
+            </div>
+          </div>
+        </div>
+      </b-tab>
       <b-tab :title="`Involvements as Parent Company (${parent_of.length})`">
         <div v-for="(involvement, i) in parent_of">
           <h3>
@@ -44,8 +64,8 @@
           <div class="row">
             <div class="col-md-3">Investor</div>
             <div class="col-md-9">
-              <a :href="`/investor/${involvement.venture.id}/`">
-                {{ involvement.venture.name }} (#{{ involvement.venture.id }})
+              <a :href="`/investor/${involvement.investor.id}/`">
+                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
               </a>
             </div>
           </div>
@@ -58,7 +78,27 @@
         </div>
       </b-tab>
 
-      <b-tab title="Involvements as Tertiary investor/lender"></b-tab>
+      <b-tab :title="`Involvements as Tertiary investor/lender (${tertiary_of.length})`">
+        <div v-for="(involvement, i) in tertiary_of">
+          <h3>
+            Involvement <small>#{{(i+1)}}</small>
+          </h3>
+          <div class="row">
+            <div class="col-md-3">Investor</div>
+            <div class="col-md-9">
+              <a :href="`/investor/${involvement.investor.id}/`">
+                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
+              </a>
+            </div>
+          </div>
+          <div class="row" v-if="involvement.percentage">
+            <div class="col-md-3">Ownership share</div>
+            <div class="col-md-9">
+                {{ involvement.percentage }}
+            </div>
+          </div>
+        </div>
+      </b-tab>
       <b-tab :title="`Deals (Involvements as Operating company) (${investor.deals.length})`">
         <div v-for="deal in investor.deals">
           <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
@@ -91,16 +131,28 @@
       involvements() {
         return this.investor.involvements;
       },
-      parent_of() {
-        return this.involvements.filter((x) => {
-          return x.role === "STAKEHOLDER" && x.investor.id === this.investor.id;
-        });
-      },
+
       parents() {
         return this.involvements.filter((x) => {
-          return x.role === "STAKEHOLDER" && x.venture.id === this.investor.id;
+          return x.role === "STAKEHOLDER" && x.involvement_type === "INVESTOR";
         });
       },
+      tertiary() {
+        return this.involvements.filter((x) => {
+          return x.role === "INVESTOR" && x.involvement_type === "INVESTOR";
+        });
+      },
+      parent_of() {
+        return this.involvements.filter((x) => {
+          return x.role === "STAKEHOLDER" && x.involvement_type === "VENTURE";
+        });
+      },
+      tertiary_of() {
+        return this.involvements.filter((x) => {
+          return x.role === "INVESTOR" && x.involvement_type === "VENTURE";
+        });
+      },
+
     },
     methods: {
       general_info(investor) {

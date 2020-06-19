@@ -38,7 +38,9 @@ def parse_filters(filters):
     ret = {}
     for filt in filters:
         field = filt["field"].replace(".", "__")
-        value = filt["value"][0] if len(filt["value"]) == 1 else filt["value"]
+        val = filt["value"]
+        if field not in ["IN", "CONTAINS"] and isinstance(val, list) and len(val) == 1:
+            val = val[0]
         operation = filter_ops[filt["operation"]]
-        ret[f"{field}{operation}"] = value
+        ret[f"{field}{operation}"] = val
     return ret

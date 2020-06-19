@@ -1,5 +1,6 @@
 from typing import Any
 
+from ariadne import ObjectType
 from ariadne.exceptions import HttpError
 from django.contrib import auth
 from graphql import GraphQLResolveInfo
@@ -40,6 +41,11 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
         reverse = True
         sort = sort[1:]
     return sorted(users, key=lambda u: u.__getattribute__(sort), reverse=reverse)
+
+
+user_regional_info_type = ObjectType("UserRegionalInfo")
+user_regional_info_type.set_field("country", lambda obj, info: obj.country.all())
+user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
 
 
 def resolve_login(_, info, username, password):
