@@ -4,6 +4,7 @@ import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
@@ -29,7 +30,17 @@ class DealManager(models.Manager):
         qs = qs.exclude(country=None).exclude(country__high_income=True)
         qs = qs.exclude(datasources=None)
         qs = qs.exclude(operating_company=None)
-        qs = qs.exclude(operating_company__name="")
+        qs = qs.exclude(
+            Q(operating_company__is_actually_unknown=True)
+            & ~Q(operating_company__investors__investor__is_actually_unknown=False)
+        )
+        # qs = qs.filter(
+        #     Q(operating_company__is_actually_unknown=False) |
+        #     Q(operating_company__investors__investor__is_actually_unknown=False)
+        # )
+
+        # TODO: rolle nur "Stakeholder"?
+        # qs = qs.filter()
         # TODO: Unknown operating company parents
         return qs
 
@@ -933,6 +944,37 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             value = 0
         return value
 
+    # def _calculate_init_date(self):
+    #     init_dates = []
+    #     self.negotiation_status
+    #     negotiation_stati = self.attributes.filter(
+    #         name="negotiation_status",
+    #         value__in=(
+    #             # NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST, - removed, see #1154
+    #             self.NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+    #             self.NEGOTIATION_STATUS_ORAL_AGREEMENT,
+    #             self.NEGOTIATION_STATUS_CONTRACT_SIGNED,
+    #             self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+    #             self.NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+    #         ),
+    #     ).order_by("date")
+    #     implementation_stati = self.attributes.filter(
+    #         name="implementation_status",
+    #         value__in=(
+    #             self.IMPLEMENTATION_STATUS_STARTUP_PHASE,
+    #             self.IMPLEMENTATION_STATUS_IN_OPERATION,
+    #             self.IMPLEMENTATION_STATUS_PROJECT_ABANDONED,
+    #         ),
+    #     ).order_by("date")
+    #     if negotiation_stati.count() > 0:
+    #         if negotiation_stati[0].date:
+    #             init_dates.append(negotiation_stati[0].date)
+    #     if implementation_stati.count() > 0:
+    #         if implementation_stati[0].date:
+    #             init_dates.append(implementation_stati[0].date)
+    #     if init_dates:
+    #         return min(init_dates)
+
     def _combine_geojson(self):
         features = []
         for loc in self.locations.all():  # type: Location
@@ -962,28 +1004,31 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.operating_company:
             return self.operating_company.get_top_investors()
 
+    class IsNotPublic(Exception):
+        pass
+
     def is_public_deal(self):
         # 1. Flag "confidential"
         if self.confidential:
-            return False
+            raise self.IsNotPublic("Confidential Flag")
         # 2. Minimum information missing?
         # No Country or High Income Country?
         if not self.country or self.country.high_income:
-            return False
+            raise self.IsNotPublic("No Country or High-Income Country")
         # No DataSource?
         if not self.datasources.exists():
-            return False
-
+            raise self.IsNotPublic("No Datasources")
         # 3. No operating company?
         if not self.operating_company:
-            return False
-        # 4A. Unknown operating company
-        if not self.operating_company.name:
-            return False
-        # TODO: Unknown operating company parents
-        # 4B. Unknown operating company parents
-        # if not self.operating_company.name:
-        #     return False
+            raise self.IsNotPublic("No Operating Company")
+        # 4A. Unknown operating company AND no known operating company parents
+        oc_has_no_known_parents = not (
+            self.operating_company.investors.filter(
+                investor__is_actually_unknown=False
+            ).exists()
+        )
+        if self.operating_company.is_actually_unknown and oc_has_no_known_parents:
+            raise self.IsNotPublic("No known investor")
         return True
 
     # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:

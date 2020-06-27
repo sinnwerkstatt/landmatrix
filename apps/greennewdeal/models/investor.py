@@ -1,3 +1,5 @@
+import re
+
 import reversion
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -22,7 +24,7 @@ class InvestorManager(models.Manager):
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
 class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
-    name = models.CharField(_("Name"), max_length=1024, blank=True)
+    name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -98,6 +100,16 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
 
     objects = InvestorManager()
 
+    # computed properties
+    # The following flag is needed at the moment to filter through Deals (public-filter)
+    # FIXME This should be replaced by an option to _NOT_ specify the investor name.
+    is_actually_unknown = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE):
+            self.is_actually_unknown = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
         if self.name:
             return f"{self.name} (#{self.id})"
@@ -132,7 +144,20 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             "id": self.id,
             "name": self.name,
             "status": self.status,
-            "deals": list(self.deals.visible().values_list("id", flat=True)),
+            "country": {"name": self.country.name, "code": self.country.code_alpha2},
+            "classification": self.classification,
+            "opencorporates": self.opencorporates,
+            "comment": self.comment,
+            "deals": self.deals.visible().values(
+                "id",
+                "recognition_status",
+                "target_country__name",
+                "nature_of_deal",
+                "intention_of_investment",
+                "negotiation_status",
+                "implementation_status",
+                "deal_size",
+            ),
         }
 
 

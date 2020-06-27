@@ -168,6 +168,5 @@
       store.dispatch("setCurrentInvestor", to.params.investor_id);
       next();
     },
-
   };
 </script>

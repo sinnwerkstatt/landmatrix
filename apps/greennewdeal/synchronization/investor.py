@@ -26,19 +26,13 @@ CLASSIFICATIONS_MAP = {
     "210": "NON_PROFIT",
 }
 
-invalid_name = re.compile(
-    r"^unknown ?(\(\))? $|^(unknown \()?unnamed (investor|company) ?[0-9]*(\))?$"
-)
-
 
 def hist_to_inv(histvestor):
     investor, created = Investor.objects.get_or_create(
         id=histvestor.investor_identifier
     )
 
-    if not invalid_name.match(histvestor.name.lower()):
-        investor.name = histvestor.name
-
+    investor.name = histvestor.name
     investor.country_id = histvestor.fk_country_id
     if histvestor.classification:
         investor.classification = CLASSIFICATIONS_MAP[histvestor.classification]
