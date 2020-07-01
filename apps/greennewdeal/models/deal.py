@@ -34,14 +34,7 @@ class DealManager(models.Manager):
             Q(operating_company__is_actually_unknown=True)
             & ~Q(operating_company__investors__investor__is_actually_unknown=False)
         )
-        # qs = qs.filter(
-        #     Q(operating_company__is_actually_unknown=False) |
-        #     Q(operating_company__investors__investor__is_actually_unknown=False)
-        # )
-
-        # TODO: rolle nur "Stakeholder"?
-        # qs = qs.filter()
-        # TODO: Unknown operating company parents
+        # TODO: Open question: just role = "Stakeholder"?
         return qs
 
 
@@ -127,6 +120,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on nature of the deal"), blank=True
     )
 
+    # # Negotiation status
     NEGOTIATION_STATUS_CHOICES = (
         ("EXPRESSION_OF_INTEREST", "Expression of interest"),
         ("UNDER_NEGOTIATION", "Under negotiation"),
@@ -205,7 +199,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         blank=True,
         null=True,
     )
-    annual_leasing_fees_comment = models.TextField(
+    annual_leasing_fee_comment = models.TextField(
         _("Comment on leasing fees"), blank=True
     )
 

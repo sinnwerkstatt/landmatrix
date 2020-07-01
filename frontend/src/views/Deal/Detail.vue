@@ -1,24 +1,16 @@
 <template>
   <div class="container" v-if="deal">
-    <b-tabs content-class="mt-3">
-      <b-tab title="Location">
+    <b-tabs content-class="mt-3" vertical pills>
+      <b-tab title="Location" active>
         <div class="row">
           <div class="col">
             <div v-for="loc in deal.locations">
               <h3>Location #{{ loc.id }}</h3>
-              <dl>
-                <dt>Name</dt>
-                <dd>{{ loc.name }}</dd>
-                <dt>Description</dt>
-                <dd>{{ loc.description }}</dd>
-                <dt>Point</dt>
-                <dd>{{ loc.point }}</dd>
-                <dt>Facility name</dt>
-                <dd>{{ loc.facility_name }}</dd>
-                <dt>Level of accuracy</dt>
-                <dd>{{ loc.level_of_accuracy }}</dd>
-                <dt>Comment</dt>
-                <dd>{{ loc.comment }}</dd>
+              <dl class="row">
+                <template v-for="(name, field) in location_fields" v-if="loc[field]">
+                  <dt class="col-3">{{ name }}</dt>
+                  <dd class="col-9">{{ loc[field] }}</dd>
+                </template>
               </dl>
             </div>
           </div>
@@ -42,46 +34,54 @@
         <DealSection :deal="deal" :sections="general_info" :readonly="true" />
       </b-tab>
 
-      <b-tab title="Contracts" active>
+      <b-tab title="Contracts">
         <div v-for="contract in deal.contracts">
           <h3>Contract #{{ contract.id }}</h3>
-          <dl>
-            <dt>Number</dt>
-            <dd>{{ contract.number }}</dd>
-            <dt>Date</dt>
-            <dd>{{ contract.date }}</dd>
-            <dt>Expiration Date</dt>
-            <dd>{{ contract.expiration_date }}</dd>
-            <dt>Agreement duration</dt>
-            <dd>{{ contract.agreement_duration }}</dd>
-            <dt>Comment</dt>
-            <dd>{{ contract.comment }}</dd>
+          <dl class="row">
+            <template v-for="(name, field) in contract_fields" v-if="contract[field]">
+              <dt class="col-3">{{ name }}</dt>
+              <dd class="col-9">{{ contract[field] }}</dd>
+            </template>
           </dl>
         </div>
       </b-tab>
       <b-tab title="Employment">
         <DealSection :deal="deal" :sections="employment" :readonly="true" />
       </b-tab>
+      <b-tab title="Investor Info">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
       <b-tab title="Data sources">
         <div v-for="datasource in deal.datasources">
           <h3>Data source #{{ datasource.id }}</h3>
-          <dl>
-            <dt>Type</dt>
-            <dd>{{ datasource.type }}</dd>
-            <dt>URL</dt>
-            <dd>{{ datasource.url }}</dd>
-            <dt>file</dt>
-            <dd>{{ datasource.file }}</dd>
-            <dt>Date</dt>
-            <dd>{{ datasource.date }}</dd>
-            <dt>Comment</dt>
-            <dd>{{ datasource.comment }}</dd>
+          <dl class="row">
+            <template
+              v-for="(name, field) in datasource_fields"
+              v-if="datasource[field]"
+            >
+              <dt class="col-3">{{ name }}</dt>
+              <dd class="col-9">{{ datasource[field] }}</dd>
+            </template>
           </dl>
         </div>
       </b-tab>
-
+      <b-tab title="Local communities">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
+      <b-tab title="Former use">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
       <b-tab title="Produce info">
         <DealSection :deal="deal" :sections="produce_info" :readonly="true" />
+      </b-tab>
+      <b-tab title="Water">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
+      <b-tab title="Gender-related info">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+      </b-tab>
+      <b-tab title="Guidelines & Principles">
+        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
       </b-tab>
     </b-tabs>
   </div>
@@ -109,6 +109,28 @@
         general_info,
         employment,
         produce_info,
+        location_fields: {
+          name: "Name",
+          description: "Description",
+          point: "Point",
+          facility_name: "Facility Name",
+          level_of_accuracy: "Level of Accuracy",
+          comment: "Comment",
+        },
+        datasource_fields: {
+          type: "Type",
+          url: "URL",
+          file: "File",
+          date: "Date",
+          comment: "Comment",
+        },
+        contract_fields: {
+          number: "Number",
+          date: "Date",
+          expiration_date: "Expiration Date",
+          agreement_duration: "Duration of the agreement (in years)",
+          comment: "Comment",
+        },
       };
     },
     computed: {

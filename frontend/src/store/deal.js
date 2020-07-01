@@ -56,10 +56,10 @@ export const dealModule = {
 
       let query = `{
         deal(id:${deal_id}) {
-          id
+        id
         # General Info
         ## Land area
-        country { id }
+        country { id name }
         intended_size
         contract_size
         production_size
@@ -76,13 +76,13 @@ export const dealModule = {
         implementation_status_comment
         ## Purchase price
         purchase_price
-        purchase_price_currency {id}
+        purchase_price_currency {id name}
         purchase_price_type
         purchase_price_area
         purchase_price_comment
         ## Leasing fees
         annual_leasing_fee
-        annual_leasing_fee_currency {id}
+        annual_leasing_fee_currency {id name}
         annual_leasing_fee_type
         annual_leasing_fee_area
         annual_leasing_fee_comment
@@ -165,16 +165,10 @@ export const dealModule = {
         former_land_cover_comment
         # Produce info
         crops
-        crops_yield
-        crops_export
         crops_comment
-        animal
-        animal_yield
-        animal_export
-        animal_comment
+        animals
+        animals_comment
         resources
-        resources_yield
-        resources_export
         resources_comment
         contract_farming_crops
         contract_farming_crops_comment

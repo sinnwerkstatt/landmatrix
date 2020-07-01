@@ -120,16 +120,10 @@ type Deal {
     former_land_cover_comment: String
     # Produce info
     crops: [DateValuePair]
-    crops_yield: [DateValuePair]
-    crops_export: [DateValuePair]
     crops_comment: String
-    animal: [DateValuePair]
-    animal_yield: [DateValuePair]
-    animal_export: [DateValuePair]
-    animal_comment: String
+    animals: [DateValuePair]
+    animals_comment: String
     resources: [DateValuePair]
-    resources_yield: [DateValuePair]
-    resources_export: [DateValuePair]
     resources_comment: String
     contract_farming_crops: [DateValuePair]
     contract_farming_crops_comment: String
@@ -204,6 +198,11 @@ type Deal {
     timestamp: DateTime
 
     reversions: [Deal]
+}
+
+type DealVersion {
+    timestamp: DateTime
+    deal: Deal
 }
 
 type Location {

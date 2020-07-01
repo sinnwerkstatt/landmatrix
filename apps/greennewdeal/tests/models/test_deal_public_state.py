@@ -80,17 +80,17 @@ def test_public_deal_unknown_investors_1(public_deal: Deal):
     oc.name = "Unnamed Investor"
     oc.save()
     assert Deal.objects.public().count() == 1
-    assert public_deal.is_public_deal()
+    assert Deal.objects.get(id=3).is_public_deal()
 
 
-# Case 2: Known investor, unknown Parent company: error
+# Case 2: Known investor, unknown Parent company: fine.
 def test_public_deal_unknown_investors_2(public_deal: Deal):
     pi = Investor.objects.get(name="Test Parent Investor")
     pi.name = "Unknown Parent Investor"
     pi.save()
-    with pytest.raises(public_deal.IsNotPublic, match="No known investor"):
-        public_deal.is_public_deal()
-    assert Deal.objects.public().count() == 0
+    assert pi.is_actually_unknown
+    assert Deal.objects.public().count() == 1
+    assert Deal.objects.get(id=3).is_public_deal()
 
 
 # Case 3: Unknown investor, unknown Parent company: error
@@ -98,22 +98,42 @@ def test_public_deal_unknown_investors_3(public_deal: Deal):
     oc = Investor.objects.get(name="Test Investor")
     oc.name = "Unnamed Investor"
     oc.save()
+    assert oc.is_actually_unknown
     pi = Investor.objects.get(name="Test Parent Investor")
     pi.name = "Unknown Parent Investor"
     pi.save()
+    assert pi.is_actually_unknown
 
-    with pytest.raises(public_deal.IsNotPublic, match="No known investor"):
-        public_deal.is_public_deal()
+    with pytest.raises(Deal.IsNotPublic, match="No known investor"):
+        Deal.objects.get(id=3).is_public_deal()
     assert Deal.objects.public().count() == 0
 
 
 # Case 4: one unknown Parent company, one known Parent company: fine
 def test_public_deal_unknown_investors_multiple(public_deal: Deal):
-    pi2 = Investor.objects.create(name="Unknown second test parent investor")
     oc = Investor.objects.get(name="Test Investor")
+    oc.name = "Unnamed Investor"
+    oc.save()
+    assert oc.is_actually_unknown
+
+    pi2 = Investor.objects.create(name="Unknown second test parent investor")
     InvestorVentureInvolvement.objects.create(
         investor=pi2, venture=oc, role="STAKEHOLDER"
     )
-    with pytest.raises(public_deal.IsNotPublic, match="No known investor"):
-        public_deal.is_public_deal()
+    assert Deal.objects.public().count() == 1
+    assert Deal.objects.get(id=3).is_public_deal()
+    pi3 = Investor.objects.create(name="Unknown third test parent investor")
+    InvestorVentureInvolvement.objects.create(
+        investor=pi3, venture=oc, role="STAKEHOLDER"
+    )
+    assert Deal.objects.public().count() == 1
+    assert Deal.objects.get(id=3).is_public_deal()
+
+    pi = Investor.objects.get(name="Test Parent Investor")
+    pi.name = "Unknown Parent Investor"
+    pi.save()
+    assert pi.is_actually_unknown
+
+    with pytest.raises(Deal.IsNotPublic, match="No known investor"):
+        Deal.objects.get(id=3).is_public_deal()
     assert Deal.objects.public().count() == 0

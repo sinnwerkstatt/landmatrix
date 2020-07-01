@@ -106,12 +106,12 @@ def parse_general(deal, attrs):
         or attrs.get("purchase_price_comment")
         or ""
     )
-    deal.annual_leasing_fees_comment = attrs.get("tg_leasing_fees_comment") or ""
+    deal.annual_leasing_fee_comment = attrs.get("tg_leasing_fees_comment") or ""
 
     annual_leasing_fee = attrs.get("annual_leasing_fee")
     # NOTE Adding broken data to comment
     if annual_leasing_fee == "9 USD per year per ha":
-        deal.annual_leasing_fees_comment += annual_leasing_fee
+        deal.annual_leasing_fee_comment += annual_leasing_fee
     else:
         deal.annual_leasing_fee = annual_leasing_fee
     annual_leasing_fee_currency = attrs.get("annual_leasing_fee_currency")
@@ -124,12 +124,20 @@ def parse_general(deal, attrs):
     deal.contract_farming = attrs.get("contract_farming") == "Yes"
     deal.on_the_lease = attrs.get("on_the_lease") == "True"
     deal.on_the_lease_area = _extras_to_json(attrs, "on_the_lease_area")
-    deal.on_the_lease_farmers = _extras_to_json(attrs, "on_the_lease_farmers")
-    deal.on_the_lease_households = _extras_to_json(attrs, "on_the_lease_households")
+    deal.on_the_lease_farmers = _extras_to_json(
+        attrs, "on_the_lease_farmers", expected_type=int
+    )
+    deal.on_the_lease_households = _extras_to_json(
+        attrs, "on_the_lease_households", expected_type=int
+    )
     deal.off_the_lease = attrs.get("off_the_lease") == "True"
     deal.off_the_lease_area = _extras_to_json(attrs, "off_the_lease_area")
-    deal.off_the_lease_farmers = _extras_to_json(attrs, "off_the_lease_farmers")
-    deal.off_the_lease_households = _extras_to_json(attrs, "off_the_lease_households")
+    deal.off_the_lease_farmers = _extras_to_json(
+        attrs, "off_the_lease_farmers", expected_type=int
+    )
+    deal.off_the_lease_households = _extras_to_json(
+        attrs, "off_the_lease_households", expected_type=int
+    )
     deal.contract_farming_comment = attrs.get("tg_contract_farming_comment") or ""
 
 

@@ -57,6 +57,17 @@ def get_deal_reversions(obj, info: GraphQLResolveInfo):
     return [x.field_dict for x in versions]
 
 
+def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
+    qs = Version.objects.get_for_model(Deal)  # .filter(revision__date_created="")
+    # qs = _resolve_deals_prefetching(info).order_by(sort)
+    print(qs.count())
+    if filters:
+        qs = qs.filter(**parse_filters(filters))
+    print(qs.count())
+
+    return [{"timestamp": x.revision.date_created, "deal": x.field_dict} for x in qs]
+
+
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
     qs = Location.objects.visible(info.context.user)
 
