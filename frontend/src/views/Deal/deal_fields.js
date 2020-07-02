@@ -246,7 +246,36 @@ export const general_info = [
   },
   {
     name: "Leasing fees",
-    fields: [],
+    fields: [
+      {
+        name: "annual_leasing_fee",
+        component: "DecimalField",
+        label: "Annual leasing fee",
+      },
+      {
+        name: "annual_leasing_fee_currency",
+        component: "ForeignKeyField",
+        label: "Annual leasing fee currency",
+        model: "currency",
+      },
+      {
+        name: "annual_leasing_fee_type",
+        component: "TextField",
+        label: "Annual leasing fee type",
+        model: "currency",
+      },
+      {
+        name: "annual_leasing_fee_area",
+        component: "DecimalField",
+        label: "Annual leasing fee area",
+      },
+      {
+        name: "annual_leasing_fee_comment",
+        component: "TextField",
+        label: "Comment on annual leasing fee",
+        multiline: true,
+      },
+    ],
   },
   {
     name: "Contract farming",
@@ -260,8 +289,50 @@ export const employment = [
     fields: [
       {
         name: "total_jobs_created",
-        component: "TextField",
+        component: "BooleanField",
         label: "Jobs created (total)",
+      },
+      {
+        name: "total_jobs_planned",
+        component: "DecimalField",
+        label: "Planned number of jobs (total)",
+      },
+      {
+        name: "total_jobs_planned_employees",
+        component: "DecimalField",
+        label: "Planned employees (total)",
+      },
+      {
+        name: "total_jobs_planned_daily_workers",
+        component: "DecimalField",
+        label: "Planned daily/seasonal workers (total)",
+      },
+      {
+        name: "total_jobs_current",
+        component: "ValueDateField",
+        label: "Current number of jobs (total)",
+        placeholder: "Amount",
+        unit: "jobs",
+      },
+      {
+        name: "total_jobs_current_employees",
+        component: "ValueDateField",
+        label: "Current number of employees (total)",
+        placeholder: "Amount",
+        unit: "employees",
+      },
+      {
+        name: "total_jobs_current_daily_workers",
+        component: "ValueDateField",
+        label: "Current number of daily/seasonal workers (total)",
+        placeholder: "Amount",
+        unit: "workers",
+      },
+      {
+        name: "total_jobs_created_comment",
+        component: "TextField",
+        label: "Comment on jobs created (total)",
+        multiline: true,
       },
     ],
   },
@@ -270,8 +341,102 @@ export const employment = [
     fields: [
       {
         name: "foreign_jobs_created",
-        component: "TextField",
+        component: "BooleanField",
         label: "Jobs created (foreign)",
+      },
+      {
+        name: "foreign_jobs_planned",
+        component: "DecimalField",
+        label: "Planned number of jobs (foreign)",
+      },
+      {
+        name: "foreign_jobs_planned_employees",
+        component: "DecimalField",
+        label: "Planned employees (foreign)",
+      },
+      {
+        name: "foreign_jobs_planned_daily_workers",
+        component: "DecimalField",
+        label: "Planned daily/seasonal workers (foreign)",
+      },
+      {
+        name: "foreign_jobs_current",
+        component: "ValueDateField",
+        label: "Current number of jobs (foreign)",
+        placeholder: "Amount",
+        unit: "jobs",
+      },
+      {
+        name: "foreign_jobs_current_employees",
+        component: "ValueDateField",
+        label: "Current number of employees (foreign)",
+        placeholder: "Amount",
+        unit: "employees",
+      },
+      {
+        name: "foreign_jobs_current_daily_workers",
+        component: "ValueDateField",
+        label: "Current number of daily/seasonal workers (foreign)",
+        placeholder: "Amount",
+        unit: "workers",
+      },
+      {
+        name: "foreign_jobs_created_comment",
+        component: "TextField",
+        label: "Comment on jobs created (foreign)",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Number of domestic jobs created",
+    fields: [
+      {
+        name: "domestic_jobs_created",
+        component: "BooleanField",
+        label: "Jobs created (domestic)",
+      },
+      {
+        name: "domestic_jobs_planned",
+        component: "DecimalField",
+        label: "Planned number of jobs (domestic)",
+      },
+      {
+        name: "domestic_jobs_planned_employees",
+        component: "DecimalField",
+        label: "Planned employees (domestic)",
+      },
+      {
+        name: "domestic_jobs_planned_daily_workers",
+        component: "DecimalField",
+        label: "Planned daily/seasonal workers (domestic)",
+      },
+      {
+        name: "domestic_jobs_current",
+        component: "ValueDateField",
+        label: "Current number of jobs (domestic)",
+        placeholder: "Amount",
+        unit: "jobs",
+      },
+      {
+        name: "domestic_jobs_current_employees",
+        component: "ValueDateField",
+        label: "Current number of employees (domestic)",
+        placeholder: "Amount",
+        unit: "employees",
+      },
+      {
+        name: "domestic_jobs_current_daily_workers",
+        component: "ValueDateField",
+        label: "Current number of daily/seasonal workers (domestic)",
+        placeholder: "Amount",
+        unit: "workers",
+      },
+      {
+        name: "domestic_jobs_created_comment",
+        component: "TextField",
+        label: "Comment on jobs created (domestic)",
+        multiline: true,
       },
     ],
   },

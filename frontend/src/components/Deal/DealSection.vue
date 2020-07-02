@@ -6,7 +6,7 @@
         v-for="formfield in section.fields"
         :key="formfield.name"
         :class="['row', 'mt-3', formfield.name]"
-        v-if="deal[formfield.name] || !readonly"
+        v-if="!readonly || (deal[formfield.name] !== undefined) "
       >
         <dt class="col-md-3">
           {{ formfield.label }}
@@ -25,14 +25,22 @@
 </template>
 
 <script>
-  import TextField from "@/components/Fields/TextField";
-  import ValueDateField from "@/components/Fields/ValueDateField";
+  import BooleanField from "@/components/Fields/BooleanField";
   import CheckboxField from "@/components/Fields/CheckboxField";
   import DecimalField from "@/components/Fields/DecimalField";
   import ForeignKeyField from "@/components/Fields/ForeignKeyField";
+  import TextField from "@/components/Fields/TextField";
+  import ValueDateField from "@/components/Fields/ValueDateField";
 
   export default {
     props: ["sections", "deal", "readonly"],
-    components: { TextField, ValueDateField, CheckboxField, ForeignKeyField, DecimalField },
+    components: {
+      BooleanField,
+      CheckboxField,
+      DecimalField,
+      ForeignKeyField,
+      TextField,
+      ValueDateField,
+    },
   };
 </script>
