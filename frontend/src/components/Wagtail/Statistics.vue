@@ -77,11 +77,11 @@
 
 <style>
   .icon-none {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-  border: 1px solid #c1c1c1;
-}
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    border: 1px solid #c1c1c1;
+  }
 </style>
 <!--<script type="text/javascript">-->
 <!--      $(document).ready(function () {-->

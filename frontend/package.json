@@ -6,18 +6,17 @@
   "scripts": {
     "watch": "webpack --progress --watch --mode=development",
     "build": "webpack --mode=production",
-    "dev": "webpack-dev-server --open --mode=development",
     "lint": "eslint --ext .js,.vue src"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
     "@types/leaflet": "^1.5.12",
     "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
-    "bootstrap": "^4.4.1",
-    "bootstrap-vue": "^2.14.0",
+    "bootstrap": "^4.5.0",
+    "bootstrap-vue": "^2.15.0",
     "chart.js": "^2.9.3",
     "css-loader": "^3.5.3",
     "dayjs": "^1.8.27",
@@ -47,7 +46,6 @@
     "webpack": "^4.43.0",
     "webpack-bundle-tracker": "^0.4.3",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.11.0",
     "webpack-livereload-plugin": "^2.3.0"
   },
   "dependencies": {

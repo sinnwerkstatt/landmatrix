@@ -10,11 +10,7 @@
     >
       {{ title }}
     </a>
-    <div
-      class="dropdown-menu"
-      aria-labelledby="navbarDropdown"
-      v-show="showDropdown"
-    >
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown" v-show="showDropdown">
       <input
         v-model="filterText"
         ref="inputField"

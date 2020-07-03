@@ -4,7 +4,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Multiselect from "vue-multiselect";
-import VCalendar from 'v-calendar';
+import VCalendar from "v-calendar";
 
 import "../node_modules/font-awesome/scss/font-awesome.scss";
 
@@ -15,7 +15,6 @@ Vue.use(VCalendar);
 
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
-
 
 import "leaflet/dist/leaflet.css";
 delete L.Icon.Default.prototype._getIconUrl;

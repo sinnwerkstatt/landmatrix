@@ -23,7 +23,7 @@
           >
         </td>
         <td>{{ deal.timestamp }}</td>
-        <td>{{deal.status}}</td>
+        <td>{{ deal.status }}</td>
         <td>{{ deal.country }}</td>
       </tr>
     </tbody>

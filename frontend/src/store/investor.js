@@ -3,12 +3,12 @@ import axios from "axios";
 export const investorModule = {
   state: () => ({
     investors: [],
-    current_investor: null
+    current_investor: null,
   }),
   mutations: {
     setCurrentInvestor(state, investor) {
       state.current_investor = investor;
-    }
+    },
   },
   actions: {
     setCurrentInvestor(context, investor_id) {
@@ -42,10 +42,10 @@ export const investorModule = {
         context.commit("setBreadcrumbs", [
           { link: { name: "wagtail" }, name: "Home" },
           { link: { name: "investor_list" }, name: "Data" },
-          { name: `Investor #${investor.id}` }
+          { name: `Investor #${investor.id}` },
         ]);
       });
-    }
+    },
   },
-  getters: {}
+  getters: {},
 };

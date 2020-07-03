@@ -53,15 +53,14 @@
     margin-bottom: 20px;
   }
   .carousel-caption {
-  bottom: 0;
-  padding: 0 !important;
-  text-shadow: none !important;
-  p {
-    background-color: rgba(0, 0, 0, .75);
-    color: white;
-    display: inline-block;
-    padding: .2em .6em .3em;
+    bottom: 0;
+    padding: 0 !important;
+    text-shadow: none !important;
+    p {
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      display: inline-block;
+      padding: 0.2em 0.6em 0.3em;
+    }
   }
-}
-
 </style>

@@ -1,6 +1,7 @@
 <template>
-  <div>latest news:
-    {{value}}
+  <div>
+    latest news:
+    {{ value }}
   </div>
 </template>
 

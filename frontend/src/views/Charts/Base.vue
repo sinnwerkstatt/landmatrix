@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <charts-navbar/>
+    <charts-navbar />
     <div class="my-3"></div>
     <div class="my-3"></div>
     <router-view></router-view>
@@ -13,7 +13,7 @@
   export default {
     name: "Charts",
     components: {
-      'charts-navbar': Navbar,
+      "charts-navbar": Navbar,
     },
   };
 </script>

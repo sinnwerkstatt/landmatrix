@@ -37,7 +37,7 @@
     LTileLayer,
   } from "vue2-leaflet";
 
-  const HereApiKey='OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo';
+  const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
   export default {
     name: "BigMap",
     components: {
@@ -54,8 +54,7 @@
           {
             name: "Here",
             visible: true,
-            attribution:
-              `Map Tiles &copy; ${new Date().getFullYear()} <a href="http://developer.here.com">HERE</a>`,
+            attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="http://developer.here.com">HERE</a>`,
             url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
           },
           {

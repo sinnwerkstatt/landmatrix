@@ -112,7 +112,6 @@
 <style scoped lang="scss">
   @import "../../scss/colors";
 
-
   a.page-link:not([href]) {
     color: $lm_investor;
   }

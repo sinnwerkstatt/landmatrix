@@ -3,9 +3,7 @@
     <div v-html="mapIntroduction"></div>
     <big-map :options="{ zoom: 2 }" @ready="pinTheMap">
       <template v-slot:overlay>
-        <div class="overlay-header" v-if="deals">
-          {{ deals.length }} Deals
-        </div>
+        <div class="overlay-header" v-if="deals">{{ deals.length }} Deals</div>
         <div class="map-overlay">
           <div v-show="overlayVisible" class="map-overlay-content">
             <div v-show="overlayView === 'deals'" class="tab-content">
@@ -618,7 +616,7 @@
       },
       deals() {
         return this.$store.state.deal.deals;
-      }
+      },
     },
     methods: {
       pinTheMap(x) {
@@ -652,7 +650,7 @@
               marker.category = loc.level_of_accuracy;
               pruneCluster.RegisterMarker(marker);
             }
-          })
+          });
         });
 
         this.bigmap.addLayer(pruneCluster);

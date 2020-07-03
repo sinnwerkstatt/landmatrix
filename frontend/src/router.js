@@ -65,7 +65,7 @@ const router = new Router({
       name: "investor_list",
       component: InvestorList,
     },
-        {
+    {
       path: "/investor/:investor_id/",
       name: "investor_detail",
       component: InvestorDetail,
