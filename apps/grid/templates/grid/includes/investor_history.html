@@ -23,9 +23,11 @@
                                                 <p>{{ item.history_date }}</p>
                                                 {% if forloop.counter == 1 %}</strong>{% endif %}
                                             </td>
+                                            {% if user.is_authenticated and perms.landmatrix.review_historicalactivity %}
                                             <td>
                                                 <p>{% if item.history_user %}{{ item.history_user.get_full_name }}{% else %}{% trans "Unknown user" %}{% endif %}</p>
                                             </td>
+                                            {% endif %}
                                             <td>
                                                 <p><small><span class="label label-default">{{ item.fk_status.name }}</span></small></p>
                                             </td>
