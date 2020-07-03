@@ -154,7 +154,7 @@
 </style>
 <script>
   import store from "@/store";
-  import { loadInvestorNetwork, mapValues } from "./investor-network";
+  // import { loadInvestorNetwork, mapValues } from "./investor-network";
 
   export default {
     props: ["investor_id"],
@@ -185,12 +185,12 @@
       },
     },
     mounted() {
-      let compat_investors = mapValues(this.investor);
-      loadInvestorNetwork(compat_investors, "#investor-network");
+      // let compat_investors = mapValues(this.investor);
+      // loadInvestorNetwork(compat_investors, "#investor-network");
     },
     watch: {
       investor(newVal) {
-        let compat_investors = mapValues(newVal);
+        // let compat_investors = mapValues(newVal);
         // loadInvestorNetwork(compat_investors, "#investor-network");
       },
     },
