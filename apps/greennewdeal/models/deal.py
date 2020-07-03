@@ -214,10 +214,16 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
     )
     on_the_lease_farmers = JSONField(
-        _("On leased / purchased farmers"), help_text=_("ha"), blank=True, null=True,
+        _("On leased / purchased farmers"),
+        help_text=_("farmers"),
+        blank=True,
+        null=True,
     )
     on_the_lease_households = JSONField(
-        _("On leased / purchased households"), help_text=_("ha"), blank=True, null=True,
+        _("On leased / purchased households"),
+        help_text=_("households"),
+        blank=True,
+        null=True,
     )
 
     off_the_lease = models.BooleanField(
@@ -231,13 +237,13 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
     off_the_lease_farmers = JSONField(
         _("Not on leased / purchased farmers (out-grower)"),
-        help_text=_("ha"),
+        help_text=_("farmers"),
         blank=True,
         null=True,
     )
     off_the_lease_households = JSONField(
         _("Not on leased / purchased households (out-grower)"),
-        help_text=_("ha"),
+        help_text=_("households"),
         blank=True,
         null=True,
     )
@@ -400,7 +406,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         blank=True,
         null=True,
     )
-    project_name = models.CharField(max_length=255, blank=True)
+    project_name = models.CharField(
+        _("Name of investment project"), max_length=255, blank=True
+    )
     investment_chain_comment = models.TextField(
         _("Comment on investment chain"), blank=True
     )
@@ -441,7 +449,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
     recognition_status = ArrayField(
         models.CharField(
-            _("Name of community"), max_length=100, choices=RECOGNITION_STATUS_CHOICES
+            _("Recognition status"), max_length=100, choices=RECOGNITION_STATUS_CHOICES
         ),
         blank=True,
         null=True,

@@ -279,7 +279,73 @@ export const general_info = [
   },
   {
     name: "Contract farming",
-    fields: [],
+    fields: [
+      {
+        name: "contract_farming",
+        component: "BooleanField",
+        label: "Contract farming",
+      },
+      {
+        name: "on_the_lease",
+        component: "BooleanField",
+        label: "On leased / purchased area",
+      },
+      {
+        name: "on_the_lease_area",
+        component: "ValueDateField",
+        label: "On leased / purchased area (in ha)",
+        placeholder: "Area",
+        unit: "ha",
+      },
+      {
+        name: "on_the_lease_farmers",
+        component: "ValueDateField",
+        label: "On leased / purchased farmers",
+        placeholder: "",
+        unit: "farmers",
+      },
+      {
+        name: "on_the_lease_households",
+        component: "ValueDateField",
+        label: "On leased / purchased households",
+        placeholder: "",
+        unit: "households",
+      },
+
+      {
+        name: "off_the_lease",
+        component: "BooleanField",
+        label: "Not on leased / purchased area (out-grower)",
+      },
+
+      {
+        name: "off_the_lease_area",
+        component: "ValueDateField",
+        label: "Not on leased / purchased area (out-grower, in ha)",
+        placeholder: "Area",
+        unit: "ha",
+      },
+      {
+        name: "off_the_lease_farmers",
+        component: "ValueDateField",
+        label: "Not on leased / purchased farmers (out-grower)",
+        placeholder: "",
+        unit: "farmers",
+      },
+      {
+        name: "off_the_lease_households",
+        component: "ValueDateField",
+        label: "Not on leased / purchased households (out-grower)",
+        placeholder: "",
+        unit: "households",
+      },
+      {
+        name: "contract_farming_comment",
+        component: "TextField",
+        label: "Comment on contract farming",
+        multiline: true,
+      },
+    ],
   },
 ];
 
@@ -438,6 +504,121 @@ export const employment = [
         label: "Comment on jobs created (domestic)",
         multiline: true,
       },
+    ],
+  },
+];
+
+export const investor_info = [
+  {
+    name: "Operating company",
+    fields: [
+      {
+        name: "operating_company",
+        component: "ForeignKeyField",
+        label: "Operating company",
+        model: "investor",
+      },
+      {
+        name: "involved_actors",
+        component: "ValueDateField", // need to change this field
+        label: "Actors involved in the negotiation / admission process",
+        unit: "role",
+      },
+      {
+        name: "project_name",
+        component: "TextField",
+        label: "Name of investment project",
+      },
+      {
+        name: "investment_chain_comment",
+        component: "TextField",
+        label: "Comment on investment chain",
+        multiline: true,
+      },
+    ],
+  },
+];
+
+export const local_communities_info = [
+  {
+    name: "Detailed crop, animal and mineral information",
+    fields: [
+      {
+        name: "name_of_community",
+        component: "TextField",
+        label: "Name of community",
+      },
+      {
+        name: "name_of_indigenous_people",
+        component: "TextField",
+        label: "Name of indigenous people",
+      },
+      {
+        name: "people_affected_comment",
+        component: "TextField",
+        label: "Comment on communities / indigenous peoples affected",
+        multiline: true,
+      },
+      {
+        name: "recognition_status",
+        component: "CheckboxField",
+        label: "Recognition status",
+        options: {
+          INDIGENOUS_RIGHTS_RECOGNIZED:
+            "Indigenous Peoples traditional or customary rights recognized by government",
+          INDIGENOUS_RIGHTS_NOT_RECOGNIZED:
+            "Indigenous Peoples traditional or customary rights not recognized by government",
+          COMMUNITY_RIGHTS_RECOGNIZED:
+            "Community traditional or customary rights recognized by government",
+          COMMUNITY_RIGHTS_NOT_RECOGNIZED:
+            "Community traditional or customary rights not recognized by government",
+        },
+      },
+      {
+        name: "recognition_status_comment",
+        component: "TextField",
+        label: "Comment on recognitions status of community land tenure",
+        multiline: true,
+      },
+      {
+        name: "community_consultation",
+        component: "TextField",
+        label: "Community consultation",
+      },
+      {
+        name: "community_consultation_comment",
+        component: "TextField",
+        label: "Comment on consultation of local community",
+        multiline: true,
+      },
+      {
+        name: "community_reaction",
+        component: "TextField",
+        label: "Community reaction",
+      },
+      {
+        name: "community_reaction_comment",
+        component: "TextField",
+        label: "Comment on community reaction",
+        multiline: true,
+      },
+      {
+        name: "land_conflicts",
+        component: "BooleanField",
+        label: "Presence of land conflicts",
+      },
+      {
+        name: "land_conflicts_comment",
+        component: "TextField",
+        label: "Comment on presence of land conflicts",
+        multiline: true,
+      },
+      {
+        name: "displacement_of_people",
+        component: "BooleanField",
+        label: "Displacement of people",
+      },
+
     ],
   },
 ];

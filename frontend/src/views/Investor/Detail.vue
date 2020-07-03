@@ -1,110 +1,87 @@
 <template>
   <div class="container" v-if="investor">
-    <b-tabs content-class="mt-3">
-      <b-tab title="General Info">
-        <div>
-          <h3>Name</h3>
-          <p>{{ investor.name }}</p>
-          <h3>Country of registration/origin</h3>
-          <p>{{ investor.country.name }}</p>
-          <h3>Classification</h3>
-          <p>{{ investor.classification }}</p>
-          <h3>Comment</h3>
-          <p>{{ investor.comment }}</p>
-        </div>
-      </b-tab>
-      <b-tab :title="`Parent companies (${parents.length})`">
-        <div v-for="(involvement, i) in parents">
-          <h3>
-            Parent company <small>#{{(i+1)}}</small>
-          </h3>
-          <div class="row">
-            <div class="col-md-3">Investor</div>
-            <div class="col-md-9">
-              <a :href="`/investor/${involvement.investor.id}/`">
-                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
-              </a>
-            </div>
-          </div>
-          <div class="row" v-if="involvement.percentage">
-            <div class="col-md-3">Ownership share</div>
-            <div class="col-md-9">
-                {{ involvement.percentage }}
-            </div>
-          </div>
-        </div>
-        {{  }}
-      </b-tab>
-      <b-tab :title="`Tertiary investors/lenders (${tertiary.length})`">
-        <div v-for="(involvement, i) in tertiary">
-          <h3>
-            Involvement <small>#{{(i+1)}}</small>
-          </h3>
-          <div class="row">
-            <div class="col-md-3">Investor</div>
-            <div class="col-md-9">
-              <a :href="`/investor/${involvement.investor.id}/`">
-                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
-              </a>
-            </div>
-          </div>
-          <div class="row" v-if="involvement.percentage">
-            <div class="col-md-3">Ownership share</div>
-            <div class="col-md-9">
-                {{ involvement.percentage }}
-            </div>
-          </div>
-        </div>
-      </b-tab>
-      <b-tab :title="`Involvements as Parent Company (${parent_of.length})`">
-        <div v-for="(involvement, i) in parent_of">
-          <h3>
-            Involvement <small>#{{(i+1)}}</small>
-          </h3>
-          <div class="row">
-            <div class="col-md-3">Investor</div>
-            <div class="col-md-9">
-              <a :href="`/investor/${involvement.investor.id}/`">
-                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
-              </a>
-            </div>
-          </div>
-          <div class="row" v-if="involvement.percentage">
-            <div class="col-md-3">Ownership share</div>
-            <div class="col-md-9">
-                {{ involvement.percentage }}
-            </div>
-          </div>
-        </div>
-      </b-tab>
+    <h2>General Info</h2>
+    <dl class="row">
+      <dt class="col-3">Name</dt>
+      <dd class="col-9">{{ investor.name }}</dd>
+    </dl>
+    <dl class="row">
+      <dt class="col-3">Country of registration/origin</dt>
+      <dd class="col-9">{{ investor.country.name }}</dd>
+    </dl>
+    <dl class="row">
+      <dt class="col-3">Classification</dt>
+      <dd class="col-9">{{ investor.classification }}</dd>
+    </dl>
+    <dl class="row">
+      <dt class="col-3">Comment</dt>
+      <dd class="col-9">{{ investor.comment }}</dd>
+    </dl>
 
-      <b-tab :title="`Involvements as Tertiary investor/lender (${tertiary_of.length})`">
-        <div v-for="(involvement, i) in tertiary_of">
-          <h3>
-            Involvement <small>#{{(i+1)}}</small>
-          </h3>
-          <div class="row">
-            <div class="col-md-3">Investor</div>
-            <div class="col-md-9">
-              <a :href="`/investor/${involvement.investor.id}/`">
-                {{ involvement.investor.name }} (#{{ involvement.investor.id }})
-              </a>
-            </div>
-          </div>
-          <div class="row" v-if="involvement.percentage">
-            <div class="col-md-3">Ownership share</div>
-            <div class="col-md-9">
-                {{ involvement.percentage }}
-            </div>
-          </div>
-        </div>
+    <b-tabs content-class="mt-3">
+      <b-tab :title="`Involvements (${involvements.length})`">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Investor ID</th>
+              <th>Name</th>
+              <th>Country</th>
+              <th>Classification</th>
+              <th>Relationship</th>
+              <th>Ownership share</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="involvement in involvements">
+              <td>
+                <router-link
+                  :to="{
+                    name: 'investor_detail',
+                    params: { investor_id: involvement.investor.id },
+                  }"
+                >
+                  #{{ involvement.investor.id }}
+                </router-link>
+              </td>
+              <td>{{ involvement.investor.name }}</td>
+              <td>{{ involvement.investor.country.name }}</td>
+              <td>{{ involvement.investor.classification }}</td>
+              <td>{{ detect_role(involvement) }}</td>
+              <td>{{ involvement.percentage }}</td>
+            </tr>
+          </tbody>
+        </table>
       </b-tab>
-      <b-tab :title="`Deals (Involvements as Operating company) (${investor.deals.length})`">
-        <div v-for="deal in investor.deals">
-          <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
-            {{ deal.id }}
-          </router-link>
-        </div>
+      <b-tab
+        :title="`Deals (Involvements as Operating company) (${investor.deals.length})`"
+      >
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Deal ID</th>
+              <th>Country</th>
+              <th>Classification</th>
+              <th>Relationship</th>
+              <th>Ownership share</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="deal in investor.deals">
+              <td>
+                <router-link
+                  :to="{
+                    name: 'deal_detail',
+                    params: { deal_id: deal.id },
+                  }"
+                >
+                  #{{ deal.id }}
+                </router-link>
+              </td>
+              <td>{{ deal.country.name }}</td>
+              <td>{{ deal }}</td>
+            </tr>
+          </tbody>
+        </table>
       </b-tab>
     </b-tabs>
   </div>
@@ -131,40 +108,27 @@
       involvements() {
         return this.investor.involvements;
       },
-
-      parents() {
-        return this.involvements.filter((x) => {
-          return x.role === "STAKEHOLDER" && x.involvement_type === "INVESTOR";
-        });
-      },
-      tertiary() {
-        return this.involvements.filter((x) => {
-          return x.role === "INVESTOR" && x.involvement_type === "INVESTOR";
-        });
-      },
-      parent_of() {
-        return this.involvements.filter((x) => {
-          return x.role === "STAKEHOLDER" && x.involvement_type === "VENTURE";
-        });
-      },
-      tertiary_of() {
-        return this.involvements.filter((x) => {
-          return x.role === "INVESTOR" && x.involvement_type === "VENTURE";
-        });
-      },
-
     },
     methods: {
-      general_info(investor) {
-        return {
-          Name: investor.name,
-          "Country of registration/origin": investor.country.name,
-          Classification: investor.classification,
-          Comment: investor.comment,
-        };
+      detect_role(investor) {
+        console.log(investor.id, investor.role, investor.involvement_type);
+        if (investor.role === "STAKEHOLDER") {
+          if (investor.involvement_type === "INVESTOR") return "Parent company";
+          if (investor.involvement_type === "VENTURE")  return "Involved in as Parent Company";
+        }
+        if (investor.role === "INVESTOR") {
+          if (investor.involvement_type === "INVESTOR")
+            return "Tertiary investor/lender";
+          if (investor.involvement_type === "VENTURE")
+            return "Involved in as Tertiary investor/lender";
+        }
       },
     },
     beforeRouteEnter(to, from, next) {
+      store.dispatch("setCurrentInvestor", to.params.investor_id);
+      next();
+    },
+    beforeRouteUpdate(to, from, next) {
       store.dispatch("setCurrentInvestor", to.params.investor_id);
       next();
     },

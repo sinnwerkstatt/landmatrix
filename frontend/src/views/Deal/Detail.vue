@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-if="deal">
     <b-tabs content-class="mt-3" vertical pills>
-      <b-tab title="Location" active>
+      <b-tab title="Location">
         <div class="row">
           <div class="col">
             <div v-for="loc in deal.locations">
@@ -45,11 +45,11 @@
           </dl>
         </div>
       </b-tab>
-      <b-tab title="Employment">
+      <b-tab title="Employment" active>
         <DealSection :deal="deal" :sections="employment" :readonly="true" />
       </b-tab>
       <b-tab title="Investor Info">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+        <DealSection :deal="deal" :sections="investor_info" :readonly="true" />
       </b-tab>
       <b-tab title="Data sources">
         <div v-for="datasource in deal.datasources">
@@ -66,7 +66,7 @@
         </div>
       </b-tab>
       <b-tab title="Local communities">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
+        <DealSection :deal="deal" :sections="local_communities_info" :readonly="true" />
       </b-tab>
       <b-tab title="Former use">
         <DealSection :deal="deal" :sections="general_info" :readonly="true" />
@@ -98,7 +98,13 @@
   import BigMap from "@/components/BigMap";
 
   import { LGeoJson } from "vue2-leaflet";
-  import { employment, general_info, produce_info } from "./deal_fields";
+  import {
+    employment,
+    general_info,
+    produce_info,
+    investor_info,
+    local_communities_info
+  } from "@/views/Deal/deal_fields";
   import DealSection from "@/components/Deal/DealSection";
 
   export default {
@@ -108,7 +114,9 @@
       return {
         general_info,
         employment,
+        investor_info,
         produce_info,
+        local_communities_info,
         location_fields: {
           name: "Name",
           description: "Description",

@@ -50,7 +50,7 @@ def old_api_latest_changes(request):
             "action": "Add" if deal["status"] == 2 else "Change",
             "deal_id": deal["id"],
             "change_date": deal["timestamp"],
-            "target_country": deal["target_country__name"],
+            "country": deal["country__name"],
         }
         for deal in Deal.objects.visible()
         .values("id", "timestamp", "country__name", "status")

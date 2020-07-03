@@ -29,7 +29,7 @@ export const investorModule = {
           # involvements
           status
           timestamp
-          deals { id }
+          deals { id country {name} }
           involvements(depth:3)
         }
       }`;

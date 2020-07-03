@@ -148,15 +148,17 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             "classification": self.classification,
             "opencorporates": self.opencorporates,
             "comment": self.comment,
-            "deals": self.deals.visible().values(
-                "id",
-                "recognition_status",
-                "target_country__name",
-                "nature_of_deal",
-                "intention_of_investment",
-                "negotiation_status",
-                "implementation_status",
-                "deal_size",
+            "deals": list(
+                self.deals.public().values(
+                    "id",
+                    "recognition_status",
+                    "country__name",
+                    "nature_of_deal",
+                    "intention_of_investment",
+                    "negotiation_status",
+                    "implementation_status",
+                    "deal_size",
+                )
             ),
         }
 

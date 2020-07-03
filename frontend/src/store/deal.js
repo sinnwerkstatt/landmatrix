@@ -123,7 +123,7 @@ export const dealModule = {
         domestic_jobs_current_daily_workers
         domestic_jobs_created_comment
         # Investor info
-        operating_company {id}
+        operating_company {id name}
         involved_actors {role value}
         project_name
         investment_chain_comment

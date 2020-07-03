@@ -1,12 +1,20 @@
 from django.core.management.base import BaseCommand
 from django.contrib.gis.geos import Point
-from apps.greennewdeal.models import Deal, Country, Location, Contract, DataSource
+from apps.greennewdeal.models import (
+    Deal,
+    Country,
+    Location,
+    Contract,
+    DataSource,
+    Investor,
+    InvestorVentureInvolvement,
+)
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         Deal.objects.filter(id=9999).delete()
-        countries = Country.objects.all()[:3]
+        countries = Country.objects.all()[:4]
         deal = Deal.objects.create(
             id=9999,
             country=Country.objects.get(name="Uganda"),
@@ -36,7 +44,7 @@ class Command(BaseCommand):
             purchase_price_area=100,
             purchase_price_comment="purchase_price_comment",
             annual_leasing_fee=100.10,
-            annual_leasing_fee_currency_id=1,
+            annual_leasing_fee_currency_id=2,
             annual_leasing_fee_type="PER_HA",
             annual_leasing_fee_area=10,
             annual_leasing_fee_comment="annual_leasing_fee_comment",
@@ -50,6 +58,7 @@ class Command(BaseCommand):
             off_the_lease_farmers=[{"value": "100"}],
             off_the_lease_households=[{"value": "2000"}],
             contract_farming_comment="contract_farming_comment",
+            # """ Employment """
             total_jobs_created=True,
             total_jobs_planned=3000,
             total_jobs_planned_employees=20000,
@@ -239,6 +248,33 @@ class Command(BaseCommand):
             comment="Rick-rollin' comment",
             deal=deal,
         )
+        deal.save()
+        print("Adding investor")
+        i1 = Investor.objects.create(
+            id=666666,
+            name="E-Corp.",
+            country=countries[3],
+            classification="COMMERCIAL_BANK",
+            homepage="http://monsanto.com",
+            opencorporates="https://opencorporates.org/666",
+            comment="Or is it Apple?",
+            status=2,
+        )
+
+        pi = Investor.objects.create(
+            id=777777,
+            name="Mom-Corp.",
+            country=countries[3],
+            classification="GOVERNMENT",
+            homepage="https://futurama.com",
+            opencorporates="https://opencorporates.org/6666",
+            comment="Destroy all humans",
+            status=2,
+        )
+        InvestorVentureInvolvement.objects.create(
+            investor=pi, venture=i1, role="STAKEHOLDER"
+        )
+        deal.operating_company = i1
         deal.save()
 
         # operating_company=
