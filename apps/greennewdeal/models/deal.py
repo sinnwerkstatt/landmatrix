@@ -288,6 +288,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on jobs created (total)"), blank=True
     )
 
+    # TODO: should this be NullBoolean? same goes for many other fields.
     foreign_jobs_created = models.BooleanField(
         _("Jobs created (foreign)"), default=False
     )
@@ -581,7 +582,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     materialized_benefits = ArrayField(
         models.CharField(
-            _("Promised benefits for local communities"),
+            _("Materialized benefits for local communities"),
             max_length=100,
             choices=BENEFITS_CHOICES,
         ),

@@ -1,27 +1,33 @@
 <template>
-  <div>
-    <div v-for="section in sections" class="panel-body">
-      <h3>{{ section.name }}</h3>
-      <dl
-        v-for="formfield in section.fields"
-        :key="formfield.name"
-        :class="['row', 'mt-3', formfield.name]"
-        v-if="!readonly || (deal[formfield.name] !== undefined) "
+  <b-tab :title="title" v-if="!readonly || any_field_at_all(sections)">
+    <div>
+      <div
+        v-for="section in sections"
+        class="panel-body"
+        v-if="!readonly || any_field_in_section(section)"
       >
-        <dt class="col-md-3">
-          {{ formfield.label }}
-        </dt>
-        <dd class="col-md-9">
-          <component
-            :is="formfield.component"
-            :formfield="formfield"
-            :readonly="!!readonly"
-            v-model="deal[formfield.name]"
-          ></component>
-        </dd>
-      </dl>
+        <h3>{{ section.name }}</h3>
+        <dl
+          v-for="formfield in section.fields"
+          :key="formfield.name"
+          :class="['row', 'mt-3', formfield.name]"
+          v-if="!readonly || custom_is_null(deal[formfield.name])"
+        >
+          <dt class="col-md-3">
+            {{ formfield.label }}
+          </dt>
+          <dd class="col-md-9">
+            <component
+              :is="formfield.component"
+              :formfield="formfield"
+              :readonly="!!readonly"
+              v-model="deal[formfield.name]"
+            ></component>
+          </dd>
+        </dl>
+      </div>
     </div>
-  </div>
+  </b-tab>
 </template>
 
 <script>
@@ -33,7 +39,7 @@
   import ValueDateField from "@/components/Fields/ValueDateField";
 
   export default {
-    props: ["sections", "deal", "readonly"],
+    props: ["title", "sections", "deal", "readonly"],
     components: {
       BooleanField,
       CheckboxField,
@@ -41,6 +47,25 @@
       ForeignKeyField,
       TextField,
       ValueDateField,
+    },
+    methods: {
+      custom_is_null(field) {
+        return !(
+          field === undefined ||
+          field === null ||
+          field === "" ||
+          (Array.isArray(field) && field.length === 0)
+        );
+      },
+      any_field_in_section(section) {
+        return !!section.fields.filter((field) => {
+          return this.custom_is_null(this.deal[field.name]);
+        }).length;
+      },
+      any_field_at_all(sections) {
+        return !!sections.filter((section) => this.any_field_in_section(section))
+          .length;
+      },
     },
   };
 </script>

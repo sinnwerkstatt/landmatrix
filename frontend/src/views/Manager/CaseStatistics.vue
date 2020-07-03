@@ -74,30 +74,6 @@
             </b-tab>
           </b-tabs>
         </b-tab>
-
-        <b-tab>
-          <template v-slot:title>
-            <h2 v-if="filtered_deals.length">
-              {{ filtered_investors.length }} Investors
-            </h2>
-            <h2 v-else>Investors</h2>
-          </template>
-
-          <b-tabs pills card vertical active-nav-item-class="teal-background">
-            <b-tab v-for="(stats, i) in investor_statistics" :key="i">
-              <template v-slot:title>
-                <strong>{{ stats.investors.length }}</strong> {{ stats.name }}<br />
-              </template>
-              <b-card-text>
-                <InvestorTable
-                  :investors="stats.investors"
-                  :fields="investorFields"
-                  :pageSize="10"
-                />
-              </b-card-text>
-            </b-tab>
-          </b-tabs>
-        </b-tab>
       </b-tabs>
     </div>
   </div>
@@ -227,7 +203,7 @@
         return [
           {
             name: "Investors added",
-            investors: this.filtered_investors.filter((d) => d.status === 2),
+            investors: this.filtered_investors.filter((d) => d.status === 1),
           },
           {
             name: "Investors updated",

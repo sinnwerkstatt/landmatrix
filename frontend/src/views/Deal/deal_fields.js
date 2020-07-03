@@ -541,7 +541,7 @@ export const investor_info = [
 
 export const local_communities_info = [
   {
-    name: "Detailed crop, animal and mineral information",
+    name: "Names of communities / indigenous peoples affected",
     fields: [
       {
         name: "name_of_community",
@@ -559,6 +559,11 @@ export const local_communities_info = [
         label: "Comment on communities / indigenous peoples affected",
         multiline: true,
       },
+    ],
+  },
+  {
+    name: "Recognitions status of community land tenure",
+    fields: [
       {
         name: "recognition_status",
         component: "CheckboxField",
@@ -580,6 +585,11 @@ export const local_communities_info = [
         label: "Comment on recognitions status of community land tenure",
         multiline: true,
       },
+    ],
+  },
+  {
+    name: "Consultation of local community",
+    fields: [
       {
         name: "community_consultation",
         component: "TextField",
@@ -591,6 +601,11 @@ export const local_communities_info = [
         label: "Comment on consultation of local community",
         multiline: true,
       },
+    ],
+  },
+  {
+    name: "How did the community react?",
+    fields: [
       {
         name: "community_reaction",
         component: "TextField",
@@ -602,6 +617,11 @@ export const local_communities_info = [
         label: "Comment on community reaction",
         multiline: true,
       },
+    ],
+  },
+  {
+    name: "Presence of land conflicts",
+    fields: [
       {
         name: "land_conflicts",
         component: "BooleanField",
@@ -613,12 +633,183 @@ export const local_communities_info = [
         label: "Comment on presence of land conflicts",
         multiline: true,
       },
+    ],
+  },
+  {
+    name: "Displacement of people",
+    fields: [
       {
         name: "displacement_of_people",
         component: "BooleanField",
         label: "Displacement of people",
       },
+      {
+        name: "displaced_people",
+        component: "DecimalField",
+        label: "Number of people actually displaced",
+      },
+      {
+        name: "displaced_households",
+        component: "DecimalField",
+        label: "Number of households actually displaced",
+      },
+      {
+        name: "displaced_people_from_community_land",
+        component: "DecimalField",
+        label: "Number of people displaced out of their community land",
+      },
+      {
+        name: "displaced_people_within_community_land",
+        component: "DecimalField",
+        label: "Number of people displaced staying on community land",
+      },
+      {
+        name: "displaced_households_from_fields",
+        component: "DecimalField",
+        label: 'Number of households displaced "only" from their agricultural fields',
+      },
+      {
+        name: "displaced_people_on_completion",
+        component: "DecimalField",
+        label: "Number of people facing displacement once project is fully implemented",
+      },
+      {
+        name: "displacement_of_people_comment",
+        component: "TextField",
+        label: "Comment on presence of land conflicts",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Negative impacts for local communities",
+    fields: [
+      {
+        name: "negative_impacts",
+        component: "TextField",
+        label: "Negative impacts for local communities",
+      },
+      {
+        name: "negative_impacts_comment",
+        component: "TextField",
+        label: "Comment on negative impacts for local communities",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Promised or received compensation",
+    fields: [
+      {
+        name: "promised_compensation",
+        component: "TextField",
+        label: "Promised compensation (e.g. for damages or resettlements)",
+        multiline: true,
+      },
+      {
+        name: "received_compensation",
+        component: "TextField",
+        label: "Received compensation (e.g. for damages or resettlements)",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Promised benefits for local communities",
+    fields: [
+      {
+        name: "promised_benefits",
+        component: "TextField",
+        label: "Promised compensation (e.g. for damages or resettlements)",
+        multiline: true,
+      },
+      {
+        name: "promised_benefits_comment",
+        component: "TextField",
+        label: "Received compensation (e.g. for damages or resettlements)",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Materialized benefits for local communities",
+    fields: [
+      {
+        name: "materialized_benefits",
+        component: "TextField",
+        label: "Materialized benefits for local communities",
+        multiline: true,
+      },
+      {
+        name: "materialized_benefits_comment",
+        component: "TextField",
+        label: "Comment on materialized benefits for local communities",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name:
+      "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
+    fields: [
+      {
+        name: "presence_of_organizations",
+        component: "TextField",
+        label:
+          "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
+        multiline: true,
+      },
+    ],
+  },
+];
 
+export const former_use = [
+  {
+    name: "Former land owner (not by constitution)",
+    fields: [
+      {
+        name: "former_land_owner",
+        component: "TextField",
+        label: "Former land owner",
+      },
+      {
+        name: "former_land_owner_comment",
+        component: "TextField",
+        label: "Comment on former land owner",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Former land use",
+    fields: [
+      {
+        name: "former_land_use",
+        component: "TextField",
+        label: "Former land use",
+      },
+      {
+        name: "former_land_use_comment",
+        component: "TextField",
+        label: "Comment on former land use",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Former land cover",
+    fields: [
+      {
+        name: "former_land_cover",
+        component: "TextField",
+        label: "Former land cover",
+      },
+      {
+        name: "former_land_cover_comment",
+        component: "TextField",
+        label: "Comment on former land cover",
+        multiline: true,
+      },
     ],
   },
 ];
@@ -633,14 +824,277 @@ export const produce_info = [
         label: "Crops area/yield/export",
       },
       {
+        name: "crops_comment",
+        component: "TextField",
+        label: "Comment on crops",
+        multiline: true,
+      },
+      {
         name: "animals",
         component: "TextField",
         label: "Animals area/yield/export",
       },
       {
+        name: "animals_comment",
+        component: "TextField",
+        label: "Comment on animals",
+        multiline: true,
+      },
+      {
         name: "resources",
         component: "TextField",
         label: "Resources area/yield/export",
+      },
+      {
+        name: "resources_comment",
+        component: "TextField",
+        label: "Comment on resources",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Detailed contract farming crop and animal information",
+    fields: [
+      {
+        name: "contract_farming_crops",
+        component: "TextField",
+        label: "Contract farming crops",
+      },
+      {
+        name: "contract_farming_crops_comment",
+        component: "TextField",
+        label: "Comment on contract farming crops",
+        multiline: true,
+      },
+      {
+        name: "contract_farming_animals",
+        component: "TextField",
+        label: "Contract farming animals",
+      },
+      {
+        name: "contract_farming_animals_comment",
+        component: "TextField",
+        label: "Comment on contract farming animals",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Use of produce",
+    fields: [
+      {
+        name: "has_domestic_use",
+        component: "BooleanField",
+        label: "Has domestic use",
+      },
+      {
+        name: "domestic_use",
+        component: "DecimalField",
+        label: "Ownership share",
+      },
+      {
+        name: "has_export",
+        component: "BooleanField",
+        label: "Has export",
+      },
+      {
+        name: "export_country1",
+        component: "ForeignKeyField",
+        label: "Country 1",
+        model: "country",
+      },
+      {
+        name: "export_country1_ratio",
+        component: "DecimalField",
+        label: "Country 1 ratio",
+      },
+      {
+        name: "export_country2",
+        component: "ForeignKeyField",
+        label: "Country 2",
+        model: "country",
+      },
+      {
+        name: "export_country2_ratio",
+        component: "DecimalField",
+        label: "Country 2 ratio",
+      },
+      {
+        name: "export_country3",
+        component: "ForeignKeyField",
+        label: "Country 3",
+        model: "country",
+      },
+      {
+        name: "export_country3_ratio",
+        component: "DecimalField",
+        label: "Country 3 ratio",
+      },
+      {
+        name: "use_of_produce_comment",
+        component: "TextField",
+        label: "Comment on use of produce",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "In country processing of produce",
+    fields: [
+      {
+        name: "in_country_processing",
+        component: "BooleanField",
+        label: "In country processing of produce",
+      },
+      {
+        name: "in_country_processing_comment",
+        component: "TextField",
+        label: "Comment on in country processing of produce",
+        multiline: true,
+      },
+      {
+        name: "in_country_processing_facilities",
+        component: "TextField",
+        label:
+          "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)",
+        multiline: true,
+      },
+      {
+        name: "in_country_end_products",
+        component: "TextField",
+        label: "In-country end products of the project",
+        multiline: true,
+      },
+    ],
+  },
+];
+
+export const water = [
+  {
+    name: "Water extraction envisaged",
+    fields: [
+      {
+        name: "water_extraction_envisaged",
+        component: "BooleanField",
+        label: "Water extraction envisaged",
+      },
+      {
+        name: "water_extraction_envisaged_comment",
+        component: "TextField",
+        label: "Comment on water extraction envisaged",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Source of water extraction",
+    fields: [
+      {
+        name: "source_of_water_extraction",
+        component: "TextField",
+        label: "Source of water extraction",
+      },
+      {
+        name: "source_of_water_extraction_comment",
+        component: "TextField",
+        label: "Comment on source of water extraction",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "How much do investors pay for water and the use of water infrastructure?\n",
+    fields: [
+      {
+        name: "how_much_do_investors_pay_comment",
+        component: "TextField",
+        label: "Comment on how much do investors pay for water",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "How much water is extracted?",
+    fields: [
+      {
+        name: "water_extraction_amount",
+        component: "DecimalField",
+        label: "Water extraction amount",
+      },
+      {
+        name: "water_extraction_amount_comment",
+        component: "TextField",
+        label: "Comment on how much water is extracted",
+        multiline: true,
+      },
+      {
+        name: "use_of_irrigation_infrastructure",
+        component: "BooleanField",
+        label: "Use of irrigation infrastructure",
+      },
+      {
+        name: "use_of_irrigation_infrastructure_comment",
+        component: "TextField",
+        label: "Comment on use of irrigation infrastructure",
+        multiline: true,
+      },
+      {
+        name: "water_footprint",
+        component: "TextField",
+        label: "Water footprint of the investment project",
+        multiline: true,
+      },
+    ],
+  },
+];
+
+export const gender_related_info = [
+  {
+    name: "Any gender-specific information about the investment and its impacts",
+    fields: [
+      {
+        name: "gender_related_information",
+        component: "TextField",
+        label: "Gender-related information",
+        multiline: true,
+      },
+    ],
+  },
+];
+
+export const guidelines_and_principles = [
+  {
+    name: "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
+    fields: [
+      {
+        name: "vggt_applied",
+        component: "TextField",
+        label:
+          "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
+      },
+      {
+        name: "vggt_applied_comment",
+        component: "TextField",
+        label: "Comment on VGGT",
+        multiline: true,
+      },
+    ],
+  },
+  {
+    name: "Principles for Responsible Agricultural Investments (PRAI)",
+    fields: [
+      {
+        name: "prai_applied",
+        component: "TextField",
+        label:
+          "Application of Principles for Responsible Agricultural Investments (PRAI)",
+      },
+      {
+        name: "prai_applied_comment",
+        component: "TextField",
+        label: "Comment on PRAI",
+        multiline: true,
       },
     ],
   },

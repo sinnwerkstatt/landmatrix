@@ -1,7 +1,13 @@
 <template>
   <div class="container" v-if="deal">
-    <b-tabs content-class="mt-3" vertical pills>
-      <b-tab title="Location">
+    <b-tabs
+      content-class="mt-3"
+      vertical
+      pills
+      nav-wrapper-class="position-relative"
+      nav-class="sticky-nav"
+    >
+      <b-tab title="Location" active>
         <div class="row">
           <div class="col">
             <div v-for="loc in deal.locations">
@@ -30,11 +36,14 @@
         </div>
       </b-tab>
 
-      <b-tab title="General Info">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
-      </b-tab>
+      <DealSection
+        title="General info"
+        :deal="deal"
+        :sections="general_info"
+        :readonly="true"
+      />
 
-      <b-tab title="Contracts">
+      <b-tab title="Contracts" v-if="deal.contracts.length">
         <div v-for="contract in deal.contracts">
           <h3>Contract #{{ contract.id }}</h3>
           <dl class="row">
@@ -45,13 +54,22 @@
           </dl>
         </div>
       </b-tab>
-      <b-tab title="Employment" active>
-        <DealSection :deal="deal" :sections="employment" :readonly="true" />
-      </b-tab>
-      <b-tab title="Investor Info">
-        <DealSection :deal="deal" :sections="investor_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Data sources">
+
+      <DealSection
+        title="Employment"
+        :deal="deal"
+        :sections="employment"
+        :readonly="true"
+      />
+
+      <DealSection
+        title="Investor Info"
+        :deal="deal"
+        :sections="investor_info"
+        :readonly="true"
+      />
+
+      <b-tab title="Data sources" v-if="deal.datasources.length">
         <div v-for="datasource in deal.datasources">
           <h3>Data source #{{ datasource.id }}</h3>
           <dl class="row">
@@ -65,24 +83,43 @@
           </dl>
         </div>
       </b-tab>
-      <b-tab title="Local communities">
-        <DealSection :deal="deal" :sections="local_communities_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Former use">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Produce info">
-        <DealSection :deal="deal" :sections="produce_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Water">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Gender-related info">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
-      </b-tab>
-      <b-tab title="Guidelines & Principles">
-        <DealSection :deal="deal" :sections="general_info" :readonly="true" />
-      </b-tab>
+
+      <DealSection
+        title="Local communities"
+        :deal="deal"
+        :sections="local_communities_info"
+        :readonly="true"
+      />
+
+      <DealSection
+        title="Former use"
+        :deal="deal"
+        :sections="former_use"
+        :readonly="true"
+      />
+
+      <DealSection
+        title="Produce info"
+        :deal="deal"
+        :sections="produce_info"
+        :readonly="true"
+      />
+
+      <DealSection title="Water" :deal="deal" :sections="water" :readonly="true" />
+
+      <DealSection
+        title="Gender-related info"
+        :deal="deal"
+        :sections="gender_related_info"
+        :readonly="true"
+      />
+
+      <DealSection
+        title="Guidelines & Principles"
+        :deal="deal"
+        :sections="guidelines_and_principles"
+        :readonly="true"
+      />
     </b-tabs>
   </div>
 </template>
@@ -99,11 +136,15 @@
 
   import { LGeoJson } from "vue2-leaflet";
   import {
-    employment,
     general_info,
-    produce_info,
+    employment,
     investor_info,
-    local_communities_info
+    local_communities_info,
+    former_use,
+    produce_info,
+    water,
+    gender_related_info,
+    guidelines_and_principles,
   } from "@/views/Deal/deal_fields";
   import DealSection from "@/components/Deal/DealSection";
 
@@ -115,8 +156,13 @@
         general_info,
         employment,
         investor_info,
-        produce_info,
         local_communities_info,
+        former_use,
+        produce_info,
+        water,
+        gender_related_info,
+        guidelines_and_principles,
+
         location_fields: {
           name: "Name",
           description: "Description",
@@ -223,3 +269,12 @@
     },
   };
 </script>
+
+<style lang="scss">
+  .sticky-nav {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 10%;
+    z-index: 99;
+  }
+</style>

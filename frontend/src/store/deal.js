@@ -177,11 +177,11 @@ export const dealModule = {
         has_domestic_use
         domestic_use
         has_export
-        export_country1 {id}
+        export_country1 {id name}
         export_country1_ratio
-        export_country2 {id}
+        export_country2 {id name}
         export_country2_ratio
-        export_country3 {id}
+        export_country3 {id name}
         export_country3_ratio
         use_of_produce_comment
         in_country_processing

@@ -4,8 +4,11 @@
       <span v-if="val">
         TRUE
       </span>
-      <span v-else>
+      <span v-else-if="val === false">
         FALSE
+      </span>
+      <span v-else>
+        UNDEFINED
       </span>
     </div>
   </div>
