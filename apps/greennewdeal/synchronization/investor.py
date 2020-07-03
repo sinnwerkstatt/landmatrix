@@ -3,7 +3,10 @@ import re
 import reversion
 
 from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
-from apps.landmatrix.models import HistoricalInvestorVentureInvolvement
+from apps.landmatrix.models import (
+    HistoricalInvestorVentureInvolvement,
+    HistoricalInvestor,
+)
 
 CLASSIFICATIONS_MAP = {
     "10": "PRIVATE_COMPANY",
@@ -27,7 +30,10 @@ CLASSIFICATIONS_MAP = {
 }
 
 
-def hist_to_inv(histvestor):
+def histvestor_to_investor(histvestor):
+    if isinstance(histvestor, int):
+        histvestor = HistoricalInvestor.objects.get(id=histvestor)
+
     investor, created = Investor.objects.get_or_create(
         id=histvestor.investor_identifier
     )

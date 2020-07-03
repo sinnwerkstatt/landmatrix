@@ -198,19 +198,9 @@ if GND_ENABLED:
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
-        # "django_elasticsearch",
         "webpack_loader",
         "ariadne.contrib.django",
     ]
-    # ELASTICSEARCH_DSL = {
-    #     "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},
-    # }
-    # ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
-    # ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
-    #     "apps.greennewdeal.documents.signals.DoNothingProcessor"
-    #     # "apps.greennewdeal.documents.signals.CelerySignalProcessor"
-    # )
-    # ELASTICSEARCH_DSL_PARALLEL ...
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
     WEBPACK_LOADER = {
         "DEFAULT": {

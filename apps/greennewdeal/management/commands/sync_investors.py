@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from apps.greennewdeal.models import Investor
-from apps.greennewdeal.synchronization.investor import hist_to_inv
+from apps.greennewdeal.synchronization.investor import histvestor_to_investor
 from apps.landmatrix.models import HistoricalInvestor
 
 
@@ -20,4 +20,4 @@ class Command(BaseCommand):
             try:
                 Investor.objects.get(old_id=histvestor.id)
             except Investor.DoesNotExist:
-                hist_to_inv(histvestor)
+                histvestor_to_investor(histvestor)

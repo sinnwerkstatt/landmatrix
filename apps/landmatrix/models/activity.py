@@ -1020,9 +1020,11 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             from apps.greennewdeal.tasks import task_propagate_save_to_gnd_deal
 
             if settings.CELERY_ENABLED:
-                task_propagate_save_to_gnd_deal.delay(self.pk)
+                transaction.on_commit(
+                    lambda: task_propagate_save_to_gnd_deal.delay(self.pk)
+                )
             else:
-                task_propagate_save_to_gnd_deal(self.pk)
+                transaction.on_commit(lambda: task_propagate_save_to_gnd_deal(self.pk))
 
     class Meta:
         verbose_name = _("Historical activity")

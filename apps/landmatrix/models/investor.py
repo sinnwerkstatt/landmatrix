@@ -622,9 +622,13 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
             from apps.greennewdeal.tasks import task_propagate_save_to_gnd_investor
 
             if settings.CELERY_ENABLED:
-                task_propagate_save_to_gnd_investor.delay(self.pk)
+                transaction.on_commit(
+                    lambda: task_propagate_save_to_gnd_investor.delay(self.pk)
+                )
             else:
-                task_propagate_save_to_gnd_investor(self.pk)
+                transaction.on_commit(
+                    lambda: task_propagate_save_to_gnd_investor(self.pk)
+                )
 
     class Meta:
         verbose_name = _("Historical investor")
