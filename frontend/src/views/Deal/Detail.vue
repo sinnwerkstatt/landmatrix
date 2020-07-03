@@ -124,12 +124,6 @@
   </div>
 </template>
 
-<style lang="scss">
-  .logo {
-    width: 300px;
-    text-align: center;
-  }
-</style>
 <script>
   import store from "@/store";
   import BigMap from "@/components/BigMap";
@@ -271,6 +265,11 @@
 </script>
 
 <style lang="scss">
+  .logo {
+    width: 300px;
+    text-align: center;
+  }
+
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;

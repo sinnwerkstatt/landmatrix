@@ -2,20 +2,10 @@
   <div class="container" v-if="investor">
     <h2>General Info</h2>
     <dl class="row">
-      <dt class="col-3">Name</dt>
-      <dd class="col-9">{{ investor.name }}</dd>
-    </dl>
-    <dl class="row">
-      <dt class="col-3">Country of registration/origin</dt>
-      <dd class="col-9">{{ investor.country.name }}</dd>
-    </dl>
-    <dl class="row">
-      <dt class="col-3">Classification</dt>
-      <dd class="col-9">{{ investor.classification }}</dd>
-    </dl>
-    <dl class="row">
-      <dt class="col-3">Comment</dt>
-      <dd class="col-9">{{ investor.comment }}</dd>
+      <template v-for="(name, field) in fields" v-if="investor[field]">
+        <dt class="col-3">{{ name }}</dt>
+        <dd class="col-9">{{ investor[field] }}</dd>
+      </template>
     </dl>
 
     <b-tabs content-class="mt-3">
@@ -85,64 +75,64 @@
       </b-tab>
     </b-tabs>
 
-    <div id="investor-network"></div>
-    <div class="row">
-      <div id="investor-level" class="col-sm-6">
-        <h5>Level of parent investors</h5>
-        <div class="slider-container col-sm-8">
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value="1"
-            class="slider"
-            id="depth"
-            autocomplete="off"
-          />
-        </div>
-        <div class="col-sm-8">
-          <input
-            type="checkbox"
-            class="show_deals"
-            id="show_deals"
-            checked="checked"
-            autocomplete="off"
-          />
-          <label for="show_deals">{% trans "Show deals" %}</label>
-        </div>
-      </div>
-      <div id="investor-legend" class="col-sm-6">
-        <h5>{% trans "Legend" %}</h5>
-        <ul class="list-unstyled">
-          <li>
-            <span class="legend-icon deal"></span> {% trans "Is operating company of" %}
-          </li>
-          <li>
-            <span class="legend-icon parent"></span> {% trans "Is parent company of" %}
-          </li>
-          <li>
-            <span class="legend-icon tertiary"></span> {% trans "Is tertiary
-            investor/lender of" %}
-          </li>
-          <li>
-            <span class="legend-icon has-children"></span> {% trans "Left-click to
-            reveal related parent companies and tertiary investors/lenders." %}
-          </li>
-          <li>
-            <span class="legend-icon investor"></span> {% trans "Right-click on
-            investors to get more information." %}
-          </li>
-          <li>
-            <span class="legend-icon none"></span> {% trans "Left-click to hide related
-            parent companies and tertiary investors/lenders." %}
-          </li>
-          <li>
-            <span class="legend-icon none"></span> {% trans "Double-click to zoom in."
-            %}
-          </li>
-        </ul>
-      </div>
-    </div>
+<!--    <div id="investor-network"></div>-->
+<!--    <div class="row">-->
+<!--      <div id="investor-level" class="col-sm-6">-->
+<!--        <h5>Level of parent investors</h5>-->
+<!--        <div class="slider-container col-sm-8">-->
+<!--          <input-->
+<!--            type="range"-->
+<!--            min="1"-->
+<!--            max="10"-->
+<!--            value="1"-->
+<!--            class="slider"-->
+<!--            id="depth"-->
+<!--            autocomplete="off"-->
+<!--          />-->
+<!--        </div>-->
+<!--        <div class="col-sm-8">-->
+<!--          <input-->
+<!--            type="checkbox"-->
+<!--            class="show_deals"-->
+<!--            id="show_deals"-->
+<!--            checked="checked"-->
+<!--            autocomplete="off"-->
+<!--          />-->
+<!--          <label for="show_deals">{% trans "Show deals" %}</label>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div id="investor-legend" class="col-sm-6">-->
+<!--        <h5>{% trans "Legend" %}</h5>-->
+<!--        <ul class="list-unstyled">-->
+<!--          <li>-->
+<!--            <span class="legend-icon deal"></span> {% trans "Is operating company of" %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon parent"></span> {% trans "Is parent company of" %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon tertiary"></span> {% trans "Is tertiary-->
+<!--            investor/lender of" %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon has-children"></span> {% trans "Left-click to-->
+<!--            reveal related parent companies and tertiary investors/lenders." %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon investor"></span> {% trans "Right-click on-->
+<!--            investors to get more information." %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon none"></span> {% trans "Left-click to hide related-->
+<!--            parent companies and tertiary investors/lenders." %}-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <span class="legend-icon none"></span> {% trans "Double-click to zoom in."-->
+<!--            %}-->
+<!--          </li>-->
+<!--        </ul>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -159,11 +149,21 @@
   export default {
     props: ["investor_id"],
     data() {
-      return {};
+      return {
+        fields: {
+          name: "Name",
+          country: "Country of registration/origin",
+          classification: "Classification",
+          homepage: "Homepage",
+          opencorporates: "Opencorporates link",
+          comment: "Comment",
+        },
+      };
     },
     computed: {
       investor() {
-        return this.$store.state.investor.current_investor;
+        let investor = this.$store.state.investor.current_investor;
+        if (investor) return { ...investor, country: investor.country.name };
       },
       involvements() {
         return this.investor.involvements;

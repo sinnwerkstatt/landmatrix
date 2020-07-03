@@ -983,7 +983,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             hinvestor = hinvolvement.fk_investor
             investor = hinvestor.update_public_investor()
 
-        self.save(update_elasticsearch=True)
+        self.save(trigger_gnd=True)
 
     @property
     def changeset_comment(self):
@@ -1005,7 +1005,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
         trigger_gnd = kwargs.pop("trigger_gnd", False)
         super().save(*args, **kwargs)
-        if update_elasticsearch:
+        if update_elasticsearch and settings.OLD_ELASTIC:
             from apps.landmatrix.tasks import index_activity, delete_historicalactivity
 
             if self.fk_status_id == self.STATUS_DELETED:

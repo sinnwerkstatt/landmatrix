@@ -192,6 +192,7 @@ print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
 
 # GreenNewDeal
+OLD_ELASTIC = env("OLD_ELASTIC", default=True)
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
     INSTALLED_APPS += [
