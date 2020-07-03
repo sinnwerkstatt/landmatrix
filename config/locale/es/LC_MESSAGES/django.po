@@ -4649,8 +4649,10 @@ msgid ""
 "      You will be sent back to the article...\n"
 "      "
 msgstr ""
+"\n"
 "Hemos recibido su comentario y lo hemos publicado en el sitio web.<br/>\n"
-"      Se le reenviará al artículo…"
+"      Se le reenviará al artículo...\n"
+"      "
 
 #: templates/comments/posted.html:19
 msgid "Back to the article"
@@ -4896,7 +4898,7 @@ msgstr ""
 "Si esto es un error, simplemente ignore este correo electrónico y nada "
 "sucederá.\n"
 "\n"
-"Para restablecer su contraseña, visite la siguiente dirección:"
+"Para restablecer su contraseña, visite la siguiente dirección:\n"
 
 #: templates/registration/password_reset_form.html:4
 #: templates/registration/password_reset_form.html:5
