@@ -31,16 +31,16 @@
 </template>
 
 <script>
-  import ArrayField from "@/components/Fields/ArrayField";
-  import BooleanField from "@/components/Fields/BooleanField";
-  import NullBooleanField from "@/components/Fields/BooleanField";
-  import CharField from "@/components/Fields/TextField";
-  import DecimalField from "@/components/Fields/DecimalField";
-  import FloatField from "@/components/Fields/DecimalField";
-  import IntegerField from "@/components/Fields/DecimalField";
-  import ForeignKey from "@/components/Fields/ForeignKeyField";
-  import TextField from "@/components/Fields/TextField";
-  import JSONField from "@/components/Fields/ValueDateField";
+  import ArrayField from "/components/Fields/ArrayField";
+  import BooleanField from "/components/Fields/BooleanField";
+  import NullBooleanField from "/components/Fields/BooleanField";
+  import CharField from "/components/Fields/TextField";
+  import DecimalField from "/components/Fields/DecimalField";
+  import FloatField from "/components/Fields/DecimalField";
+  import IntegerField from "/components/Fields/DecimalField";
+  import ForeignKey from "/components/Fields/ForeignKeyField";
+  import TextField from "/components/Fields/TextField";
+  import JSONField from "/components/Fields/ValueDateField";
 
   export default {
     props: ["title", "sections", "deal", "readonly"],

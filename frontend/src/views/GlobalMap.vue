@@ -591,9 +591,8 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import BigMap from "@/components/BigMap";
-  import axios from "axios";
+  import store from "/store";
+  import BigMap from "/components/BigMap";
 
   import "leaflet";
   import { PruneCluster, PruneClusterForLeaflet } from "prunecluster-exportable/dist";

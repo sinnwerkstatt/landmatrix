@@ -1,5 +1,6 @@
 <template>
   <div class="container" v-if="deal && deal_fields">
+
     <b-tabs
       content-class="mt-3"
       vertical
@@ -130,11 +131,11 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import BigMap from "@/components/BigMap";
+  import store from "/store";
+  import BigMap from "/components/BigMap";
 
   import { LGeoJson } from "vue2-leaflet";
-  import DealSection from "@/components/Deal/DealSection";
+  import DealSection from "/components/Deal/DealSection";
   import { mapState } from "vuex";
 
   export default {

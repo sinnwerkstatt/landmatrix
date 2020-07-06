@@ -17,8 +17,8 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import BigMap from "@/components/BigMap";
+  import store from "/store";
+  import BigMap from "/components/BigMap";
   import { LCircle, LTooltip } from "vue2-leaflet";
   import axios from "axios";
 

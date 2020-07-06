@@ -44,8 +44,8 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import BigMap from "@/components/BigMap";
+  import store from "/store";
+  import BigMap from "/components/BigMap";
 
   let MAP;
 

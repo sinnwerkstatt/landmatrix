@@ -155,7 +155,7 @@
   </nav>
 </template>
 <script>
-  import NavbarSelect from "@/components/NavbarSelect";
+  import NavbarSelect from "/components/NavbarSelect";
 
   export default {
     components: { NavbarSelect },

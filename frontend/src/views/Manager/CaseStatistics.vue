@@ -82,9 +82,9 @@
 <script>
   import axios from "axios";
   import dayjs from "dayjs";
-  import DealTable from "@/components/Deal/DealTable";
+  import DealTable from "/components/Deal/DealTable";
   import { mapState } from "vuex";
-  import InvestorTable from "@/components/Investor/InvestorTable";
+  import InvestorTable from "/components/Investor/InvestorTable";
 
   export default {
     components: { InvestorTable, DealTable },

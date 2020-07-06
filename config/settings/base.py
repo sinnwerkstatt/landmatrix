@@ -199,19 +199,19 @@ if GND_ENABLED:
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
-        "webpack_loader",
+        # "webpack_loader",
         "ariadne.contrib.django",
     ]
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
-    WEBPACK_LOADER = {
-        "DEFAULT": {
-            "BUNDLE_DIR_NAME": "/",  # must end with slash
-            "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
-            "POLL_INTERVAL": 0.1,
-            "TIMEOUT": None,
-            "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-        }
-    }
+    # WEBPACK_LOADER = {
+    #     "DEFAULT": {
+    #         "BUNDLE_DIR_NAME": "/",  # must end with slash
+    #         "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
+    #         "POLL_INTERVAL": 0.1,
+    #         "TIMEOUT": None,
+    #         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    #     }
+    # }
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import Navbar from "@/components/ChartsNavbar";
+  import Navbar from "/components/ChartsNavbar";
 
   export default {
     name: "Charts",

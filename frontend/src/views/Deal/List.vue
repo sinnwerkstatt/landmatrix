@@ -6,8 +6,8 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import DealTable from "@/components/Deal/DealTable";
+  import store from "/store";
+  import DealTable from "/components/Deal/DealTable";
 
   export default {
     components: { DealTable },

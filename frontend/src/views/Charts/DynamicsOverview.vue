@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import store from "@/store";
+  import store from "/store";
   import Chart from "chart.js";
 
   let neg_status = [

@@ -143,7 +143,7 @@
   }
 </style>
 <script>
-  import store from "@/store";
+  import store from "/store";
   // import { loadInvestorNetwork, mapValues } from "./investor-network";
 
   export default {

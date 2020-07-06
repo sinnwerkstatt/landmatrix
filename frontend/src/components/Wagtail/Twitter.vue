@@ -30,7 +30,7 @@
           {{ dayjs(status.created_at).format("MMM. DD, YYYY, H:mm") }}
         </a>
       </div>
-      <div class="twitter-timeline-text" v-html="status.text" />
+      <div class="twitter-timeline-text" v-html="status.text"></div>
     </div>
     <div v-else class="twitter-timeline-empty">
       Feed currently not available.

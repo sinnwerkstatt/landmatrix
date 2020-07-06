@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { pageModule } from "@/store/page";
-import { dealModule } from "@/store/deal";
-import { investorModule } from "@/store/investor";
+import { pageModule } from "./page";
+import { dealModule } from "./deal";
+import { investorModule } from "./investor";
 import axios from "axios";
 
 Vue.use(Vuex);
