@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="deal">
+  <div class="container" v-if="deal && deal_fields">
     <b-tabs
       content-class="mt-3"
       vertical
@@ -37,9 +37,9 @@
       </b-tab>
 
       <DealSection
-        title="General info"
+        :title="deal_fields.general_info.label"
         :deal="deal"
-        :sections="general_info"
+        :sections="deal_fields.general_info.subsections"
         :readonly="true"
       />
 
@@ -56,16 +56,16 @@
       </b-tab>
 
       <DealSection
-        title="Employment"
+        :title="deal_fields.employment.label"
         :deal="deal"
-        :sections="employment"
+        :sections="deal_fields.employment.subsections"
         :readonly="true"
       />
 
       <DealSection
-        title="Investor Info"
+        :title="deal_fields.investor_info.label"
         :deal="deal"
-        :sections="investor_info"
+        :sections="deal_fields.investor_info.subsections"
         :readonly="true"
       />
 
@@ -85,39 +85,44 @@
       </b-tab>
 
       <DealSection
-        title="Local communities"
+        :title="deal_fields.local_communities.label"
         :deal="deal"
-        :sections="local_communities_info"
+        :sections="deal_fields.local_communities.subsections"
         :readonly="true"
       />
 
       <DealSection
-        title="Former use"
+        :title="deal_fields.former_use.label"
         :deal="deal"
-        :sections="former_use"
+        :sections="deal_fields.former_use.subsections"
         :readonly="true"
       />
 
       <DealSection
-        title="Produce info"
+        :title="deal_fields.produce_info.label"
         :deal="deal"
-        :sections="produce_info"
-        :readonly="true"
-      />
-
-      <DealSection title="Water" :deal="deal" :sections="water" :readonly="true" />
-
-      <DealSection
-        title="Gender-related info"
-        :deal="deal"
-        :sections="gender_related_info"
+        :sections="deal_fields.produce_info.subsections"
         :readonly="true"
       />
 
       <DealSection
-        title="Guidelines & Principles"
+        :title="deal_fields.water.label"
         :deal="deal"
-        :sections="guidelines_and_principles"
+        :sections="deal_fields.water.subsections"
+        :readonly="true"
+      />
+
+      <DealSection
+        :title="deal_fields.gender_related_info.label"
+        :deal="deal"
+        :sections="deal_fields.gender_related_info.subsections"
+        :readonly="true"
+      />
+
+      <DealSection
+        :title="deal_fields.guidelines_and_principles.label"
+        :deal="deal"
+        :sections="deal_fields.guidelines_and_principles.subsections"
         :readonly="true"
       />
     </b-tabs>
@@ -129,38 +134,18 @@
   import BigMap from "@/components/BigMap";
 
   import { LGeoJson } from "vue2-leaflet";
-  import {
-    general_info,
-    employment,
-    investor_info,
-    local_communities_info,
-    former_use,
-    produce_info,
-    water,
-    gender_related_info,
-    guidelines_and_principles,
-  } from "@/views/Deal/deal_fields";
   import DealSection from "@/components/Deal/DealSection";
+  import { mapState } from "vuex";
 
   export default {
     props: ["deal_id"],
     components: { DealSection, BigMap, LGeoJson },
     data() {
       return {
-        general_info,
-        employment,
-        investor_info,
-        local_communities_info,
-        former_use,
-        produce_info,
-        water,
-        gender_related_info,
-        guidelines_and_principles,
-
         location_fields: {
           name: "Name",
           description: "Description",
-          point: "Point",
+          // point: "Point",
           facility_name: "Facility Name",
           level_of_accuracy: "Level of Accuracy",
           comment: "Comment",
@@ -182,6 +167,9 @@
       };
     },
     computed: {
+      ...mapState({
+        deal_fields: (state) => state.deal.deal_fields,
+      }),
       deal() {
         return this.$store.state.deal.current_deal;
       },

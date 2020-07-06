@@ -21,7 +21,6 @@
 
 <script>
   import store from "@/store";
-  import { general_info } from "./deal_fields";
   import MapEditor from "@/components/MapEditor";
   import DealSection from "@/components/Deal/DealSection";
 
@@ -31,7 +30,7 @@
     props: ["deal_id"],
     data() {
       return {
-        general_info: general_info,
+        general_info: "gi",
       };
     },
     computed: {

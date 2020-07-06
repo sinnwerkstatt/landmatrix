@@ -16,6 +16,7 @@ from apps.graphql.resolvers.deal import (
     deal_type,
     resolve_dealversions,
 )
+from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
     resolve_investor,
     resolve_investors,
@@ -48,6 +49,7 @@ query.set_field("involvements", resolve_involvements)
 query.set_field("aggregations", resolve_aggregations)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)
+query.set_field("formfields", resolve_formfields)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

@@ -1,9 +1,10 @@
 <template>
   <div>
     <div v-if="readonly">
-      <div v-for="val in vals">
-        <span v-if="val.date">[{{ val.date }}]</span> {{ val.value }}<br />
-      </div>
+      {{vals}}
+<!--      <div v-for="val in vals">-->
+<!--        <span v-if="val.date">[{{ val.date }}]</span> {{ val.value.join(', ') }}<br />-->
+<!--      </div>-->
     </div>
     <div v-else>
       <div v-for="(val, i) in vals" :key="i" class="my-1">

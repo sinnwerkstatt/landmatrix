@@ -430,6 +430,7 @@ def parse_produce_info(deal, attrs):
     deal.domestic_use = domestic_use
 
     deal.has_export = attrs.get("has_export") == "True"
+    deal.export = attrs.get("export")
 
     export_country1 = attrs.get("export_country1")
     export_country2 = attrs.get("export_country2")

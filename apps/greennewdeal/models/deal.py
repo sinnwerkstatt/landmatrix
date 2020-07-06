@@ -50,10 +50,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     """ General info """
     # Land area
     country = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, blank=True, null=True
+        Country,
+        verbose_name=_("Target Country"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     intended_size = models.DecimalField(
-        _("Intended size"), max_digits=12, decimal_places=2, blank=True, null=True
+        _("Intended size (in ha)"),
+        help_text=_("ha"),
+        max_digits=12,
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
     contract_size = JSONField(
         _("Size under contract (leased or purchased area, in ha)"),
@@ -67,36 +76,50 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         blank=True,
         null=True,
     )
-    land_area_comment = models.TextField(blank=True)
+    land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
     INTENTION_CHOICES = (
-        # Agriculture
-        ("BIOFUELS", "Biofuels"),
-        ("FOOD_CROPS", "Food crops"),
-        ("FODDER", "Fodder"),
-        ("LIVESTOCK", "Livestock"),
-        ("NON_FOOD_AGRICULTURE", "Non-food agricultural commodities"),
-        ("AGRICULTURE_UNSPECIFIED", "Agriculture unspecified"),
-        # Forestry
-        ("TIMBER_PLANTATION", "Timber plantation"),
-        ("FOREST_LOGGING", "Forest logging / management"),
-        ("CARBON", "For carbon sequestration/REDD"),
-        ("FORESTRY_UNSPECIFIED", "Forestry unspecified"),
-        # Other
-        ("MINING", "Mining"),
-        ("OIL_GAS_EXTRACTION", "Oil / Gas extraction"),
-        ("TOURISM", "Tourism"),
-        ("INDUSTRY", "Industry"),
-        ("CONVERSATION", "Conservation"),
-        ("LAND_SPECULATION", "Land speculation"),
-        ("RENEWABLE_ENERGY", "Renewable Energy"),
-        ("OTHER", "Other"),
+        (
+            _("Agriculture"),
+            (
+                ("BIOFUELS", _("Biofuels")),
+                ("FOOD_CROPS", _("Food crops")),
+                ("FODDER", _("Fodder")),
+                ("LIVESTOCK", _("Livestock")),
+                ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
+                ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
+            ),
+        ),
+        (
+            _("Forestry"),
+            (
+                ("TIMBER_PLANTATION", _("Timber plantation")),
+                ("FOREST_LOGGING", _("Forest logging / management")),
+                ("CARBON", _("For carbon sequestration/REDD")),
+                ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
+            ),
+        ),
+        (
+            _("Other"),
+            (
+                ("MINING", _("Mining")),
+                ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
+                ("TOURISM", _("Tourism")),
+                ("INDUSTRY", _("Industry")),
+                ("CONVERSATION", _("Conservation")),
+                ("LAND_SPECULATION", _("Land speculation")),
+                ("RENEWABLE_ENERGY", _("Renewable Energy")),
+                ("OTHER", _("Other")),
+            ),
+        ),
     )
     intention_of_investment = JSONField(
-        _("Intention of the investment"), blank=True, null=True
+        _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
     )
-    intention_of_investment_comment = models.TextField(blank=True)
+    intention_of_investment_comment = models.TextField(
+        _("Comment on intention of investment"), blank=True
+    )
 
     # Nature of the deal
     NATURE_OF_DEAL_CHOICES = (
@@ -110,9 +133,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
     )
     nature_of_deal = ArrayField(
-        models.CharField(
-            _("Nature of the deal"), max_length=100, choices=NATURE_OF_DEAL_CHOICES
-        ),
+        models.CharField(_("Nature of the deal"), max_length=100),
+        choices=NATURE_OF_DEAL_CHOICES,
         blank=True,
         null=True,
     )
@@ -122,17 +144,37 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     # # Negotiation status
     NEGOTIATION_STATUS_CHOICES = (
-        ("EXPRESSION_OF_INTEREST", "Expression of interest"),
-        ("UNDER_NEGOTIATION", "Under negotiation"),
-        ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
-        ("ORAL_AGREEMENT", "Oral agreement"),
-        ("CONTRACT_SIGNED", "Contract signed"),
-        ("NEGOTIATIONS_FAILED", "Negotiations failed"),
-        ("CONTRACT_CANCELED", "Contract canceled"),
+        (
+            _("Intended"),
+            (
+                ("EXPRESSION_OF_INTEREST", "Expression of interest"),
+                ("UNDER_NEGOTIATION", "Under negotiation"),
+                ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
+            ),
+        ),
+        (
+            _("Concluded"),
+            (
+                ("ORAL_AGREEMENT", "Oral agreement"),
+                ("CONTRACT_SIGNED", "Contract signed"),
+            ),
+        ),
+        (
+            _("Failed"),
+            (
+                ("NEGOTIATIONS_FAILED", "Negotiations failed"),
+                ("CONTRACT_CANCELED", "Contract canceled"),
+            ),
+        ),
         ("CONTRACT_EXPIRED", "Contract expired"),
         ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
     )
-    negotiation_status = JSONField(_("Negotiation status"), blank=True, null=True)
+    negotiation_status = JSONField(
+        _("Negotiation status"),
+        choices=NEGOTIATION_STATUS_CHOICES,
+        blank=True,
+        null=True,
+    )
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
     )
@@ -144,17 +186,23 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         ("IN_OPERATION", "In operation (production)"),
         ("PROJECT_ABANDONED", "Project abandoned"),
     )
-    implementation_status = JSONField(_("Implementation status"), blank=True, null=True)
+    implementation_status = JSONField(
+        _("Implementation status"),
+        choices=IMPLEMENTATION_STATUS_CHOICES,
+        blank=True,
+        null=True,
+    )
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
     )
 
     # Purchase price
     purchase_price = models.DecimalField(
-        max_digits=18, decimal_places=2, blank=True, null=True
+        _("Purchase price"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     purchase_price_currency = models.ForeignKey(
         "Currency",
+        verbose_name=_("Purchase price currency"),
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -165,7 +213,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         ("PER_AREA", _("for specified area")),
     )
     purchase_price_type = models.CharField(
-        max_length=100, choices=HA_AREA_CHOICES, blank=True, null=True
+        _("Purchase price area type"),
+        max_length=100,
+        choices=HA_AREA_CHOICES,
+        blank=True,
+        null=True,
     )
     purchase_price_area = models.DecimalField(
         _("Purchase price area"),
@@ -180,17 +232,22 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     # Leasing fees
     annual_leasing_fee = models.DecimalField(
-        max_digits=18, decimal_places=2, blank=True, null=True
+        _("Annual leasing fee"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     annual_leasing_fee_currency = models.ForeignKey(
         "Currency",
+        verbose_name=_("Annual leasing fee currency"),
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="deal_annual_leasing_fee",
     )
     annual_leasing_fee_type = models.CharField(
-        max_length=100, choices=HA_AREA_CHOICES, blank=True, null=True
+        _("Annual leasing fee area type"),
+        max_length=100,
+        choices=HA_AREA_CHOICES,
+        blank=True,
+        null=True,
     )
     annual_leasing_fee_area = models.DecimalField(
         _("Annual leasing fee area"),
@@ -200,7 +257,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
     )
     annual_leasing_fee_comment = models.TextField(
-        _("Comment on leasing fees"), blank=True
+        _("Comment on leasing fee"), blank=True
     )
 
     # Contract farming
@@ -433,36 +490,41 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     RECOGNITION_STATUS_CHOICES = (
         (
             "INDIGENOUS_RIGHTS_RECOGNIZED",
-            "Indigenous Peoples traditional or customary rights recognized by government",
+            _(
+                "Indigenous Peoples traditional or customary rights recognized by government"
+            ),
         ),
         (
             "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
-            "Indigenous Peoples traditional or customary rights not recognized by government",
+            _(
+                "Indigenous Peoples traditional or customary rights not recognized by government"
+            ),
         ),
         (
             "COMMUNITY_RIGHTS_RECOGNIZED",
-            "Community traditional or customary rights recognized by government",
+            _("Community traditional or customary rights recognized by government"),
         ),
         (
             "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
-            "Community traditional or customary rights not recognized by government",
+            _("Community traditional or customary rights not recognized by government"),
         ),
     )
     recognition_status = ArrayField(
         models.CharField(
-            _("Recognition status"), max_length=100, choices=RECOGNITION_STATUS_CHOICES
+            _("Recognition status of community land tenure"), max_length=100,
         ),
+        choices=RECOGNITION_STATUS_CHOICES,
         blank=True,
         null=True,
     )
     recognition_status_comment = models.TextField(
-        _("Comment on recognitions status of community land tenure"), blank=True
+        _("Comment on recognition status of community land tenure"), blank=True
     )
     COMMUNITY_CONSULTATION_CHOICES = (
-        ("NOT_CONSULTED", "Not consulted"),
-        ("LIMITED_CONSULTATION", "Limited consultation"),
-        ("FPIC", "Free, Prior and Informed Consent (FPIC)"),
-        ("OTHER", "Other"),
+        ("NOT_CONSULTED", _("Not consulted")),
+        ("LIMITED_CONSULTATION", _("Limited consultation")),
+        ("FPIC", _("Free, Prior and Informed Consent (FPIC)")),
+        ("OTHER", _("Other")),
     )
     community_consultation = models.CharField(
         _("Community consultation"),
@@ -476,9 +538,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     COMMUNITY_REACTION_CHOICES = (
-        ("CONSENT", "Consent"),
-        ("MIXED_REACTION", "Mixed reaction"),
-        ("REJECTION", "Rejection"),
+        ("CONSENT", _("Consent")),
+        ("MIXED_REACTION", _("Mixed reaction")),
+        ("REJECTION", _("Rejection")),
     )
     community_reaction = models.CharField(
         _("Community reaction"),
@@ -499,47 +561,44 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     displacement_of_people = models.NullBooleanField(_("Displacement of people"))
     displaced_people = models.IntegerField(
         _("Number of people actually displaced"), blank=True, null=True
-    )  # number_of_displaced_people
+    )
     displaced_households = models.IntegerField(
         _("Number of households actually displaced"), blank=True, null=True
-    )  # number_of_displaced_households
+    )
     displaced_people_from_community_land = models.IntegerField(
         _("Number of people displaced out of their community land"),
         blank=True,
         null=True,
-    )  # number_of_people_displaced_from_community_land
+    )
     displaced_people_within_community_land = models.IntegerField(
         _("Number of people displaced staying on community land"), blank=True, null=True
-    )  # number_of_people_displaced_within_community_land
+    )
     displaced_households_from_fields = models.IntegerField(
         _('Number of households displaced "only" from their agricultural fields'),
         blank=True,
         null=True,
-    )  # number_of_households_displaced_from_fields
+    )
     displaced_people_on_completion = models.IntegerField(
         _("Number of people facing displacement once project is fully implemented"),
         blank=True,
         null=True,
-    )  # number_of_people_displaced_on_completion
+    )
     displacement_of_people_comment = models.TextField(
-        _("Comment on presence of land conflicts"), blank=True
+        _("Comment on displacement of people"), blank=True
     )
 
     NEGATIVE_IMPACTS_CHOICES = (
-        ("ENVIRONMENTAL_DEGRADATION", "Environmental degradation"),
-        ("SOCIO_ECONOMIC", "Socio-economic"),
-        ("CULTURAL_LOSS", "Cultural loss"),
-        ("EVICTION", "Eviction"),
-        ("DISPLACEMENT", "Displacement"),
-        ("VIOLENCE", "Violence"),
-        ("OTHER", "Other"),
+        ("ENVIRONMENTAL_DEGRADATION", _("Environmental degradation")),
+        ("SOCIO_ECONOMIC", _("Socio-economic")),
+        ("CULTURAL_LOSS", _("Cultural loss")),
+        ("EVICTION", _("Eviction")),
+        ("DISPLACEMENT", _("Displacement")),
+        ("VIOLENCE", _("Violence")),
+        ("OTHER", _("Other")),
     )
     negative_impacts = ArrayField(
-        models.CharField(
-            _("Negative impacts for local communities"),
-            max_length=100,
-            choices=NEGATIVE_IMPACTS_CHOICES,
-        ),
+        models.CharField(_("Negative impacts for local communities"), max_length=100),
+        choices=NEGATIVE_IMPACTS_CHOICES,
         blank=True,
         null=True,
     )
@@ -555,24 +614,21 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     BENEFITS_CHOICES = (
-        ("HEALTH", "Health"),
-        ("EDUCATION", "Education"),
+        ("HEALTH", _("Health")),
+        ("EDUCATION", _("Education")),
         (
             "PRODUCTIVE_INFRASTRUCTURE",
-            "Productive infrastructure (e.g. irrigation, tractors, machinery...)",
+            _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
         ),
-        ("ROADS", "Roads"),
-        ("CAPACITY_BUILDING", "Capacity Building"),
-        ("FINANCIAL_SUPPORT", "Financial Support"),
-        ("COMMUNITY_SHARES", "Community shares in the investment project"),
-        ("OTHER", "Other"),
+        ("ROADS", _("Roads")),
+        ("CAPACITY_BUILDING", _("Capacity Building")),
+        ("FINANCIAL_SUPPORT", _("Financial Support")),
+        ("COMMUNITY_SHARES", _("Community shares in the investment project")),
+        ("OTHER", _("Other")),
     )
     promised_benefits = ArrayField(
-        models.CharField(
-            _("Promised benefits for local communities"),
-            max_length=100,
-            choices=BENEFITS_CHOICES,
-        ),
+        models.CharField(_("Promised benefits for local communities"), max_length=100),
+        choices=BENEFITS_CHOICES,
         blank=True,
         null=True,
     )
@@ -582,15 +638,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     materialized_benefits = ArrayField(
         models.CharField(
-            _("Materialized benefits for local communities"),
-            max_length=100,
-            choices=BENEFITS_CHOICES,
+            _("Materialized benefits for local communities"), max_length=100,
         ),
+        choices=BENEFITS_CHOICES,
         blank=True,
         null=True,
     )
     materialized_benefits_comment = models.TextField(
-        _("Comment on promised benefits for local communities"), blank=True
+        _("Comment on materialized benefits for local communities"), blank=True
     )
 
     presence_of_organizations = models.TextField(
@@ -602,17 +657,17 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Former use """
     FORMER_LAND_OWNER_CHOICES = (
-        ("STATE", "State"),
-        ("PRIVATE_SMALLHOLDERS", "Private (smallholders)"),
-        ("PRIVATE_LARGE_SCALE", "Private (large-scale farm)"),
-        ("COMMUNITY", "Community"),
-        ("INDIGENOUS_PEOPLE", "Indigenous people"),
-        ("OTHER", "Other"),
+        ("STATE", _("State")),
+        ("PRIVATE_SMALLHOLDERS", _("Private (smallholders)")),
+        ("PRIVATE_LARGE_SCALE", _("Private (large-scale farm)")),
+        ("COMMUNITY", _("Community")),
+        ("INDIGENOUS_PEOPLE", _("Indigenous people")),
+        ("OTHER", _("Other")),
     )
     former_land_owner = ArrayField(
-        models.CharField(
-            _("Former land owner"), max_length=100, choices=FORMER_LAND_OWNER_CHOICES
-        ),
+        models.CharField(max_length=100),
+        verbose_name=_("Former land owner"),
+        choices=FORMER_LAND_OWNER_CHOICES,
         blank=True,
         null=True,
     )
@@ -621,20 +676,20 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     FORMER_LAND_USE_CHOICES = (
-        ("COMMERCIAL_AGRICULTURE", "Commercial (large-scale) agriculture"),
-        ("SMALLHOLDER_AGRICULTURE", "Smallholder agriculture"),
-        ("SHIFTING_CULTIVATION", "Shifting cultivation"),
-        ("PASTORALISM", "Pastoralism"),
-        ("HUNTING_GATHERING", "Hunting/Gathering"),
-        ("FORESTRY", "Forestry"),
-        ("CONSERVATION", "Conservation"),
-        ("OTHER", "Other"),
+        ("COMMERCIAL_AGRICULTURE", _("Commercial (large-scale) agriculture")),
+        ("SMALLHOLDER_AGRICULTURE", _("Smallholder agriculture")),
+        ("SHIFTING_CULTIVATION", _("Shifting cultivation")),
+        ("PASTORALISM", _("Pastoralism")),
+        ("HUNTING_GATHERING", _("Hunting/Gathering")),
+        ("FORESTRY", _("Forestry")),
+        ("CONSERVATION", _("Conservation")),
+        ("OTHER", _("Other")),
     )
 
     former_land_use = ArrayField(
-        models.CharField(
-            _("Former land use"), max_length=100, choices=FORMER_LAND_USE_CHOICES
-        ),
+        models.CharField(max_length=100),
+        verbose_name=_("Former land use"),
+        choices=FORMER_LAND_USE_CHOICES,
         blank=True,
         null=True,
     )
@@ -643,19 +698,22 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     FORMER_LAND_COVER_CHOICES = (
-        ("CROPLAND", "Cropland"),
-        ("FOREST_LAND", "Forest land"),
-        ("PASTURE", "Pasture"),
-        ("RANGELAND", "Shrub land/Grassland (Rangeland)"),
-        ("MARGINAL_LAND", "Marginal land"),
-        ("WETLAND", "Wetland"),
-        ("OTHER_LAND", "Other land (e.g. developed land – specify in comment field)"),
+        ("CROPLAND", _("Cropland")),
+        ("FOREST_LAND", _("Forest land")),
+        ("PASTURE", _("Pasture")),
+        ("RANGELAND", _("Shrub land/Grassland (Rangeland)")),
+        ("MARGINAL_LAND", _("Marginal land")),
+        ("WETLAND", _("Wetland")),
+        (
+            "OTHER_LAND",
+            _("Other land (e.g. developed land – specify in comment field)"),
+        ),
     )
 
     former_land_cover = ArrayField(
-        models.CharField(
-            _("Former land cover"), max_length=100, choices=FORMER_LAND_COVER_CHOICES
-        ),
+        models.CharField(max_length=100),
+        verbose_name=_("Former land cover"),
+        choices=FORMER_LAND_COVER_CHOICES,
         blank=True,
         null=True,
     )
@@ -664,14 +722,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     """ Produce info """
-    crops = JSONField(_("Crops"), blank=True, null=True)
-    crops_comment = models.TextField(blank=True)
+    crops = JSONField(_("Crops area/yield/export"), blank=True, null=True)
+    crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = JSONField(_("Livestock"), blank=True, null=True)
-    animals_comment = models.TextField(blank=True)
+    animals = JSONField(_("Livestock area/yield/export"), blank=True, null=True)
+    animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    resources = JSONField(_("Resources"), blank=True, null=True)
-    resources_comment = models.TextField(blank=True)
+    resources = JSONField(_("Resources area/yield/export"), blank=True, null=True)
+    resources_comment = models.TextField(_("Comment on resources"), blank=True)
 
     contract_farming_crops = JSONField(
         _("Contract farming crops"), help_text=_("ha"), blank=True, null=True
@@ -688,15 +746,27 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     has_domestic_use = models.BooleanField(_("Has domestic use"), default=False)
     domestic_use = models.FloatField(
-        _("Ownership share"),
+        _("Domestic use"),
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     has_export = models.BooleanField(_("Has export"), default=False)
 
+    export = models.FloatField(
+        _("Export"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+
     export_country1 = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
+        Country,
+        verbose_name=_("Country 1"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
     )
     export_country1_ratio = models.FloatField(
         _("Country 1 ratio"),
@@ -705,7 +775,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     export_country2 = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
+        Country,
+        verbose_name=_("Country 2"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
     )
     export_country2_ratio = models.FloatField(
         _("Country 2 ratio"),
@@ -714,7 +789,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     export_country3 = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
+        Country,
+        verbose_name=_("Country 3"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
     )
     export_country3_ratio = models.FloatField(
         _("Country 3 ratio"),
@@ -723,7 +803,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
 
-    use_of_produce_comment = models.TextField(blank=True)
+    use_of_produce_comment = models.TextField(
+        verbose_name=_("Comment on use of produce"), blank=True
+    )
 
     in_country_processing = models.NullBooleanField(
         _("In country processing of produce")
@@ -757,11 +839,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         ("LAKE", "Lake"),
     )
     source_of_water_extraction = ArrayField(
-        models.CharField(
-            _("Source of water extraction"),
-            max_length=100,
-            choices=WATER_SOURCE_CHOICES,
-        ),
+        models.CharField(max_length=100),
+        verbose_name=_("Source of water extraction"),
+        choices=WATER_SOURCE_CHOICES,
         blank=True,
         null=True,
     )
@@ -790,7 +870,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     """ Gender-related info """
     gender_related_information = models.TextField(
-        _("Gender-related information"), blank=True
+        _("Comment on gender-related info"), blank=True
     )
 
     """ Guidelines & Principles """
@@ -823,9 +903,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     fully_updated = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
     PRIVATE_REASON_CHOICES = (
-        ("TEMPORARY_REMOVAL", "Temporary removal from PI after criticism"),
-        ("RESEARCH_IN_PROGRESS", "Research in progress"),
-        ("LAND_OBSERVATORY_IMPORT", "Land Observatory Import"),
+        ("TEMPORARY_REMOVAL", _("Temporary removal from PI after criticism")),
+        ("RESEARCH_IN_PROGRESS", _("Research in progress")),
+        ("LAND_OBSERVATORY_IMPORT", _("Land Observatory Import")),
     )
     confidential_reason = models.CharField(
         max_length=100, choices=PRIVATE_REASON_CHOICES, null=True, blank=True

@@ -47,4 +47,14 @@ type Query {
     regions: [Region]
 
     aggregations: Aggregations
+
+    formfields(language: String ="en"): FormFieldSet
 }
+
+type FormFieldSet {
+    deal: FormFields
+    location: FormFields
+    investor: FormFields
+}
+
+scalar FormFields

@@ -18,7 +18,7 @@
           </dt>
           <dd class="col-md-9">
             <component
-              :is="formfield.component"
+              :is="formfield.class"
               :formfield="formfield"
               :readonly="!!readonly"
               v-model="deal[formfield.name]"
@@ -31,22 +31,31 @@
 </template>
 
 <script>
+  import ArrayField from "@/components/Fields/ArrayField";
   import BooleanField from "@/components/Fields/BooleanField";
-  import CheckboxField from "@/components/Fields/CheckboxField";
+  import NullBooleanField from "@/components/Fields/BooleanField";
+  import CharField from "@/components/Fields/TextField";
   import DecimalField from "@/components/Fields/DecimalField";
-  import ForeignKeyField from "@/components/Fields/ForeignKeyField";
+  import FloatField from "@/components/Fields/DecimalField";
+  import IntegerField from "@/components/Fields/DecimalField";
+  import ForeignKey from "@/components/Fields/ForeignKeyField";
   import TextField from "@/components/Fields/TextField";
-  import ValueDateField from "@/components/Fields/ValueDateField";
+  import JSONField from "@/components/Fields/ValueDateField";
 
   export default {
     props: ["title", "sections", "deal", "readonly"],
     components: {
+      ArrayField,
       BooleanField,
-      CheckboxField,
+      NullBooleanField,
+      CharField,
+
       DecimalField,
-      ForeignKeyField,
+      FloatField,
+      IntegerField,
+      ForeignKey,
       TextField,
-      ValueDateField,
+      JSONField,
     },
     methods: {
       custom_is_null(field) {

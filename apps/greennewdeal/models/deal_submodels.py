@@ -36,7 +36,11 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
         ("COORDINATES", _("Coordinates")),
     )
     level_of_accuracy = models.CharField(
-        choices=ACCURACY_CHOICES, max_length=100, blank=True, null=True
+        _("Spatial accuracy level"),
+        choices=ACCURACY_CHOICES,
+        max_length=100,
+        blank=True,
+        null=True,
     )
     comment = models.TextField(blank=True)
 

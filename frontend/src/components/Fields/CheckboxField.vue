@@ -1,7 +1,8 @@
 <template>
   <div>
     <div v-if="readonly">
-      <span v-for="val in vals">{{ val }}</span>
+      <span v-for="val in vals">{{ val }}<br /></span>
+
     </div>
     <div v-else class="input-group">
       <div v-for="(key, val) in formfield.options">
