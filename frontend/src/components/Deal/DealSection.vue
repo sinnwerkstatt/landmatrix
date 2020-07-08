@@ -40,7 +40,7 @@
   import IntegerField from "/components/Fields/DecimalField";
   import ForeignKey from "/components/Fields/ForeignKeyField";
   import TextField from "/components/Fields/TextField";
-  import JSONField from "/components/Fields/ValueDateField";
+  import JSONField from "/components/Fields/JSONField";
 
   export default {
     props: ["title", "sections", "deal", "readonly"],

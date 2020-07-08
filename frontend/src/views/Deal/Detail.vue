@@ -1,6 +1,5 @@
 <template>
   <div class="container" v-if="deal && deal_fields">
-
     <b-tabs
       content-class="mt-3"
       vertical
@@ -137,6 +136,7 @@
   import { LGeoJson } from "vue2-leaflet";
   import DealSection from "/components/Deal/DealSection";
   import { mapState } from "vuex";
+  import router from "/router";
 
   export default {
     props: ["deal_id"],
@@ -228,27 +228,34 @@
       onEachFeatureFunction() {
         return (feature, layer) => {
           let tooltip = `<div>
-                <div>ID: ${feature.properties.id}</div>
-                <div>Name: ${feature.properties.name}</div>
-                <div>Type: ${feature.properties.type}</div>
-            </div>`;
+                  <div>ID: ${feature.properties.id}</div>
+                  <div>Name: ${feature.properties.name}</div>
+                  <div>Type: ${feature.properties.type}</div>
+              </div>`;
           layer.bindTooltip(tooltip, { permanent: false, sticky: true });
         };
       },
     },
     methods: {},
+
     beforeRouteEnter(to, from, next) {
       let title = `Deal #${to.params.deal_id}`;
-      store.dispatch("setCurrentDeal", to.params.deal_id);
-      store.dispatch("setPageContext", {
-        title: title,
-        breadcrumbs: [
-          { link: { name: "wagtail" }, name: "Home" },
-          { link: { name: "deal_list" }, name: "Data" },
-          { name: title },
-        ],
-      });
-      next();
+      store
+        .dispatch("setCurrentDeal", to.params.deal_id)
+        .then(() => {
+          store.dispatch("setPageContext", {
+            title: title,
+            breadcrumbs: [
+              { link: { name: "wagtail" }, name: "Home" },
+              { link: { name: "deal_list" }, name: "Data" },
+              { name: title },
+            ],
+          });
+          next();
+        })
+        .catch(() => {
+          router.replace({ name: "404" });
+        });
     },
   };
 </script>

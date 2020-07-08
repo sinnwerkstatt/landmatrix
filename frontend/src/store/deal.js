@@ -246,8 +246,16 @@ export const dealModule = {
         geojson
         }
       }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setCurrentDeal", response.data.data.deal);
+
+      return new Promise(function (resolve, reject) {
+        axios.post("/graphql/", { query }).then((response) => {
+          let resdata = response.data.data;
+          if (resdata) {
+            context.commit("setCurrentDeal", resdata.deal);
+            resolve(resdata.deal);
+          }
+          reject(resdata);
+        });
       });
     },
   },
