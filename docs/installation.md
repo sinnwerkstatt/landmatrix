@@ -4,13 +4,18 @@
 You will need PostgreSQL including PostGIS. This project will **not** work with anything else.
 
 ```bash
+#ubuntu 18.04
 sudo apt install postgresql-10 postgresql-10-postgis-scripts
+#ubuntu 20.04
+sudo apt install postgresql-12 postgresql-12-postgis-3-scripts
+
+# creation of the relevant database with extension
 sudo -u postgres psql -c "CREATE USER landmatrix WITH PASSWORD 'landmatrix'"
 sudo -u postgres psql -c "CREATE DATABASE landmatrix WITH OWNER landmatrix"
 sudo -u postgres psql landmatrix -c "CREATE EXTENSION postgis"
 ```
 
-You also need [ElasticSearch Version 5](https://www.elastic.co/de/downloads/past-releases/elasticsearch-5-0-0)
+At the moment you also still need [ElasticSearch Version 5](https://www.elastic.co/de/downloads/past-releases/elasticsearch-5-0-0) - this will hopefully be deprecated by the end of 2020.
 
 ### Python
 To install the requirements into a virtual environment this project uses [Poetry](https://poetry.eustace.io/).
@@ -34,7 +39,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 sudo apt update && sudo apt install yarn
 ```
 
-### Custom settings via .env
+### Custom settings via `.env`
 
 Any kind of settings you need to set for your system should happen in the `.env` file.
 Usually you should **not** have to edit files in `settings/`.

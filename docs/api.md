@@ -1,6 +1,6 @@
 # Landmatrix API Documentation
 
-The Landmatrix API is available at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/) and provides deal as well as investor data sets.
+The Landmatrix API is available at [https://dev.landmatrix.org/graphql/](https://dev.landmatrix.org/graphql/) and provides **deal** as well as **investor** data sets.
 The API requires you to write your queries in [GraphQL syntax](https://graphql.org/learn/) and returns the matching data sets as a [JSON](https://www.json.org/json-en.html) formatted response.
 
 
@@ -20,15 +20,15 @@ The Investor data schema including all available fields can be found in the `Sch
 
 #### Deal data by ID
 
-If you want to recieve a specific deal by ID you can pass the ID as an argument to the query. In this case you are querying for the data type `deal`.
+If you want to receive a specific deal by ID you can pass the ID as an argument to the query. In this case you are querying for the data type `deal`.
 ```
 {
   deal(id: 3) {
     geojson
   }
 }
-``` 
-will return 
+```
+will return
 ```
 {
   "data": {
@@ -63,24 +63,15 @@ _Deal IDs can for example be found [in the data section](https://landmatrix.org/
 
 Data on all deals available can be recieved by querying for `deals`.
 ```
+# This will return data of the first 5 deals (ordered by ID).
 {
   deals(limit: 5) {
+    id
+    country
     geojson
   }
 }
 ```
-for example is going to return data of the first 5 deals ordered by ID (asc).
-
-
-```
-{
-  deals(limit: 5, sort: "target_country") {
-    geojson
-  }
-}
-```
-returns data for of the first 5 deals sorted alphabetically by target country (asc).
-Note that the response data sets are ordered first before the limitation is applied.
 
 #### Investor data by ID
 
@@ -96,7 +87,7 @@ To find a specific investor by ID simply pass the ID to the `investor` query:
   }
 }
 ```
-is going to return 
+is going to return
 ```
 {
   "data": {
@@ -113,8 +104,9 @@ is going to return
 
 #### All investor data
 
-Data on all investors available can be recieved by querying for `investors`.
+Analogous to the deals, data on multiple investors can be queried with the `investors` query.
 ```
+# This will return `id` and `name` of the first 5 investors ordered ascending by ID.
 {
   investors(limit: 5) {
     id
@@ -122,13 +114,13 @@ Data on all investors available can be recieved by querying for `investors`.
   }
 }
 ```
-for example is going to return `id` and `name` of the first 5 investors ordered ascending by ID.
+
 
 
 ### Filters
 
 In most use cases you may want to specify some fields and conditions you want to have your query results filtered by.
-You can pass a `filter` array to your query as an argument. More information on GraphQL filtering can be found on [GRANDstack](https://grandstack.io/docs/graphql-filtering/#filter-argument).
+You can pass a `filter` array to your query as an argument.
 
 #### Filter examples
 
@@ -142,7 +134,8 @@ If you want to apply a filter you can directly incorporate the filter array into
 }
 ```
 
-You can also chain multiple filters by combining them into a filter array. The filters are treated as if combined with an `AND` operator.
+You can also chain multiple filters by combining them into a filter array.
+The filters will be logically combined with an `AND` operator.
 
 ```
 {
@@ -171,7 +164,7 @@ If you want to create a logical `OR` filter on a specific field you can use the 
     ]
   ) {
     id
-	deal_size
+    deal_size
   }
 }
 ```

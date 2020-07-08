@@ -12,7 +12,6 @@ transparency and accountability in decisions over land and investment.
 The website is our Global Observatory - an open tool for collecting and visualising
 information about large-scale land acquisitions.
 
-See https://landmatrix.org for more information on the project.
-
-More detailed information on the projects __structure__, __installation__ and __development setup__ as well as a documentation of the __public API__ can be found on [landmatrix.readthedocs.io](https://landmatrix.readthedocs.io/en/latest/).
+Visit [https://landmatrix.org](https://landmatrix.org) for the actual database.<br>
+More detailed information on the projects __structure__, __installation__ and __development setup__ as well as a documentation of the __public API__ can be found on [landmatrix.readthedocs.io](https://landmatrix.rtfd.io/en/latest/).
 
