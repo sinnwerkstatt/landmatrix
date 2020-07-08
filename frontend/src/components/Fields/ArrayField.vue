@@ -1,15 +1,7 @@
 <template>
   <div>
     <div v-if="readonly">
-      <span v-if="val">
-        Yes
-      </span>
-      <span v-else-if="val === false">
-        No
-      </span>
-      <span v-else>
-        NULL
-      </span>
+      {{parseValues(val)}}
     </div>
   </div>
 </template>
@@ -25,6 +17,35 @@
     methods: {
       emitVal() {
         this.$emit("input", this.val);
+      },
+      parseValues: function (value) {
+        let ret = "";
+
+        let choices = this.formfield.choices;
+        if (choices) {
+          let newchoices = {};
+          for (let [key, value] of Object.entries(choices)) {
+            if (typeof value == 'string') {
+              newchoices[key] = value;
+            } else {
+              for (let [key, v] of Object.entries(value)) {
+                newchoices[key] = v;
+              }
+
+            }
+          }
+          choices = newchoices;
+        }
+
+        if (value instanceof Array) {
+          if (choices) {
+            ret += value.map((v) => choices[v]).join(", ");
+          } else ret += value.join(", ");
+        } else {
+          if (choices) ret += choices[value];
+          else ret += value;
+        }
+        return ret;
       },
     },
   };
