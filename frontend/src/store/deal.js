@@ -244,6 +244,16 @@ export const dealModule = {
           comment
         }
         geojson
+        versions {
+          id
+          deal { fully_updated status draft_status }
+          revision {
+            id
+            date_created
+            user { id full_name }
+            comment
+          }
+        }
         }
       }`;
 

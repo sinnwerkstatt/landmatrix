@@ -51,10 +51,14 @@ deal_type.set_field("datasources", lambda obj, info: obj.datasources.all())
 deal_type.set_field("contracts", lambda obj, info: obj.contracts.all())
 
 
-@deal_type.field("reversions")
-def get_deal_reversions(obj, info: GraphQLResolveInfo):
-    versions = Version.objects.get_for_object(obj, model_db=None)
-    return [x.field_dict for x in versions]
+@deal_type.field("versions")
+def get_deal_versions(obj, info: GraphQLResolveInfo):
+    versions = Version.objects.get_for_object(obj, model_db=None).select_related(
+        "revision"
+    )
+    return [
+        {"id": x.id, "deal": x.field_dict, "revision": x.revision} for x in versions
+    ]
 
 
 def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
@@ -65,7 +69,7 @@ def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
         qs = qs.filter(**parse_filters(filters))
     print(qs.count())
 
-    return [{"timestamp": x.revision.date_created, "deal": x.field_dict} for x in qs]
+    return [{"id": x.id, "deal": x.field_dict, "revision": x.revision} for x in qs]
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):

@@ -7,7 +7,6 @@
       nav-wrapper-class="position-relative"
       nav-class="sticky-nav"
     >
-
       <DealLocationSection
         :title="deal_fields.location.label"
         :deal="deal"
@@ -104,6 +103,48 @@
         :sections="deal_fields.guidelines_and_principles.subsections"
         :readonly="true"
       />
+
+      <b-tab disabled>
+        <template v-slot:title>
+          <hr />
+        </template>
+      </b-tab>
+
+      <b-tab title="Deal History">
+        <div>
+          <h3>History</h3>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th class="">Timestamp</th>
+                <th class="">User</th>
+                <th class="">Fully updated</th>
+                <th class="">Status</th>
+                <th class="">Comment</th>
+                <th class=""></th>
+                <th class=""></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="version in deal.versions">
+                <td>{{ version.revision.date_created | defaultdate }}</td>
+                <td>{{ version.revision.user && version.revision.user.full_name }}</td>
+                <td>{{ version.deal.fully_updated ? "✓" : "" }}</td>
+                <td>
+                  {{ derive_status(version.deal.status, version.deal.draft_status) }}
+                </td>
+                <td>{{ version.revision.comment }}</td>
+                <td>
+                  <span :href="`/newdeal/deal/${deal.id}/${version.revision.id}/`">
+                    Show - not working yet
+                  </span>
+                </td>
+                <td>Compare with previous - not working yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -112,10 +153,9 @@
   import store from "/store";
   import DealSection from "/components/Deal/DealSection";
   import DealLocationSection from "/components/Deal/DealLocationSection";
-
+  import { derive_status } from "/utils";
   import { mapState } from "vuex";
   import router from "/router";
-
 
   export default {
     props: ["deal_id"],
@@ -137,6 +177,9 @@
           comment: "Comment",
         },
       };
+    },
+    methods: {
+      derive_status,
     },
     computed: {
       ...mapState({

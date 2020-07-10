@@ -29,6 +29,7 @@ from apps.graphql.resolvers.user import (
     resolve_logout,
     resolve_users,
     user_regional_info_type,
+    user_type,
 )
 from apps.graphql.scalars import geopoint_scalar
 
@@ -60,7 +61,8 @@ schema = make_executable_schema(
     [datetime_scalar, date_scalar, geopoint_scalar],
     query,
     mutation,
+    user_type,
+    user_regional_info_type,
     deal_type,
     investor_type,
-    user_regional_info_type,
 )

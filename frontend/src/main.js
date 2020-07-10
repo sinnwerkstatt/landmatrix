@@ -5,6 +5,7 @@ import router from "./router";
 import store from "./store";
 import Multiselect from "vue-multiselect";
 import VCalendar from "v-calendar";
+import dayjs from "dayjs";
 
 import '@fortawesome/fontawesome-free/css/all.css'
 
@@ -69,6 +70,11 @@ store.dispatch("fetchCountriesAndRegions");
 store.dispatch("fetchWagtailRootPage");
 
 store.dispatch("fetchFields", "en");
+
+
+Vue.filter('defaultdate', function (value) {
+  return dayjs(value).format("YYYY-MM-DD HH:mm")
+});
 
 export default new Vue({
   router,

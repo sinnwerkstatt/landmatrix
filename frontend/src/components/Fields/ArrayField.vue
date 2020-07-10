@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import flatten_choices from "/utils";
+  import {flatten_choices} from "/utils";
 
   export default {
     props: ["formfield", "value", "readonly"],

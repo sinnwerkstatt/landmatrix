@@ -197,13 +197,9 @@ type Deal {
     draft_status_display: String
     timestamp: DateTime
 
-    reversions: [Deal]
+    versions: [DealVersion]
 }
 
-type DealVersion {
-    timestamp: DateTime
-    deal: Deal
-}
 
 type Location {
     id: Int!
@@ -257,6 +253,19 @@ type Aggregations {
     deal_size_sum: Int
     deal_count: Int
     by_negotiation_status: Dict
+}
+
+type DealVersion {
+    id: Int!
+    deal: Deal
+    revision: Revision
+}
+
+type Revision {
+    id: Int!
+    date_created: DateTime
+    user: User
+    comment: String
 }
 
 scalar Dict
