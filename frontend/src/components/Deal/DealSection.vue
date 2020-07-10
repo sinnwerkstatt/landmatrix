@@ -7,23 +7,24 @@
         v-if="!readonly || any_field_in_section(section)"
       >
         <h3>{{ section.name }}</h3>
-        <dl
-          v-for="formfield in section.fields"
-          :key="formfield.name"
-          :class="['row', 'mt-3', formfield.name]"
-          v-if="!readonly || custom_is_null(deal[formfield.name])"
-        >
-          <dt class="col-md-3">
-            {{ formfield.label }}
-          </dt>
-          <dd class="col-md-9">
-            <component
-              :is="formfield.class"
-              :formfield="formfield"
-              :readonly="!!readonly"
-              v-model="deal[formfield.name]"
-            ></component>
-          </dd>
+        <dl class="row mt-3">
+          <template
+            v-for="formfield in section.fields"
+            :class="formfield.name"
+            v-if="!readonly || custom_is_null(deal[formfield.name])"
+          >
+            <dt class="col-md-3" :key="`dt-${formfield.name}`">
+              {{ formfield.label }}
+            </dt>
+            <dd class="col-md-9" :key="`dd-${formfield.name}`">
+              <component
+                :is="formfield.class"
+                :formfield="formfield"
+                :readonly="!!readonly"
+                v-model="deal[formfield.name]"
+              ></component>
+            </dd>
+          </template>
         </dl>
       </div>
     </div>

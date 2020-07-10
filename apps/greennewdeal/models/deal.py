@@ -34,7 +34,7 @@ class DealManager(models.Manager):
             Q(operating_company__is_actually_unknown=True)
             & ~Q(operating_company__investors__investor__is_actually_unknown=False)
         )
-        # TODO: Open question: just role = "Stakeholder"?
+        # TODO: Open question: just role = "PARENT"?
         return qs
 
 
@@ -345,7 +345,6 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on jobs created (total)"), blank=True
     )
 
-    # TODO: should this be NullBoolean? same goes for many other fields.
     foreign_jobs_created = models.BooleanField(
         _("Jobs created (foreign)"), default=False
     )

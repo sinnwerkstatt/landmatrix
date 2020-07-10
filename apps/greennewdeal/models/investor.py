@@ -191,8 +191,8 @@ class InvestorVentureInvolvement(
     )
 
     ROLE_CHOICES = (
-        ("STAKEHOLDER", _("Parent company")),
-        ("INVESTOR", _("Tertiary investor/lender")),
+        ("PARENT", _("Parent company")),
+        ("LENDER", _("Tertiary investor/lender")),
     )
     role = models.CharField(
         verbose_name=_("Relation type"), max_length=100, choices=ROLE_CHOICES

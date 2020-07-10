@@ -195,7 +195,7 @@ def parse_employment(deal, attrs):
 
 
 def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
-    # TODO: Is this logic sound?
+    # TODO: Simon - Is this logic sound?
     involvements = HistoricalInvestorActivityInvolvement.objects.filter(
         fk_activity=act_version
     ).order_by("-id")

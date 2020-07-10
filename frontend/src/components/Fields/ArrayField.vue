@@ -7,6 +7,8 @@
 </template>
 
 <script>
+  import flatten_choices from "/utils";
+
   export default {
     props: ["formfield", "value", "readonly"],
     data() {
@@ -21,21 +23,7 @@
       parseValues: function (value) {
         let ret = "";
 
-        let choices = this.formfield.choices;
-        if (choices) {
-          let newchoices = {};
-          for (let [key, value] of Object.entries(choices)) {
-            if (typeof value == 'string') {
-              newchoices[key] = value;
-            } else {
-              for (let [key, v] of Object.entries(value)) {
-                newchoices[key] = v;
-              }
-
-            }
-          }
-          choices = newchoices;
-        }
+        let choices = flatten_choices(this.formfield.choices);
 
         if (value instanceof Array) {
           if (choices) {

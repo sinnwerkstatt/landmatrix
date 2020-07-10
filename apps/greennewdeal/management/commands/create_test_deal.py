@@ -272,7 +272,7 @@ class Command(BaseCommand):
             status=2,
         )
         InvestorVentureInvolvement.objects.create(
-            investor=pi, venture=i1, role="STAKEHOLDER"
+            investor=pi, venture=i1, role="PARENT"
         )
         deal.operating_company = i1
         deal.save()

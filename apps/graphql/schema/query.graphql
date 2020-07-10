@@ -54,6 +54,8 @@ type Query {
 type FormFieldSet {
     deal: FormFields
     location: FormFields
+    contract: FormFields
+    datasource: FormFields
     investor: FormFields
 }
 

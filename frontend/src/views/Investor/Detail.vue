@@ -171,12 +171,12 @@
     },
     methods: {
       detect_role(investor) {
-        if (investor.role === "STAKEHOLDER") {
+        if (investor.role === "PARENT") {
           if (investor.involvement_type === "INVESTOR") return "Parent company";
           if (investor.involvement_type === "VENTURE")
             return "Involved in as Parent Company";
         }
-        if (investor.role === "INVESTOR") {
+        if (investor.role === "LENDER") {
           if (investor.involvement_type === "INVESTOR")
             return "Tertiary investor/lender";
           if (investor.involvement_type === "VENTURE")

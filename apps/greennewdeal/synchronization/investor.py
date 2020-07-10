@@ -95,7 +95,7 @@ def _create_involvements_for_investor(investor, histvestor):
         ivi.old_id = histvolvement.pk
 
 
-ROLE_MAP = {"ST": "STAKEHOLDER", "IN": "INVESTOR"}
+ROLE_MAP = {"ST": "PARENT", "IN": "LENDER"}
 INVESTMENT_MAP = {"10": "EQUITY", "20": "DEBT_FINANCING"}
 PARENTAL_RELATION_MAP = {
     None: None,
