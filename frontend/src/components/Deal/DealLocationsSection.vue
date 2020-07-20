@@ -8,7 +8,7 @@
   >
     <div class="col">
       <big-map
-        :containerStyle="{ 'max-height': '300px', height: '300px' }"
+        :containerStyle="{ 'max-height': '90%', height: '90%' }"
         :bounds="bounds"
       >
         <l-geo-json

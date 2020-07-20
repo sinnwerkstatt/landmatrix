@@ -108,7 +108,7 @@
           "margin-left": "auto",
           "margin-right": "auto",
           position: "relative",
-          height: "75vh",
+          // height: "75vh",
           "min-height": "500px",
           ...this.containerStyle,
         };

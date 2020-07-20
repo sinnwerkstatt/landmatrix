@@ -128,7 +128,7 @@
                 <th class="">Status</th>
                 <th class="">Comment</th>
                 <th class=""><i class="fa fa-eye" aria-hidden="true"></i></th>
-                <th class=""></th>
+                <th class=""><i class="fa fa-exchange" aria-hidden="true"></i></th>
               </tr>
             </thead>
             <tbody>
@@ -161,7 +161,7 @@
                 </td>
                 <td>
                   <span :href="`/newdeal/deal/compare/${version.revision.id}/`">
-                    Compare with previous - not working
+                    Compare with previous<br>not working yet
                   </span>
                 </td>
               </tr>
