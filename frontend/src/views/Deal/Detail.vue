@@ -1,11 +1,30 @@
 <template>
   <div class="container" v-if="deal && deal_fields">
+    <div class="loadingscreen" v-if="loading">
+      <div class="loader"></div>
+    </div>
+<!--    <div class="quicknav">-->
+<!--      <div v-for="(version, i) in deal.versions">-->
+<!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
+<!--          >Current</span-->
+<!--        >-->
+<!--        <router-link-->
+<!--          v-else-->
+<!--          :to="{-->
+<!--            name: 'deal_detail',-->
+<!--            params: { deal_id, deal_version: version.revision.id },-->
+<!--          }"-->
+<!--          >{{ version.revision.date_created | defaultdate }}</router-link-->
+<!--        >-->
+<!--      </div>-->
+<!--    </div>-->
     <b-tabs
       content-class="mt-3"
       vertical
       pills
       nav-wrapper-class="position-relative"
       nav-class="sticky-nav"
+      :key="deal_id + deal_version"
     >
       <DealLocationSection
         :title="deal_fields.location.label"
@@ -21,17 +40,12 @@
         :readonly="true"
       />
 
-      <b-tab title="Contracts" v-if="deal.contracts.length">
-        <div v-for="contract in deal.contracts">
-          <h3>Contract #{{ contract.id }}</h3>
-          <dl class="row">
-            <template v-for="(name, field) in contract_fields" v-if="contract[field]">
-              <dt class="col-3">{{ name }}</dt>
-              <dd class="col-9">{{ contract[field] }}</dd>
-            </template>
-          </dl>
-        </div>
-      </b-tab>
+      <DealSubmodelSection
+        :title="deal_fields.contract.label"
+        :submodel="deal.contracts"
+        :fields="deal_fields.contract.fields"
+        :readonly="true"
+      />
 
       <DealSection
         :title="deal_fields.employment.label"
@@ -47,20 +61,12 @@
         :readonly="true"
       />
 
-      <b-tab title="Data sources" v-if="deal.datasources.length">
-        <div v-for="datasource in deal.datasources">
-          <h3>Data source #{{ datasource.id }}</h3>
-          <dl class="row">
-            <template
-              v-for="(name, field) in datasource_fields"
-              v-if="datasource[field]"
-            >
-              <dt class="col-3">{{ name }}</dt>
-              <dd class="col-9">{{ datasource[field] }}</dd>
-            </template>
-          </dl>
-        </div>
-      </b-tab>
+      <DealSubmodelSection
+        :title="deal_fields.datasource.label"
+        :submodel="deal.datasources"
+        :fields="deal_fields.datasource.fields"
+        :readonly="true"
+      />
 
       <DealSection
         :title="deal_fields.local_communities.label"
@@ -121,12 +127,12 @@
                 <th class="">Fully updated</th>
                 <th class="">Status</th>
                 <th class="">Comment</th>
-                <th class=""></th>
+                <th class=""><i class="fa fa-eye" aria-hidden="true"></i></th>
                 <th class=""></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="version in deal.versions">
+              <tr v-for="(version, i) in deal.versions">
                 <td>{{ version.revision.date_created | defaultdate }}</td>
                 <td>{{ version.revision.user && version.revision.user.full_name }}</td>
                 <td>{{ version.deal.fully_updated ? "✓" : "" }}</td>
@@ -135,11 +141,29 @@
                 </td>
                 <td>{{ version.revision.comment }}</td>
                 <td>
-                  <span :href="`/newdeal/deal/${deal.id}/${version.revision.id}/`">
-                    Show - not working yet
+                  <span
+                    v-if="
+                      (!deal_version && !i) || +deal_version === +version.revision.id
+                    "
+                    >Current</span
+                  >
+                  <router-link
+                    v-else
+                    :to="{
+                      name: 'deal_detail',
+                      params: { deal_id, deal_version: version.revision.id },
+                    }"
+                    v-slot="{ href, navigate }"
+                  >
+                    <!-- this hack helps to understand that a new version is actually loading, atm -->
+                    <a :href="href" @click="navigate">Show</a>
+                  </router-link>
+                </td>
+                <td>
+                  <span :href="`/newdeal/deal/compare/${version.revision.id}/`">
+                    Compare with previous - not working
                   </span>
                 </td>
-                <td>Compare with previous - not working yet</td>
               </tr>
             </tbody>
           </table>
@@ -152,30 +176,21 @@
 <script>
   import store from "/store";
   import DealSection from "/components/Deal/DealSection";
-  import DealLocationSection from "/components/Deal/DealLocationSection";
+  import DealLocationSection from "/components/Deal/DealLocationsSection";
+  import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
   import { derive_status } from "/utils";
   import { mapState } from "vuex";
-  import router from "/router";
 
   export default {
-    props: ["deal_id"],
-    components: { DealSection, DealLocationSection },
+    props: ["deal_id", "deal_version"],
+    components: {
+      DealSection,
+      DealLocationSection,
+      DealSubmodelSection,
+    },
     data() {
       return {
-        datasource_fields: {
-          type: "Type",
-          url: "URL",
-          file: "File",
-          date: "Date",
-          comment: "Comment",
-        },
-        contract_fields: {
-          number: "Number",
-          date: "Date",
-          expiration_date: "Expiration Date",
-          agreement_duration: "Duration of the agreement (in years)",
-          comment: "Comment",
-        },
+        loading: false,
       };
     },
     methods: {
@@ -190,23 +205,26 @@
       },
     },
     beforeRouteEnter(to, from, next) {
-      let title = `Deal #${to.params.deal_id}`;
       store
-        .dispatch("setCurrentDeal", to.params.deal_id)
+        .dispatch("setCurrentDeal", {
+          deal_id: to.params.deal_id,
+          deal_version: to.params.deal_version,
+        })
+        .then(() => next())
+        .catch(() => next({ name: "404", params: [to.path], replace: true }));
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.loading = true;
+      store
+        .dispatch("setCurrentDeal", {
+          deal_id: to.params.deal_id,
+          deal_version: to.params.deal_version,
+        })
         .then(() => {
-          store.dispatch("setPageContext", {
-            title: title,
-            breadcrumbs: [
-              { link: { name: "wagtail" }, name: "Home" },
-              { link: { name: "deal_list" }, name: "Data" },
-              { name: title },
-            ],
-          });
+          this.loading = false;
           next();
         })
-        .catch(() => {
-          router.replace({ name: "404" });
-        });
+        .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
   };
 </script>
@@ -217,5 +235,14 @@
     position: sticky;
     top: 10%;
     z-index: 99;
+  }
+
+  div.quicknav {
+    z-index: 100;
+    position: absolute;
+    right: 200px;
+    width: 200px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
   }
 </style>

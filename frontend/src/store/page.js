@@ -1,5 +1,4 @@
 import axios from "axios";
-import router from "/router";
 
 export const pageModule = {
   state: () => ({
@@ -112,29 +111,35 @@ export const pageModule = {
     },
     fetchWagtailPage(context, path) {
       let url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
-      axios.get(url).then(
-        (response) => {
-          let breadcrumbs;
-          let title;
-          if (response.data.meta.type === "wagtailcms.WagtailRootPage") {
-            title = null;
-            breadcrumbs = [];
-          } else {
-            title = response.data.title;
-            breadcrumbs = [
-              { link: { name: "wagtail" }, name: "Home" },
-              { name: title },
-            ];
+      return new Promise(function (resolve, reject) {
+        axios.get(url).then(
+          (response) => {
+            let breadcrumbs;
+            let title;
+            if (response.data.meta.type === "wagtailcms.WagtailRootPage") {
+              title = null;
+              breadcrumbs = [];
+            } else {
+              title = response.data.title;
+              breadcrumbs = [
+                { link: { name: "wagtail" }, name: "Home" },
+                { name: title },
+              ];
+            }
+            context.commit("setTitle", title);
+            context.commit("setBreadcrumbs", breadcrumbs);
+            context.commit(
+              "setSearchDescription",
+              response.data.meta.search_description
+            );
+            context.commit("setWagtailPage", response.data);
+            resolve();
+          },
+          () => {
+            reject();
           }
-          context.commit("setTitle", title);
-          context.commit("setBreadcrumbs", breadcrumbs);
-          context.commit("setSearchDescription", response.data.meta.search_description);
-          context.commit("setWagtailPage", response.data);
-        },
-        () => {
-          router.replace({ name: "404" });
-        }
-      );
+        );
+      });
     },
     setPageContext(context, page_context) {
       context.commit("setTitle", page_context.title);

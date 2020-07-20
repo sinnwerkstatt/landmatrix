@@ -1,60 +1,36 @@
 <template>
-  <b-tab :title="title" active>
-    <div class="row">
-      <div class="col">
-        <div v-for="location in deal.locations" class="panel-body">
-          <h3>{{title}} #{{ location.id }}</h3>
-          <dl class="row mt-3">
-            <template
-              v-for="formfield in fields"
-              :class="formfield.name"
-              v-if="!readonly || custom_is_null(location[formfield.name])"
-            >
-              <dt class="col-md-3" :key="`dt-${formfield.name}`">
-                {{ formfield.label }}
-              </dt>
-              <dd class="col-md-9" :key="`dd-${formfield.name}`">
-                <component
-                  :is="formfield.class"
-                  :formfield="formfield"
-                  :readonly="!!readonly"
-                  v-model="location[formfield.name]"
-                ></component>
-              </dd>
-            </template>
-          </dl>
-        </div>
-      </div>
-      <div class="col">
-        <big-map
-          :containerStyle="{ 'max-height': '300px', height: '300px' }"
-          :bounds="bounds"
-        >
-          <l-geo-json
-            v-if="deal.geojson"
-            :geojson="deal.geojson"
-            :options="geojson_options"
-            :optionsStyle="geojson_styleFunction"
-          />
-        </big-map>
-      </div>
+  <DealSubmodelSection
+    :title="title"
+    :submodel="deal.locations"
+    :fields="fields"
+    :readonly="true"
+    :active="true"
+  >
+    <div class="col">
+      <big-map
+        :containerStyle="{ 'max-height': '300px', height: '300px' }"
+        :bounds="bounds"
+      >
+        <l-geo-json
+          v-if="deal.geojson"
+          :geojson="deal.geojson"
+          :options="geojson_options"
+          :optionsStyle="geojson_styleFunction"
+        />
+      </big-map>
     </div>
-  </b-tab>
+  </DealSubmodelSection>
 </template>
 
 <script>
-  import CharField from "/components/Fields/TextField";
-  import TextField from "/components/Fields/TextField";
-  import PointField from "/components/Fields/PointField";
   import BigMap from "../BigMap";
   import { LGeoJson } from "vue2-leaflet";
+  import DealSubmodelSection from "./DealSubmodelSection";
 
   export default {
     props: ["title", "fields", "deal", "readonly"],
     components: {
-      CharField,
-      PointField,
-      TextField,
+      DealSubmodelSection,
       BigMap,
       LGeoJson,
     },

@@ -175,9 +175,9 @@ type Deal {
 
 
     # Foreign Keys
-    locations: [Location]
-    contracts: [Contract]
-    datasources: [DataSource]
+    locations(version: Int): [Location]
+    contracts(version: Int): [Contract]
+    datasources(version: Int): [DataSource]
 
     #### Calculated fields
     top_investors: [Investor]

@@ -15,10 +15,12 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchFields(context, language="en") {
-      let query = `{ formfields(language:"${language}"){deal location} }`;
+      let query = `{ formfields(language:"${language}"){deal location contract datasource} }`;
       axios.post("/graphql/", { query }).then((response) => {
         let fields = response.data.data.formfields;
         fields.deal.location = fields.location.general_info;
+        fields.deal.contract = fields.contract.general_info;
+        fields.deal.datasource = fields.datasource.general_info;
         context.commit("setDealFields", fields.deal);
         // context.commit("setInvestorFields", fields.investor);
       });

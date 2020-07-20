@@ -3,7 +3,7 @@ type Query {
     user(id: Int!): User
     users(sort: String = "id"): [User]
 
-    deal(id: Int!): Deal!
+    deal(id: Int!, version: Int): Deal!
     deals(
         "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
         sort: String = "id",

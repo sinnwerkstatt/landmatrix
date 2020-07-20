@@ -55,7 +55,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/:deal_id/",
+      path: "/deal/:deal_id/:deal_version?/",
       name: "deal_detail",
       component: DealDetail,
       props: true,
@@ -109,7 +109,12 @@ const router = new Router({
       component: CaseStatistics,
     },
     {
-      path: "/404/",
+      path: "*",
+      name: "wagtail",
+      component: WagtailPage,
+    },
+    {
+      path: "*",
       name: "404",
       component: NotFound,
       beforeEnter(to, from, next) {
@@ -119,11 +124,6 @@ const router = new Router({
         });
         next();
       },
-    },
-    {
-      path: "*",
-      name: "wagtail",
-      component: WagtailPage,
     },
   ],
 

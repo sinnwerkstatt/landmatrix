@@ -52,14 +52,23 @@ export const dealModule = {
         }
       });
     },
-    setCurrentDeal(context, deal_id) {
+    setCurrentDeal(context, { deal_id, deal_version }) {
       if (!deal_id) {
         context.commit("setCurrentDeal", {});
         return;
       }
-
+      let filter = `id:${deal_id}`;
+      let version = "";
+      if (deal_version) {
+        filter = `id:${deal_id},version:${deal_version}`;
+        version = `(version:${deal_version})`;
+      }
+      // let filter = deal_version
+      //   ? `id:${deal_id},version:${deal_version}`
+      //   : `id:${deal_id}`;
+      // let version = deal_version?`(version:${deal_version})`:'';
       let query = `{
-        deal(id:${deal_id}) {
+        deal(${filter}) {
         id
         # General Info
         ## Land area
@@ -210,7 +219,7 @@ export const dealModule = {
         vggt_applied_comment
         prai_applied
         prai_applied_comment
-        locations {
+        locations${version} {
           id
           name
           description
@@ -219,7 +228,7 @@ export const dealModule = {
           level_of_accuracy
           comment
         }
-        contracts {
+        contracts${version} {
           id
           number
           date
@@ -227,7 +236,7 @@ export const dealModule = {
           agreement_duration
           comment
         }
-        datasources {
+        datasources${version} {
           id
           type
           url
@@ -258,14 +267,36 @@ export const dealModule = {
       }`;
 
       return new Promise(function (resolve, reject) {
-        axios.post("/graphql/", { query }).then((response) => {
-          let resdata = response.data.data;
-          if (resdata) {
-            context.commit("setCurrentDeal", resdata.deal);
-            resolve(resdata.deal);
-          }
-          reject(resdata);
-        });
+        axios
+          .post("/graphql/", {
+            query,
+          })
+          .then((response) => {
+            let resdata = response.data.data;
+            if (resdata) {
+              context.commit("setCurrentDeal", resdata.deal);
+              resolve(resdata.deal);
+
+              let title = `Deal #${deal_id}`;
+              context.commit("setTitle", title);
+              context.commit("setBreadcrumbs", [
+                {
+                  link: {
+                    name: "wagtail",
+                  },
+                  name: "Home",
+                },
+                {
+                  link: {
+                    name: "deal_list",
+                  },
+                  name: "Data",
+                },
+                { name: title },
+              ]);
+            }
+            reject(resdata);
+          });
       });
     },
   },

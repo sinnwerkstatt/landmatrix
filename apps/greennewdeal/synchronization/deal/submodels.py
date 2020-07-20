@@ -9,6 +9,8 @@ from apps.greennewdeal.models import Contract, DataSource, Location
 
 
 def create_locations(deal, groups, timestamp):
+    all_locations = set(c.id for c in deal.locations.all())
+
     ACCURACY_MAP = {
         None: None,
         "Country": "COUNTRY",
@@ -20,6 +22,7 @@ def create_locations(deal, groups, timestamp):
     for group_id, attrs in sorted(groups.items()):
         try:
             location = Location.objects.get(deal=deal, old_group_id=group_id)
+            all_locations.remove(location.id)
         except Location.DoesNotExist:
             location = Location(deal=deal, old_group_id=group_id)
 
@@ -78,12 +81,17 @@ def create_locations(deal, groups, timestamp):
             location.areas = {"type": "FeatureCollection", "features": features}
         location.timestamp = timestamp
         location.save()
+    if all_locations:
+        Location.objects.filter(id__in=all_locations).delete()
 
 
 def create_contracts(deal, groups, timestamp):
+    all_contracts = set(c.id for c in deal.contracts.all())
+
     for group_id, attrs in sorted(groups.items()):
         try:
             contract = Contract.objects.get(deal=deal, old_group_id=group_id)
+            all_contracts.remove(contract.id)
         except Contract.DoesNotExist:
             contract = Contract(deal=deal, old_group_id=group_id)
 
@@ -101,9 +109,13 @@ def create_contracts(deal, groups, timestamp):
         contract.comment = attrs.get("tg_contract_comment") or ""
         contract.timestamp = timestamp
         contract.save()
+    if all_contracts:
+        Contract.objects.filter(id__in=all_contracts).delete()
 
 
 def create_data_sources(deal, groups, timestamp):
+    all_ds = set(c.id for c in deal.datasources.all())
+
     TYPE_MAP = {
         None: None,
         "Media report": "MEDIA_REPORT",
@@ -120,6 +132,7 @@ def create_data_sources(deal, groups, timestamp):
     for group_id, attrs in sorted(groups.items()):
         try:
             data_source = DataSource.objects.get(deal=deal, old_group_id=group_id)
+            all_ds.remove(data_source.id)
         except DataSource.DoesNotExist:
             data_source = DataSource(deal=deal, old_group_id=group_id)
 
@@ -171,3 +184,5 @@ def create_data_sources(deal, groups, timestamp):
 
         data_source.timestamp = timestamp
         data_source.save()
+    if all_ds:
+        DataSource.objects.filter(id__in=all_ds).delete()
