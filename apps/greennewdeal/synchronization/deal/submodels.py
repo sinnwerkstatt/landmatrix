@@ -9,6 +9,8 @@ from apps.greennewdeal.models import Contract, DataSource, Location
 
 
 def create_locations(deal, groups, timestamp):
+    all_locations = set(c.id for c in deal.locations.all())
+
     ACCURACY_MAP = {
         None: None,
         "Country": "COUNTRY",
@@ -20,40 +22,34 @@ def create_locations(deal, groups, timestamp):
     for group_id, attrs in sorted(groups.items()):
         try:
             location = Location.objects.get(deal=deal, old_group_id=group_id)
+            all_locations.remove(location.id)
         except Location.DoesNotExist:
             location = Location(deal=deal, old_group_id=group_id)
 
         location.name = attrs.get("location") or ""
         location.description = attrs.get("location_description") or ""
 
+        location.comment = attrs.get("tg_location_comment") or ""
+
         # location.point
         if attrs.get("point_lat") and attrs.get("point_lon"):
-            # FIXME Fixes for broken data
             try:
                 point_lat = attrs.get("point_lat").replace(",", ".").replace("°", "")
                 point_lat = float(point_lat)
             except ValueError:
-                print(
-                    f"ValueError on {deal.id}\tpoint_lat\t{attrs.get('point_lat')}\t\thttps://landmatrix.org/deal/{deal.id}/{attrs.activity_id}/"
-                )
+                pass
             try:
                 point_lon = attrs.get("point_lon").replace(",", ".").replace("°", "")
                 point_lon = float(point_lon)
             except ValueError:
-                print(
-                    f"ValueError on {deal.id}\tpoint_lon\t{attrs.get('point_lon')}\t\thttps://landmatrix.org/deal/{deal.id}/{attrs.activity_id}/"
-                )
+                pass
             try:
                 location.point = Point(point_lon, point_lat)
-            except UnboundLocalError:
-                # TODO: Fix all of these before going live
-                pass
-            except Exception as e:
-                print(e, point_lon, point_lat)
+            except:
+                location.comment += f"\n\nWas unable to parse location. The values are: lat:{point_lat} lon:{point_lon}"
 
         location.facility_name = attrs.get("facility_name") or ""
         location.level_of_accuracy = ACCURACY_MAP[attrs.get("level_of_accuracy")]
-        location.comment = attrs.get("tg_location_comment") or ""
 
         features = []
         contract_area = attrs.get("contract_area", "polygon")
@@ -85,12 +81,17 @@ def create_locations(deal, groups, timestamp):
             location.areas = {"type": "FeatureCollection", "features": features}
         location.timestamp = timestamp
         location.save()
+    if all_locations:
+        Location.objects.filter(id__in=all_locations).delete()
 
 
 def create_contracts(deal, groups, timestamp):
+    all_contracts = set(c.id for c in deal.contracts.all())
+
     for group_id, attrs in sorted(groups.items()):
         try:
             contract = Contract.objects.get(deal=deal, old_group_id=group_id)
+            all_contracts.remove(contract.id)
         except Contract.DoesNotExist:
             contract = Contract(deal=deal, old_group_id=group_id)
 
@@ -108,9 +109,13 @@ def create_contracts(deal, groups, timestamp):
         contract.comment = attrs.get("tg_contract_comment") or ""
         contract.timestamp = timestamp
         contract.save()
+    if all_contracts:
+        Contract.objects.filter(id__in=all_contracts).delete()
 
 
 def create_data_sources(deal, groups, timestamp):
+    all_ds = set(c.id for c in deal.datasources.all())
+
     TYPE_MAP = {
         None: None,
         "Media report": "MEDIA_REPORT",
@@ -127,29 +132,27 @@ def create_data_sources(deal, groups, timestamp):
     for group_id, attrs in sorted(groups.items()):
         try:
             data_source = DataSource.objects.get(deal=deal, old_group_id=group_id)
+            all_ds.remove(data_source.id)
         except DataSource.DoesNotExist:
             data_source = DataSource(deal=deal, old_group_id=group_id)
 
         data_source.type = TYPE_MAP[attrs.get("type")]
         data_source.url = attrs.get("url")
-        # TODO check if this is working..
         if attrs.get("file"):
             data_source.file.name = f"uploads/{attrs.get('file')}"
         data_source.file_not_public = attrs.get("file_not_public") == "True"
         data_source.publication_title = attrs.get("publication_title") or ""
+
+        data_source.comment = attrs.get("tg_data_source_comment") or ""
+
         ds_date = attrs.get("date")
         if ds_date:
-            # FIXME Fixes for broken data
+            # NOTE Fixes for broken data
             if ":" in ds_date:
                 ds_date = re.sub(
                     r"([0-9]{2}):([0-9]{2}):([0-9]{4})", r"\1.\2.\3", ds_date
                 )
             broken_ds_dates = {
-                "2009/2010-01-01": "2010.01.01",
-                "2009,2011-01-01": "2011.01.01",
-                "2000-2001-01-01": "2001.01.01",
-                "Infinita Renovables websites-01-01": "1970.01.01",
-                "2012_01_31-01-01": "2012.01.31",
                 "2019-18-02": "2019-02-18",
                 "2014-29-09": "2014-09-29",
                 "2017-02-29": "2017-02-28",
@@ -164,7 +167,11 @@ def create_data_sources(deal, groups, timestamp):
                 ds_date = broken_ds_dates[ds_date]
             except KeyError:
                 pass
-            data_source.date = parser.parse(ds_date).date()
+
+            try:
+                data_source.date = parser.parse(ds_date).date()
+            except:
+                data_source.comment += f"\n\nOld Date value: {ds_date}"
 
         data_source.name = attrs.get("name") or ""
         data_source.company = attrs.get("company") or ""
@@ -174,6 +181,8 @@ def create_data_sources(deal, groups, timestamp):
             attrs.get("includes_in_country_verified_information") == "True"
         )
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
-        data_source.comment = attrs.get("tg_data_source_comment") or ""
+
         data_source.timestamp = timestamp
         data_source.save()
+    if all_ds:
+        DataSource.objects.filter(id__in=all_ds).delete()

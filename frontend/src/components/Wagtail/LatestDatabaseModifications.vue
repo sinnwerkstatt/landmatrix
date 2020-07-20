@@ -23,7 +23,7 @@
           >
         </td>
         <td>{{ deal.timestamp }}</td>
-        <td>{{deal.status}}</td>
+        <td>{{ deal.status }}</td>
         <td>{{ deal.country }}</td>
       </tr>
     </tbody>
@@ -42,14 +42,14 @@
     },
     created() {
       let query = `{ deals(sort:"-timestamp", limit: ${this.value.limit})
-      { id target_country { name } status timestamp }
+      { id country { name } status timestamp }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {
         this.modifications = response.data.data.deals.map((d) => {
           return {
             id: d.id,
             timestamp: d.timestamp.split("T")[0],
-            country: d.target_country.name,
+            country: d.country.name,
             status: "TODO",
           };
         });

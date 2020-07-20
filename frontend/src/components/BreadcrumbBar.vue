@@ -28,8 +28,7 @@
 </template>
 
 <script>
-  export default {
-  };
+  export default {};
 </script>
 
 <style lang="scss" scoped>
@@ -66,11 +65,10 @@
       display: inline-block;
       color: $lm_dark;
     }
-      .router-link-active {
-              color: $lm_offwhite;
+    .router-link-active {
+      color: $lm_offwhite;
       background-color: $lm_dark;
       border-radius: 4px;
-      }
-
+    }
   }
 </style>

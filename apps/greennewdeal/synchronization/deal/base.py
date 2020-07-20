@@ -1,14 +1,19 @@
+from collections import defaultdict
+
 from apps.greennewdeal.models import Deal
 from apps.greennewdeal.models.country import Country
 from apps.greennewdeal.synchronization.helpers import _extras_to_json, _extras_to_list
 from apps.landmatrix.models import (
     HistoricalActivity,
     HistoricalInvestorActivityInvolvement,
+    Crop,
+    Animal,
+    Mineral,
 )
 
 
 def parse_general(deal, attrs):
-    deal.target_country_id = attrs.get("target_country")
+    deal.country_id = attrs.get("target_country")
     if attrs.get("intended_size"):
         deal.intended_size = float(attrs.get("intended_size"))
     deal.contract_size = _extras_to_json(attrs, "contract_size", expected_type=float)
@@ -96,35 +101,43 @@ def parse_general(deal, attrs):
     deal.purchase_price_currency_id = attrs.get("purchase_price_currency")
     deal.purchase_price_type = HA_AREA_MAP[attrs.get("purchase_price_type")]
     deal.purchase_price_area = attrs.get("purchase_price_area")
-    deal.purchase_price_comment = attrs.get("tg_purchase_price_comment") or ""
-    if attrs.get("purchase_price_comment"):
-        if deal.purchase_price_comment:
-            print("WIR HABEN ZWEIERLEI!")
-        else:
-            deal.purchase_price_comment = attrs.get("purchase_price_comment")
+    deal.purchase_price_comment = (
+        attrs.get("tg_purchase_price_comment")
+        or attrs.get("purchase_price_comment")
+        or ""
+    )
+    deal.annual_leasing_fee_comment = attrs.get("tg_leasing_fees_comment") or ""
 
     annual_leasing_fee = attrs.get("annual_leasing_fee")
-    # FIXME Fixes for broken data
+    # NOTE Adding broken data to comment
     if annual_leasing_fee == "9 USD per year per ha":
-        annual_leasing_fee = 9
-    deal.annual_leasing_fee = annual_leasing_fee
+        deal.annual_leasing_fee_comment += annual_leasing_fee
+    else:
+        deal.annual_leasing_fee = annual_leasing_fee
     annual_leasing_fee_currency = attrs.get("annual_leasing_fee_currency")
     if annual_leasing_fee_currency == "Uruguay Peso en Unidades Indexadas":
         annual_leasing_fee_currency = 154
     deal.annual_leasing_fee_currency_id = annual_leasing_fee_currency
     deal.annual_leasing_fee_type = HA_AREA_MAP[attrs.get("annual_leasing_fee_type")]
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
-    deal.annual_leasing_fees_comment = attrs.get("tg_leasing_fees_comment") or ""
 
     deal.contract_farming = attrs.get("contract_farming") == "Yes"
     deal.on_the_lease = attrs.get("on_the_lease") == "True"
     deal.on_the_lease_area = _extras_to_json(attrs, "on_the_lease_area")
-    deal.on_the_lease_farmers = _extras_to_json(attrs, "on_the_lease_farmers")
-    deal.on_the_lease_households = _extras_to_json(attrs, "on_the_lease_households")
+    deal.on_the_lease_farmers = _extras_to_json(
+        attrs, "on_the_lease_farmers", expected_type=int
+    )
+    deal.on_the_lease_households = _extras_to_json(
+        attrs, "on_the_lease_households", expected_type=int
+    )
     deal.off_the_lease = attrs.get("off_the_lease") == "True"
     deal.off_the_lease_area = _extras_to_json(attrs, "off_the_lease_area")
-    deal.off_the_lease_farmers = _extras_to_json(attrs, "off_the_lease_farmers")
-    deal.off_the_lease_households = _extras_to_json(attrs, "off_the_lease_households")
+    deal.off_the_lease_farmers = _extras_to_json(
+        attrs, "off_the_lease_farmers", expected_type=int
+    )
+    deal.off_the_lease_households = _extras_to_json(
+        attrs, "off_the_lease_households", expected_type=int
+    )
     deal.contract_farming_comment = attrs.get("tg_contract_farming_comment") or ""
 
 
@@ -182,7 +195,7 @@ def parse_employment(deal, attrs):
 
 
 def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
-    # TODO: Is this logic sound?
+    # TODO: Simon - Is this logic sound?
     involvements = HistoricalInvestorActivityInvolvement.objects.filter(
         fk_activity=act_version
     ).order_by("-id")
@@ -322,18 +335,74 @@ def parse_former_use(deal, attrs):
     deal.former_land_cover_comment = attrs.get("tg_land_cover_comment") or ""
 
 
+def _merge_area_yield_export(attrs, name, fieldmap):
+    areas = (
+        _extras_to_json(attrs, name, "hectares", fieldmap=fieldmap, multi_value=True)
+        or []
+    )
+    yyields = (
+        _extras_to_json(
+            attrs, f"{name}_yield", "tons", fieldmap=fieldmap, multi_value=True
+        )
+        or []
+    )
+    export_name = f"{name}_export" if name != "minerals" else "export"
+    exports = (
+        _extras_to_json(
+            attrs, export_name, "percent", fieldmap=fieldmap, multi_value=True
+        )
+        or []
+    )
+    for yyield in yyields:
+        if not yyield.get("value"):
+            continue
+        abgehandelt = False
+        for area in areas:
+            is_subset = set(yyield["value"]).issubset(area.get("value"))
+            if is_subset and yyield.get("date") == area.get("date"):
+                abgehandelt = True
+                if yyield.get("tons"):
+                    area["tons"] = yyield["tons"]
+        if not abgehandelt:
+            areas += [yyield]
+    for export in exports:
+        if not export.get("value"):
+            continue
+        abgehandelt = False
+        for area in areas:
+            is_subset = set(export["value"]).issubset(area.get("value"))
+            if is_subset and export.get("date") == area.get("date"):
+                abgehandelt = True
+                if export.get("percent"):
+                    area["percent"] = export["percent"]
+                    print(area)
+        if not abgehandelt:
+            areas += [export]
+    return areas
+
+
+CROP_MAP = dict(
+    [(str(x[0]), x[1]) for x in Crop.objects.all().values_list("id", "code")]
+)
+CROP_MAP["67"] = "67"
+CROP_MAP["35"] = "35"
+ANIMAL_MAP = dict(
+    [(str(x[0]), x[1]) for x in Animal.objects.all().values_list("id", "code")]
+)
+ANIMAL_MAP["Aquaculture (animals)"] = "AQU"
+ANIMAL_MAP["1"] = "1"
+MINERAL_MAP = {str(x): str(x) for x in range(101)}
+MINERAL_MAP.update(
+    dict([(str(x[0]), x[1]) for x in Mineral.objects.all().values_list("id", "code")])
+)
+
+
 def parse_produce_info(deal, attrs):
-    deal.crops = _extras_to_json(attrs, "crops", "hectares")
-    deal.crops_yield = _extras_to_json(attrs, "crops_yield", "tons")
-    deal.crops_export = _extras_to_json(attrs, "crops_export", "percent")
+    deal.crops = _merge_area_yield_export(attrs, "crops", CROP_MAP)
     deal.crops_comment = attrs.get("tg_crops_comment") or ""
-    deal.animals = _extras_to_json(attrs, "animals", "hectares")
-    deal.animals_yield = _extras_to_json(attrs, "animals_yield", "tons")
-    deal.animals_export = _extras_to_json(attrs, "animals_export", "percent")
+    deal.animals = _merge_area_yield_export(attrs, "animals", ANIMAL_MAP)
     deal.animals_comment = attrs.get("tg_animals_comment") or ""
-    deal.resources = _extras_to_json(attrs, "minerals", "hectares")
-    deal.resources_yield = _extras_to_json(attrs, "minerals_yield", "tons")
-    deal.resources_export = _extras_to_json(attrs, "export", "percent")
+    deal.resources = _merge_area_yield_export(attrs, "minerals", MINERAL_MAP)
     deal.resources_comment = attrs.get("tg_minerals_comment") or ""
 
     deal.contract_farming_crops = _extras_to_json(
@@ -351,7 +420,7 @@ def parse_produce_info(deal, attrs):
 
     deal.has_domestic_use = attrs.get("has_domestic_use") == "True"
 
-    # FIXME Fixes for broken data
+    # NOTE Fixes for broken data
     domestic_use = attrs.get("domestic_use")
     broken_domestic_use = {"20%": 20, "over 70% of the production will be exported": 30}
     try:
@@ -361,12 +430,13 @@ def parse_produce_info(deal, attrs):
     deal.domestic_use = domestic_use
 
     deal.has_export = attrs.get("has_export") == "True"
+    deal.export = attrs.get("export")
 
     export_country1 = attrs.get("export_country1")
     export_country2 = attrs.get("export_country2")
     export_country3 = attrs.get("export_country3")
 
-    # FIXME Fixes for broken data
+    # NOTE Fixes for broken data
     broken_countries = {
         "Democratic People's Republic of Korea": "Korea, Dem. People's Rep.",
         "Democratic Republic of the Congo": "Congo, Dem. Rep.",
@@ -440,7 +510,7 @@ def parse_water(deal, attrs):
         attrs.get("tg_how_much_do_investors_pay_comment") or ""
     )
 
-    # FIXME Fixes for broken data
+    # NOTE Fixes for broken data
     water_extraction_amount = attrs.get("water_extraction_amount")
     water_extraction_amount_comment = attrs.get("tg_water_extraction_amount_comment")
     broken_water_ex_amounts = {

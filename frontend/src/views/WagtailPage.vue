@@ -3,8 +3,8 @@
 </template>
 
 <script>
-  import Streamfield from "@/components/Streamfield";
-  import store from "@/store";
+  import Streamfield from "/components/Streamfield";
+  import store from "/store";
 
   export default {
     components: { Streamfield },
@@ -15,12 +15,16 @@
       },
     },
     beforeRouteEnter: (to, from, next) => {
-      store.dispatch("fetchWagtailPage", to.path);
-      next();
+      store
+        .dispatch("fetchWagtailPage", to.path)
+        .then(() => next())
+        .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     beforeRouteUpdate(to, from, next) {
-      store.dispatch("fetchWagtailPage", to.path);
-      next();
+      store
+        .dispatch("fetchWagtailPage", to.path)
+        .then(() => next())
+        .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
   };
 </script>

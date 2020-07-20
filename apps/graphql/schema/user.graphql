@@ -10,10 +10,20 @@ type User {
     is_staff: Boolean
     is_impersonate: Boolean
     date_joined: DateTime
+    userregionalinfo: UserRegionalInfo
 }
 
 type LoginPayload {
     status: Boolean!
     error: String
     user: User
+}
+
+type UserRegionalInfo {
+    user: User
+    phone: String
+    information: String
+    super_user: User
+    country: [Country]
+    region: [Region]
 }

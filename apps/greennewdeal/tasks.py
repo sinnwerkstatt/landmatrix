@@ -11,9 +11,4 @@ def task_propagate_save_to_gnd_deal(hist_deal_pk):
 
 @shared_task
 def task_propagate_save_to_gnd_investor(histvestor_id):
-    histvestor_to_investor(investor_pk=histvestor_id)
-
-
-@shared_task
-def task_propagate_save_to_gnd_involvement(involvement_id):
-    pass  # TODO
+    histvestor_to_investor(histvestor_id)

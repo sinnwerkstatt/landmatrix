@@ -1,12 +1,9 @@
 <template>
   <div class="container">
     <div v-html="mapIntroduction"></div>
-    <FilterBar />
     <big-map :options="{ zoom: 2 }" @ready="pinTheMap">
       <template v-slot:overlay>
-        <div class="overlay-header" v-if="deals">
-          {{ deals.length }} Deals
-        </div>
+        <div class="overlay-header" v-if="deals">{{ deals.length }} Deals</div>
         <div class="map-overlay">
           <div v-show="overlayVisible" class="map-overlay-content">
             <div v-show="overlayView === 'deals'" class="tab-content">
@@ -594,17 +591,15 @@
 </template>
 
 <script>
-  import store from "@/store";
-  import BigMap from "@/components/BigMap";
-  import FilterBar from "@/components/FilterBar";
-  import axios from "axios";
+  import store from "/store";
+  import BigMap from "/components/BigMap";
 
   import "leaflet";
   import { PruneCluster, PruneClusterForLeaflet } from "prunecluster-exportable/dist";
 
   export default {
     name: "GlobalMap",
-    components: { BigMap, FilterBar },
+    components: { BigMap },
     data() {
       return {
         bigmap: null,
@@ -620,7 +615,7 @@
       },
       deals() {
         return this.$store.state.deal.deals;
-      }
+      },
     },
     methods: {
       pinTheMap(x) {
@@ -654,7 +649,7 @@
               marker.category = loc.level_of_accuracy;
               pruneCluster.RegisterMarker(marker);
             }
-          })
+          });
         });
 
         this.bigmap.addLayer(pruneCluster);

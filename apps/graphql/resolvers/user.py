@@ -1,5 +1,6 @@
 from typing import Any
 
+from ariadne import ObjectType
 from ariadne.exceptions import HttpError
 from django.contrib import auth
 from graphql import GraphQLResolveInfo
@@ -27,12 +28,6 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
         raise HttpError(message="Not allowed")
 
     users = User.objects.exclude(id=current_user.id)
-    for user in users:
-        user.full_name = (
-            f"{user.first_name} {user.last_name}".strip()
-            if (user.first_name or user.last_name)
-            else user.username
-        )
 
     # this is implemented in Python, not in SQL, to support the "full_name"
     reverse = False
@@ -42,16 +37,29 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     return sorted(users, key=lambda u: u.__getattribute__(sort), reverse=reverse)
 
 
+user_type = ObjectType("User")
+
+
+@user_type.field("full_name")
+def get_deal_versions(obj: User, info: GraphQLResolveInfo):
+    full_name = (
+        f"{obj.first_name} {obj.last_name}".strip()
+        if (obj.first_name or obj.last_name)
+        else obj.username
+    )
+    return full_name
+
+
+user_regional_info_type = ObjectType("UserRegionalInfo")
+user_regional_info_type.set_field("country", lambda obj, info: obj.country.all())
+user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
+
+
 def resolve_login(_, info, username, password):
     request = info.context
     user = auth.authenticate(request, username=username, password=password)
     if user:
         auth.login(request, user)
-        user.full_name = (
-            f"{user.first_name} {user.last_name}".strip()
-            if (user.first_name or user.last_name)
-            else user.username
-        )
         return {"status": True, "user": user}
     return {"status": False, "error": "Invalid username or password"}
 

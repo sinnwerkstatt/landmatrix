@@ -1355,8 +1355,14 @@ html,body {
 }
 
 .richtext-image.fullwidth {
-  width: 100%;
+  text-align: center;
+  max-width: 100%;
   height: auto;
+  max-height: 700px;
+  width: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .richtext-image.left {

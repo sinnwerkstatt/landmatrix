@@ -13,7 +13,11 @@
             :options="users"
             label="full_name"
           ></multiselect>
-          <a type="submit" class="btn btn-primary" :href="`/impersonate/${userToImpersonate.id}/?next=/newdeal/`">
+          <a
+            type="submit"
+            class="btn btn-primary"
+            :href="`/impersonate/${userToImpersonate.id}/?next=/newdeal/`"
+          >
             Impersonate
           </a>
         </form>
@@ -97,14 +101,13 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import store from "@/store";
-
+  import axios from "axios";
+  import store from "/store";
   export default {
     data: function () {
       return {
         users: [],
-        userToImpersonate: {id:-1},
+        userToImpersonate: { id: -1 },
       };
     },
     created() {

@@ -558,7 +558,8 @@ class HistoricalInvestorTestCase(
     @patch("django.db.transaction.on_commit")
     def test_save(self, mock_on_commit):
         investor = HistoricalInvestor.objects.get(id=30)
-        investor.save(update_elasticsearch=True)
+        # removing "update_elasticsearch=True" here, because it defaults to true
+        investor.save()
         mock_on_commit.assert_called_once()
 
 

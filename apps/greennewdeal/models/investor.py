@@ -1,3 +1,5 @@
+import re
+
 import reversion
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -17,12 +19,12 @@ class InvestorManager(models.Manager):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
             return qs
-        return qs.filter(status__in=(2, 3))
+        return qs.filter(status__in=(2, 3)).exclude(name="")
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
 class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
-    name = models.CharField(_("Name"), max_length=1024, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -31,31 +33,28 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         on_delete=models.SET_NULL,
     )
 
-    STAKEHOLDER_CLASSIFICATIONS = (
-        ("PRIVATE_COMPANY", _("Private company")),
-        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
-        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
-        ("INVESTMENT_FUND", _("Investment fund")),
-        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
-        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
-        ("OTHER", _("Other (please specify in comment field)")),
-    )
-    INVESTOR_CLASSIFICATIONS = (
+    CLASSIFICATION_CHOICES = (
         ("GOVERNMENT", _("Government")),
         ("GOVERNMENT_INSTITUTION", _("Government institution")),
-        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
+        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
+        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
+        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
         (
             "BILATERAL_DEVELOPMENT_BANK",
             _("Bilateral Development Bank / Development Finance Institution"),
         ),
+        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
         ("COMMERCIAL_BANK", _("Commercial Bank")),
-        ("INVESTMENT_BANK", _("Investment Bank")),
         ("INSURANCE_FIRM", _("Insurance firm")),
+        ("INVESTMENT_BANK", _("Investment Bank")),
+        ("INVESTMENT_FUND", _("Investment fund")),
+        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
+        ("PRIVATE_COMPANY", _("Private company")),
         ("PRIVATE_EQUITY_FIRM", _("Private equity firm")),
-        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
+        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
         ("NON_PROFIT", _("Non - Profit organization (e.g. Church, University etc.)")),
+        ("OTHER", _("Other (please specify in comment field)")),
     )
-    CLASSIFICATION_CHOICES = STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     classification = models.CharField(
         verbose_name=_("Classification"),
         max_length=100,
@@ -72,7 +71,10 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     comment = models.TextField(_("Comment"), blank=True)
 
     involvements = models.ManyToManyField(
-        "self", through="InvestorVentureInvolvement", symmetrical=False,
+        "self",
+        through="InvestorVentureInvolvement",
+        through_fields=("venture", "investor"),
+        symmetrical=False,
     )
 
     STATUS_CHOICES = (
@@ -94,10 +96,24 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     )
     timestamp = models.DateTimeField(default=timezone.now, null=False)
 
+    old_id = models.IntegerField(null=True, blank=True)
+
     objects = InvestorManager()
 
+    # computed properties
+    # The following flag is needed at the moment to filter through Deals (public-filter)
+    # FIXME This should be replaced by an option to _NOT_ specify the investor name.
+    is_actually_unknown = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE):
+            self.is_actually_unknown = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.name} (#{self.id})"
+        if self.name:
+            return f"{self.name} (#{self.id})"
+        return f"s#{self.id}"
 
     def get_top_investors(self, seen_investors=None):
         """
@@ -123,6 +139,29 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             investors.update(involvement.investor.get_top_investors(seen_investors))
         return investors
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "country": {"name": self.country.name, "code": self.country.code_alpha2},
+            "classification": self.classification,
+            "opencorporates": self.opencorporates,
+            "comment": self.comment,
+            "deals": list(
+                self.deals.public().values(
+                    "id",
+                    "recognition_status",
+                    "country__name",
+                    "nature_of_deal",
+                    "intention_of_investment",
+                    "negotiation_status",
+                    "implementation_status",
+                    "deal_size",
+                )
+            ),
+        }
+
 
 class InvolvementManager(models.Manager):
     def visible(self, user=None):
@@ -140,7 +179,7 @@ class InvestorVentureInvolvement(
         Investor,
         verbose_name=_("Investor"),
         db_index=True,
-        related_name="venture_involvements",
+        related_name="ventures",
         on_delete=models.PROTECT,
     )
     venture = models.ForeignKey(
@@ -152,8 +191,8 @@ class InvestorVentureInvolvement(
     )
 
     ROLE_CHOICES = (
-        ("STAKEHOLDER", _("Parent company")),
-        ("INVESTOR", _("Tertiary investor/lender")),
+        ("PARENT", _("Parent company")),
+        ("LENDER", _("Tertiary investor/lender")),
     )
     role = models.CharField(
         verbose_name=_("Relation type"), max_length=100, choices=ROLE_CHOICES
@@ -234,3 +273,16 @@ class InvestorVentureInvolvement(
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "role": self.role,
+            "investment_type": self.investment_type,
+            "percentage": self.percentage,
+            "loans_amount": self.loans_amount,
+            "loans_currency": self.loans_currency,
+            "loans_date": self.loans_date,
+            "parent_relation": self.parent_relation,
+            "comment": self.comment,
+        }

@@ -25,6 +25,12 @@ graphql-core = "<3.1"
 ariadne = "^0.11"
 #elasticsearch-dsl = ">=7.0.0,<8.0.0"
 #django-elasticsearch = "^7.0.2"
+#numpy = "^1.19.0"
+#gdal = "3.0"
+#fiona = "^1.8.13"
+#geopandas = "^0.8.1"
+#pyshp = "^2.1.0"
+
 
 psycopg2-binary = "*"
 redis = "*"
@@ -70,7 +76,6 @@ gunicorn = { version = "*", optional = true }
 sentry_sdk = { version = "*", optional = true }
 
 
-
 [tool.poetry.dev-dependencies]
 ipdb = "*"
 black = { version = "*", allow-prereleases = true }
@@ -79,7 +84,7 @@ django-livereload = "*"
 django-extensions = "*"
 pytest-django = "*"
 pytest-cov = "*"
-pylint = "!=2.5.0"
+pylint = "<2.5.0"
 pylint-django = "*"
 pygments = "*"
 mkdocs = "*"

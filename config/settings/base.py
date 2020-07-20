@@ -92,7 +92,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # 'django.middleware.locale.LocaleMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -192,35 +192,26 @@ print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
 
 # GreenNewDeal
+OLD_ELASTIC = env("OLD_ELASTIC", default=True)
 GND_ENABLED = env("GND_ENABLED", default=False)
 if GND_ENABLED:
     INSTALLED_APPS += [
         "wagtail.api.v2",
         "apps.greennewdeal",
         "reversion",
-        # "django_elasticsearch",
-        "webpack_loader",
+        # "webpack_loader",
         "ariadne.contrib.django",
     ]
-    # ELASTICSEARCH_DSL = {
-    #     "default": {"hosts": env("GND_ELASTICSEARCH_HOST")},
-    # }
-    # ELASTICSEARCH_DSL_INDEX_SETTINGS = {"number_of_shards": 1, "number_of_replicas": 0}
-    # ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
-    #     "apps.greennewdeal.documents.signals.DoNothingProcessor"
-    #     # "apps.greennewdeal.documents.signals.CelerySignalProcessor"
-    # )
-    # ELASTICSEARCH_DSL_PARALLEL ...
     CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
-    WEBPACK_LOADER = {
-        "DEFAULT": {
-            "BUNDLE_DIR_NAME": "/",  # must end with slash
-            "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
-            "POLL_INTERVAL": 0.1,
-            "TIMEOUT": None,
-            "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-        }
-    }
+    # WEBPACK_LOADER = {
+    #     "DEFAULT": {
+    #         "BUNDLE_DIR_NAME": "/",  # must end with slash
+    #         "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
+    #         "POLL_INTERVAL": 0.1,
+    #         "TIMEOUT": None,
+    #         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    #     }
+    # }
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

@@ -13,7 +13,7 @@
 
 <script>
   import "leaflet-draw";
-  import BigMap from "@/components/BigMap";
+  import BigMap from "/components/BigMap";
 
   function addPropertiesPopup(layer, feature) {
     let select = document.createElement("select"),

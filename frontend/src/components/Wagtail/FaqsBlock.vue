@@ -4,16 +4,24 @@
       <div v-for="faq in value.faqs" class="card">
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
-            <button class="btn btn-link" data-toggle="collapse"
-                    :data-target="`#collapse-${faq.slug}`" aria-expanded="true"
-                    :aria-controls="`collapse-${faq.slug}`">
-              {{faq.question}}
+            <button
+              class="btn btn-link"
+              data-toggle="collapse"
+              :data-target="`#collapse-${faq.slug}`"
+              aria-expanded="true"
+              :aria-controls="`collapse-${faq.slug}`"
+            >
+              {{ faq.question }}
             </button>
           </h5>
         </div>
-        <div :id="`collapse-${faq.slug}`" class="collapse" aria-labelledby="headingOne"
-             data-parent="#accordion">
-          <div class="card-body" v-html="faq.answer"/>
+        <div
+          :id="`collapse-${faq.slug}`"
+          class="collapse"
+          aria-labelledby="headingOne"
+          data-parent="#accordion"
+        >
+          <div class="card-body" v-html="faq.answer" />
         </div>
       </div>
     </div>
@@ -23,10 +31,8 @@
 <script>
   export default {
     props: ["value"],
-  }
+  };
   // TODO: Richtext in answer not evaluated yet.
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

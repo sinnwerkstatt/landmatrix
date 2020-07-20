@@ -37,7 +37,7 @@
       <ul class="pager">
         {% if blogs.has_previous %}
           <li class="previous">
-            <a href="?page={{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; {% trans "Newer" %}</a>
+            <a href="?page={{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; {% trans "Previous" %}</a>
           </li>
         {% endif %}
 
@@ -53,7 +53,7 @@
 
         {% if blogs.has_next %}
           <li class="next">
-            <a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{% trans "Older" %}  &rarr;</a>
+            <a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{% trans "Next" %}  &rarr;</a>
           </li>
         {% endif %}
       </ul>

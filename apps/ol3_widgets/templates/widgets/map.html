@@ -38,7 +38,7 @@
               "disableDrawing": true,
               {% endif %}
               {% if initial_point %}
-              "initialPoint": [{{ initial_point.0 }}, {{ initial_point.1 }}],
+              "initialPoint": [{{ initial_point.0|unlocalize }}, {{ initial_point.1|unlocalize }}],
               {% endif %}
               {% if show_layer_switcher %}
               "showLayerSwitcher": true,
@@ -51,10 +51,10 @@
               "initialZoom": "{{ initial_zoom|unlocalize }}"
               {% if initial_bounds %}
               , "initialBounds": {
-                  "latMin": {{ initial_bounds.0 }},
-                  "latMax": {{ initial_bounds.1 }},
-                  "lonMin": {{ initial_bounds.2 }}
-                  "lonMax": {{ initial_bounds.3 }}
+                  "latMin": {{ initial_bounds.0|unlocalize }},
+                  "latMax": {{ initial_bounds.1|unlocalize }},
+                  "lonMin": {{ initial_bounds.2|unlocalize }}
+                  "lonMax": {{ initial_bounds.3|unlocalize }}
               }
               {% endif %}
             }'>{{ serialized }}</textarea>

@@ -1,7 +1,10 @@
 <template>
   <div>
-    <div v-if="readonly" v-for="val in vals">
-      <span v-if="val.date">[{{val.date}}]</span> {{val.value}}<br>
+    <div v-if="readonly">
+      {{vals}}
+      <!--      <div v-for="val in vals">-->
+      <!--        <span v-if="val.date">[{{ val.date }}]</span> {{ val.value.join(', ') }}<br />-->
+      <!--      </div>-->
     </div>
     <div v-else>
       <div v-for="(val, i) in vals" :key="i" class="my-1">
@@ -20,27 +23,29 @@
               @change="updateVals"
             />
           </div>
-          <multiselect
-            class="multiselect"
-            v-if="formfield.multiselect"
-            :options="formfield.multiselect.options"
-            :multiple="formfield.multiselect.multiple"
-            :closeOnSelect="!formfield.multiselect.multiple"
-            :group-values="formfield.multiselect.with_categories && 'options'"
-            :group-label="formfield.multiselect.with_categories && 'category'"
-            :customLabel="(x) => formfield.multiselect.labels[x]"
-            :placeholder="formfield.placeholder"
-            v-model="val.value"
-          />
-          <input
-            v-else
-            :type="formfield.type || `text`"
-            :placeholder="formfield.placeholder"
-            class="form-control year-based"
-            :aria-label="formfield.placeholder"
-            v-model="val.value"
-            @change="updateVals"
-          />
+          <template v-if="formfield.multiselect">
+            <multiselect
+              class="multiselect"
+              :options="formfield.multiselect.options"
+              :multiple="formfield.multiselect.multiple"
+              :closeOnSelect="!formfield.multiselect.multiple"
+              :group-values="formfield.multiselect.with_categories && 'options'"
+              :group-label="formfield.multiselect.with_categories && 'category'"
+              :customLabel="(x) => formfield.multiselect.labels[x]"
+              :placeholder="formfield.placeholder"
+              v-model="val.value"
+            />
+          </template>
+          <template v-else>
+            <input
+              :type="formfield.type || `text`"
+              :placeholder="formfield.placeholder"
+              class="form-control year-based"
+              :aria-label="formfield.placeholder"
+              v-model="val.value"
+              @change="updateVals"
+            />
+          </template>
           <div class="input-group-append" v-if="formfield.unit">
             <div class="input-group-text">{{ formfield.unit }}</div>
           </div>

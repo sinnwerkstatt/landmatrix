@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import store from "@/store";
+  import store from "/store";
   import Chart from "chart.js";
 
   let neg_status = [
@@ -91,7 +91,7 @@
           datasets: [
             {
               label: "deal size / ha",
-              backgroundColor: '#44b7b6',
+              backgroundColor: "#44b7b6",
               data: neg_status.map((n) => {
                 return n.hectares;
               }),
@@ -120,7 +120,6 @@
                 id: "B",
                 type: "linear",
                 position: "right",
-
               },
             ],
           },

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="readonly">
-      {{ val }}
+      {{ parseVal(val) }}
     </div>
     <div v-else class="input-group">
       <input
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+  import {flatten_choices} from "/utils";
+
   export default {
     props: ["formfield", "value", "readonly"],
     data() {
@@ -42,6 +44,11 @@
     methods: {
       emitVal() {
         this.$emit("input", this.val);
+      },
+      parseVal(val) {
+        let choices = flatten_choices(this.formfield.choices);
+        if (choices) return choices[val];
+        else return val;
       },
     },
   };

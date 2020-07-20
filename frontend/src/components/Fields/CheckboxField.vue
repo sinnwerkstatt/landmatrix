@@ -1,15 +1,17 @@
 <template>
   <div>
     <div v-if="readonly">
-      <span v-for="val in vals">{{val}}</span>
+      <span v-for="val in vals">{{ val }}<br /></span>
+
     </div>
     <div v-else class="input-group">
-      <div v-for="(key,val) in formfield.options">
+      <div v-for="(key, val) in formfield.options">
         <label>
-          <input type="checkbox" :value="key">
-          {{val}}
+          <input type="checkbox" :value="key" />
+          {{ val }}
         </label>
-      </div><br>
+      </div>
+      <br />
       <div v-for="val in vals"><input type="checkbox" />{{ val }}</div>
     </div>
   </div>

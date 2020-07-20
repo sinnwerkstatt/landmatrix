@@ -8,12 +8,15 @@ type Investor {
     opencorporates: String
     comment: String
 
-    involvements: [Involvement]
-    involvements_network(depth: Int=10): InvolvementsNetwork
+#    ventures: [Involvement]
+#    investors: [Involvement]
+    involvements(depth: Int=10): InvolvementsNetwork
     deals: [Deal]
 
     status: Int
     status_display: String
+    draft_status: Int
+    draft_status_display: String
     timestamp: DateTime
 }
 

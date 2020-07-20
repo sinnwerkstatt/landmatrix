@@ -697,5 +697,7 @@ class HistoricalActivityTestCase(
     @patch("django.db.transaction.on_commit")
     def test_save(self, mock_on_commit):
         activity = HistoricalActivity.objects.get(id=21)
-        activity.save(update_elasticsearch=True)
+        # removing "update_elasticsearch=True" here, because it defaults to true
+        activity.save()
+
         mock_on_commit.assert_called_once()

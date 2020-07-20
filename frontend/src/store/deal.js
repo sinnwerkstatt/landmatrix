@@ -5,6 +5,7 @@ export const dealModule = {
     deals: [],
     deals_uptodate: false,
     current_deal: null,
+    deal_fields: null,
   }),
   mutations: {
     setDeals(state, deals) {
@@ -19,6 +20,9 @@ export const dealModule = {
     setCurrentDeal(state, deal) {
       state.current_deal = deal;
     },
+    setDealFields(state, fields) {
+      state.deal_fields = fields;
+    },
   },
   actions: {
     fetchDeals(context, options) {
@@ -29,7 +33,7 @@ export const dealModule = {
         deals(limit:${limit}, after: ${after || -1}){
           id
           deal_size
-          target_country { id name }
+          country { id name }
           # top_investors { id name }
           intention_of_investment
           current_negotiation_status
@@ -48,18 +52,27 @@ export const dealModule = {
         }
       });
     },
-    setCurrentDeal(context, deal_id) {
+    setCurrentDeal(context, { deal_id, deal_version }) {
       if (!deal_id) {
         context.commit("setCurrentDeal", {});
         return;
       }
-
+      let filter = `id:${deal_id}`;
+      let version = "";
+      if (deal_version) {
+        filter = `id:${deal_id},version:${deal_version}`;
+        version = `(version:${deal_version})`;
+      }
+      // let filter = deal_version
+      //   ? `id:${deal_id},version:${deal_version}`
+      //   : `id:${deal_id}`;
+      // let version = deal_version?`(version:${deal_version})`:'';
       let query = `{
-        deal(id:${deal_id}) {
-          id
+        deal(${filter}) {
+        id
         # General Info
         ## Land area
-        target_country { id }
+        country { id name }
         intended_size
         contract_size
         production_size
@@ -76,13 +89,13 @@ export const dealModule = {
         implementation_status_comment
         ## Purchase price
         purchase_price
-        purchase_price_currency {id}
+        purchase_price_currency {id name}
         purchase_price_type
         purchase_price_area
         purchase_price_comment
         ## Leasing fees
         annual_leasing_fee
-        annual_leasing_fee_currency {id}
+        annual_leasing_fee_currency {id name}
         annual_leasing_fee_type
         annual_leasing_fee_area
         annual_leasing_fee_comment
@@ -123,7 +136,7 @@ export const dealModule = {
         domestic_jobs_current_daily_workers
         domestic_jobs_created_comment
         # Investor info
-        operating_company {id}
+        operating_company {id name}
         involved_actors {role value}
         project_name
         investment_chain_comment
@@ -165,16 +178,10 @@ export const dealModule = {
         former_land_cover_comment
         # Produce info
         crops
-        crops_yield
-        crops_export
         crops_comment
-        animal
-        animal_yield
-        animal_export
-        animal_comment
+        animals
+        animals_comment
         resources
-        resources_yield
-        resources_export
         resources_comment
         contract_farming_crops
         contract_farming_crops_comment
@@ -183,11 +190,11 @@ export const dealModule = {
         has_domestic_use
         domestic_use
         has_export
-        export_country1 {id}
+        export_country1 {id name}
         export_country1_ratio
-        export_country2 {id}
+        export_country2 {id name}
         export_country2_ratio
-        export_country3 {id}
+        export_country3 {id name}
         export_country3_ratio
         use_of_produce_comment
         in_country_processing
@@ -212,12 +219,84 @@ export const dealModule = {
         vggt_applied_comment
         prai_applied
         prai_applied_comment
-        # locations { id point level_of_accuracy }
+        locations${version} {
+          id
+          name
+          description
+          point
+          facility_name
+          level_of_accuracy
+          comment
+        }
+        contracts${version} {
+          id
+          number
+          date
+          expiration_date
+          agreement_duration
+          comment
+        }
+        datasources${version} {
+          id
+          type
+          url
+          file
+          file_not_public
+          publication_title
+          date
+          name
+          company
+          email
+          phone
+          includes_in_country_verified_information
+          open_land_contracts_id
+          comment
+        }
         geojson
+        versions {
+          id
+          deal { fully_updated status draft_status }
+          revision {
+            id
+            date_created
+            user { id full_name }
+            comment
+          }
+        }
         }
       }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setCurrentDeal", response.data.data.deal);
+
+      return new Promise(function (resolve, reject) {
+        axios
+          .post("/graphql/", {
+            query,
+          })
+          .then((response) => {
+            let resdata = response.data.data;
+            if (resdata) {
+              context.commit("setCurrentDeal", resdata.deal);
+              resolve(resdata.deal);
+
+              let title = `Deal #${deal_id}`;
+              context.commit("setTitle", title);
+              context.commit("setBreadcrumbs", [
+                {
+                  link: {
+                    name: "wagtail",
+                  },
+                  name: "Home",
+                },
+                {
+                  link: {
+                    name: "deal_list",
+                  },
+                  name: "Data",
+                },
+                { name: title },
+              ]);
+            }
+            reject(resdata);
+          });
       });
     },
   },

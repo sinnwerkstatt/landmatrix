@@ -55,7 +55,7 @@
 
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
-          {#% include "language_chooser.html" %#}
+          {% include "language_chooser.html" %}
           {% if request.user.is_authenticated %}
             <li>
               <p class="navbar-text dropdown-header">

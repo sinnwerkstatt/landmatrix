@@ -4,20 +4,18 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Multiselect from "vue-multiselect";
-import VCalendar from 'v-calendar';
+import VCalendar from "v-calendar";
+import dayjs from "dayjs";
 
-import "../node_modules/font-awesome/scss/font-awesome.scss";
+import '@fortawesome/fontawesome-free/css/all.css'
 
 Vue.use(BootstrapVue);
 import "bootstrap";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(VCalendar);
 
 Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
-
 
 import "leaflet/dist/leaflet.css";
 delete L.Icon.Default.prototype._getIconUrl;
@@ -31,22 +29,22 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "./scss/main.scss";
 
 // needs to be registered globally for streamfield loops
-import Title from "./components/Wagtail/Title";
-import Heading from "./components/Wagtail/Heading";
-import Image from "./components/Wagtail/Image";
-import Paragraph from "./components/Wagtail/Paragraph";
-import Columns1on1 from "./components/Wagtail/Columns1on1";
-import Columns3 from "./components/Wagtail/Columns3";
-import FullWidthContainer from "./components/Wagtail/FullWidthContainer";
-import Slider from "./components/Wagtail/Slider";
-import Gallery from "./components/Wagtail/Gallery";
-import FaqsBlock from "./components/Wagtail/FaqsBlock";
-import Twitter from "./components/Wagtail/Twitter";
-import LatestNews from "./components/Wagtail/LatestNews";
-import LatestDatabaseModifications from "./components/Wagtail/LatestDatabaseModifications";
-import Statistics from "./components/Wagtail/Statistics";
-import SectionDivider from "@/components/Wagtail/SectionDivider";
-import RawHTML from "@/components/Wagtail/RawHTML";
+import Title from "/components/Wagtail/Title";
+import Heading from "/components/Wagtail/Heading";
+import Image from "/components/Wagtail/Image";
+import Paragraph from "/components/Wagtail/Paragraph";
+import Columns1on1 from "/components/Wagtail/Columns1on1";
+import Columns3 from "/components/Wagtail/Columns3";
+import FullWidthContainer from "/components/Wagtail/FullWidthContainer";
+import Slider from "/components/Wagtail/Slider";
+import Gallery from "/components/Wagtail/Gallery";
+import FaqsBlock from "/components/Wagtail/FaqsBlock";
+import Twitter from "/components/Wagtail/Twitter";
+import LatestNews from "/components/Wagtail/LatestNews";
+import LatestDatabaseModifications from "/components/Wagtail/LatestDatabaseModifications";
+import Statistics from "/components/Wagtail/Statistics";
+import SectionDivider from "/components/Wagtail/SectionDivider";
+import RawHTML from "/components/Wagtail/RawHTML";
 Vue.component("wagtail-title", Title);
 Vue.component("wagtail-heading", Heading);
 Vue.component("wagtail-image", Image);
@@ -71,8 +69,19 @@ store.dispatch("fetchCountriesAndRegions");
 // This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
 store.dispatch("fetchWagtailRootPage");
 
+store.dispatch("fetchFields", "en");
+
+
+Vue.filter('defaultdate', function (value) {
+  return dayjs(value).format("YYYY-MM-DD HH:mm")
+});
+
 export default new Vue({
   router,
   store,
   render: (h) => h(App),
 }).$mount("#app");
+
+if (module.hot) {
+  module.hot.accept()
+}

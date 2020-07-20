@@ -12,11 +12,11 @@ import Dashboard from "./views/Manager/Dashboard";
 import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
 
-import store from "./store";
-import ItsABigDeal from "./views/Charts/ItsABigDeal";
-import GlobalMapOfInvestments from "@/views/Charts/GlobalMapOfInvestments";
-import DynamicsOverview from "@/views/Charts/DynamicsOverview";
-import CaseStatistics from "@/views/Manager/CaseStatistics";
+import store from "/store";
+import ItsABigDeal from "/views/Charts/ItsABigDeal";
+import GlobalMapOfInvestments from "/views/Charts/GlobalMapOfInvestments";
+import DynamicsOverview from "/views/Charts/DynamicsOverview";
+import CaseStatistics from "/views/Manager/CaseStatistics";
 
 Vue.use(Router);
 
@@ -55,7 +55,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/:deal_id/",
+      path: "/deal/:deal_id/:deal_version?/",
       name: "deal_detail",
       component: DealDetail,
       props: true,
@@ -65,7 +65,7 @@ const router = new Router({
       name: "investor_list",
       component: InvestorList,
     },
-        {
+    {
       path: "/investor/:investor_id/",
       name: "investor_detail",
       component: InvestorDetail,
@@ -109,7 +109,12 @@ const router = new Router({
       component: CaseStatistics,
     },
     {
-      path: "/404/",
+      path: "*",
+      name: "wagtail",
+      component: WagtailPage,
+    },
+    {
+      path: "*",
       name: "404",
       component: NotFound,
       beforeEnter(to, from, next) {
@@ -119,11 +124,6 @@ const router = new Router({
         });
         next();
       },
-    },
-    {
-      path: "*",
-      name: "wagtail",
-      component: WagtailPage,
     },
   ],
 

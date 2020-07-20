@@ -1,8 +1,6 @@
-from collections import defaultdict
 from typing import Any
 
 from ariadne import ObjectType
-from django.db.models import Q
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields, parse_filters
@@ -38,56 +36,44 @@ investor_type = ObjectType("Investor")
 investor_type.set_field("deals", lambda obj, info: obj.deals.all())
 
 
-@investor_type.field("involvements")
-def get_investor_involvements(obj, info: GraphQLResolveInfo):
-    involves = InvestorVentureInvolvement.objects.visible(info.context.user)
-
-    involves = involves.filter(Q(investor=obj) | Q(venture=obj))
-    involves = involves.filter(investor__status__in=(2, 3)).filter(
-        venture__status__in=(2, 3)
-    )
-
-    return involves
-
-
-def _get_network(investor_id, exclude=None, count=10):
-    values = [
-        "investor__id",
-        "investor__name",
-        "investor__deals__id",
-        "venture__id",
-        "venture__name",
-        "venture__deals__id",
-        "percentage",
-        "role",
-    ]
-    if count <= 0:
+def _get_network(investor_id, exclude=None, depth=10):
+    if depth <= 0:
         return
-    ret = defaultdict(list)
 
-    network_investors = (
-        InvestorVentureInvolvement.objects.filter(venture_id=investor_id)
-        .exclude(investor_id=exclude)
-        .values(*values)
+    involvements = []
+    qs = (
+        InvestorVentureInvolvement.objects.filter(status__in=(2, 3))
+        .filter(investor__status__in=(2, 3), venture__status__in=(2, 3))
+        .prefetch_related("investor")
+        .prefetch_related("investor__deals")
+        .prefetch_related("venture")
+        .prefetch_related("venture__deals")
     )
+
+    network_investors = qs.filter(venture_id=investor_id).exclude(investor_id=exclude)
     for inv in network_investors:
-        inv["involvements"] = _get_network(inv["investor__id"], investor_id, count - 1)
-        ret["investors"] += [inv]
+        involvement = inv.to_dict()
+        involvement["involvement_type"] = "INVESTOR"
+        investor = inv.investor.to_dict()
+        investor["involvements"] = _get_network(inv.investor_id, investor_id, depth - 1)
+        involvement["investor"] = investor
+        involvements += [involvement]
 
-    network_ventures = (
-        InvestorVentureInvolvement.objects.filter(investor_id=investor_id)
-        .exclude(venture_id=exclude)
-        .values(*values)
-    )
+    network_ventures = qs.filter(investor_id=investor_id).exclude(venture_id=exclude)
     for inv in network_ventures:
-        inv["involvements"] = _get_network(inv["venture__id"], investor_id, count - 1)
-        ret["ventures"] += [inv]
-    return dict(ret)
+        involvement = inv.to_dict()
+        involvement["involvement_type"] = "VENTURE"
+        venture = inv.venture.to_dict()
+        venture["involvements"] = _get_network(inv.venture_id, investor_id, depth - 1)
+        involvement["investor"] = venture
+        involvements += [involvement]
+
+    return involvements
 
 
-@investor_type.field("involvements_network")
+@investor_type.field("involvements")
 def resolve_involvements_network(obj: Any, info: GraphQLResolveInfo, depth):
-    investors = _get_network(obj.id, count=depth)
+    investors = _get_network(obj.id, depth=depth)
     # print(dict(investors))
     return investors
 

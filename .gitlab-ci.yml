@@ -24,14 +24,14 @@ django formatting and linting:
     - yarn install --frozen-lockfile
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
-    - poetry run pylint apps --exit-zero
+#    - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
 frontend formatting and linting:
   stage: test
   script:
     - cd frontend
     - yarn install --frozen-lockfile
-    - yarn build
+    - yarn parcelbuild
 
 tests and coverage:
   stage: test

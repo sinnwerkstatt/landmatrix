@@ -2,7 +2,7 @@ type Deal {
     id: Int!
     # General Info
     ## Land area
-    target_country: Country
+    country: Country
     intended_size: Float
     contract_size: [DateValuePair]
     production_size: [DateValuePair]
@@ -120,16 +120,10 @@ type Deal {
     former_land_cover_comment: String
     # Produce info
     crops: [DateValuePair]
-    crops_yield: [DateValuePair]
-    crops_export: [DateValuePair]
     crops_comment: String
-    animal: [DateValuePair]
-    animal_yield: [DateValuePair]
-    animal_export: [DateValuePair]
-    animal_comment: String
+    animals: [DateValuePair]
+    animals_comment: String
     resources: [DateValuePair]
-    resources_yield: [DateValuePair]
-    resources_export: [DateValuePair]
     resources_comment: String
     contract_farming_crops: [DateValuePair]
     contract_farming_crops_comment: String
@@ -181,9 +175,9 @@ type Deal {
 
 
     # Foreign Keys
-    locations: [Location]
-    contracts: [Contract]
-    datasources: [DataSource]
+    locations(version: Int): [Location]
+    contracts(version: Int): [Contract]
+    datasources(version: Int): [DataSource]
 
     #### Calculated fields
     top_investors: [Investor]
@@ -199,10 +193,13 @@ type Deal {
 
     status: Int
     status_display: String
+    draft_status: Int
+    draft_status_display: String
     timestamp: DateTime
 
-    reversions: [Deal]
+    versions: [DealVersion]
 }
+
 
 type Location {
     id: Int!
@@ -256,6 +253,19 @@ type Aggregations {
     deal_size_sum: Int
     deal_count: Int
     by_negotiation_status: Dict
+}
+
+type DealVersion {
+    id: Int!
+    deal: Deal
+    revision: Revision
+}
+
+type Revision {
+    id: Int!
+    date_created: DateTime
+    user: User
+    comment: String
 }
 
 scalar Dict
