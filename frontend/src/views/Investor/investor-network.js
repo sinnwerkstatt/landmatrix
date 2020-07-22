@@ -1,175 +1,182 @@
 import * as d3 from "d3";
+import { hierarchy } from "d3-hierarchy";
 
-var invMargin = { top: 20, right: 30, bottom: 20, left: 30 },
+import {
+  forceCenter,
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  forceX,
+  forceY,
+} from "d3-force";
+
+const invMargin = { top: 20, right: 30, bottom: 20, left: 30 },
   invWidth = 960 - invMargin.left - invMargin.right,
-  invHeight = 500 - invMargin.top - invMargin.bottom,
-  invSvg;
+  invHeight = 500 - invMargin.top - invMargin.bottom;
+let invSvg;
 
-var invData = {},
-  invCrossLinksData = [];
+let invData = {};
+const invCrossLinksData = [];
 
-var showInvestorModal = function (data, i) {
-  var modal = $("#stakeholder"),
-    type =
-      (data.type === "parent" && "Parent company") ||
-      (data.type === "tertiary" && "Tertiary investor/lender") ||
-      "Operating company";
-  modal.find(".modal-header h4").text(data.name + " (#" + data.identifier + ")");
-  var output = [
-    data.classification,
-    data.country,
-    data.homepage &&
-      '<a target="_blank" href="' + data.homepage + '">' + data.homepage + "</a>",
-    data.opencorporates_link &&
-      '<a target="_blank" href="' +
-        data.opencorporates_link +
-        '">' +
-        data.opencorporates_link +
-        "</a>",
-    data.comment,
-  ];
-  if (data.involvement) {
-    var inv = data.involvement;
-    output.push.apply(output, [
-      "<h4>Involvement</h4>" + type,
-      (inv.percentage &&
-        inv.percentage +
-          "%" +
-          ((inv.investment_type && " " + inv.investment_type) || "")) ||
-        "",
-      inv.loans_amount &&
-        inv.loans_amount +
-          " " +
-          inv.loans_currency +
-          (inv.loans_date && " (" + inv.loans_date + ")"),
-      inv.comment,
-      inv.parent_relation,
-    ]);
-  }
-  output = output
-    .filter(function (val) {
-      return val;
-    })
-    .join("<br>");
-  modal.find(".modal-body p").html(output);
-  modal.find(".modal-footer a.investor-link").attr("href", data.url);
-  modal.modal("show");
-};
+// const showInvestorModal = function(data, i) {
+//   const modal = $("#stakeholder"),
+//     type =
+//       (data.type === "parent" && "Parent company") ||
+//       (data.type === "tertiary" && "Tertiary investor/lender") ||
+//       "Operating company";
+//   modal.find(".modal-header h4").text(data.name + " (#" + data.identifier + ")");
+//   let output = [
+//     data.classification,
+//     data.country,
+//     data.homepage &&
+//     "<a target=\"_blank\" href=\"" + data.homepage + "\">" + data.homepage + "</a>",
+//     data.opencorporates_link &&
+//     "<a target=\"_blank\" href=\"" +
+//     data.opencorporates_link +
+//     "\">" +
+//     data.opencorporates_link +
+//     "</a>",
+//     data.comment
+//   ];
+//   if (data.involvement) {
+//     const inv = data.involvement;
+//     output.push.apply(output, [
+//       "<h4>Involvement</h4>" + type,
+//       (inv.percentage &&
+//         inv.percentage +
+//         "%" +
+//         ((inv.investment_type && " " + inv.investment_type) || "")) ||
+//       "",
+//       inv.loans_amount &&
+//       inv.loans_amount +
+//       " " +
+//       inv.loans_currency +
+//       (inv.loans_date && " (" + inv.loans_date + ")"),
+//       inv.comment,
+//       inv.parent_relation
+//     ]);
+//   }
+//   output = output
+//     .filter(function(val) {
+//       return val;
+//     })
+//     .join("<br>");
+//   modal.find(".modal-body p").html(output);
+//   modal.find(".modal-footer a.investor-link").attr("href", data.url);
+//   modal.modal("show");
+// };
 
-var showDealModal = function (data, i) {
-  var modal = $("#deal");
-  modal.find(".modal-header h4").text("Deal #" + data.name);
-  var output = [
-    data.country,
-    data.intention ? "Intention of investment" + ": " + data.intention : "",
-    data.implementation_status
-      ? "Implementation status" + ": " + data.implementation_status
-      : "",
-    data.intended_size ? "Intended size (in ha)" + ": " + data.intended_size : "",
-    data.contract_size
-      ? "Size under contract (leased or purchased area, in ha)" +
-        ": " +
-        data.contract_size
-      : "",
-    data.production_size
-      ? "Size in operation (production, in ha)" + ": " + data.production_size
-      : "",
-  ];
-  output = output
-    .filter(function (val) {
-      return val;
-    })
-    .join("<br>");
-  modal.find(".modal-body p").html(output);
-  modal.find(".modal-footer a.deal-link").attr("href", data.url);
-  modal.modal("show");
-};
+// const showDealModal = function(data, i) {
+//   const modal = $("#deal");
+//   modal.find(".modal-header h4").text("Deal #" + data.name);
+//   let output = [
+//     data.country,
+//     data.intention ? "Intention of investment" + ": " + data.intention : "",
+//     data.implementation_status
+//       ? "Implementation status" + ": " + data.implementation_status
+//       : "",
+//     data.intended_size ? "Intended size (in ha)" + ": " + data.intended_size : "",
+//     data.contract_size
+//       ? "Size under contract (leased or purchased area, in ha)" +
+//       ": " +
+//       data.contract_size
+//       : "",
+//     data.production_size
+//       ? "Size in operation (production, in ha)" + ": " + data.production_size
+//       : ""
+//   ];
+//   output = output
+//     .filter(function(val) {
+//       return val;
+//     })
+//     .join("<br>");
+//   modal.find(".modal-body p").html(output);
+//   modal.find(".modal-footer a.deal-link").attr("href", data.url);
+//   modal.modal("show");
+// };
 
-function diagonal(s, d) {
-  return `M ${s.y} ${s.x} L ${d.y} ${d.x}`;
-}
-
-var findNode = function (id) {
-  var node = d3.selectAll(".node").filter(function (d) {
+const findNode = function (id) {
+  const node = d3.selectAll(".node").filter(function (d) {
     return d && d.data.id === id;
   });
   return node.size() && node.datum();
 };
 
 function wordwrap(str, width) {
-  var width = width || 20;
+  width = width || 20;
   if (!str) {
     return str;
   }
-  var regex = ".{1," + width + "}(\\s|$)";
+  const regex = ".{1," + width + "}(\\s|$)";
   return str.match(RegExp(regex, "g"));
 }
 
 // Find references (duplicate nodes) and split original/duplicates
-var updateReferences = function (data) {
-  var uniqueNodes = {},
-    nodes = [data];
-
-  while ((node = nodes.pop())) {
-    var children = [];
-    if (Object.keys(node.investors || node.deals || {}).length > 0) {
-      children = node.investors.concat(node.deals);
-    } else if (Object.keys(node._investors || node._deals || {}).length > 0) {
-      children = node._investors.concat(node._deals);
-    }
-    // Original?
-    if (Object.keys(children).length > 0) {
-      if (node.id in uniqueNodes) {
-        uniqueNodes[node.id].original = node;
-      } else {
-        uniqueNodes[node.id] = {
-          original: node,
-          duplicates: [],
-        };
-
-        for (var id in children) {
-          nodes.push(children[id]);
-        }
-      }
-    } else {
-      // Duplicate
-      if (node.id in uniqueNodes) {
-        uniqueNodes[node.id].duplicates.push(node);
-      } else {
-        uniqueNodes[node.id] = {
-          original: undefined,
-          duplicates: [node],
-        };
-      }
-    }
-  }
-
-  for (var id in uniqueNodes) {
-    var node = uniqueNodes[id],
-      duplicate;
-    if (!node.original) continue;
-    for (var i = 0; i < node.duplicates.length; i++) {
-      duplicate = node.duplicates[i];
-      duplicate.found = "1";
-      duplicate.investors = node.original.investors;
-      duplicate._investors = node.original._investors;
-      duplicate.deals = node.original.deals;
-      duplicate._deals = node.original._deals;
-    }
-  }
-
-  return data;
-};
+// const updateReferences = function(data) {
+//   const uniqueNodes = {},
+//     nodes = [data];
+//
+//   while ((node = nodes.pop())) {
+//     let children = [];
+//     if (Object.keys(node.investors || node.deals || {}).length > 0) {
+//       children = node.investors.concat(node.deals);
+//     } else if (Object.keys(node._investors || node._deals || {}).length > 0) {
+//       children = node._investors.concat(node._deals);
+//     }
+//     // Original?
+//     if (Object.keys(children).length > 0) {
+//       if (node.id in uniqueNodes) {
+//         uniqueNodes[node.id].original = node;
+//       } else {
+//         uniqueNodes[node.id] = {
+//           original: node,
+//           duplicates: []
+//         };
+//
+//         for (var id in children) {
+//           nodes.push(children[id]);
+//         }
+//       }
+//     } else {
+//       // Duplicate
+//       if (node.id in uniqueNodes) {
+//         uniqueNodes[node.id].duplicates.push(node);
+//       } else {
+//         uniqueNodes[node.id] = {
+//           original: undefined,
+//           duplicates: [node]
+//         };
+//       }
+//     }
+//   }
+//
+//   for (var id in uniqueNodes) {
+//     var node = uniqueNodes[id],
+//       duplicate;
+//     if (!node.original) continue;
+//     for (let i = 0; i < node.duplicates.length; i++) {
+//       duplicate = node.duplicates[i];
+//       duplicate.found = "1";
+//       duplicate.investors = node.original.investors;
+//       duplicate._investors = node.original._investors;
+//       duplicate.deals = node.original.deals;
+//       duplicate._deals = node.original._deals;
+//     }
+//   }
+//
+//   return data;
+// };
 
 // Update children/links in tree
-var getLinkedTreeData = function (curRoot, curCrossLinks) {
-  var nodesProcessed = {};
+const getLinkedTreeData = function (curRoot, curCrossLinks) {
+  const nodesProcessed = {};
 
   function getLink(node, childNode, type, dir) {
-    var found = false,
+    let found = false,
       link;
     // Find link
-    for (var i = 0; i < curCrossLinks.length; i++) {
+    for (let i = 0; i < curCrossLinks.length; i++) {
       link = curCrossLinks[i];
       if (link.source.id === node.id && link.target.id === childNode.id) {
         // Link already existing? Done.
@@ -190,13 +197,13 @@ var getLinkedTreeData = function (curRoot, curCrossLinks) {
   }
 
   function getChildrenAndLinks(currentNode, parentNode) {
-    var node = {},
-      links = [];
+    let node = {};
+    const links = [];
 
     // Node already processed?
 
     if (currentNode.id in nodesProcessed) {
-      var type = currentNode.type,
+      let type = currentNode.type,
         dir = "parent";
       if (type === "investor") {
         type = currentNode.involvement.type;
@@ -214,17 +221,17 @@ var getLinkedTreeData = function (curRoot, curCrossLinks) {
       if (!node.deals) {
         node.deals = [];
       }
-      var investorsAndDeals = node.investors.concat(node.deals);
+      const investorsAndDeals = node.investors.concat(node.deals);
       if (investorsAndDeals && Object.keys(investorsAndDeals).length > 0) {
-        var children = [],
-          childNode;
+        const children = [];
+        let childNode;
 
         // First only check all direct children
-        for (var id in investorsAndDeals) {
+        for (let id in investorsAndDeals) {
           if (!investorsAndDeals.hasOwnProperty(id)) continue;
           childNode = investorsAndDeals[id];
 
-          var [childRoot, childCrossLinks] = getChildrenAndLinks(childNode, node);
+          let [childRoot, childCrossLinks] = getChildrenAndLinks(childNode, node);
 
           if (Object.keys(childRoot).length > 0) {
             children.push(childRoot);
@@ -263,7 +270,7 @@ https://github.com/bumbeishvili/d3-coding-conventions
 
 function renderChartCollapsibleNetwork(params) {
   // Exposed variables
-  var attrs = {
+  let attrs = {
     id: "id" + Math.floor(Math.random() * 1000000),
     svgWidth: 960,
     svgHeight: 600,
@@ -277,52 +284,45 @@ function renderChartCollapsibleNetwork(params) {
     hiddenChildLevel: 1,
     lineStrokeWidth: 1.5,
     data: null,
+    ...params,
   };
 
-  /* ############### IF EXISTS OVERWRITE ATTRIBUTES FROM PASSED PARAM  #######  */
-  var attrKeys = Object.keys(attrs);
-  attrKeys.forEach(function (key) {
-    if (params && params[key]) {
-      attrs[key] = params[key];
-    }
-  });
-
   // InnerFunctions which will update visuals
-  var updateData;
-  var filter;
+  let updateData;
+  let filter;
 
   // Main chart object
-  var main = function (selection) {
+  const main = function (selection) {
     selection.each(function scope() {
       // Calculated properties
-      var calc = {};
+      const calc = {};
       calc.chartLeftMargin = attrs.marginLeft;
       calc.chartTopMargin = attrs.marginTop;
       calc.chartWidth = attrs.svgWidth - attrs.marginRight - calc.chartLeftMargin;
       calc.chartHeight = attrs.svgHeight - attrs.marginBottom - calc.chartTopMargin;
 
       // ########################## HIERARCHY STUFF  #########################
-      var hierarchy = {};
+      const myhierarchy = {};
 
-      // ###########################   BEHAVIORS #########################
-      var behaviors = {};
-      // behaviors.zoom = d3.zoom().scaleExtent([0.75, 1.5, 8]).on("zoom", zoomed);
-      // behaviors.drag = d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+      // // ###########################   BEHAVIORS #########################
+      // const behaviors = {};
+      // // behaviors.zoom = d3.zoom().scaleExtent([0.75, 1.5, 8]).on("zoom", zoomed);
+      // // behaviors.drag = d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
 
       // ###########################   LAYOUTS #########################
-      var layouts = {};
+      const layouts = {};
 
       // Custom radial kayout
       layouts.radial = d3.radial();
 
       // ###########################   FORCE STUFF #########################
-      var force = {};
-      force.link = d3.forceLink().id((d) => d.id);
-      force.charge = d3.forceManyBody();
-      force.center = d3.forceCenter(calc.chartWidth / 2, calc.chartHeight / 2);
+      const force = {};
+      force.link = forceLink().id((d) => d.id);
+      force.charge = forceManyBody();
+      force.center = forceCenter(calc.chartWidth / 2, calc.chartHeight / 2);
 
       // Prevent collide
-      force.collide = d3.forceCollide().radius((d) => {
+      force.collide = forceCollide().radius((d) => {
         // If parent has many children, reduce collide strength
         if (d.parent) {
           if (d.parent.children.length > 10) {
@@ -340,8 +340,7 @@ function renderChartCollapsibleNetwork(params) {
       });
 
       // Manually set x positions (which is calculated using custom radial layout)
-      force.x = d3
-        .forceX()
+      force.x = forceX()
         .strength(0.5)
         .x(function (d, i) {
           // If node does not have children and is channel (depth=2) , then position it on parent's coordinate
@@ -356,8 +355,7 @@ function renderChartCollapsibleNetwork(params) {
         });
 
       // Manually set y positions (which is calculated using d3.cluster)
-      force.y = d3
-        .forceY()
+      force.y = forceY()
         .strength(0.5)
         .y(function (d, i) {
           // If node does not have children and is channel (depth=2) , then position it on parent's coordinate
@@ -374,8 +372,7 @@ function renderChartCollapsibleNetwork(params) {
       //---------------------------------  INITIALISE FORCE SIMULATION ----------------------------
 
       // Get based on top parameter simulation
-      force.simulation = d3
-        .forceSimulation()
+      force.simulation = forceSimulation()
         .force("link", force.link)
         .force("charge", force.charge)
         .force("center", force.center)
@@ -386,11 +383,11 @@ function renderChartCollapsibleNetwork(params) {
       // ###########################   HIERARCHY STUFF #########################
 
       // Flatten root
-      var [startRoot, startCrossLinksData] = getLinkedTreeData(
+      let [startRoot, startCrossLinksData] = getLinkedTreeData(
         invData,
         invCrossLinksData
       );
-      hierarchy.root = d3.hierarchy(startRoot, function (d) {
+      myhierarchy.root = hierarchy(startRoot, function (d) {
         return d.children;
       });
       hideLevels();
@@ -398,7 +395,7 @@ function renderChartCollapsibleNetwork(params) {
       // ####################################  DRAWINGS #######################
 
       // Drawing containers
-      var container = d3.select(this);
+      const container = d3.select(this);
 
       // Add svg
       invSvg = container
@@ -409,7 +406,7 @@ function renderChartCollapsibleNetwork(params) {
       // .call(behaviors.zoom);
 
       // Add container g element
-      var chart = invSvg
+      const chart = invSvg
         .patternify({ tag: "g", selector: "chart" })
         .attr(
           "transform",
@@ -419,7 +416,7 @@ function renderChartCollapsibleNetwork(params) {
       // ################################   Chart Content Drawing ##################################
 
       // Defs for arrows
-      invDefs = invSvg.append("defs");
+      let invDefs = invSvg.append("defs");
       invDefs
         .append("marker")
         .attr("id", "arrowhead-parent")
@@ -450,15 +447,15 @@ function renderChartCollapsibleNetwork(params) {
         .style("stroke", "none");
 
       // Link wrapper
-      var linksWrapper = chart.patternify({ tag: "g", selector: "links-wrapper" });
-      var crossLinksWrapper = chart.patternify({
+      const linksWrapper = chart.patternify({ tag: "g", selector: "links-wrapper" });
+      const crossLinksWrapper = chart.patternify({
         tag: "g",
         selector: "crosslinks-wrapper",
       });
 
       // Node wrapper
-      var nodesWrapper = chart.patternify({ tag: "g", selector: "nodes-wrapper" });
-      var nodes, links, crossLinks, enteredNodes, invNodes, dealNodes;
+      const nodesWrapper = chart.patternify({ tag: "g", selector: "nodes-wrapper" });
+      let nodes, links, crossLinks, enteredNodes, invNodes, dealNodes;
 
       // Reusable function which updates visual based on data change
       update();
@@ -466,21 +463,21 @@ function renderChartCollapsibleNetwork(params) {
       // Update visual based on data change
       function update(clickedNode) {
         // Set xy and proportion properties with custom radial layout
-        var [curRoot, curCrossLinksData] = getLinkedTreeData(
+        let [curRoot, curCrossLinksData] = getLinkedTreeData(
           invData,
           invCrossLinksData
         );
-        curRoot = d3.hierarchy(curRoot, function (d) {
+        curRoot = hierarchy(curRoot, function (d) {
           return d.children;
         });
         layouts.radial(curRoot);
 
         // Nodes and links array
-        var nodesArr = flatten(curRoot, true)
+        const nodesArr = flatten(curRoot, true)
           .orderBy((d) => d.depth)
           .filter((d) => !d.hidden);
 
-        var linksArr = curRoot
+        const linksArr = curRoot
           .links()
           .filter((d) => !d.source.hidden)
           .filter((d) => !d.target.hidden);
@@ -514,35 +511,35 @@ function renderChartCollapsibleNetwork(params) {
         // Modal
         enteredNodes.on("contextmenu", function (d, i) {
           d3.event.preventDefault();
-          if (d.data.type === "investor") {
-            showInvestorModal(d.data, i);
-          } else {
-            showDealModal(d.data, i);
-          }
+          // if (d.data.type === "investor") {
+          //   showInvestorModal(d.data, i);
+          // } else {
+          //   showDealModal(d.data, i);
+          // }
         });
 
         // Tooltip
-        $("svg .node").tooltip({
-          container: "body",
-          placement: "bottom",
-          html: true,
-          title: function () {
-            var data = d3.select(this).datum().data;
-            if (data.type == "investor") {
-              var name =
-                  "<strong>" + data.name + " (#" + data.identifier + ")</strong>",
-                meta = [data.country, data.classification]
-                  .filter(function (val) {
-                    return val;
-                  })
-                  .join(", ");
-              return name + (meta ? "<br>" + meta : "");
-            } else {
-              var name = "<strong>Deal #" + data.name + "</strong>";
-              return name + "<br>" + data.country;
-            }
-          },
-        });
+        // $("svg .node").tooltip({
+        //   container: "body",
+        //   placement: "bottom",
+        //   html: true,
+        //   title: function () {
+        //     const data = d3.select(this).datum().data;
+        //     if (data.type == "investor") {
+        //       var name =
+        //           "<strong>" + data.name + " (#" + data.identifier + ")</strong>",
+        //         meta = [data.country, data.classification]
+        //           .filter(function (val) {
+        //             return val;
+        //           })
+        //           .join(", ");
+        //       return name + (meta ? "<br>" + meta : "");
+        //     } else {
+        //       var name = "<strong>Deal #" + data.name + "</strong>";
+        //       return name + "<br>" + data.country;
+        //     }
+        //   },
+        // });
 
         // Subtitle top
         // invNodes.append("text")
@@ -558,7 +555,7 @@ function renderChartCollapsibleNetwork(params) {
           })
           .text(function (d) {
             if (d.data.type === "investor") {
-              var name = d.data.name;
+              const name = d.data.name;
               if (name.length > 20) {
                 return wordwrap(name)[0];
               } else {
@@ -577,7 +574,7 @@ function renderChartCollapsibleNetwork(params) {
           })
           .text(function (d) {
             if (d.data.type === "investor") {
-              var name = d.data.name;
+              const name = d.data.name;
               if (name.length <= 40) {
                 return name.length > 20 ? wordwrap(name)[1] : name;
               } else {
@@ -596,9 +593,9 @@ function renderChartCollapsibleNetwork(params) {
           });
 
         // Merge node groups and style it
-        nodes = nodes.merge(enteredNodes).attr("class", function (d) {
-          var data = d.data,
-            cls = "node " + data.type;
+        nodes = enteredNodes.attr("class", function (d) {
+          const data = d.data;
+          let cls = "node " + data.type;
           cls += data.is_root ? " is-root" : "";
           if (
             (data._investors && Object.keys(data._investors).length > 0) ||
@@ -611,12 +608,12 @@ function renderChartCollapsibleNetwork(params) {
 
         // Links
         function getLinkClass(d) {
-          var data = d.target.data;
+          const data = d.target.data;
           return (data.involvement && data.involvement.type) || data.type;
         }
 
         function getCrossLinkClass(d) {
-          var data = d.target;
+          const data = d.target;
           return (
             d.type || (data.type === "investor" && data.involvement.type) || data.type
           );
@@ -625,7 +622,7 @@ function renderChartCollapsibleNetwork(params) {
         links = linksWrapper
           .selectAll(".link")
           .data(linksArr, (d) => d.source.id + "-" + d.target.id);
-        links.exit().remove();
+        // links.exit().remove();
         links = links
           .enter()
           .append("line")
@@ -646,7 +643,7 @@ function renderChartCollapsibleNetwork(params) {
         crossLinks = crossLinks
           .enter()
           .insert("line")
-          .merge(crossLinks)
+          // .merge(crossLinks)
           .attr("class", function (d) {
             return "crosslink " + getCrossLinkClass(d);
           })
@@ -679,7 +676,7 @@ function renderChartCollapsibleNetwork(params) {
       // Zoom handler
       function zoomed() {
         // Get transform event
-        var transform = d3.event.transform;
+        const transform = d3.event.transform;
         attrs.lastTransform = transform;
 
         // Apply transform event props to the wrapper
@@ -766,15 +763,15 @@ function renderChartCollapsibleNetwork(params) {
         d.fx = d3.event.x;
         d.fy = d3.event.y;
 
-        var diffX = d.fx - d.x;
-        var diffY = d.fy - d.y;
-        var moved = [d.id];
+        const diffX = d.fx - d.x;
+        const diffY = d.fy - d.y;
+        const moved = [d.id];
 
         function moveChildren(node) {
           if (!node.children) {
             return;
           }
-          for (var c of node.children) {
+          for (let c of node.children) {
             if (moved.indexOf(c.id) > -1) {
               continue;
             }
@@ -796,18 +793,18 @@ function renderChartCollapsibleNetwork(params) {
       // -------------------------- node mouse hover handler ---------------
       function nodeMouseEnter(d) {
         // Get hovered node
-        var node = d3.select(this).classed("hover", true);
+        const node = d3.select(this).classed("hover", true);
 
         // Get links
-        var links = hierarchy.root.links();
+        const links = myhierarchy.root.links();
 
         // Get hovered node connected links
-        var connectedLinks = links.filter(
+        const connectedLinks = links.filter(
           (l) => l.source.id === d.id || l.target.id === d.id
         );
 
         // Get hovered node linked nodes
-        var linkedNodes = connectedLinks
+        const linkedNodes = connectedLinks
           .map((s) => s.source.id)
           .concat(connectedLinks.map((d) => d.target.id));
 
@@ -862,7 +859,7 @@ function renderChartCollapsibleNetwork(params) {
         d.children = null;
 
         // Collapse or expand node
-        var data = d.data;
+        const data = d.data;
         if (
           (data.investors && Object.keys(data.investors).length > 0) ||
           (data.deals && Object.keys(data.deals).length > 0)
@@ -910,15 +907,15 @@ function renderChartCollapsibleNetwork(params) {
       }
 
       function projectCircle(value, radius) {
-        var r = radius || 0;
-        var corner = value * 2 * Math.PI;
+        const r = radius || 0;
+        const corner = value * 2 * Math.PI;
         return [Math.sin(corner) * r, -Math.cos(corner) * r];
       }
 
       // Recursively loop on children and extract nodes as an array
       function flatten(root, clustered) {
-        var nodesArray = [];
-        var i = 0;
+        const nodesArray = [];
+        let i = 0;
 
         function recurse(node, depth) {
           if (node.children)
@@ -944,10 +941,10 @@ function renderChartCollapsibleNetwork(params) {
       function debug() {
         if (attrs.isDebug) {
           // Stringify func
-          var stringified = scope + "";
+          const stringified = scope + "";
 
           // Parse variable names
-          var groupVariables = stringified
+          const groupVariables = stringified
             // Match var x-xx= {};
             .match(/var\s+([\w])+\s*=\s*{\s*}/gi)
             // Match xxx
@@ -966,9 +963,9 @@ function renderChartCollapsibleNetwork(params) {
 
       function hideLevels() {
         // Hide members based on their depth
-        var arr = flatten(hierarchy.root);
+        const arr = flatten(myhierarchy.root);
         arr.forEach((d) => {
-          var data = d.data;
+          const data = d.data;
           if (d.depth > attrs.hiddenChildLevel) {
             if (data.investors && Object.keys(data.investors).length > 0) {
               data._investors = data.investors;
@@ -1001,15 +998,15 @@ function renderChartCollapsibleNetwork(params) {
 
   //----------- PROTOTYPE FUNCTIONS  ----------------------
   d3.selection.prototype.patternify = function (params) {
-    var container = this;
-    var selector = params.selector;
-    var elementTag = params.tag;
-    var data = params.data || [selector];
+    const container = this;
+    const selector = params.selector;
+    const elementTag = params.tag;
+    const data = params.data || [selector];
 
     // Pattern in action
-    var selection = container.selectAll("." + selector).data(data);
+    let selection = container.selectAll("." + selector).data(data);
     selection.exit().remove();
-    selection = selection.enter().append(elementTag).merge(selection);
+    // selection = selection.enter().append(elementTag).merge(selection);
     selection.attr("class", selector);
     return selection;
   };
@@ -1041,10 +1038,10 @@ function renderChartCollapsibleNetwork(params) {
 
         // Recursively do the same for children
         if (node.children) {
-          var offset = (max - min) / node.children.length;
+          const offset = (max - min) / node.children.length;
           node.children.forEach(function (child, i, arr) {
-            var newMin = min + offset * i;
-            var newMax = newMin + offset;
+            const newMin = min + offset * i;
+            const newMax = newMin + offset;
             recurse(child, newMin, newMax);
           });
         }
@@ -1052,11 +1049,11 @@ function renderChartCollapsibleNetwork(params) {
     };
   };
 
-  // Https://github.com/bumbeishvili/d3js-boilerplates#orderby
+  // https://github.com/bumbeishvili/d3js-boilerplates#orderby
   Array.prototype.orderBy = function (func) {
     this.sort((a, b) => {
-      var a = func(a);
-      var b = func(b);
+      a = func(a);
+      b = func(b);
       if (typeof a === "string" || a instanceof String) {
         return a.localeCompare(b);
       }
@@ -1071,7 +1068,7 @@ function renderChartCollapsibleNetwork(params) {
   Object.keys(attrs).forEach((key) => {
     // Attach variables to main function
     return (main[key] = function (_) {
-      var string = `attrs['${key}'] = _`;
+      const string = `attrs['${key}'] = _`;
       if (!arguments.length) {
         return eval(` attrs['${key}'];`);
       }
@@ -1143,663 +1140,4 @@ export function loadInvestorNetwork(investors, containerEl) {
   //   .debug(true)
   //   .run();
   // });
-}
-
-export function mapValues(investor) {
-  return {
-    id: "I36759",
-    type: "investor",
-    name: "Black River Asset Management",
-    status: "overwritten",
-    is_root: true,
-    identifier: 36759,
-    country: "Colombia",
-    country_code: "CO",
-    classification: "Private company",
-    homepage: null,
-    opencorporates_link: null,
-    comment: null,
-    url: "/investor/36759/",
-    investors: [
-      {
-        id: "I146",
-        type: "investor",
-        name: "Cargill",
-        status: "active",
-        is_root: false,
-        identifier: 146,
-        country: "United States of America",
-        country_code: "US",
-        classification: "Private company",
-        homepage: null,
-        opencorporates_link: null,
-        comment:
-          "36 societies were created between 2010 and 2012 (with the same legal responsible) but were bought by Cargill in 2012. This strategy were built for the same lawyer buffet to avoid the farm land grabbing to Ripaila S.A",
-        url: "/investor/146/",
-        investors: [
-          {
-            id: "I36841",
-            type: "investor",
-            name: "PT Harapan Sawit Lestari",
-            status: "active",
-            is_root: false,
-            identifier: 36841,
-            country: "Indonesia",
-            country_code: "ID",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: null,
-            comment: null,
-            url: "/investor/36841/",
-            investors: [],
-            deals: [
-              {
-                id: "D3497",
-                type: "deal",
-                name: "3497",
-                status: "overwritten",
-                identifier: 3497,
-                country: "Indonesia",
-                country_code: "ID",
-                intention: "Agriculture unspecified",
-                nature: "Concession",
-                negotiation_status: "Contract signed",
-                implementation_status: "In operation (production)",
-                intended_size: 0,
-                contract_size: 5137,
-                production_size: 3884,
-                url: "/deal/3497/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: 100,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: null,
-            },
-          },
-          {
-            id: "I37575",
-            type: "investor",
-            name: "PT Hindoli",
-            status: "active",
-            is_root: false,
-            identifier: 37575,
-            country: "Indonesia",
-            country_code: "ID",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: null,
-            comment: null,
-            url: "/investor/37575/",
-            investors: [],
-            deals: [
-              {
-                id: "D3499",
-                type: "deal",
-                name: "3499",
-                status: "overwritten",
-                identifier: 3499,
-                country: "Indonesia",
-                country_code: "ID",
-                intention: "Agriculture unspecified",
-                nature: "Concession",
-                negotiation_status: "Contract signed",
-                implementation_status: "In operation (production)",
-                intended_size: 0,
-                contract_size: 9555,
-                production_size: 9479,
-                url: "/deal/3499/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: 100,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: null,
-            },
-          },
-          {
-            id: "I39776",
-            type: "investor",
-            name: "Unknown (Cargill Cameroon)",
-            status: "active",
-            is_root: false,
-            identifier: 39776,
-            country: "Cameroon",
-            country_code: "CM",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: null,
-            comment: null,
-            url: "/investor/39776/",
-            investors: [],
-            deals: [
-              {
-                id: "D3202",
-                type: "deal",
-                name: "3202",
-                status: "overwritten",
-                identifier: 3202,
-                country: "Cameroon",
-                country_code: "CM",
-                intention: "Agriculture unspecified",
-                nature: "Lease",
-                negotiation_status: "Negotiations failed",
-                implementation_status: null,
-                intended_size: 50000,
-                contract_size: 0,
-                production_size: 0,
-                url: "/deal/3202/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: 100,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: null,
-            },
-          },
-          {
-            id: "I39777",
-            type: "investor",
-            name: "Telcar Cocoa Ltd",
-            status: "active",
-            is_root: false,
-            identifier: 39777,
-            country: "Cameroon",
-            country_code: "CM",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: null,
-            comment: null,
-            url: "/investor/39777/",
-            investors: [
-              {
-                id: "I5006",
-                type: "investor",
-                name: "Kate Kanyi Fotso Tometi",
-                status: "active",
-                is_root: false,
-                identifier: 5006,
-                country: "Cameroon",
-                country_code: "CM",
-                classification: "Individual entrepreneur",
-                homepage: null,
-                opencorporates_link: null,
-                comment: null,
-                url: "/investor/5006/",
-                investors: [],
-                deals: [],
-                involvement: {
-                  dir: "child",
-                  type: "parent",
-                  percentage: null,
-                  investment_type: "",
-                  loans_amount: null,
-                  loans_currency: "None",
-                  loans_date: null,
-                  parent_relation: null,
-                  comment: null,
-                },
-              },
-            ],
-            deals: [
-              {
-                id: "D6000",
-                type: "deal",
-                name: "6000",
-                status: "active",
-                identifier: 6000,
-                country: "Cameroon",
-                country_code: "CM",
-                intention: "Food crops",
-                nature: null,
-                negotiation_status: "Contract signed",
-                implementation_status: "Startup phase (no production)",
-                intended_size: 0,
-                contract_size: 0,
-                production_size: 0,
-                url: "/deal/6000/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: null,
-            },
-          },
-          {
-            id: "I40901",
-            type: "investor",
-            name: "Colombia Agro SAS",
-            status: "overwritten",
-            is_root: false,
-            identifier: 40901,
-            country: "Colombia",
-            country_code: "CO",
-            classification: "Private company",
-            homepage: "",
-            opencorporates_link: "",
-            comment: "",
-            url: "/investor/40901/",
-            investors: [
-              {
-                id: "I40904",
-                type: "investor",
-                name: "Unknown_Cargill",
-                status: "overwritten",
-                is_root: false,
-                identifier: 40904,
-                country: "Colombia",
-                country_code: "CO",
-                classification: "Private company",
-                homepage: "",
-                opencorporates_link: "",
-                comment:
-                  'Cargill, being advised by the law firm Brigard & Urrutia, created a "fictional" firm to acquire land that was previously allocated to landless peasants by the state under law 160 of 1994. To circumvent local legislation, they created a firm for every plot they bought and let them liquidate later, after they had made long-term renting agreements with the superior companies. Source 14 - Deal 3107',
-                url: "/investor/40904/",
-                investors: [],
-                deals: [],
-                involvement: {
-                  dir: "parent",
-                  type: "parent",
-                  percentage: null,
-                  investment_type: "",
-                  loans_amount: null,
-                  loans_currency: "None",
-                  loans_date: "",
-                  parent_relation: null,
-                  comment: "",
-                },
-              },
-            ],
-            deals: [],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: "",
-              parent_relation: null,
-              comment: "",
-            },
-          },
-          {
-            id: "I40902",
-            type: "investor",
-            name: "Cargill Trading Colombia",
-            status: "overwritten",
-            is_root: false,
-            identifier: 40902,
-            country: "Colombia",
-            country_code: "CO",
-            classification: "Private company",
-            homepage: "",
-            opencorporates_link: "",
-            comment: "",
-            url: "/investor/40902/",
-            investors: [
-              {
-                id: "I40904",
-                type: "investor",
-                name: "Unknown_Cargill",
-                status: "overwritten",
-                is_root: false,
-                identifier: 40904,
-                country: "Colombia",
-                country_code: "CO",
-                classification: "Private company",
-                homepage: "",
-                opencorporates_link: "",
-                comment:
-                  'Cargill, being advised by the law firm Brigard & Urrutia, created a "fictional" firm to acquire land that was previously allocated to landless peasants by the state under law 160 of 1994. To circumvent local legislation, they created a firm for every plot they bought and let them liquidate later, after they had made long-term renting agreements with the superior companies. Source 14 - Deal 3107',
-                url: "/investor/40904/",
-                investors: [],
-                deals: [],
-                involvement: {
-                  dir: "parent",
-                  type: "parent",
-                  percentage: null,
-                  investment_type: "",
-                  loans_amount: null,
-                  loans_currency: "None",
-                  loans_date: "",
-                  parent_relation: null,
-                  comment: "",
-                },
-              },
-            ],
-            deals: [],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: "",
-              parent_relation: null,
-              comment: "",
-            },
-          },
-          {
-            id: "I40903",
-            type: "investor",
-            name: "Cargill de Colombia",
-            status: "overwritten",
-            is_root: false,
-            identifier: 40903,
-            country: "Colombia",
-            country_code: "CO",
-            classification: "Private company",
-            homepage: "",
-            opencorporates_link:
-              "https://www.bloomberg.com/research/stocks/private/snapshot.asp?privcapId=323641301",
-            comment: "",
-            url: "/investor/40903/",
-            investors: [
-              {
-                id: "I40904",
-                type: "investor",
-                name: "Unknown_Cargill",
-                status: "overwritten",
-                is_root: false,
-                identifier: 40904,
-                country: "Colombia",
-                country_code: "CO",
-                classification: "Private company",
-                homepage: "",
-                opencorporates_link: "",
-                comment:
-                  'Cargill, being advised by the law firm Brigard & Urrutia, created a "fictional" firm to acquire land that was previously allocated to landless peasants by the state under law 160 of 1994. To circumvent local legislation, they created a firm for every plot they bought and let them liquidate later, after they had made long-term renting agreements with the superior companies. Source 14 - Deal 3107',
-                url: "/investor/40904/",
-                investors: [],
-                deals: [],
-                involvement: {
-                  dir: "parent",
-                  type: "parent",
-                  percentage: null,
-                  investment_type: "",
-                  loans_amount: null,
-                  loans_currency: "None",
-                  loans_date: "",
-                  parent_relation: null,
-                  comment: "",
-                },
-              },
-            ],
-            deals: [],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: "",
-              parent_relation: null,
-              comment: "",
-            },
-          },
-          {
-            id: "I41752",
-            type: "investor",
-            name: "PT. MAYA AGRO INVESTAMA",
-            status: "active",
-            is_root: false,
-            identifier: 41752,
-            country: "Indonesia",
-            country_code: "ID",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: "https://www.cargill.co.id",
-            comment: "",
-            url: "/investor/41752/",
-            investors: [],
-            deals: [
-              {
-                id: "D7507",
-                type: "deal",
-                name: "7507",
-                status: "active",
-                identifier: 7507,
-                country: "Indonesia",
-                country_code: "ID",
-                intention: "Non-food agricultural commodities",
-                nature: "Concession",
-                negotiation_status: "Contract signed",
-                implementation_status: "In operation (production)",
-                intended_size: 0,
-                contract_size: 12948,
-                production_size: 7426,
-                url: "/deal/7507/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: "",
-            },
-          },
-          {
-            id: "I41799",
-            type: "investor",
-            name: "PT. Andes Agro Investama",
-            status: "active",
-            is_root: false,
-            identifier: 41799,
-            country: "Indonesia",
-            country_code: "ID",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: "https://www.cargill.co.id/",
-            comment: "",
-            url: "/investor/41799/",
-            investors: [],
-            deals: [
-              {
-                id: "D7583",
-                type: "deal",
-                name: "7583",
-                status: "active",
-                identifier: 7583,
-                country: "Indonesia",
-                country_code: "ID",
-                intention: "Agriculture unspecified",
-                nature: "Concession",
-                negotiation_status: "Contract signed",
-                implementation_status: "In operation (production)",
-                intended_size: 0,
-                contract_size: 13310,
-                production_size: 10609,
-                url: "/deal/7583/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: "Subsidiary of parent company",
-              comment: "",
-            },
-          },
-          {
-            id: "I42443",
-            type: "investor",
-            name: "PT. Harapan Hibrida Kalbar",
-            status: "active",
-            is_root: false,
-            identifier: 42443,
-            country: "Indonesia",
-            country_code: "ID",
-            classification: "Private company",
-            homepage: null,
-            opencorporates_link: null,
-            comment: "",
-            url: "/investor/42443/",
-            investors: [],
-            deals: [
-              {
-                id: "D7933",
-                type: "deal",
-                name: "7933",
-                status: "active",
-                identifier: 7933,
-                country: "Indonesia",
-                country_code: "ID",
-                intention: "Non-food agricultural commodities",
-                nature: "Lease",
-                negotiation_status: "Contract signed",
-                implementation_status: "In operation (production)",
-                intended_size: 0,
-                contract_size: 9849,
-                production_size: 0,
-                url: "/deal/7933/",
-              },
-            ],
-            involvement: {
-              dir: "parent",
-              type: "parent",
-              percentage: null,
-              investment_type: "",
-              loans_amount: null,
-              loans_currency: "None",
-              loans_date: null,
-              parent_relation: null,
-              comment: "",
-            },
-          },
-        ],
-        deals: [],
-        involvement: {
-          dir: "child",
-          type: "parent",
-          percentage: null,
-          investment_type: "",
-          loans_amount: null,
-          loans_currency: "None",
-          loans_date: null,
-          parent_relation: null,
-          comment: null,
-        },
-      },
-      {
-        id: "I40904",
-        type: "investor",
-        name: "Unknown_Cargill",
-        status: "overwritten",
-        is_root: false,
-        identifier: 40904,
-        country: "Colombia",
-        country_code: "CO",
-        classification: "Private company",
-        homepage: "",
-        opencorporates_link: "",
-        comment:
-          'Cargill, being advised by the law firm Brigard & Urrutia, created a "fictional" firm to acquire land that was previously allocated to landless peasants by the state under law 160 of 1994. To circumvent local legislation, they created a firm for every plot they bought and let them liquidate later, after they had made long-term renting agreements with the superior companies. Source 14 - Deal 3107',
-        url: "/investor/40904/",
-        investors: [],
-        deals: [
-          {
-            id: "D3107",
-            type: "deal",
-            name: "3107",
-            status: "overwritten",
-            identifier: 3107,
-            country: "Colombia",
-            country_code: "CO",
-            intention: "Non-food agricultural commodities",
-            nature: "Outright Purchase",
-            negotiation_status: "Contract signed",
-            implementation_status: "Startup phase (no production)",
-            intended_size: 0,
-            contract_size: 52576,
-            production_size: 0,
-            url: "/deal/3107/",
-          },
-        ],
-        involvement: {
-          dir: "parent",
-          type: "parent",
-          percentage: null,
-          investment_type: "",
-          loans_amount: null,
-          loans_currency: "None",
-          loans_date: "",
-          parent_relation: null,
-          comment: "",
-        },
-      },
-    ],
-    deals: [
-      {
-        id: "D3890",
-        type: "deal",
-        name: "3890",
-        status: "overwritten",
-        identifier: 3890,
-        country: "Colombia",
-        country_code: "CO",
-        intention: "Food crops",
-        nature: "Outright Purchase",
-        negotiation_status: "Contract signed",
-        implementation_status: "In operation (production)",
-        intended_size: 0,
-        contract_size: 52570,
-        production_size: 52570,
-        url: "/deal/3890/",
-      },
-    ],
-  };
-  // return {
-  //   id: `I${investor.id}`,
-  //   type: "investor",
-  //   name: "Black River Asset Management",
-  //   status: "overwritten",
-  //   is_root: true,
-  //   identifier: 36759,
-  //   country: "Colombia",
-  //   country_code: "CO",
-  //   classification: "Private company",
-  //   homepage: null,
-  //   opencorporates_link: null,
-  //   comment: null,
-  //   url: "/investor/36759/",
-  //   investors: [],
-  //   deals: [],
-  // };
 }

@@ -195,7 +195,9 @@ type Deal {
     status_display: String
     draft_status: Int
     draft_status_display: String
-    timestamp: DateTime
+    created_at: DateTime
+    modified_at: DateTime
+    fully_updated_at: DateTime
 
     versions: [DealVersion]
 }
@@ -211,7 +213,6 @@ type Location {
     #level_of_accuracy_display: String
     comment: String
     areas: GeoJSON
-    timestamp: DateTime
     deal: Deal
 }
 
@@ -222,7 +223,6 @@ type Contract {
     expiration_date: Date
     agreement_duration: Int
     comment: String
-    timestamp: DateTime
 }
 
 type DataSource {
@@ -241,7 +241,6 @@ type DataSource {
     includes_in_country_verified_information: Boolean
     open_land_contracts_id: String
     comment: String
-    timestamp: DateTime
 }
 
 type Actor {

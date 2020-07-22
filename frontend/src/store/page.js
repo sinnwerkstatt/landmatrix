@@ -44,8 +44,11 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchUser(context) {
-      let query = `{ me
+    fetchUserCountriesAndRegions(context) {
+      let query = `{
+        countries { id name slug }
+        regions { id name slug }
+        me
         {
           full_name
           username
@@ -55,14 +58,9 @@ export const pageModule = {
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setUser", response.data.data.me);
-      });
-    },
-    fetchCountriesAndRegions(context) {
-      let query = `{ countries { id name slug } regions { id name slug } }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
         context.commit("setCountries", response.data.data.countries);
         context.commit("setRegions", response.data.data.regions);
+        context.commit("setUser", response.data.data.me);
       });
     },
     fetchWagtailRootPage(context) {

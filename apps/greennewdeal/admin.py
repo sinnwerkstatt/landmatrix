@@ -49,7 +49,7 @@ class ContractAdmin(VersionAdmin):
 
 @admin.register(Investor)
 class InvestorAdmin(VersionAdmin):
-    list_display = ["pk", "__str__", "timestamp"]
+    list_display = ["pk", "__str__", "created_at"]
 
 
 @admin.register(InvestorVentureInvolvement)

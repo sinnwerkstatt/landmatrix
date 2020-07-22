@@ -13,6 +13,8 @@ def _resolve_investors_prefetching(info: GraphQLResolveInfo):
     fields = get_fields(info)
     if "country" in fields:
         qs = qs.prefetch_related("country")
+    if "deals" in fields:
+        qs = qs.prefetch_related("deals")
     return qs
 
 

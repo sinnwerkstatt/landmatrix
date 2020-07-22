@@ -22,6 +22,13 @@
     "bootstrap-vue": "^2.15.0",
     "chart.js": "^2.9.3",
     "css-loader": "^3.5.3",
+    "d3": "~3.5",
+    "d3-dispatch": "^1.0.6",
+    "d3-quadtree": "^1.0.7",
+    "d3-timer": "^1.0.10",
+    "d3-force": "^2.0.1",
+    "d3-hierarchy": "^1.1.9",
+    "d3-sankey": "~0.12.1",
     "dayjs": "^1.8.27",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
@@ -66,10 +73,16 @@
       "node": true,
       "es6": true
     },
+    "rules": {
+      "no-unused-vars": "warn"
+    },
     "parserOptions": {
       "ecmaVersion": 6,
       "sourceType": "module",
       "ecmaFeatures": {}
     }
-  }
+  },
+  "browserslist": [
+    "since 2017-06"
+  ]
 }

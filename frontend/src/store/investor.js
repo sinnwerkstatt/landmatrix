@@ -32,7 +32,8 @@ export const investorModule = {
           comment
           # involvements
           status
-          timestamp
+          created_at
+          modified_at
           deals { id country {name} }
           involvements(depth:3)
         }

@@ -77,7 +77,7 @@ class ReversionSaveMixin:
                 or (current_model.status == self.STATUS_DRAFT)
                 or not status == self.STATUS_DRAFT
             ):
-                self.save()
+                self.save(custom_modification_date=date)
             # otherwise update the draft_status of the current_model
             else:
                 self.__class__.objects.filter(pk=self.pk).update(

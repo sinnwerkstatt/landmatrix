@@ -51,7 +51,6 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
 
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="locations")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     objects = DealSubmodelManager()
 
@@ -71,7 +70,6 @@ class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
 
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="contracts")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     objects = DealSubmodelManager()
 
@@ -118,7 +116,6 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
 
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="datasources")
     old_group_id = models.IntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
 
     objects = DealSubmodelManager()
 

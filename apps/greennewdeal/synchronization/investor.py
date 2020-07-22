@@ -1,4 +1,4 @@
-import re
+from typing import Union
 
 import reversion
 
@@ -30,12 +30,13 @@ CLASSIFICATIONS_MAP = {
 }
 
 
-def histvestor_to_investor(histvestor):
+def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
     if isinstance(histvestor, int):
         histvestor = HistoricalInvestor.objects.get(id=histvestor)
 
     investor, created = Investor.objects.get_or_create(
-        id=histvestor.investor_identifier
+        id=histvestor.investor_identifier,
+        defaults={"created_at": histvestor.history_date},
     )
 
     investor.name = histvestor.name
@@ -47,7 +48,7 @@ def histvestor_to_investor(histvestor):
     investor.comment = histvestor.comment or ""
 
     status = histvestor.fk_status_id
-    investor.timestamp = histvestor.history_date
+    investor.modified_at = histvestor.history_date
     investor.old_id = histvestor.id
 
     # check involvements
@@ -56,7 +57,7 @@ def histvestor_to_investor(histvestor):
         try:
             Investor.objects.get(id=involve.fk_investor.investor_identifier)
         except Investor.DoesNotExist:
-            hist_to_inv(involve.fk_investor)
+            histvestor_to_investor(involve.fk_investor)
 
     with reversion.create_revision():
         _create_involvements_for_investor(investor, histvestor)

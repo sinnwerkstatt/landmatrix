@@ -5,7 +5,7 @@ type Query {
 
     deal(id: Int!, version: Int): Deal!
     deals(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
@@ -27,7 +27,7 @@ type Query {
 
     investor(id: Int!): Investor!
     investors(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
@@ -35,7 +35,7 @@ type Query {
         filters: [Filter]
     ): [Investor]
     involvements(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,

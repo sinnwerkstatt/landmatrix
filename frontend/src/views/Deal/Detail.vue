@@ -128,7 +128,7 @@
                 <th class="">Status</th>
                 <th class="">Comment</th>
                 <th class=""><i class="fa fa-eye" aria-hidden="true"></i></th>
-                <th class=""><i class="fa fa-exchange" aria-hidden="true"></i></th>
+                <th class=""></th>
               </tr>
             </thead>
             <tbody>

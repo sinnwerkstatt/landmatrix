@@ -17,7 +17,10 @@ type Investor {
     status_display: String
     draft_status: Int
     draft_status_display: String
-    timestamp: DateTime
+    created_at: DateTime
+    modified_at: DateTime
+
+    is_actually_unknown: Boolean
 }
 
 type Involvement {

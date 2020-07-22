@@ -1,4 +1,5 @@
 import warnings
+from tempfile import mkdtemp
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -15,7 +16,7 @@ def vuebase(request, path=None):
 
 # def gis_export(request):
 #     jsons = [
-#         x.geojson["features"] for x in Location.objects.filter(deal__status__in=(2, 3))
+#         x.areas["features"] for x in Location.objects.filter(deal__status__in=(2, 3)) if x.areas
 #     ]
 #     import geopandas
 #     import fiona
@@ -24,8 +25,9 @@ def vuebase(request, path=None):
 #     # pts = [x for x in self.geojson["features"] if x["geometry"]["type"] != "Point"]
 #     x = geopandas.GeoDataFrame.from_features(jsons)
 #     gisdir = mkdtemp(prefix="gis_export")
-#     x.to_file("/tmp/mbla.shp")
-#     x.to_file("/tmp/bla.kml", driver="KML")
+#     x.to_file(f"{gisdir}/export.shp")
+#     # x.to_file("/tmp/mbla.shp")
+#     x.to_file(f"{gisdir}/export.kml", driver="KML")
 #     return
 
 

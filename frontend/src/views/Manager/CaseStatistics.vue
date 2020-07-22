@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div class="loadingscreen" v-if="loading">
+      <div class="loader"></div>
+    </div>
     <div class="row my-5">
       <div class="col-md-6">
         <div class="form-group">
@@ -32,7 +35,7 @@
                 :options="regions"
                 label="name"
                 placeholder="Region"
-                @input="selectedCountry = null"
+                @input="updateStats('region')"
               />
             </div>
             <div class="multiselect-div">
@@ -41,7 +44,7 @@
                 :options="countries"
                 label="name"
                 placeholder="Country"
-                @input="selectedRegion = null"
+                @input="updateStats('country')"
               />
             </div>
           </div>
@@ -49,14 +52,10 @@
       </div>
     </div>
     <div class="number-of-deals">
-      <div class="loadingscreen" v-if="loading">
-        <div class="loader"></div>
-      </div>
       <b-tabs>
         <b-tab>
           <template v-slot:title>
-            <h2 v-if="filtered_deals.length">{{ filtered_deals.length }} Deals</h2>
-            <h2 v-else>Deals</h2>
+            <h2>Deals</h2>
           </template>
 
           <b-tabs pills card vertical>
@@ -87,10 +86,11 @@
   import InvestorTable from "/components/Investor/InvestorTable";
 
   export default {
+    name: "CaseStatistics",
     components: { InvestorTable, DealTable },
     data: function () {
       return {
-        loading: true,
+        loading: false,
         today: dayjs().format("YYYY/MM/DD"),
         daterange: {
           start: dayjs().subtract(30, "day").toDate(),
@@ -99,7 +99,9 @@
         selectedCountry: null,
         selectedRegion: null,
 
-        deals: [],
+        deals_added: [],
+        deals_updated: [],
+        deals_fully_updated: [],
         dealFields: [
           "deal_size",
           "status",
@@ -107,7 +109,8 @@
           "confidential",
           "country",
           "operating_company",
-          "timestamp",
+          "created_at",
+          "modified_at",
         ],
         investorFields: ["name", "status"],
         investors: [],
@@ -127,60 +130,54 @@
         countries: (state) => state.page.countries,
         user: (state) => state.page.user,
       }),
-      filtered_deals() {
-        if (this.selectedCountry)
-          return this.deals.filter((d) => {
-            return d.country && d.country.id === this.selectedCountry.id;
-          });
-        if (this.selectedRegion)
-          return this.deals.filter((d) => {
-            return d.country && d.country.region.id === this.selectedRegion.id;
-          });
-        return this.deals;
-      },
       deal_statistics() {
         return [
           {
             name: "Deals added",
-            deals: this.filtered_deals.filter((d) => d.status === 2),
+            deals: this.deals_added,
           },
           {
             name: "Deals updated",
-            deals: this.filtered_deals.filter((d) => d.status === 3),
+            deals: this.deals_updated,
+          },
+          {
+            name: "Deals Fully Updated",
+            deals: this.deals_fully_updated,
           },
           {
             name: "Deals published",
-            deals: this.filtered_deals.filter((d) => d.status === 2 || d.status === 3),
+            deals: this.deals_updated.filter((d) => d.status === 2 || d.status === 3),
           },
           {
             name: "Deals pending",
-            deals: this.filtered_deals.filter((d) => d.draft_status !== null),
+            deals: this.deals_updated.filter((d) => d.draft_status !== null),
           },
           {
             name: "Deals rejected",
-            deals: this.filtered_deals.filter((d) => d.status === 5),
+            deals: this.deals_updated.filter((d) => d.status === 5),
           },
           {
             name: "Deals pending deletion",
-            deals: this.filtered_deals.filter((d) => d.status === 6),
+            deals: this.deals_updated.filter((d) => d.status === 6),
           },
           {
             name: "Deals active, not public",
-            deals: this.filtered_deals.filter((d) => {
+            deals: this.deals_updated.filter((d) => {
               // only consider deals that are "live/updated"
               if (!(d.status === 2 || d.status === 3)) return false;
 
               if (d.confidential) return true;
               if (!d.country || d.country.high_income) return true;
               if (!d.datasources) return true;
-              if (!d.operating_company || d.operating_company.name === "") return true;
+              if (!d.operating_company || d.operating_company.is_actually_unknown)
+                return true;
               // TODO: The parent company unknown filter is still missing here;
               return false;
             }),
           },
           {
             name: "Deals active, not-public flag",
-            deals: this.filtered_deals.filter((d) => {
+            deals: this.deals_updated.filter((d) => {
               // only consider deals that are "live/updated"
               if (!(d.status === 2 || d.status === 3)) return false;
               return !!d.confidential;
@@ -226,27 +223,18 @@
       user() {
         this.triggerUserRegion();
       },
-      regions() {
-        this.triggerUserRegion();
-      },
-      countries() {
-        this.triggerUserRegion();
-      },
     },
     methods: {
       triggerUserRegion() {
-        if (!this.countries) return;
-        if (!this.regions) return;
-        if (!this.user) return;
         if (this.user.userregionalinfo) {
           let uri = this.user.userregionalinfo;
           if (uri.region) {
             this.selectedRegion = uri.region[0];
-            this.updateStats("region");
+            this.updateStats();
           }
           if (uri.country) {
             this.selectedCountry = uri.country[0];
-            this.updateStats("country");
+            this.updateStats();
           }
         }
       },
@@ -255,12 +243,17 @@
           start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
           end: new Date(),
         };
+        this.updateStats();
       },
-      updateStats() {
-        this.loading = true;
+      updateStats(triggerfield) {
+        if (triggerfield === "country") this.selectedRegion = null;
+        if (triggerfield === "region") this.selectedCountry = null;
 
-        let query = `query Stats($filters: [Filter]) {
-          deals(limit: 0, filters: $filters) {
+        if (!this.user) return;
+
+        if (this.loading) return;
+        this.loading = true;
+        const deal_gql_fields = `{
            id
            deal_size
            fully_updated
@@ -269,37 +262,59 @@
            confidential
            country { id name high_income region {id} }
            datasources { id }
-           operating_company {name}
-           timestamp
-          }
-          investors(limit: 0, filters: $filters) {
-           id
-           name
-           timestamp
-           status
-           draft_status
-           country { id name high_income region { id } }
-          }
+           operating_company {name is_actually_unknown}
+           created_at
+           modified_at
         }`;
-        let variables = {
-          filters: [
-            {
-              field: "timestamp",
-              operation: "GE",
-              value: dayjs(this.daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "timestamp",
-              operation: "LE",
-              value: dayjs(this.daterange.end).format("YYYY-MM-DD"),
-            },
-          ],
-        };
-        axios.post("/graphql/", { query, variables }).then((response) => {
-          this.deals = response.data.data.deals;
-          this.investors = response.data.data.investors;
-          this.loading = false;
-        });
+        const investors_x = `
+          investors(limit: 0, filters: $filters) {
+          id
+          name
+          created_at
+          modified_at
+          status
+          draft_status
+          country { id name high_income region { id } }
+        }`;
+        let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
+        let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
+        let reg_con = "";
+        if (this.selectedCountry) {
+          reg_con = `{field:"country.id",operation:EQ,value:"${this.selectedCountry.id}"}`;
+        }
+        if (this.selectedRegion) {
+          reg_con = `{field:"country.region_id",operation:EQ,value:"${this.selectedRegion.id}"}`;
+        }
+
+        const query = `query {
+          deals_added: deals(limit: 0, filters: [
+            {field:"created_at",operation:GE,value:"${dr_start}"},
+            {field:"created_at",operation:LE,value:"${dr_end}"},
+            {field:"status",operation:IN,value:["1","2","3"]},
+            ${reg_con}
+            ]) ${deal_gql_fields}
+          deals_updated: deals(limit: 0, filters: [
+            {field:"modified_at",operation:GE,value:"${dr_start}"},
+            {field:"modified_at",operation:LE,value:"${dr_end}"},
+            {field:"status",operation:IN,value:["1","2","3"]},
+            ${reg_con}
+            ]) ${deal_gql_fields}
+          deals_fully_updated: deals(limit: 0, filters: [
+            {field:"fully_updated_at",operation:GE,value:"${dr_start}"},
+            {field:"fully_updated_at",operation:LE,value:"${dr_end}"},
+            ${reg_con}
+            ]) ${deal_gql_fields}
+        }`;
+
+        axios
+          .post("/graphql/", { query })
+          .then((response) => {
+            this.deals_added = response.data.data.deals_added || [];
+            this.deals_updated = response.data.data.deals_updated || [];
+            this.deals_fully_updated = response.data.data.deals_fully_updated || [];
+            // this.investors = response.data.data.investors;
+          })
+          .finally(() => (this.loading = false));
       },
       prepareDeals(deals) {
         return deals.map((deal) => {
@@ -307,11 +322,11 @@
           let operating_company = deal.operating_company
             ? deal.operating_company.name
             : "";
-          let timestamp = dayjs(deal.timestamp).format("YYYY-MM-DD");
           let confidential = deal.confidential ? "fa-check" : "fa-times";
           return {
             ...deal,
-            timestamp,
+            created_at: dayjs(deal.created_at).format("YYYY-MM-DD"),
+            modified_at: dayjs(deal.modified_at).format("YYYY-MM-DD"),
             confidential: `<i class="fa ${confidential}" aria-hidden="true"></i>`,
             country,
             operating_company,
@@ -365,78 +380,6 @@
 
     .multiselect {
       width: 100%;
-    }
-  }
-  .number-of-deals {
-    position: relative;
-
-    .loadingscreen {
-      z-index: 10;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(128, 128, 128, 0.8);
-      /*background: rgba( darken($primary, 30%), 0.7 );*/
-    }
-  }
-
-  .loader,
-  .loader:before,
-  .loader:after {
-    background: #ffffff;
-    -webkit-animation: load1 1s infinite ease-in-out;
-    animation: load1 1s infinite ease-in-out;
-    width: 1em;
-    height: 4em;
-  }
-  .loader {
-    color: #ffffff;
-    text-indent: -9999em;
-    margin: 88px auto;
-    position: relative;
-    font-size: 11px;
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-animation-delay: -0.16s;
-    animation-delay: -0.16s;
-  }
-  .loader:before,
-  .loader:after {
-    position: absolute;
-    top: 0;
-    content: "";
-  }
-  .loader:before {
-    left: -1.5em;
-    -webkit-animation-delay: -0.32s;
-    animation-delay: -0.32s;
-  }
-  .loader:after {
-    left: 1.5em;
-  }
-  @-webkit-keyframes load1 {
-    0%,
-    80%,
-    100% {
-      box-shadow: 0 0;
-      height: 4em;
-    }
-    40% {
-      box-shadow: 0 -2em;
-      height: 5em;
-    }
-  }
-  @keyframes load1 {
-    0%,
-    80%,
-    100% {
-      box-shadow: 0 0;
-      height: 4em;
-    }
-    40% {
-      box-shadow: 0 -2em;
-      height: 5em;
     }
   }
 </style>

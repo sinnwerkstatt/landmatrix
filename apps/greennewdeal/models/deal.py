@@ -27,7 +27,7 @@ class DealManager(models.Manager):
     def public(self):
         qs = self.get_queryset()
         qs = qs.exclude(confidential=True)
-        qs = qs.exclude(country=None).exclude(country__high_income=True)
+        qs = qs.exclude(Q(country=None) | Q(country__high_income=True))
         qs = qs.exclude(datasources=None)
         qs = qs.exclude(operating_company=None)
         qs = qs.exclude(
@@ -36,6 +36,37 @@ class DealManager(models.Manager):
         )
         # TODO: Open question: just role = "PARENT"?
         return qs
+
+    # def with_public_status(self, user=None):
+    #     if not (user or user.is_staff or user.is_superuser):
+    #         return self.public()
+    #     qs = self.get_queryset()
+    #     return qs.annotate(
+    #         public_status=Case(
+    #             When(Q(confidential=True), then=Value("CONFIDENTIAL_FLAG")),
+    #             When(
+    #                 Q(country=None) | Q(country__high_income=True),
+    #                 then=Value("COUNTRY_PROBLEMS"),
+    #             ),
+    #             When(
+    #                 Q(datasources=None),
+    #                 then=Value("NO_DATASOURCES"),
+    #             ),
+    #             # When(
+    #             #     Q(operating_company=None),
+    #             #     then=Value("NO_OPERATING_COMPANY"),
+    #             # ),
+    #             # When(
+    #             #     Q(operating_company__is_actually_unknown=True)
+    #             #     & ~Q(
+    #             #         operating_company__investors__investor__is_actually_unknown=False
+    #             #     ),
+    #             #     then=Value("UNKNOWN_INVESTORS"),
+    #             # ),
+    #             default=Value("PUBLIC"),
+    #             output_field=CharField(),
+    #         )
+    #     )
 
 
 @reversion.register(
@@ -948,7 +979,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
+
+    """ # Timestamps """
+    created_at = models.DateTimeField(default=timezone.now)
+    modified_at = models.DateTimeField()
+    fully_updated_at = models.DateTimeField(null=True)
 
     objects = DealManager()
 
@@ -956,14 +991,18 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         return f"#{self.id} in {self.country}"
 
     @transaction.atomic
-    def save(self, *args, **kwargs):
+    def save(self, custom_modification_date=None, *args, **kwargs):
+        self.modified_at = custom_modification_date or timezone.now()
+        if self.fully_updated:
+            self.fully_updated_at = timezone.now()
+
         self.current_contract_size = self._get_current("contract_size")
         self.current_production_size = self._get_current("production_size")
         self.current_negotiation_status = self._get_current("negotiation_status")
         self.current_implementation_status = self._get_current("implementation_status")
         self.deal_size = self._calculate_deal_size()
         self.geojson = self._combine_geojson()
-        super(Deal, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)

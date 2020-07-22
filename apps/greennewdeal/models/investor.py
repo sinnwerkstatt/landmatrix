@@ -94,20 +94,24 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    modified_at = models.DateTimeField()
 
     old_id = models.IntegerField(null=True, blank=True)
 
     objects = InvestorManager()
 
-    # computed properties
+    """ # computed properties """
     # The following flag is needed at the moment to filter through Deals (public-filter)
     # FIXME This should be replaced by an option to _NOT_ specify the investor name.
     is_actually_unknown = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
+    def save(self, custom_modification_date=None, *args, **kwargs):
+        self.modified_at = custom_modification_date or timezone.now()
+
         if re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE):
             self.is_actually_unknown = True
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -257,7 +261,9 @@ class InvestorVentureInvolvement(
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
-    timestamp = models.DateTimeField(default=timezone.now, null=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    modified_at = models.DateTimeField()
+
     old_id = models.IntegerField(null=True, blank=True)
 
     objects = InvolvementManager()
@@ -273,6 +279,10 @@ class InvestorVentureInvolvement(
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
+
+    def save(self, custom_modification_date=None, *args, **kwargs):
+        self.modified_at = custom_modification_date or timezone.now()
+        super().save(*args, **kwargs)
 
     def to_dict(self):
         return {
