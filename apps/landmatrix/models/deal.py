@@ -292,9 +292,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     # Contract farming
-    contract_farming = models.BooleanField(default=False)
+    contract_farming = models.NullBooleanField()
 
-    on_the_lease = models.BooleanField(_("On leased / purchased area"), default=False)
+    on_the_lease = models.NullBooleanField(_("On leased / purchased area"))
     on_the_lease_area = JSONField(
         _("On leased / purchased area (in ha)"),
         help_text=_("ha"),
@@ -314,8 +314,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
     )
 
-    off_the_lease = models.BooleanField(
-        _("Not on leased / purchased area (out-grower)"), default=False
+    off_the_lease = models.NullBooleanField(
+        _("Not on leased / purchased area (out-grower)")
     )
     off_the_lease_area = JSONField(
         _("Not on leased / purchased area (out-grower, in ha)"),
@@ -344,7 +344,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     # is a foreign key
 
     """ Employment """
-    total_jobs_created = models.BooleanField(_("Jobs created (total)"), default=False)
+    total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
     total_jobs_planned = models.IntegerField(
         _("Planned number of jobs (total)"), help_text=_("jobs"), blank=True, null=True
     )
@@ -376,9 +376,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on jobs created (total)"), blank=True
     )
 
-    foreign_jobs_created = models.BooleanField(
-        _("Jobs created (foreign)"), default=False
-    )
+    foreign_jobs_created = models.NullBooleanField(_("Jobs created (foreign)"))
     foreign_jobs_planned = models.IntegerField(
         _("Planned number of jobs (foreign)"),
         help_text=_("jobs"),
@@ -419,9 +417,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on jobs created (foreign)"), blank=True
     )
 
-    domestic_jobs_created = models.BooleanField(
-        _("Jobs created (domestic)"), default=False
-    )
+    domestic_jobs_created = models.NullBooleanField(_("Jobs created (domestic)"))
     domestic_jobs_planned = models.IntegerField(
         _("Planned number of jobs (domestic)"),
         help_text=_("jobs"),
@@ -774,14 +770,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         _("Comment on contract farming livestock"), blank=True
     )
 
-    has_domestic_use = models.BooleanField(_("Has domestic use"), default=False)
+    has_domestic_use = models.NullBooleanField(_("Has domestic use"))
     domestic_use = models.FloatField(
         _("Domestic use"),
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    has_export = models.BooleanField(_("Has export"), default=False)
+    has_export = models.NullBooleanField(_("Has export"))
 
     export = models.FloatField(
         _("Export"),

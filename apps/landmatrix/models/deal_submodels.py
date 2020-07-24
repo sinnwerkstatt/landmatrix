@@ -107,8 +107,8 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
     email = models.EmailField(_("Email"), blank=True)
     phone = models.CharField(_("Phone"), max_length=500, blank=True)
 
-    includes_in_country_verified_information = models.BooleanField(
-        _("Includes in-country-verified information"), default=False
+    includes_in_country_verified_information = models.NullBooleanField(
+        _("Includes in-country-verified information")
     )
     open_land_contracts_id = models.CharField(max_length=500, blank=True)
     comment = models.TextField(_("Comment on data source"), blank=True)

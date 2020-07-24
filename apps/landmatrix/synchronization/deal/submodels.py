@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Point
 from geojson_rewind import rewind
 
 from apps.landmatrix.models import Contract, DataSource, Location
+from apps.landmatrix.synchronization.helpers import _to_nullbool
 
 
 def create_locations(deal, groups):
@@ -188,8 +189,8 @@ def create_data_sources(deal, groups):
         data_source.company = attrs.get("company") or ""
         data_source.email = attrs.get("email") or ""
         data_source.phone = attrs.get("phone") or ""
-        data_source.includes_in_country_verified_information = (
-            attrs.get("includes_in_country_verified_information") == "True"
+        data_source.includes_in_country_verified_information = _to_nullbool(
+            attrs.get("includes_in_country_verified_information")
         )
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
         data_source.save()

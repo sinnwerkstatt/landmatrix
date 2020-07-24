@@ -1,6 +1,11 @@
 from collections import defaultdict
+from typing import Optional
 
 from apps.landmatrix.models import Contract, DataSource, Deal, Location
+
+
+def _to_nullbool(val: Optional[str]):
+    return None if val is None else val in {"True", "Yes"}
 
 
 def _extras_to_json(

@@ -1,8 +1,4 @@
-from collections import defaultdict
-
 from apps.landmatrix.models import Deal
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.synchronization.helpers import _extras_to_json, _extras_to_list
 from apps.landmatrix.models import (
     HistoricalActivity,
     HistoricalInvestorActivityInvolvement,
@@ -10,10 +6,12 @@ from apps.landmatrix.models import (
     Animal,
     Mineral,
 )
-
-
-def _to_nullbool(val):
-    return None if val is None else val == "Yes"
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.synchronization.helpers import (
+    _extras_to_json,
+    _extras_to_list,
+    _to_nullbool,
+)
 
 
 def parse_general(deal, attrs):
@@ -126,8 +124,8 @@ def parse_general(deal, attrs):
     deal.annual_leasing_fee_type = HA_AREA_MAP[attrs.get("annual_leasing_fee_type")]
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
 
-    deal.contract_farming = attrs.get("contract_farming") == "Yes"
-    deal.on_the_lease = attrs.get("on_the_lease") == "True"
+    deal.contract_farming = _to_nullbool(attrs.get("contract_farming"))
+    deal.on_the_lease = _to_nullbool(attrs.get("on_the_lease"))
     deal.on_the_lease_area = _extras_to_json(attrs, "on_the_lease_area")
     deal.on_the_lease_farmers = _extras_to_json(
         attrs, "on_the_lease_farmers", expected_type=int
@@ -135,7 +133,7 @@ def parse_general(deal, attrs):
     deal.on_the_lease_households = _extras_to_json(
         attrs, "on_the_lease_households", expected_type=int
     )
-    deal.off_the_lease = attrs.get("off_the_lease") == "True"
+    deal.off_the_lease = _to_nullbool(attrs.get("off_the_lease"))
     deal.off_the_lease_area = _extras_to_json(attrs, "off_the_lease_area")
     deal.off_the_lease_farmers = _extras_to_json(
         attrs, "off_the_lease_farmers", expected_type=int
@@ -147,7 +145,7 @@ def parse_general(deal, attrs):
 
 
 def parse_employment(deal, attrs):
-    deal.total_jobs_created = attrs.get("total_jobs_created") == "True"
+    deal.total_jobs_created = _to_nullbool(attrs.get("total_jobs_created"))
     deal.total_jobs_planned = attrs.get("total_jobs_planned")
     deal.total_jobs_planned_employees = attrs.get("total_jobs_planned_employees")
     deal.total_jobs_planned_daily_workers = attrs.get(
@@ -164,7 +162,7 @@ def parse_employment(deal, attrs):
         attrs.get("tg_total_number_of_jobs_created_comment") or ""
     )
 
-    deal.foreign_jobs_created = attrs.get("foreign_jobs_created") == "True"
+    deal.foreign_jobs_created = _to_nullbool(attrs.get("foreign_jobs_created"))
     deal.foreign_jobs_planned = attrs.get("foreign_jobs_planned")
     deal.foreign_jobs_planned_employees = attrs.get("foreign_jobs_planned_employees")
     deal.foreign_jobs_planned_daily_workers = attrs.get(
@@ -181,7 +179,7 @@ def parse_employment(deal, attrs):
         attrs.get("tg_foreign_jobs_created_comment") or ""
     )
 
-    deal.domestic_jobs_created = attrs.get("domestic_jobs_created") == "True"
+    deal.domestic_jobs_created = _to_nullbool(attrs.get("domestic_jobs_created"))
     deal.domestic_jobs_planned = attrs.get("domestic_jobs_planned")
     deal.domestic_jobs_planned_employees = attrs.get("domestic_jobs_planned_employees")
     deal.domestic_jobs_planned_daily_workers = attrs.get(
@@ -427,7 +425,7 @@ def parse_produce_info(deal, attrs):
         attrs.get("tg_contract_farming_animals_comment") or ""
     )
 
-    deal.has_domestic_use = attrs.get("has_domestic_use") == "True"
+    deal.has_domestic_use = _to_nullbool(attrs.get("has_domestic_use"))
 
     # NOTE Fixes for broken data
     domestic_use = attrs.get("domestic_use")
@@ -438,7 +436,7 @@ def parse_produce_info(deal, attrs):
         pass
     deal.domestic_use = domestic_use
 
-    deal.has_export = attrs.get("has_export") == "True"
+    deal.has_export = _to_nullbool(attrs.get("has_export"))
     deal.export = attrs.get("export")
 
     export_country1 = attrs.get("export_country1")
