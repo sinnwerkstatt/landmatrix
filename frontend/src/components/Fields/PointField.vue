@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="readonly">
-      <span v-if="val.lat">Lat: {{ val.lat.toFixed(8) }}</span>
-      <span v-if="val.lng">Lng: {{val.lng.toFixed(8)}}</span>
+      <span v-if="val.lat">Lat: {{ parseFloat(val.lat.toFixed(8)) }}</span>
+      <span v-if="val.lng">Lng: {{ parseFloat(val.lng.toFixed(8)) }}</span>
     </div>
   </div>
 </template>

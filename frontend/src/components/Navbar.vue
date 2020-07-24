@@ -47,6 +47,30 @@
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="languageDropdown"
+            >
+              <i class="fa fa-language" aria-hidden="true" style="display: inline;"></i>
+              {{ LANGUAGES[LANGUAGE] }}
+            </a>
+            <div class="dropdown-menu">
+              <a
+                v-for="(lingo, lcode) in LANGUAGES"
+                :href="`/language/${lcode}/`"
+                class="dropdown-item"
+                :class="{ active: lcode === LANGUAGE }"
+              >
+                {{ lingo }} ({{ lcode }})
+              </a>
+            </div>
+          </li>
           <li v-if="user" class="nav-item">
             <p class="navbar-text dropdown-header">
               {{ user.full_name }}
@@ -164,6 +188,8 @@
         username: null,
         password: null,
         login_failed_message: "",
+        LANGUAGE: LANGUAGE,
+        LANGUAGES: { en: "English", es: "Español", fr: "Français" },
       };
     },
     computed: {

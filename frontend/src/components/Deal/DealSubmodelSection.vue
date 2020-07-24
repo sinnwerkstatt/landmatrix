@@ -39,7 +39,7 @@
   import PointField from "/components/Fields/PointField";
   import IntegerField from "/components/Fields/DecimalField";
   import EmailField from "/components/Fields/TextField";
-  import FileField from "/components/Fields/TextField";
+  import FileField from "/components/Fields/FileField";
 
   export default {
     props: ["title", "fields", "submodel", "readonly", "active"],

@@ -68,7 +68,7 @@ store.dispatch("fetchUserCountriesAndRegions");
 // This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
 store.dispatch("fetchWagtailRootPage");
 
-store.dispatch("fetchFields", "en");
+store.dispatch("fetchFields", LANGUAGE || "en");
 
 
 Vue.filter('defaultdate', function (value) {

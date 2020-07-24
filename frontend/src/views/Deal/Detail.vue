@@ -3,21 +3,22 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
-<!--    <div class="quicknav">-->
-<!--      <div v-for="(version, i) in deal.versions">-->
-<!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
-<!--          >Current</span-->
-<!--        >-->
-<!--        <router-link-->
-<!--          v-else-->
-<!--          :to="{-->
-<!--            name: 'deal_detail',-->
-<!--            params: { deal_id, deal_version: version.revision.id },-->
-<!--          }"-->
-<!--          >{{ version.revision.date_created | defaultdate }}</router-link-->
-<!--        >-->
-<!--      </div>-->
-<!--    </div>-->
+    <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
+    <!--    <div class="quicknav">-->
+    <!--      <div v-for="(version, i) in deal.versions">-->
+    <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
+    <!--          >Current</span-->
+    <!--        >-->
+    <!--        <router-link-->
+    <!--          v-else-->
+    <!--          :to="{-->
+    <!--            name: 'deal_detail',-->
+    <!--            params: { deal_id, deal_version: version.revision.id },-->
+    <!--          }"-->
+    <!--          >{{ version.revision.date_created | defaultdate }}</router-link-->
+    <!--        >-->
+    <!--      </div>-->
+    <!--    </div>-->
     <b-tabs
       content-class="mt-3"
       vertical
@@ -117,57 +118,7 @@
       </b-tab>
 
       <b-tab title="Deal History">
-        <div>
-          <h3>History</h3>
-          <table class="table table-condensed">
-            <thead>
-              <tr>
-                <th class="">Timestamp</th>
-                <th class="">User</th>
-                <th class="">Fully updated</th>
-                <th class="">Status</th>
-                <th class="">Comment</th>
-                <th class=""><i class="fa fa-eye" aria-hidden="true"></i></th>
-                <th class=""></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(version, i) in deal.versions">
-                <td>{{ version.revision.date_created | defaultdate }}</td>
-                <td>{{ version.revision.user && version.revision.user.full_name }}</td>
-                <td>{{ version.deal.fully_updated ? "✓" : "" }}</td>
-                <td>
-                  {{ derive_status(version.deal.status, version.deal.draft_status) }}
-                </td>
-                <td>{{ version.revision.comment }}</td>
-                <td>
-                  <span
-                    v-if="
-                      (!deal_version && !i) || +deal_version === +version.revision.id
-                    "
-                    >Current</span
-                  >
-                  <router-link
-                    v-else
-                    :to="{
-                      name: 'deal_detail',
-                      params: { deal_id, deal_version: version.revision.id },
-                    }"
-                    v-slot="{ href, navigate }"
-                  >
-                    <!-- this hack helps to understand that a new version is actually loading, atm -->
-                    <a :href="href" @click="navigate">Show</a>
-                  </router-link>
-                </td>
-                <td>
-                  <span :href="`/newdeal/deal/compare/${version.revision.id}/`">
-                    Compare with previous<br>not working yet
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
       </b-tab>
     </b-tabs>
   </div>
@@ -178,12 +129,13 @@
   import DealSection from "/components/Deal/DealSection";
   import DealLocationSection from "/components/Deal/DealLocationsSection";
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
-  import { derive_status } from "/utils";
   import { mapState } from "vuex";
+  import DealHistory from "../../components/Deal/DealHistory";
 
   export default {
     props: ["deal_id", "deal_version"],
     components: {
+      DealHistory,
       DealSection,
       DealLocationSection,
       DealSubmodelSection,
@@ -193,15 +145,23 @@
         loading: false,
       };
     },
-    methods: {
-      derive_status,
-    },
     computed: {
       ...mapState({
         deal_fields: (state) => state.deal.deal_fields,
       }),
       deal() {
         return this.$store.state.deal.current_deal;
+      },
+      not_public() {
+        if (this.deal) {
+          if (this.deal.status === 1 || this.deal.status === 6)
+            return "This deal version is pending.";
+          if (this.deal.status === 4)
+            return "This deal has been deleted. It is not visible for public users.";
+          if (this.deal.status === 5)
+            return "This deal version has been rejected. It is not visible for public users.";
+        }
+        return null;
       },
     },
     beforeRouteEnter(to, from, next) {

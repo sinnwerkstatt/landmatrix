@@ -68,7 +68,7 @@ export const dealModule = {
       //   : `id:${deal_id}`;
       // let version = deal_version?`(version:${deal_version})`:'';
       let query = `{
-        deal(${filter}) {
+      deal(${filter}) {
         id
         # General Info
         ## Land area
@@ -263,7 +263,9 @@ export const dealModule = {
             comment
           }
         }
-        }
+        status
+        draft_status
+      }
       }`;
 
       return new Promise(function (resolve, reject) {
