@@ -144,12 +144,12 @@
 
     &.asc:before {
       content: "\f078";
-      font-family: FontAwesome;
+      font-family: 'Font Awesome 5 Free';
     }
 
     &:not(.asc):before {
       content: "\f077";
-      font-family: FontAwesome;
+      font-family: 'Font Awesome 5 Free';
     }
   }
 </style>
