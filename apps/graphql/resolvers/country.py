@@ -2,8 +2,7 @@ from typing import Any
 
 from graphql import GraphQLResolveInfo
 
-from apps.greennewdeal.models import Country, Region
-from apps.wagtailcms.models import RegionPage
+from apps.landmatrix.models import Country, Region
 
 
 def resolve_countries(obj: Any, info: GraphQLResolveInfo, sort="id", limit=20):

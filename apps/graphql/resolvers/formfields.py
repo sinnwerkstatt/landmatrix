@@ -3,8 +3,8 @@ from typing import Any
 from django.utils import translation
 from graphql import GraphQLResolveInfo
 
-from apps.greennewdeal.forms.deal import DealForm
-from apps.greennewdeal.forms.deal_submodels import (
+from apps.landmatrix.forms.deal import DealForm
+from apps.landmatrix.forms.deal_submodels import (
     LocationForm,
     ContractForm,
     DataSourceForm,

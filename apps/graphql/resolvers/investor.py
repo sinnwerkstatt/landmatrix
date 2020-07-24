@@ -4,7 +4,7 @@ from ariadne import ObjectType
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.greennewdeal.models import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models import Investor, InvestorVentureInvolvement
 
 
 def _resolve_investors_prefetching(info: GraphQLResolveInfo):

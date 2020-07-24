@@ -22,6 +22,11 @@ from apps.landmatrix.models.investor import (
     HistoricalInvestorVentureInvolvement,
 )
 
+from .currency import Currency
+from .gndinvestor import Investor, InvestorVentureInvolvement
+from .deal import Deal
+from .deal_submodels import Contract, DataSource, Location
+
 
 class AgriculturalProduce(models.Model):
     name = models.CharField("Name", max_length=255)
@@ -63,17 +68,6 @@ class Crop(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Currency(models.Model):
-    code = models.CharField("Code", max_length=3)
-    name = models.CharField("Name", max_length=255)
-    symbol = models.CharField("Symbol", max_length=255)
-    country = models.CharField("Country", max_length=2)
-    ranking = models.IntegerField("Ranking")
-
-    def __str__(self):
-        return str("%s%s" % (self.name, self.symbol and " (%s)" % self.symbol or ""))
 
 
 class Language(models.Model):

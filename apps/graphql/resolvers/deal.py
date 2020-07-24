@@ -6,7 +6,7 @@ from graphql import GraphQLResolveInfo
 from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.greennewdeal.models import Deal, Location
+from apps.landmatrix.models import Deal, Location
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
