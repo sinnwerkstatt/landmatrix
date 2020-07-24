@@ -11,6 +11,12 @@ type User {
     is_impersonate: Boolean
     date_joined: DateTime
     userregionalinfo: UserRegionalInfo
+    groups: [UserGroup]
+}
+
+type UserGroup {
+    id: Int!
+    name: String!
 }
 
 type LoginPayload {

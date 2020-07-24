@@ -55,6 +55,7 @@ export const pageModule = {
           is_authenticated
           is_impersonate
           userregionalinfo { country { id name } region { id name } }
+          groups { id name }
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {

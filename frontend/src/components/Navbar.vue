@@ -75,7 +75,7 @@
             <p class="navbar-text dropdown-header">
               {{ user.full_name }}
               <br />
-              <small>BOFH</small>
+              <small>{{ user_role }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">
@@ -201,6 +201,32 @@
       },
       countries() {
         return this.$store.state.page.countries;
+      },
+      user_role() {
+        if (this.user && this.user.groups.length) {
+          let groupi = this.user.groups
+            .map((g) => g.name)
+            .filter((name) => {
+              return ["Administrators", "Editors", "Reporters"].indexOf(name) > -1;
+            });
+
+          if (groupi.length) {
+            let ret = "";
+            if (groupi.indexOf("Reporters") > -1) ret = "Reporter";
+            if (groupi.indexOf("Editors") > -1) ret = "Editor";
+            if (groupi.indexOf("Administrators") > -1) ret = "Administrator";
+            let uri = this.user.userregionalinfo;
+            if (uri) {
+              let area = uri.region.map((c) => c.name);
+              area = area.concat(uri.country.map((c) => c.name));
+              if (area.length) {
+                return `${ret} of ${area.join(", ")}`;
+              }
+            }
+            return ret;
+          }
+        }
+        return "No Role";
       },
     },
     methods: {
