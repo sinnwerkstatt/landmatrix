@@ -388,23 +388,23 @@ def _merge_area_yield_export(attrs, name, fieldmap):
     return areas
 
 
-CROP_MAP = dict(
-    [(str(x[0]), x[1]) for x in Crop.objects.all().values_list("id", "code")]
-)
-CROP_MAP["67"] = "67"
-CROP_MAP["35"] = "35"
-ANIMAL_MAP = dict(
-    [(str(x[0]), x[1]) for x in Animal.objects.all().values_list("id", "code")]
-)
-ANIMAL_MAP["Aquaculture (animals)"] = "AQU"
-ANIMAL_MAP["1"] = "1"
-MINERAL_MAP = {str(x): str(x) for x in range(101)}
-MINERAL_MAP.update(
-    dict([(str(x[0]), x[1]) for x in Mineral.objects.all().values_list("id", "code")])
-)
-
-
 def parse_produce_info(deal, attrs):
+    CROP_MAP = dict(
+        [(str(x[0]), x[1]) for x in Crop.objects.all().values_list("id", "code")]
+    )
+    CROP_MAP["67"] = "67"
+    CROP_MAP["35"] = "35"
+    ANIMAL_MAP = dict(
+        [(str(x[0]), x[1]) for x in Animal.objects.all().values_list("id", "code")]
+    )
+    ANIMAL_MAP["Aquaculture (animals)"] = "AQU"
+    ANIMAL_MAP["1"] = "1"
+    MINERAL_MAP = {str(x): str(x) for x in range(101)}
+    MINERAL_MAP.update(
+        dict(
+            [(str(x[0]), x[1]) for x in Mineral.objects.all().values_list("id", "code")]
+        )
+    )
     deal.crops = _merge_area_yield_export(attrs, "crops", CROP_MAP)
     deal.crops_comment = attrs.get("tg_crops_comment") or ""
     deal.animals = _merge_area_yield_export(attrs, "animals", ANIMAL_MAP)
