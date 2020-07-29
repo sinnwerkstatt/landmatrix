@@ -198,7 +198,6 @@ def parse_employment(deal, attrs):
 
 
 def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
-    # TODO: Simon - Is this logic sound?
     involvements = HistoricalInvestorActivityInvolvement.objects.filter(
         fk_activity=act_version
     ).order_by("-id")
@@ -399,6 +398,8 @@ def parse_produce_info(deal, attrs):
     )
     ANIMAL_MAP["Aquaculture (animals)"] = "AQU"
     ANIMAL_MAP["1"] = "1"
+    ANIMAL_MAP["5"] = "5"
+    ANIMAL_MAP["6"] = "6"
     MINERAL_MAP = {str(x): str(x) for x in range(101)}
     MINERAL_MAP.update(
         dict(

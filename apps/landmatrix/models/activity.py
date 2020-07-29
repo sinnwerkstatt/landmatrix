@@ -1019,12 +1019,7 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
         if trigger_gnd and settings.GND_ENABLED:
             from apps.landmatrix.tasks import task_propagate_save_to_gnd_deal
 
-            if settings.CELERY_ENABLED:
-                transaction.on_commit(
-                    lambda: task_propagate_save_to_gnd_deal.delay(self.pk)
-                )
-            else:
-                transaction.on_commit(task_propagate_save_to_gnd_deal(self.pk))
+            transaction.on_commit(task_propagate_save_to_gnd_deal(self.pk))
 
     class Meta:
         verbose_name = _("Historical activity")

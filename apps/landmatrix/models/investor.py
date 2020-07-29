@@ -618,15 +618,10 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                 transaction.on_commit(
                     lambda: index_investor.delay(self.investor_identifier)
                 )
-        if settings.GND_ENABLED:
+        if trigger_gnd and settings.GND_ENABLED:
             from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
 
-            if settings.CELERY_ENABLED:
-                transaction.on_commit(
-                    lambda: task_propagate_save_to_gnd_investor.delay(self.pk)
-                )
-            else:
-                transaction.on_commit(task_propagate_save_to_gnd_investor(self.pk))
+            transaction.on_commit(task_propagate_save_to_gnd_investor(self.pk))
 
     class Meta:
         verbose_name = _("Historical investor")
