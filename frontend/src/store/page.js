@@ -13,7 +13,7 @@ export const pageModule = {
     breadNav: [
       { route: "map", icon: "fa fa-map-marker", name: "Map" },
       { route: "deal_list", icon: "fa fa-table", name: "Data" },
-      { route: "charts", icon: "fa fa-bar-chart", name: "Charts" },
+      { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
     ],
   }),
   mutations: {
@@ -55,6 +55,7 @@ export const pageModule = {
           is_authenticated
           is_impersonate
           userregionalinfo { country { id name } region { id name } }
+          groups { id name }
         }
       }`;
       axios.post("/graphql/", { query: query }).then((response) => {

@@ -40,8 +40,13 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
 user_type = ObjectType("User")
 
 
+@user_type.field("groups")
+def get_user_groups(obj: User, info: GraphQLResolveInfo):
+    return obj.groups.all()
+
+
 @user_type.field("full_name")
-def get_deal_versions(obj: User, info: GraphQLResolveInfo):
+def get_user_full_name(obj: User, info: GraphQLResolveInfo):
     full_name = (
         f"{obj.first_name} {obj.last_name}".strip()
         if (obj.first_name or obj.last_name)

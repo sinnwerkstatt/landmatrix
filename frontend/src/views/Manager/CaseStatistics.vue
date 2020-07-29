@@ -283,7 +283,7 @@
           reg_con = `{field:"country.id",operation:EQ,value:"${this.selectedCountry.id}"}`;
         }
         if (this.selectedRegion) {
-          reg_con = `{field:"country.region_id",operation:EQ,value:"${this.selectedRegion.id}"}`;
+          reg_con = `{field:"country.fk_region_id",operation:EQ,value:"${this.selectedRegion.id}"}`;
         }
 
         const query = `query {
