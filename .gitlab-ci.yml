@@ -9,7 +9,7 @@ variables:
   STAGING_USER: landmatrix
   PRODUCTION_HOST: landmatrix.org
   PRODUCTION_USER: landmatrix
-  DJANGO_SETTINGS_MODULE: config.settings.dev
+  DJANGO_SETTINGS_MODULE: config.settings.ci
   DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
   ELASTICSEARCH_URL: "http://elasticsearch"
 
@@ -39,7 +39,6 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
-    - env
     - poetry install
     - yarn install --frozen-lockfile
     - poetry run doit -n 4 update
