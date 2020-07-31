@@ -25,9 +25,9 @@ from apps.landmatrix.models import (
 @pytest.mark.django_db
 def test_all_status_options():
     ID = 1  # Draft (Pending)
-    HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
     deal_draft_only = Deal.objects.get(id=ID)
@@ -40,9 +40,9 @@ def test_all_status_options():
     assert versions[0].field_dict["draft_status"] == deal_draft_only.DRAFT_STATUS_DRAFT
 
     ID = 2  # Live (Active)
-    HistoricalActivity(activity_identifier=ID, fk_status_id=2).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=2)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
     deal_live_only = Deal.objects.get(id=ID)
@@ -55,9 +55,9 @@ def test_all_status_options():
     assert versions[0].field_dict["draft_status"] is None
 
     ID = 3  # Live (this time with Overwritten)
-    HistoricalActivity(activity_identifier=ID, fk_status_id=3).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=3)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 1
 
     deal_live_only = Deal.objects.get(id=ID)
@@ -69,9 +69,9 @@ def test_all_status_options():
 
     # Stati: Deleted, Rejected, To Delete
     for status in [4, 5, 6]:
-        HistoricalActivity(activity_identifier=status, fk_status_id=status).save(
-            update_elasticsearch=False, trigger_gnd=True
-        )
+        hact = HistoricalActivity(activity_identifier=status, fk_status_id=status)
+        hact.save(update_elasticsearch=False)
+        hact.trigger_gnd()
         assert (
             HistoricalActivity.objects.filter(activity_identifier=status).count() == 1
         )
@@ -88,13 +88,13 @@ def test_all_status_options():
 def test_updated_activity():
     ID = 5
     # create first draft
-    HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     # create live version
-    HistoricalActivity(activity_identifier=ID, fk_status_id=2).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hactx = HistoricalActivity(activity_identifier=ID, fk_status_id=2)
+    hactx.save(update_elasticsearch=False)
+    hactx.trigger_gnd()
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 2
 
     deal = Deal.objects.get(id=ID)
@@ -107,9 +107,9 @@ def test_updated_activity():
     assert versions[1].field_dict["status"] == deal.STATUS_DRAFT
 
     # create another draft
-    HistoricalActivity(activity_identifier=ID, fk_status_id=1).save(
-        update_elasticsearch=False, trigger_gnd=True
-    )
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     deal.refresh_from_db()
     assert deal.status == deal.STATUS_LIVE
     assert deal.draft_status == deal.DRAFT_STATUS_DRAFT
@@ -121,9 +121,11 @@ def test_updated_activity():
     assert versions[2].field_dict["status"] == deal.STATUS_DRAFT
 
     # and set it live again
-    HistoricalActivity(activity_identifier=ID, fk_status_id=3).save(
-        update_elasticsearch=False, trigger_gnd=True
+    hact = HistoricalActivity(
+        activity_identifier=ID, fully_updated=True, fk_status_id=3
     )
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 4
 
     deal.refresh_from_db()
@@ -161,7 +163,8 @@ def test_activity_with_attributes():
     HistoricalActivityAttribute.objects.create(
         fk_activity=histact, name="point_lat", value=5.0123, fk_group=fk_group
     )
-    histact.save(update_elasticsearch=False, trigger_gnd=True)
+    histact.save(update_elasticsearch=False)
+    histact.trigger_gnd()
 
     d1 = Deal.objects.get(id=ID)
     loc1 = d1.locations.get()
@@ -185,7 +188,8 @@ def test_activity_with_attributes():
     HistoricalActivityAttribute.objects.create(
         fk_activity=histact2, name="point_lat", value=5.456, fk_group=fk_group
     )
-    histact2.save(update_elasticsearch=False, trigger_gnd=True)
+    histact2.save(update_elasticsearch=False)
+    histact2.trigger_gnd()
 
     d1.refresh_from_db()
     loc1 = d1.locations.get()

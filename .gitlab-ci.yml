@@ -36,7 +36,8 @@ frontend formatting and linting:
 tests and coverage:
   stage: test
   services:
-    - mdillon/postgis:12
+#    - kartoza/postgis:12.1
+    - mdillon/postgis:10
     - elasticsearch:5
   script:
     - poetry install

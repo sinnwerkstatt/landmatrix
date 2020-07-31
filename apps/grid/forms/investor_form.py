@@ -63,7 +63,7 @@ class BaseInvestorForm(BaseModelForm):
         """
         Force status to pending on update.
         """
-        hinvestor = super().save(commit=False)
+        hinvestor: HistoricalInvestor = super().save(commit=False)
         hinvestor.fk_status_id = HistoricalInvestor.STATUS_PENDING
         # Create new historical investor
         hinvestor.id = None

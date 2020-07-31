@@ -2,8 +2,8 @@ import pytest
 from django.utils import timezone
 from reversion.models import Version
 
-from apps.landmatrix.models import Investor
 from apps.landmatrix.models import HistoricalInvestor
+from apps.landmatrix.models import Investor
 
 NAME = "The Grand Investor"
 COMMENT = "regular blabla comment"
@@ -27,7 +27,7 @@ def histvestor_draft(db) -> HistoricalInvestor:
         homepage=HOMEPAGE,
         opencorporates_link=OPENCORP,
     )
-    histvestor.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor.save(update_elasticsearch=False)
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 1
     return histvestor
 
@@ -36,7 +36,7 @@ def histvestor_draft(db) -> HistoricalInvestor:
 def histvestor_draft_live(histvestor_draft) -> HistoricalInvestor:
     histvestor_draft.fk_status_id = 2
     histvestor_draft.action_comment = "Approved"
-    histvestor_draft.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor_draft.save(update_elasticsearch=False)
     return histvestor_draft
 
 
@@ -61,7 +61,7 @@ def test_draft_update_draft(histvestor_draft):
     histvestor_draft.classification = 40
     histvestor_draft.action_comment = "Fix classification"
     histvestor_draft.fk_status_id = 1
-    histvestor_draft.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor_draft.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
     assert inv1.classification == "INVESTMENT_FUND"
@@ -95,7 +95,7 @@ def test_investor_live_and_draft(histvestor_draft_live):
     histvestor_draft_live.fk_status_id = 1
     histvestor_draft_live.name = new_name
     histvestor_draft_live.action_comment = "Some more changes draft"
-    histvestor_draft_live.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_LIVE
@@ -109,7 +109,7 @@ def test_investor_live_and_draft(histvestor_draft_live):
 
     histvestor_draft_live.fk_status_id = 2
     histvestor_draft_live.action_comment = "Approve changes"
-    histvestor_draft_live.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_UPDATED
@@ -135,7 +135,7 @@ def test_new_investor_live_directly():
         comment=COMMENT,
         action_comment=ACTION_COMM,
     )
-    histvestor.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor.save(update_elasticsearch=False)
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 1
 
     inv1 = Investor.objects.get()
@@ -161,7 +161,7 @@ def test_new_investor_deleted_directly():
         homepage=HOMEPAGE,
         opencorporates_link=OPENCORP,
     )
-    histvestor.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor.save(update_elasticsearch=False)
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 1
 
     inv1 = Investor.objects.get()
@@ -175,7 +175,7 @@ def test_new_investor_deleted_directly():
 def test_investor_live_then_delete(histvestor_draft_live):
     histvestor_draft_live.fk_status_id = Investor.STATUS_DELETED
     histvestor_draft_live.action_comment = "Delete this!"
-    histvestor_draft_live.save(update_elasticsearch=False, trigger_gnd=True)
+    histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_DELETED

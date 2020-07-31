@@ -983,7 +983,8 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
             hinvestor = hinvolvement.fk_investor
             investor = hinvestor.update_public_investor()
 
-        self.save(trigger_gnd=True)
+        self.save()
+        self.trigger_gnd()
 
     @property
     def changeset_comment(self):
@@ -1003,7 +1004,6 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
 
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
-        trigger_gnd = kwargs.pop("trigger_gnd", False)
         super().save(*args, **kwargs)
         if update_elasticsearch and settings.OLD_ELASTIC:
             from apps.landmatrix.tasks import index_activity, delete_historicalactivity
@@ -1016,10 +1016,13 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
                 transaction.on_commit(
                     lambda: index_activity.delay(self.activity_identifier)
                 )
-        if trigger_gnd and settings.GND_ENABLED:
-            from apps.landmatrix.tasks import task_propagate_save_to_gnd_deal
 
-            transaction.on_commit(task_propagate_save_to_gnd_deal(self.pk))
+    def trigger_gnd(self):
+        if not settings.GND_ENABLED:
+            return
+        from apps.landmatrix.tasks import task_propagate_save_to_gnd_deal
+
+        task_propagate_save_to_gnd_deal(self.pk)
 
     class Meta:
         verbose_name = _("Historical activity")
