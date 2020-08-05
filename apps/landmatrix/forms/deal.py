@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext as _
 
 from apps.landmatrix.forms import VueForm
-from apps.landmatrix.models import Deal
+from apps.landmatrix.models import Deal, Crop, Animal, Mineral
 
 
 class DealForm(VueForm):
@@ -247,11 +247,20 @@ class DealForm(VueForm):
                 {
                     "name": "Detailed crop, animal and mineral information",
                     "fields": [
-                        "crops",
+                        {
+                            "name": "crops",
+                            "choices": {c.code: c.name for c in Crop.objects.all()},
+                        },
                         "crops_comment",
-                        "animals",
+                        {
+                            "name": "animals",
+                            "choices": {c.code: c.name for c in Animal.objects.all()},
+                        },
                         "animals_comment",
-                        "resources",
+                        {
+                            "name": "resources",
+                            "choices": {c.code: c.name for c in Mineral.objects.all()},
+                        },
                         "resources_comment",
                     ],
                 },

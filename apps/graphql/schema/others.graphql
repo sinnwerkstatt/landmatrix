@@ -19,6 +19,25 @@ type Currency {
     name: String
 }
 
+type Animal {
+    id: Int
+    code: String
+    name: String
+}
+
+type Crop {
+    id: Int
+    code: String
+    name: String
+    slug: String
+}
+type Mineral {
+    id: Int
+    code: String
+    name: String
+
+}
+
 scalar DateValuePair
 #type DateValuePair {
 #    date: String

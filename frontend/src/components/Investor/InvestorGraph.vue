@@ -1,7 +1,10 @@
 <template>
   <div v-if="investor && investor.involvements.length">
     <div id="investor-network"></div>
-    <b-modal id="investor-detail-modal" :title="`${modalInfo.name} (#${modalInfo.id})`">
+    <b-modal
+      id="investor-detail-modal"
+      :title="`${modalInfo.name} (#${modalInfo._id})`"
+    >
       <p>{{ modalInfo.classification }}</p>
       <p>{{ modalInfo.comment }}</p>
       <p>{{ modalInfo.country && modalInfo.country.name }}</p>
@@ -13,10 +16,11 @@
       <template v-slot:modal-footer>
         <div class="w-100">
           <router-link
-            :to="{ name: 'investor_detail', params: { investor_id: modalInfo.id } }"
+            :to="modalInfo.link"
             class="btn btn-primary investor-link float-right"
             target="_blank"
             v-slot="{ href }"
+            v-if="modalInfo.link"
           >
             <a :href="href">More details about this investor</a>
           </router-link>
@@ -38,16 +42,16 @@
           <em>{{ depth }}</em>
         </div>
 
-        <div class="col-sm-8">
-          <input
-            type="checkbox"
-            class="show_deals"
-            id="show_deals"
-            checked="checked"
-            autocomplete="off"
-          />
-          <label for="show_deals">Show deals</label>
-        </div>
+        <!--        <div class="col-sm-8">-->
+        <!--          <input-->
+        <!--            type="checkbox"-->
+        <!--            class="show_deals"-->
+        <!--            id="show_deals"-->
+        <!--            checked="checked"-->
+        <!--            autocomplete="off"-->
+        <!--          />-->
+        <!--          <label for="show_deals">Show deals</label>-->
+        <!--        </div>-->
       </div>
       <div id="investor-legend" class="col-sm-6">
         <h5>Legend</h5>
@@ -67,6 +71,7 @@
   import cytoscape from "cytoscape";
   import coseBilkent from "cytoscape-cose-bilkent";
   import { pick } from "lodash";
+
   cytoscape.use(coseBilkent);
 
   let cy = null;
@@ -93,6 +98,7 @@
           "font-size": "9pt",
           "text-wrap": "wrap",
           "text-max-width": "120px",
+          // "shape": "ellipse",
         },
       },
       {
@@ -101,7 +107,9 @@
           width: 1,
           "line-color": "data(edge_color)",
           "target-arrow-color": "data(edge_color)",
-          "target-arrow-shape": "triangle",
+          "target-arrow-shape": (obj) => {
+            return obj.data("target_arrow_shape") || "none  ";
+          },
           "curve-style": "bezier",
         },
       },
@@ -116,7 +124,7 @@
       return {
         depth: 1,
         maxDepth: 10,
-        modalInfo: pick(this.investor, investor_fields),
+        modalInfo: {},
       };
     },
     computed: {
@@ -125,11 +133,12 @@
           {
             data: {
               ...pick(this.investor, investor_fields),
+              _id: this.investor.id,
               bgcolor: "#44b7b6",
             },
           },
         ];
-        this.get_edges(this.investor, elements, this.depth);
+        this.build_graph(this.investor, elements, this.depth);
 
         return elements;
       },
@@ -147,31 +156,60 @@
           this.$bvModal.show("investor-detail-modal");
         });
       },
-      get_edges(investor, elements, depth) {
+      build_graph(investor, elements, depth) {
         if (depth <= 0) return;
+
+        investor.deals.forEach((deal) => {
+          let deal_node = {
+            data: {
+              id: "D" + deal.id,
+              name: "#" + deal.id,
+              _id: deal.id,
+              bgcolor: "#fc941f",
+              link: { name: "deal_detail", params: { deal_id: deal.id } },
+            },
+          };
+          let deal_edge = {
+            data: {
+              id: `${investor.id}_D${deal.id}`,
+              source: investor.id,
+              target: "D" + deal.id,
+              edge_color: "#fc941f",
+            },
+          };
+
+          elements.push(deal_node);
+          elements.push(deal_edge);
+        });
+
         if (!investor.involvements || !investor.involvements.length) return;
         investor.involvements.forEach((involvement) => {
-          elements.push({
+          let investor_node = {
             data: {
               ...pick(involvement.investor, investor_fields),
+              _id: involvement.investor.id,
               involvement: pick(involvement, ["role", "involvement_type"]),
+              link: {
+                name: "investor_detail",
+                params: { investor_id: involvement.investor.id },
+              },
             },
-          });
-          console.log(involvement.investor);
-          let source_and_target =
-            involvement.involvement_type === "VENTURE"
-              ? { source: investor.id, target: involvement.investor.id }
-              : { source: involvement.investor.id, target: investor.id };
-          let edge_color = involvement.role === "PARENT" ? "#72B0FD" : "#F78E8F";
-          elements.push({
+          };
+          let investor_edge = {
             data: {
               id: `${investor.id}_${involvement.investor.id}`,
-              name: involvement.investor.name,
-              edge_color,
-              ...source_and_target,
+              edge_color: involvement.role === "PARENT" ? "#72B0FD" : "#F78E8F",
+              ...(involvement.involvement_type === "VENTURE"
+                ? { source: investor.id, target: involvement.investor.id }
+                : { source: involvement.investor.id, target: investor.id }),
+              target_arrow_shape: "triangle",
             },
-          });
-          this.get_edges(involvement.investor, elements, depth - 1);
+          };
+
+          elements.push(investor_node);
+          elements.push(investor_edge);
+
+          this.build_graph(involvement.investor, elements, depth - 1);
         });
       },
       do_the_graph() {

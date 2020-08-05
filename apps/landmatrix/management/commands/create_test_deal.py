@@ -143,7 +143,15 @@ class Command(BaseCommand):
                 {"value": ["MAN"], "hectares": "50"},
             ],
             crops_comment="crops_comment",
-            animals=[{"value": ["SHP", "DCT"]}],
+            animals=[
+                {
+                    "value": ["SHP", "DCT"],
+                    "date": "2010-02-23",
+                    "tons": "10000",
+                    "hectares": "2000",
+                    "percent": "30",
+                }
+            ],
             animals_comment="animal_comment",
             resources=[{"value": ["IRO"]}],
             resources_comment="resources_comment",

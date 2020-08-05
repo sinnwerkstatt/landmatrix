@@ -45,6 +45,9 @@ type Query {
 
     countries: [Country]
     regions: [Region]
+    animals: [Animal]
+    crops: [Crop]
+    minerals: [Mineral]
 
     aggregations: Aggregations
 

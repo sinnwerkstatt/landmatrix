@@ -15,7 +15,10 @@
       </div>
       <div id="footer-etc" class="row">
         <div class="col-md-6">
-          <p>&copy; {{ currentyear }} The Land Matrix | All rights reserved</p>
+          <p>
+            <a :href="`/toggle_gnd/?next=${toggle_gnd_route}`">&copy; {{ currentyear }}</a>
+            The Land Matrix | All rights reserved
+          </p>
         </div>
         <div class="col-md-6 text-right">
           <a target="_blank" href="https://twitter.com/Land_Matrix">
@@ -36,6 +39,7 @@
     data() {
       return {
         currentyear: new Date().getFullYear(),
+        toggle_gnd_route: this.$router.currentRoute.path,
       };
     },
     computed: {

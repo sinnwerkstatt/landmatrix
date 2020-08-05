@@ -524,7 +524,9 @@ def parse_water(deal, attrs):
 
     # NOTE Fixes for broken data
     water_extraction_amount = attrs.get("water_extraction_amount")
-    water_extraction_amount_comment = attrs.get("tg_water_extraction_amount_comment")
+    water_extraction_amount_comment = (
+        attrs.get("tg_water_extraction_amount_comment") or ""
+    )
     broken_water_ex_amounts = {
         "150 billion litres": 150_000_000,  # billion / 1000 for m3 instead of litres
         "75m m3/year": 75_000_000,
@@ -538,10 +540,16 @@ def parse_water(deal, attrs):
         water_extraction_amount = broken_water_ex_amounts[water_extraction_amount]
     except KeyError:
         pass
-    if water_extraction_amount == "80% of annual flow":
-        water_extraction_amount = None
-        water_extraction_amount_comment = "80% of annual flow"
-    deal.water_extraction_amount = water_extraction_amount
+
+    try:
+        deal.water_extraction_amount = (
+            float(water_extraction_amount) if water_extraction_amount else None
+        )
+    except ValueError:
+        deal.water_extraction_amount = None
+        water_extraction_amount_comment += (
+            f"\n\nwater_extraction_amount={water_extraction_amount}"
+        )
     deal.water_extraction_amount_comment = water_extraction_amount_comment or ""
 
     deal.use_of_irrigation_infrastructure = _to_nullbool(

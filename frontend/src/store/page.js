@@ -44,12 +44,11 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchUserCountriesAndRegions(context) {
+    fetchBasicInfo(context) {
       let query = `{
         countries { id name slug }
         regions { id name slug }
-        me
-        {
+        me {
           full_name
           username
           is_authenticated
