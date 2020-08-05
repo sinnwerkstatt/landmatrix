@@ -143,11 +143,16 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         return investors
 
     def to_dict(self):
+        country = (
+            {"name": self.country.name, "code": self.country.code_alpha2}
+            if self.country
+            else None
+        )
         return {
             "id": self.id,
             "name": self.name,
             "status": self.status,
-            "country": {"name": self.country.name, "code": self.country.code_alpha2},
+            "country": country,
             "classification": self.classification,
             "opencorporates": self.opencorporates,
             "comment": self.comment,
