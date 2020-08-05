@@ -1,28 +1,18 @@
 <template>
   <b-tab :title="title" v-if="submodel.length" :active="active">
     <div class="row">
-      <div class="col">
+      <div class="col-lg-6 col-xs-12">
         <div v-for="entry in submodel" class="panel-body">
           <h3>{{ title }} #{{ entry.id }}</h3>
-          <dl class="row mt-3">
-            <template
-              v-for="formfield in fields"
-              :class="formfield.name"
-              v-if="!readonly || custom_is_null(entry[formfield.name])"
-            >
-              <dt class="col-md-3" :key="`dt-${formfield.name}`">
-                {{ formfield.label }}
-              </dt>
-              <dd class="col-md-9" :key="`dd-${formfield.name}`">
-                <component
-                  :is="formfield.class"
-                  :formfield="formfield"
-                  :readonly="!!readonly"
-                  v-model="entry[formfield.name]"
-                ></component>
-              </dd>
-            </template>
-          </dl>
+          <component
+            :is="formfield.class"
+            :formfield="formfield"
+            :readonly="!!readonly"
+            v-model="entry[formfield.name]"
+            :file_not_public="entry.file_not_public"
+            v-for="formfield in fields"
+            v-if="!readonly || custom_is_null(entry[formfield.name])"
+          />
         </div>
       </div>
       <slot></slot>

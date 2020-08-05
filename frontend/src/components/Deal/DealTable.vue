@@ -34,8 +34,8 @@
       <tbody>
         <tr v-for="deal in dt_deals" :key="deal.id">
           <td>
-            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
-              {{ deal.id }}
+            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }" v-slot="{ href }">
+              <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
           <td v-for="field in fields" :key="field" v-html="deal[field]"></td>

@@ -36,8 +36,9 @@
                     name: 'investor_detail',
                     params: { investor_id: involvement.investor.id },
                   }"
+                  v-slot="{ href }"
                 >
-                  #{{ involvement.investor.id }}
+                  <a :href="href">#{{ involvement.investor.id }}</a>
                 </router-link>
               </td>
               <td>{{ involvement.investor.name }}</td>
@@ -70,8 +71,9 @@
                     name: 'deal_detail',
                     params: { deal_id: deal.id },
                   }"
+                  v-slot="{ href }"
                 >
-                  #{{ deal.id }}
+                  <a :href="href">#{{ deal.id }}</a>
                 </router-link>
               </td>
               <td>{{ deal.country.name }}</td>

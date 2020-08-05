@@ -35,7 +35,7 @@
               v-slot="{ href, navigate }"
             >
               <!-- this hack helps to understand that a new version is actually loading, atm -->
-              <a :href="href" @click="navigate">Show</a>
+              <a :href="href" >Show</a>
             </router-link>
           </td>
           <td>

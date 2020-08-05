@@ -16,8 +16,9 @@
             :to="{ name: 'investor_detail', params: { investor_id: modalInfo.id } }"
             class="btn btn-primary investor-link float-right"
             target="_blank"
+            v-slot="{ href }"
           >
-            More details about this investor
+            <a :href="href">More details about this investor</a>
           </router-link>
         </div>
       </template>

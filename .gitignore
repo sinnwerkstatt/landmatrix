@@ -13,7 +13,7 @@ apps/landmatrix/static/css/*.css
 *.mo
 .es_index_ab_switch
 
-_icebox/
+/_icebox/
 
 # python
 __pycache__/

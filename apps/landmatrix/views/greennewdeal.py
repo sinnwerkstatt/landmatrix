@@ -10,7 +10,7 @@ from apps.landmatrix.models import Country, Deal, Location
 
 
 @cache_page(5)
-def vuebase(request, path=None):
+def vuebase(request, *args, **kwargs):
     return render(request, template_name="landmatrix/vuebase.html")
 
 

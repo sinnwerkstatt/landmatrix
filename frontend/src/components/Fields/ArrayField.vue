@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <div v-if="readonly">
-      {{parseValues(val)}}
+  <div class="row">
+    <div class="col-md-3 font-weight-bold">
+      {{ formfield.label }}
+    </div>
+    <div class="col-md-9">
+      <div v-if="readonly">
+        {{ parseValues(val) }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import {flatten_choices} from "/utils";
+  import { flatten_choices } from "/utils";
 
   export default {
     props: ["formfield", "value", "readonly"],

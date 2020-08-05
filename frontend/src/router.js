@@ -22,7 +22,7 @@ Vue.use(Router);
 
 const router = new Router({
   mode: "history",
-  base: "/newdeal/", //process.env.BASE_URL,
+  base: "/", //process.env.BASE_URL,
   routes: [
     {
       path: "/data/",

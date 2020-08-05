@@ -6,7 +6,7 @@
     :readonly="true"
     :active="true"
   >
-    <div class="col">
+    <div class="col-lg-6 col-xs-12">
       <big-map
         :containerStyle="{ 'max-height': '90%', height: '90%' }"
         :bounds="bounds"

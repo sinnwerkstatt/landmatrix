@@ -46,7 +46,11 @@ class DataSourceForm(VueForm):
                 "type",
                 "url",
                 "file",
-                "file_not_public",
+                # {
+                #     "name": "file_not_public",
+                #     "hidden_in_detail_view": True,
+                # TODO: Enable this for editor later.
+                # },
                 "publication_title",
                 "date",
                 "name",

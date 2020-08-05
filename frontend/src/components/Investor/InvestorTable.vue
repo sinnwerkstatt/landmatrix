@@ -36,8 +36,9 @@
           <td>
             <router-link
               :to="{ name: 'investor_detail', params: { investor_id: data.id } }"
+              v-slot="{ href }"
             >
-              {{ data.id }}
+              <a :href="href">{{ data.id }}</a>
             </router-link>
           </td>
           <td v-for="field in fields" :key="field" v-html="data[field]"></td>

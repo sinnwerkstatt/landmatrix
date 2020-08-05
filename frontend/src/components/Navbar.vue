@@ -1,8 +1,10 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">
-        <img src="../images/lm-logo.png" alt="Landmatrix Logo" />
+      <router-link class="navbar-brand" to="/" v-slot="{ href }">
+        <a :href="href">
+          <img src="../images/lm-logo.png" alt="Landmatrix Logo" />
+        </a>
       </router-link>
       <button
         class="navbar-toggler"
@@ -18,7 +20,9 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" to="/global/">Global</router-link>
+            <router-link class="nav-link" to="/global/" v-slot="{ href }">
+              <a :href="href">Global</a>
+            </router-link>
           </li>
           <navbar-select
             title="Regions"
@@ -31,18 +35,23 @@
             @select="openLink('country', $event)"
           ></navbar-select>
           <li class="nav-item">
-            <router-link class="nav-link" to="/stay-informed/" role="button">
-              <span class="nav-text">Stay informed</span>
+            <router-link
+              class="nav-link"
+              to="/stay-informed/"
+              role="button"
+              v-slot="{ href }"
+            >
+              <a :href="href"><span class="nav-text">Stay informed</span></a>
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/get-involved/" role="button">
-              <span class="nav-text">Get involved</span>
+            <router-link class="nav-link" to="/get-involved/" role="button" v-slot="{ href }">
+              <a :href="href"><span class="nav-text">Get involved</span></a>
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/faq/" role="button">
-              <span class="nav-text">FAQ</span>
+            <router-link class="nav-link" to="/faq/" role="button" v-slot="{href}">
+              <a :href="href"><span class="nav-text">FAQ</span></a>
             </router-link>
           </li>
         </ul>
@@ -102,17 +111,18 @@
               <a
                 v-if="user.is_impersonate"
                 class="dropdown-item"
-                href="/impersonate/stop/?next=/newdeal/dashboard/"
+                href="/impersonate/stop/?next=/dashboard/"
               >
                 Stop impersonation
               </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <router-link class="dropdown-item" :to="{ name: 'dashboard' }">
-                Dashboard
+              <router-link class="dropdown-item" :to="{ name: 'dashboard' }" v-slot="{href}">
+                <a :href="href">  Dashboard</a>
               </router-link>
-              <router-link class="dropdown-item" to="/manage/">Manage</router-link>
-              <router-link class="dropdown-item" :to="{ name: 'deal_add' }">
-                Add a deal
+              <router-link class="dropdown-item" to="/manage/" v-slot="{href}">
+                <a :href="href">Manage</a></router-link>
+              <router-link class="dropdown-item" :to="{ name: 'deal_add' }" v-slot="{ href }">
+                <a :href="href">Add a deal</a>
               </router-link>
               <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
             </div>
