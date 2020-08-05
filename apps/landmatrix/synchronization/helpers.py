@@ -41,6 +41,8 @@ def _extras_to_json(
 
     if adict.get("extras"):
         for extra in adict["extras"]:
+            if not extra or not extra["value"]:
+                continue
             # NOTE Fixes for broken data # deal 618 contract_size
             if expected_type == float and extra["value"] == "":
                 continue
