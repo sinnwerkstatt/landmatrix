@@ -1018,8 +1018,6 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
                 )
 
     def trigger_gnd(self):
-        if not settings.GND_ENABLED:
-            return
         from apps.landmatrix.tasks import task_propagate_save_to_gnd_deal
 
         task_propagate_save_to_gnd_deal(self.pk)

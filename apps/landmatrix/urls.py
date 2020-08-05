@@ -22,7 +22,7 @@ oldroutes = [
 def gnd_switch(request, *args, **kwargs):
     gnd_toggle = request.COOKIES.get("gnd_toggle") or "off"
 
-    if settings.GND_ENABLED and gnd_toggle == "on":
+    if gnd_toggle == "on":
         return vuebase(request)
     else:
         print(request.path)

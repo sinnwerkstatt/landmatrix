@@ -87,6 +87,10 @@ INSTALLED_APPS = [
     "impersonate",
     "celery",
     "django_prometheus",
+    # green new deal
+    "wagtail.api.v2",
+    "reversion",
+    "ariadne.contrib.django",
 ]
 
 MIDDLEWARE = [
@@ -193,24 +197,6 @@ sys.stdout.flush()
 
 # GreenNewDeal
 OLD_ELASTIC = env("OLD_ELASTIC", default=True)
-GND_ENABLED = env("GND_ENABLED", default=False)
-if GND_ENABLED:
-    INSTALLED_APPS += [
-        "wagtail.api.v2",
-        "reversion",
-        # "webpack_loader",
-        "ariadne.contrib.django",
-    ]
-    CELERY_ENABLED = env("DJANGO_CELERY_ENABLED", default=True)
-    # WEBPACK_LOADER = {
-    #     "DEFAULT": {
-    #         "BUNDLE_DIR_NAME": "/",  # must end with slash
-    #         "STATS_FILE": BASE_DIR("frontend/webpack-stats.json"),
-    #         "POLL_INTERVAL": 0.1,
-    #         "TIMEOUT": None,
-    #         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    #     }
-    # }
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

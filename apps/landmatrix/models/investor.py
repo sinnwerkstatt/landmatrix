@@ -617,7 +617,7 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                 transaction.on_commit(
                     lambda: index_investor.delay(self.investor_identifier)
                 )
-        if settings.GND_ENABLED:
+
             from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
 
             task_propagate_save_to_gnd_investor(self.pk)
