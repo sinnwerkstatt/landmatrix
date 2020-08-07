@@ -11,9 +11,12 @@ export const pageModule = {
     searchDescription: null,
     breadcrumbs: [],
     breadNav: [
-      { route: "map", icon: "fa fa-map-marker", name: "Map" },
-      { route: "deal_list", icon: "fa fa-table", name: "Data" },
-      { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
+      // { route: "map", icon: "fa fa-map-marker", name: "Map" },
+      // { route: "deal_list", icon: "fa fa-table", name: "Data" },
+      // { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
+      { route: "/map/", icon: "fa fa-map-marker", name: "Map" },
+      { route: "/data/", icon: "fa fa-table", name: "Data" },
+      { route: "/charts/", icon: "far fa-chart-bar", name: "Charts" },
     ],
   }),
   mutations: {
