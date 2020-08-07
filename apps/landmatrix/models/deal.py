@@ -1094,12 +1094,17 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     def _combine_geojson(self):
         features = []
-        for loc in self.locations.all():  # type: Location
+        for loc in self.locations.all():
             if loc.point:
                 point = {
                     "type": "Feature",
                     "geometry": (json.loads(loc.point.geojson)),
-                    "properties": {"name": loc.name, "id": loc.id, "type": "point"},
+                    "properties": {
+                        "id": loc.id,
+                        "name": loc.name,
+                        "type": "point",
+                        "spatial_accuracy": loc.level_of_accuracy,
+                    },
                 }
                 features += [point]
             if loc.areas:

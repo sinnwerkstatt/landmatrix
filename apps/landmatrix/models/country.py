@@ -84,6 +84,9 @@ class Country(models.Model):
     def get_absolute_url(self):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
+    def to_dict(self):
+        return {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
+
 
 class Region(models.Model):
     name = models.CharField("Name", max_length=255)
@@ -127,3 +130,6 @@ class Region(models.Model):
     @property
     def point_lat(self):
         return (self.point_lat_min + self.point_lat_max) / 2
+
+    def to_dict(self):
+        return {"id": self.id, "name": self.name}

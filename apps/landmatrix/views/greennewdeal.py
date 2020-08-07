@@ -1,17 +1,51 @@
+import io
 import warnings
-from tempfile import mkdtemp
+import zipfile
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
-from reversion.models import Version
 
-from apps.landmatrix.models import Country, Deal, Location
+from apps.landmatrix.models import Deal
 
 
-@cache_page(5)
+# @cache_page(5)
 def vuebase(request, *args, **kwargs):
     return render(request, template_name="landmatrix/vuebase.html")
+
+
+def gis_export(request):
+    point_json = []
+    area_json = []
+    for deal in Deal.objects.public().exclude(geojson=None).prefetch_related("country"):
+        for feat in deal.geojson.get("features"):
+            props = feat.get("properties", {})
+            if deal.country:
+                country = deal.country.to_dict()
+                region = deal.country.fk_region.to_dict()
+            else:
+                country = region = None
+            props.update({"deal_id": deal.id, "country": country, "region": region})
+            if feat["geometry"]["type"] == "Point":
+                point_json += [feat]
+            else:
+                area_json += [feat]
+
+    point_res = {"type": "FeatureCollection", "features": point_json}
+    area_res = {"type": "FeatureCollection", "features": area_json}
+    request_type = request.GET.get("type")
+    if request_type == "points":
+        return JsonResponse(point_res)
+    elif request_type == "areas":
+        return JsonResponse(area_res)
+
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
+        zip_file.writestr("points.geojson", str(point_res))
+        zip_file.writestr("areas.geojson", str(area_json))
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
+    return response
 
 
 # def gis_export(request):

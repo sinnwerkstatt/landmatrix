@@ -50,9 +50,10 @@
 # ]
 from django.urls import re_path, path
 
-from apps.landmatrix.views.greennewdeal import vuebase
+from apps.landmatrix.views.greennewdeal import vuebase, gis_export
 
 urlpatterns = [
     re_path(r"^newdeal/(?P<path>.*)/$", vuebase),
+    path("newdeal/data.geojson", gis_export),
     path("newdeal/", vuebase),
 ]
