@@ -1,13 +1,36 @@
-# import re
-#
-# from django.conf import settings
-# from django.http import HttpResponseRedirect
-# from django.urls import path
-#
-# from apps.grid.views.deal import DealDetailView
-# from apps.grid.views.investor import InvestorDetailView
-# from apps.landmatrix.views.greennewdeal import vuebase
-#
+from django.http import JsonResponse
+from django.urls import re_path, path
+from wagtail.core.rich_text import expand_db_html
+
+from apps.landmatrix.views.greennewdeal import vuebase, gis_export
+
+
+def rootpage_json(request):
+    from apps.wagtailcms.models import WagtailRootPage
+
+    rp: WagtailRootPage = WagtailRootPage.objects.first()
+    return JsonResponse(
+        {
+            "map_introduction": rp.map_introduction,
+            "data_introduction": rp.data_introduction,
+            "footer_columns": [
+                expand_db_html(rp.footer_column_1),
+                expand_db_html(rp.footer_column_2),
+                expand_db_html(rp.footer_column_3),
+                expand_db_html(rp.footer_column_4),
+            ],
+        }
+    )
+
+
+urlpatterns = [
+    re_path(r"^newdeal/(?P<path>.*)/$", vuebase),
+    path("newdeal/data.geojson", gis_export),
+    path("newdeal/", vuebase),
+    path("newdeal_legacy/rootpage/", rootpage_json),
+]
+
+
 # oldroutes = [
 #     (r"/deal/(?P<deal_id>\d*)/$", DealDetailView.as_view()),
 #     (r"/deal/(?P<deal_id>\d*)/(?P<history_id>\d+)/$", DealDetailView.as_view()),
@@ -48,12 +71,3 @@
 #         name="investor_detail",
 #     ),
 # ]
-from django.urls import re_path, path
-
-from apps.landmatrix.views.greennewdeal import vuebase, gis_export
-
-urlpatterns = [
-    re_path(r"^newdeal/(?P<path>.*)/$", vuebase),
-    path("newdeal/data.geojson", gis_export),
-    path("newdeal/", vuebase),
-]

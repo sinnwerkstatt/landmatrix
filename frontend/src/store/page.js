@@ -67,18 +67,9 @@ export const pageModule = {
       });
     },
     fetchWagtailRootPage(context) {
-      let url = `/wagtailapi/v2/pages/find/?html_path=/`;
+      let url = `/newdeal_legacy/rootpage/`;
       axios.get(url).then((response) => {
-        context.commit("setWagtailRootPage", {
-          map_introduction: response.data.map_introduction,
-          data_introduction: response.data.data_introduction,
-          footer_columns: [
-            response.data.footer_column_1,
-            response.data.footer_column_2,
-            response.data.footer_column_3,
-            response.data.footer_column_4,
-          ],
-        });
+        context.commit("setWagtailRootPage", response.data);
       });
     },
     login(context, { username, password }) {
