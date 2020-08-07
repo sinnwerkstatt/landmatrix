@@ -618,9 +618,9 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                     lambda: index_investor.delay(self.investor_identifier)
                 )
 
-            from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
+        from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
 
-            task_propagate_save_to_gnd_investor(self.pk)
+        task_propagate_save_to_gnd_investor(self.pk)
 
     class Meta:
         verbose_name = _("Historical investor")
