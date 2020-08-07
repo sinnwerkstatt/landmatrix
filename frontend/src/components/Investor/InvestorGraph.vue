@@ -1,6 +1,5 @@
 <template>
   <div v-if="investor && investor.involvements.length">
-    <div id="investor-network"></div>
     <b-modal
       id="investor-detail-modal"
       :title="`${modalInfo.name} (#${modalInfo._id})`"
@@ -27,41 +26,53 @@
         </div>
       </template>
     </b-modal>
-    <div class="row">
-      <div id="investor-level" class="col-sm-6">
-        <h5>Level of parent investors</h5>
-        <div class="slider-container col-sm-8">
-          <input
-            type="range"
-            min="1"
-            :max="maxDepth"
-            value="1"
-            v-model="depth"
-            @change="refresh_graph"
-          />
-          <em>{{ depth }}</em>
-        </div>
 
-        <!--        <div class="col-sm-8">-->
-        <!--          <input-->
-        <!--            type="checkbox"-->
-        <!--            class="show_deals"-->
-        <!--            id="show_deals"-->
-        <!--            checked="checked"-->
-        <!--            autocomplete="off"-->
-        <!--          />-->
-        <!--          <label for="show_deals">Show deals</label>-->
-        <!--        </div>-->
+    <div id="investor-network-wrapper" :class="{ network_fs }">
+      <div class="close_button">
+        <a class="" @click="fullscreen_switch">
+          <i v-if="network_fs" class="fas fa-compress"></i>
+          <i v-else class="fas fa-expand"></i>
+        </a>
       </div>
-      <div id="investor-legend" class="col-sm-6">
-        <h5>Legend</h5>
-        <ul class="list-unstyled">
-          <li><span class="legend-icon deal"></span>Is operating company of</li>
-          <li><span class="legend-icon parent"></span>Is parent company of</li>
-          <li>
-            <span class="legend-icon tertiary"></span>Is tertiary investor/lender of
-          </li>
-        </ul>
+      <div id="investor-network" :class="{ network_fs }"></div>
+
+      <div class="row">
+        <div id="investor-level" class="col-sm-6">
+          <h5>Level of parent investors</h5>
+          <div class="slider-container col-sm-8">
+            <input
+              type="range"
+              min="1"
+              :max="maxDepth"
+              value="1"
+              v-model="depth"
+              @change="refresh_graph"
+            />
+            <em>{{ depth }}</em>
+          </div>
+
+          <div class="col-sm-8">
+            <label for="show_deals">
+              <input
+                type="checkbox"
+                id="show_deals"
+                v-model="show_deals"
+                @change="refresh_graph"
+              />
+              Show deals
+            </label>
+          </div>
+        </div>
+        <div id="investor-legend" class="col-sm-6">
+          <h5>Legend</h5>
+          <ul class="list-unstyled">
+            <li><span class="legend-icon deal"></span>Is operating company of</li>
+            <li><span class="legend-icon parent"></span>Is parent company of</li>
+            <li>
+              <span class="legend-icon tertiary"></span>Is tertiary investor/lender of
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -123,8 +134,10 @@
     data() {
       return {
         depth: 1,
-        maxDepth: 10,
+        maxDepth: 4,
         modalInfo: {},
+        show_deals: true,
+        network_fs: false,
       };
     },
     computed: {
@@ -144,8 +157,14 @@
       },
     },
     methods: {
+      fullscreen_switch() {
+        this.network_fs = !this.network_fs;
+        this.$nextTick(() => {
+          this.do_the_graph();
+        });
+      },
       refresh_graph() {
-        // cy.elements().remove();
+        cy.elements().remove();
         cy.add(this.elements);
         cy.layout(cyconfig.layout).run();
         this.add_rightclick_modal();
@@ -159,28 +178,30 @@
       build_graph(investor, elements, depth) {
         if (depth <= 0) return;
 
-        investor.deals.forEach((deal) => {
-          let deal_node = {
-            data: {
-              id: "D" + deal.id,
-              name: "#" + deal.id,
-              _id: deal.id,
-              bgcolor: "#fc941f",
-              link: { name: "deal_detail", params: { deal_id: deal.id } },
-            },
-          };
-          let deal_edge = {
-            data: {
-              id: `${investor.id}_D${deal.id}`,
-              source: investor.id,
-              target: "D" + deal.id,
-              edge_color: "#fc941f",
-            },
-          };
+        if (this.show_deals) {
+          investor.deals.forEach((deal) => {
+            let deal_node = {
+              data: {
+                id: "D" + deal.id,
+                name: "#" + deal.id,
+                _id: deal.id,
+                bgcolor: "#fc941f",
+                link: { name: "deal_detail", params: { deal_id: deal.id } },
+              },
+            };
+            let deal_edge = {
+              data: {
+                id: `${investor.id}_D${deal.id}`,
+                source: investor.id,
+                target: "D" + deal.id,
+                edge_color: "#fc941f",
+              },
+            };
 
-          elements.push(deal_node);
-          elements.push(deal_edge);
-        });
+            elements.push(deal_node);
+            elements.push(deal_edge);
+          });
+        }
 
         if (!investor.involvements || !investor.involvements.length) return;
         investor.involvements.forEach((involvement) => {
@@ -228,6 +249,30 @@
 </script>
 
 <style lang="scss">
+  #investor-network-wrapper {
+    .close_button {
+      right: 20px;
+      position: absolute;
+      z-index: 2000;
+      cursor: pointer;
+    }
+    &.network_fs {
+      position: fixed;
+      top: 100px;
+      left: 0;
+
+      margin-left: 5%;
+      margin-right: 5%;
+      width: 90%;
+      height: 80%;
+      background: #ffffff;
+      z-index: 1000;
+      border: 1px solid black;
+      .close_button {
+        right: 5px;
+      }
+    }
+  }
   div#investor-network {
     border: 2px solid #ddd;
     display: block;
@@ -236,97 +281,14 @@
     max-height: 460px;
     cursor: all-scroll;
     overflow: hidden;
-
-    .node {
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .node.hover-other circle {
-      fill: #f2fafa; /* .2 of primary color */
-      stroke: #dcf0f0; /* .2 of primary color */
-    }
-
-    .node circle,
-    .node.hover circle {
-      fill: #bee7e7;
-      stroke: #44b7b6;
-      stroke-width: 2;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .node.is-root circle,
-    .node.is-root.hover circle {
-      fill: #44b7b6;
-      stroke: #44b7b6;
-    }
-
-    .node.deal.hover-other circle {
-      fill: #fff9f2; /* .2 of primary color */
-      stroke: #ffe9d7; /* .2 of primary color */
-    }
-
-    .node.deal circle,
-    .node.deal.hover circle {
-      fill: #fcdfbf;
-      stroke: #fc941f;
-    }
-
-    .node text {
-      font-family: "Open Sans Condensed", sans-serif;
-      font-size: 12px;
-      font-weight: bold;
-      transition: all 0.2s ease-in-out;
-      text-anchor: middle;
-      fill: #333;
-      letter-spacing: 0.03em;
-    }
-
-    .node text.subtitle {
-      font-weight: normal;
-    }
-
-    .link,
-    .crosslink {
-      fill: none;
-      stroke: #333;
-      stroke-width: 2;
-    }
-
-    .link {
-      fill: none;
-      stroke: #333;
-    }
-
-    .link.parent,
-    .crosslink.parent {
-      stroke: #72b0fd;
-    }
-
-    .link.tertiary,
-    .crosslink.tertiary {
-      stroke: #f78e8f;
-    }
-
-    .link.deal,
-    .crosslink.deal {
-      stroke: #fc941f;
-    }
-
-    .link.hover-other,
-    .crosslink.hover-other {
-      opacity: 0.2;
-    }
-
-    .link.hover,
-    .crosslink.hover {
-      opacity: 1;
-    }
-
-    .node.has-children circle {
-      stroke-dasharray: 0.2em;
+    &.network_fs {
+      width: 100%;
+      max-width: 100%;
+      height: 80%;
+      max-height: 80%;
     }
   }
+
   #investor-legend {
     .legend-icon {
       display: inline-block;
