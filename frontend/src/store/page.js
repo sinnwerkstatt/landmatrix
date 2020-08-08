@@ -6,6 +6,7 @@ export const pageModule = {
     countries: [],
     regions: [],
     wagtailRootPage: null,
+    messages: [],
     wagtailPage: null,
     title: null,
     searchDescription: null,
@@ -34,6 +35,9 @@ export const pageModule = {
     },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
+    },
+    setMessages(state, messages) {
+      state.messages = messages;
     },
 
     setTitle(state, title) {
@@ -70,6 +74,12 @@ export const pageModule = {
       let url = `/newdeal_legacy/rootpage/`;
       axios.get(url).then((response) => {
         context.commit("setWagtailRootPage", response.data);
+      });
+    },
+    fetchMessages(context) {
+      let url = `/newdeal_legacy/messages/`;
+      axios.get(url).then((response) => {
+        context.commit("setMessages", response.data.messages);
       });
     },
     login(context, { username, password }) {

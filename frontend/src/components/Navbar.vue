@@ -2,7 +2,7 @@
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
-          <img src="../images/lm-logo.png" alt="Landmatrix Logo" />
+          <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
       </a>
       <button
         class="navbar-toggler"

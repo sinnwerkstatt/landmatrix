@@ -3,6 +3,7 @@ from django.urls import re_path, path
 from wagtail.core.rich_text import expand_db_html
 
 from apps.landmatrix.views.greennewdeal import vuebase, gis_export
+from apps.message.views import messages_json
 
 
 def rootpage_json(request):
@@ -28,6 +29,7 @@ urlpatterns = [
     path("newdeal/data.geojson", gis_export),
     path("newdeal/", vuebase),
     path("newdeal_legacy/rootpage/", rootpage_json),
+    path("newdeal_legacy/messages/", messages_json),
 ]
 
 

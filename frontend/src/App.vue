@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Navbar />
+    <Messages />
     <BreadcrumbBar />
     <div v-if="this.$store.state.page.title" class="container">
       <div class="row">
@@ -18,11 +19,12 @@
 
 <script>
   import Navbar from "/components/Navbar";
+  import Messages from "/components/Messages";
   import BreadcrumbBar from "/components/BreadcrumbBar";
   import Footer from "/components/Footer";
 
   export default {
-    components: { Navbar, BreadcrumbBar, Footer },
+    components: { Navbar, Messages, BreadcrumbBar, Footer },
   };
 </script>
 

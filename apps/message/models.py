@@ -27,3 +27,12 @@ class Message(models.Model):
     class Meta:
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "text": self.text,
+            "level": self.level,
+            "is_active": self.is_active,
+        }
