@@ -3,11 +3,11 @@
     <Navbar />
     <Messages />
     <BreadcrumbBar />
-    <div v-if="this.$store.state.page.title" class="container">
+    <div v-if="$store.state.page.title" class="container">
       <div class="row">
         <div class="col-md-12">
           <h1>
-            <span v-html="this.$store.state.page.title"></span>
+            <span v-html="$store.state.page.title"></span>
           </h1>
         </div>
       </div>

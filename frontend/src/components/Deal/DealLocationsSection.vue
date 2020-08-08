@@ -53,11 +53,11 @@
       geojson_options() {
         return {
           onEachFeature: this.onEachFeatureFunction,
-          pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, {
-              radius: 8,
-            });
-          },
+          // pointToLayer: function (feature, latlng) {
+          //   return L.circleMarker(latlng, {
+          //     radius: 8,
+          //   });
+          // },
         };
       },
       onEachFeatureFunction() {

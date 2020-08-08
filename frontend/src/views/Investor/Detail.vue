@@ -1,88 +1,97 @@
 <template>
-  <div class="container" v-if="investor">
-    <h2>General Info</h2>
-    <div class="row">
-      <div class="col">
-        <dl class="row">
-          <template v-for="(name, field) in fields" v-if="investor[field]">
-            <dt class="col-3">{{ name }}</dt>
-            <dd class="col-9">{{ investor[field] }}</dd>
-          </template>
-        </dl>
-      </div>
-      <div class="col">
-        <InvestorGraph v-if="involvements.length" :investor="investor"></InvestorGraph>
-      </div>
+  <div>
+    <div class="loadingscreen" v-if="!investor">
+      <div class="loader"></div>
     </div>
 
-    <b-tabs content-class="mt-3">
-      <b-tab :title="`Involvements (${involvements.length})`">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Investor ID</th>
-              <th>Name</th>
-              <th>Country</th>
-              <th>Classification</th>
-              <th>Relationship</th>
-              <th>Ownership share</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="involvement in involvements">
-              <td>
-                <router-link
-                  :to="{
-                    name: 'investor_detail',
-                    params: { investor_id: involvement.investor.id },
-                  }"
-                  v-slot="{ href }"
-                >
-                  <a :href="href">#{{ involvement.investor.id }}</a>
-                </router-link>
-              </td>
-              <td>{{ involvement.investor.name }}</td>
-              <td>{{ involvement.investor.country.name }}</td>
-              <td>{{ involvement.investor.classification }}</td>
-              <td>{{ detect_role(involvement) }}</td>
-              <td>{{ involvement.percentage }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </b-tab>
-      <b-tab
-        :title="`Deals (Involvements as Operating company) (${investor.deals.length})`"
-      >
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Deal ID</th>
-              <th>Country</th>
-              <th>Classification</th>
-              <th>Relationship</th>
-              <th>Ownership share</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="deal in investor.deals">
-              <td>
-                <router-link
-                  :to="{
-                    name: 'deal_detail',
-                    params: { deal_id: deal.id },
-                  }"
-                  v-slot="{ href }"
-                >
-                  <a :href="href">#{{ deal.id }}</a>
-                </router-link>
-              </td>
-              <td>{{ deal.country.name }}</td>
-              <td>{{ deal }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </b-tab>
-    </b-tabs>
+    <div class="container" v-if="investor">
+      <h2>General Info</h2>
+      <div class="row">
+        <div class="col">
+          <dl class="row">
+            <template v-for="(name, field) in fields" v-if="investor[field]">
+              <dt class="col-3">{{ name }}</dt>
+              <dd class="col-9">{{ investor[field] }}</dd>
+            </template>
+          </dl>
+        </div>
+        <div class="col">
+          <InvestorGraph
+            v-if="involvements.length"
+            :investor="investor"
+          ></InvestorGraph>
+        </div>
+      </div>
+
+      <b-tabs content-class="mt-3">
+        <b-tab :title="`Involvements (${involvements.length})`">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Investor ID</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Classification</th>
+                <th>Relationship</th>
+                <th>Ownership share</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="involvement in involvements">
+                <td>
+                  <router-link
+                    :to="{
+                      name: 'investor_detail',
+                      params: { investor_id: involvement.investor.id },
+                    }"
+                    v-slot="{ href }"
+                  >
+                    <a :href="href">#{{ involvement.investor.id }}</a>
+                  </router-link>
+                </td>
+                <td>{{ involvement.investor.name }}</td>
+                <td>{{ involvement.investor.country.name }}</td>
+                <td>{{ involvement.investor.classification }}</td>
+                <td>{{ detect_role(involvement) }}</td>
+                <td>{{ involvement.percentage }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </b-tab>
+        <b-tab
+          :title="`Deals (Involvements as Operating company) (${investor.deals.length})`"
+        >
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Deal ID</th>
+                <th>Country</th>
+                <th>Classification</th>
+                <th>Relationship</th>
+                <th>Ownership share</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="deal in investor.deals">
+                <td>
+                  <router-link
+                    :to="{
+                      name: 'deal_detail',
+                      params: { deal_id: deal.id },
+                    }"
+                    v-slot="{ href }"
+                  >
+                    <a :href="href">#{{ deal.id }}</a>
+                  </router-link>
+                </td>
+                <td>{{ deal.country.name }}</td>
+                <td>{{ deal }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </b-tab>
+      </b-tabs>
+    </div>
   </div>
 </template>
 

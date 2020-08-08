@@ -37,6 +37,21 @@
     LTileLayer,
   } from "vue2-leaflet";
 
+  import * as L from "leaflet";
+  import { GestureHandling } from "leaflet-gesture-handling";
+
+  import "leaflet/dist/leaflet.css";
+  import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+  L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+  import { Icon } from "leaflet";
+
+  delete Icon.Default.prototype._getIconUrl;
+  Icon.Default.mergeOptions({
+    iconRetinaUrl: require("/static/images/marker-icon-2x.png"),
+    iconUrl: require("/static/images/marker-icon.png"),
+    shadowUrl: require("/static/images/marker-shadow.png"),
+  });
+
   const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
   export default {
     name: "BigMap",
@@ -100,6 +115,7 @@
           minZoom: 1,
           zoom: 3,
           zoomControl: false,
+          gestureHandling: true,
           ...this.options,
         };
       },
@@ -115,8 +131,8 @@
       },
     },
     methods: {
-      emitUp(x) {
-        this.$emit("ready", x);
+      emitUp(map) {
+        this.$emit("ready", map);
       },
     },
   };
