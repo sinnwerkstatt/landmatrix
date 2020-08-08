@@ -51,64 +51,10 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchBasicInfo(context) {
-      let query = `{
-        countries { id name slug }
-        regions { id name slug }
-        me {
-          full_name
-          username
-          is_authenticated
-          is_impersonate
-          userregionalinfo { country { id name } region { id name } }
-          groups { id name }
-        }
-      }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setCountries", response.data.data.countries);
-        context.commit("setRegions", response.data.data.regions);
-        context.commit("setUser", response.data.data.me);
-      });
-    },
     fetchWagtailRootPage(context) {
       let url = `/newdeal_legacy/rootpage/`;
       axios.get(url).then((response) => {
         context.commit("setWagtailRootPage", response.data);
-      });
-    },
-    fetchMessages(context) {
-      let url = `/newdeal_legacy/messages/`;
-      axios.get(url).then((response) => {
-        context.commit("setMessages", response.data.messages);
-      });
-    },
-    login(context, { username, password }) {
-      let query = `mutation {
-        login(username: "${username}", password: "${password}") {
-          status
-          error
-          user { full_name username is_authenticated is_impersonate }
-        }
-      }`;
-
-      return new Promise(function (resolve, reject) {
-        axios.post("/graphql/", { query: query }).then((response) => {
-          let login_data = response.data.data.login;
-          if (login_data.status === true) {
-            context.commit("setUser", login_data.user);
-            resolve(login_data);
-          } else {
-            reject(login_data);
-          }
-        });
-      });
-    },
-    logout(context) {
-      let query = "mutation { logout }";
-      return axios.post("/graphql/", { query: query }).then((response) => {
-        if (response.data.data.logout === true) {
-          context.commit("setUser", null);
-        }
       });
     },
     fetchWagtailPage(context, path) {

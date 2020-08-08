@@ -1,4 +1,5 @@
 from django.db.models import Model
+from django.utils.functional import Promise
 from django.utils.translation import gettext
 
 from .oldforms import (
@@ -31,7 +32,7 @@ class VueForm:
         if mfield.choices:
             choices = {}
             for name, choice in mfield.choices:
-                if isinstance(choice, str):
+                if isinstance(choice, (str, Promise)):
                     choices[name] = gettext(choice)
                 elif isinstance(choice, (list, tuple)):
                     choices[gettext(name)] = {cn: gettext(cv) for (cn, cv) in choice}

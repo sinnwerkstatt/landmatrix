@@ -1,5 +1,5 @@
 <template>
-  <div v-if="investor && investor.involvements.length">
+  <div v-if="investor.involvements.length">
     <b-modal
       id="investor-detail-modal"
       :title="`${modalInfo.name} (#${modalInfo._id})`"

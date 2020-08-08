@@ -3,23 +3,24 @@
     <div class="loadingscreen" v-if="!investor">
       <div class="loader"></div>
     </div>
-
+    <div class="container" v-if="investor"></div>
     <div class="container" v-if="investor">
       <h2>General Info</h2>
       <div class="row">
         <div class="col">
-          <dl class="row">
-            <template v-for="(name, field) in fields" v-if="investor[field]">
-              <dt class="col-3">{{ name }}</dt>
-              <dd class="col-9">{{ investor[field] }}</dd>
-            </template>
-          </dl>
+          <Field
+            :formfield="formfield"
+            :readonly="true"
+            v-model="investor[formfield.name]"
+            v-for="formfield in investor_fields.general_info.fields"
+          />
         </div>
-        <div class="col">
+        <div class="col" :class="{ loading_wrapper: !involvements.length }">
           <InvestorGraph
             v-if="involvements.length"
             :investor="investor"
           ></InvestorGraph>
+          <div v-else class="loader"></div>
         </div>
       </div>
 
@@ -97,14 +98,57 @@
 
 <script>
   import store from "/store";
+  import gql from "graphql-tag";
+  import { mapState } from "vuex";
   import InvestorGraph from "/components/Investor/InvestorGraph";
+  import Field from "/components/Fields/Field";
+
+  let investor_query = gql`
+    query Investor($investorID: Int!, $depth: Int) {
+      investor(id: $investorID) {
+        id
+        name
+        country {
+          id
+          name
+        }
+        classification
+        homepage
+        opencorporates
+        comment
+        # involvements
+        status
+        created_at
+        modified_at
+        deals {
+          id
+          country {
+            name
+          }
+        }
+        involvements(depth: $depth)
+      }
+    }
+  `;
 
   export default {
     name: "InvestorDetail",
-    components: { InvestorGraph },
+    components: { InvestorGraph, Field },
     props: ["investor_id"],
+    apollo: {
+      investor() {
+        return {
+          query: investor_query,
+          variables: {
+            investorID: +this.investor_id,
+            depth: 0,
+          },
+        };
+      },
+    },
     data() {
       return {
+        investor: null,
         fields: {
           name: "Name",
           country: "Country of registration/origin",
@@ -116,10 +160,9 @@
       };
     },
     computed: {
-      investor() {
-        let investor = this.$store.state.investor.current_investor;
-        if (investor) return { ...investor, country: investor.country.name };
-      },
+      ...mapState({
+        investor_fields: (state) => state.investor.investor_fields,
+      }),
       involvements() {
         return this.investor.involvements || [];
       },
@@ -139,13 +182,35 @@
         }
       },
     },
-    beforeRouteEnter(to, from, next) {
-      store.dispatch("setCurrentInvestor", to.params.investor_id);
-      next();
+    mounted() {
+      this.$apollo.addSmartQuery("investor", {
+        query: investor_query,
+        variables: {
+          investorID: +this.investor_id,
+          depth: 4,
+        },
+      });
     },
-    beforeRouteUpdate(to, from, next) {
-      store.dispatch("setCurrentInvestor", to.params.investor_id);
-      next();
+    watch: {
+      investor(investor, oldInvestor) {
+        let title = `${investor.name} <small>(#${investor.id})</small>`;
+        store.dispatch("setPageContext", {
+          title,
+          breadcrumbs: [
+            { link: { name: "wagtail" }, name: "Home" },
+            { link: { name: "investor_list" }, name: "Data" },
+            { name: `Investor #${investor.id}` },
+          ],
+        });
+      },
     },
   };
 </script>
+
+<style>
+  .loading_wrapper {
+    background: grey;
+    width: 100%;
+    height: 100%;
+  }
+</style>
