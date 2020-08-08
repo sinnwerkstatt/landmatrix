@@ -27,12 +27,12 @@ function derive_status(status, draft_status) {
     1: "Draft",
     2: "Review",
     3: "Activation",
-  }
-  let st = status_map[status]
+  };
+  let st = status_map[status];
   if (draft_status) {
     return `${st} + ${draft_status_map[draft_status]}`;
   }
   return st;
 }
 
-export {flatten_choices, derive_status};
+export { flatten_choices, derive_status };

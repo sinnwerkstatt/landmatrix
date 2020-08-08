@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="readonly">
-      {{vals}}
+      {{ vals }}
       <!--      <div v-for="val in vals">-->
       <!--        <span v-if="val.date">[{{ val.date }}]</span> {{ val.value.join(', ') }}<br />-->
       <!--      </div>-->
@@ -63,7 +63,7 @@
             @click.prevent="removeSet(i)"
           >
             <i class="lm lm-minus"></i
-            ></a>
+          ></a>
         </div>
       </div>
       <a class="btn add-ybd add-row" @click.prevent="addSet">
@@ -79,7 +79,7 @@
     data() {
       return {
         current: 0,
-        vals: [{ date: null, value: null }]
+        vals: [{ date: null, value: null }],
       };
     },
     computed: {},
@@ -96,14 +96,14 @@
           return { value: val.value, date: val.date, ...current };
         });
         this.$emit("input", vals_with_current);
-      }
+      },
     },
     created() {
       if (this.value) {
         this.current = this.value.map((e) => e.current).indexOf(true);
         this.vals = this.value;
       }
-    }
+    },
   };
 </script>
 <style lang="scss" scoped>

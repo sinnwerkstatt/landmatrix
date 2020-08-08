@@ -8,16 +8,15 @@
         <span v-if="val.date">[{{ val.date }}] </span>
         <span class="font-weight-bold" v-html="parseValues(val)"></span>
         <span class="mx-2" v-if="val.hectares">
-          <i class="fas fa-circle-notch"></i> {{val.hectares}} ha
+          <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
         </span>
         <span class="mx-2" v-if="val.tons">
-          <i class="fas fa-weight-hanging"></i> {{val.tons}} tons
+          <i class="fas fa-weight-hanging"></i> {{ val.tons }} tons
         </span>
         <span class="mx-2" v-if="val.percent">
-          <i class="fas fa-plane-departure"></i> {{val.percent}} %
+          <i class="fas fa-plane-departure"></i> {{ val.percent }} %
         </span>
       </div>
-
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@ export const investorModule = {
   state: () => ({
     investors: [],
     current_investor: null,
-    investor_fields: null
+    investor_fields: null,
   }),
   mutations: {
     setCurrentInvestor(state, investor) {
@@ -10,6 +10,6 @@ export const investorModule = {
     },
     setInvestorFields(state, fields) {
       state.investor_fields = fields;
-    }
-  }
+    },
+  },
 };

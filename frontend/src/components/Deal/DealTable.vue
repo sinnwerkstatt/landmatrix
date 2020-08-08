@@ -34,7 +34,10 @@
       <tbody>
         <tr v-for="deal in dt_deals" :key="deal.id">
           <td>
-            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }" v-slot="{ href }">
+            <router-link
+              :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
+              v-slot="{ href }"
+            >
               <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
@@ -144,12 +147,12 @@
 
     &.asc:before {
       content: "\f078";
-      font-family: 'Font Awesome 5 Free';
+      font-family: "Font Awesome 5 Free";
     }
 
     &:not(.asc):before {
       content: "\f077";
-      font-family: 'Font Awesome 5 Free';
+      font-family: "Font Awesome 5 Free";
     }
   }
 </style>

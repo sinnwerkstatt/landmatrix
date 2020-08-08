@@ -6,7 +6,7 @@ import store from "./store";
 import Multiselect from "vue-multiselect";
 import VCalendar from "v-calendar";
 import dayjs from "dayjs";
-import VueApollo from 'vue-apollo'
+import VueApollo from "vue-apollo";
 import { apolloClient } from "./apolloclient";
 
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -70,12 +70,11 @@ Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
 
-
 const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
-})
+});
 
-Vue.use(VueApollo)
+Vue.use(VueApollo);
 export default new Vue({
   router,
   store,

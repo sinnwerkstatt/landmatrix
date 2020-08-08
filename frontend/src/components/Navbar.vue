@@ -2,7 +2,7 @@
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
-          <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
+        <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
       </a>
       <button
         class="navbar-toggler"
@@ -18,7 +18,7 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/global/" >Global</a>
+            <a class="nav-link" href="/global/">Global</a>
           </li>
           <navbar-select
             title="Regions"

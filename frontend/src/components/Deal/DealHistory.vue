@@ -9,14 +9,15 @@
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
-            <b-button disabled
-              v-b-tooltip.hover :title="version.deal.fully_updated?'Fully updated':'Updated'"
+            <b-button
+              disabled
+              v-b-tooltip.hover
+              :title="version.deal.fully_updated ? 'Fully updated' : 'Updated'"
               :class="[
                 'fa',
                 version.deal.fully_updated ? 'fa-check-circle' : 'fa-circle',
               ]"
             />
-
           </td>
           <td>
             {{ derive_status(version.deal.status, version.deal.draft_status) }}
@@ -35,7 +36,7 @@
               v-slot="{ href, navigate }"
             >
               <!-- this hack helps to understand that a new version is actually loading, atm -->
-              <a :href="href" >Show</a>
+              <a :href="href">Show</a>
             </router-link>
           </td>
           <td>
