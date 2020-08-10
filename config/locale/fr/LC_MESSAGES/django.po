@@ -4922,7 +4922,7 @@ msgstr "Veuillez vous connecter pour consulter cette page."
 
 #: templates/registration/login.html:37
 msgid "Forgot password?"
-msgstr "Vous avez oublié votre mot de passe ?"
+msgstr "Vous avez oublié votre mot de passe?"
 
 #: templates/registration/login.html:37
 msgid "Reset it"

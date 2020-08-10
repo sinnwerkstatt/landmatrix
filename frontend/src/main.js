@@ -8,6 +8,8 @@ import VCalendar from "v-calendar";
 import dayjs from "dayjs";
 import VueApollo from "vue-apollo";
 import { apolloClient } from "./apolloclient";
+import VueI18n from "vue-i18n";
+import { messages } from "./i18n.messages";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
@@ -38,6 +40,8 @@ import RawHTML from "/components/Wagtail/RawHTML";
 
 Vue.use(BootstrapVue);
 Vue.use(VCalendar);
+Vue.use(VueI18n);
+Vue.use(VueApollo);
 
 Vue.component("multiselect", Multiselect);
 
@@ -70,14 +74,21 @@ Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
 
-const apolloProvider = new VueApollo({
-  defaultClient: apolloClient,
-});
 
-Vue.use(VueApollo);
+// Create VueI18n instance with options
+const i18n = new VueI18n({
+  locale: LANGUAGE || "en",
+  fallbackLocale: 'en',
+  messages: messages,
+})
+
+
 export default new Vue({
   router,
   store,
-  apolloProvider,
+  i18n,
+  apolloProvider: new VueApollo({
+    defaultClient: apolloClient,
+  }),
   render: (h) => h(App),
 }).$mount("#app");
