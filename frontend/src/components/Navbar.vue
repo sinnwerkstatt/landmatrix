@@ -18,26 +18,26 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/global/">Global</a>
+            <a class="nav-link" href="/global/">{{ $t("Global") }}</a>
           </li>
           <navbar-select
-            title="Regions"
+            :title="$t('Regions')"
             :options="regions"
             @select="openLink('region', $event)"
           ></navbar-select>
           <navbar-select
-            title="Countries"
+            :title="$t('Countries')"
             :options="countries"
             @select="openLink('country', $event)"
           ></navbar-select>
           <li class="nav-item">
-            <a class="nav-link" href="/stay-informed/">Stay informed</a>
+            <a class="nav-link" href="/stay-informed/">{{ $t("Stay informed") }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/get-involved/">Get involved</a>
+            <a class="nav-link" href="/get-involved/">{{ $t("Get involved") }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/faq/">FAQ</a>
+            <a class="nav-link" href="/faq/">{{ $t("FAQ") }}</a>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -98,13 +98,15 @@
                 class="dropdown-item"
                 href="/impersonate/stop/?next=/dashboard/"
               >
-                Stop impersonation
+                {{ $t("Stop impersonation") }}
               </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/editor/">Dashboard</a>
-              <a class="dropdown-item" href="/manage/">Manage</a>
-              <a class="dropdown-item" href="/deal/add/">Add a deal</a>
-              <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
+              <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
+              <a class="dropdown-item" href="/manage/">{{ $t("Manage") }}</a>
+              <a class="dropdown-item" href="/deal/add/">{{ $t("Add a deal") }}</a>
+              <a class="dropdown-item" @click.prevent="dispatchLogout">{{
+                $t("Logout")
+              }}</a>
             </div>
           </li>
           <li v-if="!user" class="nav-item dropdown">
@@ -150,17 +152,17 @@
                   @click.prevent="dispatchLogin"
                   class="btn btn-secondary"
                 >
-                  Login
+                  {{ $t("Login") }}
                 </button>
                 <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
               </form>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/accounts/register/"
-                >New around here? Sign up</a
-              >
-              <a class="dropdown-item" href="/accounts/password_reset/"
-                >Forgot password?</a
-              >
+              <a class="dropdown-item" href="/accounts/register/">{{
+                $t("New around here? Sign up")
+              }}</a>
+              <a class="dropdown-item" href="/accounts/password_reset/">{{
+                $t("Forgot password?")
+              }}</a>
             </div>
           </li>
         </ul>
