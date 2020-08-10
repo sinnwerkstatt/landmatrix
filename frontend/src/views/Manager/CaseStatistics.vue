@@ -64,11 +64,18 @@
                 <strong>{{ stats.deals.length }}</strong> {{ stats.name }}<br />
               </template>
               <b-card-text>
-                <DealTable
-                  :deals="prepareDeals(stats.deals)"
-                  :fields="dealFields"
-                  :pageSize="10"
-                />
+                <div class="actions">
+                  <DownloadJsonCSV v-if="prepareDealsCsv(stats.deals).length" :data="prepareDealsCsv(stats.deals)">
+                    <a class="btn btn-outline-primary">Download Deals as CSV</a>
+                  </DownloadJsonCSV>
+                </div>
+                <div class="scroll-container">
+                  <DealTable
+                    :deals="prepareDeals(stats.deals)"
+                    :fields="dealFields"
+                    :pageSize="10"
+                  />
+                </div>
               </b-card-text>
             </b-tab>
           </b-tabs>
@@ -84,10 +91,11 @@
   import DealTable from "/components/Deal/DealTable";
   import { mapState } from "vuex";
   import InvestorTable from "/components/Investor/InvestorTable";
+  import DownloadJsonCSV from 'vue-json-csv';
 
   export default {
     name: "CaseStatistics",
-    components: { InvestorTable, DealTable },
+    components: { InvestorTable, DealTable, DownloadJsonCSV },
     data: function () {
       return {
         loading: false,
@@ -103,11 +111,11 @@
         deals_updated: [],
         deals_fully_updated: [],
         dealFields: [
+          "country",
           "deal_size",
           "status",
           "draft_status",
           "confidential",
-          "country",
           "operating_company",
           "created_at",
           "modified_at",
@@ -333,6 +341,15 @@
           };
         });
       },
+      prepareDealsCsv(deals) {
+        return this.prepareDeals(deals).map((deal) => {
+          delete deal.confidential;
+          delete deal.datasources;
+          return {
+            ...deal,
+          };
+        })
+      }
     },
     beforeRouteEnter(to, from, next) {
       next();
@@ -382,6 +399,13 @@
       width: 100%;
     }
   }
+  .actions {
+    margin-bottom: 1em;
+    text-align: right;
+  }
+  .scroll-container {
+    overflow: scroll;
+  }
 </style>
 
 <style lang="scss">
@@ -390,4 +414,8 @@
   .nav-link.active.teal-background {
     background: $lm_investor !important;
   }
+  .tab-content {
+    overflow: hidden;
+  }
+
 </style>
