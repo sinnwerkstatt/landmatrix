@@ -1,17 +1,12 @@
 <template>
   <div class="deal-table">
-    <nav aria-label="Deal table navigation">
-      <ul class="pagination justify-content-center" v-if="pages > 1">
-        <li
-          v-for="(n, i) in pages"
-          class="page-item"
-          :class="['page-item', currentPage === i ? 'disabled' : '']"
-        >
-          <a class="page-link" @click="currentPage = i">{{ i + 1 }}</a>
-        </li>
-      </ul>
-    </nav>
-
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="deals.length"
+      :per-page="pageSize"
+      align="center"
+      limit="12"
+    ></b-pagination>
     <table id="summary" class="table table-striped">
       <thead>
         <tr>
@@ -55,7 +50,7 @@
     props: ["deals", "fields", "pageSize"],
     data() {
       return {
-        currentPage: 0,
+        currentPage: 1,
         sortField: "id",
         sortAscending: true,
         fieldNameMap: {
@@ -94,8 +89,8 @@
 
         if (this.pageSize) {
           return deals.slice(
-            this.pageSize * this.currentPage,
-            this.pageSize * (this.currentPage + 1)
+            this.pageSize * (this.currentPage - 1),
+            this.pageSize * this.currentPage
           );
         }
         return deals;

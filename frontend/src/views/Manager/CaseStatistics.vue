@@ -63,7 +63,7 @@
             <h2>Deals</h2>
           </template>
 
-          <b-tabs pills card vertical>
+          <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
             <b-tab v-for="(stats, i) in deal_statistics" :key="i">
               <template v-slot:title>
                 <strong>{{ stats.deals.length }}</strong> {{ stats.name }}<br/>
