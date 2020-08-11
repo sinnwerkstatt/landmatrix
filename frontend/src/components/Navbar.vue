@@ -20,16 +20,16 @@
           <li class="nav-item">
             <a class="nav-link" href="/global/">{{ $t("Global") }}</a>
           </li>
-          <navbar-select
+          <NavbarSelect
             :title="$t('Regions')"
             :options="regions"
             @select="openLink('region', $event)"
-          ></navbar-select>
-          <navbar-select
+          />
+          <NavbarSelect
             :title="$t('Countries')"
             :options="countries"
             @select="openLink('country', $event)"
-          ></navbar-select>
+          />
           <li class="nav-item">
             <a class="nav-link" href="/stay-informed/">{{ $t("Stay informed") }}</a>
           </li>
@@ -223,7 +223,8 @@
     },
     methods: {
       openLink(target_url, option) {
-        this.$router.push(`/${target_url}/${option.slug}/`);
+        window.location.href = `/${target_url}/${option.slug}/`;
+        // this.$router.push(`/${target_url}/${option.slug}/`);
       },
       dispatchLogout() {
         this.$store.dispatch("logout");

@@ -15,24 +15,21 @@ def vuebase(request, *args, **kwargs):
 
 
 def gis_export(request):
-    point_json = []
-    area_json = []
+    point_res = {"type": "FeatureCollection", "features": []}
+    area_res = {"type": "FeatureCollection", "features": []}
+
     for deal in Deal.objects.public().exclude(geojson=None).prefetch_related("country"):
         for feat in deal.geojson.get("features"):
             props = feat.get("properties", {})
+            props["deal_id"] = deal.id
             if deal.country:
-                country = deal.country.to_dict()
-                region = deal.country.fk_region.to_dict()
-            else:
-                country = region = None
-            props.update({"deal_id": deal.id, "country": country, "region": region})
+                props["country"] = deal.country.name
+                props["region"] = deal.country.fk_region.name
             if feat["geometry"]["type"] == "Point":
-                point_json += [feat]
+                point_res["features"] += [feat]
             else:
-                area_json += [feat]
+                area_res["features"] += [feat]
 
-    point_res = {"type": "FeatureCollection", "features": point_json}
-    area_res = {"type": "FeatureCollection", "features": area_json}
     request_type = request.GET.get("type")
     if request_type == "points":
         return JsonResponse(point_res)
@@ -42,7 +39,7 @@ def gis_export(request):
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
         zip_file.writestr("points.geojson", json.dumps(point_res))
-        zip_file.writestr("areas.geojson", json.dumps(area_json))
+        zip_file.writestr("areas.geojson", json.dumps(area_res))
     zip_buffer.seek(0)
     response = HttpResponse(zip_buffer, content_type="application/zip")
     response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
