@@ -1,4 +1,5 @@
 import io
+import json
 import warnings
 import zipfile
 
@@ -40,8 +41,8 @@ def gis_export(request):
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("points.geojson", str(point_res))
-        zip_file.writestr("areas.geojson", str(area_json))
+        zip_file.writestr("points.geojson", json.dumps(point_res))
+        zip_file.writestr("areas.geojson", json.dumps(area_json))
     zip_buffer.seek(0)
     response = HttpResponse(zip_buffer, content_type="application/zip")
     response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
