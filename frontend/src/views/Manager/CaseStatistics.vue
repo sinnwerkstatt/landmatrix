@@ -72,13 +72,41 @@
                 <div class="actions">
                   <DownloadJsonCSV v-if="prepareDealsCsv(stats.deals).length" :data="prepareDealsCsv(stats.deals)"
                     :name="`Indicator-List_${stats.name}.csv`">
-                    <a class="btn btn-outline-primary">Download Deals as CSV</a>
+                    <a class="btn btn-outline-primary">Download deals as CSV</a>
                   </DownloadJsonCSV>
                 </div>
                 <div class="scroll-container">
                   <DealTable
                     :deals="prepareDeals(stats.deals)"
                     :fields="dealFields"
+                    :pageSize="10"
+                  />
+                </div>
+              </b-card-text>
+            </b-tab>
+          </b-tabs>
+        </b-tab>
+        <b-tab>
+          <template v-slot:title>
+            <h2>Investors</h2>
+          </template>
+
+          <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
+            <b-tab v-for="(stats, i) in investor_statistics" :key="i">
+              <template v-slot:title>
+                <strong>{{ stats.investors.length }}</strong> {{ stats.name }}<br/>
+              </template>
+              <b-card-text>
+                <div class="actions">
+                  <DownloadJsonCSV v-if="prepareInvestors(stats.investors).length" :data="prepareInvestors(stats.investors)"
+                    :name="`Indicator-List_${stats.name}.csv`">
+                    <a class="btn btn-outline-primary">Download investors as CSV</a>
+                  </DownloadJsonCSV>
+                </div>
+                <div class="scroll-container">
+                  <InvestorTable
+                    :investors="prepareInvestors(stats.investors)"
+                    :fields="investorFields"
                     :pageSize="10"
                   />
                 </div>
@@ -126,8 +154,14 @@ export default {
         "created_at",
         "modified_at",
       ],
-      investorFields: ["name", "status"],
       investors: [],
+      investorFields: [
+        "name",
+        "country",
+        "status",
+        "created_at",
+        "modified_at"
+      ],
 
       selectedDateOption: 30,
       date_pre_options: [
@@ -202,36 +236,25 @@ export default {
         },
       ];
     },
-    filtered_investors() {
-      if (this.selectedCountry)
-        return this.investors.filter((d) => {
-          return d.country && d.country.id === this.selectedCountry.id;
-        });
-      if (this.selectedRegion)
-        return this.investors.filter((d) => {
-          return d.country && d.country.region.id === this.selectedRegion.id;
-        });
-      return this.investors;
-    },
     investor_statistics() {
       return [
         {
           name: "Investors added",
-          investors: this.filtered_investors.filter((d) => d.status === 1),
+          investors: this.investors.filter((d) => d.status === 1),
         },
         {
           name: "Investors updated",
-          investors: this.filtered_investors.filter((d) => d.status === 3),
+          investors: this.investors.filter((d) => d.status === 3),
         },
         {
           name: "Investors published",
-          investors: this.filtered_investors.filter(
+          investors: this.investors.filter(
             (d) => d.status === 2 || d.status === 3
           ),
         },
         {
           name: "Investors pending",
-          investors: this.filtered_investors.filter((d) => d.draft_status !== null),
+          investors: this.investors.filter((d) => d.draft_status !== null),
         },
       ];
     },
@@ -239,6 +262,9 @@ export default {
       let allStats = {};
       for (var stats of this.deal_statistics) {
         allStats[stats.name] = stats.deals.length;
+      }
+      for (var stats of this.investor_statistics) {
+        allStats[stats.name] = stats.investors.length;
       }
       return [allStats];
     },
@@ -302,8 +328,7 @@ export default {
            created_at
            modified_at
         }`;
-      const investors_x = `
-          investors(limit: 0, filters: $filters) {
+      const investor_gql_fields = `{
           id
           name
           created_at
@@ -314,7 +339,7 @@ export default {
         }`;
       let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
       let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
-      let reg_con = "";
+      let reg_con = "", reg_con_inv = "";
       if (this.selectedCountry) {
         reg_con = `{field:"country.id",operation:EQ,value:"${this.selectedCountry.id}"}`;
       }
@@ -340,6 +365,9 @@ export default {
             {field:"fully_updated_at",operation:LE,value:"${dr_end}"},
             ${reg_con}
             ]) ${deal_gql_fields}
+          investors_data: investors(limit: 0, filters:[
+            ${reg_con}
+            ]) ${investor_gql_fields}
         }`;
 
       axios
@@ -348,7 +376,7 @@ export default {
           this.deals_added = response.data.data.deals_added || [];
           this.deals_updated = response.data.data.deals_updated || [];
           this.deals_fully_updated = response.data.data.deals_fully_updated || [];
-          // this.investors = response.data.data.investors;
+          this.investors = response.data.data.investors_data;
         })
         .finally(() => (this.loading = false));
     },
@@ -377,6 +405,17 @@ export default {
           ...deal,
         };
       })
+    },
+    prepareInvestors(investors) {
+      return investors.map((investor) => {
+        let country = investor.country ? investor.country.name : "";
+        return {
+          ...investor,
+          country,
+          created_at: dayjs(investor.created_at).format("YYYY-MM-DD"),
+          modified_at: dayjs(investor.modified_at).format("YYYY-MM-DD"),
+        };
+      });
     }
   },
   beforeRouteEnter(to, from, next) {

@@ -62,6 +62,11 @@
           deal_size: "Deal size in ha",
           fully_updated: "Full updated",
           status: "Status",
+          draft_status: "Draft status",
+          confidential: "Confidential",
+          operating_company: "Operating company",
+          created_at: "Created at",
+          modified_at: "Last modified at"
         },
       };
     },
