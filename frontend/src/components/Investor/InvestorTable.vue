@@ -50,7 +50,7 @@
     props: ["investors", "fields", "pageSize"],
     data() {
       return {
-        currentPage: 0,
+        currentPage: 1,
         sortField: "id",
         sortAscending: true,
         fieldNameMap: {

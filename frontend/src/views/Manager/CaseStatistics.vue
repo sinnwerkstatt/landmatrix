@@ -174,7 +174,14 @@ export default {
   },
   computed: {
     ...mapState({
-      regions: (state) => state.page.regions,
+      regions: (state) => {
+        let world = {
+          id: -1,
+          name: "World",
+          slug: "world"
+        }
+        return state.page.regions.concat([world]);
+      },
       countries: (state) => state.page.countries,
       user: (state) => state.page.user,
     }),
@@ -343,7 +350,7 @@ export default {
       if (this.selectedCountry) {
         reg_con = `{field:"country.id",operation:EQ,value:"${this.selectedCountry.id}"}`;
       }
-      if (this.selectedRegion) {
+      if (this.selectedRegion && this.selectedRegion.id != -1) {
         reg_con = `{field:"country.fk_region_id",operation:EQ,value:"${this.selectedRegion.id}"}`;
       }
 
@@ -470,6 +477,9 @@ export default {
 .actions {
   margin-bottom: 1em;
   text-align: right;
+  > div {
+    display: inline-block;
+  }
 }
 
 .scroll-container {
