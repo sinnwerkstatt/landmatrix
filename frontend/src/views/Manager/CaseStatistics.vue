@@ -3,118 +3,176 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
-    <div class="row my-5">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Date range</label>
-          <div class="input-group datepicker-div">
-            <div class="input-group-prepend">
-              <select v-model="selectedDateOption" @change="updateDateRange($event)">
-                <option v-for="option in date_pre_options" :value="option.value">
-                  {{ option.name }}
-                </option>
-              </select>
-            </div>
-            <v-date-picker
-              mode="range"
-              v-model="daterange"
-              :max-date="new Date()"
-              @input="updateStats"
-              :input-props="{ style: 'width: 100%' }"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Country/Region</label>
-          <div class="input-group">
-            <div class="multiselect-div">
-              <multiselect
-                v-model="selectedRegion"
-                :options="regions"
-                label="name"
-                placeholder="Region"
-                @input="selectedCountry=null"
-              />
-            </div>
-            <div class="multiselect-div">
-              <multiselect
-                v-model="selectedCountry"
-                :options="countries"
-                label="name"
-                placeholder="Country"
-                @input="selectedRegion=null"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <DownloadJsonCSV v-if="formFilled" :data="allStatsCsv" :name="allStatsCsvFileName">
-        <a class="btn btn-outline-primary">Download all indicators as CSV</a>
-      </DownloadJsonCSV>
-    </div>
-    <div class="number-of-deals">
-      <b-tabs>
-        <b-tab>
-          <template v-slot:title>
-            <h2>Deals</h2>
-          </template>
+    <div>
+      <b-card no-body>
+        <b-tabs card>
+          <b-tab active>
+            <template v-slot:title>
+              <h2>Filtered Statistics</h2>
+            </template>
+            <b-card-text>
+              <div class="row my-5">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Date range</label>
+                    <div class="input-group datepicker-div">
+                      <div class="input-group-prepend">
+                        <select v-model="selectedDateOption" @change="updateDateRange($event)">
+                          <option v-for="option in date_pre_options" :value="option.value">
+                            {{ option.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <v-date-picker
+                        mode="range"
+                        v-model="daterange"
+                        :max-date="new Date()"
+                        @input="updateStats"
+                        :input-props="{ style: 'width: 100%' }"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Country/Region</label>
+                    <div class="input-group">
+                      <div class="multiselect-div">
+                        <multiselect
+                          v-model="selectedRegion"
+                          :options="regions"
+                          label="name"
+                          placeholder="Region"
+                          @input="selectedCountry=null"
+                        />
+                      </div>
+                      <div class="multiselect-div">
+                        <multiselect
+                          v-model="selectedCountry"
+                          :options="countries"
+                          label="name"
+                          placeholder="Country"
+                          @input="selectedRegion=null"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <DownloadJsonCSV v-if="formFilled" :data="allStatsCsv" :name="allStatsCsvFileName">
+                  <a class="btn btn-outline-primary">Download all indicators as CSV</a>
+                </DownloadJsonCSV>
+              </div>
+              <div class="number-of-deals">
+                <b-tabs>
+                  <b-tab>
+                    <template v-slot:title>
+                      <h3>Deals</h3>
+                    </template>
 
-          <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
-            <b-tab v-for="(stats, i) in deal_statistics" :key="i">
-              <template v-slot:title>
-                <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
-              </template>
-              <b-card-text>
-                <div class="actions">
-                  <DownloadJsonCSV v-if="prepareDealsCsv(stats.deals).length" :data="prepareDealsCsv(stats.deals)"
-                                   :name="`Indicator-List_${stats.name}.csv`">
-                    <a class="btn btn-outline-primary">Download deals as CSV</a>
-                  </DownloadJsonCSV>
-                </div>
-                <div class="scroll-container">
-                  <DealTable
-                    :deals="prepareDeals(stats.deals)"
-                    :fields="dealFields"
-                    :pageSize="10"
-                  />
-                </div>
-              </b-card-text>
-            </b-tab>
-          </b-tabs>
-        </b-tab>
-        <b-tab>
-          <template v-slot:title>
-            <h2>Investors</h2>
-          </template>
+                    <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
+                      <b-tab v-for="(stats, i) in deal_statistics" :key="i">
+                        <template v-slot:title>
+                          <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
+                        </template>
+                        <b-card-text>
+                          <div class="actions">
+                            <DownloadJsonCSV v-if="prepareDealsCsv(stats.deals).length" :data="prepareDealsCsv(stats.deals)"
+                                             :name="`Indicator-List_${stats.name}.csv`">
+                              <a class="btn btn-outline-primary">Download deals as CSV</a>
+                            </DownloadJsonCSV>
+                          </div>
+                          <div class="scroll-container">
+                            <DealTable
+                              :deals="prepareDeals(stats.deals)"
+                              :fields="dealFields"
+                              :pageSize="10"
+                            />
+                          </div>
+                        </b-card-text>
+                      </b-tab>
+                    </b-tabs>
+                  </b-tab>
+                  <b-tab>
+                    <template v-slot:title>
+                      <h3>Investors</h3>
+                    </template>
 
-          <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
-            <b-tab v-for="(stats, i) in investor_statistics" :key="i">
-              <template v-slot:title>
-                <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
-              </template>
-              <b-card-text>
-                <div class="actions">
-                  <DownloadJsonCSV v-if="prepareInvestors(stats.investors).length" :data="prepareInvestors(stats.investors)"
-                    :name="`Indicator-List_${stats.name}.csv`">
-                    <a class="btn btn-outline-primary">Download investors as CSV</a>
-                  </DownloadJsonCSV>
+                    <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
+                      <b-tab v-for="(stats, i) in investor_statistics" :key="i">
+                        <template v-slot:title>
+                          <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
+                        </template>
+                        <b-card-text>
+                          <div class="actions">
+                            <DownloadJsonCSV v-if="prepareInvestors(stats.investors).length" :data="prepareInvestors(stats.investors)"
+                              :name="`Indicator-List_${stats.name}.csv`">
+                              <a class="btn btn-outline-primary">Download investors as CSV</a>
+                            </DownloadJsonCSV>
+                          </div>
+                          <div class="scroll-container">
+                            <InvestorTable
+                              :investors="prepareInvestors(stats.investors)"
+                              :fields="investorFields"
+                              :pageSize="10"
+                            />
+                          </div>
+                        </b-card-text>
+                      </b-tab>
+                    </b-tabs>
+                  </b-tab>
+                </b-tabs>
+              </div>
+            </b-card-text>
+          </b-tab>
+          <b-tab>
+            <template v-slot:title>
+              <h2>Goals</h2>
+            </template>
+            <b-card-text>
+              <div class="row my-5">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Country/Region</label>
+                    <div class="input-group">
+                      <div class="multiselect-div">
+                        <multiselect
+                          v-model="selectedRegion"
+                          :options="regions"
+                          label="name"
+                          placeholder="Region"
+                          @input="selectedCountry=null"
+                        />
+                      </div>
+                      <div class="multiselect-div">
+                        <multiselect
+                          v-model="selectedCountry"
+                          :options="countries"
+                          label="name"
+                          placeholder="Country"
+                          @input="selectedRegion=null"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="scroll-container">
-                  <InvestorTable
-                    :investors="prepareInvestors(stats.investors)"
-                    :fields="investorFields"
-                    :pageSize="10"
-                  />
-                </div>
-              </b-card-text>
-            </b-tab>
-          </b-tabs>
-        </b-tab>
-      </b-tabs>
+              </div>
+              <ul>
+                <li># publicly visible deals (published, public filter ok, 'not public' not set)</li>
+                <li># publicly visible deals, with default filter</li>
+                <li># deals with with multiple data sources</li>
+                <li># deals with with multiple data sources, with default filter</li>
+                <li># deals georeferenced with high accuracy*</li>
+                <li># deals georeferenced with high accuracy, with default filter</li>
+                <li># deals with polygon data</li>
+                <li># deals with polygon data, with default filter</li>
+              </ul>
+              <p>* Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.</p>
+            </b-card-text>
+          </b-tab>
+        </b-tabs>
+      </b-card>
     </div>
   </div>
 </template>
@@ -564,6 +622,13 @@ export default {
 
 .scroll-container {
   overflow: scroll;
+}
+
+.nav-tabs {
+  h2, h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 </style>
 
