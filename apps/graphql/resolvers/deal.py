@@ -6,7 +6,7 @@ from graphql import GraphQLResolveInfo
 from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Deal, Location
+from apps.landmatrix.models import Deal, Location, Country
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
@@ -75,6 +75,8 @@ def get_deal_datasources(obj: Deal, info: GraphQLResolveInfo, version=None):
             .version_set.filter(content_type__model="datasource")
             .order_by("id")
         ]
+    if type(obj) is dict:
+        return obj["datasources"]
     return obj.datasources.all().order_by("id")
 
 
@@ -100,15 +102,38 @@ def get_deal_versions(obj, info: GraphQLResolveInfo):
     ]
 
 
+def _resolve_field_dict_fetch(field_dict, revision):
+    if "country_id" in field_dict and not field_dict["country_id"] is None:
+        try:
+            c = Country.objects.get(id=field_dict["country_id"])
+            field_dict["country"] = c.to_dict(deep=True)
+        except Country.DoesNotExist:
+            pass
+
+    field_dict["datasources"] = [
+        r._object_version.object
+        for r in revision.version_set.filter(content_type__model="datasource").order_by(
+            "id"
+        )
+    ]
+
+    return field_dict
+
+
 def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = Version.objects.get_for_model(Deal)  # .filter(revision__date_created="")
     # qs = _resolve_deals_prefetching(info).order_by(sort)
-    print(qs.count())
     if filters:
         qs = qs.filter(**parse_filters(filters))
-    print(qs.count())
 
-    return [{"id": x.id, "deal": x.field_dict, "revision": x.revision} for x in qs]
+    return [
+        {
+            "id": x.id,
+            "deal": _resolve_field_dict_fetch(x.field_dict, x.revision),
+            "revision": x.revision,
+        }
+        for x in qs
+    ]
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):

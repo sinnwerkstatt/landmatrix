@@ -42,6 +42,9 @@ type Query {
         "Filters are ANDed together"
         filters: [Filter]
     ): [Involvement]
+    investorversions(
+        filters: [Filter]
+    ): [InvestorVersion]
 
     countries: [Country]
     regions: [Region]

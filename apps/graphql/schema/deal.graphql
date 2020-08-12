@@ -260,11 +260,4 @@ type DealVersion {
     revision: Revision
 }
 
-type Revision {
-    id: Int!
-    date_created: DateTime
-    user: User
-    comment: String
-}
-
 scalar Dict

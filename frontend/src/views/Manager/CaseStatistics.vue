@@ -35,7 +35,7 @@
                 :options="regions"
                 label="name"
                 placeholder="Region"
-                @input="updateStats('region')"
+                @input="selectedCountry=null"
               />
             </div>
             <div class="multiselect-div">
@@ -44,7 +44,7 @@
                 :options="countries"
                 label="name"
                 placeholder="Country"
-                @input="updateStats('country')"
+                @input="selectedRegion=null"
               />
             </div>
           </div>
@@ -53,7 +53,7 @@
     </div>
     <div class="actions">
       <DownloadJsonCSV v-if="formFilled" :data="allStatsCsv" :name="allStatsCsvFileName">
-        <a class="btn btn-outline-primary">Download Indicators</a>
+        <a class="btn btn-outline-primary">Download all indicators as CSV</a>
       </DownloadJsonCSV>
     </div>
     <div class="number-of-deals">
@@ -66,12 +66,12 @@
           <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
             <b-tab v-for="(stats, i) in deal_statistics" :key="i">
               <template v-slot:title>
-                <strong>{{ stats.deals.length }}</strong> {{ stats.name }}<br/>
+                <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
               </template>
               <b-card-text>
                 <div class="actions">
                   <DownloadJsonCSV v-if="prepareDealsCsv(stats.deals).length" :data="prepareDealsCsv(stats.deals)"
-                    :name="`Indicator-List_${stats.name}.csv`">
+                                   :name="`Indicator-List_${stats.name}.csv`">
                     <a class="btn btn-outline-primary">Download deals as CSV</a>
                   </DownloadJsonCSV>
                 </div>
@@ -94,7 +94,7 @@
           <b-tabs pills card vertical nav-wrapper-class="col-lg-3 col-md-12" content-class="col-lg-9 col-md-12">
             <b-tab v-for="(stats, i) in investor_statistics" :key="i">
               <template v-slot:title>
-                <strong>{{ stats.investors.length }}</strong> {{ stats.name }}<br/>
+                <strong>{{ stats.value }}</strong> {{ stats.name }}<br/>
               </template>
               <b-card-text>
                 <div class="actions">
@@ -127,6 +127,31 @@ import {mapState} from "vuex";
 import InvestorTable from "/components/Investor/InvestorTable";
 import DownloadJsonCSV from 'vue-json-csv';
 
+function uniq(a, keepLatest = false) {
+  if (keepLatest) {
+    a.sort((a, b) => {
+      return a.modified_at > b.modified_at ? -1 : a.modified_at < b.modified_at ? 1 : 0;
+    });
+  }
+  let seen = new Set();
+  return a.filter(item => {
+    let k = item.id;
+    return seen.has(k) ? false : seen.add(k);
+  });
+}
+
+function uniqByKeepLatest(a) {
+  return uniq(a, true);
+}
+
+function isPublicDeal(deal) {
+  if (!deal.country || deal.country.high_income) return false;
+  if (!deal.datasources.length) return false;
+  // if (!deal.operating_company || deal.operating_company.is_actually_unknown) return false;
+  // TODO: The parent company unknown filter is still missing here;
+  return true;
+}
+
 export default {
   name: "CaseStatistics",
   components: {InvestorTable, DealTable, DownloadJsonCSV},
@@ -141,18 +166,16 @@ export default {
       selectedCountry: null,
       selectedRegion: null,
 
-      deals_added: [],
-      deals_updated: [],
-      deals_fully_updated: [],
+      deals: [],
       dealFields: [
         "country",
         "deal_size",
         "status",
         "draft_status",
         "confidential",
-        "operating_company",
         "created_at",
         "modified_at",
+        "fully_updated_at"
       ],
       investors: [],
       investorFields: [
@@ -188,90 +211,140 @@ export default {
     formFilled() {
       return this.selectedCountry || this.selectedRegion;
     },
+    filtered_deals() {
+      if (this.selectedCountry)
+        return this.deals.filter((d) => {
+          return d.country && d.country.id === this.selectedCountry.id;
+        });
+      if (this.selectedRegion && this.selectedRegion.id != -1)
+        return this.deals.filter((d) => {
+          return d.country && d.country.region.id === this.selectedRegion.id;
+        });
+      return this.deals;
+    },
+    public_deals() {
+
+    },
     deal_statistics() {
-      return [
+      let stats = [
         {
           name: "Deals added",
-          deals: this.deals_added,
-        },
-        {
-          name: "Deals updated",
-          deals: this.deals_updated,
-        },
-        {
-          name: "Deals Fully Updated",
-          deals: this.deals_fully_updated,
-        },
-        {
-          name: "Deals published",
-          deals: this.deals_updated.filter((d) => d.status === 2 || d.status === 3),
-        },
-        {
-          name: "Deals pending",
-          deals: this.deals_updated.filter((d) => d.draft_status !== null),
-        },
-        {
-          name: "Deals rejected",
-          deals: this.deals_updated.filter((d) => d.status === 5),
-        },
-        {
-          name: "Deals pending deletion",
-          deals: this.deals_updated.filter((d) => d.status === 6),
-        },
-        {
-          name: "Deals active, not public",
-          deals: this.deals_updated.filter((d) => {
-            // only consider deals that are "live/updated"
-            if (!(d.status === 2 || d.status === 3)) return false;
-
-            if (d.confidential) return true;
-            if (!d.country || d.country.high_income) return true;
-            if (!d.datasources) return true;
-            if (!d.operating_company || d.operating_company.is_actually_unknown)
-              return true;
-            // TODO: The parent company unknown filter is still missing here;
-            return false;
-          }),
-        },
-        {
-          name: "Deals active, not-public flag",
-          deals: this.deals_updated.filter((d) => {
-            // only consider deals that are "live/updated"
-            if (!(d.status === 2 || d.status === 3)) return false;
-            return !!d.confidential;
-          }),
-        },
-      ];
-    },
-    investor_statistics() {
-      return [
-        {
-          name: "Investors added",
-          investors: this.investors.filter((d) => d.status === 1),
-        },
-        {
-          name: "Investors updated",
-          investors: this.investors.filter((d) => d.status === 3),
-        },
-        {
-          name: "Investors published",
-          investors: this.investors.filter(
-            (d) => d.status === 2 || d.status === 3
+          deals: uniq(this.filtered_deals
+            .filter((d) => d.status === 1 && d.created_at == d.modified_at)
           ),
         },
         {
-          name: "Investors pending",
-          investors: this.investors.filter((d) => d.draft_status !== null),
+          name: "Deals updated",
+          deals: uniq(this.filtered_deals
+            .filter((d) => {
+              // not added deals
+              if (d.status === 1 && d.created_at == d.modified_at) return false;
+              // not deleted deals
+              if (d.status === 4) return false;
+              return true;
+            })
+          ),
+        },
+        {
+          name: "Deals Fully Updated",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => {
+                if (d.fully_updated_at) {
+                  let dateFU = dayjs(d.fully_updated_at);
+                  return this.daterange.start <= dateFU && dateFU <= this.daterange.end;
+                }
+                return false;
+              }
+            )
+        },
+        {
+          name: "Deals published",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
+        },
+        {
+          name: "Deals pending",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => d.draft_status !== null)
+        },
+        {
+          name: "Deals rejected",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => d.status === 5)
+        },
+        {
+          name: "Deals pending deletion",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => d.status === 6)
+        },
+        {
+          name: "Deals active, but not public",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => {
+              // only consider deals that are "live/updated"
+              if (!(d.status === 2 || d.status === 3)) return false;
+              if (d.confidential) return true;
+              if (!isPublicDeal(d)) return true;
+              return false;
+            })
+        },
+        {
+          name: "Deals active, but confidential",
+          deals: uniqByKeepLatest(this.filtered_deals)
+            .filter((d) => {
+              if (!(d.status === 2 || d.status === 3)) return false;
+              return !!d.confidential;
+            })
         },
       ];
+      for (let stat of stats) {
+        stat.value = stat.deals.length;
+      }
+      return stats;
+    },
+    investor_statistics() {
+      let stats = [
+        {
+          name: "Investors added",
+          investors: uniq(this.investors
+            .filter((d) => d.status === 1 && d.created_at == d.modified_at)
+          ),
+        },
+        {
+          name: "Investors updated",
+          investors: uniq(this.investors
+            .filter((d) => {
+              // not added deals
+              if (d.status === 1 && d.created_at == d.modified_at) return false;
+              // not deleted deals
+              if (d.status === 4) return false;
+              return true;
+            })
+          ),
+        },
+        {
+          name: "Investors published",
+          investors: uniqByKeepLatest(this.investors)
+            .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
+        },
+        {
+          name: "Investors pending",
+          investors: uniqByKeepLatest(this.investors)
+            .filter((d) => d.draft_status !== null)
+        },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.investors.length;
+      }
+      return stats;
     },
     allStatsCsv() {
       let allStats = {};
       for (var stats of this.deal_statistics) {
-        allStats[stats.name] = stats.deals.length;
+        allStats[stats.name] = stats.value;
       }
       for (var stats of this.investor_statistics) {
-        allStats[stats.name] = stats.investors.length;
+        allStats[stats.name] = stats.value;
       }
       return [allStats];
     },
@@ -314,76 +387,82 @@ export default {
       };
       this.updateStats();
     },
-    updateStats(triggerfield) {
-      if (triggerfield === "country") this.selectedRegion = null;
-      if (triggerfield === "region") this.selectedCountry = null;
 
+    updateStats() {
       if (!this.user) return;
-
       if (this.loading) return;
       this.loading = true;
-      const deal_gql_fields = `{
-           id
-           deal_size
-           fully_updated
-           status
-           draft_status
-           confidential
-           country { id name high_income region {id} }
-           datasources { id }
-           operating_company {name is_actually_unknown}
-           created_at
-           modified_at
-        }`;
-      const investor_gql_fields = `{
-          id
-          name
-          created_at
-          modified_at
-          status
-          draft_status
-          country { id name high_income region { id } }
-        }`;
+
       let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
       let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
-      let reg_con = "", reg_con_inv = "";
+
+      let filterByEditorLocation = '';
       if (this.selectedCountry) {
-        reg_con = `{field:"country.id",operation:EQ,value:"${this.selectedCountry.id}"}`;
+        filterByEditorLocation =
+          `{
+              field:"revision.user.userregionalinfo.country_id",
+              operation:EQ,
+              value:"${this.selectedCountry.id}"
+           },`
       }
       if (this.selectedRegion && this.selectedRegion.id != -1) {
-        reg_con = `{field:"country.fk_region_id",operation:EQ,value:"${this.selectedRegion.id}"}`;
+        filterByEditorLocation =
+          `{
+              field:"revision.user.userregionalinfo.region.id",
+              operation:EQ,
+              value:"${this.selectedRegion.id}"
+           },`
       }
 
       const query = `query {
-          deals_added: deals(limit: 0, filters: [
-            {field:"created_at",operation:GE,value:"${dr_start}"},
-            {field:"created_at",operation:LE,value:"${dr_end}"},
-            {field:"status",operation:IN,value:["1","2","3"]},
-            ${reg_con}
-            ]) ${deal_gql_fields}
-          deals_updated: deals(limit: 0, filters: [
-            {field:"modified_at",operation:GE,value:"${dr_start}"},
-            {field:"modified_at",operation:LE,value:"${dr_end}"},
-            {field:"status",operation:IN,value:["1","2","3"]},
-            ${reg_con}
-            ]) ${deal_gql_fields}
-          deals_fully_updated: deals(limit: 0, filters: [
-            {field:"fully_updated_at",operation:GE,value:"${dr_start}"},
-            {field:"fully_updated_at",operation:LE,value:"${dr_end}"},
-            ${reg_con}
-            ]) ${deal_gql_fields}
-          investors_data: investors(limit: 0, filters:[
-            ${reg_con}
-            ]) ${investor_gql_fields}
-        }`;
+        deals: dealversions(filters:[
+          {field:"revision.date_created",operation:GE,value:"${dr_start}"},
+          {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+        ])
+        {
+          deal  {
+            id
+            deal_size
+            fully_updated
+            fully_updated_at
+            status
+            draft_status
+            confidential
+            country { id name high_income region {id} }
+            datasources { id type name }
+            created_at
+            modified_at
+          }
+        }
+        investors: investorversions(filters:[
+          {field:"revision.date_created",operation:GE,value:"${dr_start}"},
+          {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+          ${filterByEditorLocation}
+        ])
+        {
+          investor {
+            id
+            name
+            country { id name }
+            status
+            draft_status
+            created_at
+            modified_at
+          }
+        }
+      }`;
+
 
       axios
         .post("/graphql/", {query})
         .then((response) => {
-          this.deals_added = response.data.data.deals_added || [];
-          this.deals_updated = response.data.data.deals_updated || [];
-          this.deals_fully_updated = response.data.data.deals_fully_updated || [];
-          this.investors = response.data.data.investors_data;
+          // this.deals_added = response.data.data.deals_added || [];
+          // this.deals_updated = response.data.data.deals_updated || [];
+          // this.deals_fully_updated = response.data.data.deals_fully_updated || [];
+          // this.investors_added = response.data.data.investors_added || [];
+          // this.investors_updated = response.data.data.investors_updated || [];
+          this.deals = response.data.data.deals.map((v) => v.deal) || [];
+          this.investors = response.data.data.investors.map((v) => v.investor) || [];
         })
         .finally(() => (this.loading = false));
     },
@@ -477,6 +556,7 @@ export default {
 .actions {
   margin-bottom: 1em;
   text-align: right;
+
   > div {
     display: inline-block;
   }

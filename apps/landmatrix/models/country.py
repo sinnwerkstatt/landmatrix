@@ -84,8 +84,12 @@ class Country(models.Model):
     def get_absolute_url(self):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
-    def to_dict(self):
-        return {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
+    def to_dict(self, deep=False):
+        dict = {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
+        if deep:
+            dict["high_income"] = self.high_income
+            dict["region"] = self.fk_region.to_dict()
+        return dict
 
 
 class Region(models.Model):

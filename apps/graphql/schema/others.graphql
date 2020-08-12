@@ -49,3 +49,11 @@ scalar Date
 scalar DateTime
 scalar GeoJSON
 scalar GeoPoint
+
+
+type Revision {
+    id: Int!
+    date_created: DateTime
+    user: User
+    comment: String
+}
