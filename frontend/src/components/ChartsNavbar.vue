@@ -25,30 +25,9 @@
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'global-map-of-investments' }">
-              Global map of investments
-            </router-link>
+            <a class="dropdown-item" href="/charts/produce-info/">Produce Info</a>
           </li>
 
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown2"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Special Interest
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-              <a class="dropdown-item" href="/charts/agricultural-drivers/">
-                Agricultural Drivers
-              </a>
-              <a class="dropdown-item" href="/charts/produce-info/">Produce Info</a>
-            </div>
-          </li>
         </ul>
       </div>
     </div>

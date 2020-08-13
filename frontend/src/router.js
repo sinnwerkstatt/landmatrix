@@ -13,7 +13,6 @@ import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
 
 import store from "/store";
-import GlobalMapOfInvestments from "/views/Charts/GlobalMapOfInvestments";
 import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import CaseStatistics from "/views/Manager/CaseStatistics";
 
@@ -80,11 +79,7 @@ const router = new Router({
           name: "web-of-transnational-deals",
           component: WebOfTransnationalDeals,
         },
-        {
-          path: "map-of-investments/",
-          name: "global-map-of-investments",
-          component: GlobalMapOfInvestments,
-        },
+
         {
           path: "dynamics/",
           name: "dynamics-overview",
