@@ -1153,6 +1153,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         return True
 
     def _has_no_known_investor(self) -> bool:
+        if not self.operating_company:
+            return True
         oc_unknown = self.operating_company.is_actually_unknown
         oc_has_no_known_parents = not (
             self.operating_company.investors.filter(
