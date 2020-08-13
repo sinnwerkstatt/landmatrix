@@ -13,7 +13,6 @@ import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
 
 import store from "/store";
-import ItsABigDeal from "/views/Charts/ItsABigDeal";
 import GlobalMapOfInvestments from "/views/Charts/GlobalMapOfInvestments";
 import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import CaseStatistics from "/views/Manager/CaseStatistics";
@@ -80,11 +79,6 @@ const router = new Router({
           path: "web-of-transnational-deals/",
           name: "web-of-transnational-deals",
           component: WebOfTransnationalDeals,
-        },
-        {
-          path: "perspective/",
-          name: "its-a-big-deal",
-          component: ItsABigDeal,
         },
         {
           path: "map-of-investments/",

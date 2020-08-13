@@ -29,11 +29,7 @@
               Global map of investments
             </router-link>
           </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'its-a-big-deal' }">
-              It's a big deal
-            </router-link>
-          </li>
+
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
