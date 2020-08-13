@@ -43,7 +43,7 @@
                           :options="regions"
                           label="name"
                           placeholder="Region"
-                          @input="selectedCountry=null"
+                          @input="updateStats('region')"
                         />
                       </div>
                       <div class="multiselect-div">
@@ -52,7 +52,7 @@
                           :options="countries"
                           label="name"
                           placeholder="Country"
-                          @input="selectedRegion=null"
+                          @input="updateStats('country')"
                         />
                       </div>
                     </div>
@@ -159,13 +159,13 @@
                 </div>
               </div>
               <ul>
-                <li># publicly visible deals (published, public filter ok, 'not public' not set)</li>
+                <li><b>{{ goal_statistics.deals_public_count }}</b> # publicly visible deals (published, public filter ok, 'not public' not set)</li>
                 <li># publicly visible deals, with default filter</li>
-                <li># deals with with multiple data sources</li>
+                <li><b>{{ goal_statistics.deals_public_multi_ds_count }}</b># deals with with multiple data sources</li>
                 <li># deals with with multiple data sources, with default filter</li>
-                <li># deals georeferenced with high accuracy*</li>
+                <li><b>{{ goal_statistics.deals_public_high_geo_accuracy }}</b># deals georeferenced with high accuracy*</li>
                 <li># deals georeferenced with high accuracy, with default filter</li>
-                <li># deals with polygon data</li>
+                <li><b>{{ goal_statistics.deals_public_polygons }}</b># deals with polygon data</li>
                 <li># deals with polygon data, with default filter</li>
               </ul>
               <p>* Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.</p>
@@ -251,6 +251,10 @@ export default {
         {name: "Last 180 days", value: 180},
         {name: "Last 365 days", value: 365},
       ],
+      goal_statistics: {
+        deals_public_count: 0,
+        deals_public_multi_ds_count: 0,
+      },
     };
   },
   computed: {
@@ -446,7 +450,10 @@ export default {
       this.updateStats();
     },
 
-    updateStats() {
+    updateStats(triggerfield) {
+      if (triggerfield === "country") this.selectedRegion = null;
+      if (triggerfield === "region") this.selectedCountry = null;
+
       if (!this.user) return;
       if (this.loading) return;
       this.loading = true;
@@ -508,6 +515,12 @@ export default {
             modified_at
           }
         }
+        statistics {
+          deals_public_count
+          deals_public_multi_ds_count
+          deals_public_high_geo_accuracy
+          deals_public_polygons
+        }
       }`;
 
 
@@ -521,6 +534,7 @@ export default {
           // this.investors_updated = response.data.data.investors_updated || [];
           this.deals = response.data.data.deals.map((v) => v.deal) || [];
           this.investors = response.data.data.investors.map((v) => v.investor) || [];
+          this.goal_statistics = response.data.data.statistics || {};
         })
         .finally(() => (this.loading = false));
     },

@@ -55,6 +55,8 @@ type Query {
     aggregations: Aggregations
 
     formfields(language: String ="en"): FormFieldSet
+
+    statistics: Statistics
 }
 
 type FormFieldSet {

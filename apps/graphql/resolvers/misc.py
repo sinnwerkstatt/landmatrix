@@ -1,8 +1,9 @@
 from typing import Any
 
+from django.db.models import Count, Q
 from graphql import GraphQLResolveInfo
 
-from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop
+from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop, Deal
 
 
 def resolve_countries(obj: Any, info: GraphQLResolveInfo):
@@ -34,3 +35,23 @@ def resolve_animals(obj: Any, info: GraphQLResolveInfo):
 
 def resolve_crops(obj: Any, info: GraphQLResolveInfo):
     return Crop.objects.all()
+
+
+def resolve_statistics(obj, info: GraphQLResolveInfo, country=None, region=None):
+    public_deals = Deal.objects.public()
+    q_has_at_least_one_polygon = Q(locations__areas__isnull=False)
+    return {
+        "deals_public_count": public_deals.count(),
+        "deals_public_multi_ds_count": public_deals.annotate(
+            ds_count=Count("datasources")
+        )
+        .filter(ds_count__gte=2)
+        .count(),
+        "deals_public_high_geo_accuracy": public_deals.filter(
+            Q(locations__level_of_accuracy__in=["EXACT_LOCATION", "COORDINATES"])
+            | q_has_at_least_one_polygon
+        ).count(),
+        "deals_public_polygons": public_deals.filter(
+            q_has_at_least_one_polygon
+        ).count(),
+    }
