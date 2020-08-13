@@ -128,9 +128,9 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             seen_investors = {self}
 
         investor_involvements = self.investors.filter(
-            investor__status__in=[self.STATUS_LIVE, self.STATUS_LIVE_AND_DRAFT],
-            venture__status__in=[self.STATUS_LIVE, self.STATUS_LIVE_AND_DRAFT],
-            role=InvestorVentureInvolvement.STAKEHOLDER_ROLE,
+            investor__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            venture__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            role="PARENT",
         ).exclude(investor__in=seen_investors)
 
         if not investor_involvements:

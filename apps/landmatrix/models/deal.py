@@ -957,6 +957,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     geojson = JSONField(blank=True, null=True)
+    # the following is a cache for Deal versions, to deduce if they were public or not
+    cached_has_no_known_investor = models.BooleanField(default=True)
 
     STATUS_CHOICES = (
         (1, _("Draft")),
@@ -998,6 +1000,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.current_implementation_status = self._get_current("implementation_status")
         self.deal_size = self._calculate_deal_size()
         self.geojson = self._combine_geojson()
+        self.cached_has_no_known_investor = self._has_no_known_investor()
         super().save(*args, **kwargs)
 
     def _get_current(self, attribute):
@@ -1144,14 +1147,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if not self.operating_company:
             raise self.IsNotPublic("No Operating Company")
         # 4A. Unknown operating company AND no known operating company parents
+
+        if self._has_no_known_investor():
+            raise self.IsNotPublic("No known investor")
+        return True
+
+    def _has_no_known_investor(self) -> bool:
+        oc_unknown = self.operating_company.is_actually_unknown
         oc_has_no_known_parents = not (
             self.operating_company.investors.filter(
                 investor__is_actually_unknown=False
             ).exists()
         )
-        if self.operating_company.is_actually_unknown and oc_has_no_known_parents:
-            raise self.IsNotPublic("No known investor")
-        return True
+        return oc_unknown and oc_has_no_known_parents
 
     # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
     #     attribute = self.__getattribute__(name)
