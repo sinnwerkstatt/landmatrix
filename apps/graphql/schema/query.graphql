@@ -56,7 +56,10 @@ type Query {
 
     formfields(language: String ="en"): FormFieldSet
 
-    statistics: Statistics
+    statistics(
+        country_id: Int,
+        region_id: Int
+    ): Statistics
 }
 
 type FormFieldSet {

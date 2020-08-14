@@ -142,7 +142,7 @@
                           :options="regions"
                           label="name"
                           placeholder="Region"
-                          @input="selectedCountry=null"
+                          @input="updateStats('region')"
                         />
                       </div>
                       <div class="multiselect-div">
@@ -151,24 +151,61 @@
                           :options="countries"
                           label="name"
                           placeholder="Country"
-                          @input="selectedRegion=null"
+                          @input="updateStats('country')"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <ul>
-                <li><b>{{ goal_statistics.deals_public_count }}</b> # publicly visible deals (published, public filter ok, 'not public' not set)</li>
-                <li># publicly visible deals, with default filter</li>
-                <li><b>{{ goal_statistics.deals_public_multi_ds_count }}</b># deals with with multiple data sources</li>
-                <li># deals with with multiple data sources, with default filter</li>
-                <li><b>{{ goal_statistics.deals_public_high_geo_accuracy }}</b># deals georeferenced with high accuracy*</li>
-                <li># deals georeferenced with high accuracy, with default filter</li>
-                <li><b>{{ goal_statistics.deals_public_polygons }}</b># deals with polygon data</li>
-                <li># deals with polygon data, with default filter</li>
-              </ul>
-              <p>* Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.</p>
+              <table class="goals">
+                <tr><th></th><th colspan="2">Public</th><th></th><th colspan="2">Globald default</th></tr>
+                <tr><td></td><td>Count</td><td>Ratio</td><td></td><td>Count</td><td>Ratio</td><td></td></tr>
+                <tr>
+                  <th class="label">
+                    Publicly visible deals<sup class="tiny">1</sup>
+                  </th>
+                  <td>{{ goal_statistics.deals_public_count }}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th class="label">
+                    Deals with with multiple data sources
+                  </th>
+                  <td>{{ goal_statistics.deals_public_multi_ds_count }}</td>
+                  <td>{{ percentRatio(goal_statistics.deals_public_multi_ds_count, goal_statistics.deals_public_count ) }}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th class="label">
+                    Deals georeferenced with high accuracy<sup class="tiny">2</sup>
+                  </th>
+                  <td>{{ goal_statistics.deals_public_high_geo_accuracy }}</td>
+                  <td>{{ percentRatio(goal_statistics.deals_public_high_geo_accuracy, goal_statistics.deals_public_count ) }}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th class="label">
+                    Deals with polygon data
+                  </th>
+                  <td>{{ goal_statistics.deals_public_polygons }}</td>
+                  <td>{{ percentRatio(goal_statistics.deals_public_polygons, goal_statistics.deals_public_count ) }}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </table>
+              <p class="small mt-3">
+                <sup>1</sup> Active deals with public filter ok, not confidential.<br />
+                <sup>2</sup> Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.
+              </p>
             </b-card-text>
           </b-tab>
         </b-tabs>
@@ -251,10 +288,7 @@ export default {
         {name: "Last 180 days", value: 180},
         {name: "Last 365 days", value: 365},
       ],
-      goal_statistics: {
-        deals_public_count: 0,
-        deals_public_multi_ds_count: 0,
-      },
+      goal_statistics: {},
     };
   },
   computed: {
@@ -461,8 +495,10 @@ export default {
       let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
       let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
 
+      let filterByDealLocation = '';
       let filterByEditorLocation = '';
       if (this.selectedCountry) {
+        filterByDealLocation = `(country_id:${this.selectedCountry.id})`;
         filterByEditorLocation =
           `{
               field:"revision.user.userregionalinfo.country_id",
@@ -471,6 +507,7 @@ export default {
            },`
       }
       if (this.selectedRegion && this.selectedRegion.id != -1) {
+        filterByDealLocation = `(region_id:${this.selectedRegion.id})`;
         filterByEditorLocation =
           `{
               field:"revision.user.userregionalinfo.region.id",
@@ -515,7 +552,7 @@ export default {
             modified_at
           }
         }
-        statistics {
+        statistics${filterByDealLocation} {
           deals_public_count
           deals_public_multi_ds_count
           deals_public_high_geo_accuracy
@@ -574,6 +611,13 @@ export default {
           modified_at: dayjs(investor.modified_at).format("YYYY-MM-DD"),
         };
       });
+    },
+    percentRatio(partialValue, totalValue) {
+      if (totalValue) {
+        let ratio = ((100 * partialValue) / totalValue).toFixed(1);
+        return `${ratio} %`;
+      }
+      return '';
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -642,6 +686,22 @@ export default {
   h2, h3 {
     margin-top: 0;
     margin-bottom: 0;
+  }
+}
+
+table.goals {
+  th,td {
+    padding: 0.3em;
+  }
+  th {
+    text-align: center;
+    white-space: nowrap;
+    &.label {
+      text-align: left;
+    }
+  }
+  td {
+    text-align: right;
   }
 }
 </style>
