@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    blablabla
+    Web of Transnational deals and Global map of investments together O_O
   </div>
 </template>
 

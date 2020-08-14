@@ -292,6 +292,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
 
     # Contract farming
+    # started implementing #113 . but not urgent, defering.
+    # YES_IN_PLANNING_NO_CHOICES = (
+    #     ("", _("Unknown")),
+    #     ("YES", _("Yes")),
+    #     ("IN_PLANNING", _("In Planning")),
+    #     ("NO", _("No")),
+    # )
+    # contract_farming = models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
     contract_farming = models.NullBooleanField()
 
     on_the_lease = models.NullBooleanField(_("On leased / purchased area"))
