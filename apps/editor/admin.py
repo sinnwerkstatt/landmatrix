@@ -14,9 +14,26 @@ class UserRegionalInfoInline(admin.StackedInline):
     fk_name = "user"
 
 
+def set_inactive(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+
+
+set_inactive.short_description = "Set selected users INACTIVE"
+
+
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "last_login",
+        "date_joined",
+    )
     inlines = (UserRegionalInfoInline,)
+    actions = [set_inactive]
 
 
 # Re-register UserAdmin
