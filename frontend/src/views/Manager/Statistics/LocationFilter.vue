@@ -8,7 +8,7 @@
           :options="regions"
           label="name"
           placeholder="Region"
-          @input="(value, id) => $emit('updateRegion', value)"
+          @input="(r) => $emit('updateRegion', r)"
         />
       </div>
       <div class="multiselect-div">
@@ -17,7 +17,7 @@
           :options="countries"
           label="name"
           placeholder="Country"
-          @input="(value, id) => $emit('updateCountry', value)"
+          @input="(c) => $emit('updateCountry', c)"
         />
       </div>
     </div>

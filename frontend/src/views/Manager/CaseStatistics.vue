@@ -8,10 +8,39 @@
         <b-tabs card>
           <b-tab active>
             <template v-slot:title>
-              <h2>Filtered Statistics</h2>
+              <h2>Current statistics</h2>
             </template>
             <b-card-text>
-              <div class="row my-5">
+              <div class="row my-3">
+                <div class="col-md-6">
+                  <LocationFilter :regions="regions" :countries="countries"
+                                  :selected-region="selectedRegion"
+                                  :selected-country="selectedCountry"
+                                  @updateRegion="updateRegion"
+                                  @updateCountry="updateCountry"
+                  ></LocationFilter>
+                </div>
+              </div>
+              <h3 class="mt-5">Quality Goals</h3>
+              <hr>
+              <GoalsTable :goal_statistics="goal_statistics"></GoalsTable>
+              <h3 class="mt-5">Indicator listings</h3>
+              <hr>
+              <StatisticsTable
+                :deal_statistics="current_deal_statistics"
+                :investor_statistics="current_investor_statistics"
+                :countries="countries"
+                :selected-region="selectedRegion"
+                :selected-country="selectedCountry"
+              ></StatisticsTable>
+            </b-card-text>
+          </b-tab>
+          <b-tab>
+            <template v-slot:title>
+              <h2>Changes whithin timespan</h2>
+            </template>
+            <b-card-text>
+              <div class="row my-3">
                 <div class="col-md-6">
                   <div class="data-filter form-group">
                     <label>Date range</label>
@@ -46,26 +75,10 @@
                 :deal_statistics="historic_deal_statistics"
                 :investor_statistics="historic_investor_statistics"
                 :countries="countries"
+                :selected-region="selectedRegion"
+                :selected-country="selectedCountry"
               >
               </StatisticsTable>
-            </b-card-text>
-          </b-tab>
-          <b-tab>
-            <template v-slot:title>
-              <h2>Goals</h2>
-            </template>
-            <b-card-text>
-              <div class="row my-5">
-                <div class="col-md-6">
-                  <LocationFilter :regions="regions" :countries="countries"
-                                  :selected-region="selectedRegion"
-                                  :selected-country="selectedCountry"
-                                  @updateRegion="updateRegion"
-                                  @updateCountry="updateCountry"
-                  ></LocationFilter>
-                </div>
-              </div>
-              <GoalsTable :goal_statistics="goal_statistics"></GoalsTable>
             </b-card-text>
           </b-tab>
         </b-tabs>
@@ -100,15 +113,37 @@ function uniqByKeepLatest(a) {
 }
 
 function isPublicDeal(deal) {
+  if (deal.confidential) return false;
   if (!deal.country || deal.country.high_income) return false;
-  if (!deal.datasources_count) return false;
-  if (deal.cached_has_no_known_investor) return false;
+  if (!deal.datasources.length) return false;
+  if (deal.has_no_known_investor) return false;
   return true;
 }
 
+const DEAL_QUERY_FIELDS = `id
+                deal_size
+                fully_updated
+                fully_updated_at
+                status
+                draft_status
+                confidential
+                country_id
+                created_at
+                modified_at
+`;
+
+const INVESTOR_QUERY_FIELDS = `id
+            name
+            country { id name }
+            status
+            draft_status
+            created_at
+            modified_at
+`;
+
 export default {
   name: "CaseStatistics",
-  components: {LocationFilter, GoalsTable, StatisticsTable },
+  components: {LocationFilter, GoalsTable, StatisticsTable},
   data: function () {
     return {
       loading: false,
@@ -121,6 +156,11 @@ export default {
       selectedRegion: null,
 
       historic_deals: [],
+      deals_pending: [],
+      deals_rejected: [],
+      deals_pending_deletion: [],
+      deals_active: [],
+
       dealFields: [
         "country",
         "deal_size",
@@ -131,7 +171,13 @@ export default {
         "modified_at",
         "fully_updated_at"
       ],
+
       historic_investors: [],
+      investors_pending: [],
+      investors_rejected: [],
+      investors_pending_deletion: [],
+      investors_active: [],
+
       selectedDateOption: 30,
       date_pre_options: [
         {name: "Last 30 days", value: 30},
@@ -192,39 +238,37 @@ export default {
           deals: uniqByKeepLatest(this.historic_deals)
             .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
         },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.deals.length;
+      }
+      return stats;
+    },
+    current_deal_statistics() {
+      let stats = [
         {
           name: "Deals pending",
-          deals: uniqByKeepLatest(this.historic_deals)
-            .filter((d) => d.draft_status !== null)
+          deals: this.deals_pending,
         },
         {
           name: "Deals rejected",
-          deals: uniqByKeepLatest(this.historic_deals)
-            .filter((d) => d.status === 5)
+          deals: this.deals_rejected,
         },
         {
           name: "Deals pending deletion",
-          deals: uniqByKeepLatest(this.historic_deals)
-            .filter((d) => d.status === 6)
+          deals: this.deals_pending_deletion,
+        },
+        {
+          name: "Deals active",
+          deals: this.deals_active,
         },
         {
           name: "Deals active, but not public",
-          deals: uniqByKeepLatest(this.historic_deals)
-            .filter((d) => {
-              // only consider deals that are "live/updated"
-              if (!(d.status === 2 || d.status === 3)) return false;
-              if (d.confidential) return true;
-              if (!isPublicDeal(d)) return true;
-              return false;
-            })
+          deals: this.deals_active.filter((d) => !isPublicDeal(d)),
         },
         {
           name: "Deals active, but confidential",
-          deals: uniqByKeepLatest(this.historic_deals)
-            .filter((d) => {
-              if (!(d.status === 2 || d.status === 3)) return false;
-              return !!d.confidential;
-            })
+          deals: this.deals_active.filter((d) => d.confidential),
         },
       ];
       for (let stat of stats) {
@@ -257,10 +301,29 @@ export default {
           investors: uniqByKeepLatest(this.historic_investors)
             .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
         },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.investors.length;
+      }
+      return stats;
+    },
+    current_investor_statistics() {
+      let stats = [
         {
           name: "Investors pending",
-          investors: uniqByKeepLatest(this.historic_investors)
-            .filter((d) => d.draft_status !== null)
+          investors: this.investors_pending,
+        },
+        {
+          name: "Investors rejected",
+          investors: this.investors_rejected,
+        },
+        {
+          name: "Investors pending deletion",
+          investors: this.investors_pending_deletion,
+        },
+        {
+          name: "Investors active",
+          investors: this.investors_active,
         },
       ];
       for (let stat of stats) {
@@ -286,12 +349,12 @@ export default {
     triggerUserRegion() {
       if (this.user.userregionalinfo) {
         let uri = this.user.userregionalinfo;
-        if (uri.region) {
-          this.selectedRegion = uri.region[0];
+        if (uri.region.length) {
+          this.selectedRegion = this.regions.find((r) => r.id == uri.region[0].id);
           this.updateStats();
         }
-        if (uri.country) {
-          this.selectedCountry = uri.country[0];
+        if (uri.country.length) {
+          this.selectedCountry = this.countries.find((c) => c.id == uri.country[0].id);
           this.updateStats();
         }
       }
@@ -303,7 +366,6 @@ export default {
       };
       this.updateStats();
     },
-
     updateStats(triggerfield) {
       if (triggerfield === "country") this.selectedRegion = null;
       if (triggerfield === "region") this.selectedCountry = null;
@@ -315,9 +377,16 @@ export default {
       let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
       let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
 
+      let filterLocation = '';
       let filterByDealLocation = '';
       let filterByEditorLocation = '';
       if (this.selectedCountry) {
+        filterLocation =
+          `{
+              field:"country.id",
+              operation:EQ,
+              value:"${this.selectedCountry.id}"
+           }`
         filterByDealLocation = `country_id:${this.selectedCountry.id}`;
         filterByEditorLocation =
           `{
@@ -327,6 +396,12 @@ export default {
            },`
       }
       if (this.selectedRegion && this.selectedRegion.id != -1) {
+        filterLocation =
+          `{
+              field:"country.fk_region.id",
+              operation:EQ,
+              value:"${this.selectedRegion.id}"
+           }`
         filterByDealLocation = `region_id:${this.selectedRegion.id}`;
         filterByEditorLocation =
           `{
@@ -347,18 +422,7 @@ export default {
         )
         {
           deal  {
-            id
-            deal_size
-            fully_updated
-            fully_updated_at
-            status
-            draft_status
-            confidential
-            country_id
-            datasources_count
-            cached_has_no_known_investor
-            created_at
-            modified_at
+            ${DEAL_QUERY_FIELDS}
           }
         }
         investors: investorversions(filters:[
@@ -369,13 +433,7 @@ export default {
         )
         {
           investor {
-            id
-            name
-            country { id name }
-            status
-            draft_status
-            created_at
-            modified_at
+            ${INVESTOR_QUERY_FIELDS}
           }
         }
         statistics${filterByDealLocationBracketed} {
@@ -383,6 +441,62 @@ export default {
           deals_public_multi_ds_count
           deals_public_high_geo_accuracy
           deals_public_polygons
+        }
+        deals_pending: deals(limit:0, filters:[
+          {field:"draft_status",operation:IN,value:["1","2","3"]},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_rejected: deals(limit:0, filters:[
+          {field:"status",operation:EQ,value:"5"},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_pending_deletion: deals(limit:0, filters:[
+          {field:"status",operation:EQ,value:"6"},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_active: deals(limit:0, filters:[
+          {field:"status",operation:IN,value:["2","3"]},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+          country {
+            id
+            high_income
+          }
+          datasources {
+            id
+          }
+          has_no_known_investor
+        }
+        investors_pending: investors(limit:0, filters:[
+          {field:"draft_status",operation:IN,value:["1","2","3"]},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_rejected: investors(limit:0, filters:[
+          {field:"status",operation:EQ,value:"5"},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_pending_deletion: investors(limit:0, filters:[
+          {field:"status",operation:EQ,value:"6"},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_active: investors(limit:0, filters:[
+          {field:"status",operation:IN,value:["2","3"]},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
         }
       }`;
 
@@ -398,43 +512,22 @@ export default {
           this.historic_deals = response.data.data.deals.map((v) => v.deal) || [];
           this.historic_investors = response.data.data.investors.map((v) => v.investor) || [];
           this.goal_statistics = response.data.data.statistics || {};
+          this.deals_pending = response.data.data.deals_pending || [];
+          this.deals_rejected = response.data.data.deals_rejected || [];
+          this.deals_pending_deletion = response.data.data.deals_pending_deletion || [];
+          this.deals_active = response.data.data.deals_active || [];
+          this.investors_pending = response.data.data.investors_pending || [];
+          this.investors_rejected = response.data.data.investors_rejected || [];
+          this.investors_pending_deletion = response.data.data.investors_pending_deletion || [];
+          this.investors_active = response.data.data.investors_active || [];
         })
         .finally(() => (this.loading = false));
     },
-    percentRatio(partialValue, totalValue) {
-      if (totalValue) {
-        let ratio = ((100 * partialValue) / totalValue).toFixed(1);
-        return `${ratio} %`;
-      }
-      return '';
-    }
   },
   beforeRouteEnter(to, from, next) {
     next();
   },
 };
-
-//   parseTopInvestors(deal) {
-//   if (!deal.top_investors) return "";
-//   return deal.top_investors
-//     .map((inv) => {
-//       return inv.name;
-//     })
-//     .join("<br>");
-// },
-// parseIntentionOfInvestment(deal) {
-//   if (!deal.intention_of_investment) return "";
-//   return deal.intention_of_investment
-//     .map((int) => {
-//       let intention = int.value;
-//       console.log(int);
-//       let slug = intention; //slugify(intention, { lower: true });
-//       return `<a href="/data/by-intention/${intention}/"
-//                 class="toggle-tooltip intention-icon ${slug}" title=""
-//                 data-original-title="${intention}"><span>${intention}</span></a>`;
-//     })
-//     .sort();
-// },
 </script>
 
 <style scoped lang="scss">
@@ -467,33 +560,16 @@ export default {
   }
 }
 
-.scroll-container {
-  overflow: scroll;
-}
-
 .nav-tabs {
   h2, h3 {
     margin-top: 0;
     margin-bottom: 0;
   }
 }
-
-table.goals {
-  th, td {
-    padding: 0.3em;
-  }
-
-  th {
-    text-align: center;
-    white-space: nowrap;
-
-    &.label {
-      text-align: left;
-    }
-  }
-
-  td {
-    text-align: right;
+.loadingscreen {
+  position: fixed;
+  .loader{
+    margin-top: calc(50vh - 100px);
   }
 }
 </style>

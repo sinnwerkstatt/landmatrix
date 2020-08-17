@@ -38,7 +38,7 @@ def resolve_crops(obj: Any, info: GraphQLResolveInfo):
 
 
 def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
-    public_deals = Deal.objects.public()
+    public_deals = Deal.objects.public().filter(status__in=(2, 3))
     if country_id:
         public_deals = public_deals.filter(country_id=country_id)
     if region_id:

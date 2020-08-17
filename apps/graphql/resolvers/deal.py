@@ -102,6 +102,11 @@ def get_deal_versions(obj, info: GraphQLResolveInfo):
     ]
 
 
+@deal_type.field("has_no_known_investor")
+def get_has_no_known_investor(obj, info: GraphQLResolveInfo):
+    return obj._has_no_known_investor()
+
+
 def _resolve_field_dict_fetch(field_dict, revision):
     field_dict["datasources_count"] = revision.version_set.filter(
         content_type__model="datasource"

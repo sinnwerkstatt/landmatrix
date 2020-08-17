@@ -1,8 +1,8 @@
 <template>
   <div class="goals-table">
     <table class="goals">
-      <tr><th></th><th colspan="2">Public</th><th></th><th colspan="2">Globald default</th></tr>
-      <tr><td></td><td>Count</td><td>Ratio</td><td></td><td>Count</td><td>Ratio</td><td></td></tr>
+      <!--<tr><th></th><th colspan="2">Public</th><th></th><th colspan="2">Globald default</th></tr>-->
+      <tr><td></td><th>Count</th><th>Ratio</th><td></td><td><!--Count--></td><td><!--Ratio--></td><td></td></tr>
       <tr>
         <th class="label">
           Publicly visible deals<sup class="tiny">1</sup>
@@ -82,6 +82,7 @@ table.goals {
   }
   td {
     text-align: right;
+    padding: 0.3em 1.5em;
   }
 }
 </style>

@@ -48,7 +48,7 @@
               <b-card-text>
                 <div class="actions">
                   <DownloadJsonCSV v-if="prepareInvestors(stats.investors).length" :data="prepareInvestors(stats.investors)"
-                    :name="`Indicator-List_${stats.name}.csv`">
+                                   :name="`Indicator-List_${stats.name}.csv`">
                     <a class="btn btn-outline-primary">Download investors as CSV</a>
                   </DownloadJsonCSV>
                 </div>
@@ -77,7 +77,13 @@ import dayjs from "dayjs";
 export default {
   name: "StatisticsTable",
   components: {InvestorTable, DealTable, DownloadJsonCSV},
-  props: ['deal_statistics', 'investor_statistics', 'countries'],
+  props: [
+    'deal_statistics',
+    'investor_statistics',
+    'countries',
+    'selectedRegion',
+    'selectedCountry',
+  ],
   data: function () {
     return {
       dealFields: [
@@ -89,7 +95,6 @@ export default {
         "created_at",
         "modified_at",
         "fully_updated_at",
-        "cached_has_no_known_investor"
       ],
       investorFields: [
         "name",
@@ -102,7 +107,7 @@ export default {
   },
   computed: {
     formFilled() {
-      return this.deals || this.investors;
+      return this.selectedRegion || this.selectedCountry;
     },
     allStatsCsv() {
       let allStats = {};
@@ -116,8 +121,6 @@ export default {
     },
     allStatsCsvFileName() {
       let filename = "Indicators_";
-      filename += dayjs(this.daterange.start).format('DD-MM-YYYY');
-      filename += "_" + dayjs(this.daterange.end).format('DD-MM-YYYY');
       if (this.selectedCountry) {
         filename += "_" + this.selectedCountry.slug;
       } else {
