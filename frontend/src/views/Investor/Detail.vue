@@ -9,10 +9,11 @@
       <div class="row">
         <div class="col">
           <Field
-            :formfield="formfield"
+            :fieldname="fieldname"
             :readonly="true"
-            v-model="investor[formfield.name]"
-            v-for="formfield in investor_fields.general_info.fields"
+            v-model="investor[fieldname]"
+            v-for="fieldname in fields"
+            model="investor"
           />
         </div>
         <div class="col" :class="{ loading_wrapper: !involvements.length }">
@@ -125,6 +126,12 @@
           country {
             name
           }
+          recognition_status
+          nature_of_deal
+          intention_of_investment
+          negotiation_status
+          implementation_status
+          deal_size
         }
         involvements(depth: $depth)
       }
@@ -149,14 +156,14 @@
     data() {
       return {
         investor: null,
-        fields: {
-          name: "Name",
-          country: "Country of registration/origin",
-          classification: "Classification",
-          homepage: "Homepage",
-          opencorporates: "Opencorporates link",
-          comment: "Comment",
-        },
+        fields: [
+          "name",
+          "country",
+          "classification",
+          "homepage",
+          "opencorporates",
+          "comment",
+        ],
       };
     },
     computed: {
@@ -187,7 +194,7 @@
         query: investor_query,
         variables: {
           investorID: +this.investor_id,
-          depth: 4,
+          depth: 3,
         },
       });
     },

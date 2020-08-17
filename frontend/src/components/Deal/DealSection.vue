@@ -1,17 +1,13 @@
 <template>
-  <b-tab :title="title" v-if="!readonly || any_field_at_all(sections)">
+  <b-tab :title="title">
     <div>
-      <div
-        v-for="section in sections"
-        class="panel-body"
-        v-if="!readonly || any_field_in_section(section)"
-      >
+      <div v-for="section in sections" class="panel-body">
         <h3>{{ section.name }}</h3>
         <Field
-          :formfield="formfield"
+          :fieldname="fieldname"
           :readonly="!!readonly"
-          v-model="deal[formfield.name]"
-          v-for="formfield in section.fields"
+          v-model="deal[fieldname]"
+          v-for="fieldname in section.fields"
         />
       </div>
     </div>

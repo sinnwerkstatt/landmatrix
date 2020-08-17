@@ -151,11 +151,13 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         return {
             "id": self.id,
             "name": self.name,
-            "status": self.status,
             "country": country,
             "classification": self.classification,
+            "homepage": self.homepage,
             "opencorporates": self.opencorporates,
             "comment": self.comment,
+            "status": self.status,
+            "draft_status": self.draft_status,
             "deals": list(
                 self.deals.public().values(
                     "id",
@@ -163,6 +165,8 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
                     "country__name",
                     "nature_of_deal",
                     "intention_of_investment",
+                    "intended_size",
+                    "contract_size",
                     "negotiation_status",
                     "implementation_status",
                     "deal_size",
@@ -211,9 +215,8 @@ class InvestorVentureInvolvement(
         ("DEBT_FINANCING", _("Debt financing")),
     )
     investment_type = ArrayField(
-        models.CharField(
-            _("Investment type"), max_length=100, choices=INVESTMENT_TYPE_CHOICES
-        ),
+        models.CharField(_("Investment type"), max_length=100),
+        choices=INVESTMENT_TYPE_CHOICES,
         blank=True,
         null=True,
     )

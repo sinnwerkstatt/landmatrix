@@ -9,7 +9,7 @@ from apps.landmatrix.forms.deal_submodels import (
     ContractForm,
     DataSourceForm,
 )
-from apps.landmatrix.forms.investor import InvestorForm
+from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
 
 
 def resolve_formfields(obj: Any, info: GraphQLResolveInfo, language="en"):
@@ -20,4 +20,5 @@ def resolve_formfields(obj: Any, info: GraphQLResolveInfo, language="en"):
             "contract": ContractForm().get_fields(),
             "datasource": DataSourceForm().get_fields(),
             "investor": InvestorForm().get_fields(),
+            "involvement": InvestorVentureInvolvementForm().get_fields(),
         }

@@ -1,4 +1,5 @@
 <template>
+  <div>
   <component
     :is="formfield.class"
     :formfield="formfield"
@@ -7,6 +8,7 @@
     :file_not_public="file_not_public"
     v-if="!readonly || custom_is_null(value)"
   />
+  </div>
 </template>
 
 <script>
@@ -25,9 +27,10 @@
   import PointField from "/components/Fields/PointField";
   import TextField from "/components/Fields/TextField";
   import URLField from "/components/Fields/TextField";
+  import { mapState } from "vuex";
   export default {
     name: "Field",
-    props: ["formfield", "value", "readonly", "file_not_public"],
+    props: ["fieldname", "model", "value", "readonly", "file_not_public"],
     components: {
       ArrayField,
       BooleanField,
@@ -44,6 +47,21 @@
       PointField,
       TextField,
       URLField,
+    },
+    computed: {
+      formfield(){
+        switch (this.model) {
+          case "contract": return this.formfields.contract[this.fieldname];
+          case "datasource": return this.formfields.datasource[this.fieldname];
+          case "location": return this.formfields.location[this.fieldname];
+          case "investor": return this.formfields.investor[this.fieldname];
+          case "involvement": return this.formfields.involvement[this.fieldname];
+          default: return this.formfields.deal[this.fieldname]
+        }
+      },
+      ...mapState({
+        formfields: (state) => state.formfields,
+      }),
     },
     methods: {
       custom_is_null(field) {

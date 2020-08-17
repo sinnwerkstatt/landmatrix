@@ -1,9 +1,10 @@
 <template>
   <DealSubmodelSection
     :title="title"
-    :submodel="deal.locations"
+    :entries="deal.locations"
     :fields="fields"
     :readonly="true"
+    model="location"
     :active="true"
   >
     <div class="col-lg-6 col-xs-12">

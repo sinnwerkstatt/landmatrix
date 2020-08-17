@@ -71,6 +71,7 @@ type FormFieldSet {
     contract: FormFields
     datasource: FormFields
     investor: FormFields
+    involvement: FormFields
 }
 
 scalar FormFields

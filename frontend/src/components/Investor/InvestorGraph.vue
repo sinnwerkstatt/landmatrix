@@ -1,31 +1,7 @@
 <template>
   <div v-if="investor.involvements.length">
-    <b-modal
-      id="investor-detail-modal"
-      :title="`${modalInfo.name} (#${modalInfo._id})`"
-    >
-      <p>{{ modalInfo.classification }}</p>
-      <p>{{ modalInfo.comment }}</p>
-      <p>{{ modalInfo.country && modalInfo.country.name }}</p>
-
-      <div v-if="modalInfo.involvement">
-        <h2>Involvement</h2>
-        {{ modalInfo.involvement }}
-      </div>
-      <template v-slot:modal-footer>
-        <div class="w-100">
-          <router-link
-            :to="modalInfo.link"
-            class="btn btn-primary investor-link float-right"
-            target="_blank"
-            v-slot="{ href }"
-            v-if="modalInfo.link"
-          >
-            <a :href="href">More details about this investor</a>
-          </router-link>
-        </div>
-      </template>
-    </b-modal>
+    <InvestorDetailInvestorModal v-model="showInvestorModal" :investor="modalData" />
+    <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
@@ -82,6 +58,9 @@
   import cytoscape from "cytoscape";
   import coseBilkent from "cytoscape-cose-bilkent";
   import { pick } from "lodash";
+  import { investor_color, primary_color } from "../../colors";
+  import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
+  import InvestorDetailDealModal from "./InvestorDetailDealModal";
 
   cytoscape.use(coseBilkent);
 
@@ -92,7 +71,6 @@
       name: "cose-bilkent",
       quality: "proof",
       nodeDimensionsIncludeLabels: true,
-      // padding: 50,
       animate: "end",
     },
     style: [
@@ -127,17 +105,38 @@
     ],
   };
 
-  const investor_fields = ["id", "name", "comment", "country", "classification"];
+  const investor_fields = [
+    "id",
+    "name",
+    "comment",
+    "country",
+    "classification",
+    "homepage",
+  ];
+  const involvement_fields = [
+    "role",
+    "investment_type",
+    "involvement_type",
+    "percentage",
+    "loans_amount",
+    "loans_currency",
+    "loans_date",
+    "parent_relation",
+    "comment",
+  ];
 
   export default {
+    components: { InvestorDetailDealModal, InvestorDetailInvestorModal },
     props: ["investor"],
     data() {
       return {
         depth: 1,
         maxDepth: 4,
-        modalInfo: {},
+        modalData: {},
         show_deals: true,
         network_fs: false,
+        showInvestorModal: false,
+        showDealModal: false,
       };
     },
     computed: {
@@ -146,8 +145,8 @@
           {
             data: {
               ...pick(this.investor, investor_fields),
-              _id: this.investor.id,
-              bgcolor: "#44b7b6",
+              bgcolor: investor_color,
+              rootNode: true,
             },
           },
         ];
@@ -171,8 +170,10 @@
       },
       add_rightclick_modal() {
         cy.nodes().on("cxttap", (e) => {
-          this.modalInfo = e.target.data();
-          this.$bvModal.show("investor-detail-modal");
+          this.modalData = e.target.data();
+          if (this.modalData.rootNode) return;
+          if (this.modalData.dealNode) this.showDealModal = true;
+          else this.showInvestorModal = true;
         });
       },
       build_graph(investor, elements, depth) {
@@ -180,13 +181,15 @@
 
         if (this.show_deals) {
           investor.deals.forEach((deal) => {
+            console.log(deal);
             let deal_node = {
               data: {
+                ...deal,
+                _id: deal.id,
                 id: "D" + deal.id,
                 name: "#" + deal.id,
-                _id: deal.id,
-                bgcolor: "#fc941f",
-                link: { name: "deal_detail", params: { deal_id: deal.id } },
+                bgcolor: primary_color,
+                dealNode: true,
               },
             };
             let deal_edge = {
@@ -194,7 +197,7 @@
                 id: `${investor.id}_D${deal.id}`,
                 source: investor.id,
                 target: "D" + deal.id,
-                edge_color: "#fc941f",
+                edge_color: primary_color,
               },
             };
 
@@ -208,12 +211,7 @@
           let investor_node = {
             data: {
               ...pick(involvement.investor, investor_fields),
-              _id: involvement.investor.id,
-              involvement: pick(involvement, ["role", "involvement_type"]),
-              link: {
-                name: "investor_detail",
-                params: { investor_id: involvement.investor.id },
-              },
+              involvement: pick(involvement, involvement_fields),
             },
           };
           let investor_edge = {

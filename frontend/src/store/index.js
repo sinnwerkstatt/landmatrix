@@ -13,6 +13,14 @@ const store = new Vuex.Store({
     deal: dealModule,
     investor: investorModule,
   },
+  state: {
+    formfields: {},
+  },
+  mutations: {
+    setFields(state, fields) {
+      state.formfields = fields;
+    },
+  },
   actions: {
     fetchBasicInfo(context) {
       let query = `{
@@ -34,14 +42,9 @@ const store = new Vuex.Store({
       });
     },
     fetchFields(context, language = "en") {
-      let query = `{ formfields(language:"${language}"){deal location contract datasource investor} }`;
+      let query = `{ formfields(language:"${language}"){deal location contract datasource investor involvement} }`;
       axios.post("/graphql/", { query }).then((response) => {
-        let fields = response.data.data.formfields;
-        fields.deal.location = fields.location.general_info;
-        fields.deal.contract = fields.contract.general_info;
-        fields.deal.datasource = fields.datasource.general_info;
-        context.commit("setDealFields", fields.deal);
-        context.commit("setInvestorFields", fields.investor);
+        context.commit("setFields", response.data.data.formfields);
       });
     },
     fetchMessages(context) {
