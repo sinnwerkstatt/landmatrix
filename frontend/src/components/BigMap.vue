@@ -73,6 +73,13 @@
             url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
           },
           {
+            name: "ThunderForest",
+            attribution:
+              'Maps &copy; <a href="http://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+            url:
+              "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
+          },
+          {
             name: "OpenStreetMap",
             attribution:
               '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
