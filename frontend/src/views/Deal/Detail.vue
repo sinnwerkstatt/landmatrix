@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="deal && deal_fields">
+  <div class="container" v-if="deal">
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
@@ -28,86 +28,87 @@
       :key="deal_id + deal_version"
     >
       <DealLocationSection
-        :title="deal_fields.location.label"
+        :title="`Locations`"
         :deal="deal"
-        :fields="deal_fields.location.fields"
+        :fields="deal_submodel_sections.location"
         :readonly="true"
       />
-
       <DealSection
-        :title="deal_fields.general_info.label"
+        :title="deal_sections.general_info.label"
         :deal="deal"
-        :sections="deal_fields.general_info.subsections"
+        :sections="deal_sections.general_info.subsections"
         :readonly="true"
       />
 
       <DealSubmodelSection
-        :title="deal_fields.contract.label"
-        :submodel="deal.contracts"
-        :fields="deal_fields.contract.fields"
+        :title="`Contracts`"
+        :entries="deal.contracts"
+        :fields="deal_submodel_sections.contract"
+        :readonly="true"
+        model="contract"
+      />
+
+      <DealSection
+        :title="deal_sections.employment.label"
+        :deal="deal"
+        :sections="deal_sections.employment.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.employment.label"
+        :title="deal_sections.investor_info.label"
         :deal="deal"
-        :sections="deal_fields.employment.subsections"
-        :readonly="true"
-      />
-
-      <DealSection
-        :title="deal_fields.investor_info.label"
-        :deal="deal"
-        :sections="deal_fields.investor_info.subsections"
+        :sections="deal_sections.investor_info.subsections"
         :readonly="true"
       />
 
       <DealSubmodelSection
-        :title="deal_fields.datasource.label"
-        :submodel="deal.datasources"
-        :fields="deal_fields.datasource.fields"
+        :title="`DataSources`"
+        :entries="deal.datasources"
+        :fields="deal_submodel_sections.datasource"
+        :readonly="true"
+        model="datasource"
+      />
+
+      <DealSection
+        :title="deal_sections.local_communities.label"
+        :deal="deal"
+        :sections="deal_sections.local_communities.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.local_communities.label"
+        :title="deal_sections.former_use.label"
         :deal="deal"
-        :sections="deal_fields.local_communities.subsections"
+        :sections="deal_sections.former_use.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.former_use.label"
+        :title="deal_sections.produce_info.label"
         :deal="deal"
-        :sections="deal_fields.former_use.subsections"
+        :sections="deal_sections.produce_info.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.produce_info.label"
+        :title="deal_sections.water.label"
         :deal="deal"
-        :sections="deal_fields.produce_info.subsections"
+        :sections="deal_sections.water.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.water.label"
+        :title="deal_sections.gender_related_info.label"
         :deal="deal"
-        :sections="deal_fields.water.subsections"
+        :sections="deal_sections.gender_related_info.subsections"
         :readonly="true"
       />
 
       <DealSection
-        :title="deal_fields.gender_related_info.label"
+        :title="deal_sections.guidelines_and_principles.label"
         :deal="deal"
-        :sections="deal_fields.gender_related_info.subsections"
-        :readonly="true"
-      />
-
-      <DealSection
-        :title="deal_fields.guidelines_and_principles.label"
-        :deal="deal"
-        :sections="deal_fields.guidelines_and_principles.subsections"
+        :sections="deal_sections.guidelines_and_principles.subsections"
         :readonly="true"
       />
 
@@ -127,10 +128,10 @@
 <script>
   import store from "/store";
   import DealSection from "/components/Deal/DealSection";
+  import DealHistory from "/components/Deal/DealHistory";
   import DealLocationSection from "/components/Deal/DealLocationsSection";
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
-  import { mapState } from "vuex";
-  import DealHistory from "../../components/Deal/DealHistory";
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
     props: ["deal_id", "deal_version"],
@@ -143,12 +144,11 @@
     data() {
       return {
         loading: false,
+        deal_sections,
+        deal_submodel_sections,
       };
     },
     computed: {
-      ...mapState({
-        deal_fields: (state) => state.deal.deal_fields,
-      }),
       deal() {
         return this.$store.state.deal.current_deal;
       },

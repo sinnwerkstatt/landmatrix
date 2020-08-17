@@ -5,7 +5,6 @@ export const dealModule = {
     deals: [],
     deals_uptodate: false,
     current_deal: null,
-    deal_fields: null,
   }),
   mutations: {
     setDeals(state, deals) {
@@ -19,9 +18,6 @@ export const dealModule = {
     },
     setCurrentDeal(state, deal) {
       state.current_deal = deal;
-    },
-    setDealFields(state, fields) {
-      state.deal_fields = fields;
     },
   },
   actions: {

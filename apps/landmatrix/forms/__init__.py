@@ -13,17 +13,16 @@ from .oldforms import (
 class VueForm:
     model: Model = None
     sections = {}
+    attributes = {}
 
     def __init__(self):
         self.modelfields = {f.name: f for f in self.model._meta.fields}
+        self._attributes = self.attributes
 
-    def _process_field(self, field):
-        fieldname = field if isinstance(field, str) else field["name"]
-        mfield = self.modelfields[fieldname]
+    def _process_field(self, mfield):
         vname = gettext(mfield.verbose_name)
 
         richfield = {
-            "name": fieldname,
             "label": vname[0].capitalize() + vname[1:],
             "class": mfield.__class__.__name__,
         }
@@ -40,31 +39,37 @@ class VueForm:
         if mfield.help_text:
             richfield["help_text"] = gettext(mfield.help_text)
 
-        if isinstance(field, dict):
-            richfield.update(field)
+        if mfield.name in list(self._attributes.keys()):
+            richfield.update(self._attributes[mfield.name])
         return richfield
 
     def get_fields(self):
-        retsections = {}
-        for sectionname, section in self.sections.items():
-            retsubsections = []
-            retfields = []
-            for field in section.get("fields", []):
-                retfields += [self._process_field(field)]
+        retfields = {}
+        for name, mfield in self.modelfields.items():
+            retfields[name] = self._process_field(mfield)
+        return retfields
 
-            for subsection in section.get("subsections", []):
-                subretfields = []
-                for field in subsection["fields"]:
-                    subretfields += [self._process_field(field)]
-
-                retsubsections += [
-                    {"name": gettext(subsection["name"]), "fields": subretfields}
-                ]
-
-            retsections[sectionname] = {"label": gettext(section["label"])}
-            if retsubsections:
-                retsections[sectionname]["subsections"] = retsubsections
-            if retfields:
-                retsections[sectionname]["fields"] = retfields
-
-        return retsections
+    # def get_sections(self):
+    #     retsections = {}
+    #     for sectionname, section in self.sections.items():
+    #         retsubsections = []
+    #         retfields = []
+    #         for field in section.get("fields", []):
+    #             retfields += [self._process_field(field)]
+    #
+    #         for subsection in section.get("subsections", []):
+    #             subretfields = []
+    #             for field in subsection["fields"]:
+    #                 subretfields += [self._process_field(field)]
+    #
+    #             retsubsections += [
+    #                 {"name": gettext(subsection["name"]), "fields": subretfields}
+    #             ]
+    #
+    #         retsections[sectionname] = {"label": gettext(section["label"])}
+    #         if retsubsections:
+    #             retsections[sectionname]["subsections"] = retsubsections
+    #         if retfields:
+    #             retsections[sectionname]["fields"] = retfields
+    #
+    #     return retsections
