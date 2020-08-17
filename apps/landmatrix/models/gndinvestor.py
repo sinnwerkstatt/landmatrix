@@ -215,9 +215,8 @@ class InvestorVentureInvolvement(
         ("DEBT_FINANCING", _("Debt financing")),
     )
     investment_type = ArrayField(
-        models.CharField(
-            _("Investment type"), max_length=100, choices=INVESTMENT_TYPE_CHOICES
-        ),
+        models.CharField(_("Investment type"), max_length=100),
+        choices=INVESTMENT_TYPE_CHOICES,
         blank=True,
         null=True,
     )

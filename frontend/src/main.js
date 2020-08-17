@@ -80,6 +80,7 @@ const i18n = new VueI18n({
   locale: LANGUAGE || "en",
   fallbackLocale: 'en',
   messages: messages,
+  silentTranslationWarn: true,
 })
 
 

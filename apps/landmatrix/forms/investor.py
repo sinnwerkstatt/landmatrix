@@ -8,3 +8,6 @@ class InvestorForm(VueForm):
 
 class InvestorVentureInvolvementForm(VueForm):
     model = InvestorVentureInvolvement
+    attributes = {
+        "involvement_type": {"class": "TextField", "label": "Involvement type"}
+    }

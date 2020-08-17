@@ -105,7 +105,25 @@
     ],
   };
 
-  const investor_fields = ["id", "name", "comment", "country", "classification", "homepage"];
+  const investor_fields = [
+    "id",
+    "name",
+    "comment",
+    "country",
+    "classification",
+    "homepage",
+  ];
+  const involvement_fields = [
+    "role",
+    "investment_type",
+    "involvement_type",
+    "percentage",
+    "loans_amount",
+    "loans_currency",
+    "loans_date",
+    "parent_relation",
+    "comment",
+  ];
 
   export default {
     components: { InvestorDetailDealModal, InvestorDetailInvestorModal },
@@ -193,7 +211,7 @@
           let investor_node = {
             data: {
               ...pick(involvement.investor, investor_fields),
-              involvement: pick(involvement, ["role", "involvement_type"]),
+              involvement: pick(involvement, involvement_fields),
             },
           };
           let investor_edge = {

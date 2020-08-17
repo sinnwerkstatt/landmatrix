@@ -1,6 +1,5 @@
 <template>
   <b-modal v-model="visible" :title="`${investor.name} (#${investor.id})`">
-xxx
     <Field
       :fieldname="fieldname"
       :readonly="true"
@@ -10,7 +9,7 @@ xxx
     />
 
     <div v-if="investor.involvement">
-      <h2>Involvement</h2>
+      <h3>Involvement</h3>
       <Field
         :fieldname="fieldname"
         :readonly="true"
@@ -18,7 +17,6 @@ xxx
         v-for="fieldname in involvement_fields"
         model="involvement"
       />
-      {{ investor.involvement }}
     </div>
     <template v-slot:modal-footer>
       <div class="w-100">
@@ -47,7 +45,17 @@ xxx
     data() {
       return {
         fields: ["classification", "country", "homepage", "comment"],
-        involvement_fields: ["role"],
+        involvement_fields: [
+          "role",
+          "investment_type",
+          // "involvement_type",
+          "percentage",
+          "loans_amount",
+          "loans_currency",
+          "loans_date",
+          "parent_relation",
+          "comment",
+        ],
       };
     },
     computed: {
