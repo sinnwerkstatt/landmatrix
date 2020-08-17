@@ -15,7 +15,10 @@ type Query {
         filters: [Filter]
     ): [Deal]
     dealversions(
-        filters: [Filter]
+        filters: [Filter],
+        country_id: Int,
+        region_id: Int,
+        at_date: Date
     ): [DealVersion]
 
 

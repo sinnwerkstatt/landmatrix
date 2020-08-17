@@ -66,7 +66,9 @@
           confidential: "Confidential",
           operating_company: "Operating company",
           created_at: "Created at",
-          modified_at: "Last modified at"
+          modified_at: "Last modified at",
+          fully_updated_at: "Fully updated at",
+          cached_has_no_known_investor: "Has no known investor"
         },
       };
     },

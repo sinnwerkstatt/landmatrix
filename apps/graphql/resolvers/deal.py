@@ -103,28 +103,30 @@ def get_deal_versions(obj, info: GraphQLResolveInfo):
 
 
 def _resolve_field_dict_fetch(field_dict, revision):
-    if "country_id" in field_dict and not field_dict["country_id"] is None:
-        try:
-            c = Country.objects.get(id=field_dict["country_id"])
-            field_dict["country"] = c.to_dict(deep=True)
-        except Country.DoesNotExist:
-            pass
-
-    field_dict["datasources"] = [
-        r._object_version.object
-        for r in revision.version_set.filter(content_type__model="datasource").order_by(
-            "id"
-        )
-    ]
+    field_dict["datasources_count"] = revision.version_set.filter(
+        content_type__model="datasource"
+    ).count()
 
     return field_dict
 
 
-def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
+def resolve_dealversions(
+    obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
+):
     qs = Version.objects.get_for_model(Deal)  # .filter(revision__date_created="")
     # qs = _resolve_deals_prefetching(info).order_by(sort)
+
     if filters:
         qs = qs.filter(**parse_filters(filters))
+
+    if country_id:
+        qs = filter((lambda v: v.field_dict["country_id"] == country_id), qs)
+
+    if region_id:
+        country_ids = Country.objects.filter(fk_region_id=region_id).values_list(
+            "id", flat=True
+        )
+        qs = filter((lambda v: v.field_dict["country_id"] in country_ids), qs)
 
     return [
         {

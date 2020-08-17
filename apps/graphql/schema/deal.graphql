@@ -200,6 +200,11 @@ type Deal {
     fully_updated_at: DateTime
 
     versions: [DealVersion]
+
+    # for statistics only
+    country_id: Int
+    datasources_count: Int
+    cached_has_no_known_investor: Boolean
 }
 
 
