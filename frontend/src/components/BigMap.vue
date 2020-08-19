@@ -2,28 +2,26 @@
   <div class="map-container" :style="mapContainerStyle">
     <l-map
       :options="mapOptions"
-      :center="center || [0, 0]"
+      :center="center"
       :bounds="bounds"
       id="bigMap"
       ref="bigMap"
       @ready="emitUp"
     >
-      <l-control-layers position="bottomright"></l-control-layers>
-      <!--      <l-control-zoom position="topright"></l-control-zoom>-->
-      <slot name="layers">
-        <l-tile-layer
-          v-for="tileProvider in tileProviders"
-          :key="tileProvider.name"
-          :name="tileProvider.name"
-          :visible="tileProvider.visible || false"
-          :url="tileProvider.url"
-          :attribution="tileProvider.attribution"
-          :maxZoom="tileProvider.maxZoom || 19"
-          layer-type="base"
-        />
-      </slot>
+      <l-tile-layer
+        v-for="tileProvider in tileLayers"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.name === visibleLayer"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        :maxZoom="tileProvider.maxZoom || 19"
+        layer-type="base"
+      />
+
       <slot></slot>
     </l-map>
+    <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />
     <slot name="overlay"></slot>
   </div>
 </template>
@@ -44,6 +42,8 @@
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
   L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
   import { Icon } from "leaflet";
+  import { mapState } from "vuex";
+  import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher";
 
   delete Icon.Default.prototype._getIconUrl;
   Icon.Default.mergeOptions({
@@ -56,13 +56,14 @@
   export default {
     name: "BigMap",
     components: {
+      BigMapStandaloneLayerSwitcher,
       LMap,
       LTileLayer,
       LControlLayers,
       LGeoJson,
       LControlZoom,
     },
-    props: ["center", "options", "bounds", "containerStyle"],
+    props: ["center", "options", "bounds", "containerStyle", "hideLayerSwitcher"],
     data() {
       return {
         tileProviders: [
@@ -116,6 +117,10 @@
       };
     },
     computed: {
+      ...mapState({
+        tileLayers: (state) => state.map.layers,
+        visibleLayer: (state) => state.map.visibleLayer,
+      }),
       mapOptions() {
         return {
           zoomSnap: 0.5,

@@ -6,22 +6,11 @@
           :options="bigmap_options"
           :containerStyle="{ 'max-height': '100%', height: '100%' }"
           @ready="pinTheMap"
+          :hideLayerSwitcher="true"
         >
           <template v-slot:overlay>
-            <FilterBar :deals="deals"></FilterBar>
-            <div class="scope-overlay" :class="{ collapsed: !showScopeOverlay }">
-              <div class="toggle-button">
-                <a href="#" @click.prevent="showScopeOverlay = !showScopeOverlay">
-                  <i
-                    class="fas"
-                    :class="[showScopeOverlay ? 'fa-chevron-left' : 'fa-chevron-right']"
-                  ></i>
-                </a>
-              </div>
-              <div class="overlay-content">
-                asdf
-              </div>
-            </div>
+            <FilterBar :deals="deals" :bigmap="bigmap"></FilterBar>
+            <ScopeBar></ScopeBar>
           </template>
         </big-map>
       </div>
@@ -34,18 +23,18 @@
   import gql from "graphql-tag";
   import "leaflet";
   import "leaflet.markercluster";
-  // import { PruneCluster, PruneClusterForLeaflet } from "prunecluster-exportable/dist";
   import { groupBy } from "lodash";
   import FilterBar from "../components/Map/FilterBar";
+  import ScopeBar from "../components/Map/ScopeBar";
 
   export default {
     name: "GlobalMap",
-    components: { FilterBar, BigMap },
+    components: { ScopeBar, FilterBar, BigMap },
     apollo: {
       deals: {
         query: gql`
-          query Deals($limit: Int!) {
-            deals(limit: $limit) {
+          query Deals($limit: Int!, $filters: [Filter]) {
+            deals(limit: $limit, filters: $filters) {
               id
               deal_size
               country {
@@ -66,18 +55,20 @@
             }
           }
         `,
-        variables: {
-          limit: 200,
+        variables() {
+          return {
+            limit: 200,
+            filters: this.filters,
+          };
         },
       },
     },
     data() {
       return {
         bigmap_options: { zoom: 2, zoomControl: false, gestureHandling: false },
-        showFilterOverlay: true,
-        showScopeOverlay: false,
         deals: [],
         bigmap: null,
+        filters: [{ field: "deal_size", operation: "GE", value: "200" }],
       };
     },
     watch: {
@@ -91,15 +82,6 @@
       pinTheMap(bigmap) {
         this.bigmap = bigmap;
         if (this.deals.length) this.setMarkers();
-        // // console.log(this.bigmap);
-        // var layers = [];
-        // this.bigmap.eachLayer(function (layer) {
-        //   // console.log(layer._url);
-        //   if (layer instanceof L.TileLayer)
-        //     // console.log(layer._url);
-        //     layers.push(layer);
-        // });
-        // console.log(layers);
       },
       setMarkers() {
         let markers = [];
@@ -132,35 +114,3 @@
     },
   };
 </script>
-
-<style lang="scss">
-  .scope-overlay {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.95);
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
-    display: flex;
-    .toggle-button {
-      position: absolute;
-      left: 10px;
-    }
-    .overlay-content {
-      width: 20vw;
-      max-width: 230px;
-      height: 100%;
-      overflow-y: auto;
-      padding: 0.5em;
-    }
-    &.collapsed {
-      width: 25px;
-      .toggle-button {
-        position: static;
-      }
-      .overlay-content {
-        display: none;
-      }
-    }
-  }
-</style>

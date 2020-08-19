@@ -10,69 +10,121 @@
     </div>
     <div class="overlay-content">
       <div>
-        <strong>Filter</strong>
-        <div>
-          <div>
-            <b-button block v-b-toggle.accordion-1>Region</b-button>
-            <b-collapse id="accordion-1" accordion="my-accordion" role="tabpanel">
-              <b-form-group>
-                <b-form-radio
-                  v-model="selectedRegion"
-                  name="regionRadio"
-                  :value="reg.id"
-                  v-for="reg in regions"
-                >
-                  {{ reg.name }}
-                </b-form-radio>
-              </b-form-group>
-            </b-collapse>
-          </div>
+        <strong>Filter ({{ deals.length }})</strong>
+        <FilterCollapse title="Region">
+          <b-form-group>
+            <b-form-radio
+              v-model="selectedRegion"
+              name="regionRadio"
+              :value="reg.id"
+              v-for="reg in regions"
+            >
+              {{ reg.name }}
+            </b-form-radio>
+          </b-form-group>
+        </FilterCollapse>
 
-          <div>
-            <b-button block v-b-toggle.accordion-2>Country</b-button>
-            <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
-              <b-form-group>
-                <multiselect
-                  v-model="selectedCountry"
-                  :options="countries"
-                  label="name"
-                  placeholder="Country"
-                />
-              </b-form-group>
-            </b-collapse>
+        <FilterCollapse title="Country">
+          <b-form-group>
+            <multiselect
+              v-model="selectedCountry"
+              :options="countries"
+              label="name"
+              placeholder="Country"
+            />
+          </b-form-group>
+        </FilterCollapse>
+        <FilterCollapse title="Deal size">
+          <div class="input-group">
+            <input
+              v-model="dealSizeMin"
+              type="text"
+              class="form-control"
+              placeholder="from"
+              aria-label="from"
+            />
+            <div class="input-group-append">
+              <span class="input-group-text">ha</span>
+            </div>
           </div>
+          <div class="input-group">
+            <input
+              type="text"
+              v-model="dealSizeMax"
+              class="form-control"
+              placeholder="to"
+              aria-label="to"
+            />
+            <div class="input-group-append">
+              <span class="input-group-text">ha</span>
+            </div>
+          </div>
+        </FilterCollapse>
 
-          <div>
-            <div>Deal size</div>
+        <FilterCollapse title="Negotiation status">
+          <div
+            v-for="negstat in ['Concluded', 'Intended', 'Failed']"
+            class="form-check"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              :value="negstat"
+              :id="negstat"
+              :checked="!negotiationStatus.indexOf(negstat)"
+            />
+            <label class="form-check-label" :for="negstat">
+              {{ negstat }}
+            </label>
           </div>
-          <div>
-            <div>Negotiation status</div>
-          </div>
-          <div>
-            <div>Investor</div>
-          </div>
-          <div>
-            <div>Year of initiation</div>
-          </div>
-          <div>
-            <div>Implementation status</div>
-          </div>
-          <div>
-            <div>Intention of Investment</div>
-          </div>
-          <div>
-            <div>Produce</div>
-          </div>
-        </div>
+        </FilterCollapse>
 
-        Deals: {{ deals.length }}
+        <FilterCollapse title="Investor">
+          <div>Investor</div>
+        </FilterCollapse>
+        <FilterCollapse title="Year of initiation">
+          <div></div>
+        </FilterCollapse>
+        <FilterCollapse title="Implementation status">
+          <div
+            v-for="negstat in [
+              'Project not started',
+              'Start-up phase',
+              'In Operation',
+              'Project abandoned',
+            ]"
+            class="form-check"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              :value="negstat"
+              :id="negstat"
+            />
+            <label class="form-check-label" :for="negstat">
+              {{ negstat }}
+            </label>
+          </div>
+        </FilterCollapse>
+        <FilterCollapse title="Intention of Investment">
+          <div></div>
+        </FilterCollapse>
+        <FilterCollapse title="Produce">
+          <div></div>
+        </FilterCollapse>
       </div>
       <div style="position: absolute; bottom: 0;">
         <h4>Map settings</h4>
-        Displayed data
-        <hr />
-        Layers
-        <hr />
+        <FilterCollapse title="Base layer">
+          <ul class="layer-list">
+            <li v-for="layer in tileLayers">
+              <div v-if="layer.name === visibleLayer">{{ layer.name }}</div>
+              <a v-else @click.prevent="$store.dispatch('setCurrentLayer', layer.name)">
+                {{ layer.name }}
+              </a>
+            </li>
+          </ul>
+        </FilterCollapse>
       </div>
     </div>
   </div>
@@ -80,15 +132,20 @@
 
 <script>
   import { mapState } from "vuex";
+  import FilterCollapse from "./FilterCollapse";
 
   export default {
     name: "FilterBar",
-    props: ["deals"],
+    components: { FilterCollapse },
+    props: ["deals", "bigmap"],
     data() {
       return {
         showFilterOverlay: true,
         selectedRegion: -1,
         selectedCountry: null,
+        dealSizeMin: 200,
+        dealSizeMax: null,
+        negotiationStatus: ["Concluded"],
       };
     },
     computed: {
@@ -102,23 +159,16 @@
           };
           return [world, ...state.page.regions];
         },
+        tileLayers: (state) => state.map.layers,
+        visibleLayer: (state) => state.map.visibleLayer,
       }),
     },
   };
 </script>
 
 <style lang="scss">
-  .divs {
-    font-size: 12px;
-  }
-  button.div {
-    padding-top: 2px;
-    padding-bottom: 3px;
-    padding-left: 4px;
-    padding-right: 5px;
+  @import "../../scss/colors";
 
-    font-size: 14px;
-  }
   .filter-overlay {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
@@ -146,6 +196,16 @@
       .overlay-content {
         display: none;
       }
+    }
+  }
+  ul.layer-list {
+    padding-left: 5px;
+    list-style: none;
+    div {
+      color: $primary;
+    }
+    a {
+      cursor: pointer;
     }
   }
 </style>

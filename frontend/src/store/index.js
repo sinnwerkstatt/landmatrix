@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import { pageModule } from "./page";
 import { dealModule } from "./deal";
 import { investorModule } from "./investor";
+import { mapModule } from "./map";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -12,6 +13,7 @@ const store = new Vuex.Store({
     page: pageModule,
     deal: dealModule,
     investor: investorModule,
+    map: mapModule,
   },
   state: {
     formfields: {},
