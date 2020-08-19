@@ -38,7 +38,17 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 def resolve_deals(
     obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, after=None
 ):
-    qs = _resolve_deals_prefetching(info).order_by(sort)
+    qs = Deal.objects.public().order_by(sort)
+    fields = get_fields(info)
+    if "country" in fields:
+        qs = qs.prefetch_related("country")
+    if "locations" in fields:
+        qs = qs.prefetch_related("locations")
+    if "contracts" in fields:
+        qs = qs.prefetch_related("contracts")
+    if "datasources" in fields:
+        qs = qs.prefetch_related("datasources")
+
     if filters:
         qs = qs.filter(**parse_filters(filters))
 

@@ -26,19 +26,19 @@ const router = new Router({
       path: "/data/",
       name: "deal_list",
       component: DealList,
-      beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { limit: 1000 });
-        next();
-      },
+      // beforeEnter(to, from, next) {
+      //   store.dispatch("fetchDeals", { limit: 1000 });
+      //   next();
+      // },
     },
     {
       path: "/map/",
       name: "map",
       component: GlobalMap,
-      beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { limit: 1000 });
-        next();
-      },
+      // beforeEnter(to, from, next) {
+      //   store.dispatch("fetchDeals", { limit: 1000 });
+      //   next();
+      // },
     },
     {
       path: "/deal/add/",

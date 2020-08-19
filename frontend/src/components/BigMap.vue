@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container mt-4" :style="mapContainerStyle">
+  <div class="map-container" :style="mapContainerStyle">
     <l-map
       :options="mapOptions"
       :center="center || [0, 0]"
@@ -9,7 +9,7 @@
       @ready="emitUp"
     >
       <l-control-layers position="bottomright"></l-control-layers>
-      <l-control-zoom position="topright"></l-control-zoom>
+      <!--      <l-control-zoom position="topright"></l-control-zoom>-->
       <slot name="layers">
         <l-tile-layer
           v-for="tileProvider in tileProviders"
@@ -68,12 +68,12 @@
         tileProviders: [
           {
             name: "Here",
-            visible: true,
             attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="http://developer.here.com">HERE</a>`,
             url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
           },
           {
             name: "ThunderForest",
+            visible: true,
             attribution:
               'Maps &copy; <a href="http://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
             url:
@@ -121,7 +121,7 @@
           zoomSnap: 0.5,
           minZoom: 1,
           zoom: 3,
-          zoomControl: false,
+          zoomControl: true,
           gestureHandling: true,
           ...this.options,
         };

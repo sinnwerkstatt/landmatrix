@@ -5,7 +5,7 @@ type Country {
     code_alpha2: String
     code_alpha3: String
     high_income: Boolean
-    region: Region
+    fk_region: Region
 }
 
 type Region {
