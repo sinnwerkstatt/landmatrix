@@ -175,7 +175,7 @@ export default {
 
 <style scoped lang="scss">
 .actions {
-  margin-bottom: 1em;
+  margin-bottom: -0.7em;
   text-align: right;
 
   > div {

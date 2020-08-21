@@ -21,7 +21,12 @@
                   ></LocationFilter>
                 </div>
               </div>
-              <h3 class="mt-5">Quality Goals</h3>
+              <div class="row">
+                <div class="col-3">
+                  <button class="btn btn-primary" @click="updateStats()">Update</button>
+                </div>
+              </div>
+              <h3 class="mt-5">Quality goals</h3>
               <hr>
               <GoalsTable :goal_statistics="goal_statistics"></GoalsTable>
               <h3 class="mt-5">Indicator listings</h3>
@@ -44,7 +49,7 @@
                 <div class="col-md-6">
                   <div class="data-filter form-group">
                     <label>Date range</label>
-                    <div class="input-group datepicker-div">
+                    <div class="input-group datepicker-div" >
                       <div class="input-group-prepend">
                         <select v-model="selectedDateOption" @change="updateDateRange($event)">
                           <option v-for="option in date_pre_options" :value="option.value">
@@ -56,7 +61,7 @@
                         mode="range"
                         v-model="daterange"
                         :max-date="new Date()"
-                        @input="updateStats"
+                        @input="selectedDateOption = null"
                         :input-props="{ style: 'width: 100%' }"
                       />
                     </div>
@@ -71,6 +76,12 @@
                   ></LocationFilter>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-3">
+                  <button class="btn btn-primary" @click="updateStats()">Update</button>
+                </div>
+              </div>
+              <div class="my-5"/>
               <StatisticsTable
                 :deal_statistics="historic_deal_statistics"
                 :investor_statistics="historic_investor_statistics"
@@ -340,11 +351,11 @@ export default {
   methods: {
     updateRegion(region) {
       this.selectedRegion = region;
-      this.updateStats("region");
+      this.selectedCountry = null;
     },
     updateCountry(country) {
       this.selectedCountry = country;
-      this.updateStats("country");
+      this.selectedRegion = null;
     },
     triggerUserRegion() {
       if (this.user.userregionalinfo) {
@@ -364,12 +375,8 @@ export default {
         start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
         end: new Date(),
       };
-      this.updateStats();
     },
-    updateStats(triggerfield) {
-      if (triggerfield === "country") this.selectedRegion = null;
-      if (triggerfield === "region") this.selectedCountry = null;
-
+    updateStats() {
       if (!this.user) return;
       if (this.loading) return;
       this.loading = true;
