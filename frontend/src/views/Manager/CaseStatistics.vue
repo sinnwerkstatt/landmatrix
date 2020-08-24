@@ -42,7 +42,7 @@
           </b-tab>
           <b-tab>
             <template v-slot:title>
-              <h2>Changes whithin timespan</h2>
+              <h2>Changes within timespan</h2>
             </template>
             <b-card-text>
               <div class="row my-3">
