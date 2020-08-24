@@ -190,8 +190,8 @@ class LinkedImageBlock(ExternalLinkMixin, StructBlock):
         context = super().get_context(value, parent_context)
         context["href"] = get_country_or_region_link(
             value.get("url"),
-            request=parent_context.get("request"),
-            page=parent_context.get("page"),
+            request=parent_context and parent_context.get("request"),
+            page=parent_context and parent_context.get("page"),
         )
         context["external"] = self._is_external_link(context["href"])
         image = value.get("image")
