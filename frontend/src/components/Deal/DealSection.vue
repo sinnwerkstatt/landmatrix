@@ -1,7 +1,7 @@
 <template>
-  <b-tab :title="title">
+  <b-tab :title="title" v-if="any_field_at_all(sections)">
     <div>
-      <div v-for="section in sections" class="panel-body">
+      <div v-for="section in sections" class="panel-body" v-if="any_field_in_section(section)">
         <h3>{{ section.name }}</h3>
         <Field
           :fieldname="fieldname"
@@ -31,7 +31,7 @@
       },
       any_field_in_section(section) {
         return !!section.fields.filter((field) => {
-          return this.custom_is_null(this.deal[field.name]);
+          return this.custom_is_null(this.deal[field]);
         }).length;
       },
       any_field_at_all(sections) {

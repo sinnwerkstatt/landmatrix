@@ -1,6 +1,6 @@
 <template>
   <div class="layerSwitcher" @mouseleave="shown = false">
-    <div class="layerSwitcherIcon">
+    <div class="layerSwitcherIcon" v-if="!shown">
       <i class="fas fa-layer-group" @mouseover="shown = true"></i>
     </div>
     <div class="layerSwitcherOptions">
