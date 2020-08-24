@@ -5,13 +5,10 @@ type Query {
 
     deal(id: Int!, version: Int): Deal!
     deals(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
-        "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
 
         after: Int,
-        "Filters are ANDed together"
         filters: [Filter]
     ): [Deal]
     dealversions(
@@ -24,25 +21,18 @@ type Query {
 
     locations(
         limit: Int = 300,
-        "Filters are ANDed together"
         filters: [Filter]
     ): [Location]
 
     investor(id: Int!): Investor!
     investors(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
-        "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
-        "Filters are ANDed together"
         filters: [Filter]
     ): [Investor]
     involvements(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
-        "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
-        "Filters are ANDed together"
         filters: [Filter]
     ): [Involvement]
     investorversions(

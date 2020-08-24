@@ -11,6 +11,7 @@
         />
       </div>
     </div>
+    <slot></slot>
   </b-tab>
 </template>
 

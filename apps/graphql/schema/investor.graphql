@@ -10,7 +10,7 @@ type Investor {
 
     #    ventures: [Involvement]
     #    investors: [Involvement]
-    involvements(depth: Int=10): InvolvementsNetwork
+    involvements(depth: Int=4, include_ventures: Boolean=true): InvolvementsNetwork
     deals: [Deal]
 
     status: Int

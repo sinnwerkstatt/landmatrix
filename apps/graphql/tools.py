@@ -8,7 +8,9 @@ def get_fields(info: GraphQLResolveInfo, recursive=False):
             if recursive:
                 fields += _recursive_fieldnode(selection)
             else:
-                fields += [selection.name.value]
+                sel = selection.name.value
+                if sel != "__typename":
+                    fields += [sel]
     return fields
 
 
@@ -17,9 +19,10 @@ def _recursive_fieldnode(fnode: FieldNode):
         sel_set = []
         for selection in fnode.selection_set.selections:
             sel_set += _recursive_fieldnode(selection)
-        return [f"{fnode.name.value}__{sel}" for sel in sel_set]
-    else:
+        return [f"{fnode.name.value}__{sel}" for sel in sel_set if sel != "__typename"]
+    elif fnode.name.value != "__typename":
         return [fnode.name.value]
+    return []
 
 
 filter_ops = {

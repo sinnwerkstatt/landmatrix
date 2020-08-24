@@ -35,7 +35,7 @@
     },
     computed: {
       deal() {
-        return this.$store.state.deal.current_deal;
+        return { }
       },
     },
     beforeRouteEnter(to, from, next) {
