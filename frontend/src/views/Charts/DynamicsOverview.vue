@@ -1,28 +1,17 @@
 <template>
-  <div class="">
-    <ul class="nav nav-pills nav-fill">
-      <li class="nav-item">
-        <a class="nav-link active" href="#">Intention of investment</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Negotiation status</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Implementation status</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Investment in Agriculture</a>
-      </li>
-    </ul>
-    <div style="height: 300px;">
-      <canvas id="myChart" ref="myChart" height="100%"></canvas>
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+        <h2 class="text-center mb-3">Implementation Status</h2>
+        <ImplementationStatusChart></ImplementationStatusChart>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
   import store from "/store";
-  import Chart from "chart.js";
+  import ImplementationStatusChart from "../../components/Charts/ImplementationStatusChart";
 
   let neg_status = [
     {
@@ -73,6 +62,7 @@
   ];
 
   export default {
+    components: { ImplementationStatusChart },
     data: function () {
       return {
         canvasCtx: null,
@@ -81,50 +71,50 @@
     },
     computed: {},
     mounted() {
-      this.canvasCtx = this.$refs.myChart.getContext("2d");
-      this.chart = new Chart(this.canvasCtx, {
-        type: "bar",
-        data: {
-          labels: neg_status.map((n) => {
-            return n.name;
-          }),
-          datasets: [
-            {
-              label: "deal size / ha",
-              backgroundColor: "#44b7b6",
-              data: neg_status.map((n) => {
-                return n.hectares;
-              }),
-              borderWidth: 1,
-            },
-            {
-              label: "deal count",
-              backgroundColor: "#fc941f",
-              yAxisID: "B",
-              data: neg_status.map((n) => {
-                return n.deals;
-              }),
-            },
-          ],
-        },
-        options: {
-          scales: {
-            yAxes: [
-              {
-                ticks: { beginAtZero: true },
-                id: "A",
-                type: "linear",
-                position: "left",
-              },
-              {
-                id: "B",
-                type: "linear",
-                position: "right",
-              },
-            ],
-          },
-        },
-      });
+      // this.canvasCtx = this.$refs.myChart.getContext("2d");
+      // this.chart = new Chart(this.canvasCtx, {
+      //   type: "bar",
+      //   data: {
+      //     labels: neg_status.map((n) => {
+      //       return n.name;
+      //     }),
+      //     datasets: [
+      //       {
+      //         label: "deal size / ha",
+      //         backgroundColor: "#44b7b6",
+      //         data: neg_status.map((n) => {
+      //           return n.hectares;
+      //         }),
+      //         borderWidth: 1,
+      //       },
+      //       {
+      //         label: "deal count",
+      //         backgroundColor: "#fc941f",
+      //         yAxisID: "B",
+      //         data: neg_status.map((n) => {
+      //           return n.deals;
+      //         }),
+      //       },
+      //     ],
+      //   },
+      //   options: {
+      //     scales: {
+      //       yAxes: [
+      //         {
+      //           ticks: { beginAtZero: true },
+      //           id: "A",
+      //           type: "linear",
+      //           position: "left",
+      //         },
+      //         {
+      //           id: "B",
+      //           type: "linear",
+      //           position: "right",
+      //         },
+      //       ],
+      //     },
+      //   },
+      // });
     },
     methods: {},
     beforeRouteEnter(to, from, next) {

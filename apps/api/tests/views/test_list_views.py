@@ -549,6 +549,7 @@ class ElasticSearchMixinTestCase(
 
 
 class ListViewsTestCase(ElasticSearchFixtureMixin, TestCase):
+    maxDiff = 5000
 
     act_fixtures = [
         {

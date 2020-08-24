@@ -195,9 +195,16 @@ type Deal {
     status_display: String
     draft_status: Int
     draft_status_display: String
-    timestamp: DateTime
+    created_at: DateTime
+    modified_at: DateTime
+    fully_updated_at: DateTime
 
     versions: [DealVersion]
+
+    # for statistics only
+    country_id: Int
+    datasources_count: Int
+    has_no_known_investor: Boolean
 }
 
 
@@ -211,7 +218,6 @@ type Location {
     #level_of_accuracy_display: String
     comment: String
     areas: GeoJSON
-    timestamp: DateTime
     deal: Deal
 }
 
@@ -222,7 +228,6 @@ type Contract {
     expiration_date: Date
     agreement_duration: Int
     comment: String
-    timestamp: DateTime
 }
 
 type DataSource {
@@ -241,7 +246,6 @@ type DataSource {
     includes_in_country_verified_information: Boolean
     open_land_contracts_id: String
     comment: String
-    timestamp: DateTime
 }
 
 type Actor {
@@ -259,13 +263,6 @@ type DealVersion {
     id: Int!
     deal: Deal
     revision: Revision
-}
-
-type Revision {
-    id: Int!
-    date_created: DateTime
-    user: User
-    comment: String
 }
 
 scalar Dict

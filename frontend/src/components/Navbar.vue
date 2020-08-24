@@ -1,9 +1,9 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">
-        <img src="../images/lm-logo.png" alt="Landmatrix Logo" />
-      </router-link>
+      <a class="navbar-brand" href="/">
+        <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
+      </a>
       <button
         class="navbar-toggler"
         type="button"
@@ -18,40 +18,58 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" to="/global/">Global</router-link>
+            <a class="nav-link" href="/global/">{{ $t("Global") }}</a>
           </li>
-          <navbar-select
-            title="Regions"
+          <NavbarSelect
+            :title="$t('Regions')"
             :options="regions"
             @select="openLink('region', $event)"
-          ></navbar-select>
-          <navbar-select
-            title="Countries"
+          />
+          <NavbarSelect
+            :title="$t('Countries')"
             :options="countries"
             @select="openLink('country', $event)"
-          ></navbar-select>
+          />
           <li class="nav-item">
-            <router-link class="nav-link" to="/stay-informed/" role="button">
-              <span class="nav-text">Stay informed</span>
-            </router-link>
+            <a class="nav-link" href="/stay-informed/">{{ $t("Stay informed") }}</a>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/get-involved/" role="button">
-              <span class="nav-text">Get involved</span>
-            </router-link>
+            <a class="nav-link" href="/get-involved/">{{ $t("Get involved") }}</a>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/faq/" role="button">
-              <span class="nav-text">FAQ</span>
-            </router-link>
+            <a class="nav-link" href="/faq/">{{ $t("FAQ") }}</a>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="languageDropdown"
+            >
+              <i class="fa fa-language" aria-hidden="true" style="display: inline;"></i>
+              {{ LANGUAGES[LANGUAGE] }}
+            </a>
+            <div class="dropdown-menu">
+              <a
+                v-for="(lingo, lcode) in LANGUAGES"
+                :href="`/language/${lcode}/`"
+                class="dropdown-item"
+                :class="{ active: lcode === LANGUAGE }"
+              >
+                {{ lingo }} ({{ lcode }})
+              </a>
+            </div>
+          </li>
           <li v-if="user" class="nav-item">
             <p class="navbar-text dropdown-header">
               {{ user.full_name }}
               <br />
-              <small>BOFH</small>
+              <small>{{ user_role }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">
@@ -78,19 +96,18 @@
               <a
                 v-if="user.is_impersonate"
                 class="dropdown-item"
-                href="/impersonate/stop/?next=/newdeal/dashboard/"
+                href="/impersonate/stop/?next=/dashboard/"
               >
-                Stop impersonation
+                {{ $t("Stop impersonation") }}
               </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <router-link class="dropdown-item" :to="{ name: 'dashboard' }">
-                Dashboard
-              </router-link>
-              <router-link class="dropdown-item" to="/manage/">Manage</router-link>
-              <router-link class="dropdown-item" :to="{ name: 'deal_add' }">
-                Add a deal
-              </router-link>
-              <a class="dropdown-item" @click.prevent="dispatchLogout">Logout</a>
+              <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
+              <a class="dropdown-item" href="/manage/">{{ $t("Manage") }}</a>
+              <a class="dropdown-item" href="/deal/add/">{{ $t("Add a deal") }}</a>
+              <a class="dropdown-item" href="/newdeal/case_statistics/">{{ $t("Case statistics") }}</a>
+              <a class="dropdown-item" @click.prevent="dispatchLogout">{{
+                $t("Logout")
+              }}</a>
             </div>
           </li>
           <li v-if="!user" class="nav-item dropdown">
@@ -136,17 +153,17 @@
                   @click.prevent="dispatchLogin"
                   class="btn btn-secondary"
                 >
-                  Login
+                  {{ $t("Login") }}
                 </button>
                 <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
               </form>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/accounts/register/"
-                >New around here? Sign up</a
-              >
-              <a class="dropdown-item" href="/accounts/password_reset/"
-                >Forgot password?</a
-              >
+              <a class="dropdown-item" href="/accounts/register/">{{
+                $t("New around here? Sign up")
+              }}</a>
+              <a class="dropdown-item" href="/accounts/password_reset/">{{
+                $t("Forgot password?")
+              }}</a>
             </div>
           </li>
         </ul>
@@ -164,6 +181,8 @@
         username: null,
         password: null,
         login_failed_message: "",
+        LANGUAGE: LANGUAGE,
+        LANGUAGES: { en: "English", es: "Español", fr: "Français" },
       };
     },
     computed: {
@@ -176,10 +195,37 @@
       countries() {
         return this.$store.state.page.countries;
       },
+      user_role() {
+        if (this.user && this.user.groups.length) {
+          let groupi = this.user.groups
+            .map((g) => g.name)
+            .filter((name) => {
+              return ["Administrators", "Editors", "Reporters"].indexOf(name) > -1;
+            });
+
+          if (groupi.length) {
+            let ret = "";
+            if (groupi.indexOf("Reporters") > -1) ret = "Reporter";
+            if (groupi.indexOf("Editors") > -1) ret = "Editor";
+            if (groupi.indexOf("Administrators") > -1) ret = "Administrator";
+            let uri = this.user.userregionalinfo;
+            if (uri) {
+              let area = uri.region.map((c) => c.name);
+              area = area.concat(uri.country.map((c) => c.name));
+              if (area.length) {
+                return `${ret} of ${area.join(", ")}`;
+              }
+            }
+            return ret;
+          }
+        }
+        return "No Role";
+      },
     },
     methods: {
       openLink(target_url, option) {
-        this.$router.push(`/${target_url}/${option.slug}/`);
+        window.location.href = `/${target_url}/${option.slug}/`;
+        // this.$router.push(`/${target_url}/${option.slug}/`);
       },
       dispatchLogout() {
         this.$store.dispatch("logout");

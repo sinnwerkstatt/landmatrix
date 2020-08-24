@@ -6,24 +6,16 @@ import store from "./store";
 import Multiselect from "vue-multiselect";
 import VCalendar from "v-calendar";
 import dayjs from "dayjs";
+import VueApollo from "vue-apollo";
+import { apolloClient } from "./apolloclient";
+import VueI18n from "vue-i18n";
+import { messages } from "./i18n.messages";
 
-import '@fortawesome/fontawesome-free/css/all.css'
-
-Vue.use(BootstrapVue);
+import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
-
-Vue.use(VCalendar);
-
-Vue.component("multiselect", Multiselect);
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import "leaflet/dist/leaflet.css";
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
-});
 import "leaflet-draw/dist/leaflet.draw.css";
 
 import "./scss/main.scss";
@@ -45,6 +37,14 @@ import LatestDatabaseModifications from "/components/Wagtail/LatestDatabaseModif
 import Statistics from "/components/Wagtail/Statistics";
 import SectionDivider from "/components/Wagtail/SectionDivider";
 import RawHTML from "/components/Wagtail/RawHTML";
+
+Vue.use(BootstrapVue);
+Vue.use(VCalendar);
+Vue.use(VueI18n);
+Vue.use(VueApollo);
+
+Vue.component("multiselect", Multiselect);
+
 Vue.component("wagtail-title", Title);
 Vue.component("wagtail-heading", Heading);
 Vue.component("wagtail-image", Image);
@@ -64,24 +64,32 @@ Vue.component("wagtail-latest_database_modifications", LatestDatabaseModificatio
 Vue.component("wagtail-statistics", Statistics);
 // Vue.component("wagtail-", );
 
-store.dispatch("fetchUser");
-store.dispatch("fetchCountriesAndRegions");
+store.dispatch("fetchBasicInfo");
 // This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
 store.dispatch("fetchWagtailRootPage");
+store.dispatch("fetchFields", LANGUAGE || "en");
+store.dispatch("fetchMessages");
 
-store.dispatch("fetchFields", "en");
-
-
-Vue.filter('defaultdate', function (value) {
-  return dayjs(value).format("YYYY-MM-DD HH:mm")
+Vue.filter("defaultdate", function (value) {
+  return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
+
+
+// Create VueI18n instance with options
+const i18n = new VueI18n({
+  locale: LANGUAGE || "en",
+  fallbackLocale: 'en',
+  messages: messages,
+  silentTranslationWarn: true,
+})
+
 
 export default new Vue({
   router,
   store,
+  i18n,
+  apolloProvider: new VueApollo({
+    defaultClient: apolloClient,
+  }),
   render: (h) => h(App),
 }).$mount("#app");
-
-if (module.hot) {
-  module.hot.accept()
-}

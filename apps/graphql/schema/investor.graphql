@@ -8,8 +8,8 @@ type Investor {
     opencorporates: String
     comment: String
 
-#    ventures: [Involvement]
-#    investors: [Involvement]
+    #    ventures: [Involvement]
+    #    investors: [Involvement]
     involvements(depth: Int=10): InvolvementsNetwork
     deals: [Deal]
 
@@ -17,7 +17,16 @@ type Investor {
     status_display: String
     draft_status: Int
     draft_status_display: String
-    timestamp: DateTime
+    created_at: DateTime
+    modified_at: DateTime
+
+    is_actually_unknown: Boolean
+}
+
+type InvestorVersion {
+    id: Int!
+    investor: Investor
+    revision: Revision
 }
 
 type Involvement {

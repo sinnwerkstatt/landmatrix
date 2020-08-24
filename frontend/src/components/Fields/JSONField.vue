@@ -1,13 +1,28 @@
 <template>
-  <div>
-    <div v-if="readonly">
-      <div v-for="val in vals" v-html="parseValues(val)"></div>
+  <div class="row">
+    <div class="col-md-3 font-weight-bold">
+      {{ formfield.label }}
+    </div>
+    <div class="col-md-9">
+      <div v-for="val in vals">
+        <span v-if="val.date">[{{ val.date }}] </span>
+        <span class="font-weight-bold" v-html="parseValues(val)"></span>
+        <span class="mx-2" v-if="val.hectares">
+          <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
+        </span>
+        <span class="mx-2" v-if="val.tons">
+          <i class="fas fa-weight-hanging"></i> {{ val.tons }} tons
+        </span>
+        <span class="mx-2" v-if="val.percent">
+          <i class="fas fa-plane-departure"></i> {{ val.percent }} %
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import {flatten_choices} from "/utils";
+  import { flatten_choices } from "/utils";
 
   export default {
     props: ["formfield", "value", "readonly"],
@@ -34,7 +49,7 @@
       },
       parseValues: function (value) {
         let ret = "";
-        if (value.date) ret += `<span class="date">[${value.date}]</span> `;
+        // if (value.date) ret += `<span class="date">[${value.date}]</span> `;
 
         let choices = flatten_choices(this.formfield.choices);
 

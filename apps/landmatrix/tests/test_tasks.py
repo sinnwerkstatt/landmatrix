@@ -1,7 +1,13 @@
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from apps.landmatrix.tasks import *
+from apps.landmatrix.tasks import (
+    es_save,
+    index_activity,
+    index_investor,
+    delete_historicalactivity,
+    delete_historicalinvestor,
+)
 
 
 class TasksTestCase(TestCase):

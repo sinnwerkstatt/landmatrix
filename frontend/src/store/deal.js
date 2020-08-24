@@ -5,7 +5,6 @@ export const dealModule = {
     deals: [],
     deals_uptodate: false,
     current_deal: null,
-    deal_fields: null,
   }),
   mutations: {
     setDeals(state, deals) {
@@ -19,9 +18,6 @@ export const dealModule = {
     },
     setCurrentDeal(state, deal) {
       state.current_deal = deal;
-    },
-    setDealFields(state, fields) {
-      state.deal_fields = fields;
     },
   },
   actions: {
@@ -68,7 +64,7 @@ export const dealModule = {
       //   : `id:${deal_id}`;
       // let version = deal_version?`(version:${deal_version})`:'';
       let query = `{
-        deal(${filter}) {
+      deal(${filter}) {
         id
         # General Info
         ## Land area
@@ -263,7 +259,9 @@ export const dealModule = {
             comment
           }
         }
-        }
+        status
+        draft_status
+      }
       }`;
 
       return new Promise(function (resolve, reject) {

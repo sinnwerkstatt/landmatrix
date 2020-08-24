@@ -1,450 +1,595 @@
 <template>
   <div class="container">
-    <div class="row my-5">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Date range</label>
-          <div class="input-group datepicker-div">
-            <div class="input-group-prepend">
-              <select v-model="selectedDateOption" @change="updateDateRange($event)">
-                <option v-for="option in date_pre_options" :value="option.value">
-                  {{ option.name }}
-                </option>
-              </select>
-            </div>
-            <v-date-picker
-              mode="range"
-              v-model="daterange"
-              :max-date="new Date()"
-              @input="updateStats"
-              :input-props="{ style: 'width: 100%' }"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Country/Region</label>
-          <div class="input-group">
-            <div class="multiselect-div">
-              <multiselect
-                v-model="selectedRegion"
-                :options="regions"
-                label="name"
-                placeholder="Region"
-                @input="selectedCountry = null"
-              />
-            </div>
-            <div class="multiselect-div">
-              <multiselect
-                v-model="selectedCountry"
-                :options="countries"
-                label="name"
-                placeholder="Country"
-                @input="selectedRegion = null"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="loadingscreen" v-if="loading">
+      <div class="loader"></div>
     </div>
-    <div class="number-of-deals">
-      <div class="loadingscreen" v-if="loading">
-        <div class="loader"></div>
-      </div>
-      <b-tabs>
-        <b-tab>
-          <template v-slot:title>
-            <h2 v-if="filtered_deals.length">{{ filtered_deals.length }} Deals</h2>
-            <h2 v-else>Deals</h2>
-          </template>
-
-          <b-tabs pills card vertical>
-            <b-tab v-for="(stats, i) in deal_statistics" :key="i">
-              <template v-slot:title>
-                <strong>{{ stats.deals.length }}</strong> {{ stats.name }}<br />
-              </template>
-              <b-card-text>
-                <DealTable
-                  :deals="prepareDeals(stats.deals)"
-                  :fields="dealFields"
-                  :pageSize="10"
-                />
-              </b-card-text>
-            </b-tab>
-          </b-tabs>
-        </b-tab>
-      </b-tabs>
+    <div>
+      <b-card no-body>
+        <b-tabs card>
+          <b-tab active>
+            <template v-slot:title>
+              <h2>Current statistics</h2>
+            </template>
+            <b-card-text>
+              <div class="row my-3">
+                <div class="col-md-6">
+                  <LocationFilter :regions="regions" :countries="countries"
+                                  :selected-region="selectedRegion"
+                                  :selected-country="selectedCountry"
+                                  @updateRegion="updateRegion"
+                                  @updateCountry="updateCountry"
+                  ></LocationFilter>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3">
+                  <button class="btn btn-primary" @click="updateStats()">Update</button>
+                </div>
+              </div>
+              <h3 class="mt-5">Quality goals</h3>
+              <hr>
+              <GoalsTable :goal_statistics="goal_statistics"></GoalsTable>
+              <h3 class="mt-5">Indicator listings</h3>
+              <hr>
+              <StatisticsTable
+                :deal_statistics="current_deal_statistics"
+                :investor_statistics="current_investor_statistics"
+                :countries="countries"
+                :selected-region="selectedRegion"
+                :selected-country="selectedCountry"
+              ></StatisticsTable>
+            </b-card-text>
+          </b-tab>
+          <b-tab>
+            <template v-slot:title>
+              <h2>Changes whithin timespan</h2>
+            </template>
+            <b-card-text>
+              <div class="row my-3">
+                <div class="col-md-6">
+                  <div class="data-filter form-group">
+                    <label>Date range</label>
+                    <div class="input-group datepicker-div" >
+                      <div class="input-group-prepend">
+                        <select v-model="selectedDateOption" @change="updateDateRange($event)">
+                          <option v-for="option in date_pre_options" :value="option.value">
+                            {{ option.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <v-date-picker
+                        mode="range"
+                        v-model="daterange"
+                        :max-date="new Date()"
+                        @input="selectedDateOption = null"
+                        :input-props="{ style: 'width: 100%' }"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <LocationFilter :regions="regions" :countries="countries"
+                                  :selected-region="selectedRegion"
+                                  :selected-country="selectedCountry"
+                                  @updateRegion="updateRegion"
+                                  @updateCountry="updateCountry"
+                  ></LocationFilter>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3">
+                  <button class="btn btn-primary" @click="updateStats()">Update</button>
+                </div>
+              </div>
+              <div class="my-5"/>
+              <StatisticsTable
+                :deal_statistics="historic_deal_statistics"
+                :investor_statistics="historic_investor_statistics"
+                :countries="countries"
+                :selected-region="selectedRegion"
+                :selected-country="selectedCountry"
+              >
+              </StatisticsTable>
+            </b-card-text>
+          </b-tab>
+        </b-tabs>
+      </b-card>
     </div>
   </div>
 </template>
 
 <script>
-  import axios from "axios";
-  import dayjs from "dayjs";
-  import DealTable from "/components/Deal/DealTable";
-  import { mapState } from "vuex";
-  import InvestorTable from "/components/Investor/InvestorTable";
+import axios from "axios";
+import dayjs from "dayjs";
+import {mapState} from "vuex";
+import StatisticsTable from "./Statistics/StatisticsTable.vue";
+import GoalsTable from "./Statistics/GoalsTable.vue";
+import LocationFilter from "./Statistics/LocationFilter.vue";
 
-  export default {
-    components: { InvestorTable, DealTable },
-    data: function () {
-      return {
-        loading: true,
-        today: dayjs().format("YYYY/MM/DD"),
-        daterange: {
-          start: dayjs().subtract(30, "day").toDate(),
-          end: new Date(),
+function uniq(a, keepLatest = false) {
+  if (keepLatest) {
+    a.sort((a, b) => {
+      return a.modified_at > b.modified_at ? -1 : a.modified_at < b.modified_at ? 1 : 0;
+    });
+  }
+  let seen = new Set();
+  return a.filter(item => {
+    let k = item.id;
+    return seen.has(k) ? false : seen.add(k);
+  });
+}
+
+function uniqByKeepLatest(a) {
+  return uniq(a, true);
+}
+
+function isPublicDeal(deal) {
+  if (deal.confidential) return false;
+  if (!deal.country || deal.country.high_income) return false;
+  if (!deal.datasources.length) return false;
+  if (deal.has_no_known_investor) return false;
+  return true;
+}
+
+const DEAL_QUERY_FIELDS = `id
+                deal_size
+                fully_updated
+                fully_updated_at
+                status
+                draft_status
+                confidential
+                country_id
+                created_at
+                modified_at
+`;
+
+const INVESTOR_QUERY_FIELDS = `id
+            name
+            country { id name }
+            status
+            draft_status
+            created_at
+            modified_at
+`;
+
+export default {
+  name: "CaseStatistics",
+  components: {LocationFilter, GoalsTable, StatisticsTable},
+  data: function () {
+    return {
+      loading: false,
+      today: dayjs().format("YYYY/MM/DD"),
+      daterange: {
+        start: dayjs().subtract(30, "day").toDate(),
+        end: new Date(),
+      },
+      selectedCountry: null,
+      selectedRegion: null,
+
+      historic_deals: [],
+      deals_pending: [],
+      deals_rejected: [],
+      deals_pending_deletion: [],
+      deals_active: [],
+
+      dealFields: [
+        "country",
+        "deal_size",
+        "status",
+        "draft_status",
+        "confidential",
+        "created_at",
+        "modified_at",
+        "fully_updated_at"
+      ],
+
+      historic_investors: [],
+      investors_pending: [],
+      investors_rejected: [],
+      investors_pending_deletion: [],
+      investors_active: [],
+
+      selectedDateOption: 30,
+      date_pre_options: [
+        {name: "Last 30 days", value: 30},
+        {name: "Last 60 days", value: 60},
+        {name: "Last 180 days", value: 180},
+        {name: "Last 365 days", value: 365},
+      ],
+      goal_statistics: {},
+    };
+  },
+  computed: {
+    ...mapState({
+      regions: (state) => {
+        let world = {
+          id: -1,
+          name: "World",
+          slug: "world"
+        }
+        return state.page.regions.concat([world]);
+      },
+      countries: (state) => state.page.countries,
+      user: (state) => state.page.user,
+    }),
+    historic_deal_statistics() {
+      let stats = [
+        {
+          name: "Deals added",
+          deals: uniq(this.historic_deals
+            .filter((d) => d.status === 1 && d.created_at == d.modified_at)
+          ),
         },
-        selectedCountry: null,
-        selectedRegion: null,
-
-        deals: [],
-        dealFields: [
-          "deal_size",
-          "status",
-          "draft_status",
-          "confidential",
-          "country",
-          "operating_company",
-          "timestamp",
-        ],
-        investorFields: ["name", "status"],
-        investors: [],
-
-        selectedDateOption: 30,
-        date_pre_options: [
-          { name: "Last 30 days", value: 30 },
-          { name: "Last 60 days", value: 60 },
-          { name: "Last 180 days", value: 180 },
-          { name: "Last 365 days", value: 365 },
-        ],
+        {
+          name: "Deals updated",
+          deals: uniq(this.historic_deals
+            .filter((d) => {
+              // not added deals
+              if (d.status === 1 && d.created_at == d.modified_at) return false;
+              // not deleted deals
+              if (d.status === 4) return false;
+              return true;
+            })
+          ),
+        },
+        {
+          name: "Deals Fully Updated",
+          deals: uniqByKeepLatest(this.historic_deals)
+            .filter((d) => {
+                if (d.fully_updated_at) {
+                  let dateFU = dayjs(d.fully_updated_at);
+                  return this.daterange.start <= dateFU && dateFU <= this.daterange.end;
+                }
+                return false;
+              }
+            )
+        },
+        {
+          name: "Deals published",
+          deals: uniqByKeepLatest(this.historic_deals)
+            .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
+        },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.deals.length;
+      }
+      return stats;
+    },
+    current_deal_statistics() {
+      let stats = [
+        {
+          name: "Deals pending",
+          deals: this.deals_pending,
+        },
+        {
+          name: "Deals rejected",
+          deals: this.deals_rejected,
+        },
+        {
+          name: "Deals pending deletion",
+          deals: this.deals_pending_deletion,
+        },
+        {
+          name: "Deals active",
+          deals: this.deals_active,
+        },
+        {
+          name: "Deals active, but not public",
+          deals: this.deals_active.filter((d) => !isPublicDeal(d)),
+        },
+        {
+          name: "Deals active, but confidential",
+          deals: this.deals_active.filter((d) => d.confidential),
+        },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.deals.length;
+      }
+      return stats;
+    },
+    historic_investor_statistics() {
+      let stats = [
+        {
+          name: "Investors added",
+          investors: uniq(this.historic_investors
+            .filter((d) => d.status === 1 && d.created_at == d.modified_at)
+          ),
+        },
+        {
+          name: "Investors updated",
+          investors: uniq(this.historic_investors
+            .filter((d) => {
+              // not added deals
+              if (d.status === 1 && d.created_at == d.modified_at) return false;
+              // not deleted deals
+              if (d.status === 4) return false;
+              return true;
+            })
+          ),
+        },
+        {
+          name: "Investors published",
+          investors: uniqByKeepLatest(this.historic_investors)
+            .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
+        },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.investors.length;
+      }
+      return stats;
+    },
+    current_investor_statistics() {
+      let stats = [
+        {
+          name: "Investors pending",
+          investors: this.investors_pending,
+        },
+        {
+          name: "Investors rejected",
+          investors: this.investors_rejected,
+        },
+        {
+          name: "Investors pending deletion",
+          investors: this.investors_pending_deletion,
+        },
+        {
+          name: "Investors active",
+          investors: this.investors_active,
+        },
+      ];
+      for (let stat of stats) {
+        stat.value = stat.investors.length;
+      }
+      return stats;
+    },
+  },
+  watch: {
+    user() {
+      this.triggerUserRegion();
+    },
+  },
+  methods: {
+    updateRegion(region) {
+      this.selectedRegion = region;
+      this.selectedCountry = null;
+    },
+    updateCountry(country) {
+      this.selectedCountry = country;
+      this.selectedRegion = null;
+    },
+    triggerUserRegion() {
+      if (this.user.userregionalinfo) {
+        let uri = this.user.userregionalinfo;
+        if (uri.region.length) {
+          this.selectedRegion = this.regions.find((r) => r.id == uri.region[0].id);
+          this.updateStats();
+        }
+        if (uri.country.length) {
+          this.selectedCountry = this.countries.find((c) => c.id == uri.country[0].id);
+          this.updateStats();
+        }
+      }
+    },
+    updateDateRange() {
+      this.daterange = {
+        start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
+        end: new Date(),
       };
     },
-    computed: {
-      ...mapState({
-        regions: (state) => state.page.regions,
-        countries: (state) => state.page.countries,
-        user: (state) => state.page.user,
-      }),
-      filtered_deals() {
-        if (this.selectedCountry)
-          return this.deals.filter((d) => {
-            return d.country && d.country.id === this.selectedCountry.id;
-          });
-        if (this.selectedRegion)
-          return this.deals.filter((d) => {
-            return d.country && d.country.region.id === this.selectedRegion.id;
-          });
-        return this.deals;
-      },
-      deal_statistics() {
-        return [
-          {
-            name: "Deals added",
-            deals: this.filtered_deals.filter((d) => d.status === 2),
-          },
-          {
-            name: "Deals updated",
-            deals: this.filtered_deals.filter((d) => d.status === 3),
-          },
-          {
-            name: "Deals published",
-            deals: this.filtered_deals.filter((d) => d.status === 2 || d.status === 3),
-          },
-          {
-            name: "Deals pending",
-            deals: this.filtered_deals.filter((d) => d.draft_status !== null),
-          },
-          {
-            name: "Deals rejected",
-            deals: this.filtered_deals.filter((d) => d.status === 5),
-          },
-          {
-            name: "Deals pending deletion",
-            deals: this.filtered_deals.filter((d) => d.status === 6),
-          },
-          {
-            name: "Deals active, not public",
-            deals: this.filtered_deals.filter((d) => {
-              // only consider deals that are "live/updated"
-              if (!(d.status === 2 || d.status === 3)) return false;
+    updateStats() {
+      if (!this.user) return;
+      if (this.loading) return;
+      this.loading = true;
 
-              if (d.confidential) return true;
-              if (!d.country || d.country.high_income) return true;
-              if (!d.datasources) return true;
-              if (!d.operating_company || d.operating_company.name === "") return true;
-              // TODO: The parent company unknown filter is still missing here;
-              return false;
-            }),
-          },
-          {
-            name: "Deals active, not-public flag",
-            deals: this.filtered_deals.filter((d) => {
-              // only consider deals that are "live/updated"
-              if (!(d.status === 2 || d.status === 3)) return false;
-              return !!d.confidential;
-            }),
-          },
-        ];
-      },
-      filtered_investors() {
-        if (this.selectedCountry)
-          return this.investors.filter((d) => {
-            return d.country && d.country.id === this.selectedCountry.id;
-          });
-        if (this.selectedRegion)
-          return this.investors.filter((d) => {
-            return d.country && d.country.region.id === this.selectedRegion.id;
-          });
-        return this.investors;
-      },
-      investor_statistics() {
-        return [
-          {
-            name: "Investors added",
-            investors: this.filtered_investors.filter((d) => d.status === 1),
-          },
-          {
-            name: "Investors updated",
-            investors: this.filtered_investors.filter((d) => d.status === 3),
-          },
-          {
-            name: "Investors published",
-            investors: this.filtered_investors.filter(
-              (d) => d.status === 2 || d.status === 3
-            ),
-          },
-          {
-            name: "Investors pending",
-            investors: this.filtered_investors.filter((d) => d.draft_status !== null),
-          },
-        ];
-      },
-    },
-    watch: {
-      user() {
-        this.triggerUserRegion();
-      },
-      regions() {
-        this.triggerUserRegion();
-      },
-      countries() {
-        this.triggerUserRegion();
-      },
-    },
-    methods: {
-      triggerUserRegion() {
-        if (!this.countries) return;
-        if (!this.regions) return;
-        if (!this.user) return;
-        if (this.user.userregionalinfo) {
-          let uri = this.user.userregionalinfo;
-          if (uri.region) {
-            this.selectedRegion = uri.region[0];
-            this.updateStats("region");
-          }
-          if (uri.country) {
-            this.selectedCountry = uri.country[0];
-            this.updateStats("country");
+      let dr_start = dayjs(this.daterange.start).format("YYYY-MM-DD");
+      let dr_end = dayjs(this.daterange.end).format("YYYY-MM-DD");
+
+      let filterLocation = '';
+      let filterByDealLocation = '';
+      let filterByEditorLocation = '';
+      if (this.selectedCountry) {
+        filterLocation =
+          `{
+              field:"country.id",
+              operation:EQ,
+              value:"${this.selectedCountry.id}"
+           }`
+        filterByDealLocation = `country_id:${this.selectedCountry.id}`;
+        filterByEditorLocation =
+          `{
+              field:"revision.user.userregionalinfo.country.id",
+              operation:EQ,
+              value:"${this.selectedCountry.id}"
+           },`
+      }
+      if (this.selectedRegion && this.selectedRegion.id != -1) {
+        filterLocation =
+          `{
+              field:"country.fk_region.id",
+              operation:EQ,
+              value:"${this.selectedRegion.id}"
+           }`
+        filterByDealLocation = `region_id:${this.selectedRegion.id}`;
+        filterByEditorLocation =
+          `{
+              field:"revision.user.userregionalinfo.region.id",
+              operation:EQ,
+              value:"${this.selectedRegion.id}"
+           },`
+      }
+      let filterByDealLocationBracketed = '';
+      if (filterByDealLocation) filterByDealLocationBracketed = `(${filterByDealLocation})`;
+
+      const query = `query {
+        deals: dealversions(filters:[
+            {field:"revision.date_created",operation:GE,value:"${dr_start}"},
+            {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+          ]
+          ${filterByDealLocation}
+        )
+        {
+          deal  {
+            ${DEAL_QUERY_FIELDS}
           }
         }
-      },
-      updateDateRange() {
-        this.daterange = {
-          start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
-          end: new Date(),
-        };
-      },
-      updateStats() {
-        this.loading = true;
-
-        let query = `query Stats($filters: [Filter]) {
-          deals(limit: 0, filters: $filters) {
-           id
-           deal_size
-           fully_updated
-           status
-           draft_status
-           confidential
-           country { id name high_income region {id} }
-           datasources { id }
-           operating_company {name}
-           timestamp
+        investors: investorversions(filters:[
+            {field:"revision.date_created",operation:GE,value:"${dr_start}"},
+            {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+            ${filterByEditorLocation}
+          ]
+        )
+        {
+          investor {
+            ${INVESTOR_QUERY_FIELDS}
           }
-          investors(limit: 0, filters: $filters) {
-           id
-           name
-           timestamp
-           status
-           draft_status
-           country { id name high_income region { id } }
+        }
+        statistics${filterByDealLocationBracketed} {
+          deals_public_count
+          deals_public_multi_ds_count
+          deals_public_high_geo_accuracy
+          deals_public_polygons
+        }
+        deals_pending: deals(limit:0, filters:[
+          {field:"draft_status",operation:IN,value:["1","2","3"]},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_rejected: deals(limit:0, filters:[
+          {field:"status",operation:EQ,value:"5"},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_pending_deletion: deals(limit:0, filters:[
+          {field:"status",operation:EQ,value:"6"},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+        }
+        deals_active: deals(limit:0, filters:[
+          {field:"status",operation:IN,value:["2","3"]},
+          ${filterLocation}
+        ]) {
+          ${DEAL_QUERY_FIELDS}
+          country {
+            id
+            high_income
           }
-        }`;
-        let variables = {
-          filters: [
-            {
-              field: "timestamp",
-              operation: "GE",
-              value: dayjs(this.daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "timestamp",
-              operation: "LE",
-              value: dayjs(this.daterange.end).format("YYYY-MM-DD"),
-            },
-          ],
-        };
-        axios.post("/graphql/", { query, variables }).then((response) => {
-          this.deals = response.data.data.deals;
-          this.investors = response.data.data.investors;
-          this.loading = false;
-        });
-      },
-      prepareDeals(deals) {
-        return deals.map((deal) => {
-          let country = deal.country ? deal.country.name : "";
-          let operating_company = deal.operating_company
-            ? deal.operating_company.name
-            : "";
-          let timestamp = dayjs(deal.timestamp).format("YYYY-MM-DD");
-          let confidential = deal.confidential ? "fa-check" : "fa-times";
-          return {
-            ...deal,
-            timestamp,
-            confidential: `<i class="fa ${confidential}" aria-hidden="true"></i>`,
-            country,
-            operating_company,
-          };
-        });
-      },
-    },
-    beforeRouteEnter(to, from, next) {
-      next();
-    },
-  };
+          datasources {
+            id
+          }
+          has_no_known_investor
+        }
+        investors_pending: investors(limit:0, filters:[
+          {field:"draft_status",operation:IN,value:["1","2","3"]},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_rejected: investors(limit:0, filters:[
+          {field:"status",operation:EQ,value:"5"},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_pending_deletion: investors(limit:0, filters:[
+          {field:"status",operation:EQ,value:"6"},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+        investors_active: investors(limit:0, filters:[
+          {field:"status",operation:IN,value:["2","3"]},
+          ${filterLocation}
+        ]) {
+          ${INVESTOR_QUERY_FIELDS}
+        }
+      }`;
 
-  //   parseTopInvestors(deal) {
-  //   if (!deal.top_investors) return "";
-  //   return deal.top_investors
-  //     .map((inv) => {
-  //       return inv.name;
-  //     })
-  //     .join("<br>");
-  // },
-  // parseIntentionOfInvestment(deal) {
-  //   if (!deal.intention_of_investment) return "";
-  //   return deal.intention_of_investment
-  //     .map((int) => {
-  //       let intention = int.value;
-  //       console.log(int);
-  //       let slug = intention; //slugify(intention, { lower: true });
-  //       return `<a href="/data/by-intention/${intention}/"
-  //                 class="toggle-tooltip intention-icon ${slug}" title=""
-  //                 data-original-title="${intention}"><span>${intention}</span></a>`;
-  //     })
-  //     .sort();
-  // },
+
+      axios
+        .post("/graphql/", {query})
+        .then((response) => {
+          // this.historic_deals_added = response.data.data.deals_added || [];
+          // this.historic_deals_updated = response.data.data.deals_updated || [];
+          // this.historic_deals_fully_updated = response.data.data.deals_fully_updated || [];
+          // this.historic_investors_added = response.data.data.investors_added || [];
+          // this.historic_investors_updated = response.data.data.investors_updated || [];
+          this.historic_deals = response.data.data.deals.map((v) => v.deal) || [];
+          this.historic_investors = response.data.data.investors.map((v) => v.investor) || [];
+          this.goal_statistics = response.data.data.statistics || {};
+          this.deals_pending = response.data.data.deals_pending || [];
+          this.deals_rejected = response.data.data.deals_rejected || [];
+          this.deals_pending_deletion = response.data.data.deals_pending_deletion || [];
+          this.deals_active = response.data.data.deals_active || [];
+          this.investors_pending = response.data.data.investors_pending || [];
+          this.investors_rejected = response.data.data.investors_rejected || [];
+          this.investors_pending_deletion = response.data.data.investors_pending_deletion || [];
+          this.investors_active = response.data.data.investors_active || [];
+        })
+        .finally(() => (this.loading = false));
+    },
+  },
+  beforeRouteEnter(to, from, next) {
+    next();
+  },
+};
 </script>
 
 <style scoped lang="scss">
-  @import "../../scss/colors";
+@import "../../scss/colors";
 
-  .input-group {
+.input-group {
+  width: 100%;
+}
+
+.datepicker-div > span {
+  width: 60%;
+  max-width: 100%;
+}
+
+.multiselect-div {
+  width: 50%;
+  padding-right: 5px;
+
+  .multiselect {
     width: 100%;
   }
+}
 
-  .datepicker-div > span {
-    width: 60%;
-    max-width: 100%;
-  }
+.actions {
+  margin-bottom: 1em;
+  text-align: right;
 
-  .multiselect-div {
-    width: 50%;
-    padding-right: 5px;
+  > div {
+    display: inline-block;
+  }
+}
 
-    .multiselect {
-      width: 100%;
-    }
+.nav-tabs {
+  h2, h3 {
+    margin-top: 0;
+    margin-bottom: 0;
   }
-  .number-of-deals {
-    position: relative;
-
-    .loadingscreen {
-      z-index: 10;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(128, 128, 128, 0.8);
-      /*background: rgba( darken($primary, 30%), 0.7 );*/
-    }
+}
+.loadingscreen {
+  position: fixed;
+  .loader{
+    margin-top: calc(50vh - 100px);
   }
-
-  .loader,
-  .loader:before,
-  .loader:after {
-    background: #ffffff;
-    -webkit-animation: load1 1s infinite ease-in-out;
-    animation: load1 1s infinite ease-in-out;
-    width: 1em;
-    height: 4em;
-  }
-  .loader {
-    color: #ffffff;
-    text-indent: -9999em;
-    margin: 88px auto;
-    position: relative;
-    font-size: 11px;
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-animation-delay: -0.16s;
-    animation-delay: -0.16s;
-  }
-  .loader:before,
-  .loader:after {
-    position: absolute;
-    top: 0;
-    content: "";
-  }
-  .loader:before {
-    left: -1.5em;
-    -webkit-animation-delay: -0.32s;
-    animation-delay: -0.32s;
-  }
-  .loader:after {
-    left: 1.5em;
-  }
-  @-webkit-keyframes load1 {
-    0%,
-    80%,
-    100% {
-      box-shadow: 0 0;
-      height: 4em;
-    }
-    40% {
-      box-shadow: 0 -2em;
-      height: 5em;
-    }
-  }
-  @keyframes load1 {
-    0%,
-    80%,
-    100% {
-      box-shadow: 0 0;
-      height: 4em;
-    }
-    40% {
-      box-shadow: 0 -2em;
-      height: 5em;
-    }
-  }
+}
 </style>
 
 <style lang="scss">
-  @import "../../scss/colors";
+@import "../../scss/colors";
 
-  .nav-link.active.teal-background {
-    background: $lm_investor !important;
-  }
+.nav-link.active.teal-background {
+  background: $lm_investor !important;
+}
+
+.tab-content {
+  overflow: hidden;
+}
+
 </style>

@@ -6,14 +6,18 @@ export const pageModule = {
     countries: [],
     regions: [],
     wagtailRootPage: null,
+    messages: [],
     wagtailPage: null,
     title: null,
     searchDescription: null,
     breadcrumbs: [],
     breadNav: [
-      { route: "map", icon: "fa fa-map-marker", name: "Map" },
-      { route: "deal_list", icon: "fa fa-table", name: "Data" },
-      { route: "charts", icon: "fa fa-bar-chart", name: "Charts" },
+      // { route: "map", icon: "fa fa-map-marker", name: "Map" },
+      // { route: "deal_list", icon: "fa fa-table", name: "Data" },
+      // { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
+      { route: "/map/", icon: "fa fa-map-marker", name: "Map" },
+      { route: "/data/", icon: "fa fa-table", name: "Data" },
+      { route: "/charts/", icon: "far fa-chart-bar", name: "Charts" },
     ],
   }),
   mutations: {
@@ -32,6 +36,9 @@ export const pageModule = {
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
+    setMessages(state, messages) {
+      state.messages = messages;
+    },
 
     setTitle(state, title) {
       state.title = title;
@@ -44,69 +51,10 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchUser(context) {
-      let query = `{ me
-        {
-          full_name
-          username
-          is_authenticated
-          is_impersonate
-          userregionalinfo { country { id name } region { id name } }
-        }
-      }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setUser", response.data.data.me);
-      });
-    },
-    fetchCountriesAndRegions(context) {
-      let query = `{ countries { id name slug } regions { id name slug } }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        context.commit("setCountries", response.data.data.countries);
-        context.commit("setRegions", response.data.data.regions);
-      });
-    },
     fetchWagtailRootPage(context) {
-      let url = `/wagtailapi/v2/pages/find/?html_path=/`;
+      let url = `/newdeal_legacy/rootpage/`;
       axios.get(url).then((response) => {
-        context.commit("setWagtailRootPage", {
-          map_introduction: response.data.map_introduction,
-          data_introduction: response.data.data_introduction,
-          footer_columns: [
-            response.data.footer_column_1,
-            response.data.footer_column_2,
-            response.data.footer_column_3,
-            response.data.footer_column_4,
-          ],
-        });
-      });
-    },
-    login(context, { username, password }) {
-      let query = `mutation {
-        login(username: "${username}", password: "${password}") {
-          status
-          error
-          user { full_name username is_authenticated is_impersonate }
-        }
-      }`;
-
-      return new Promise(function (resolve, reject) {
-        axios.post("/graphql/", { query: query }).then((response) => {
-          let login_data = response.data.data.login;
-          if (login_data.status === true) {
-            context.commit("setUser", login_data.user);
-            resolve(login_data);
-          } else {
-            reject(login_data);
-          }
-        });
-      });
-    },
-    logout(context) {
-      let query = "mutation { logout }";
-      return axios.post("/graphql/", { query: query }).then((response) => {
-        if (response.data.data.logout === true) {
-          context.commit("setUser", null);
-        }
+        context.commit("setWagtailRootPage", response.data);
       });
     },
     fetchWagtailPage(context, path) {

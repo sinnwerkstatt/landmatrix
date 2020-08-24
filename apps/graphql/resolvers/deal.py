@@ -6,7 +6,7 @@ from graphql import GraphQLResolveInfo
 from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.greennewdeal.models import Deal, Location
+from apps.landmatrix.models import Deal, Location, Country
 
 
 def _resolve_deals_prefetching(info: GraphQLResolveInfo):
@@ -38,7 +38,17 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 def resolve_deals(
     obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, after=None
 ):
-    qs = _resolve_deals_prefetching(info).order_by(sort)
+    qs = Deal.objects.public().order_by(sort)
+    fields = get_fields(info)
+    if "country" in fields:
+        qs = qs.prefetch_related("country")
+    if "locations" in fields:
+        qs = qs.prefetch_related("locations")
+    if "contracts" in fields:
+        qs = qs.prefetch_related("contracts")
+    if "datasources" in fields:
+        qs = qs.prefetch_related("datasources")
+
     if filters:
         qs = qs.filter(**parse_filters(filters))
 
@@ -75,6 +85,8 @@ def get_deal_datasources(obj: Deal, info: GraphQLResolveInfo, version=None):
             .version_set.filter(content_type__model="datasource")
             .order_by("id")
         ]
+    if type(obj) is dict:
+        return obj["datasources"]
     return obj.datasources.all().order_by("id")
 
 
@@ -100,15 +112,45 @@ def get_deal_versions(obj, info: GraphQLResolveInfo):
     ]
 
 
-def resolve_dealversions(obj, info: GraphQLResolveInfo, filters=None):
+@deal_type.field("has_no_known_investor")
+def get_has_no_known_investor(obj, info: GraphQLResolveInfo):
+    return obj._has_no_known_investor()
+
+
+def _resolve_field_dict_fetch(field_dict, revision):
+    field_dict["datasources_count"] = revision.version_set.filter(
+        content_type__model="datasource"
+    ).count()
+
+    return field_dict
+
+
+def resolve_dealversions(
+    obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
+):
     qs = Version.objects.get_for_model(Deal)  # .filter(revision__date_created="")
     # qs = _resolve_deals_prefetching(info).order_by(sort)
-    print(qs.count())
+
     if filters:
         qs = qs.filter(**parse_filters(filters))
-    print(qs.count())
 
-    return [{"id": x.id, "deal": x.field_dict, "revision": x.revision} for x in qs]
+    if country_id:
+        qs = filter((lambda v: v.field_dict["country_id"] == country_id), qs)
+
+    if region_id:
+        country_ids = Country.objects.filter(fk_region_id=region_id).values_list(
+            "id", flat=True
+        )
+        qs = filter((lambda v: v.field_dict["country_id"] in country_ids), qs)
+
+    return [
+        {
+            "id": x.id,
+            "deal": _resolve_field_dict_fetch(x.field_dict, x.revision),
+            "revision": x.revision,
+        }
+        for x in qs
+    ]
 
 
 def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):

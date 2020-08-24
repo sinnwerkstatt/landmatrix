@@ -1,17 +1,12 @@
 <template>
   <div class="deal-table">
-    <nav aria-label="Deal table navigation">
-      <ul class="pagination justify-content-center" v-if="pages > 1">
-        <li
-          v-for="(n, i) in pages"
-          class="page-item"
-          :class="['page-item', currentPage === i ? 'disabled' : '']"
-        >
-          <a class="page-link" @click="currentPage = i">{{ i + 1 }}</a>
-        </li>
-      </ul>
-    </nav>
-
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="deals.length"
+      :per-page="pageSize"
+      align="center"
+      limit="12"
+    ></b-pagination>
     <table id="summary" class="table table-striped">
       <thead>
         <tr>
@@ -34,8 +29,11 @@
       <tbody>
         <tr v-for="deal in dt_deals" :key="deal.id">
           <td>
-            <router-link :to="{ name: 'deal_detail', params: { deal_id: deal.id } }">
-              {{ deal.id }}
+            <router-link
+              :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
+              v-slot="{ href }"
+            >
+              <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
           <td v-for="field in fields" :key="field" v-html="deal[field]"></td>
@@ -52,7 +50,7 @@
     props: ["deals", "fields", "pageSize"],
     data() {
       return {
-        currentPage: 0,
+        currentPage: 1,
         sortField: "id",
         sortAscending: true,
         fieldNameMap: {
@@ -64,6 +62,13 @@
           deal_size: "Deal size in ha",
           fully_updated: "Full updated",
           status: "Status",
+          draft_status: "Draft status",
+          confidential: "Confidential",
+          operating_company: "Operating company",
+          created_at: "Created at",
+          modified_at: "Last modified at",
+          fully_updated_at: "Fully updated at",
+          cached_has_no_known_investor: "Has no known investor"
         },
       };
     },
@@ -91,8 +96,8 @@
 
         if (this.pageSize) {
           return deals.slice(
-            this.pageSize * this.currentPage,
-            this.pageSize * (this.currentPage + 1)
+            this.pageSize * (this.currentPage - 1),
+            this.pageSize * this.currentPage
           );
         }
         return deals;
@@ -144,12 +149,12 @@
 
     &.asc:before {
       content: "\f078";
-      font-family: FontAwesome;
+      font-family: "Font Awesome 5 Free";
     }
 
     &:not(.asc):before {
       content: "\f077";
-      font-family: FontAwesome;
+      font-family: "Font Awesome 5 Free";
     }
   }
 </style>

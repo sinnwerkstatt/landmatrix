@@ -18,9 +18,10 @@
           <router-link
             :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
             class="label label-default"
+            v-slot="{ href }"
           >
-            {{ deal.id }}</router-link
-          >
+            <a :href="href">{{ deal.id }}</a>
+          </router-link>
         </td>
         <td>{{ deal.timestamp }}</td>
         <td>{{ deal.status }}</td>

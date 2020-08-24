@@ -9,7 +9,7 @@ variables:
   STAGING_USER: landmatrix
   PRODUCTION_HOST: landmatrix.org
   PRODUCTION_USER: landmatrix
-  DJANGO_SETTINGS_MODULE: config.settings.dev
+  DJANGO_SETTINGS_MODULE: config.settings.ci
   DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
   ELASTICSEARCH_URL: "http://elasticsearch"
 
@@ -36,6 +36,7 @@ frontend formatting and linting:
 tests and coverage:
   stage: test
   services:
+#    - kartoza/postgis:12.1
     - mdillon/postgis:10
     - elasticsearch:5
   script:

@@ -10,12 +10,14 @@ from apps.grid.views.filter import FilterWidgetAjaxView
 from apps.grid.views.investor_comparison import InvestorComparisonView
 from apps.landmatrix.forms import CustomRegistrationForm
 from apps.landmatrix.views import CountryView, RegionView, SwitchLanguageView
+from apps.wagtailcms.api import api_router
 
 handler500 = "apps.landmatrix.views.handler500"
 
 CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
+    path("", include("apps.landmatrix.urls")),
     path(
         "accounts/register/",
         RegistrationView.as_view(form_class=CustomRegistrationForm),
@@ -62,23 +64,17 @@ urlpatterns = [
         exports.ExportToDjangoView,
         name="prometheus-django-metrics",
     ),
+    path("graphql/", include("apps.graphql.urls")),
+    path("wagtailapi/v2/", api_router.urls),
+    # path("api/", include("apps.landmatrix.urlsapi")),
 ]
-
-if settings.GND_ENABLED:
-    from apps.wagtailcms.api import api_router
-
-    urlpatterns += [
-        path("newdeal/", include("apps.greennewdeal.urls")),
-        path("graphql/", include("apps.graphql.urls")),
-        path("api/", include("apps.greennewdeal.urlsapi")),
-        path("wagtailapi/v2/", api_router.urls),
-    ]
 
 if settings.DEBUG:
     # Non i18n patterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     try:
+        # noinspection PyUnresolvedReferences
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns

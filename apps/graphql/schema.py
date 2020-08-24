@@ -7,7 +7,6 @@ from ariadne import (
 )
 from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
 
-from apps.graphql.resolvers.country import resolve_countries, resolve_regions
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
@@ -22,6 +21,15 @@ from apps.graphql.resolvers.investor import (
     resolve_investors,
     investor_type,
     resolve_involvements,
+    resolve_investorversions,
+)
+from apps.graphql.resolvers.misc import (
+    resolve_countries,
+    resolve_regions,
+    resolve_minerals,
+    resolve_crops,
+    resolve_animals,
+    resolve_statistics,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
@@ -46,11 +54,16 @@ query.set_field("dealversions", resolve_dealversions)
 query.set_field("locations", resolve_locations)
 query.set_field("investor", resolve_investor)
 query.set_field("investors", resolve_investors)
+query.set_field("investorversions", resolve_investorversions)
 query.set_field("involvements", resolve_involvements)
 query.set_field("aggregations", resolve_aggregations)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)
+query.set_field("animals", resolve_animals)
+query.set_field("crops", resolve_crops)
+query.set_field("minerals", resolve_minerals)
 query.set_field("formfields", resolve_formfields)
+query.set_field("statistics", resolve_statistics)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

@@ -1,12 +1,27 @@
 # pylint: disable=unused-argument
-from __future__ import absolute_import
-
 import time
 
+from celery import shared_task
 from django.conf import settings
 
 from apps.api.elasticsearch import es_save
 from apps.landmatrix.celery_app import app
+from apps.landmatrix.synchronization.deal import histivity_to_deal
+from apps.landmatrix.synchronization.investor import histvestor_to_investor
+
+
+# ### Green New Deal ### #
+@shared_task
+def task_propagate_save_to_gnd_deal(hist_deal_pk):
+    histivity_to_deal(activity_pk=hist_deal_pk)
+
+
+@shared_task
+def task_propagate_save_to_gnd_investor(histvestor_id):
+    histvestor_to_investor(histvestor_id)
+
+
+# ### Green New Deal ### #
 
 
 @app.task(name="%s.tasks.index_activity" % settings.CELERY_NAME, bind=True)

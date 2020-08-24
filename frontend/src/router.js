@@ -13,8 +13,6 @@ import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
 
 import store from "/store";
-import ItsABigDeal from "/views/Charts/ItsABigDeal";
-import GlobalMapOfInvestments from "/views/Charts/GlobalMapOfInvestments";
 import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import CaseStatistics from "/views/Manager/CaseStatistics";
 
@@ -28,19 +26,19 @@ const router = new Router({
       path: "/data/",
       name: "deal_list",
       component: DealList,
-      beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { limit: 1000 });
-        next();
-      },
+      // beforeEnter(to, from, next) {
+      //   store.dispatch("fetchDeals", { limit: 1000 });
+      //   next();
+      // },
     },
     {
       path: "/map/",
       name: "map",
       component: GlobalMap,
-      beforeEnter(to, from, next) {
-        store.dispatch("fetchDeals", { limit: 1000 });
-        next();
-      },
+      // beforeEnter(to, from, next) {
+      //   store.dispatch("fetchDeals", { limit: 1000 });
+      //   next();
+      // },
     },
     {
       path: "/deal/add/",
@@ -81,16 +79,7 @@ const router = new Router({
           name: "web-of-transnational-deals",
           component: WebOfTransnationalDeals,
         },
-        {
-          path: "perspective/",
-          name: "its-a-big-deal",
-          component: ItsABigDeal,
-        },
-        {
-          path: "map-of-investments/",
-          name: "global-map-of-investments",
-          component: GlobalMapOfInvestments,
-        },
+
         {
           path: "dynamics/",
           name: "dynamics-overview",

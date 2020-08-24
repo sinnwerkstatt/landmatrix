@@ -605,7 +605,6 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
 
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop("update_elasticsearch", True)
-        trigger_gnd = kwargs.pop("trigger_gnd", False)
         super().save(*args, **kwargs)
         if update_elasticsearch and settings.OLD_ELASTIC:
             from apps.landmatrix.tasks import index_investor, delete_historicalinvestor
@@ -618,17 +617,10 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                 transaction.on_commit(
                     lambda: index_investor.delay(self.investor_identifier)
                 )
-        if settings.GND_ENABLED:
-            from apps.greennewdeal.tasks import task_propagate_save_to_gnd_investor
 
-            if settings.CELERY_ENABLED:
-                transaction.on_commit(
-                    lambda: task_propagate_save_to_gnd_investor.delay(self.pk)
-                )
-            else:
-                transaction.on_commit(
-                    lambda: task_propagate_save_to_gnd_investor(self.pk)
-                )
+        from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
+
+        task_propagate_save_to_gnd_investor(self.pk)
 
     class Meta:
         verbose_name = _("Historical investor")

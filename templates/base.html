@@ -80,6 +80,7 @@
                 <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
                 <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
                 <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
+                <li><a href="/newdeal/case_statistics/">{% trans "Case statistics" %}</a></li>
                 <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
               </ul>
             </li>
@@ -126,7 +127,7 @@
             </span>
           </li>
           <li>
-            <a href="/stay-informed/" role="button"><span class="nav-text">Stay informed</span></a>
+            <a href="/stay-informed/" role="button"><span class="nav-text">{% trans "Stay informed" %}</span></a>
           </li>
           <li>
             <a href="/get-involved/" role="button"><span class="nav-text">{% trans "Get involved" %}</span></a>
@@ -256,7 +257,7 @@
       <div id="footer-etc" class="row">
         <div class="col-md-6">
           <p>
-            &copy; {% now "Y" %} The Land Matrix | All rights reserved
+            <a href="/newdeal{{ request.path }}">&copy; {% now "Y" %}</a> The Land Matrix | All rights reserved
           </p>
         </div>
         <div class="col-md-6 text-right">

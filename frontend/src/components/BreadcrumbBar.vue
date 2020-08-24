@@ -4,9 +4,7 @@
       <div class="col-md-4 mr-auto">
         <ul class="breadcrumb">
           <li v-for="bcrumb in this.$store.state.page.breadcrumbs" :key="bcrumb.name">
-            <router-link v-if="bcrumb.link" :to="bcrumb.link">
-              {{ bcrumb.name }}
-            </router-link>
+            <a v-if="bcrumb.link" :href="bcrumb.link">{{ bcrumb.name }}</a>
             <template v-else>{{ bcrumb.name }}</template>
           </li>
         </ul>
@@ -14,9 +12,7 @@
       <div class="col-auto">
         <ul class="subnav nav nav-pills">
           <li class="nav-item" v-for="nav in this.$store.state.page.breadNav">
-            <router-link :to="{ name: nav.route }">
-              <i :class="nav.icon"></i> {{ nav.name }}
-            </router-link>
+            <a :href="nav.route"><i :class="nav.icon"></i> {{ nav.name }}</a>
           </li>
           <li class="divider"></li>
           <li role="presentation"></li>

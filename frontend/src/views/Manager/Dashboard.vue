@@ -16,7 +16,7 @@
           <a
             type="submit"
             class="btn btn-primary"
-            :href="`/impersonate/${userToImpersonate.id}/?next=/newdeal/`"
+            :href="`/impersonate/${userToImpersonate.id}/?next=/`"
           >
             Impersonate
           </a>

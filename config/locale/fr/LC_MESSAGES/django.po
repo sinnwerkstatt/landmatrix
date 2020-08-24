@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-03 15:31+0200\n"
+"POT-Creation-Date: 2020-08-10 10:14+0200\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -109,12 +109,15 @@ msgid "excludes"
 msgstr "exclut"
 
 #: apps/api/views/chart_views.py:241 apps/grid/views/base.py:23
-#: apps/grid/views/base.py:25 apps/map/views.py:49
+#: apps/grid/views/base.py:25 apps/landmatrix/models/deal.py:115
+#: apps/map/views.py:49
 msgid "Agriculture"
 msgstr "Agriculture"
 
 #: apps/api/views/chart_views.py:243 apps/grid/forms/deal_former_use_form.py:27
-#: apps/grid/views/base.py:29 apps/grid/views/base.py:31 apps/map/views.py:53
+#: apps/grid/views/base.py:29 apps/grid/views/base.py:31
+#: apps/landmatrix/models/deal.py:126 apps/landmatrix/models/deal.py:710
+#: apps/map/views.py:53
 msgid "Forestry"
 msgstr "Foresterie"
 
@@ -124,6 +127,10 @@ msgstr "Foresterie"
 #: apps/grid/forms/deal_local_communities_form.py:43
 #: apps/grid/forms/deal_local_communities_form.py:59
 #: apps/grid/forms/deal_local_communities_form.py:75
+#: apps/landmatrix/models/deal.py:135 apps/landmatrix/models/deal.py:144
+#: apps/landmatrix/models/deal.py:553 apps/landmatrix/models/deal.py:623
+#: apps/landmatrix/models/deal.py:653 apps/landmatrix/models/deal.py:691
+#: apps/landmatrix/models/deal.py:712
 #: apps/landmatrix/templatetags/landmatrix_tags.py:50 apps/map/views.py:67
 msgid "Other"
 msgstr "Autre"
@@ -230,9 +237,9 @@ msgstr ""
 #: apps/charts/templates/charts/transnational-deals.html:65
 #: apps/charts/templates/charts/transnational-deals.html:81
 #: apps/charts/templates/charts/transnational-deals.html:100
-#: apps/greennewdeal/models/deal_submodels.py:32
 #: apps/grid/forms/deal_spatial_form.py:16
 #: apps/landmatrix/models/activity_changeset.py:23
+#: apps/landmatrix/models/deal_submodels.py:31
 #: apps/landmatrix/models/filter.py:78 apps/map/views.py:74
 msgid "Country"
 msgstr "Pays"
@@ -450,6 +457,7 @@ msgstr "Coupes de bois."
 #: apps/charts/templates/charts/special-interest/mining.html:58
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:12
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:58
+#: apps/landmatrix/models/deal.py:187
 #: apps/wagtailcms/templates/widgets/statistics.html:44
 msgid "Concluded"
 msgstr "Conclus"
@@ -460,6 +468,7 @@ msgstr "Conclus"
 #: apps/charts/templates/charts/special-interest/mining.html:59
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:13
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:59
+#: apps/landmatrix/models/deal.py:179
 #: apps/wagtailcms/templates/widgets/statistics.html:45
 msgid "Intended"
 msgstr "Prévu"
@@ -470,6 +479,7 @@ msgstr "Prévu"
 #: apps/charts/templates/charts/special-interest/mining.html:60
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:14
 #: apps/charts/templates/charts/special-interest/resource-extraction.html:60
+#: apps/landmatrix/models/deal.py:194
 #: apps/wagtailcms/templates/widgets/statistics.html:46
 msgid "Failed"
 msgstr "Echoué"
@@ -516,7 +526,7 @@ msgstr ""
 "l'investissement : Cultures, ressources minérales ou animaux d’élevage"
 
 #: apps/charts/templates/charts/special-interest/produce-info.html:12
-#: apps/greennewdeal/models/deal.py:667 apps/grid/views/base.py:109
+#: apps/grid/views/base.py:109
 msgid "Crops"
 msgstr "Cultures"
 
@@ -525,7 +535,7 @@ msgid "Mineral Resources"
 msgstr "Ressources minérales"
 
 #: apps/charts/templates/charts/special-interest/produce-info.html:14
-#: apps/greennewdeal/models/deal.py:670 apps/grid/forms/choices.py:33
+#: apps/grid/forms/choices.py:33 apps/landmatrix/models/deal.py:120
 msgid "Livestock"
 msgstr "Animaux d’élevage"
 
@@ -545,20 +555,22 @@ msgstr "Tissu de transactions transnationales"
 
 #: apps/charts/templates/charts/subnav.html:27
 #: apps/grid/forms/deal_general_form.py:56
-#: apps/grid/forms/deal_general_form.py:60 apps/map/views.py:46
+#: apps/grid/forms/deal_general_form.py:60 apps/landmatrix/models/deal.py:149
+#: apps/map/views.py:46
 msgid "Intention of investment"
 msgstr "Intention de l’investissement"
 
 #: apps/charts/templates/charts/subnav.html:28
-#: apps/greennewdeal/models/deal.py:135 apps/grid/forms/deal_general_form.py:83
+#: apps/grid/forms/deal_general_form.py:83
 #: apps/grid/forms/deal_general_form.py:87 apps/grid/views/base.py:105
+#: apps/landmatrix/models/deal.py:204
 msgid "Negotiation status"
 msgstr "Statut de la négociation"
 
 #: apps/charts/templates/charts/subnav.html:29
-#: apps/greennewdeal/models/deal.py:147 apps/grid/forms/deal_general_form.py:96
+#: apps/grid/forms/deal_general_form.py:96
 #: apps/grid/forms/deal_general_form.py:100 apps/grid/views/base.py:106
-#: apps/map/views.py:20
+#: apps/landmatrix/models/deal.py:221 apps/map/views.py:20
 msgid "Implementation status"
 msgstr "Statut de la mise en œuvre "
 
@@ -579,7 +591,7 @@ msgid "Produce Info"
 msgstr "Info produit"
 
 #: apps/charts/templates/charts/subnav.html:47 apps/grid/forms/choices.py:53
-#: apps/map/views.py:54
+#: apps/landmatrix/models/deal.py:137 apps/map/views.py:54
 msgid "Mining"
 msgstr "Exploitation minière"
 
@@ -698,7 +710,8 @@ msgstr "Investisseurs"
 #: apps/editor/templates/dashboard.html:60
 #: apps/grid/templates/grid/includes/subnav_investors.html:42
 #: apps/grid/views/base.py:100 apps/grid/views/investor.py:64
-#: apps/landmatrix/forms.py:117 apps/map/templates/map/includes/markup.html:30
+#: apps/landmatrix/forms/oldforms.py:117
+#: apps/map/templates/map/includes/markup.html:30
 msgid "Deals"
 msgstr "Transactions"
 
@@ -748,15 +761,17 @@ msgstr "Ajoutée par"
 #: apps/editor/templates/manage.html:63 apps/editor/templates/manage.html:99
 #: apps/editor/templates/manage.html:144 apps/editor/templates/manage.html:205
 #: apps/editor/templates/manage.html:267 apps/editor/templates/manage.html:329
-#: apps/greennewdeal/models/investor.py:71
-#: apps/greennewdeal/models/investor.py:241 apps/grid/forms/investor_form.py:38
-#: apps/grid/forms/parent_investor_formset.py:91 apps/landmatrix/forms.py:115
-#: apps/landmatrix/models/__init__.py:43 apps/landmatrix/models/activity.py:823
+#: apps/grid/forms/investor_form.py:38
+#: apps/grid/forms/parent_investor_formset.py:91
+#: apps/landmatrix/forms/oldforms.py:115 apps/landmatrix/models/__init__.py:48
+#: apps/landmatrix/models/activity.py:823
 #: apps/landmatrix/models/activity_changeset.py:44
 #: apps/landmatrix/models/activity_feedback.py:28
+#: apps/landmatrix/models/gndinvestor.py:71
+#: apps/landmatrix/models/gndinvestor.py:249
 #: apps/landmatrix/models/investor.py:144
 #: apps/landmatrix/models/investor.py:451
-#: apps/landmatrix/models/investor.py:748
+#: apps/landmatrix/models/investor.py:744
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -794,13 +809,13 @@ msgid "Deleted by"
 msgstr "Supprimée par"
 
 #: apps/editor/templates/dashboard.html:263
-#: apps/editor/templates/manage.html:206 apps/greennewdeal/models/deal.py:859
-#: apps/greennewdeal/models/investor.py:84
-#: apps/greennewdeal/models/investor.py:247
+#: apps/editor/templates/manage.html:206
 #: apps/grid/templates/grid/includes/filters_investors.html:132
-#: apps/landmatrix/models/activity.py:90 apps/landmatrix/models/investor.py:79
-#: apps/landmatrix/models/investor.py:692
-#: apps/landmatrix/models/investor.py:824 templates/filters.html:169
+#: apps/landmatrix/models/activity.py:90 apps/landmatrix/models/deal.py:965
+#: apps/landmatrix/models/gndinvestor.py:84
+#: apps/landmatrix/models/gndinvestor.py:255
+#: apps/landmatrix/models/investor.py:79 apps/landmatrix/models/investor.py:688
+#: apps/landmatrix/models/investor.py:820 templates/filters.html:169
 msgid "Deleted"
 msgstr "Supprimée"
 
@@ -820,11 +835,12 @@ msgstr "Dernière révision"
 
 #: apps/editor/templates/dashboard.html:310
 #: apps/grid/forms/deal_former_use_form.py:11
+#: apps/landmatrix/models/deal.py:686
 msgid "State"
 msgstr "État"
 
 #: apps/editor/templates/dashboard.html:311
-#: apps/editor/templates/manage.html:330 apps/landmatrix/models/__init__.py:44
+#: apps/editor/templates/manage.html:330 apps/landmatrix/models/__init__.py:49
 #: apps/landmatrix/models/activity_changeset.py:36
 #: apps/landmatrix/models/activity_feedback.py:29
 msgid "Timestamp"
@@ -920,7 +936,7 @@ msgid "Change log"
 msgstr "Registre des modifications"
 
 #: apps/editor/templates/log.html:54 apps/editor/templates/manage.html:328
-#: apps/landmatrix/models/__init__.py:46
+#: apps/landmatrix/models/__init__.py:51
 #: apps/landmatrix/models/activity_changeset.py:31
 msgid "User"
 msgstr "Utilisateur"
@@ -977,8 +993,8 @@ msgstr "Il n'y a actuellement aucune demande de feedback."
 
 #: apps/editor/templates/manage.html:100 apps/landmatrix/models/activity.py:164
 #: apps/landmatrix/models/investor.py:147
-#: apps/landmatrix/models/investor.py:751
-#: apps/landmatrix/models/investor.py:832
+#: apps/landmatrix/models/investor.py:747
+#: apps/landmatrix/models/investor.py:828
 #: apps/wagtailcms/templates/widgets/latest-database-modifications.html:7
 msgid "Status"
 msgstr "Statut"
@@ -987,10 +1003,10 @@ msgstr "Statut"
 msgid "Currently there are no pending updates."
 msgstr "Il n'y a actuellement aucune mise à jour en attente."
 
-#: apps/editor/templates/manage.html:145 apps/greennewdeal/models/deal.py:858
-#: apps/greennewdeal/models/investor.py:83
-#: apps/greennewdeal/models/investor.py:246
+#: apps/editor/templates/manage.html:145
 #: apps/grid/templates/grid/includes/deal_history.html:31
+#: apps/landmatrix/models/deal.py:964 apps/landmatrix/models/gndinvestor.py:83
+#: apps/landmatrix/models/gndinvestor.py:254
 msgid "Updated"
 msgstr "Actualisée"
 
@@ -1091,78 +1107,6 @@ msgstr "Historique %(deal_id)s transaction"
 msgid "A list of changes made to deal %(deal_id)s"
 msgstr "Liste de modifications apportées à la transaction %(deal_id)s"
 
-#: apps/greennewdeal/models/country.py:15 apps/landmatrix/models/country.py:14
-msgid "Region"
-msgstr "Région"
-
-#: apps/greennewdeal/models/country.py:17 apps/landmatrix/models/country.py:16
-msgid "Code ISO 3166-1 alpha2"
-msgstr "Code ISO 3166-1 alpha2"
-
-#: apps/greennewdeal/models/country.py:18 apps/landmatrix/models/country.py:17
-msgid "Code ISO 3166-1 alpha3"
-msgstr "Code ISO 3166-1 alpha3"
-
-#: apps/greennewdeal/models/country.py:22 apps/landmatrix/models/country.py:21
-msgid "Latitude of central point"
-msgstr "Latitude du point central"
-
-#: apps/greennewdeal/models/country.py:29 apps/landmatrix/models/country.py:28
-msgid "Longitude of central point"
-msgstr "Longitude du point central"
-
-#: apps/greennewdeal/models/country.py:36
-#: apps/greennewdeal/models/country.py:107 apps/landmatrix/models/country.py:35
-#: apps/landmatrix/models/country.py:106
-msgid "Latitude of southernmost point"
-msgstr "Latitude du point le plus au sud"
-
-#: apps/greennewdeal/models/country.py:43
-#: apps/greennewdeal/models/country.py:100 apps/landmatrix/models/country.py:42
-#: apps/landmatrix/models/country.py:99
-msgid "Longitude of westernmost point"
-msgstr "Longitude du point le plus à l’ouest"
-
-#: apps/greennewdeal/models/country.py:50
-#: apps/greennewdeal/models/country.py:93 apps/landmatrix/models/country.py:49
-#: apps/landmatrix/models/country.py:92
-msgid "Latitude of northernmost point"
-msgstr "Latitude du point le plus au nord"
-
-#: apps/greennewdeal/models/country.py:57
-#: apps/greennewdeal/models/country.py:114 apps/landmatrix/models/country.py:56
-#: apps/landmatrix/models/country.py:113
-msgid "Longitude of easternmost point"
-msgstr "Longitude du point le plus à l’est"
-
-#: apps/greennewdeal/models/country.py:64 apps/landmatrix/models/country.py:63
-msgid "Democracy index"
-msgstr "Indice de démocratie"
-
-#: apps/greennewdeal/models/country.py:67 apps/landmatrix/models/country.py:66
-msgid "Corruption perception index"
-msgstr "Indice de perception de la corruption"
-
-#: apps/greennewdeal/models/country.py:73 apps/landmatrix/models/country.py:72
-#: apps/landmatrix/models/filter.py:19
-msgid "High income"
-msgstr "Revenu élevé"
-
-#: apps/greennewdeal/models/country.py:74 apps/landmatrix/models/country.py:73
-msgid "Is target country"
-msgstr "Est un pays cible"
-
-#: apps/greennewdeal/models/deal.py:56
-msgid "Intended size"
-msgstr "Superficie prévue"
-
-#: apps/greennewdeal/models/deal.py:59 apps/grid/forms/deal_general_form.py:40
-msgid "Size under contract (leased or purchased area, in ha)"
-msgstr "Superficie sous contrat (superficie louée ou achetée, en ha)"
-
-#: apps/greennewdeal/models/deal.py:60 apps/greennewdeal/models/deal.py:66
-#: apps/greennewdeal/models/deal.py:212 apps/greennewdeal/models/deal.py:234
-#: apps/greennewdeal/models/deal.py:677 apps/greennewdeal/models/deal.py:683
 #: apps/grid/fields.py:196 apps/grid/forms/deal_general_form.py:30
 #: apps/grid/forms/deal_general_form.py:41
 #: apps/grid/forms/deal_general_form.py:47
@@ -1173,1079 +1117,12 @@ msgstr "Superficie sous contrat (superficie louée ou achetée, en ha)"
 #: apps/grid/forms/deal_produce_info_form.py:24
 #: apps/grid/forms/deal_produce_info_form.py:45
 #: apps/grid/forms/deal_produce_info_form.py:66
+#: apps/landmatrix/models/deal.py:92 apps/landmatrix/models/deal.py:100
+#: apps/landmatrix/models/deal.py:106 apps/landmatrix/models/deal.py:300
+#: apps/landmatrix/models/deal.py:322 apps/landmatrix/models/deal.py:761
+#: apps/landmatrix/models/deal.py:767
 msgid "ha"
 msgstr "ha"
-
-#: apps/greennewdeal/models/deal.py:65 apps/grid/forms/deal_general_form.py:46
-msgid "Size in operation (production, in ha)"
-msgstr "Superficie en cours d’exploitation (production, en ha)"
-
-#: apps/greennewdeal/models/deal.py:97
-#, fuzzy
-#| msgid "Intention of investment"
-msgid "Intention of the investment"
-msgstr "Intention de l’investissement"
-
-#: apps/greennewdeal/models/deal.py:103 apps/grid/forms/choices.py:81
-msgid "Outright Purchase"
-msgstr "Achat ferme"
-
-#: apps/greennewdeal/models/deal.py:104 apps/grid/forms/choices.py:82
-msgid "Lease"
-msgstr "Bail"
-
-#: apps/greennewdeal/models/deal.py:105 apps/grid/forms/choices.py:83
-msgid "Concession"
-msgstr "Concession"
-
-#: apps/greennewdeal/models/deal.py:108 apps/grid/forms/choices.py:86
-msgid "Exploitation permit / license / concession (for mineral resources)"
-msgstr ""
-"Permis/licence/concession d’exploitation (pour les ressources minérales)"
-
-#: apps/greennewdeal/models/deal.py:110 apps/grid/forms/choices.py:88
-msgid "Pure contract farming"
-msgstr "Agriculture sous contrat pure"
-
-#: apps/greennewdeal/models/deal.py:114 apps/grid/forms/deal_general_form.py:70
-#: apps/grid/forms/deal_general_form.py:73
-msgid "Nature of the deal"
-msgstr "Nature de la transaction"
-
-#: apps/greennewdeal/models/deal.py:120 apps/grid/forms/deal_general_form.py:78
-msgid "Comment on nature of the deal"
-msgstr "Commentaire sur la nature de la transaction"
-
-#: apps/greennewdeal/models/deal.py:137 apps/grid/forms/deal_general_form.py:91
-msgid "Comment on negotiation status"
-msgstr "Commentaire sur le statut de la négociation"
-
-#: apps/greennewdeal/models/deal.py:149
-#: apps/grid/forms/deal_general_form.py:104
-msgid "Comment on implementation status"
-msgstr "Commentaire sur le statut de la mise en œuvre "
-
-#: apps/greennewdeal/models/deal.py:164 apps/grid/forms/choices.py:93
-msgid "per ha"
-msgstr "par ha"
-
-#: apps/greennewdeal/models/deal.py:165 apps/grid/forms/choices.py:94
-msgid "for specified area"
-msgstr "pour la superficie spécifiée"
-
-#: apps/greennewdeal/models/deal.py:171
-#: apps/grid/forms/deal_general_form.py:124
-msgid "Purchase price area"
-msgstr "Superficie"
-
-#: apps/greennewdeal/models/deal.py:178
-#: apps/grid/forms/deal_general_form.py:129
-msgid "Comment on purchase price"
-msgstr "Commentaire sur le prix d’achat"
-
-#: apps/greennewdeal/models/deal.py:196
-#: apps/grid/forms/deal_general_form.py:147
-#, fuzzy
-#| msgid "Annual leasing fee"
-msgid "Annual leasing fee area"
-msgstr "Frais de location annuel"
-
-#: apps/greennewdeal/models/deal.py:203
-#: apps/grid/forms/deal_general_form.py:152
-msgid "Comment on leasing fees"
-msgstr "Commentaire sur les frais de location"
-
-#: apps/greennewdeal/models/deal.py:209
-#: apps/grid/forms/deal_general_form.py:166
-msgid "On leased / purchased area"
-msgstr "Superficie louée/achetée"
-
-#: apps/greennewdeal/models/deal.py:211
-#: apps/grid/forms/deal_general_form.py:170
-msgid "On leased / purchased area (in ha)"
-msgstr "Superficie louée/achetée (en ha)"
-
-#: apps/greennewdeal/models/deal.py:217
-#: apps/grid/forms/deal_general_form.py:175
-msgid "On leased / purchased farmers"
-msgstr "Agriculteurs travaillant sur une superficie louée/achetée"
-
-#: apps/greennewdeal/models/deal.py:218 apps/greennewdeal/models/deal.py:240
-#: apps/grid/forms/deal_general_form.py:175
-#: apps/grid/forms/deal_general_form.py:194
-msgid "farmers"
-msgstr "agriculteurs"
-
-#: apps/greennewdeal/models/deal.py:223
-#: apps/grid/forms/deal_general_form.py:179
-msgid "On leased / purchased households"
-msgstr "Ménages travaillant sur une superficie louée/achetée"
-
-#: apps/greennewdeal/models/deal.py:224 apps/greennewdeal/models/deal.py:246
-#: apps/grid/forms/deal_general_form.py:180
-#: apps/grid/forms/deal_general_form.py:199
-msgid "households"
-msgstr "Ménages"
-
-#: apps/greennewdeal/models/deal.py:230
-#: apps/grid/forms/deal_general_form.py:183
-msgid "Not on leased / purchased area (out-grower)"
-msgstr "Superficie non louée/achetée (cultivateur sous-traitant)"
-
-#: apps/greennewdeal/models/deal.py:233
-#: apps/grid/forms/deal_general_form.py:187
-msgid "Not on leased / purchased area (out-grower, in ha)"
-msgstr "Superficie non louée/achetée (cultivateur sous-traitant)"
-
-#: apps/greennewdeal/models/deal.py:239
-#: apps/grid/forms/deal_general_form.py:193
-msgid "Not on leased / purchased farmers (out-grower)"
-msgstr ""
-"Agriculteurs travaillant sur une superficie non louée/achetée (cultivateur "
-"sous-traitant)"
-
-#: apps/greennewdeal/models/deal.py:245
-#: apps/grid/forms/deal_general_form.py:198
-msgid "Not on leased / purchased households (out-grower)"
-msgstr ""
-"Ménages travaillant sur une superficie non louée/achetée (cultivateur sous-"
-"traitant)"
-
-#: apps/greennewdeal/models/deal.py:252
-#: apps/grid/forms/deal_general_form.py:202
-msgid "Comment on contract farming"
-msgstr "Commentaire sur l’agriculture sous contrat"
-
-#: apps/greennewdeal/models/deal.py:259
-#: apps/grid/forms/deal_employment_form.py:18
-msgid "Jobs created (total)"
-msgstr "Emplois créés (total)"
-
-#: apps/greennewdeal/models/deal.py:261
-#: apps/grid/forms/deal_employment_form.py:22
-msgid "Planned number of jobs (total)"
-msgstr "Nombre d’emplois prévus (total)"
-
-#: apps/greennewdeal/models/deal.py:261 apps/greennewdeal/models/deal.py:273
-#: apps/greennewdeal/models/deal.py:297 apps/greennewdeal/models/deal.py:315
-#: apps/greennewdeal/models/deal.py:340 apps/greennewdeal/models/deal.py:358
-#: apps/grid/forms/deal_employment_form.py:23
-#: apps/grid/forms/deal_employment_form.py:41
-#: apps/grid/forms/deal_employment_form.py:70
-#: apps/grid/forms/deal_employment_form.py:86
-#: apps/grid/forms/deal_employment_form.py:114
-#: apps/grid/forms/deal_employment_form.py:132
-msgid "jobs"
-msgstr "emplois"
-
-#: apps/greennewdeal/models/deal.py:264
-#: apps/grid/forms/deal_employment_form.py:28
-msgid "Planned employees (total)"
-msgstr "Employés prévus (total)"
-
-#: apps/greennewdeal/models/deal.py:264 apps/greennewdeal/models/deal.py:277
-#: apps/greennewdeal/models/deal.py:303 apps/greennewdeal/models/deal.py:321
-#: apps/greennewdeal/models/deal.py:346 apps/greennewdeal/models/deal.py:364
-#: apps/grid/forms/deal_employment_form.py:29
-#: apps/grid/forms/deal_employment_form.py:47
-#: apps/grid/forms/deal_employment_form.py:76
-#: apps/grid/forms/deal_employment_form.py:91
-#: apps/grid/forms/deal_employment_form.py:120
-#: apps/grid/forms/deal_employment_form.py:137
-msgid "employees"
-msgstr "employé-e-s"
-
-#: apps/greennewdeal/models/deal.py:267
-#: apps/grid/forms/deal_employment_form.py:34
-msgid "Planned daily/seasonal workers (total)"
-msgstr "Employés journaliers/saisonniers prévus (total)"
-
-#: apps/greennewdeal/models/deal.py:268 apps/greennewdeal/models/deal.py:283
-#: apps/greennewdeal/models/deal.py:309 apps/greennewdeal/models/deal.py:327
-#: apps/greennewdeal/models/deal.py:352 apps/greennewdeal/models/deal.py:370
-#: apps/grid/forms/deal_employment_form.py:35
-#: apps/grid/forms/deal_employment_form.py:53
-#: apps/grid/forms/deal_employment_form.py:82
-#: apps/grid/forms/deal_employment_form.py:96
-#: apps/grid/forms/deal_employment_form.py:126
-#: apps/grid/forms/deal_employment_form.py:142
-msgid "workers"
-msgstr "travailleurs"
-
-#: apps/greennewdeal/models/deal.py:273
-#: apps/grid/forms/deal_employment_form.py:40
-msgid "Current number of jobs (total)"
-msgstr "Nombre d’emplois actuel (total)"
-
-#: apps/greennewdeal/models/deal.py:276
-#: apps/grid/forms/deal_employment_form.py:46
-msgid "Current number of employees (total)"
-msgstr "Nombre actuel d’employés (total)"
-
-#: apps/greennewdeal/models/deal.py:282
-#: apps/grid/forms/deal_employment_form.py:52
-msgid "Current number of daily/seasonal workers (total)"
-msgstr "Nombre actuel de travailleurs journaliers/saisonniers (total)"
-
-#: apps/greennewdeal/models/deal.py:288
-#: apps/grid/forms/deal_employment_form.py:57
-msgid "Comment on jobs created (total)"
-msgstr "Commentaire sur les emplois créés (total)"
-
-#: apps/greennewdeal/models/deal.py:293
-#: apps/grid/forms/deal_employment_form.py:65
-msgid "Jobs created (foreign)"
-msgstr "Emplois créés (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:296
-#: apps/grid/forms/deal_employment_form.py:69
-msgid "Planned number of jobs (foreign)"
-msgstr "Nombre d’emplois prévus (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:302
-#: apps/grid/forms/deal_employment_form.py:75
-msgid "Planned employees (foreign)"
-msgstr "Employés prévus (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:308
-#: apps/grid/forms/deal_employment_form.py:81
-msgid "Planned daily/seasonal workers (foreign)"
-msgstr "Travailleurs journaliers/saisonniers prévus (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:314
-#: apps/grid/forms/deal_employment_form.py:86
-msgid "Current number of jobs (foreign)"
-msgstr "Nombre d’emplois actuel (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:320
-#: apps/grid/forms/deal_employment_form.py:90
-msgid "Current number of employees (foreign)"
-msgstr "Nombre d’employés actuel (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:326
-#: apps/grid/forms/deal_employment_form.py:95
-msgid "Current number of daily/seasonal workers (foreign)"
-msgstr "Nombre actuel de travailleurs journaliers/saisonniers (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:332
-#: apps/grid/forms/deal_employment_form.py:100
-msgid "Comment on jobs created (foreign)"
-msgstr "Commentaire sur les emplois créés (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:336
-#: apps/grid/forms/deal_employment_form.py:109
-msgid "Jobs created (domestic)"
-msgstr "Emplois créés (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:339
-#: apps/grid/forms/deal_employment_form.py:113
-msgid "Planned number of jobs (domestic)"
-msgstr "Nombre d’emplois prévus (étrangers)"
-
-#: apps/greennewdeal/models/deal.py:345
-#: apps/grid/forms/deal_employment_form.py:119
-msgid "Planned employees (domestic)"
-msgstr "Employés prévus (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:351
-#: apps/grid/forms/deal_employment_form.py:125
-msgid "Planned daily/seasonal workers (domestic)"
-msgstr "Travailleurs journaliers/saisonniers prévus (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:357
-#: apps/grid/forms/deal_employment_form.py:131
-msgid "Current number of jobs (domestic)"
-msgstr "Nombre d’emplois actuel (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:363
-#: apps/grid/forms/deal_employment_form.py:136
-msgid "Current number of employees (domestic)"
-msgstr "Nombre d’employés actuel (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:369
-#: apps/grid/forms/deal_employment_form.py:141
-msgid "Current number of daily/seasonal workers (domestic)"
-msgstr "Nombre actuel de travailleurs journaliers/saisonniers (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:375
-#: apps/grid/forms/deal_employment_form.py:146
-msgid "Comment on jobs created (domestic)"
-msgstr "Commentaire sur les emplois créés (nationaux)"
-
-#: apps/greennewdeal/models/deal.py:390 apps/grid/forms/choices.py:102
-msgid ""
-"Government / State institutions (government, ministries, departments, "
-"agencies etc.)"
-msgstr ""
-"Gouvernement/institutions publiques (gouvernement, ministères, départements, "
-"agences, etc.)"
-
-#: apps/greennewdeal/models/deal.py:395 apps/grid/forms/choices.py:107
-msgid "Traditional land-owners / communities"
-msgstr "Propriétaires traditionnels des terres/communautés"
-
-#: apps/greennewdeal/models/deal.py:399 apps/grid/forms/choices.py:111
-msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
-msgstr "Autorité locale traditionnelle (ex. : Conseil des chefs/chefs)"
-
-#: apps/greennewdeal/models/deal.py:401 apps/grid/forms/choices.py:113
-msgid "Broker"
-msgstr "Courtier"
-
-#: apps/greennewdeal/models/deal.py:402 apps/grid/forms/choices.py:114
-msgid "Intermediary"
-msgstr "Intermédiaire"
-
-#: apps/greennewdeal/models/deal.py:403 apps/grid/forms/choices.py:60
-#: apps/grid/forms/choices.py:115
-msgid "Other (please specify)"
-msgstr "Autre (veuillez préciser)"
-
-#: apps/greennewdeal/models/deal.py:406
-#: apps/grid/forms/operational_stakeholder_form.py:29
-msgid "Actors involved in the negotiation / admission process"
-msgstr "Acteurs impliqués dans le processus de négociation/admission"
-
-#: apps/greennewdeal/models/deal.py:411
-#: apps/grid/forms/operational_stakeholder_form.py:33
-msgid "Name of investment project"
-msgstr "Nom du projet d’investissement"
-
-#: apps/greennewdeal/models/deal.py:414
-#: apps/grid/forms/operational_stakeholder_form.py:36
-msgid "Comment on investment chain"
-msgstr "Commentaire sur la chaîne d'investissement"
-
-#: apps/greennewdeal/models/deal.py:422
-#: apps/grid/forms/deal_local_communities_form.py:87
-msgid "Name of community"
-msgstr "Nom de la communauté"
-
-#: apps/greennewdeal/models/deal.py:425
-#: apps/grid/forms/deal_local_communities_form.py:90
-msgid "Name of indigenous people"
-msgstr "Nom du peuple autochtone"
-
-#: apps/greennewdeal/models/deal.py:430
-#: apps/grid/forms/deal_local_communities_form.py:94
-msgid "Comment on communities / indigenous peoples affected"
-msgstr "Commentaire sur les communautés/peuples autochtones affectés"
-
-#: apps/greennewdeal/models/deal.py:453
-#, fuzzy
-#| msgid "Negotiation status"
-msgid "Recognition status"
-msgstr "Statut de la négociation"
-
-#: apps/greennewdeal/models/deal.py:459
-#: apps/grid/forms/deal_local_communities_form.py:112
-msgid "Comment on recognitions status of community land tenure"
-msgstr "Commentaire sur la reconnaissance des régimes fonciers communautaires"
-
-#: apps/greennewdeal/models/deal.py:468
-#: apps/grid/forms/deal_local_communities_form.py:122
-msgid "Community consultation"
-msgstr "Consultation de la communauté"
-
-#: apps/greennewdeal/models/deal.py:475
-#: apps/grid/forms/deal_local_communities_form.py:128
-msgid "Comment on consultation of local community"
-msgstr "Commentaire sur la consultation de la communauté locale"
-
-#: apps/greennewdeal/models/deal.py:484
-#: apps/grid/forms/deal_local_communities_form.py:138
-msgid "Community reaction"
-msgstr "Réaction de la communauté"
-
-#: apps/greennewdeal/models/deal.py:491
-#: apps/grid/forms/deal_local_communities_form.py:143
-msgid "Comment on community reaction"
-msgstr "Commentaire sur la réaction de la communauté"
-
-#: apps/greennewdeal/models/deal.py:494
-#: apps/grid/forms/deal_local_communities_form.py:148
-#: apps/grid/forms/deal_local_communities_form.py:152
-msgid "Presence of land conflicts"
-msgstr "Présence de conflits fonciers"
-
-#: apps/greennewdeal/models/deal.py:496 apps/greennewdeal/models/deal.py:525
-#: apps/grid/forms/deal_local_communities_form.py:158
-msgid "Comment on presence of land conflicts"
-msgstr "Commentaire sur la présence de conflits fonciers"
-
-#: apps/greennewdeal/models/deal.py:499
-#: apps/grid/forms/deal_local_communities_form.py:164
-#: apps/grid/forms/deal_local_communities_form.py:168
-msgid "Displacement of people"
-msgstr "Déplacement de personnes"
-
-#: apps/greennewdeal/models/deal.py:501
-#: apps/grid/forms/deal_local_communities_form.py:174
-msgid "Number of people actually displaced"
-msgstr "Nombre de personnes réellement déplacées"
-
-#: apps/greennewdeal/models/deal.py:504
-#: apps/grid/forms/deal_local_communities_form.py:179
-msgid "Number of households actually displaced"
-msgstr "Nombre de ménages réellement déplacés"
-
-#: apps/greennewdeal/models/deal.py:507
-#: apps/grid/forms/deal_local_communities_form.py:184
-msgid "Number of people displaced out of their community land"
-msgstr "Nombre de personnes déplacées de leurs terres communautaires"
-
-#: apps/greennewdeal/models/deal.py:512
-#: apps/grid/forms/deal_local_communities_form.py:189
-msgid "Number of people displaced staying on community land"
-msgstr "Nombre de personnes déplacées demeurant sur les terres communautaires"
-
-#: apps/greennewdeal/models/deal.py:515
-#: apps/grid/forms/deal_local_communities_form.py:194
-msgid "Number of households displaced \"only\" from their agricultural fields"
-msgstr "Nombre de ménages « seulement » déplacés de leurs champs agricoles"
-
-#: apps/greennewdeal/models/deal.py:520
-#: apps/grid/forms/deal_local_communities_form.py:200
-msgid "Number of people facing displacement once project is fully implemented"
-msgstr ""
-"Nombre de personnes confrontées au déplacement une fois le projet pleinement "
-"mis en œuvre"
-
-#: apps/greennewdeal/models/deal.py:539
-#: apps/grid/forms/deal_local_communities_form.py:211
-#: apps/grid/forms/deal_local_communities_form.py:215
-msgid "Negative impacts for local communities"
-msgstr "Impacts négatifs pour les communautés locales"
-
-#: apps/greennewdeal/models/deal.py:547
-#: apps/grid/forms/deal_local_communities_form.py:221
-msgid "Comment on negative impacts for local communities"
-msgstr "Commentaire sur les impacts négatifs pour les communautés locales"
-
-#: apps/greennewdeal/models/deal.py:551
-#: apps/grid/forms/deal_local_communities_form.py:231
-msgid "Promised compensation (e.g. for damages or resettlements)"
-msgstr ""
-"Compensation promise (au titre, par exemple, des dommages ou des "
-"réinstallations)"
-
-#: apps/greennewdeal/models/deal.py:554
-#: apps/grid/forms/deal_local_communities_form.py:236
-msgid "Received compensation (e.g. for damages or resettlements)"
-msgstr ""
-"Compensation reçue (au titre, par exemple, des dommages ou des "
-"réinstallations)"
-
-#: apps/greennewdeal/models/deal.py:572
-#: apps/grid/forms/deal_local_communities_form.py:242
-#: apps/grid/forms/deal_local_communities_form.py:246
-msgid "Promised benefits for local communities"
-msgstr "Bénéfices promis aux communautés locales"
-
-#: apps/greennewdeal/models/deal.py:580 apps/greennewdeal/models/deal.py:593
-#: apps/grid/forms/deal_local_communities_form.py:252
-msgid "Comment on promised benefits for local communities"
-msgstr "Commentaires sur les bénéfices promis aux communautés locales"
-
-#: apps/greennewdeal/models/deal.py:585
-#: apps/grid/forms/deal_local_communities_form.py:260
-#: apps/grid/forms/deal_local_communities_form.py:264
-msgid "Materialized benefits for local communities"
-msgstr "Bénéfices concrets pour les communautés locales"
-
-#: apps/greennewdeal/models/deal.py:598
-#: apps/grid/forms/deal_local_communities_form.py:278
-#: apps/grid/forms/deal_local_communities_form.py:284
-msgid ""
-"Presence of organizations and actions taken (e.g. farmer organizations, "
-"NGOs, etc.)"
-msgstr ""
-"Présence d'organisations et mesures prises (ex. : organisations agricoles, "
-"ONG, etc.)"
-
-#: apps/greennewdeal/models/deal.py:614
-#: apps/grid/forms/deal_former_use_form.py:51
-msgid "Former land owner"
-msgstr "Propriétaire antérieur des terres"
-
-#: apps/greennewdeal/models/deal.py:620
-#: apps/grid/forms/deal_former_use_form.py:56
-msgid "Comment on former land owner"
-msgstr "Commentaire sur le propriétaire antérieur des terres"
-
-#: apps/greennewdeal/models/deal.py:636
-#: apps/grid/forms/deal_former_use_form.py:59
-#: apps/grid/forms/deal_former_use_form.py:62
-msgid "Former land use"
-msgstr "Utilisation antérieure des terres"
-
-#: apps/greennewdeal/models/deal.py:642
-#: apps/grid/forms/deal_former_use_form.py:67
-msgid "Comment on former land use"
-msgstr "Commentaire sur l’utilisation précédente des terres"
-
-#: apps/greennewdeal/models/deal.py:657
-#: apps/grid/forms/deal_former_use_form.py:70
-#: apps/grid/forms/deal_former_use_form.py:73
-msgid "Former land cover"
-msgstr "Occupation antérieure des terres"
-
-#: apps/greennewdeal/models/deal.py:663
-#: apps/grid/forms/deal_former_use_form.py:78
-msgid "Comment on former land cover"
-msgstr "Commentaire sur l’occupation antérieure des terres"
-
-#: apps/greennewdeal/models/deal.py:673
-#, fuzzy
-#| msgid "Resources area"
-msgid "Resources"
-msgstr "Superficie consacrée aux ressources"
-
-#: apps/greennewdeal/models/deal.py:677
-#: apps/grid/forms/deal_produce_info_form.py:90
-msgid "Contract farming crops"
-msgstr "Cultures sous agriculture sous contrat"
-
-#: apps/greennewdeal/models/deal.py:680
-#: apps/grid/forms/deal_produce_info_form.py:94
-msgid "Comment on contract farming crops"
-msgstr "Commentaire sur les cultures sous agriculture sous contrat"
-
-#: apps/greennewdeal/models/deal.py:683
-#: apps/grid/forms/deal_produce_info_form.py:100
-msgid "Contract farming livestock"
-msgstr "Animaux d‘élevage sous agriculture sous contrat"
-
-#: apps/greennewdeal/models/deal.py:686
-#: apps/grid/forms/deal_produce_info_form.py:105
-msgid "Comment on contract farming livestock"
-msgstr "Commentaire sur les animaux d’élevage sous agriculture sous contrat"
-
-#: apps/greennewdeal/models/deal.py:689
-#: apps/grid/forms/deal_produce_info_form.py:113
-msgid "Has domestic use"
-msgstr "Ha usage domestique"
-
-#: apps/greennewdeal/models/deal.py:691
-#: apps/greennewdeal/models/investor.py:214
-#: apps/grid/forms/parent_investor_formset.py:88
-#: apps/landmatrix/models/investor.py:727
-msgid "Ownership share"
-msgstr "Niveau de participation"
-
-#: apps/greennewdeal/models/deal.py:696
-#: apps/grid/forms/deal_produce_info_form.py:117
-msgid "Has export"
-msgstr "Ha exportation"
-
-#: apps/greennewdeal/models/deal.py:702
-#: apps/grid/forms/deal_produce_info_form.py:128
-msgid "Country 1 ratio"
-msgstr "Ratio pays 1"
-
-#: apps/greennewdeal/models/deal.py:711
-#: apps/grid/forms/deal_produce_info_form.py:136
-msgid "Country 2 ratio"
-msgstr "Ratio pays 2"
-
-#: apps/greennewdeal/models/deal.py:720
-#: apps/grid/forms/deal_produce_info_form.py:144
-msgid "Country 3 ratio"
-msgstr "Ratio pays 3"
-
-#: apps/greennewdeal/models/deal.py:729
-#: apps/grid/forms/deal_produce_info_form.py:152
-#: apps/grid/forms/deal_produce_info_form.py:157
-msgid "In country processing of produce"
-msgstr "Transformation du produit dans le pays"
-
-#: apps/greennewdeal/models/deal.py:732
-#: apps/grid/forms/deal_produce_info_form.py:163
-msgid "Comment on in country processing of produce"
-msgstr "Commentaire sur la transformation du produit dans le pays"
-
-#: apps/greennewdeal/models/deal.py:736
-#: apps/grid/forms/deal_produce_info_form.py:169
-msgid ""
-"Processing facilities / production infrastructure of the project (e.g. oil "
-"mill, ethanol distillery, biomass power plant etc.)"
-msgstr ""
-"Installations de transformation/infrastructure de production du projet "
-"(ex. : huilerie, distillerie d’éthanol, centrale à biomasse, etc.)"
-
-#: apps/greennewdeal/models/deal.py:742
-#: apps/grid/forms/deal_produce_info_form.py:176
-msgid "In-country end products of the project"
-msgstr "Produits finaux du projet dans le pays"
-
-#: apps/greennewdeal/models/deal.py:747 apps/grid/forms/deal_water_form.py:22
-#: apps/grid/forms/deal_water_form.py:26
-msgid "Water extraction envisaged"
-msgstr "Captage d’eau envisagé"
-
-#: apps/greennewdeal/models/deal.py:750 apps/grid/forms/deal_water_form.py:32
-msgid "Comment on water extraction envisaged"
-msgstr "Commentaire sur le captage d’eau envisagé"
-
-#: apps/greennewdeal/models/deal.py:761 apps/grid/forms/deal_water_form.py:37
-#: apps/grid/forms/deal_water_form.py:41
-msgid "Source of water extraction"
-msgstr "Source du captage d’eau"
-
-#: apps/greennewdeal/models/deal.py:769 apps/grid/forms/deal_water_form.py:46
-msgid "Comment on source of water extraction"
-msgstr "Commentaire sur la source du captage d’eau"
-
-#: apps/greennewdeal/models/deal.py:772 apps/grid/forms/deal_water_form.py:58
-msgid "Comment on how much do investors pay for water"
-msgstr "Commentaire sur le prix payé par les investisseurs pour l’eau"
-
-#: apps/greennewdeal/models/deal.py:776 apps/grid/forms/deal_water_form.py:66
-msgid "Water extraction amount"
-msgstr "Volume d’eau captée"
-
-#: apps/greennewdeal/models/deal.py:776 apps/grid/forms/deal_water_form.py:66
-msgid "m3/year"
-msgstr "m3/an"
-
-#: apps/greennewdeal/models/deal.py:779 apps/grid/forms/deal_water_form.py:70
-msgid "Comment on how much water is extracted"
-msgstr "Commentaire sur la quantité d’eau captée"
-
-#: apps/greennewdeal/models/deal.py:782 apps/grid/forms/deal_water_form.py:76
-msgid "Use of irrigation infrastructure"
-msgstr "Utilisation de l’infrastructure hydrique"
-
-#: apps/greennewdeal/models/deal.py:785 apps/grid/forms/deal_water_form.py:82
-msgid "Comment on use of irrigation infrastructure"
-msgstr "Commentaire sur l’utilisation de l’infrastructure d’irrigation"
-
-#: apps/greennewdeal/models/deal.py:788 apps/grid/forms/deal_water_form.py:88
-msgid "Water footprint of the investment project"
-msgstr "Empreinte en eau du projet d'investissement"
-
-#: apps/greennewdeal/models/deal.py:793
-#, fuzzy
-#| msgid "Gender-related info"
-msgid "Gender-related information"
-msgstr "Informations relatives au genre"
-
-#: apps/greennewdeal/models/deal.py:801 apps/grid/forms/deal_vggt_form.py:30
-msgid ""
-"Application of Voluntary Guidelines on the Responsible Governance of Tenure "
-"(VGGT)"
-msgstr "Application des Directives volontaires sur les régimes fonciers"
-
-#: apps/greennewdeal/models/deal.py:808 apps/grid/forms/deal_vggt_form.py:36
-msgid "Comment on VGGT"
-msgstr "Commentaire sur les Directives volontaires sur les régimes fonciers"
-
-#: apps/greennewdeal/models/deal.py:811 apps/grid/forms/deal_vggt_form.py:46
-msgid ""
-"Application of Principles for Responsible Agricultural Investments (PRAI)"
-msgstr ""
-"Application des principes pour un investissement responsable dans "
-"l’agriculture (PRAI)"
-
-#: apps/greennewdeal/models/deal.py:817 apps/grid/forms/deal_vggt_form.py:52
-msgid "Comment on PRAI"
-msgstr "Commentaire sur les PRAI"
-
-#: apps/greennewdeal/models/deal.py:820
-#: apps/grid/forms/deal_overall_comment_form.py:12
-#: apps/grid/forms/deal_overall_comment_form.py:14
-msgid "Overall comment"
-msgstr "Commentaire général"
-
-#: apps/greennewdeal/models/deal.py:834
-#, fuzzy
-#| msgid "Comment on how much water is extracted"
-msgid "Comment why this deal is private"
-msgstr "Commentaire sur la quantité d’eau captée"
-
-#: apps/greennewdeal/models/deal.py:856 apps/greennewdeal/models/investor.py:81
-#: apps/greennewdeal/models/investor.py:244
-msgid "Draft"
-msgstr ""
-
-#: apps/greennewdeal/models/deal.py:857 apps/greennewdeal/models/investor.py:82
-#: apps/greennewdeal/models/investor.py:245
-#, fuzzy
-#| msgid "Livestock"
-msgid "Live"
-msgstr "Animaux d’élevage"
-
-#: apps/greennewdeal/models/deal.py:860 apps/greennewdeal/models/investor.py:85
-#: apps/greennewdeal/models/investor.py:248
-#: apps/landmatrix/models/activity.py:91 apps/landmatrix/models/investor.py:80
-#: apps/landmatrix/models/investor.py:694
-#: apps/landmatrix/models/investor.py:826
-msgid "Rejected"
-msgstr "Rejeté"
-
-#: apps/greennewdeal/models/deal.py:861 apps/greennewdeal/models/investor.py:86
-#: apps/greennewdeal/models/investor.py:249
-#, fuzzy
-#| msgid "To delete"
-msgid "To Delete?"
-msgstr "A supprimer"
-
-#: apps/greennewdeal/models/deal_submodels.py:33
-#: apps/grid/forms/deal_spatial_form.py:17 apps/map/views.py:76
-msgid "Administrative region"
-msgstr "Région administrative"
-
-#: apps/greennewdeal/models/deal_submodels.py:34
-#: apps/grid/forms/deal_spatial_form.py:18 apps/map/views.py:81
-msgid "Approximate location"
-msgstr "Localisation approximative"
-
-#: apps/greennewdeal/models/deal_submodels.py:35
-#: apps/grid/forms/deal_spatial_form.py:19 apps/map/views.py:86
-msgid "Exact location"
-msgstr "Localisation exacte"
-
-#: apps/greennewdeal/models/deal_submodels.py:36
-#: apps/grid/forms/deal_spatial_form.py:20 apps/map/views.py:91
-msgid "Coordinates"
-msgstr "Coordonnées"
-
-#: apps/greennewdeal/models/deal_submodels.py:60
-#: apps/grid/forms/deal_contract_form.py:15
-msgid "Contract number"
-msgstr "Numéro du contrat"
-
-#: apps/greennewdeal/models/deal_submodels.py:64
-#: apps/grid/forms/deal_contract_form.py:25
-msgid "Duration of the agreement (in years)"
-msgstr "Durée de l’accord (en nombre d’années)"
-
-#: apps/greennewdeal/models/deal_submodels.py:81
-#: apps/grid/forms/deal_data_source_form.py:27
-msgid "Media report"
-msgstr "Médias"
-
-#: apps/greennewdeal/models/deal_submodels.py:82
-#: apps/grid/forms/deal_data_source_form.py:28
-msgid "Research Paper / Policy Report"
-msgstr "Articles scientifiques/rapports politiques"
-
-#: apps/greennewdeal/models/deal_submodels.py:83
-#: apps/grid/forms/deal_data_source_form.py:29
-msgid "Government sources"
-msgstr "Gouvernements"
-
-#: apps/greennewdeal/models/deal_submodels.py:84
-#: apps/grid/forms/deal_data_source_form.py:30
-msgid "Company sources"
-msgstr "Entreprises"
-
-#: apps/greennewdeal/models/deal_submodels.py:85
-#: apps/grid/forms/deal_contract_form.py:14
-#: apps/grid/forms/deal_data_source_form.py:31
-msgid "Contract"
-msgstr "Contrat"
-
-#: apps/greennewdeal/models/deal_submodels.py:86
-#: apps/grid/forms/deal_data_source_form.py:34
-msgid "Contract (contract farming agreement)"
-msgstr "Contrat (agriculture sous contrat)"
-
-#: apps/greennewdeal/models/deal_submodels.py:87
-#: apps/grid/forms/deal_data_source_form.py:36
-msgid "Personal information"
-msgstr "Informations personnelles"
-
-#: apps/greennewdeal/models/deal_submodels.py:88
-#: apps/grid/forms/deal_data_source_form.py:37
-msgid "Crowdsourcing"
-msgstr "Production participative"
-
-#: apps/greennewdeal/models/deal_submodels.py:89
-#: apps/grid/forms/deal_data_source_form.py:38
-msgid "Other (Please specify in comment field)"
-msgstr "Autre (veuillez préciser dans le champ Commentaire)"
-
-#: apps/greennewdeal/models/deal_submodels.py:94
-#: apps/grid/forms/deal_data_source_form.py:43
-msgid "File"
-msgstr "Fichier"
-
-#: apps/greennewdeal/models/deal_submodels.py:97
-#: apps/grid/forms/deal_data_source_form.py:43
-msgid "Maximum file size: 10MB"
-msgstr "Taille maximale du fichier : 10 Mo"
-
-#: apps/greennewdeal/models/deal_submodels.py:101
-#: apps/grid/forms/deal_data_source_form.py:45
-msgid "Keep PDF not public"
-msgstr "Maintenir le PDF non public"
-
-#: apps/greennewdeal/models/deal_submodels.py:104
-#: apps/greennewdeal/models/investor.py:27
-#: apps/grid/forms/deal_data_source_form.py:55
-#: apps/grid/forms/investor_form.py:28
-#: apps/grid/forms/public_user_information_form.py:25
-#: apps/landmatrix/forms.py:106 apps/landmatrix/models/__init__.py:94
-#: apps/landmatrix/models/activity_changeset.py:8
-#: apps/landmatrix/models/filter.py:52 apps/landmatrix/models/filter.py:68
-#: apps/landmatrix/models/investor.py:124
-msgid "Name"
-msgstr "Nom"
-
-#: apps/greennewdeal/models/deal_submodels.py:105
-#, fuzzy
-#| msgid "Company sources"
-msgid "Company"
-msgstr "Entreprises"
-
-#: apps/greennewdeal/models/deal_submodels.py:106
-#: apps/grid/forms/deal_data_source_form.py:57
-#: apps/grid/forms/public_user_information_form.py:26
-msgid "Email"
-msgstr "E-mail"
-
-#: apps/greennewdeal/models/deal_submodels.py:107
-#: apps/grid/forms/deal_data_source_form.py:58
-#: apps/grid/forms/public_user_information_form.py:27
-#: apps/landmatrix/forms.py:15
-msgid "Phone"
-msgstr "Téléphone"
-
-#: apps/greennewdeal/models/deal_submodels.py:110
-#: apps/grid/forms/deal_data_source_form.py:60
-msgid "Includes in-country-verified information"
-msgstr "Inclut des informations vérifiées dans le pays"
-
-#: apps/greennewdeal/models/deal_submodels.py:113
-#: apps/grid/forms/deal_data_source_form.py:66
-msgid "Comment on data source"
-msgstr "Commentaire sur la source des données"
-
-#: apps/greennewdeal/models/investor.py:30 apps/grid/forms/investor_form.py:34
-#: apps/grid/forms/investor_form.py:114 apps/grid/views/filter.py:447
-#: apps/grid/views/investor.py:60 apps/landmatrix/forms.py:108
-#: apps/landmatrix/models/investor.py:127
-msgid "Country of registration/origin"
-msgstr "Pays de domiciliation/d’origine"
-
-#: apps/greennewdeal/models/investor.py:37
-#: apps/landmatrix/models/investor.py:94
-msgid "Government"
-msgstr "Gouvernement"
-
-#: apps/greennewdeal/models/investor.py:38
-#: apps/landmatrix/models/investor.py:95
-msgid "Government institution"
-msgstr "Institution gouvernementale"
-
-#: apps/greennewdeal/models/investor.py:39
-#: apps/landmatrix/models/investor.py:90
-msgid "State-/government (owned) company"
-msgstr "Société (détenue) par l’Etat/le gouvernement"
-
-#: apps/greennewdeal/models/investor.py:40
-#: apps/landmatrix/models/investor.py:89
-msgid "Semi state-owned company"
-msgstr "Société semi-publique"
-
-#: apps/greennewdeal/models/investor.py:41
-#: apps/landmatrix/models/investor.py:108
-msgid "Asset management firm"
-msgstr "Société de gestion d’actifs"
-
-#: apps/greennewdeal/models/investor.py:44
-#: apps/landmatrix/models/investor.py:97
-msgid "Bilateral Development Bank / Development Finance Institution"
-msgstr ""
-"Banque de développement bilatérale/institution de financement du "
-"développement"
-
-#: apps/greennewdeal/models/investor.py:46
-#: apps/landmatrix/models/investor.py:86
-msgid "Stock-exchange listed company"
-msgstr "Société enregistrée en bourse"
-
-#: apps/greennewdeal/models/investor.py:47
-#: apps/landmatrix/models/investor.py:98
-msgid "Commercial Bank"
-msgstr "Banque commerciale"
-
-#: apps/greennewdeal/models/investor.py:48
-#: apps/landmatrix/models/investor.py:106
-msgid "Insurance firm"
-msgstr "Société d’assurance"
-
-#: apps/greennewdeal/models/investor.py:49
-#: apps/landmatrix/models/investor.py:99
-msgid "Investment Bank"
-msgstr "Banque d'investissement"
-
-#: apps/greennewdeal/models/investor.py:50
-#: apps/landmatrix/models/investor.py:88
-msgid "Investment fund"
-msgstr "Fonds d’investissement"
-
-#: apps/greennewdeal/models/investor.py:51
-#: apps/landmatrix/models/investor.py:96
-msgid "Multilateral Development Bank (MDB)"
-msgstr "Banque de développement multilatérale (BDM)"
-
-#: apps/greennewdeal/models/investor.py:52
-#: apps/landmatrix/models/investor.py:85
-msgid "Private company"
-msgstr "Société privée"
-
-#: apps/greennewdeal/models/investor.py:53
-#: apps/landmatrix/models/investor.py:107
-msgid "Private equity firm"
-msgstr "Société de capital-investissement"
-
-#: apps/greennewdeal/models/investor.py:54
-#: apps/landmatrix/models/investor.py:87
-msgid "Individual entrepreneur"
-msgstr "Entrepreneur individuel"
-
-#: apps/greennewdeal/models/investor.py:55
-#: apps/landmatrix/models/investor.py:109
-msgid "Non - Profit organization (e.g. Church, University etc.)"
-msgstr "Organisation à but non lucratif (ex. : Eglise, Université, etc.)"
-
-#: apps/greennewdeal/models/investor.py:56
-#: apps/landmatrix/models/investor.py:91
-msgid "Other (please specify in comment field)"
-msgstr "Autre (veuillez préciser dans le champ Commentaire)"
-
-#: apps/greennewdeal/models/investor.py:59 apps/grid/forms/investor_form.py:30
-#: apps/landmatrix/forms.py:111 apps/landmatrix/models/investor.py:133
-msgid "Classification"
-msgstr "Classification"
-
-#: apps/greennewdeal/models/investor.py:66 apps/landmatrix/forms.py:113
-#: apps/landmatrix/models/investor.py:140
-msgid "Investor homepage"
-msgstr "Page d’accueil investisseur"
-
-#: apps/greennewdeal/models/investor.py:68 apps/landmatrix/forms.py:114
-#: apps/landmatrix/models/investor.py:142
-msgid "Opencorporates link"
-msgstr "Lien OpenCorporates"
-
-#: apps/greennewdeal/models/investor.py:180 apps/grid/forms/investor_form.py:24
-#: apps/grid/templates/grid/investor_detail.html:30
-#: apps/grid/templates/grid/investor_detail.html:172
-#: apps/grid/templates/grid/investor_detail.html:259
-#: apps/grid/templates/grid/investor_detail.html:346
-#: apps/grid/templates/grid/investor_detail.html:433
-#: apps/grid/views/filter.py:343 apps/landmatrix/models/investor.py:857
-msgid "Investor"
-msgstr "Investisseur"
-
-#: apps/greennewdeal/models/investor.py:187
-#, fuzzy
-#| msgid "Parent company"
-msgid "Venture Company"
-msgstr "Société mère"
-
-#: apps/greennewdeal/models/investor.py:194
-#: apps/grid/forms/investor_form.py:170
-#: apps/grid/forms/parent_investor_formset.py:76
-#: apps/grid/templates/grid/investor_detail.html:166
-#: apps/grid/views/browse_filter_conditions.py:60
-#: apps/grid/views/browse_filter_conditions.py:77 apps/grid/views/filter.py:298
-#: apps/grid/views/filter.py:302 apps/grid/views/filter.py:305
-#: apps/grid/views/filter.py:353 apps/grid/views/filter.py:356
-#: apps/grid/views/investor.py:223 apps/landmatrix/models/investor.py:117
-#: apps/landmatrix/models/investor.py:701
-msgid "Parent company"
-msgstr "Société mère"
-
-#: apps/greennewdeal/models/investor.py:195
-#: apps/grid/forms/investor_form.py:156
-#: apps/grid/forms/parent_investor_formset.py:129
-#: apps/grid/forms/parent_investor_formset.py:132
-#: apps/grid/templates/grid/investor_detail.html:253
-#: apps/grid/views/browse_filter_conditions.py:61
-#: apps/grid/views/browse_filter_conditions.py:78 apps/grid/views/filter.py:310
-#: apps/grid/views/filter.py:314 apps/grid/views/filter.py:318
-#: apps/grid/views/filter.py:367 apps/grid/views/filter.py:370
-#: apps/grid/views/investor.py:224 apps/landmatrix/models/investor.py:118
-#: apps/landmatrix/models/investor.py:702
-msgid "Tertiary investor/lender"
-msgstr "Prêteur/investisseur tertiaire"
-
-#: apps/greennewdeal/models/investor.py:198
-#: apps/landmatrix/models/investor.py:717
-msgid "Relation type"
-msgstr "Type de lien"
-
-#: apps/greennewdeal/models/investor.py:202
-#: apps/landmatrix/models/investor.py:707
-msgid "Shares/Equity"
-msgstr "Actions/capital"
-
-#: apps/greennewdeal/models/investor.py:203
-#: apps/landmatrix/models/investor.py:708
-msgid "Debt financing"
-msgstr "Financement de la dette"
-
-#: apps/greennewdeal/models/investor.py:207
-#, fuzzy
-#| msgid "Investment fund"
-msgid "Investment type"
-msgstr "Fonds d’investissement"
-
-#: apps/greennewdeal/models/investor.py:219
-#: apps/landmatrix/models/investor.py:732
-msgid "Loan amount"
-msgstr "Montant du prêt"
-
-#: apps/greennewdeal/models/investor.py:222
-#: apps/landmatrix/models/investor.py:735
-msgid "Loan currency"
-msgstr "Devise du prêt"
-
-#: apps/greennewdeal/models/investor.py:227
-#, fuzzy
-#| msgid "Loan amount"
-msgid "Loan date"
-msgstr "Montant du prêt"
-
-#: apps/greennewdeal/models/investor.py:230
-#: apps/landmatrix/models/investor.py:711
-msgid "Subsidiary of parent company"
-msgstr "Filiale de la société mère"
-
-#: apps/greennewdeal/models/investor.py:231
-#: apps/landmatrix/models/investor.py:712
-msgid "Local branch of parent company"
-msgstr "Succursale locale de la société mère"
-
-#: apps/greennewdeal/models/investor.py:232
-#: apps/landmatrix/models/investor.py:713
-msgid "Joint venture of parent companies"
-msgstr "Co-entreprise de sociétés mères"
-
-#: apps/greennewdeal/models/investor.py:235
-#: apps/landmatrix/models/investor.py:742
-msgid "Parent relation"
-msgstr "Lien de filiation"
-
-#: apps/greennewdeal/models/investor.py:266
-msgid "Investor Venture Involvement"
-msgstr "Implication de l’investisseur dans le projet"
-
-#: apps/greennewdeal/models/investor.py:267
-msgid "Investor Venture Involvements"
-msgstr "Implications de l’investisseur dans le projet"
-
-#: apps/greennewdeal/models/investor.py:272
-msgid "<is PARENT of>"
-msgstr ""
-
-#: apps/greennewdeal/models/investor.py:274
-msgid "<is INVESTOR of>"
-msgstr ""
 
 #: apps/grid/fields.py:409
 msgid "Uploaded files must be less than 10MB."
@@ -2256,23 +1133,23 @@ msgstr "La taille des fichiers téléchargés doit être inférieure à 10 Mo. 
 msgid " (%s %s)"
 msgstr " (%s %s)"
 
-#: apps/grid/forms/choices.py:30
+#: apps/grid/forms/choices.py:30 apps/landmatrix/models/deal.py:117
 msgid "Biofuels"
 msgstr "Biocombustibles"
 
-#: apps/grid/forms/choices.py:31
+#: apps/grid/forms/choices.py:31 apps/landmatrix/models/deal.py:118
 msgid "Food crops"
 msgstr "Cultures vivrières"
 
-#: apps/grid/forms/choices.py:32
+#: apps/grid/forms/choices.py:32 apps/landmatrix/models/deal.py:119
 msgid "Fodder"
 msgstr "Fourrage"
 
-#: apps/grid/forms/choices.py:34
+#: apps/grid/forms/choices.py:34 apps/landmatrix/models/deal.py:121
 msgid "Non-food agricultural commodities"
 msgstr "Produits agricoles non alimentaires"
 
-#: apps/grid/forms/choices.py:35
+#: apps/grid/forms/choices.py:35 apps/landmatrix/models/deal.py:122
 msgid "Agriculture unspecified"
 msgstr "Agriculture - Autres"
 
@@ -2284,38 +1161,68 @@ msgstr "Plantation d’arbres (pour le bois et la fibre)"
 msgid "Forest logging / management (for wood and fibre)"
 msgstr "Exploitation/gestion forestière (pour le bois et la fibre)"
 
-#: apps/grid/forms/choices.py:46
+#: apps/grid/forms/choices.py:46 apps/landmatrix/models/deal.py:130
 msgid "For carbon sequestration/REDD"
 msgstr "Pour la séquestration du carbone/REDD"
 
-#: apps/grid/forms/choices.py:47
+#: apps/grid/forms/choices.py:47 apps/landmatrix/models/deal.py:131
 msgid "Forestry unspecified"
 msgstr "Foresterie - Autres"
 
-#: apps/grid/forms/choices.py:54
+#: apps/grid/forms/choices.py:54 apps/landmatrix/models/deal.py:138
 msgid "Oil / Gas extraction"
 msgstr "Extraction pétrolière et gazière"
 
-#: apps/grid/forms/choices.py:55 apps/map/views.py:55
+#: apps/grid/forms/choices.py:55 apps/landmatrix/models/deal.py:139
+#: apps/map/views.py:55
 msgid "Tourism"
 msgstr "Tourisme"
 
-#: apps/grid/forms/choices.py:56 apps/map/views.py:56
+#: apps/grid/forms/choices.py:56 apps/landmatrix/models/deal.py:140
+#: apps/map/views.py:56
 msgid "Industry"
 msgstr "Industrie"
 
 #: apps/grid/forms/choices.py:57 apps/grid/forms/deal_former_use_form.py:28
+#: apps/landmatrix/models/deal.py:141 apps/landmatrix/models/deal.py:711
 #: apps/map/views.py:58
 msgid "Conservation"
 msgstr "Conservation"
 
-#: apps/grid/forms/choices.py:58
+#: apps/grid/forms/choices.py:58 apps/landmatrix/models/deal.py:142
 msgid "Land speculation"
 msgstr "Spéculation foncière"
 
-#: apps/grid/forms/choices.py:59 apps/map/views.py:63
+#: apps/grid/forms/choices.py:59 apps/landmatrix/models/deal.py:143
+#: apps/map/views.py:63
 msgid "Renewable Energy"
 msgstr "Energies renouvelables"
+
+#: apps/grid/forms/choices.py:60 apps/grid/forms/choices.py:115
+#: apps/landmatrix/models/deal.py:486
+msgid "Other (please specify)"
+msgstr "Autre (veuillez préciser)"
+
+#: apps/grid/forms/choices.py:81 apps/landmatrix/models/deal.py:157
+msgid "Outright Purchase"
+msgstr "Achat ferme"
+
+#: apps/grid/forms/choices.py:82 apps/landmatrix/models/deal.py:158
+msgid "Lease"
+msgstr "Bail"
+
+#: apps/grid/forms/choices.py:83 apps/landmatrix/models/deal.py:159
+msgid "Concession"
+msgstr "Concession"
+
+#: apps/grid/forms/choices.py:86 apps/landmatrix/models/deal.py:162
+msgid "Exploitation permit / license / concession (for mineral resources)"
+msgstr ""
+"Permis/licence/concession d’exploitation (pour les ressources minérales)"
+
+#: apps/grid/forms/choices.py:88 apps/landmatrix/models/deal.py:164
+msgid "Pure contract farming"
+msgstr "Agriculture sous contrat pure"
 
 #: apps/grid/forms/choices.py:92 apps/grid/forms/choices.py:98
 #: apps/grid/forms/deal_action_comment_form.py:21
@@ -2324,15 +1231,50 @@ msgstr "Energies renouvelables"
 msgid "---------"
 msgstr "---------"
 
+#: apps/grid/forms/choices.py:93 apps/landmatrix/models/deal.py:243
+msgid "per ha"
+msgstr "par ha"
+
+#: apps/grid/forms/choices.py:94 apps/landmatrix/models/deal.py:244
+msgid "for specified area"
+msgstr "pour la superficie spécifiée"
+
+#: apps/grid/forms/choices.py:102 apps/landmatrix/models/deal.py:473
+msgid ""
+"Government / State institutions (government, ministries, departments, "
+"agencies etc.)"
+msgstr ""
+"Gouvernement/institutions publiques (gouvernement, ministères, départements, "
+"agences, etc.)"
+
+#: apps/grid/forms/choices.py:107 apps/landmatrix/models/deal.py:478
+msgid "Traditional land-owners / communities"
+msgstr "Propriétaires traditionnels des terres/communautés"
+
+#: apps/grid/forms/choices.py:111 apps/landmatrix/models/deal.py:482
+msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
+msgstr "Autorité locale traditionnelle (ex. : Conseil des chefs/chefs)"
+
+#: apps/grid/forms/choices.py:113 apps/landmatrix/models/deal.py:484
+msgid "Broker"
+msgstr "Courtier"
+
+#: apps/grid/forms/choices.py:114 apps/landmatrix/models/deal.py:485
+msgid "Intermediary"
+msgstr "Intermédiaire"
+
 #: apps/grid/forms/deal_action_comment_form.py:24
+#: apps/landmatrix/models/deal.py:932
 msgid "Temporary removal from PI after criticism"
 msgstr "Suppression temporaire de l’interface de la plate-forme après critique"
 
 #: apps/grid/forms/deal_action_comment_form.py:26
+#: apps/landmatrix/models/deal.py:933
 msgid "Research in progress"
 msgstr "Recherche en cours"
 
 #: apps/grid/forms/deal_action_comment_form.py:27
+#: apps/landmatrix/models/deal.py:934
 msgid "Land Observatory Import"
 msgstr "Importation Observatoire foncier"
 
@@ -2343,7 +1285,7 @@ msgstr "Info Meta"
 #: apps/grid/forms/deal_action_comment_form.py:31
 #: apps/grid/forms/deal_action_comment_form.py:35
 #: apps/grid/templates/grid/includes/deal_history.html:31
-#: apps/grid/views/export.py:351 apps/landmatrix/forms.py:139
+#: apps/grid/views/export.py:351 apps/landmatrix/forms/oldforms.py:139
 #: apps/landmatrix/models/activity.py:824
 msgid "Fully updated"
 msgstr "Entièrement actualisé"
@@ -2393,6 +1335,18 @@ msgstr "Commentaire de retour"
 msgid "Contracts"
 msgstr "Contrats"
 
+#: apps/grid/forms/deal_contract_form.py:14
+#: apps/grid/forms/deal_data_source_form.py:31
+#: apps/landmatrix/forms/deal_submodels.py:28
+#: apps/landmatrix/models/deal_submodels.py:86
+msgid "Contract"
+msgstr "Contrat"
+
+#: apps/grid/forms/deal_contract_form.py:15
+#: apps/landmatrix/models/deal_submodels.py:62
+msgid "Contract number"
+msgstr "Numéro du contrat"
+
 #: apps/grid/forms/deal_contract_form.py:17
 msgid "Contract date"
 msgstr "Date du contrat"
@@ -2400,6 +1354,11 @@ msgstr "Date du contrat"
 #: apps/grid/forms/deal_contract_form.py:20
 msgid "Contract expiration date"
 msgstr "Date d’expiration du contrat"
+
+#: apps/grid/forms/deal_contract_form.py:25
+#: apps/landmatrix/models/deal_submodels.py:66
+msgid "Duration of the agreement (in years)"
+msgstr "Durée de l’accord (en nombre d’années)"
 
 #: apps/grid/forms/deal_contract_form.py:26
 msgid "years"
@@ -2410,6 +1369,7 @@ msgid "Comment on contract"
 msgstr "Commentaire sur le contrat"
 
 #: apps/grid/forms/deal_data_source_form.py:21
+#: apps/landmatrix/forms/deal_submodels.py:44
 msgid "Data source"
 msgstr "Source des données"
 
@@ -2417,9 +1377,64 @@ msgstr "Source des données"
 msgid "Data source type"
 msgstr "Type de source des données"
 
+#: apps/grid/forms/deal_data_source_form.py:27
+#: apps/landmatrix/models/deal_submodels.py:82
+msgid "Media report"
+msgstr "Médias"
+
+#: apps/grid/forms/deal_data_source_form.py:28
+#: apps/landmatrix/models/deal_submodels.py:83
+msgid "Research Paper / Policy Report"
+msgstr "Articles scientifiques/rapports politiques"
+
+#: apps/grid/forms/deal_data_source_form.py:29
+#: apps/landmatrix/models/deal_submodels.py:84
+msgid "Government sources"
+msgstr "Gouvernements"
+
+#: apps/grid/forms/deal_data_source_form.py:30
+#: apps/landmatrix/models/deal_submodels.py:85
+msgid "Company sources"
+msgstr "Entreprises"
+
+#: apps/grid/forms/deal_data_source_form.py:34
+#: apps/landmatrix/models/deal_submodels.py:87
+msgid "Contract (contract farming agreement)"
+msgstr "Contrat (agriculture sous contrat)"
+
+#: apps/grid/forms/deal_data_source_form.py:36
+#: apps/landmatrix/models/deal_submodels.py:88
+msgid "Personal information"
+msgstr "Informations personnelles"
+
+#: apps/grid/forms/deal_data_source_form.py:37
+#: apps/landmatrix/models/deal_submodels.py:89
+msgid "Crowdsourcing"
+msgstr "Production participative"
+
+#: apps/grid/forms/deal_data_source_form.py:38
+#: apps/landmatrix/models/deal_submodels.py:90
+msgid "Other (Please specify in comment field)"
+msgstr "Autre (veuillez préciser dans le champ Commentaire)"
+
 #: apps/grid/forms/deal_data_source_form.py:41
 msgid "URL"
 msgstr "URL"
+
+#: apps/grid/forms/deal_data_source_form.py:43
+#: apps/landmatrix/models/deal_submodels.py:95
+msgid "File"
+msgstr "Fichier"
+
+#: apps/grid/forms/deal_data_source_form.py:43
+#: apps/landmatrix/models/deal_submodels.py:98
+msgid "Maximum file size: 10MB"
+msgstr "Taille maximale du fichier : 10 Mo"
+
+#: apps/grid/forms/deal_data_source_form.py:45
+#: apps/landmatrix/models/deal_submodels.py:102
+msgid "Keep PDF not public"
+msgstr "Maintenir le PDF non public"
 
 #: apps/grid/forms/deal_data_source_form.py:46
 msgid "Publication title"
@@ -2431,20 +1446,55 @@ msgstr "Titre de la publication"
 msgid "Date"
 msgstr "Date"
 
+#: apps/grid/forms/deal_data_source_form.py:55
+#: apps/grid/forms/investor_form.py:28
+#: apps/grid/forms/public_user_information_form.py:25
+#: apps/landmatrix/forms/oldforms.py:106 apps/landmatrix/models/__init__.py:88
+#: apps/landmatrix/models/activity_changeset.py:8
+#: apps/landmatrix/models/deal_submodels.py:105
+#: apps/landmatrix/models/filter.py:52 apps/landmatrix/models/filter.py:68
+#: apps/landmatrix/models/gndinvestor.py:27
+#: apps/landmatrix/models/investor.py:124
+msgid "Name"
+msgstr "Nom"
+
 #: apps/grid/forms/deal_data_source_form.py:56
 msgid "Organisation"
 msgstr "Organisation"
 
+#: apps/grid/forms/deal_data_source_form.py:57
+#: apps/grid/forms/public_user_information_form.py:26
+#: apps/landmatrix/models/deal_submodels.py:107
+msgid "Email"
+msgstr "E-mail"
+
+#: apps/grid/forms/deal_data_source_form.py:58
+#: apps/grid/forms/public_user_information_form.py:27
+#: apps/landmatrix/forms/oldforms.py:15
+#: apps/landmatrix/models/deal_submodels.py:108
+msgid "Phone"
+msgstr "Téléphone"
+
+#: apps/grid/forms/deal_data_source_form.py:60
+#: apps/landmatrix/models/deal_submodels.py:111
+msgid "Includes in-country-verified information"
+msgstr "Inclut des informations vérifiées dans le pays"
+
 #: apps/grid/forms/deal_data_source_form.py:63
 msgid "Open Contracting ID"
 msgstr "Identifiant Open Contracting ID"
+
+#: apps/grid/forms/deal_data_source_form.py:66
+#: apps/landmatrix/models/deal_submodels.py:114
+msgid "Comment on data source"
+msgstr "Commentaire sur la source des données"
 
 #: apps/grid/forms/deal_data_source_form.py:140
 #: apps/grid/forms/deal_data_source_form.py:204
 msgid "Data sources"
 msgstr "Sources de données"
 
-#: apps/grid/forms/deal_employment_form.py:11
+#: apps/grid/forms/deal_employment_form.py:11 apps/landmatrix/forms/deal.py:105
 msgid "Employment"
 msgstr "Emploi"
 
@@ -2452,81 +1502,253 @@ msgstr "Emploi"
 msgid "Number of total jobs created"
 msgstr "Nombre total d’emplois créés"
 
+#: apps/grid/forms/deal_employment_form.py:18
+#: apps/landmatrix/models/deal.py:347
+msgid "Jobs created (total)"
+msgstr "Emplois créés (total)"
+
+#: apps/grid/forms/deal_employment_form.py:22
+#: apps/landmatrix/models/deal.py:349
+msgid "Planned number of jobs (total)"
+msgstr "Nombre d’emplois prévus (total)"
+
+#: apps/grid/forms/deal_employment_form.py:23
+#: apps/grid/forms/deal_employment_form.py:41
+#: apps/grid/forms/deal_employment_form.py:70
+#: apps/grid/forms/deal_employment_form.py:86
+#: apps/grid/forms/deal_employment_form.py:114
+#: apps/grid/forms/deal_employment_form.py:132
+#: apps/landmatrix/models/deal.py:349 apps/landmatrix/models/deal.py:361
+#: apps/landmatrix/models/deal.py:382 apps/landmatrix/models/deal.py:400
+#: apps/landmatrix/models/deal.py:423 apps/landmatrix/models/deal.py:441
+msgid "jobs"
+msgstr "emplois"
+
+#: apps/grid/forms/deal_employment_form.py:28
+#: apps/landmatrix/models/deal.py:352
+msgid "Planned employees (total)"
+msgstr "Employés prévus (total)"
+
+#: apps/grid/forms/deal_employment_form.py:29
+#: apps/grid/forms/deal_employment_form.py:47
+#: apps/grid/forms/deal_employment_form.py:76
+#: apps/grid/forms/deal_employment_form.py:91
+#: apps/grid/forms/deal_employment_form.py:120
+#: apps/grid/forms/deal_employment_form.py:137
+#: apps/landmatrix/models/deal.py:352 apps/landmatrix/models/deal.py:365
+#: apps/landmatrix/models/deal.py:388 apps/landmatrix/models/deal.py:406
+#: apps/landmatrix/models/deal.py:429 apps/landmatrix/models/deal.py:447
+msgid "employees"
+msgstr "employé-e-s"
+
+#: apps/grid/forms/deal_employment_form.py:34
+#: apps/landmatrix/models/deal.py:355
+msgid "Planned daily/seasonal workers (total)"
+msgstr "Employés journaliers/saisonniers prévus (total)"
+
+#: apps/grid/forms/deal_employment_form.py:35
+#: apps/grid/forms/deal_employment_form.py:53
+#: apps/grid/forms/deal_employment_form.py:82
+#: apps/grid/forms/deal_employment_form.py:96
+#: apps/grid/forms/deal_employment_form.py:126
+#: apps/grid/forms/deal_employment_form.py:142
+#: apps/landmatrix/models/deal.py:356 apps/landmatrix/models/deal.py:371
+#: apps/landmatrix/models/deal.py:394 apps/landmatrix/models/deal.py:412
+#: apps/landmatrix/models/deal.py:435 apps/landmatrix/models/deal.py:453
+msgid "workers"
+msgstr "travailleurs"
+
+#: apps/grid/forms/deal_employment_form.py:40
+#: apps/landmatrix/models/deal.py:361
+msgid "Current number of jobs (total)"
+msgstr "Nombre d’emplois actuel (total)"
+
+#: apps/grid/forms/deal_employment_form.py:46
+#: apps/landmatrix/models/deal.py:364
+msgid "Current number of employees (total)"
+msgstr "Nombre actuel d’employés (total)"
+
+#: apps/grid/forms/deal_employment_form.py:52
+#: apps/landmatrix/models/deal.py:370
+msgid "Current number of daily/seasonal workers (total)"
+msgstr "Nombre actuel de travailleurs journaliers/saisonniers (total)"
+
+#: apps/grid/forms/deal_employment_form.py:57
+#: apps/landmatrix/models/deal.py:376
+msgid "Comment on jobs created (total)"
+msgstr "Commentaire sur les emplois créés (total)"
+
 #: apps/grid/forms/deal_employment_form.py:62
 msgid "Number of jobs for foreigners created"
 msgstr "Nombre d’emplois pour étrangers créés"
+
+#: apps/grid/forms/deal_employment_form.py:65
+#: apps/landmatrix/models/deal.py:379
+msgid "Jobs created (foreign)"
+msgstr "Emplois créés (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:69
+#: apps/landmatrix/models/deal.py:381
+msgid "Planned number of jobs (foreign)"
+msgstr "Nombre d’emplois prévus (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:75
+#: apps/landmatrix/models/deal.py:387
+msgid "Planned employees (foreign)"
+msgstr "Employés prévus (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:81
+#: apps/landmatrix/models/deal.py:393
+msgid "Planned daily/seasonal workers (foreign)"
+msgstr "Travailleurs journaliers/saisonniers prévus (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:86
+#: apps/landmatrix/models/deal.py:399
+msgid "Current number of jobs (foreign)"
+msgstr "Nombre d’emplois actuel (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:90
+#: apps/landmatrix/models/deal.py:405
+msgid "Current number of employees (foreign)"
+msgstr "Nombre d’employés actuel (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:95
+#: apps/landmatrix/models/deal.py:411
+msgid "Current number of daily/seasonal workers (foreign)"
+msgstr "Nombre actuel de travailleurs journaliers/saisonniers (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:100
+#: apps/landmatrix/models/deal.py:417
+msgid "Comment on jobs created (foreign)"
+msgstr "Commentaire sur les emplois créés (étrangers)"
 
 #: apps/grid/forms/deal_employment_form.py:106
 msgid "Number of domestic jobs created"
 msgstr "Nombre d’emplois nationaux créés"
 
+#: apps/grid/forms/deal_employment_form.py:109
+#: apps/landmatrix/models/deal.py:420
+msgid "Jobs created (domestic)"
+msgstr "Emplois créés (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:113
+#: apps/landmatrix/models/deal.py:422
+msgid "Planned number of jobs (domestic)"
+msgstr "Nombre d’emplois prévus (étrangers)"
+
+#: apps/grid/forms/deal_employment_form.py:119
+#: apps/landmatrix/models/deal.py:428
+msgid "Planned employees (domestic)"
+msgstr "Employés prévus (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:125
+#: apps/landmatrix/models/deal.py:434
+msgid "Planned daily/seasonal workers (domestic)"
+msgstr "Travailleurs journaliers/saisonniers prévus (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:131
+#: apps/landmatrix/models/deal.py:440
+msgid "Current number of jobs (domestic)"
+msgstr "Nombre d’emplois actuel (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:136
+#: apps/landmatrix/models/deal.py:446
+msgid "Current number of employees (domestic)"
+msgstr "Nombre d’employés actuel (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:141
+#: apps/landmatrix/models/deal.py:452
+msgid "Current number of daily/seasonal workers (domestic)"
+msgstr "Nombre actuel de travailleurs journaliers/saisonniers (nationaux)"
+
+#: apps/grid/forms/deal_employment_form.py:146
+#: apps/landmatrix/models/deal.py:458
+msgid "Comment on jobs created (domestic)"
+msgstr "Commentaire sur les emplois créés (nationaux)"
+
 #: apps/grid/forms/deal_former_use_form.py:12
+#: apps/landmatrix/models/deal.py:687
 msgid "Private (smallholders)"
 msgstr "Privé (petits exploitants)"
 
 #: apps/grid/forms/deal_former_use_form.py:13
+#: apps/landmatrix/models/deal.py:688
 msgid "Private (large-scale farm)"
 msgstr "Privé (grande exploitation)"
 
 #: apps/grid/forms/deal_former_use_form.py:14
+#: apps/landmatrix/models/deal.py:689
 msgid "Community"
 msgstr "Communauté"
 
 #: apps/grid/forms/deal_former_use_form.py:15
+#: apps/landmatrix/models/deal.py:690
 msgid "Indigenous people"
 msgstr "Peuples autochtones"
 
 #: apps/grid/forms/deal_former_use_form.py:21
+#: apps/landmatrix/models/deal.py:705
 msgid "Commercial (large-scale) agriculture"
 msgstr "Agriculture commerciale (à grande échelle)"
 
 #: apps/grid/forms/deal_former_use_form.py:23
+#: apps/landmatrix/models/deal.py:706
 msgid "Smallholder agriculture"
 msgstr "Petite agriculture"
 
 #: apps/grid/forms/deal_former_use_form.py:24
+#: apps/landmatrix/models/deal.py:707
 msgid "Shifting cultivation"
 msgstr "Culture itinérante"
 
 #: apps/grid/forms/deal_former_use_form.py:25
+#: apps/landmatrix/models/deal.py:708
 msgid "Pastoralism"
 msgstr "Pastoralisme"
 
 #: apps/grid/forms/deal_former_use_form.py:26
+#: apps/landmatrix/models/deal.py:709
 msgid "Hunting/Gathering"
 msgstr "Chasse/cueillette"
 
 #: apps/grid/forms/deal_former_use_form.py:32
+#: apps/landmatrix/models/deal.py:727
 msgid "Cropland"
 msgstr "Terres agricoles"
 
 #: apps/grid/forms/deal_former_use_form.py:33
+#: apps/landmatrix/models/deal.py:728
 msgid "Forest land"
 msgstr "Zone forestière"
 
 #: apps/grid/forms/deal_former_use_form.py:34
+#: apps/landmatrix/models/deal.py:729
 msgid "Pasture"
 msgstr "Pâturages"
 
 #: apps/grid/forms/deal_former_use_form.py:35
+#: apps/landmatrix/models/deal.py:730
 msgid "Shrub land/Grassland (Rangeland)"
 msgstr "Terres arbustives/pâturages"
 
 #: apps/grid/forms/deal_former_use_form.py:36
+#: apps/landmatrix/models/deal.py:731
 msgid "Marginal land"
 msgstr "Terres marginales"
 
 #: apps/grid/forms/deal_former_use_form.py:37
+#: apps/landmatrix/models/deal.py:732
 msgid "Wetland"
 msgstr "Terres humides"
 
 #: apps/grid/forms/deal_former_use_form.py:40
+#: apps/landmatrix/models/deal.py:735
 msgid "Other land (e.g. developed land – specify in comment field)"
 msgstr ""
 "Autres terres (ex. : terres mises en valeur – veuillez préciser dans le "
 "champ Commentaire)"
 
-#: apps/grid/forms/deal_former_use_form.py:44
+#: apps/grid/forms/deal_former_use_form.py:44 apps/landmatrix/forms/deal.py:231
 msgid "Former use"
 msgstr "Utilisation antérieure"
 
@@ -2534,7 +1756,40 @@ msgstr "Utilisation antérieure"
 msgid "Former land owner (not by constitution)"
 msgstr "Propriétaire antérieur des terres (autre que par acte constitutif)"
 
+#: apps/grid/forms/deal_former_use_form.py:51
+#: apps/landmatrix/models/deal.py:695
+msgid "Former land owner"
+msgstr "Propriétaire antérieur des terres"
+
+#: apps/grid/forms/deal_former_use_form.py:56
+#: apps/landmatrix/models/deal.py:701
+msgid "Comment on former land owner"
+msgstr "Commentaire sur le propriétaire antérieur des terres"
+
+#: apps/grid/forms/deal_former_use_form.py:59
+#: apps/grid/forms/deal_former_use_form.py:62
+#: apps/landmatrix/models/deal.py:717
+msgid "Former land use"
+msgstr "Utilisation antérieure des terres"
+
+#: apps/grid/forms/deal_former_use_form.py:67
+#: apps/landmatrix/models/deal.py:723
+msgid "Comment on former land use"
+msgstr "Commentaire sur l’utilisation précédente des terres"
+
+#: apps/grid/forms/deal_former_use_form.py:70
+#: apps/grid/forms/deal_former_use_form.py:73
+#: apps/landmatrix/models/deal.py:741
+msgid "Former land cover"
+msgstr "Occupation antérieure des terres"
+
+#: apps/grid/forms/deal_former_use_form.py:78
+#: apps/landmatrix/models/deal.py:747
+msgid "Comment on former land cover"
+msgstr "Commentaire sur l’occupation antérieure des terres"
+
 #: apps/grid/forms/deal_gender_related_info_form.py:11
+#: apps/landmatrix/forms/deal.py:343
 msgid "Gender-related info"
 msgstr "Informations relatives au genre"
 
@@ -2545,53 +1800,88 @@ msgstr ""
 "impacts"
 
 #: apps/grid/forms/deal_gender_related_info_form.py:21
+#: apps/landmatrix/models/deal.py:899
 msgid "Comment on gender-related info"
 msgstr "Commentaire sur les informations relatives au genre"
 
 #: apps/grid/forms/deal_general_form.py:22
 #: apps/grid/templates/grid/investor_detail.html:69
 #: apps/grid/templates/grid/investor_form.html:52
+#: apps/landmatrix/forms/deal.py:14
 msgid "General info"
 msgstr "Informations générales"
 
-#: apps/grid/forms/deal_general_form.py:25
+#: apps/grid/forms/deal_general_form.py:25 apps/landmatrix/forms/deal.py:17
 msgid "Land area"
 msgstr "Superficie des terres"
 
-#: apps/grid/forms/deal_general_form.py:29
+#: apps/grid/forms/deal_general_form.py:29 apps/landmatrix/models/deal.py:91
 msgid "Intended size (in ha)"
 msgstr "Superficie prévue (en ha)"
 
-#: apps/grid/forms/deal_general_form.py:51
+#: apps/grid/forms/deal_general_form.py:40 apps/landmatrix/models/deal.py:99
+msgid "Size under contract (leased or purchased area, in ha)"
+msgstr "Superficie sous contrat (superficie louée ou achetée, en ha)"
+
+#: apps/grid/forms/deal_general_form.py:46 apps/landmatrix/models/deal.py:105
+msgid "Size in operation (production, in ha)"
+msgstr "Superficie en cours d’exploitation (production, en ha)"
+
+#: apps/grid/forms/deal_general_form.py:51 apps/landmatrix/models/deal.py:110
 msgid "Comment on land area"
 msgstr "Commentaire sur la superficie des terres"
 
-#: apps/grid/forms/deal_general_form.py:65
+#: apps/grid/forms/deal_general_form.py:65 apps/landmatrix/models/deal.py:152
 msgid "Comment on intention of investment"
 msgstr "Commentaire sur l’intention de l’investissement"
 
+#: apps/grid/forms/deal_general_form.py:70
+#: apps/grid/forms/deal_general_form.py:73 apps/landmatrix/models/deal.py:167
+msgid "Nature of the deal"
+msgstr "Nature de la transaction"
+
+#: apps/grid/forms/deal_general_form.py:78 apps/landmatrix/models/deal.py:173
+msgid "Comment on nature of the deal"
+msgstr "Commentaire sur la nature de la transaction"
+
+#: apps/grid/forms/deal_general_form.py:91 apps/landmatrix/models/deal.py:210
+msgid "Comment on negotiation status"
+msgstr "Commentaire sur le statut de la négociation"
+
+#: apps/grid/forms/deal_general_form.py:104 apps/landmatrix/models/deal.py:227
+msgid "Comment on implementation status"
+msgstr "Commentaire sur le statut de la mise en œuvre "
+
 #: apps/grid/forms/deal_general_form.py:109
-#: apps/grid/forms/deal_general_form.py:112
+#: apps/grid/forms/deal_general_form.py:112 apps/landmatrix/models/deal.py:232
 msgid "Purchase price"
 msgstr "Prix d’achat"
 
-#: apps/grid/forms/deal_general_form.py:116
+#: apps/grid/forms/deal_general_form.py:116 apps/landmatrix/models/deal.py:236
 msgid "Purchase price currency"
 msgstr "Devise"
 
-#: apps/grid/forms/deal_general_form.py:120
+#: apps/grid/forms/deal_general_form.py:120 apps/landmatrix/models/deal.py:247
 msgid "Purchase price area type"
 msgstr "Type de superficie"
+
+#: apps/grid/forms/deal_general_form.py:124 apps/landmatrix/models/deal.py:254
+msgid "Purchase price area"
+msgstr "Superficie"
+
+#: apps/grid/forms/deal_general_form.py:129 apps/landmatrix/models/deal.py:261
+msgid "Comment on purchase price"
+msgstr "Commentaire sur le prix d’achat"
 
 #: apps/grid/forms/deal_general_form.py:133
 msgid "Leasing fees"
 msgstr "Frais de location"
 
-#: apps/grid/forms/deal_general_form.py:135
+#: apps/grid/forms/deal_general_form.py:135 apps/landmatrix/models/deal.py:266
 msgid "Annual leasing fee"
 msgstr "Frais de location annuel"
 
-#: apps/grid/forms/deal_general_form.py:139
+#: apps/grid/forms/deal_general_form.py:139 apps/landmatrix/models/deal.py:270
 msgid "Annual leasing fee currency"
 msgstr "Devise"
 
@@ -2599,12 +1889,75 @@ msgstr "Devise"
 msgid "Annual leasing fee type"
 msgstr "Type"
 
+#: apps/grid/forms/deal_general_form.py:147 apps/landmatrix/models/deal.py:284
+#, fuzzy
+#| msgid "Annual leasing fee"
+msgid "Annual leasing fee area"
+msgstr "Frais de location annuel"
+
+#: apps/grid/forms/deal_general_form.py:152
+msgid "Comment on leasing fees"
+msgstr "Commentaire sur les frais de location"
+
 #: apps/grid/forms/deal_general_form.py:157
 #: apps/grid/forms/deal_general_form.py:161
 msgid "Contract farming"
 msgstr "Agriculture sous contrat"
 
+#: apps/grid/forms/deal_general_form.py:166 apps/landmatrix/models/deal.py:297
+msgid "On leased / purchased area"
+msgstr "Superficie louée/achetée"
+
+#: apps/grid/forms/deal_general_form.py:170 apps/landmatrix/models/deal.py:299
+msgid "On leased / purchased area (in ha)"
+msgstr "Superficie louée/achetée (en ha)"
+
+#: apps/grid/forms/deal_general_form.py:175 apps/landmatrix/models/deal.py:305
+msgid "On leased / purchased farmers"
+msgstr "Agriculteurs travaillant sur une superficie louée/achetée"
+
+#: apps/grid/forms/deal_general_form.py:175
+#: apps/grid/forms/deal_general_form.py:194 apps/landmatrix/models/deal.py:306
+#: apps/landmatrix/models/deal.py:328
+msgid "farmers"
+msgstr "agriculteurs"
+
+#: apps/grid/forms/deal_general_form.py:179 apps/landmatrix/models/deal.py:311
+msgid "On leased / purchased households"
+msgstr "Ménages travaillant sur une superficie louée/achetée"
+
+#: apps/grid/forms/deal_general_form.py:180
+#: apps/grid/forms/deal_general_form.py:199 apps/landmatrix/models/deal.py:312
+#: apps/landmatrix/models/deal.py:334
+msgid "households"
+msgstr "Ménages"
+
+#: apps/grid/forms/deal_general_form.py:183 apps/landmatrix/models/deal.py:318
+msgid "Not on leased / purchased area (out-grower)"
+msgstr "Superficie non louée/achetée (cultivateur sous-traitant)"
+
+#: apps/grid/forms/deal_general_form.py:187 apps/landmatrix/models/deal.py:321
+msgid "Not on leased / purchased area (out-grower, in ha)"
+msgstr "Superficie non louée/achetée (cultivateur sous-traitant)"
+
+#: apps/grid/forms/deal_general_form.py:193 apps/landmatrix/models/deal.py:327
+msgid "Not on leased / purchased farmers (out-grower)"
+msgstr ""
+"Agriculteurs travaillant sur une superficie non louée/achetée (cultivateur "
+"sous-traitant)"
+
+#: apps/grid/forms/deal_general_form.py:198 apps/landmatrix/models/deal.py:333
+msgid "Not on leased / purchased households (out-grower)"
+msgstr ""
+"Ménages travaillant sur une superficie non louée/achetée (cultivateur sous-"
+"traitant)"
+
+#: apps/grid/forms/deal_general_form.py:202 apps/landmatrix/models/deal.py:340
+msgid "Comment on contract farming"
+msgstr "Commentaire sur l’agriculture sous contrat"
+
 #: apps/grid/forms/deal_local_communities_form.py:14
+#: apps/landmatrix/models/deal.py:520
 msgid ""
 "Indigenous Peoples traditional or customary rights recognized by government"
 msgstr ""
@@ -2612,6 +1965,7 @@ msgstr ""
 "par le gouvernement"
 
 #: apps/grid/forms/deal_local_communities_form.py:20
+#: apps/landmatrix/models/deal.py:526
 msgid ""
 "Indigenous Peoples traditional or customary rights not recognized by "
 "government"
@@ -2620,26 +1974,31 @@ msgstr ""
 "reconnus par le gouvernement"
 
 #: apps/grid/forms/deal_local_communities_form.py:25
+#: apps/landmatrix/models/deal.py:531
 msgid "Community traditional or customary rights recognized by government"
 msgstr ""
 "Les droits traditionnels ou coutumiers des communautés sont reconnus par le "
 "gouvernement"
 
 #: apps/grid/forms/deal_local_communities_form.py:29
+#: apps/landmatrix/models/deal.py:535
 msgid "Community traditional or customary rights not recognized by government"
 msgstr ""
 "Les droits traditionnels ou coutumiers des communautés ne sont pas reconnus "
 "par le gouvernement"
 
 #: apps/grid/forms/deal_local_communities_form.py:33
+#: apps/landmatrix/models/deal.py:550
 msgid "Not consulted"
 msgstr "Pas de consultation"
 
 #: apps/grid/forms/deal_local_communities_form.py:34
+#: apps/landmatrix/models/deal.py:551
 msgid "Limited consultation"
 msgstr "Consultation limitée"
 
 #: apps/grid/forms/deal_local_communities_form.py:37
+#: apps/landmatrix/models/deal.py:552
 msgid "Free, Prior and Informed Consent (FPIC)"
 msgstr ""
 "Consentement préalable, donné librement et en connaissance de cause (CPLCC)"
@@ -2651,71 +2010,88 @@ msgstr ""
 "certifié"
 
 #: apps/grid/forms/deal_local_communities_form.py:46
+#: apps/landmatrix/models/deal.py:567
 msgid "Consent"
 msgstr "Consentement"
 
 #: apps/grid/forms/deal_local_communities_form.py:47
+#: apps/landmatrix/models/deal.py:568
 msgid "Mixed reaction"
 msgstr "Réactions mitigées"
 
 #: apps/grid/forms/deal_local_communities_form.py:48
+#: apps/landmatrix/models/deal.py:569
 msgid "Rejection"
 msgstr "Rejet"
 
 #: apps/grid/forms/deal_local_communities_form.py:53
+#: apps/landmatrix/models/deal.py:617
 msgid "Environmental degradation"
 msgstr "Dégradation de l'environnement"
 
 #: apps/grid/forms/deal_local_communities_form.py:54
+#: apps/landmatrix/models/deal.py:618
 msgid "Socio-economic"
 msgstr "Socioéconomique"
 
 #: apps/grid/forms/deal_local_communities_form.py:55
+#: apps/landmatrix/models/deal.py:619
 msgid "Cultural loss"
 msgstr "Perte de la culture"
 
 #: apps/grid/forms/deal_local_communities_form.py:56
+#: apps/landmatrix/models/deal.py:620
 msgid "Eviction"
 msgstr "Expulsion"
 
 #: apps/grid/forms/deal_local_communities_form.py:57
+#: apps/landmatrix/models/deal.py:621
 msgid "Displacement"
 msgstr "Déplacement"
 
 #: apps/grid/forms/deal_local_communities_form.py:58
+#: apps/landmatrix/models/deal.py:622
 msgid "Violence"
 msgstr "Violence"
 
 #: apps/grid/forms/deal_local_communities_form.py:62
+#: apps/landmatrix/models/deal.py:643
 msgid "Health"
 msgstr "Santé"
 
 #: apps/grid/forms/deal_local_communities_form.py:63
+#: apps/landmatrix/models/deal.py:644
 msgid "Education"
 msgstr "Education"
 
 #: apps/grid/forms/deal_local_communities_form.py:66
+#: apps/landmatrix/models/deal.py:647
 msgid "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
 msgstr ""
 "Infrastructure de production (ex. : irrigation, tracteurs, machines, ...)"
 
 #: apps/grid/forms/deal_local_communities_form.py:68
+#: apps/landmatrix/models/deal.py:649
 msgid "Roads"
 msgstr "Routes"
 
 #: apps/grid/forms/deal_local_communities_form.py:69
+#: apps/landmatrix/models/deal.py:650
 msgid "Capacity Building"
 msgstr "Renforcement des capacités"
 
 #: apps/grid/forms/deal_local_communities_form.py:70
+#: apps/landmatrix/models/deal.py:651
 msgid "Financial Support"
 msgstr "Soutien financier"
 
 #: apps/grid/forms/deal_local_communities_form.py:73
+#: apps/landmatrix/models/deal.py:652
 msgid "Community shares in the investment project"
 msgstr "Parts de la communauté dans le projet d'investissement"
 
 #: apps/grid/forms/deal_local_communities_form.py:78
+#: apps/landmatrix/forms/deal.py:163
 msgid "Local communities / indigenous peoples"
 msgstr "Communautés locales/peuples autochtones"
 
@@ -2723,39 +2099,189 @@ msgstr "Communautés locales/peuples autochtones"
 msgid "Names of communities / indigenous peoples affected"
 msgstr "Noms des communautés/peuples autochtones affectés"
 
+#: apps/grid/forms/deal_local_communities_form.py:87
+#: apps/landmatrix/models/deal.py:505
+msgid "Name of community"
+msgstr "Nom de la communauté"
+
+#: apps/grid/forms/deal_local_communities_form.py:90
+#: apps/landmatrix/models/deal.py:508
+msgid "Name of indigenous people"
+msgstr "Nom du peuple autochtone"
+
+#: apps/grid/forms/deal_local_communities_form.py:94
+#: apps/landmatrix/models/deal.py:513
+msgid "Comment on communities / indigenous peoples affected"
+msgstr "Commentaire sur les communautés/peuples autochtones affectés"
+
 #: apps/grid/forms/deal_local_communities_form.py:102
 msgid "Recognitions status of community land tenure"
 msgstr "Reconnaissance des régimes fonciers communautaires"
 
 #: apps/grid/forms/deal_local_communities_form.py:106
+#: apps/landmatrix/models/deal.py:540
 msgid "Recognition status of community land tenure"
 msgstr "Reconnaissance des régimes fonciers communautaires"
+
+#: apps/grid/forms/deal_local_communities_form.py:112
+msgid "Comment on recognitions status of community land tenure"
+msgstr "Commentaire sur la reconnaissance des régimes fonciers communautaires"
 
 #: apps/grid/forms/deal_local_communities_form.py:118
 msgid "Consultation of local community"
 msgstr "Consultation de la communauté locale"
 
+#: apps/grid/forms/deal_local_communities_form.py:122
+#: apps/landmatrix/models/deal.py:556
+msgid "Community consultation"
+msgstr "Consultation de la communauté"
+
+#: apps/grid/forms/deal_local_communities_form.py:128
+#: apps/landmatrix/models/deal.py:563
+msgid "Comment on consultation of local community"
+msgstr "Commentaire sur la consultation de la communauté locale"
+
 #: apps/grid/forms/deal_local_communities_form.py:134
 msgid "How did the community react?"
 msgstr "Comment la communauté a-t-elle réagi ?"
 
+#: apps/grid/forms/deal_local_communities_form.py:138
+#: apps/landmatrix/models/deal.py:572
+msgid "Community reaction"
+msgstr "Réaction de la communauté"
+
+#: apps/grid/forms/deal_local_communities_form.py:143
+#: apps/landmatrix/models/deal.py:579
+msgid "Comment on community reaction"
+msgstr "Commentaire sur la réaction de la communauté"
+
+#: apps/grid/forms/deal_local_communities_form.py:148
+#: apps/grid/forms/deal_local_communities_form.py:152
+#: apps/landmatrix/models/deal.py:582
+msgid "Presence of land conflicts"
+msgstr "Présence de conflits fonciers"
+
+#: apps/grid/forms/deal_local_communities_form.py:158
+#: apps/landmatrix/models/deal.py:584
+msgid "Comment on presence of land conflicts"
+msgstr "Commentaire sur la présence de conflits fonciers"
+
+#: apps/grid/forms/deal_local_communities_form.py:164
+#: apps/grid/forms/deal_local_communities_form.py:168
+#: apps/landmatrix/models/deal.py:587
+msgid "Displacement of people"
+msgstr "Déplacement de personnes"
+
+#: apps/grid/forms/deal_local_communities_form.py:174
+#: apps/landmatrix/models/deal.py:589
+msgid "Number of people actually displaced"
+msgstr "Nombre de personnes réellement déplacées"
+
+#: apps/grid/forms/deal_local_communities_form.py:179
+#: apps/landmatrix/models/deal.py:592
+msgid "Number of households actually displaced"
+msgstr "Nombre de ménages réellement déplacés"
+
+#: apps/grid/forms/deal_local_communities_form.py:184
+#: apps/landmatrix/models/deal.py:595
+msgid "Number of people displaced out of their community land"
+msgstr "Nombre de personnes déplacées de leurs terres communautaires"
+
+#: apps/grid/forms/deal_local_communities_form.py:189
+#: apps/landmatrix/models/deal.py:600
+msgid "Number of people displaced staying on community land"
+msgstr "Nombre de personnes déplacées demeurant sur les terres communautaires"
+
+#: apps/grid/forms/deal_local_communities_form.py:194
+#: apps/landmatrix/models/deal.py:603
+msgid "Number of households displaced \"only\" from their agricultural fields"
+msgstr "Nombre de ménages « seulement » déplacés de leurs champs agricoles"
+
+#: apps/grid/forms/deal_local_communities_form.py:200
+#: apps/landmatrix/models/deal.py:608
+msgid "Number of people facing displacement once project is fully implemented"
+msgstr ""
+"Nombre de personnes confrontées au déplacement une fois le projet pleinement "
+"mis en œuvre"
+
 #: apps/grid/forms/deal_local_communities_form.py:206
+#: apps/landmatrix/models/deal.py:613
 msgid "Comment on displacement of people"
 msgstr "Commentaire sur le déplacement des personnes"
+
+#: apps/grid/forms/deal_local_communities_form.py:211
+#: apps/grid/forms/deal_local_communities_form.py:215
+#: apps/landmatrix/models/deal.py:626
+msgid "Negative impacts for local communities"
+msgstr "Impacts négatifs pour les communautés locales"
+
+#: apps/grid/forms/deal_local_communities_form.py:221
+#: apps/landmatrix/models/deal.py:632
+msgid "Comment on negative impacts for local communities"
+msgstr "Commentaire sur les impacts négatifs pour les communautés locales"
 
 #: apps/grid/forms/deal_local_communities_form.py:227
 msgid "Promised or received compensation"
 msgstr "Compensation promise ou reçue"
 
+#: apps/grid/forms/deal_local_communities_form.py:231
+#: apps/landmatrix/models/deal.py:636
+msgid "Promised compensation (e.g. for damages or resettlements)"
+msgstr ""
+"Compensation promise (au titre, par exemple, des dommages ou des "
+"réinstallations)"
+
+#: apps/grid/forms/deal_local_communities_form.py:236
+#: apps/landmatrix/models/deal.py:639
+msgid "Received compensation (e.g. for damages or resettlements)"
+msgstr ""
+"Compensation reçue (au titre, par exemple, des dommages ou des "
+"réinstallations)"
+
+#: apps/grid/forms/deal_local_communities_form.py:242
+#: apps/grid/forms/deal_local_communities_form.py:246
+#: apps/landmatrix/models/deal.py:656
+msgid "Promised benefits for local communities"
+msgstr "Bénéfices promis aux communautés locales"
+
+#: apps/grid/forms/deal_local_communities_form.py:252
+#: apps/landmatrix/models/deal.py:662
+msgid "Comment on promised benefits for local communities"
+msgstr "Commentaires sur les bénéfices promis aux communautés locales"
+
+#: apps/grid/forms/deal_local_communities_form.py:260
+#: apps/grid/forms/deal_local_communities_form.py:264
+#: apps/landmatrix/models/deal.py:667
+msgid "Materialized benefits for local communities"
+msgstr "Bénéfices concrets pour les communautés locales"
+
 #: apps/grid/forms/deal_local_communities_form.py:270
+#: apps/landmatrix/models/deal.py:674
 msgid "Comment on materialized benefits for local communities"
 msgstr "Commentaires sur les bénéfices concrets pour les communautés locales"
+
+#: apps/grid/forms/deal_local_communities_form.py:278
+#: apps/grid/forms/deal_local_communities_form.py:284
+#: apps/landmatrix/models/deal.py:679
+msgid ""
+"Presence of organizations and actions taken (e.g. farmer organizations, "
+"NGOs, etc.)"
+msgstr ""
+"Présence d'organisations et mesures prises (ex. : organisations agricoles, "
+"ONG, etc.)"
 
 #: apps/grid/forms/deal_overall_comment_form.py:10
 msgid "Overall Comment"
 msgstr "Commentaire général"
 
+#: apps/grid/forms/deal_overall_comment_form.py:12
+#: apps/grid/forms/deal_overall_comment_form.py:14
+#: apps/landmatrix/models/deal.py:926
+msgid "Overall comment"
+msgstr "Commentaire général"
+
 #: apps/grid/forms/deal_produce_info_form.py:12
+#: apps/landmatrix/forms/deal.py:248
 msgid "Produce info"
 msgstr "Info produit"
 
@@ -2796,6 +2322,7 @@ msgid "%"
 msgstr "%"
 
 #: apps/grid/forms/deal_produce_info_form.py:39
+#: apps/landmatrix/models/deal.py:752
 msgid "Comment on crops"
 msgstr "Commentaire sur les cultures"
 
@@ -2812,6 +2339,7 @@ msgid "Livestock export"
 msgstr "Exportation d’animaux d’élevage"
 
 #: apps/grid/forms/deal_produce_info_form.py:60
+#: apps/landmatrix/models/deal.py:755
 msgid "Comment on livestock"
 msgstr "Commentaire sur l’élevage"
 
@@ -2828,6 +2356,7 @@ msgid "Resources export"
 msgstr "Exportation de ressources"
 
 #: apps/grid/forms/deal_produce_info_form.py:81
+#: apps/landmatrix/models/deal.py:758
 msgid "Comment on resources"
 msgstr "Commentaire sur les ressources"
 
@@ -2837,43 +2366,141 @@ msgstr ""
 "Informations détaillées sur les cultures et les animaux sous agriculture "
 "sous contrat"
 
+#: apps/grid/forms/deal_produce_info_form.py:90
+#: apps/landmatrix/models/deal.py:761
+msgid "Contract farming crops"
+msgstr "Cultures sous agriculture sous contrat"
+
+#: apps/grid/forms/deal_produce_info_form.py:94
+#: apps/landmatrix/models/deal.py:764
+msgid "Comment on contract farming crops"
+msgstr "Commentaire sur les cultures sous agriculture sous contrat"
+
+#: apps/grid/forms/deal_produce_info_form.py:100
+#: apps/landmatrix/models/deal.py:767
+msgid "Contract farming livestock"
+msgstr "Animaux d‘élevage sous agriculture sous contrat"
+
+#: apps/grid/forms/deal_produce_info_form.py:105
+#: apps/landmatrix/models/deal.py:770
+msgid "Comment on contract farming livestock"
+msgstr "Commentaire sur les animaux d’élevage sous agriculture sous contrat"
+
 #: apps/grid/forms/deal_produce_info_form.py:111
 msgid "Use of produce"
 msgstr "Utilisation du produit"
 
+#: apps/grid/forms/deal_produce_info_form.py:113
+#: apps/landmatrix/models/deal.py:773
+msgid "Has domestic use"
+msgstr "Ha usage domestique"
+
 #: apps/grid/forms/deal_produce_info_form.py:115
+#: apps/landmatrix/models/deal.py:775
 msgid "Domestic use"
 msgstr "Usage domestique"
 
+#: apps/grid/forms/deal_produce_info_form.py:117
+#: apps/landmatrix/models/deal.py:780
+msgid "Has export"
+msgstr "Ha exportation"
+
 #: apps/grid/forms/deal_produce_info_form.py:119
+#: apps/landmatrix/models/deal.py:783
 msgid "Export"
 msgstr "Exportation"
 
 #: apps/grid/forms/deal_produce_info_form.py:124
+#: apps/landmatrix/models/deal.py:791
 msgid "Country 1"
 msgstr "Pays 1"
 
+#: apps/grid/forms/deal_produce_info_form.py:128
+#: apps/landmatrix/models/deal.py:798
+msgid "Country 1 ratio"
+msgstr "Ratio pays 1"
+
 #: apps/grid/forms/deal_produce_info_form.py:132
+#: apps/landmatrix/models/deal.py:805
 msgid "Country 2"
 msgstr "Pays 2"
 
+#: apps/grid/forms/deal_produce_info_form.py:136
+#: apps/landmatrix/models/deal.py:812
+msgid "Country 2 ratio"
+msgstr "Ratio pays 2"
+
 #: apps/grid/forms/deal_produce_info_form.py:140
+#: apps/landmatrix/models/deal.py:819
 msgid "Country 3"
 msgstr "Pays 3"
 
+#: apps/grid/forms/deal_produce_info_form.py:144
+#: apps/landmatrix/models/deal.py:826
+msgid "Country 3 ratio"
+msgstr "Ratio pays 3"
+
 #: apps/grid/forms/deal_produce_info_form.py:147
+#: apps/landmatrix/models/deal.py:833
 msgid "Comment on use of produce"
 msgstr "Commentaire sur l’usage du produit"
+
+#: apps/grid/forms/deal_produce_info_form.py:152
+#: apps/grid/forms/deal_produce_info_form.py:157
+#: apps/landmatrix/models/deal.py:837
+msgid "In country processing of produce"
+msgstr "Transformation du produit dans le pays"
+
+#: apps/grid/forms/deal_produce_info_form.py:163
+#: apps/landmatrix/models/deal.py:840
+msgid "Comment on in country processing of produce"
+msgstr "Commentaire sur la transformation du produit dans le pays"
+
+#: apps/grid/forms/deal_produce_info_form.py:169
+#: apps/landmatrix/models/deal.py:844
+msgid ""
+"Processing facilities / production infrastructure of the project (e.g. oil "
+"mill, ethanol distillery, biomass power plant etc.)"
+msgstr ""
+"Installations de transformation/infrastructure de production du projet "
+"(ex. : huilerie, distillerie d’éthanol, centrale à biomasse, etc.)"
+
+#: apps/grid/forms/deal_produce_info_form.py:176
+#: apps/landmatrix/models/deal.py:850
+msgid "In-country end products of the project"
+msgstr "Produits finaux du projet dans le pays"
+
+#: apps/grid/forms/deal_spatial_form.py:17
+#: apps/landmatrix/models/deal_submodels.py:32 apps/map/views.py:76
+msgid "Administrative region"
+msgstr "Région administrative"
+
+#: apps/grid/forms/deal_spatial_form.py:18
+#: apps/landmatrix/models/deal_submodels.py:33 apps/map/views.py:81
+msgid "Approximate location"
+msgstr "Localisation approximative"
+
+#: apps/grid/forms/deal_spatial_form.py:19
+#: apps/landmatrix/models/deal_submodels.py:34 apps/map/views.py:86
+msgid "Exact location"
+msgstr "Localisation exacte"
+
+#: apps/grid/forms/deal_spatial_form.py:20
+#: apps/landmatrix/models/deal_submodels.py:35 apps/map/views.py:91
+msgid "Coordinates"
+msgstr "Coordonnées"
 
 #: apps/grid/forms/deal_spatial_form.py:24
 #: apps/grid/forms/deal_spatial_form.py:25
 #: apps/grid/forms/deal_spatial_form.py:30
 #: apps/grid/forms/deal_spatial_form.py:211
 #: apps/grid/forms/deal_spatial_form.py:222
+#: apps/landmatrix/forms/deal_submodels.py:11
 msgid "Location"
 msgstr "Localisation"
 
 #: apps/grid/forms/deal_spatial_form.py:27
+#: apps/landmatrix/models/deal_submodels.py:38
 msgid "Spatial accuracy level"
 msgstr "Niveau de précision spatiale"
 
@@ -2919,7 +2546,7 @@ msgstr "Commentaire sur la localisation"
 msgid "Error parsing shapefile: %s"
 msgstr "Error parsing shapefile: %s"
 
-#: apps/grid/forms/deal_vggt_form.py:14
+#: apps/grid/forms/deal_vggt_form.py:14 apps/landmatrix/forms/deal.py:352
 msgid "Guidelines & Principles"
 msgstr "Directives et principes"
 
@@ -2931,9 +2558,30 @@ msgstr "Partiellement"
 msgid "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
 msgstr "Directives volontaires sur les régimes fonciers"
 
+#: apps/grid/forms/deal_vggt_form.py:30 apps/landmatrix/models/deal.py:907
+msgid ""
+"Application of Voluntary Guidelines on the Responsible Governance of Tenure "
+"(VGGT)"
+msgstr "Application des Directives volontaires sur les régimes fonciers"
+
+#: apps/grid/forms/deal_vggt_form.py:36 apps/landmatrix/models/deal.py:914
+msgid "Comment on VGGT"
+msgstr "Commentaire sur les Directives volontaires sur les régimes fonciers"
+
 #: apps/grid/forms/deal_vggt_form.py:41
 msgid "Principles for Responsible Agricultural Investments (PRAI)"
 msgstr "Principes pour un investissement responsable dans l’agriculture (PRAI)"
+
+#: apps/grid/forms/deal_vggt_form.py:46 apps/landmatrix/models/deal.py:917
+msgid ""
+"Application of Principles for Responsible Agricultural Investments (PRAI)"
+msgstr ""
+"Application des principes pour un investissement responsable dans "
+"l’agriculture (PRAI)"
+
+#: apps/grid/forms/deal_vggt_form.py:52 apps/landmatrix/models/deal.py:923
+msgid "Comment on PRAI"
+msgstr "Commentaire sur les PRAI"
 
 #: apps/grid/forms/deal_water_form.py:12
 msgid "Groundwater"
@@ -2951,9 +2599,27 @@ msgstr "Rivière"
 msgid "Lake"
 msgstr "Lac"
 
-#: apps/grid/forms/deal_water_form.py:19
+#: apps/grid/forms/deal_water_form.py:19 apps/landmatrix/forms/deal.py:310
 msgid "Water"
 msgstr "Eau"
+
+#: apps/grid/forms/deal_water_form.py:22 apps/grid/forms/deal_water_form.py:26
+#: apps/landmatrix/models/deal.py:855
+msgid "Water extraction envisaged"
+msgstr "Captage d’eau envisagé"
+
+#: apps/grid/forms/deal_water_form.py:32 apps/landmatrix/models/deal.py:858
+msgid "Comment on water extraction envisaged"
+msgstr "Commentaire sur le captage d’eau envisagé"
+
+#: apps/grid/forms/deal_water_form.py:37 apps/grid/forms/deal_water_form.py:41
+#: apps/landmatrix/models/deal.py:869
+msgid "Source of water extraction"
+msgstr "Source du captage d’eau"
+
+#: apps/grid/forms/deal_water_form.py:46 apps/landmatrix/models/deal.py:875
+msgid "Comment on source of water extraction"
+msgstr "Commentaire sur la source du captage d’eau"
 
 #: apps/grid/forms/deal_water_form.py:53
 msgid ""
@@ -2962,15 +2628,97 @@ msgstr ""
 "Quel prix les investisseurs paient-ils l’eau et l'utilisation de "
 "l’infrastructure hydrique ?"
 
+#: apps/grid/forms/deal_water_form.py:58 apps/landmatrix/models/deal.py:878
+msgid "Comment on how much do investors pay for water"
+msgstr "Commentaire sur le prix payé par les investisseurs pour l’eau"
+
 #: apps/grid/forms/deal_water_form.py:63
 msgid "How much water is extracted?"
 msgstr "Quelle quantité d’eau est captée ?"
+
+#: apps/grid/forms/deal_water_form.py:66 apps/landmatrix/models/deal.py:882
+msgid "Water extraction amount"
+msgstr "Volume d’eau captée"
+
+#: apps/grid/forms/deal_water_form.py:66 apps/landmatrix/models/deal.py:882
+msgid "m3/year"
+msgstr "m3/an"
+
+#: apps/grid/forms/deal_water_form.py:70 apps/landmatrix/models/deal.py:885
+msgid "Comment on how much water is extracted"
+msgstr "Commentaire sur la quantité d’eau captée"
+
+#: apps/grid/forms/deal_water_form.py:76 apps/landmatrix/models/deal.py:888
+msgid "Use of irrigation infrastructure"
+msgstr "Utilisation de l’infrastructure hydrique"
+
+#: apps/grid/forms/deal_water_form.py:82 apps/landmatrix/models/deal.py:891
+msgid "Comment on use of irrigation infrastructure"
+msgstr "Commentaire sur l’utilisation de l’infrastructure d’irrigation"
+
+#: apps/grid/forms/deal_water_form.py:88 apps/landmatrix/models/deal.py:894
+msgid "Water footprint of the investment project"
+msgstr "Empreinte en eau du projet d'investissement"
+
+#: apps/grid/forms/investor_form.py:24
+#: apps/grid/templates/grid/investor_detail.html:30
+#: apps/grid/templates/grid/investor_detail.html:172
+#: apps/grid/templates/grid/investor_detail.html:259
+#: apps/grid/templates/grid/investor_detail.html:346
+#: apps/grid/templates/grid/investor_detail.html:433
+#: apps/grid/views/filter.py:343 apps/landmatrix/forms/investor.py:11
+#: apps/landmatrix/models/gndinvestor.py:188
+#: apps/landmatrix/models/investor.py:853
+msgid "Investor"
+msgstr "Investisseur"
+
+#: apps/grid/forms/investor_form.py:30 apps/landmatrix/forms/oldforms.py:111
+#: apps/landmatrix/models/gndinvestor.py:59
+#: apps/landmatrix/models/investor.py:133
+msgid "Classification"
+msgstr "Classification"
+
+#: apps/grid/forms/investor_form.py:34 apps/grid/forms/investor_form.py:114
+#: apps/grid/views/filter.py:447 apps/grid/views/investor.py:60
+#: apps/landmatrix/forms/oldforms.py:108
+#: apps/landmatrix/models/gndinvestor.py:30
+#: apps/landmatrix/models/investor.py:127
+msgid "Country of registration/origin"
+msgstr "Pays de domiciliation/d’origine"
+
+#: apps/grid/forms/investor_form.py:156
+#: apps/grid/forms/parent_investor_formset.py:129
+#: apps/grid/forms/parent_investor_formset.py:132
+#: apps/grid/templates/grid/investor_detail.html:253
+#: apps/grid/views/browse_filter_conditions.py:61
+#: apps/grid/views/browse_filter_conditions.py:78 apps/grid/views/filter.py:310
+#: apps/grid/views/filter.py:314 apps/grid/views/filter.py:318
+#: apps/grid/views/filter.py:367 apps/grid/views/filter.py:370
+#: apps/grid/views/investor.py:224 apps/landmatrix/models/gndinvestor.py:203
+#: apps/landmatrix/models/investor.py:118
+#: apps/landmatrix/models/investor.py:698
+msgid "Tertiary investor/lender"
+msgstr "Prêteur/investisseur tertiaire"
+
+#: apps/grid/forms/investor_form.py:170
+#: apps/grid/forms/parent_investor_formset.py:76
+#: apps/grid/templates/grid/investor_detail.html:166
+#: apps/grid/views/browse_filter_conditions.py:60
+#: apps/grid/views/browse_filter_conditions.py:77 apps/grid/views/filter.py:298
+#: apps/grid/views/filter.py:302 apps/grid/views/filter.py:305
+#: apps/grid/views/filter.py:353 apps/grid/views/filter.py:356
+#: apps/grid/views/investor.py:223 apps/landmatrix/models/gndinvestor.py:202
+#: apps/landmatrix/models/investor.py:117
+#: apps/landmatrix/models/investor.py:697
+msgid "Parent company"
+msgstr "Société mère"
 
 #: apps/grid/forms/investor_form.py:174
 msgid "Operational company"
 msgstr "Entreprise exploitante"
 
 #: apps/grid/forms/operational_stakeholder_form.py:16
+#: apps/landmatrix/forms/deal.py:149
 msgid "Investor info"
 msgstr "Info investisseur"
 
@@ -2985,6 +2733,21 @@ msgstr "Info investisseur"
 msgid "Operating company"
 msgstr "Société exploitante"
 
+#: apps/grid/forms/operational_stakeholder_form.py:29
+#: apps/landmatrix/models/deal.py:489
+msgid "Actors involved in the negotiation / admission process"
+msgstr "Acteurs impliqués dans le processus de négociation/admission"
+
+#: apps/grid/forms/operational_stakeholder_form.py:33
+#: apps/landmatrix/models/deal.py:494
+msgid "Name of investment project"
+msgstr "Nom du projet d’investissement"
+
+#: apps/grid/forms/operational_stakeholder_form.py:36
+#: apps/landmatrix/models/deal.py:497
+msgid "Comment on investment chain"
+msgstr "Commentaire sur la chaîne d'investissement"
+
 #: apps/grid/forms/parent_investor_formset.py:73
 #: apps/grid/forms/parent_investor_formset.py:224
 #: apps/grid/templates/grid/investor_detail.html:153
@@ -2996,6 +2759,12 @@ msgstr "Sociétés mères"
 #: apps/grid/forms/parent_investor_formset.py:80
 msgid "Existing parent company"
 msgstr "Société mère actuelle"
+
+#: apps/grid/forms/parent_investor_formset.py:88
+#: apps/landmatrix/models/gndinvestor.py:222
+#: apps/landmatrix/models/investor.py:723
+msgid "Ownership share"
+msgstr "Niveau de participation"
 
 #: apps/grid/forms/parent_investor_formset.py:136
 msgid "Existing investor"
@@ -3009,7 +2778,7 @@ msgstr "Prêteurs/investisseurs tertiaires"
 
 #: apps/grid/forms/public_user_information_form.py:11
 #: apps/grid/forms/public_user_information_form.py:16
-#: apps/landmatrix/forms.py:17
+#: apps/landmatrix/forms/oldforms.py:17
 msgid "User information"
 msgstr "Information sur l’utilisateur"
 
@@ -3027,7 +2796,7 @@ msgstr ""
 "l’adresse data@landmatrix.org"
 
 #: apps/grid/forms/public_user_information_form.py:21
-#: apps/landmatrix/forms.py:19
+#: apps/landmatrix/forms/oldforms.py:19
 msgid ""
 "Write something about yourself and your company. This won't be published."
 msgstr ""
@@ -3450,8 +3219,8 @@ msgstr "Modifié"
 
 #: apps/grid/templates/grid/includes/filters_investors.html:133
 #: apps/landmatrix/models/activity.py:87 apps/landmatrix/models/investor.py:76
-#: apps/landmatrix/models/investor.py:686
-#: apps/landmatrix/models/investor.py:818 templates/filters.html:170
+#: apps/landmatrix/models/investor.py:682
+#: apps/landmatrix/models/investor.py:814 templates/filters.html:170
 msgid "Pending"
 msgstr "En attente"
 
@@ -3713,17 +3482,17 @@ msgid "Availability"
 msgstr "Disponibilité"
 
 #: apps/grid/views/base.py:102 apps/grid/views/export.py:346
-#: apps/landmatrix/forms.py:61 apps/landmatrix/forms.py:128
+#: apps/landmatrix/forms/oldforms.py:61 apps/landmatrix/forms/oldforms.py:128
 msgid "Deal size"
 msgstr "Superficie de la transaction"
 
 #: apps/grid/views/base.py:103 apps/grid/views/investor.py:65
-#: apps/landmatrix/forms.py:87 apps/landmatrix/forms.py:116
+#: apps/landmatrix/forms/oldforms.py:87 apps/landmatrix/forms/oldforms.py:116
 msgid "Top investors"
 msgstr "Premiers investisseurs"
 
 #: apps/grid/views/base.py:107 apps/grid/views/filter.py:460
-#: apps/landmatrix/forms.py:64
+#: apps/landmatrix/forms/oldforms.py:64
 msgid "Target region"
 msgstr "Région cible"
 
@@ -3736,7 +3505,7 @@ msgid "Investor region"
 msgstr "Région de l’investisseur"
 
 #: apps/grid/views/base.py:117 apps/grid/views/browse_filter_conditions.py:71
-#: apps/landmatrix/forms.py:105 apps/landmatrix/models/investor.py:122
+#: apps/landmatrix/forms/oldforms.py:105 apps/landmatrix/models/investor.py:122
 msgid "Investor ID"
 msgstr "ID investisseur"
 
@@ -3806,7 +3575,7 @@ msgid "Unknown group '%(group)s'."
 msgstr "Groupe inconnu '%(group)s'."
 
 #: apps/grid/views/browse_filter_conditions.py:53 apps/grid/views/export.py:343
-#: apps/landmatrix/forms.py:56 apps/landmatrix/forms.py:125
+#: apps/landmatrix/forms/oldforms.py:56 apps/landmatrix/forms/oldforms.py:125
 msgid "Deal ID"
 msgstr "ID transaction"
 
@@ -3824,11 +3593,11 @@ msgstr ""
 "Les modifications que vous avez apportées à la transaction ont été "
 "enregistrées avec succès."
 
-#: apps/grid/views/deal.py:165 apps/grid/views/investor.py:230
+#: apps/grid/views/deal.py:166 apps/grid/views/investor.py:230
 msgid "Please correct the error below."
 msgstr "Veuillez corriger l’erreur ci-dessous."
 
-#: apps/grid/views/deal.py:349
+#: apps/grid/views/deal.py:350
 msgid ""
 "The deal has been submitted successfully (#{}). It will be reviewed and "
 "published soon."
@@ -3836,11 +3605,11 @@ msgstr ""
 "La transaction a été soumise avec succès (#{}). Elle sera examinée et "
 "publiée prochainement."
 
-#: apps/grid/views/deal.py:351
+#: apps/grid/views/deal.py:352
 msgid "The deal has been added successfully (#{})."
 msgstr "La transaction a été ajoutée avec succès (#{})."
 
-#: apps/grid/views/deal.py:518
+#: apps/grid/views/deal.py:519
 msgid ""
 "The deal #{} has been marked for deletion. It will be reviewed and deleted "
 "soon."
@@ -3848,45 +3617,45 @@ msgstr ""
 "La transaction #{} a été marquée pour être éliminée. Elle sera examinée et "
 "supprimée prochainement."
 
-#: apps/grid/views/deal.py:520
+#: apps/grid/views/deal.py:521
 msgid "The deal #{} has been deleted successfully."
 msgstr "La transaction #{} a été supprimée avec succès."
 
-#: apps/grid/views/deal.py:594
+#: apps/grid/views/deal.py:595
 msgid "The deal #{} has been recovered successfully."
 msgstr "La transaction #{} a été rétablie avec succès."
 
-#: apps/grid/views/export.py:344 apps/landmatrix/forms.py:57
-#: apps/landmatrix/forms.py:126
+#: apps/grid/views/export.py:344 apps/landmatrix/forms/oldforms.py:57
+#: apps/landmatrix/forms/oldforms.py:126
 msgid "Is public"
 msgstr "Est public"
 
-#: apps/grid/views/export.py:345 apps/landmatrix/forms.py:59
-#: apps/landmatrix/forms.py:127
+#: apps/grid/views/export.py:345 apps/landmatrix/forms/oldforms.py:59
+#: apps/landmatrix/forms/oldforms.py:127
 msgid "Deal scope"
 msgstr "Portée de la transaction"
 
-#: apps/grid/views/export.py:347 apps/landmatrix/forms.py:74
-#: apps/landmatrix/forms.py:129
+#: apps/grid/views/export.py:347 apps/landmatrix/forms/oldforms.py:74
+#: apps/landmatrix/forms/oldforms.py:129
 msgid "Current size under contract"
 msgstr "Superficie actuelle sous contrat"
 
-#: apps/grid/views/export.py:348 apps/landmatrix/forms.py:76
-#: apps/landmatrix/forms.py:131
+#: apps/grid/views/export.py:348 apps/landmatrix/forms/oldforms.py:76
+#: apps/landmatrix/forms/oldforms.py:131
 msgid "Current size in operation (production)"
 msgstr "Superficie actuelle en cours d’exploitation (production)"
 
-#: apps/grid/views/export.py:349 apps/landmatrix/forms.py:67
-#: apps/landmatrix/forms.py:134
+#: apps/grid/views/export.py:349 apps/landmatrix/forms/oldforms.py:67
+#: apps/landmatrix/forms/oldforms.py:134
 msgid "Current negotiation status"
 msgstr "Statut actuel de la négociation"
 
-#: apps/grid/views/export.py:350 apps/landmatrix/forms.py:71
-#: apps/landmatrix/forms.py:137
+#: apps/grid/views/export.py:350 apps/landmatrix/forms/oldforms.py:71
+#: apps/landmatrix/forms/oldforms.py:137
 msgid "Current implementation status"
 msgstr "Statut actuel de la mise en œuvre"
 
-#: apps/grid/views/export.py:352 apps/landmatrix/forms.py:140
+#: apps/grid/views/export.py:352 apps/landmatrix/forms/oldforms.py:140
 msgid "Top parent companies"
 msgstr "Principales sociétés mères"
 
@@ -3959,59 +3728,79 @@ msgstr ""
 "Téléchargement du fichier Shapefile (sélectionner tous les fichiers, formats "
 "exigés : .shp, .shx, .dbf et .prj)"
 
-#: apps/landmatrix/forms.py:13
+#: apps/landmatrix/forms/oldforms.py:13
 msgid "First name"
 msgstr "Prénom"
 
-#: apps/landmatrix/forms.py:14
+#: apps/landmatrix/forms/oldforms.py:14
 msgid "Last name"
 msgstr "Nom"
 
-#: apps/landmatrix/forms.py:62
+#: apps/landmatrix/forms/oldforms.py:62
 msgid "Initiation year or date"
 msgstr "Année ou date de démarrage"
 
-#: apps/landmatrix/forms.py:78
+#: apps/landmatrix/forms/oldforms.py:78
 msgid "Forest concession"
 msgstr "Concession forestière"
 
-#: apps/landmatrix/models/__init__.py:57
+#: apps/landmatrix/forms/oldforms.py:113
+#: apps/landmatrix/models/gndinvestor.py:66
+#: apps/landmatrix/models/investor.py:140
+msgid "Investor homepage"
+msgstr "Page d’accueil investisseur"
+
+#: apps/landmatrix/forms/oldforms.py:114
+#: apps/landmatrix/models/gndinvestor.py:68
+#: apps/landmatrix/models/investor.py:142
+msgid "Opencorporates link"
+msgstr "Lien OpenCorporates"
+
+#: apps/landmatrix/models/__init__.py:62
 msgid "Agricultural produce"
 msgstr "Produit agricole"
 
-#: apps/landmatrix/models/__init__.py:80
+#: apps/landmatrix/models/__init__.py:74
 msgid "English name"
 msgstr "Nom anglais"
 
-#: apps/landmatrix/models/__init__.py:81
+#: apps/landmatrix/models/__init__.py:75
 msgid "Local name"
 msgstr "Nom local"
 
-#: apps/landmatrix/models/__init__.py:82
+#: apps/landmatrix/models/__init__.py:76
 msgid "Locale"
 msgstr "Lieu"
 
-#: apps/landmatrix/models/__init__.py:95
+#: apps/landmatrix/models/__init__.py:89
 #: apps/landmatrix/models/activity_changeset.py:9
 msgid "Description"
 msgstr "Description"
 
 #: apps/landmatrix/models/activity.py:88 apps/landmatrix/models/investor.py:77
-#: apps/landmatrix/models/investor.py:688
-#: apps/landmatrix/models/investor.py:820
+#: apps/landmatrix/models/investor.py:684
+#: apps/landmatrix/models/investor.py:816
 #: templates/django_registration/activate.html:7
 msgid "Active"
 msgstr "Actif"
 
 #: apps/landmatrix/models/activity.py:89 apps/landmatrix/models/investor.py:78
-#: apps/landmatrix/models/investor.py:690
-#: apps/landmatrix/models/investor.py:822
+#: apps/landmatrix/models/investor.py:686
+#: apps/landmatrix/models/investor.py:818
 msgid "Overwritten"
 msgstr "Ecrasé"
 
+#: apps/landmatrix/models/activity.py:91 apps/landmatrix/models/deal.py:966
+#: apps/landmatrix/models/gndinvestor.py:85
+#: apps/landmatrix/models/gndinvestor.py:256
+#: apps/landmatrix/models/investor.py:80 apps/landmatrix/models/investor.py:690
+#: apps/landmatrix/models/investor.py:822
+msgid "Rejected"
+msgstr "Rejeté"
+
 #: apps/landmatrix/models/activity.py:92 apps/landmatrix/models/investor.py:81
-#: apps/landmatrix/models/investor.py:696
-#: apps/landmatrix/models/investor.py:828
+#: apps/landmatrix/models/investor.py:692
+#: apps/landmatrix/models/investor.py:824
 msgid "To delete"
 msgstr "A supprimer"
 
@@ -4083,11 +3872,11 @@ msgstr "Identifiant activité"
 msgid "availability"
 msgstr "disponibilité"
 
-#: apps/landmatrix/models/activity.py:1028
+#: apps/landmatrix/models/activity.py:1026
 msgid "Historical activity"
 msgstr "Activité historique"
 
-#: apps/landmatrix/models/activity.py:1029
+#: apps/landmatrix/models/activity.py:1027
 msgid "Historical activities"
 msgstr "Activités historiques"
 
@@ -4118,7 +3907,7 @@ msgstr "Est actuelle"
 #: apps/landmatrix/models/activity_attribute_group.py:61
 #: apps/landmatrix/models/activity_changeset.py:15
 #: apps/landmatrix/models/activity_feedback.py:10
-#: apps/landmatrix/models/investor.py:850
+#: apps/landmatrix/models/investor.py:846
 msgid "Activity"
 msgstr "Activité"
 
@@ -4149,6 +3938,143 @@ msgstr "Feedback activité"
 #: apps/landmatrix/models/activity_feedback.py:36
 msgid "Activity feedbacks"
 msgstr "Feedback activités"
+
+#: apps/landmatrix/models/country.py:14
+msgid "Region"
+msgstr "Région"
+
+#: apps/landmatrix/models/country.py:16
+msgid "Code ISO 3166-1 alpha2"
+msgstr "Code ISO 3166-1 alpha2"
+
+#: apps/landmatrix/models/country.py:17
+msgid "Code ISO 3166-1 alpha3"
+msgstr "Code ISO 3166-1 alpha3"
+
+#: apps/landmatrix/models/country.py:21
+msgid "Latitude of central point"
+msgstr "Latitude du point central"
+
+#: apps/landmatrix/models/country.py:28
+msgid "Longitude of central point"
+msgstr "Longitude du point central"
+
+#: apps/landmatrix/models/country.py:35 apps/landmatrix/models/country.py:109
+msgid "Latitude of southernmost point"
+msgstr "Latitude du point le plus au sud"
+
+#: apps/landmatrix/models/country.py:42 apps/landmatrix/models/country.py:102
+msgid "Longitude of westernmost point"
+msgstr "Longitude du point le plus à l’ouest"
+
+#: apps/landmatrix/models/country.py:49 apps/landmatrix/models/country.py:95
+msgid "Latitude of northernmost point"
+msgstr "Latitude du point le plus au nord"
+
+#: apps/landmatrix/models/country.py:56 apps/landmatrix/models/country.py:116
+msgid "Longitude of easternmost point"
+msgstr "Longitude du point le plus à l’est"
+
+#: apps/landmatrix/models/country.py:63
+msgid "Democracy index"
+msgstr "Indice de démocratie"
+
+#: apps/landmatrix/models/country.py:66
+msgid "Corruption perception index"
+msgstr "Indice de perception de la corruption"
+
+#: apps/landmatrix/models/country.py:72 apps/landmatrix/models/filter.py:19
+msgid "High income"
+msgstr "Revenu élevé"
+
+#: apps/landmatrix/models/country.py:73
+msgid "Is target country"
+msgstr "Est un pays cible"
+
+#: apps/landmatrix/models/deal.py:85
+#, fuzzy
+#| msgid "Target country"
+msgid "Target Country"
+msgstr "Pays cible"
+
+#: apps/landmatrix/models/deal.py:128
+#, fuzzy
+#| msgid "Timber plantation (for wood and fibre)"
+msgid "Timber plantation"
+msgstr "Plantation d’arbres (pour le bois et la fibre)"
+
+#: apps/landmatrix/models/deal.py:129
+#, fuzzy
+#| msgid "Forest logging / management (for wood and fibre)"
+msgid "Forest logging / management"
+msgstr "Exploitation/gestion forestière (pour le bois et la fibre)"
+
+#: apps/landmatrix/models/deal.py:277
+#, fuzzy
+#| msgid "Annual leasing fee"
+msgid "Annual leasing fee area type"
+msgstr "Frais de location annuel"
+
+#: apps/landmatrix/models/deal.py:291
+#, fuzzy
+#| msgid "Comment on leasing fees"
+msgid "Comment on leasing fee"
+msgstr "Commentaire sur les frais de location"
+
+#: apps/landmatrix/models/deal.py:547
+#, fuzzy
+#| msgid "Comment on recognitions status of community land tenure"
+msgid "Comment on recognition status of community land tenure"
+msgstr "Commentaire sur la reconnaissance des régimes fonciers communautaires"
+
+#: apps/landmatrix/models/deal.py:751
+#, fuzzy
+#| msgid "Crops export"
+msgid "Crops area/yield/export"
+msgstr "Exportation de cultures"
+
+#: apps/landmatrix/models/deal.py:754
+#, fuzzy
+#| msgid "Livestock export"
+msgid "Livestock area/yield/export"
+msgstr "Exportation d’animaux d’élevage"
+
+#: apps/landmatrix/models/deal.py:757
+#, fuzzy
+#| msgid "Resources export"
+msgid "Resources area/yield/export"
+msgstr "Exportation de ressources"
+
+#: apps/landmatrix/models/deal.py:940
+#, fuzzy
+#| msgid "Comment on how much water is extracted"
+msgid "Comment why this deal is private"
+msgstr "Commentaire sur la quantité d’eau captée"
+
+#: apps/landmatrix/models/deal.py:962 apps/landmatrix/models/gndinvestor.py:81
+#: apps/landmatrix/models/gndinvestor.py:252
+msgid "Draft"
+msgstr ""
+
+#: apps/landmatrix/models/deal.py:963 apps/landmatrix/models/gndinvestor.py:82
+#: apps/landmatrix/models/gndinvestor.py:253
+#, fuzzy
+#| msgid "Livestock"
+msgid "Live"
+msgstr "Animaux d’élevage"
+
+#: apps/landmatrix/models/deal.py:967 apps/landmatrix/models/gndinvestor.py:86
+#: apps/landmatrix/models/gndinvestor.py:257
+#, fuzzy
+#| msgid "To delete"
+msgid "To Delete?"
+msgstr "A supprimer"
+
+#: apps/landmatrix/models/deal_submodels.py:106
+#, fuzzy
+#| msgid "Company sources"
+msgid "Company"
+msgstr "Entreprises"
 
 #: apps/landmatrix/models/filter.py:15 apps/landmatrix/models/filter.py:30
 msgid "Value"
@@ -4206,6 +4132,172 @@ msgstr "Filtres pré-établis"
 msgid "Filter presets"
 msgstr "Filtres pré-établis"
 
+#: apps/landmatrix/models/gndinvestor.py:37
+#: apps/landmatrix/models/investor.py:94
+msgid "Government"
+msgstr "Gouvernement"
+
+#: apps/landmatrix/models/gndinvestor.py:38
+#: apps/landmatrix/models/investor.py:95
+msgid "Government institution"
+msgstr "Institution gouvernementale"
+
+#: apps/landmatrix/models/gndinvestor.py:39
+#: apps/landmatrix/models/investor.py:90
+msgid "State-/government (owned) company"
+msgstr "Société (détenue) par l’Etat/le gouvernement"
+
+#: apps/landmatrix/models/gndinvestor.py:40
+#: apps/landmatrix/models/investor.py:89
+msgid "Semi state-owned company"
+msgstr "Société semi-publique"
+
+#: apps/landmatrix/models/gndinvestor.py:41
+#: apps/landmatrix/models/investor.py:108
+msgid "Asset management firm"
+msgstr "Société de gestion d’actifs"
+
+#: apps/landmatrix/models/gndinvestor.py:44
+#: apps/landmatrix/models/investor.py:97
+msgid "Bilateral Development Bank / Development Finance Institution"
+msgstr ""
+"Banque de développement bilatérale/institution de financement du "
+"développement"
+
+#: apps/landmatrix/models/gndinvestor.py:46
+#: apps/landmatrix/models/investor.py:86
+msgid "Stock-exchange listed company"
+msgstr "Société enregistrée en bourse"
+
+#: apps/landmatrix/models/gndinvestor.py:47
+#: apps/landmatrix/models/investor.py:98
+msgid "Commercial Bank"
+msgstr "Banque commerciale"
+
+#: apps/landmatrix/models/gndinvestor.py:48
+#: apps/landmatrix/models/investor.py:106
+msgid "Insurance firm"
+msgstr "Société d’assurance"
+
+#: apps/landmatrix/models/gndinvestor.py:49
+#: apps/landmatrix/models/investor.py:99
+msgid "Investment Bank"
+msgstr "Banque d'investissement"
+
+#: apps/landmatrix/models/gndinvestor.py:50
+#: apps/landmatrix/models/investor.py:88
+msgid "Investment fund"
+msgstr "Fonds d’investissement"
+
+#: apps/landmatrix/models/gndinvestor.py:51
+#: apps/landmatrix/models/investor.py:96
+msgid "Multilateral Development Bank (MDB)"
+msgstr "Banque de développement multilatérale (BDM)"
+
+#: apps/landmatrix/models/gndinvestor.py:52
+#: apps/landmatrix/models/investor.py:85
+msgid "Private company"
+msgstr "Société privée"
+
+#: apps/landmatrix/models/gndinvestor.py:53
+#: apps/landmatrix/models/investor.py:107
+msgid "Private equity firm"
+msgstr "Société de capital-investissement"
+
+#: apps/landmatrix/models/gndinvestor.py:54
+#: apps/landmatrix/models/investor.py:87
+msgid "Individual entrepreneur"
+msgstr "Entrepreneur individuel"
+
+#: apps/landmatrix/models/gndinvestor.py:55
+#: apps/landmatrix/models/investor.py:109
+msgid "Non - Profit organization (e.g. Church, University etc.)"
+msgstr "Organisation à but non lucratif (ex. : Eglise, Université, etc.)"
+
+#: apps/landmatrix/models/gndinvestor.py:56
+#: apps/landmatrix/models/investor.py:91
+msgid "Other (please specify in comment field)"
+msgstr "Autre (veuillez préciser dans le champ Commentaire)"
+
+#: apps/landmatrix/models/gndinvestor.py:195
+#, fuzzy
+#| msgid "Parent company"
+msgid "Venture Company"
+msgstr "Société mère"
+
+#: apps/landmatrix/models/gndinvestor.py:206
+#: apps/landmatrix/models/investor.py:713
+msgid "Relation type"
+msgstr "Type de lien"
+
+#: apps/landmatrix/models/gndinvestor.py:210
+#: apps/landmatrix/models/investor.py:703
+msgid "Shares/Equity"
+msgstr "Actions/capital"
+
+#: apps/landmatrix/models/gndinvestor.py:211
+#: apps/landmatrix/models/investor.py:704
+msgid "Debt financing"
+msgstr "Financement de la dette"
+
+#: apps/landmatrix/models/gndinvestor.py:215
+#, fuzzy
+#| msgid "Investment fund"
+msgid "Investment type"
+msgstr "Fonds d’investissement"
+
+#: apps/landmatrix/models/gndinvestor.py:227
+#: apps/landmatrix/models/investor.py:728
+msgid "Loan amount"
+msgstr "Montant du prêt"
+
+#: apps/landmatrix/models/gndinvestor.py:230
+#: apps/landmatrix/models/investor.py:731
+msgid "Loan currency"
+msgstr "Devise du prêt"
+
+#: apps/landmatrix/models/gndinvestor.py:235
+#, fuzzy
+#| msgid "Loan amount"
+msgid "Loan date"
+msgstr "Montant du prêt"
+
+#: apps/landmatrix/models/gndinvestor.py:238
+#: apps/landmatrix/models/investor.py:707
+msgid "Subsidiary of parent company"
+msgstr "Filiale de la société mère"
+
+#: apps/landmatrix/models/gndinvestor.py:239
+#: apps/landmatrix/models/investor.py:708
+msgid "Local branch of parent company"
+msgstr "Succursale locale de la société mère"
+
+#: apps/landmatrix/models/gndinvestor.py:240
+#: apps/landmatrix/models/investor.py:709
+msgid "Joint venture of parent companies"
+msgstr "Co-entreprise de sociétés mères"
+
+#: apps/landmatrix/models/gndinvestor.py:243
+#: apps/landmatrix/models/investor.py:738
+msgid "Parent relation"
+msgstr "Lien de filiation"
+
+#: apps/landmatrix/models/gndinvestor.py:276
+msgid "Investor Venture Involvement"
+msgstr "Implication de l’investisseur dans le projet"
+
+#: apps/landmatrix/models/gndinvestor.py:277
+msgid "Investor Venture Involvements"
+msgstr "Implications de l’investisseur dans le projet"
+
+#: apps/landmatrix/models/gndinvestor.py:282
+msgid "<is PARENT of>"
+msgstr ""
+
+#: apps/landmatrix/models/gndinvestor.py:284
+msgid "<is INVESTOR of>"
+msgstr ""
+
 #: apps/landmatrix/models/investor.py:103
 msgid ""
 "Investment Fund (all types incl. pension, hedge, mutual, private equity "
@@ -4235,35 +4327,35 @@ msgstr "Prêteur/investisseur tertiaire inconnu (#%s))"
 msgid "Unknown (#%s)"
 msgstr "Inconnu (#%s)"
 
-#: apps/landmatrix/models/investor.py:630
+#: apps/landmatrix/models/investor.py:626
 msgid "Historical investor"
 msgstr "Investisseur historique"
 
-#: apps/landmatrix/models/investor.py:631
+#: apps/landmatrix/models/investor.py:627
 msgid "Historical investors"
 msgstr "Investisseurs historiques"
 
-#: apps/landmatrix/models/investor.py:767
+#: apps/landmatrix/models/investor.py:763
 msgid "Investor ID Downstream"
 msgstr "ID Investisseur aval"
 
-#: apps/landmatrix/models/investor.py:774
+#: apps/landmatrix/models/investor.py:770
 msgid "Investor ID Upstream"
 msgstr "ID Investisseur amont"
 
-#: apps/landmatrix/models/investor.py:781
+#: apps/landmatrix/models/investor.py:777
 msgid "Historical Investor Venture Involvement"
 msgstr "Implication de l’investisseur historique dans le projet"
 
-#: apps/landmatrix/models/investor.py:782
+#: apps/landmatrix/models/investor.py:778
 msgid "Historical Investor Venture Involvements"
 msgstr "Implications de l’investisseur historique dans le projet"
 
-#: apps/landmatrix/models/investor.py:864
+#: apps/landmatrix/models/investor.py:860
 msgid "Historical Investor Activity Involvement"
 msgstr "Implication de l’investisseur historique dans l’activité"
 
-#: apps/landmatrix/models/investor.py:865
+#: apps/landmatrix/models/investor.py:861
 msgid "Historical Investor Activity Involvements"
 msgstr "Implications de l’investisseur historique dans l’activité"
 
@@ -4616,6 +4708,10 @@ msgstr "Déconnexion"
 msgid "Login/Register"
 msgstr "Connexion/enregistrement"
 
+#: templates/base.html:129
+msgid "Stay informed"
+msgstr "Rester informé"
+
 #: templates/base.html:132
 msgid "Get involved"
 msgstr "S'engager"
@@ -4826,7 +4922,7 @@ msgstr "Veuillez vous connecter pour consulter cette page."
 
 #: templates/registration/login.html:37
 msgid "Forgot password?"
-msgstr "Vous avez oublié votre mot de passe ?"
+msgstr "Vous avez oublié votre mot de passe?"
 
 #: templates/registration/login.html:37
 msgid "Reset it"
@@ -4925,6 +5021,29 @@ msgstr "Réinitialiser le mot de passe"
 #: templates/share.html:3
 msgid "Share"
 msgstr "Partager"
+
+#~ msgid "Intended size"
+#~ msgstr "Superficie prévue"
+
+#, fuzzy
+#~| msgid "Intention of investment"
+#~ msgid "Intention of the investment"
+#~ msgstr "Intention de l’investissement"
+
+#, fuzzy
+#~| msgid "Negotiation status"
+#~ msgid "Recognition status"
+#~ msgstr "Statut de la négociation"
+
+#, fuzzy
+#~| msgid "Resources area"
+#~ msgid "Resources"
+#~ msgstr "Superficie consacrée aux ressources"
+
+#, fuzzy
+#~| msgid "Gender-related info"
+#~ msgid "Gender-related information"
+#~ msgstr "Informations relatives au genre"
 
 #~ msgid "Mongolia"
 #~ msgstr "Mongolie"

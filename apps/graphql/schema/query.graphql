@@ -5,7 +5,7 @@ type Query {
 
     deal(id: Int!, version: Int): Deal!
     deals(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
@@ -15,7 +15,10 @@ type Query {
         filters: [Filter]
     ): [Deal]
     dealversions(
-        filters: [Filter]
+        filters: [Filter],
+        country_id: Int,
+        region_id: Int,
+        at_date: Date
     ): [DealVersion]
 
 
@@ -27,7 +30,7 @@ type Query {
 
     investor(id: Int!): Investor!
     investors(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
@@ -35,20 +38,31 @@ type Query {
         filters: [Filter]
     ): [Investor]
     involvements(
-        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-timestamp'"
+        "You should be able to sort by any field of the model. DESC with `-`, e.g. '-modified_at'"
         sort: String = "id",
         "A limit between 1 and 500. If you need more, please contact us"
         limit: Int = 20,
         "Filters are ANDed together"
         filters: [Filter]
     ): [Involvement]
+    investorversions(
+        filters: [Filter]
+    ): [InvestorVersion]
 
     countries: [Country]
     regions: [Region]
+    animals: [Animal]
+    crops: [Crop]
+    minerals: [Mineral]
 
     aggregations: Aggregations
 
     formfields(language: String ="en"): FormFieldSet
+
+    statistics(
+        country_id: Int,
+        region_id: Int
+    ): Statistics
 }
 
 type FormFieldSet {
@@ -57,6 +71,7 @@ type FormFieldSet {
     contract: FormFields
     datasource: FormFields
     investor: FormFields
+    involvement: FormFields
 }
 
 scalar FormFields
