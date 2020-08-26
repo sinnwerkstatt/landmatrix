@@ -25,6 +25,7 @@
     "ol3-google-maps": "0.12.3",
     "openlayers": "3.19.1",
     "openlayers4": "npm:openlayers@~4.0.1",
+    "po2json": "^0.4.5",
     "prettier": "^2.0.1",
     "raphael": "~2.1.4",
     "select2": "4.0.2"

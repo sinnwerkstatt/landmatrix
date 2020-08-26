@@ -9,7 +9,8 @@ import dayjs from "dayjs";
 import VueApollo from "vue-apollo";
 import { apolloClient } from "./apolloclient";
 import VueI18n from "vue-i18n";
-import { messages } from "./i18n.messages";
+import es_messages from './i18n_messages.es.json';
+import fr_messages from './i18n_messages.fr.json';
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
@@ -79,7 +80,7 @@ Vue.filter("defaultdate", function (value) {
 const i18n = new VueI18n({
   locale: LANGUAGE || "en",
   fallbackLocale: 'en',
-  messages: messages,
+  messages: { es: es_messages, fr: fr_messages },
   silentTranslationWarn: true,
 })
 

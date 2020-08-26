@@ -53,7 +53,11 @@ def task_yarn_install():
     actions = ["yarn install"]
     if get_var("production", False):
         actions += ["yarn build_frontend"]
-    return {"targets": ["node_modules/"], "actions": actions}
+    return {
+        "task_dep": ["compilemessages"],
+        "targets": ["node_modules/"],
+        "actions": actions,
+    }
 
 
 def task_convert_scss():
@@ -76,13 +80,17 @@ def task_collectstatic():
 
 
 def task_compilemessages():
-    for pofile in glob("**/LC_MESSAGES/*.po", recursive=True):
+    for pofile in glob("config/locale/**/LC_MESSAGES/*.po", recursive=True):
         mofile = pofile[:-2] + "mo"
+        json_target = f"frontend/src/i18n_messages.{pofile[14:16]}.json"
         yield {
             "name": pofile,
             "file_dep": [pofile],
-            "targets": [mofile],
-            "actions": [f"msgfmt -o {mofile} {pofile}"],
+            "targets": [mofile, json_target],
+            "actions": [
+                f"msgfmt -o {mofile} {pofile}",
+                f"yarn run po2json -f mf {pofile} {json_target}",
+            ],
             "clean": True,
         }
 
