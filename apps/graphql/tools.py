@@ -39,11 +39,12 @@ filter_ops = {
 
 def parse_filters(filters):
     ret = {}
-    for filt in filters:
-        field = filt["field"].replace(".", "__")
-        val = filt["value"]
-        if field not in ["IN", "CONTAINS"] and isinstance(val, list) and len(val) == 1:
+    for filtr in filters:
+        field = filtr["field"].replace(".", "__")
+        op = filtr["operation"]
+        val = filtr["value"]
+        if op not in ["IN", "CONTAINS"] and isinstance(val, list) and len(val) == 1:
             val = val[0]
-        operation = filter_ops[filt["operation"]]
+        operation = filter_ops[op]
         ret[f"{field}{operation}"] = val
     return ret

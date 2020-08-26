@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { pageModule } from "./page";
-import { dealModule } from "./deal";
+import filtersModule from "./filters";
 import { investorModule } from "./investor";
 import { mapModule } from "./map";
 import axios from "axios";
@@ -11,7 +11,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   modules: {
     page: pageModule,
-    deal: dealModule,
+    filters: filtersModule,
     investor: investorModule,
     map: mapModule,
   },

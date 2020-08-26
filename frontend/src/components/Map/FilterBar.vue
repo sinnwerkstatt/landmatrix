@@ -11,6 +11,13 @@
     <div class="overlay-content">
       <div>
         <strong>Filter ({{ deals.length }})</strong>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" v-model="defaultFilters" />
+            {{ $t("Default filter") }}
+          </label>
+        </div>
+
         <FilterCollapse title="Region">
           <b-form-group>
             <b-form-radio
@@ -137,16 +144,24 @@
   export default {
     name: "FilterBar",
     components: { FilterCollapse },
-    props: ["deals", "bigmap"],
+    props: ["deals"],
     data() {
       return {
         showFilterOverlay: true,
+        defaultFilters: true,
         selectedRegion: -1,
         selectedCountry: null,
         dealSizeMin: 200,
         dealSizeMax: null,
         negotiationStatus: ["Concluded"],
       };
+    },
+    watch: {
+      defaultFilters(val, old) {
+        if (val) {
+          this.$store.dispatch("resetFilters");
+        }
+      },
     },
     computed: {
       ...mapState({

@@ -182,12 +182,15 @@ type Deal {
     #### Calculated fields
     top_investors: [Investor]
     deal_size: Float
+    current_intention_of_investment: [String]
     current_negotiation_status: String
     #current_negotiation_status_display: String
     current_implementation_status: String
     #current_implementation_status_display: String
     current_contract_size: Float
     current_production_size: Float
+    initiation_date: String
+    transnational: Boolean
     "GeoJSON combined from all the deals' locations"
     geojson: GeoJSON
 

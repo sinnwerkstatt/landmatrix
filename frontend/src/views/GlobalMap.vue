@@ -57,7 +57,7 @@
         `,
         variables() {
           return {
-            limit: 200,
+            limit: 0,
             filters: this.filters,
           };
         },

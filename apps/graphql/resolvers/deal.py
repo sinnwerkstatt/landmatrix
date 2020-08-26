@@ -32,7 +32,6 @@ def resolve_deal_version(version, fields):
     deal["locations"] = [
         v.field_dict for v in rev.filter(content_type__model="location")
     ]
-    print(deal["locations"])
     deal["datasources"] = [
         v.field_dict for v in rev.filter(content_type__model="datasource")
     ]
@@ -80,7 +79,6 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
             {"id": x.id, "deal": x.field_dict, "revision": x.revision}
             for x in Version.objects.get_for_object_reference(Deal, id)
         ]
-    print(deal["operating_company"])
     return deal
 
 
