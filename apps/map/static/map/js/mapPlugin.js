@@ -455,7 +455,58 @@
                             return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${$.param(imgParams)}`;
                         },
                       dataSourceOwner: 'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>'
+                    }),
+                    new ol.layer.Tile({
+                      name: 'ph_key_biodiversity_areas',
+                      source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
+                        params: {
+                          'srs': 'EPSG%3a900913',
+                          'layers': 'ph_key_biodiversity_areas'
+                        }
+                      }),
+                      visible: false,
+                      opacity: 0.6,
+                      legendUrlFunction: function() {
+                            let imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'ph_key_biodiversity_areas',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${$.param(imgParams)}`;
+                        },
+                      dataSourceOwner: 'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>'
+                    }),
+                    new ol.layer.Tile({
+                      name: 'ph_protected_areas',
+                      source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
+                        params: {
+                          'srs': 'EPSG%3a900913',
+                          'layers': 'ph_protected_areas'
+                        }
+                      }),
+                      visible: false,
+                      opacity: 0.6,
+                      legendUrlFunction: function() {
+                            let imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'ph_protected_areas',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${$.param(imgParams)}`;
+                        },
+                      dataSourceOwner: 'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>'
                     })
+
                 ];
             }
 
