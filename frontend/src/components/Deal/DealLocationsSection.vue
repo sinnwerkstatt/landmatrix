@@ -1,6 +1,7 @@
 <template>
   <DealSubmodelSection
-    :title="title"
+    :title="$t('Locations')"
+    :model_name="$t('Location')"
     :entries="deal.locations"
     :fields="fields"
     :readonly="true"

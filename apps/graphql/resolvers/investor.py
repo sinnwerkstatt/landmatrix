@@ -67,8 +67,9 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
 
 
 class InvolvementNetwork:
-    def __init__(self):
+    def __init__(self, include_ventures=False):
         self.seen_investors = set()
+        self.include_ventures = include_ventures
 
     def get_network(self, investor_id, exclude=None, depth=10):
         if depth <= 0:
@@ -103,28 +104,33 @@ class InvolvementNetwork:
             self.seen_investors.add(inv.id)
 
         # traverse over the ventures
-        network_ventures = qs.filter(investor_id=investor_id).exclude(
-            venture_id=exclude
-        )
-        for inv in network_ventures:
-            if inv.id in self.seen_investors:
-                continue
-            involvement = inv.to_dict()
-            involvement["involvement_type"] = "VENTURE"
-            venture = inv.venture.to_dict()
-            venture["involvements"] = self.get_network(
-                inv.venture_id, investor_id, depth - 1
+        if self.include_ventures:
+            network_ventures = qs.filter(investor_id=investor_id).exclude(
+                venture_id=exclude
             )
-            involvement["investor"] = venture
-            involvements += [involvement]
-            self.seen_investors.add(inv.id)
+            for inv in network_ventures:
+                if inv.id in self.seen_investors:
+                    continue
+                involvement = inv.to_dict()
+                involvement["involvement_type"] = "VENTURE"
+                venture = inv.venture.to_dict()
+                venture["involvements"] = self.get_network(
+                    inv.venture_id, investor_id, depth - 1
+                )
+                involvement["investor"] = venture
+                involvements += [involvement]
+                self.seen_investors.add(inv.id)
 
         return involvements
 
 
 @investor_type.field("involvements")
-def resolve_involvements_network(obj: Any, info: GraphQLResolveInfo, depth):
-    investors = InvolvementNetwork().get_network(obj.id, depth=depth)
+def resolve_involvements_network(
+    obj: Any, info: GraphQLResolveInfo, depth, include_ventures=True
+):
+    investors = InvolvementNetwork(include_ventures=include_ventures).get_network(
+        obj.id, depth=depth
+    )
     # print(dict(investors))
     return investors
 

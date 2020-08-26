@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-6 col-xs-12">
         <div v-for="entry in entries" class="panel-body">
-          <h3>{{ title }} #{{ entry.id }}</h3>
+          <h3>{{ model_name }} #{{ entry.id }}</h3>
           <Field
             :fieldname="fieldname"
             :readonly="!!readonly"
@@ -22,7 +22,7 @@
   import Field from "/components/Fields/Field";
 
   export default {
-    props: ["title", "model", "entries", "fields", "readonly", "active"],
+    props: ["title", "model", "model_name", "entries", "fields", "readonly", "active"],
     components: { Field },
   };
 </script>

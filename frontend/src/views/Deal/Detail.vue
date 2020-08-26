@@ -28,7 +28,6 @@
       :key="deal_id + deal_version"
     >
       <DealLocationSection
-        :title="`Locations`"
         :deal="deal"
         :fields="deal_submodel_sections.location"
         :readonly="true"
@@ -41,7 +40,8 @@
       />
 
       <DealSubmodelSection
-        :title="`Contracts`"
+        :title="$t('Contracts')"
+        :model_name="$t('Contract')"
         :entries="deal.contracts"
         :fields="deal_submodel_sections.contract"
         :readonly="true"
@@ -60,10 +60,25 @@
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
         :readonly="true"
-      />
+      >
+        <div
+          class="col"
+          :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"
+        >
+          <InvestorGraph
+            v-if="investor.involvements.length"
+            :investor="investor"
+            :showDeals="false"
+            :controls="false"
+            :depth="4"
+          ></InvestorGraph>
+          <div v-else class="loader"></div>
+        </div>
+      </DealSection>
 
       <DealSubmodelSection
-        :title="`DataSources`"
+        :title="$t('Data Sources')"
+        :model_name="$t('Data Source')"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         :readonly="true"
@@ -118,7 +133,7 @@
         </template>
       </b-tab>
 
-      <b-tab title="Deal History">
+      <b-tab :title="$t('Deal History')">
         <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
       </b-tab>
     </b-tabs>
@@ -126,32 +141,66 @@
 </template>
 
 <script>
-  import store from "/store";
   import DealSection from "/components/Deal/DealSection";
   import DealHistory from "/components/Deal/DealHistory";
   import DealLocationSection from "/components/Deal/DealLocationsSection";
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
+  import InvestorGraph from "/components/Investor/InvestorGraph";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import { deal_gql_query } from "./deal_fields";
+  import gql from "graphql-tag";
+  import store from "../../store";
 
   export default {
     props: ["deal_id", "deal_version"],
     components: {
+      InvestorGraph,
       DealHistory,
       DealSection,
       DealLocationSection,
       DealSubmodelSection,
     },
+    apollo: {
+      deal: {
+        query: deal_gql_query,
+        variables() {
+          return {
+            id: +this.deal_id,
+          };
+        },
+      },
+      investor: {
+        query: gql`
+          query DealInvestor($id: Int!) {
+            investor(id: $id) {
+              id
+              name
+              involvements(depth: 3, include_ventures: false)
+            }
+          }
+        `,
+        variables() {
+          return {
+            id: +this.deal.operating_company.id,
+          };
+        },
+        skip() {
+          if (!this.deal) return true;
+          if (!this.deal.operating_company) return true;
+          return !this.deal.operating_company.id;
+        },
+      },
+    },
     data() {
       return {
+        deal: null,
         loading: false,
         deal_sections,
         deal_submodel_sections,
+        investor: { involvements: [] },
       };
     },
     computed: {
-      deal() {
-        return this.$store.state.deal.current_deal;
-      },
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
@@ -165,26 +214,28 @@
       },
     },
     beforeRouteEnter(to, from, next) {
-      store
-        .dispatch("setCurrentDeal", {
-          deal_id: to.params.deal_id,
-          deal_version: to.params.deal_version,
-        })
-        .then(() => next())
-        .catch(() => next({ name: "404", params: [to.path], replace: true }));
+      let title = `Deal #${to.params.deal_id}`;
+      store.dispatch("setPageContext", {
+        title,
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "deal_list" }, name: "Data" },
+          { name: title },
+        ],
+      });
+      next();
     },
     beforeRouteUpdate(to, from, next) {
-      this.loading = true;
-      store
-        .dispatch("setCurrentDeal", {
-          deal_id: to.params.deal_id,
-          deal_version: to.params.deal_version,
-        })
-        .then(() => {
-          this.loading = false;
-          next();
-        })
-        .catch(() => next({ name: "404", params: [to.path], replace: true }));
+      let title = `Deal #${to.params.deal_id}`;
+      store.dispatch("setPageContext", {
+        title,
+        breadcrumbs: [
+          { link: { name: "wagtail" }, name: "Home" },
+          { link: { name: "deal_list" }, name: "Data" },
+          { name: title },
+        ],
+      });
+      next();
     },
   };
 </script>

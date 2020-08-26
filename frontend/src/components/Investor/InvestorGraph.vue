@@ -13,14 +13,13 @@
       <div id="investor-network" :class="{ network_fs }"></div>
 
       <div class="row">
-        <div id="investor-level" class="col-sm-6">
+        <div v-if="controls" id="investor-level" class="col-sm-6">
           <h5>Level of parent investors</h5>
           <div class="slider-container col-sm-8">
             <input
               type="range"
               min="1"
               :max="maxDepth"
-              value="1"
               v-model="depth"
               @change="refresh_graph"
             />
@@ -32,7 +31,7 @@
               <input
                 type="checkbox"
                 id="show_deals"
-                v-model="show_deals"
+                v-model="showDeals"
                 @change="refresh_graph"
               />
               Show deals
@@ -67,6 +66,8 @@
   let cy = null;
 
   const cyconfig = {
+    minZoom: 0.3,
+    maxZoom: 5,
     layout: {
       name: "cose-bilkent",
       quality: "proof",
@@ -126,14 +127,28 @@
   ];
 
   export default {
+    name: "InvestorGraph",
     components: { InvestorDetailDealModal, InvestorDetailInvestorModal },
-    props: ["investor"],
+    props: {
+      investor: Object,
+      showDeals: {
+        type: Boolean,
+        default: true,
+      },
+      controls: {
+        type: Boolean,
+        default: true,
+      },
+      depth: {
+        type: Number,
+        default: 1,
+      },
+    },
     data() {
       return {
-        depth: 1,
+        // depth: 1,
         maxDepth: 4,
         modalData: {},
-        show_deals: true,
         network_fs: false,
         showInvestorModal: false,
         showDealModal: false,
@@ -179,7 +194,7 @@
       build_graph(investor, elements, depth) {
         if (depth <= 0) return;
 
-        if (this.show_deals) {
+        if (this.showDeals) {
           investor.deals.forEach((deal) => {
             console.log(deal);
             let deal_node = {
