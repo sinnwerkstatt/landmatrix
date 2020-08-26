@@ -8,7 +8,7 @@
         <b-tabs card>
           <b-tab active>
             <template v-slot:title>
-              <h2>Current statistics</h2>
+              <h2>{{ $t('Current statistics') }}</h2>
             </template>
             <b-card-text>
               <div class="row my-3">
@@ -42,7 +42,7 @@
           </b-tab>
           <b-tab>
             <template v-slot:title>
-              <h2>Changes within timespan</h2>
+              <h2>{{ $t('Changes within timespan') }}</h2>
             </template>
             <b-card-text>
               <div class="row my-3">
