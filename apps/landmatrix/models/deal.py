@@ -20,6 +20,7 @@ from apps.landmatrix.models.mixins import (
 
 
 class DealManager(models.Manager):
+    # TODO throw me out.
     def visible(self, user=None):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
@@ -975,6 +976,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     deal_size = models.IntegerField(blank=True, null=True)
     initiation_date = models.CharField(max_length=10, blank=True)
+    forest_concession = models.BooleanField(default=False)
     transnational = models.NullBooleanField()
     geojson = JSONField(blank=True, null=True)
 
@@ -1025,6 +1027,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.current_implementation_status = self._get_current("implementation_status")
         self.deal_size = self._calculate_deal_size()
         self.initiation_date = self._calculate_init_date()
+        self.forest_concession = self._calculate_forest_concession()
         # FIXME: This field is calculated on save but actually it might change when investors change
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
@@ -1124,6 +1127,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         dates = valid_implementation_status + valid_negotation_status
         # TODO: Should we turn this into a datefield?
         return min(dates) if dates else ""
+
+    def _calculate_forest_concession(self) -> bool:
+        return bool(
+            self.nature_of_deal
+            and "CONCESSION" in self.nature_of_deal
+            and self.current_intention_of_investment
+            and "FOREST_LOGGING" in self.current_intention_of_investment
+        )
 
     def _calculate_transnational(self) -> Optional[bool]:
         if not self.country_id:

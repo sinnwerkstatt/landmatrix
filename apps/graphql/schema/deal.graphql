@@ -167,8 +167,8 @@ type Deal {
 
     # internal?
     overall_comment: String
-    fully_updated: Boolean
-    confidential: Boolean
+    fully_updated: Boolean!
+    confidential: Boolean!
     confidential_reason: String
     #confidential_reason_display: String
     confidential_comment: String
@@ -190,6 +190,7 @@ type Deal {
     current_contract_size: Float
     current_production_size: Float
     initiation_date: String
+    forest_concession: Boolean!
     transnational: Boolean
     "GeoJSON combined from all the deals' locations"
     geojson: GeoJSON
