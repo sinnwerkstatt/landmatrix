@@ -28,6 +28,7 @@ class DealManager(models.Manager):
 
     def public(self):
         qs = self.get_queryset()
+        qs = qs.filter(status__in=(2, 3))
         qs = qs.exclude(confidential=True)
         qs = qs.exclude(Q(country=None) | Q(country__high_income=True))
         qs = qs.exclude(datasources=None)
