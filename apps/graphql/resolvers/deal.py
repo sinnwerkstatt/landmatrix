@@ -141,19 +141,19 @@ def resolve_dealversions(
     ]
 
 
-def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-    qs = Location.objects.visible(info.context.user)
-
-    fields = get_fields(info)
-    if "deal" in fields:
-        qs = qs.select_related("deal")
-
-    if filters:
-        qs = qs.filter(**parse_filters(filters))
-
-    if limit != 0:
-        qs = qs[:limit]
-    return qs
+# def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
+#     qs = Location.objects.visible(info.context.user)
+#
+#     fields = get_fields(info)
+#     if "deal" in fields:
+#         qs = qs.select_related("deal")
+#
+#     if filters:
+#         qs = qs.filter(**parse_filters(filters))
+#
+#     if limit != 0:
+#         qs = qs[:limit]
+#     return qs
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):

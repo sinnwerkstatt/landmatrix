@@ -34,6 +34,8 @@ filter_ops = {
     "LE": "__lte",
     "GE": "__gte",
     "GT": "__gt",
+    "CONTAINED_BY": "__contained_by",
+    "OVERLAP": "__overlap",
 }
 
 
@@ -41,7 +43,7 @@ def parse_filters(filters):
     ret = {}
     for filtr in filters:
         field = filtr["field"].replace(".", "__")
-        op = filtr["operation"]
+        op = filtr["operation"] or "EQ"
         val = filtr["value"]
         if op not in ["IN", "CONTAINS"] and isinstance(val, list) and len(val) == 1:
             val = val[0]

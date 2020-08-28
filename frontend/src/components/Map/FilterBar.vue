@@ -25,6 +25,7 @@
               name="regionRadio"
               :value="reg.id"
               v-for="reg in regions"
+              @change="selectedCountry = null"
             >
               {{ reg.name }}
             </b-form-radio>
@@ -38,6 +39,7 @@
               :options="countries"
               label="name"
               placeholder="Country"
+              @input="selectedRegion = null"
             />
           </b-form-group>
         </FilterCollapse>
@@ -69,19 +71,16 @@
         </FilterCollapse>
 
         <FilterCollapse title="Negotiation status">
-          <div
-            v-for="negstat in ['Concluded', 'Intended', 'Failed']"
-            class="form-check"
-          >
+          <div v-for="(nsname, nsval) in negotiationStatusOptions" class="form-check">
             <input
               class="form-check-input"
               type="checkbox"
-              :value="negstat"
-              :id="negstat"
-              :checked="!negotiationStatus.indexOf(negstat)"
+              :value="nsval"
+              :id="nsval"
+              v-model="negotiationStatus"
             />
-            <label class="form-check-label" :for="negstat">
-              {{ negstat }}
+            <label class="form-check-label" :for="nsval">
+              {{ nsname }}
             </label>
           </div>
         </FilterCollapse>
@@ -94,22 +93,18 @@
         </FilterCollapse>
         <FilterCollapse title="Implementation status">
           <div
-            v-for="negstat in [
-              'Project not started',
-              'Start-up phase',
-              'In Operation',
-              'Project abandoned',
-            ]"
+            v-for="(isname, isval) in implementationStatusOptions"
             class="form-check"
           >
             <input
               class="form-check-input"
               type="checkbox"
-              :value="negstat"
-              :id="negstat"
+              :value="isval"
+              :id="isval"
+              v-model="implementationStatus"
             />
-            <label class="form-check-label" :for="negstat">
-              {{ negstat }}
+            <label class="form-check-label" :for="isval">
+              {{ isname }}
             </label>
           </div>
         </FilterCollapse>
@@ -149,11 +144,23 @@
       return {
         showFilterOverlay: true,
         defaultFilters: true,
-        selectedRegion: -1,
+        selectedRegion: null,
         selectedCountry: null,
         dealSizeMin: 200,
         dealSizeMax: null,
-        negotiationStatus: ["Concluded"],
+        negotiationStatus: ["CONCLUDED"],
+        negotiationStatusOptions: {
+          CONCLUDED: "Concluded",
+          INTENDED: "Intended",
+          FAILED: "Failed",
+        },
+        implementationStatus: [],
+        implementationStatusOptions: {
+          PROJECT_NOT_STARTED: "Project not started",
+          STARTUP_PHASE: "Start-up phase",
+          IN_OPERATION: "In Operation",
+          PROJECT_ABANDONED: "Project abandoned",
+        },
       };
     },
     watch: {
@@ -162,15 +169,73 @@
           this.$store.dispatch("resetFilters");
         }
       },
+      aggFilters(newfilt, oldfilt) {
+        this.$store.dispatch("setFilters", newfilt);
+      },
     },
     computed: {
+      aggFilters() {
+        let filters = [];
+        if (this.selectedRegion) {
+          filters.push({
+            field: "country.fk_region_id",
+            value: this.selectedRegion.toString(),
+          });
+        }
+        if (this.selectedCountry) {
+          filters.push({
+            field: "country_id",
+            value: this.selectedCountry.id.toString(),
+          });
+        }
+        if (this.dealSizeMin) {
+          filters.push({
+            field: "deal_size",
+            operation: "GE",
+            value: this.dealSizeMin.toString(),
+          });
+        }
+        if (this.dealSizeMax) {
+          filters.push({
+            field: "deal_size",
+            operation: "LE",
+            value: this.dealSizeMax.toString(),
+          });
+        }
+        if (this.negotiationStatus.length > 0) {
+          let negstat = [];
+          if (this.negotiationStatus.includes("CONCLUDED"))
+            negstat.push("ORAL_AGREEMENT", "CONTRACT_SIGNED");
+          if (this.negotiationStatus.includes("INTENDED"))
+            negstat.push(
+              "EXPRESSION_OF_INTEREST",
+              "UNDER_NEGOTIATION",
+              "MEMORANDUM_OF_UNDERSTANDING"
+            );
+          if (this.negotiationStatus.includes("FAILED"))
+            negstat.push("NEGOTIATIONS_FAILED", "CONTRACT_CANCELED");
+          filters.push({
+            field: "current_negotiation_status",
+            operation: "IN",
+            value: negstat,
+          });
+          if (this.implementationStatus.length > 0) {
+            filters.push({
+            field: "current_implementation_status",
+            operation: "IN",
+            value: this.implementationStatus,
+          });
+          }
+        }
+        return filters;
+      },
       ...mapState({
         countries: (state) => state.page.countries,
         regions: (state) => {
           let world = {
-            id: -1,
-            name: "World",
-            slug: "world",
+            id: null,
+            name: "Global",
+            slug: "global",
           };
           return [world, ...state.page.regions];
         },

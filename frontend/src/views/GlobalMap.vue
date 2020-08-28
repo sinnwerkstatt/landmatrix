@@ -1,5 +1,6 @@
 <template>
   <div class="container mh-100" style="max-width: 100%;">
+    {{ this.$store.state.filters.filters }}
     <div class="row">
       <div class="col" style="min-height: 700px; border: 1px solid; padding: 0;">
         <big-map
@@ -9,7 +10,7 @@
           :hideLayerSwitcher="true"
         >
           <template v-slot:overlay>
-            <FilterBar :deals="deals" :bigmap="bigmap"></FilterBar>
+            <FilterBar :deals="deals"></FilterBar>
             <ScopeBar></ScopeBar>
           </template>
         </big-map>
@@ -57,8 +58,8 @@
         `,
         variables() {
           return {
-            limit: 0,
-            filters: this.filters,
+            limit: 1000,
+            filters: this.$store.state.filters.filters,
           };
         },
       },
@@ -68,48 +69,43 @@
         bigmap_options: { zoom: 2, zoomControl: false, gestureHandling: false },
         deals: [],
         bigmap: null,
-        filters: [{ field: "deal_size", operation: "GE", value: "200" }],
+        markerClusterGroup: L.markerClusterGroup({ chunkedLoading: true }),
       };
     },
     watch: {
       deals(newDeals, oldDeals) {
-        if (newDeals.length && this.bigmap) {
-          this.setMarkers();
+        if (this.bigmap) {
+          let markers = [];
+          this.deals.map((deal) => {
+            deal.locations.map((loc) => {
+              if (loc.point) {
+                let marker = new L.marker([loc.point.lat, loc.point.lng]);
+                marker.deal_id = deal.id;
+                // marker.region_id = deal.country.fk_region.id;
+                // marker.country_id = deal.country.id;
+                marker.on("click", (e) => console.log(e.target.deal_id));
+                markers.push(marker);
+              }
+            });
+          });
+          this.markerClusterGroup.clearLayers();
+          this.markerClusterGroup.addLayers(markers);
+          // Object.entries(groupBy(markers, (mark) => mark.country_id)).forEach(
+          //   ([key, val]) => {
+          //     // let lg = L.layerGroup(val);
+          //     // this.bigmap.addLayer(lg);
+          //     let mcg = L.markerClusterGroup();
+          //     mcg.addLayers(val);
+          //     this.bigmap.addLayer(mcg);
+          //   }
+          // );
         }
       },
     },
     methods: {
       pinTheMap(bigmap) {
         this.bigmap = bigmap;
-        if (this.deals.length) this.setMarkers();
-      },
-      setMarkers() {
-        let markers = [];
-        this.deals.map((deal) => {
-          deal.locations.map((loc) => {
-            if (loc.point) {
-              let marker = new L.marker([loc.point.lat, loc.point.lng]);
-              marker.deal_id = deal.id;
-              // marker.region_id = deal.country.fk_region.id;
-              // marker.country_id = deal.country.id;
-              marker.on("click", (e) => console.log(e.target.deal_id));
-              markers.push(marker);
-            }
-          });
-        });
-        let mcg = L.markerClusterGroup({ chunkedLoading: true });
-        mcg.addLayers(markers);
-        this.bigmap.addLayer(mcg);
-
-        // Object.entries(groupBy(markers, (mark) => mark.country_id)).forEach(
-        //   ([key, val]) => {
-        //     // let lg = L.layerGroup(val);
-        //     // this.bigmap.addLayer(lg);
-        //     let mcg = L.markerClusterGroup();
-        //     mcg.addLayers(val);
-        //     this.bigmap.addLayer(mcg);
-        //   }
-        // );
+        this.bigmap.addLayer(this.markerClusterGroup);
       },
     },
   };

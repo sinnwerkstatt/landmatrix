@@ -9,10 +9,11 @@ export default {
         value: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
       },
       // Deal size greater or equal 200ha
-      { field: "deal_size", operation: "GE", value: "200" },
       // OR?! { field: "intended_size", operation: "GE", value: "200" },
+      // NOTE: this might not work like before because we leave out the "intended_size"
+      { field: "deal_size", operation: "GE", value: "200" },
 
-      // Exclude: Oil / Gas extraction & Mining ; and Forest Concession Intention Part
+      // Exclude: Oil / Gas extraction & Mining
       // {
       //   field: "current_intention_of_investment",
       //   operation: "IN",
@@ -36,16 +37,16 @@ export default {
       //   ],
       // },
 
-      // Exclude Pure Contract Farming, also Forest Concession "Nature" Part (CONCESSION)
+      // Exclude Pure Contract Farming
       {
         field: "nature_of_deal",
-        operation: "CONTAINS",
+        operation: "OVERLAP",
         value: ["OUTRIGHT_PURCHASE", "LEASE", "EXPLOITATION_PERMIT"],
       },
+      // TODO: Was ist hier mit Deals die keinen nature_of_deal haben? Fliegen raus.
       // Transnational
       {
         field: "transnational",
-        operation: "IS",
         value: "True",
       },
       // Year unknown or >2000

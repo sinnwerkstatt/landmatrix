@@ -2,7 +2,7 @@ input Filter {
     "Any field name from the corresponding model"
     field: String!
     "The default operation is the check on equality"
-    operation: FilterOperation!
+    operation: FilterOperation! = EQ
     "The value can be a string or a list of strings"
     value: [String!]
 }
@@ -22,4 +22,8 @@ enum FilterOperation {
     GE
     "Greater than"
     GT
+    "Contained by - an Arrayfield specific Operation"
+    CONTAINED_BY
+    "OVERLAP - an Arrayfield specific Operation"
+    OVERLAP
 }
