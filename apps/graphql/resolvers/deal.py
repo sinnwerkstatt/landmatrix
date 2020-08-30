@@ -87,7 +87,7 @@ def resolve_deals(
 ):
     qs = Deal.objects.public().order_by(sort)
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     fields = get_fields(info, recursive=True)
 
@@ -120,7 +120,7 @@ def resolve_dealversions(
     # qs = _resolve_deals_prefetching(info).order_by(sort)
 
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     if country_id:
         qs = filter((lambda v: v.field_dict["country_id"] == country_id), qs)
@@ -149,7 +149,7 @@ def resolve_dealversions(
 #         qs = qs.select_related("deal")
 #
 #     if filters:
-#         qs = qs.filter(**parse_filters(filters))
+#         qs = qs.filter(parse_filters(filters))
 #
 #     if limit != 0:
 #         qs = qs[:limit]

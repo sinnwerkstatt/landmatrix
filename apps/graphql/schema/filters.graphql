@@ -2,9 +2,11 @@ input Filter {
     "Any field name from the corresponding model"
     field: String!
     "The default operation is the check on equality"
-    operation: FilterOperation! = EQ
+    operation: FilterOperation = EQ
     "The value can be a string or a list of strings"
     value: [String!]
+    exclusion: Boolean = false
+    allow_null: Boolean = false
 }
 
 enum FilterOperation {
@@ -12,8 +14,6 @@ enum FilterOperation {
     EQ
     "In Set"
     IN
-    "Contains (case insensitive)"
-    CONTAINS
     "Less than"
     LT
     "Less than or equal"
@@ -22,8 +22,10 @@ enum FilterOperation {
     GE
     "Greater than"
     GT
+    "Contains (case insensitive)"
+    CONTAINS
     "Contained by - an Arrayfield specific Operation"
     CONTAINED_BY
-    "OVERLAP - an Arrayfield specific Operation"
+    "Overlap - an Arrayfield specific Operation"
     OVERLAP
 }

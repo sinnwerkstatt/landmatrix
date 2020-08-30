@@ -33,15 +33,13 @@
         </FilterCollapse>
 
         <FilterCollapse title="Country">
-          <b-form-group>
-            <multiselect
-              v-model="selectedCountry"
-              :options="countries"
-              label="name"
-              placeholder="Country"
-              @input="selectedRegion = null"
-            />
-          </b-form-group>
+          <multiselect
+            v-model="selectedCountry"
+            :options="countries"
+            label="name"
+            placeholder="Country"
+            @input="selectedRegion = null"
+          />
         </FilterCollapse>
         <FilterCollapse title="Deal size">
           <div class="input-group">
@@ -70,7 +68,7 @@
           </div>
         </FilterCollapse>
 
-        <FilterCollapse title="Negotiation status">
+        <FilterCollapse :title="$t('Negotiation status')">
           <div v-for="(nsname, nsval) in negotiationStatusOptions" class="form-check">
             <input
               class="form-check-input"
@@ -86,7 +84,17 @@
         </FilterCollapse>
 
         <FilterCollapse title="Investor">
-          <div>Investor</div>
+          <div>
+            <multiselect
+              v-model="selectedInvestor"
+              :options="investors"
+              :multiple="false"
+              :close-on-select="true"
+              placeholder="Investor"
+              track-by="id"
+              label="name"
+            />
+          </div>
         </FilterCollapse>
         <FilterCollapse title="Year of initiation">
           <div></div>
@@ -112,7 +120,20 @@
           <div></div>
         </FilterCollapse>
         <FilterCollapse title="Produce">
-          <div></div>
+          <div>
+            <multiselect
+              v-model="selectedProduce"
+              :options="produces"
+              :multiple="true"
+              :close-on-select="false"
+              placeholder="Produce"
+              :group-select="true"
+              group-label="type"
+              group-values="options"
+              track-by="id"
+              label="name"
+            />
+          </div>
         </FilterCollapse>
       </div>
       <div style="position: absolute; bottom: 0;">
@@ -135,6 +156,8 @@
 <script>
   import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse";
+  import gql from "graphql-tag";
+  import Cookies from "js-cookie";
 
   export default {
     name: "FilterBar",
@@ -142,6 +165,7 @@
     props: ["deals"],
     data() {
       return {
+        investors: [],
         showFilterOverlay: true,
         defaultFilters: true,
         selectedRegion: null,
@@ -150,10 +174,12 @@
         dealSizeMax: null,
         negotiationStatus: ["CONCLUDED"],
         negotiationStatusOptions: {
-          CONCLUDED: "Concluded",
-          INTENDED: "Intended",
-          FAILED: "Failed",
+          CONCLUDED: this.$t("Concluded"),
+          INTENDED: this.$t("Intended"),
+          FAILED: this.$t("Failed"),
         },
+        selectedInvestor: null,
+        selectedProduce: null,
         implementationStatus: [],
         implementationStatusOptions: {
           PROJECT_NOT_STARTED: "Project not started",
@@ -162,6 +188,18 @@
           PROJECT_ABANDONED: "Project abandoned",
         },
       };
+    },
+    apollo: {
+      investors: {
+        query: gql`
+          query {
+            investors(limit: 0) {
+              id
+              name
+            }
+          }
+        `,
+      },
     },
     watch: {
       defaultFilters(val, old) {
@@ -173,7 +211,48 @@
         this.$store.dispatch("setFilters", newfilt);
       },
     },
+    created() {
+      let filters = Cookies.get("filters");
+      console.log(JSON.parse(filters));
+    },
     computed: {
+      ...mapState({
+        countries: (state) => state.page.countries,
+        regions: (state) => {
+          let world = {
+            id: null,
+            name: "Global",
+            slug: "global",
+          };
+          return [world, ...state.page.regions];
+        },
+        tileLayers: (state) => state.map.layers,
+        visibleLayer: (state) => state.map.visibleLayer,
+        dealFormfields: (state) => state.formfields.deal,
+      }),
+      produces() {
+        if (!this.dealFormfields) return [];
+        return [
+          {
+            type: "Crop",
+            options: Object.entries(
+              this.dealFormfields.crops.choices
+            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k })),
+          },
+          {
+            type: "Livestock",
+            options: Object.entries(
+              this.dealFormfields.animals.choices
+            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k })),
+          },
+          {
+            type: "Minerals",
+            options: Object.entries(
+              this.dealFormfields.resources.choices
+            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
+          },
+        ];
+      },
       aggFilters() {
         let filters = [];
         if (this.selectedRegion) {
@@ -219,29 +298,41 @@
             operation: "IN",
             value: negstat,
           });
-          if (this.implementationStatus.length > 0) {
-            filters.push({
+        }
+        if (this.implementationStatus.length > 0) {
+          filters.push({
             field: "current_implementation_status",
             operation: "IN",
             value: this.implementationStatus,
           });
-          }
         }
+
+        if (this.selectedInvestor) {
+          filters.push({
+            field: "operating_company",
+            value: this.selectedInvestor.id.toString(),
+          });
+        }
+
+        // if (this.selectedProduce && this.selectedProduce.length > 0) {
+        //   let crops = [];
+        //   let animals = [];
+        //   let minerals = [];
+        //   this.selectedProduce.map(prod => {
+        //     if(prod.startsWith('crop_')) crops.push(prod.replace('crop_',''));
+        //   });
+        //   if(crops.length>0) {
+        //     filters.push({
+        //     field: "current_implementation_status",
+        //     operation: "IN",
+        //     value: this.implementationStatus,
+        //   })
+        //   }
+        //   console.log(this.selectedProduce);
+        // }
+
         return filters;
       },
-      ...mapState({
-        countries: (state) => state.page.countries,
-        regions: (state) => {
-          let world = {
-            id: null,
-            name: "Global",
-            slug: "global",
-          };
-          return [world, ...state.page.regions];
-        },
-        tileLayers: (state) => state.map.layers,
-        visibleLayer: (state) => state.map.visibleLayer,
-      }),
     },
   };
 </script>

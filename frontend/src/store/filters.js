@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 export default {
   state: () => ({
     filters: [],
@@ -14,48 +16,31 @@ export default {
       { field: "deal_size", operation: "GE", value: "200" },
 
       // Exclude: Oil / Gas extraction & Mining
-      // {
-      //   field: "current_intention_of_investment",
-      //   operation: "IN",
-      //   value: [
-      //     "BIOFUELS",
-      //     "FOOD_CROPS",
-      //     "FODDER",
-      //     "LIVESTOCK",
-      //     "NON_FOOD_AGRICULTURE",
-      //     "AGRICULTURE_UNSPECIFIED",
-      //     "TIMBER_PLANTATION",
-      //     "FOREST_LOGGING", // Exclude this for Forest concession
-      //     "CARBON",
-      //     "FORESTRY_UNSPECIFIED",
-      //     "TOURISM",
-      //     "INDUSTRY",
-      //     "CONVERSATION",
-      //     "LAND_SPECULATION",
-      //     "RENEWABLE_ENERGY",
-      //     "OTHER",
-      //   ],
-      // },
-
+      {
+        field: "current_intention_of_investment",
+        operation: "OVERLAP",
+        value: ["OIL_GAS_EXTRACTION", "MINING"],
+        exclusion: true,
+      },
       // Exclude Pure Contract Farming
       {
         field: "nature_of_deal",
-        operation: "OVERLAP",
-        value: ["OUTRIGHT_PURCHASE", "LEASE", "EXPLOITATION_PERMIT"],
+        operation: "CONTAINED_BY",
+        value: ["PURE_CONTRACT_FARMING"],
+        exclusion: true,
       },
-      // TODO: Was ist hier mit Deals die keinen nature_of_deal haben? Fliegen raus.
       // Transnational
       {
         field: "transnational",
         value: "True",
       },
-      // Year unknown or >2000
-      // TODO: what about unknown?
+      // Year unknown or >=2000
       {
-        field: "initiation_date",
+        field: "initiation_year",
         operation: "GE",
-        value: "2000-01-01",
-      }
+        value: "2000",
+        allow_null: true,
+      },
     ],
   }),
   mutations: {
@@ -64,15 +49,16 @@ export default {
     },
     resetFilters(state) {
       state.filters = state.default_filters;
-    }
+    },
   },
   actions: {
     setFilters(context, filters) {
+      Cookies.set("filters", filters, { sameSite: "lax" });
       context.commit("setFilters", filters);
     },
     resetFilters(context) {
       context.commit("resetFilters");
-    }
+    },
   },
   getters: {},
 };

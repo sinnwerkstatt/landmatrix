@@ -27,7 +27,7 @@ def resolve_investor(obj: Any, info: GraphQLResolveInfo, id):
 def resolve_investors(obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20):
     qs = _resolve_investors_prefetching(info).order_by(sort)
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     # limit = max(1, min(limit, 500))
     if limit != 0:
@@ -54,7 +54,7 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = Version.objects.get_for_model(Investor)  # .filter(revision__date_created="")
     # qs = _resolve_deals_prefetching(info).order_by(sort)
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     return [
         {
@@ -141,7 +141,7 @@ def resolve_involvements(
     qs = InvestorVentureInvolvement.objects.visible(info.context.user)
 
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
     if limit != 0:
         qs = qs[:limit]
     return qs
