@@ -11,6 +11,7 @@
 </template>
 <script>
   export default {
+    name: "FilterCollapse",
     props: ["title"],
     data() {
       return {

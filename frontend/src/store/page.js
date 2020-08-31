@@ -19,6 +19,7 @@ export const pageModule = {
       { route: "/data/", icon: "fa fa-table", name: "Data" },
       { route: "/charts/", icon: "far fa-chart-bar", name: "Charts" },
     ],
+    showBreadcrumbs: true,
   }),
   mutations: {
     setUser(state, user) {
@@ -48,6 +49,9 @@ export const pageModule = {
     },
     setBreadcrumbs(state, breadcrumbs) {
       state.breadcrumbs = breadcrumbs;
+    },
+    breadcrumbBar(state, visible) {
+      state.showBreadcrumbs = visible;
     },
   },
   actions: {
@@ -93,5 +97,8 @@ export const pageModule = {
       context.commit("setTitle", page_context.title);
       context.commit("setBreadcrumbs", page_context.breadcrumbs);
     },
+    breadcrumbBar(context, visible) {
+      context.commit("breadcrumbBar", visible);
+    }
   },
 };
