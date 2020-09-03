@@ -171,18 +171,6 @@ export default {
       deals_rejected: [],
       deals_pending_deletion: [],
       deals_active: [],
-
-      dealFields: [
-        "country",
-        "deal_size",
-        "status",
-        "draft_status",
-        "confidential",
-        "created_at",
-        "modified_at",
-        "fully_updated_at"
-      ],
-
       historic_investors: [],
       investors_pending: [],
       investors_rejected: [],

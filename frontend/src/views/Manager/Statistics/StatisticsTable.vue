@@ -100,6 +100,7 @@ export default {
         "name",
         "country",
         "status",
+        "draft_status",
         "created_at",
         "modified_at"
       ],
