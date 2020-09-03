@@ -9,7 +9,8 @@ type Query {
         limit: Int = 20,
 
         after: Int,
-        filters: [Filter]
+        filters: [Filter],
+        public: Boolean
     ): [Deal]
     dealversions(
         filters: [Filter],

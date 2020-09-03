@@ -61,6 +61,7 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         return resolve_deal_version(version, fields)
 
     add_versions = False
+    has_no_known_investor = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
@@ -83,17 +84,23 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 
 
 def resolve_deals(
-    obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, after=None
+    obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, public=True,
+    after=None
 ):
-    qs = Deal.objects.public().order_by(sort)
+    qs = Deal.objects
+    if public:
+        qs = qs.public()
+
+    qs = qs.order_by(sort)
     if filters:
         qs = qs.filter(**parse_filters(filters))
 
-    fields = get_fields(info, recursive=True)
+    fields = get_fields(info, recursive=True, exclude=["has_no_known_investor"])
 
     # limit = max(1, min(limit, 500))
     if limit != 0:
         qs = qs[:limit]
+
     return qs_values_to_dict(qs, fields, ["locations", "datasources", "contracts"])
 
 
@@ -101,8 +108,8 @@ deal_type = ObjectType("Deal")
 
 
 @deal_type.field("has_no_known_investor")
-def get_has_no_known_investor(obj, info: GraphQLResolveInfo):
-    return obj._has_no_known_investor()
+def get_has_no_known_investor(deal, info: GraphQLResolveInfo):
+    return Deal.objects.get(id=deal['id'])._has_no_known_investor()
 
 
 def _resolve_field_dict_fetch(field_dict, revision):

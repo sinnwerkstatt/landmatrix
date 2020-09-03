@@ -1,26 +1,26 @@
 from graphql import GraphQLResolveInfo, FieldNode
 
 
-def get_fields(info: GraphQLResolveInfo, recursive=False):
+def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=[]):
     fields = []
     for fnode in info.field_nodes:
         for selection in fnode.selection_set.selections:
             if recursive:
-                fields += _recursive_fieldnode(selection)
+                fields += _recursive_fieldnode(selection, exclude)
             else:
                 sel = selection.name.value
-                if sel != "__typename":
+                if sel != "__typename" and not sel in exclude:
                     fields += [sel]
     return fields
 
 
-def _recursive_fieldnode(fnode: FieldNode):
+def _recursive_fieldnode(fnode: FieldNode, exclude):
     if fnode.selection_set:
         sel_set = []
         for selection in fnode.selection_set.selections:
-            sel_set += _recursive_fieldnode(selection)
+            sel_set += _recursive_fieldnode(selection, exclude)
         return [f"{fnode.name.value}__{sel}" for sel in sel_set if sel != "__typename"]
-    elif fnode.name.value != "__typename":
+    elif fnode.name.value != "__typename" and not fnode.name.value in exclude:
         return [fnode.name.value]
     return []
 
