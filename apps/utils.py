@@ -26,7 +26,7 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
         for group in dealgroup:
             manytomany_combine = {mtm: {} for mtm in many_to_many_relations}
             for key, val in group.items():
-                if not val:
+                if val is None:
                     continue
                 if "__" in key:
                     keyprefix, restkey = key.split("__", 1)
