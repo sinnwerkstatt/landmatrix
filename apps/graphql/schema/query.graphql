@@ -20,10 +20,11 @@ type Query {
     ): [DealVersion]
 
 
-    locations(
-        limit: Int = 300,
-        filters: [Filter]
-    ): [Location]
+# we probably dont need this
+#    locations(
+#        limit: Int = 300,
+#        filters: [Filter]
+#    ): [Location]
 
     investor(id: Int!): Investor!
     investors(

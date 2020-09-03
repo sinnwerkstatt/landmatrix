@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 export default {
   state: () => ({
     filters: [],
@@ -9,52 +11,36 @@ export default {
         value: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
       },
       // Deal size greater or equal 200ha
-      { field: "deal_size", operation: "GE", value: "200" },
       // OR?! { field: "intended_size", operation: "GE", value: "200" },
+      // NOTE: this might not work like before because we leave out the "intended_size"
+      { field: "deal_size", operation: "GE", value: "200" },
 
-      // Exclude: Oil / Gas extraction & Mining ; and Forest Concession Intention Part
-      // {
-      //   field: "current_intention_of_investment",
-      //   operation: "IN",
-      //   value: [
-      //     "BIOFUELS",
-      //     "FOOD_CROPS",
-      //     "FODDER",
-      //     "LIVESTOCK",
-      //     "NON_FOOD_AGRICULTURE",
-      //     "AGRICULTURE_UNSPECIFIED",
-      //     "TIMBER_PLANTATION",
-      //     "FOREST_LOGGING", // Exclude this for Forest concession
-      //     "CARBON",
-      //     "FORESTRY_UNSPECIFIED",
-      //     "TOURISM",
-      //     "INDUSTRY",
-      //     "CONVERSATION",
-      //     "LAND_SPECULATION",
-      //     "RENEWABLE_ENERGY",
-      //     "OTHER",
-      //   ],
-      // },
-
-      // Exclude Pure Contract Farming, also Forest Concession "Nature" Part (CONCESSION)
+      // Exclude: Oil / Gas extraction & Mining
+      {
+        field: "current_intention_of_investment",
+        operation: "OVERLAP",
+        value: ["OIL_GAS_EXTRACTION", "MINING"],
+        exclusion: true,
+      },
+      // Exclude Pure Contract Farming
       {
         field: "nature_of_deal",
-        operation: "CONTAINS",
-        value: ["OUTRIGHT_PURCHASE", "LEASE", "EXPLOITATION_PERMIT"],
+        operation: "CONTAINED_BY",
+        value: ["PURE_CONTRACT_FARMING"],
+        exclusion: true,
       },
       // Transnational
       {
         field: "transnational",
-        operation: "IS",
         value: "True",
       },
-      // Year unknown or >2000
-      // TODO: what about unknown?
+      // Year unknown or >=2000
       {
-        field: "initiation_date",
+        field: "initiation_year",
         operation: "GE",
-        value: "2000-01-01",
-      }
+        value: "2000",
+        allow_null: true,
+      },
     ],
   }),
   mutations: {
@@ -63,15 +49,16 @@ export default {
     },
     resetFilters(state) {
       state.filters = state.default_filters;
-    }
+    },
   },
   actions: {
     setFilters(context, filters) {
+      Cookies.set("filters", filters, { sameSite: "lax" });
       context.commit("setFilters", filters);
     },
     resetFilters(context) {
       context.commit("resetFilters");
-    }
+    },
   },
   getters: {},
 };

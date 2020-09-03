@@ -20,6 +20,7 @@ from apps.landmatrix.models.mixins import (
 
 
 class DealManager(models.Manager):
+    # TODO throw me out.
     def visible(self, user=None):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
@@ -28,6 +29,7 @@ class DealManager(models.Manager):
 
     def public(self):
         qs = self.get_queryset()
+        qs = qs.filter(status__in=(2, 3))
         qs = qs.exclude(confidential=True)
         qs = qs.exclude(Q(country=None) | Q(country__high_income=True))
         qs = qs.exclude(datasources=None)
@@ -957,8 +959,10 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
+    current_contract_size = models.FloatField(blank=True, null=True)
+    current_production_size = models.FloatField(blank=True, null=True)
     current_intention_of_investment = ArrayField(
-        models.CharField(_("Nature of the deal"), max_length=100),
+        models.CharField(max_length=100),
         choices=INTENTION_CHOICES,
         blank=True,
         null=True,
@@ -969,11 +973,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     current_implementation_status = models.CharField(
         choices=IMPLEMENTATION_STATUS_CHOICES, max_length=100, blank=True, null=True
     )
-    current_contract_size = models.FloatField(blank=True, null=True)
-    current_production_size = models.FloatField(blank=True, null=True)
+    current_crops = ArrayField(models.CharField(max_length=100), blank=True, null=True)
+    current_animals = ArrayField(
+        models.CharField(max_length=100), blank=True, null=True
+    )
+    current_resources = ArrayField(
+        models.CharField(max_length=100), blank=True, null=True
+    )
 
     deal_size = models.IntegerField(blank=True, null=True)
-    initiation_date = models.CharField(max_length=10, blank=True)
+    initiation_year = models.IntegerField(
+        blank=True, null=True, validators=[MinValueValidator(1970)]
+    )
+    forest_concession = models.BooleanField(default=False)
     transnational = models.NullBooleanField()
     geojson = JSONField(blank=True, null=True)
 
@@ -1015,6 +1027,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.fully_updated:
             self.fully_updated_at = timezone.now()
 
+        # Get current values from a lot of the JSONField attributes
         self.current_contract_size = self._get_current("contract_size")
         self.current_production_size = self._get_current("production_size")
         self.current_intention_of_investment = self._get_current(
@@ -1022,8 +1035,13 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         )
         self.current_negotiation_status = self._get_current("negotiation_status")
         self.current_implementation_status = self._get_current("implementation_status")
+        self.current_crops = self._get_current("crops")
+        self.current_animals = self._get_current("animals")
+        self.current_resources = self._get_current("resources")
+
         self.deal_size = self._calculate_deal_size()
-        self.initiation_date = self._calculate_init_date()
+        self.initiation_year = self._calculate_initiation_year()
+        self.forest_concession = self._calculate_forest_concession()
         # FIXME: This field is calculated on save but actually it might change when investors change
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
@@ -1091,10 +1109,10 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             value = 0
         return value
 
-    def _calculate_init_date(self):
+    def _calculate_initiation_year(self):
         valid_negotation_status = (
             [
-                x["date"]
+                int(x["date"][:4])
                 for x in self.negotiation_status
                 if x.get("date")
                 and x["value"]
@@ -1111,7 +1129,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         )
         valid_implementation_status = (
             [
-                x["date"]
+                int(x["date"][:4])
                 for x in self.implementation_status
                 if x.get("date")
                 and x["value"]
@@ -1121,8 +1139,15 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             else []
         )
         dates = valid_implementation_status + valid_negotation_status
-        # TODO: Should we turn this into a datefield?
-        return min(dates) if dates else ""
+        return min(dates) if dates else None
+
+    def _calculate_forest_concession(self) -> bool:
+        return bool(
+            self.nature_of_deal
+            and "CONCESSION" in self.nature_of_deal
+            and self.current_intention_of_investment
+            and "FOREST_LOGGING" in self.current_intention_of_investment
+        )
 
     def _calculate_transnational(self) -> Optional[bool]:
         if not self.country_id:

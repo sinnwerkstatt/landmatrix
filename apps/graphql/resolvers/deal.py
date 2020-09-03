@@ -93,7 +93,7 @@ def resolve_deals(
 
     qs = qs.order_by(sort)
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     fields = get_fields(info, recursive=True, exclude=["has_no_known_investor"])
 
@@ -127,7 +127,7 @@ def resolve_dealversions(
     # qs = _resolve_deals_prefetching(info).order_by(sort)
 
     if filters:
-        qs = qs.filter(**parse_filters(filters))
+        qs = qs.filter(parse_filters(filters))
 
     if country_id:
         qs = filter((lambda v: v.field_dict["country_id"] == country_id), qs)
@@ -148,19 +148,19 @@ def resolve_dealversions(
     ]
 
 
-def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-    qs = Location.objects.visible(info.context.user)
-
-    fields = get_fields(info)
-    if "deal" in fields:
-        qs = qs.select_related("deal")
-
-    if filters:
-        qs = qs.filter(**parse_filters(filters))
-
-    if limit != 0:
-        qs = qs[:limit]
-    return qs
+# def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
+#     qs = Location.objects.visible(info.context.user)
+#
+#     fields = get_fields(info)
+#     if "deal" in fields:
+#         qs = qs.select_related("deal")
+#
+#     if filters:
+#         qs = qs.filter(parse_filters(filters))
+#
+#     if limit != 0:
+#         qs = qs[:limit]
+#     return qs
 
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):

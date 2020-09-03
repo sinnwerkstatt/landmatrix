@@ -35,10 +35,14 @@ const router = new Router({
       path: "/map/",
       name: "map",
       component: GlobalMap,
-      // beforeEnter(to, from, next) {
-      //   store.dispatch("fetchDeals", { limit: 1000 });
-      //   next();
-      // },
+      beforeEnter(to, from, next) {
+        store.dispatch("breadcrumbBar", false);
+        next();
+      },
+      beforeLeave(to, from, next) {
+        store.dispatch("breadcrumbBar", true);
+        next();
+      },
     },
     {
       path: "/deal/add/",

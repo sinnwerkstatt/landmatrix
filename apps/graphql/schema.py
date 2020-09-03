@@ -11,7 +11,6 @@ from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
     resolve_aggregations,
-    resolve_locations,
     deal_type,
     resolve_dealversions,
 )
@@ -51,7 +50,7 @@ query.set_field("users", resolve_users)
 query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
 query.set_field("dealversions", resolve_dealversions)
-query.set_field("locations", resolve_locations)
+# query.set_field("locations", resolve_locations)
 query.set_field("investor", resolve_investor)
 query.set_field("investors", resolve_investors)
 query.set_field("investorversions", resolve_investorversions)

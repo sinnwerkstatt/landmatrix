@@ -6,6 +6,8 @@ type Country {
     code_alpha3: String
     high_income: Boolean
     fk_region: Region
+    point_lat: Float
+    point_lon: Float
 }
 
 type Region {
