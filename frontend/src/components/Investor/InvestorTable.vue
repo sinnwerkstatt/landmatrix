@@ -55,7 +55,7 @@
         sortAscending: true,
         fieldNameMap: {
           name: "Name",
-          country: "Target country",
+          country: "Country of registration",
           top_investors: "Top investors",
           intention_of_investment: "Intention of investment",
           current_negotiation_status: "Negotiation status",
