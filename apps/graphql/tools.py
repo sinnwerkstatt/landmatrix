@@ -2,7 +2,9 @@ from django.db.models import Q
 from graphql import GraphQLResolveInfo, FieldNode
 
 
-def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=[]):
+def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=None):
+    if exclude is None:
+        exclude = []
     fields = []
     for fnode in info.field_nodes:
         for selection in fnode.selection_set.selections:
@@ -10,7 +12,7 @@ def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=[]):
                 fields += _recursive_fieldnode(selection, exclude)
             else:
                 sel = selection.name.value
-                if sel != "__typename" and not sel in exclude:
+                if sel not in exclude:
                     fields += [sel]
     return fields
 
@@ -20,8 +22,8 @@ def _recursive_fieldnode(fnode: FieldNode, exclude):
         sel_set = []
         for selection in fnode.selection_set.selections:
             sel_set += _recursive_fieldnode(selection, exclude)
-        return [f"{fnode.name.value}__{sel}" for sel in sel_set if sel != "__typename"]
-    elif fnode.name.value != "__typename" and not fnode.name.value in exclude:
+        return [f"{fnode.name.value}__{sel}" for sel in sel_set if sel not in exclude]
+    elif fnode.name.value not in exclude:
         return [fnode.name.value]
     return []
 

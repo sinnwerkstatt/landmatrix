@@ -55,7 +55,7 @@ def resolve_deal_version(version, fields):
 
 
 def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
-    fields = get_fields(info, recursive=True)
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     if version:
         return resolve_deal_version(version, fields)
@@ -84,18 +84,28 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 
 
 def resolve_deals(
-    obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20, public=True,
-    after=None
+    obj,
+    info: GraphQLResolveInfo,
+    filters=None,
+    sort="id",
+    limit=20,
+    public=True,
+    after=None,
 ):
     qs = Deal.objects
-    if public:
+
+    # only logged in users are allowed to see not public deals
+    # TODO: access should be more fine-grained?!
+    if info.context.user.is_anonymous or public:
         qs = qs.public()
 
     qs = qs.order_by(sort)
     if filters:
         qs = qs.filter(parse_filters(filters))
 
-    fields = get_fields(info, recursive=True, exclude=["has_no_known_investor"])
+    fields = get_fields(
+        info, recursive=True, exclude=["__typename", "has_no_known_investor"]
+    )
 
     # limit = max(1, min(limit, 500))
     if limit != 0:
@@ -109,7 +119,7 @@ deal_type = ObjectType("Deal")
 
 @deal_type.field("has_no_known_investor")
 def get_has_no_known_investor(deal, info: GraphQLResolveInfo):
-    return Deal.objects.get(id=deal['id'])._has_no_known_investor()
+    return Deal.objects.get(id=deal["id"])._has_no_known_investor()
 
 
 def _resolve_field_dict_fetch(field_dict, revision):
@@ -151,7 +161,7 @@ def resolve_dealversions(
 # def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
 #     qs = Location.objects.visible(info.context.user)
 #
-#     fields = get_fields(info)
+#     fields = get_fields(info, exclude=["__typename"])
 #     if "deal" in fields:
 #         qs = qs.select_related("deal")
 #
