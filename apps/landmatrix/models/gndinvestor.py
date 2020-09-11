@@ -1,4 +1,5 @@
 import re
+from typing import Set
 
 import reversion
 from django.contrib.postgres.fields import ArrayField
@@ -118,7 +119,7 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             return f"{self.name} (#{self.id})"
         return f"s#{self.id}"
 
-    def get_top_investors(self, seen_investors=None):
+    def get_top_investors(self, seen_investors=None) -> Set["Investor"]:
         """
         Get list of highest parent companies
         (all right-hand side parent companies of the network visualisation)

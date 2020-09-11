@@ -19,7 +19,7 @@ def public_deal(db) -> Deal:
     )
 
     deal = Deal.objects.create(
-        id=3, confidential=False, country=c1, operating_company=i1,
+        id=3, confidential=False, country=c1, operating_company=i1, status=2,
     )
     DataSource.objects.create(deal=deal, name="Test data source")
 

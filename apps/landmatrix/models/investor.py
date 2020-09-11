@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django_prometheus.models import ExportModelOperationsMixin
 from multiselectfield import MultiSelectField
+from sentry_sdk import capture_message
 
 
 class InvestorQuerySet(models.QuerySet):
@@ -618,9 +619,12 @@ class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
                     lambda: index_investor.delay(self.investor_identifier)
                 )
 
-        from apps.landmatrix.tasks import task_propagate_save_to_gnd_investor
+        from apps.landmatrix.synchronization.investor import histvestor_to_investor
 
-        task_propagate_save_to_gnd_investor(self.pk)
+        try:
+            histvestor_to_investor(self.pk)
+        except:
+            capture_message("Could not sync HistVestor to Investor", level="error")
 
     class Meta:
         verbose_name = _("Historical investor")

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="messages.length > 0">
     <div v-for="msg in messages" role="alert" class="alert" :class="map_level(msg)">
       <strong>{{ msg.title }}</strong>
       {{ msg.text }}

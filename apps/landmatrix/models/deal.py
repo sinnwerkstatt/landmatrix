@@ -1,4 +1,5 @@
 import json
+from typing import Optional, Set
 
 import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -6,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 
 from apps.landmatrix.models import Investor
@@ -18,6 +20,7 @@ from apps.landmatrix.models.mixins import (
 
 
 class DealManager(models.Manager):
+    # TODO throw me out.
     def visible(self, user=None):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
@@ -956,19 +959,40 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
-    deal_size = models.IntegerField(blank=True, null=True)
+    current_contract_size = models.FloatField(blank=True, null=True)
+    current_production_size = models.FloatField(blank=True, null=True)
+    current_intention_of_investment = ArrayField(
+        models.CharField(max_length=100),
+        choices=INTENTION_CHOICES,
+        blank=True,
+        null=True,
+    )
     current_negotiation_status = models.CharField(
         choices=NEGOTIATION_STATUS_CHOICES, max_length=100, blank=True, null=True
     )
     current_implementation_status = models.CharField(
         choices=IMPLEMENTATION_STATUS_CHOICES, max_length=100, blank=True, null=True
     )
-    current_contract_size = models.FloatField(blank=True, null=True)
-    current_production_size = models.FloatField(blank=True, null=True)
+    current_crops = ArrayField(models.CharField(max_length=100), blank=True, null=True)
+    current_animals = ArrayField(
+        models.CharField(max_length=100), blank=True, null=True
+    )
+    current_resources = ArrayField(
+        models.CharField(max_length=100), blank=True, null=True
+    )
+
+    deal_size = models.IntegerField(blank=True, null=True)
+    initiation_year = models.IntegerField(
+        blank=True, null=True, validators=[MinValueValidator(1970)]
+    )
+    forest_concession = models.BooleanField(default=False)
+    transnational = models.NullBooleanField()
     geojson = JSONField(blank=True, null=True)
+
     # the following is a cache for Deal versions, to deduce if they were public or not
     cached_has_no_known_investor = models.BooleanField(default=True)
 
+    """ # Status """
     STATUS_CHOICES = (
         (1, _("Draft")),
         (2, _("Live")),
@@ -1003,11 +1027,23 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.fully_updated:
             self.fully_updated_at = timezone.now()
 
+        # Get current values from a lot of the JSONField attributes
         self.current_contract_size = self._get_current("contract_size")
         self.current_production_size = self._get_current("production_size")
+        self.current_intention_of_investment = self._get_current(
+            "intention_of_investment"
+        )
         self.current_negotiation_status = self._get_current("negotiation_status")
         self.current_implementation_status = self._get_current("implementation_status")
+        self.current_crops = self._get_current("crops")
+        self.current_animals = self._get_current("animals")
+        self.current_resources = self._get_current("resources")
+
         self.deal_size = self._calculate_deal_size()
+        self.initiation_year = self._calculate_initiation_year()
+        self.forest_concession = self._calculate_forest_concession()
+        # FIXME: This field is calculated on save but actually it might change when investors change
+        self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
         super().save(*args, **kwargs)
@@ -1073,36 +1109,61 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             value = 0
         return value
 
-    # def _calculate_init_date(self):
-    #     init_dates = []
-    #     self.negotiation_status
-    #     negotiation_stati = self.attributes.filter(
-    #         name="negotiation_status",
-    #         value__in=(
-    #             # NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST, - removed, see #1154
-    #             self.NEGOTIATION_STATUS_UNDER_NEGOTIATION,
-    #             self.NEGOTIATION_STATUS_ORAL_AGREEMENT,
-    #             self.NEGOTIATION_STATUS_CONTRACT_SIGNED,
-    #             self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
-    #             self.NEGOTIATION_STATUS_CONTRACT_CANCELLED,
-    #         ),
-    #     ).order_by("date")
-    #     implementation_stati = self.attributes.filter(
-    #         name="implementation_status",
-    #         value__in=(
-    #             self.IMPLEMENTATION_STATUS_STARTUP_PHASE,
-    #             self.IMPLEMENTATION_STATUS_IN_OPERATION,
-    #             self.IMPLEMENTATION_STATUS_PROJECT_ABANDONED,
-    #         ),
-    #     ).order_by("date")
-    #     if negotiation_stati.count() > 0:
-    #         if negotiation_stati[0].date:
-    #             init_dates.append(negotiation_stati[0].date)
-    #     if implementation_stati.count() > 0:
-    #         if implementation_stati[0].date:
-    #             init_dates.append(implementation_stati[0].date)
-    #     if init_dates:
-    #         return min(init_dates)
+    def _calculate_initiation_year(self):
+        valid_negotation_status = (
+            [
+                int(x["date"][:4])
+                for x in self.negotiation_status
+                if x.get("date")
+                and x["value"]
+                in (
+                    "UNDER_NEGOTIATION",
+                    "ORAL_AGREEMENT",
+                    "CONTRACT_SIGNED",
+                    "NEGOTIATIONS_FAILED",
+                    "CONTRACT_CANCELED",
+                )
+            ]
+            if self.negotiation_status
+            else []
+        )
+        valid_implementation_status = (
+            [
+                int(x["date"][:4])
+                for x in self.implementation_status
+                if x.get("date")
+                and x["value"]
+                in ("STARTUP_PHASE", "IN_OPERATION", "PROJECT_ABANDONED",)
+            ]
+            if self.implementation_status
+            else []
+        )
+        dates = valid_implementation_status + valid_negotation_status
+        return min(dates) if dates else None
+
+    def _calculate_forest_concession(self) -> bool:
+        return bool(
+            self.nature_of_deal
+            and "CONCESSION" in self.nature_of_deal
+            and self.current_intention_of_investment
+            and "FOREST_LOGGING" in self.current_intention_of_investment
+        )
+
+    def _calculate_transnational(self) -> Optional[bool]:
+        if not self.country_id:
+            # unknown if we have no target country
+            return None
+
+        if not self.top_investors:
+            # treat deals without investors as transnational
+            return True
+
+        investors_countries = {i.country_id for i in self.top_investors if i.country_id}
+        if not len(investors_countries):
+            # treat deals without investor countries as transnational
+            return True
+        # `True` if we have investors in other countries else `False`
+        return bool(investors_countries - {self.country_id})
 
     def _combine_geojson(self):
         features = []
@@ -1129,8 +1190,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             return None
         return {"type": "FeatureCollection", "features": features}
 
-    @property
-    def top_investors(self):
+    @cached_property
+    def top_investors(self) -> Optional[Set["Investor"]]:
         """
         Get list of highest parent companies
         (all right-hand side parent companies of the network visualisation)
@@ -1171,9 +1232,3 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ).exists()
         )
         return oc_unknown and oc_has_no_known_parents
-
-    # def get_value_from_datevalueobject(self, name: str) -> Optional[str]:
-    #     attribute = self.__getattribute__(name)
-    #     if attribute:
-    #         return attribute[0]["value"]
-    #     return None

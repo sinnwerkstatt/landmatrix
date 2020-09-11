@@ -7,6 +7,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django_prometheus.models import ExportModelOperationsMixin
+from sentry_sdk import capture_message
 
 from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
 from apps.landmatrix.models.country import Country
@@ -1018,9 +1019,12 @@ class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
                 )
 
     def trigger_gnd(self):
-        from apps.landmatrix.tasks import task_propagate_save_to_gnd_deal
+        from apps.landmatrix.synchronization.deal import histivity_to_deal
 
-        task_propagate_save_to_gnd_deal(self.pk)
+        try:
+            histivity_to_deal(activity_pk=self.pk)
+        except:
+            capture_message("Could not sync HistIvity to Deal", level="error")
 
     class Meta:
         verbose_name = _("Historical activity")

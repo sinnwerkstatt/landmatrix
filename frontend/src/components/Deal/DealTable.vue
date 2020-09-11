@@ -36,7 +36,7 @@
               <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
-          <td v-for="field in fields" :key="field" v-html="deal[field]"></td>
+          <td v-for="field in fields" :key="field" v-html="displayField(deal, field)"></td>
         </tr>
       </tbody>
     </table>
@@ -45,6 +45,21 @@
 
 <script>
   const slugify = require("slugify");
+
+  const STATUS_MAP = {
+    1: "Draft",
+    2: "Active",
+    3: "Active",
+    4: "Deleted",
+    5: "Rejected",
+    6: "To Delete",
+  };
+
+  const DRAFT_STATUS_MAP = {
+    1: "Draft",
+    2: "Review",
+    3: "Activation",
+  };
 
   export default {
     props: ["deals", "fields", "pageSize"],
@@ -107,6 +122,16 @@
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
+      },
+      displayField(deal, field) {
+        let val = deal[field];
+        if (field === "status") {
+          return STATUS_MAP[val];
+        } else if (field === "draft_status") {
+          return DRAFT_STATUS_MAP[val];
+        } else {
+          return val;
+        }
       },
       parseTopInvestors(deal) {
         if (!deal.top_investors) return "";

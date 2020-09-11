@@ -171,18 +171,6 @@ export default {
       deals_rejected: [],
       deals_pending_deletion: [],
       deals_active: [],
-
-      dealFields: [
-        "country",
-        "deal_size",
-        "status",
-        "draft_status",
-        "confidential",
-        "created_at",
-        "modified_at",
-        "fully_updated_at"
-      ],
-
       historic_investors: [],
       investors_pending: [],
       investors_rejected: [],
@@ -204,8 +192,8 @@ export default {
       regions: (state) => {
         let world = {
           id: -1,
-          name: "World",
-          slug: "world"
+          name: "Global",
+          slug: "global"
         }
         return state.page.regions.concat([world]);
       },
@@ -245,7 +233,7 @@ export default {
             )
         },
         {
-          name: "Deals published",
+          name: "Deals approved",
           deals: uniqByKeepLatest(this.historic_deals)
             .filter((d) => d.draft_status === null && (d.status === 2 || d.status === 3))
         },
@@ -452,25 +440,25 @@ export default {
         deals_pending: deals(limit:0, filters:[
           {field:"draft_status",operation:IN,value:["1","2","3"]},
           ${filterLocation}
-        ]) {
+        ], public:false) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_rejected: deals(limit:0, filters:[
           {field:"status",operation:EQ,value:"5"},
           ${filterLocation}
-        ]) {
+        ], public:false) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_pending_deletion: deals(limit:0, filters:[
           {field:"status",operation:EQ,value:"6"},
           ${filterLocation}
-        ]) {
+        ], public:false) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_active: deals(limit:0, filters:[
           {field:"status",operation:IN,value:["2","3"]},
           ${filterLocation}
-        ]) {
+        ], public:false) {
           ${DEAL_QUERY_FIELDS}
           country {
             id
@@ -506,7 +494,6 @@ export default {
           ${INVESTOR_QUERY_FIELDS}
         }
       }`;
-
 
       axios
         .post("/graphql/", {query})

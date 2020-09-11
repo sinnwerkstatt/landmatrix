@@ -36,7 +36,7 @@
               <a :href="href">{{ data.id }}</a>
             </router-link>
           </td>
-          <td v-for="field in fields" :key="field" v-html="data[field]"></td>
+          <td v-for="field in fields" :key="field" v-html="displayField(data, field)"></td>
         </tr>
       </tbody>
     </table>
@@ -45,6 +45,21 @@
 
 <script>
   const slugify = require("slugify");
+
+  const STATUS_MAP = {
+    1: "Draft",
+    2: "Active",
+    3: "Active",
+    4: "Deleted",
+    5: "Rejected",
+    6: "To Delete",
+  };
+
+  const DRAFT_STATUS_MAP = {
+    1: "Draft",
+    2: "Review",
+    3: "Activation",
+  };
 
   export default {
     props: ["investors", "fields", "pageSize"],
@@ -55,7 +70,7 @@
         sortAscending: true,
         fieldNameMap: {
           name: "Name",
-          country: "Target country",
+          country: "Country of registration",
           top_investors: "Top investors",
           intention_of_investment: "Intention of investment",
           current_negotiation_status: "Negotiation status",
@@ -63,6 +78,7 @@
           deal_size: "Deal size in ha",
           fully_updated: "Full updated",
           status: "Status",
+          draft_status: "Draft status",
           created_at: "Created at",
           modified_at: "Last modified at"
         },
@@ -103,6 +119,16 @@
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
+      },
+      displayField(data, field) {
+        let val = data[field];
+        if (field === "status") {
+          return STATUS_MAP[val];
+        } else if (field === "draft_status") {
+          return DRAFT_STATUS_MAP[val];
+        } else {
+          return val;
+        }
       },
     },
   };

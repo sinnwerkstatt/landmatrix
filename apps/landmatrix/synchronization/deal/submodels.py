@@ -19,6 +19,7 @@ def create_locations(deal, groups):
         "Approximate location": "APPROXIMATE_LOCATION",
         "Exact location": "EXACT_LOCATION",
         "Coordinates": "COORDINATES",
+        "Coordenadas": "COORDINATES",
     }
     for group_id, attrs in sorted(groups.items()):
         try:

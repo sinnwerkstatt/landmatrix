@@ -167,8 +167,8 @@ type Deal {
 
     # internal?
     overall_comment: String
-    fully_updated: Boolean
-    confidential: Boolean
+    fully_updated: Boolean!
+    confidential: Boolean!
     confidential_reason: String
     #confidential_reason_display: String
     confidential_comment: String
@@ -180,16 +180,22 @@ type Deal {
     datasources(version: Int): [DataSource]
 
     #### Calculated fields
-    top_investors: [Investor]
-    deal_size: Float
-    current_negotiation_status: String
-    #current_negotiation_status_display: String
-    current_implementation_status: String
-    #current_implementation_status_display: String
     current_contract_size: Float
     current_production_size: Float
-    "GeoJSON combined from all the deals' locations"
+    current_intention_of_investment: [String]
+    current_negotiation_status: String
+    current_implementation_status: String
+    current_crops: [String]
+    current_animals: [String]
+    current_resources: [String]
+
+    deal_size: Float
+    initiation_year: Int
+    forest_concession: Boolean!
+    transnational: Boolean
     geojson: GeoJSON
+    # Todo: should we cache this as well? we might have to
+    top_investors: [Investor]
 
     status: Int
     status_display: String

@@ -18,6 +18,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 import "./scss/main.scss";
 
