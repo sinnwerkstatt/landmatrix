@@ -1,5 +1,5 @@
 <template>
-  <b-tab :title="title" v-if="any_field_at_all(sections)">
+  <b-tab :title="title" v-if="any_field_at_all(sections)" @click="$emit('activated')">
     <div>
       <div v-for="section in sections" class="panel-body" v-if="any_field_in_section(section)">
         <h3>{{ section.name }}</h3>

@@ -1,8 +1,9 @@
 <template>
-  <div v-if="investor.involvements.length">
+  <div class="investor-graph" v-if="investor.involvements.length">
     <InvestorDetailInvestorModal v-model="showInvestorModal" :investor="modalData" />
     <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
+    <p class="mb-0 font-italic small">Please right-click the nodes to get more details.</p>
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
         <a class="" @click="fullscreen_switch">
@@ -13,8 +14,8 @@
       <div id="investor-network" :class="{ network_fs }"></div>
 
       <div class="row">
-        <div v-if="controls" id="investor-level" class="col-sm-6">
-          <h5>Level of parent investors</h5>
+        <div v-if="controls" id="investor-level" class="col-sm-6 mt-1">
+          <h6>Level of parent investors</h6>
           <div class="slider-container col-sm-8">
             <input
               type="range"
@@ -38,10 +39,10 @@
             </label>
           </div>
         </div>
-        <div id="investor-legend" class="col-sm-6">
-          <h5>Legend</h5>
+        <div id="investor-legend" class="mt-1" :class="{ 'col-sm-6': controls, 'col-sm-12': !controls }">
+          <h6>Legend</h6>
           <ul class="list-unstyled">
-            <li><span class="legend-icon deal"></span>Is operating company of</li>
+            <li v-if="showDeals"><span class="legend-icon deal"></span>Is operating company of</li>
             <li><span class="legend-icon parent"></span>Is parent company of</li>
             <li>
               <span class="legend-icon tertiary"></span>Is tertiary investor/lender of
@@ -180,15 +181,20 @@
       refresh_graph() {
         cy.elements().remove();
         cy.add(this.elements);
-        cy.layout(cyconfig.layout).run();
-        this.add_rightclick_modal();
+        window.setTimeout(() => {
+          cy.layout(cyconfig.layout).run();
+          this.add_rightclick_modal();
+        },200);
       },
       add_rightclick_modal() {
         cy.nodes().on("cxttap", (e) => {
           this.modalData = e.target.data();
-          if (this.modalData.rootNode) return;
-          if (this.modalData.dealNode) this.showDealModal = true;
-          else this.showInvestorModal = true;
+          // delay to avoid context menu from opening
+          window.setTimeout(() => {
+            if (this.modalData.rootNode) this.showInvestorModal = true;
+            if (this.modalData.dealNode) this.showDealModal = true;
+            else this.showInvestorModal = true;
+          }, 10);
         });
       },
       build_graph(investor, elements, depth) {
@@ -252,7 +258,6 @@
           elements: this.elements,
           ...cyconfig,
         });
-        this.add_rightclick_modal();
       },
     },
     mounted() {
@@ -262,10 +267,16 @@
 </script>
 
 <style lang="scss">
+  .investor-graph{
+    max-width: 1000px;
+  }
   #investor-network-wrapper {
+    margin-top: -20px;
     .close_button {
-      right: 20px;
-      position: absolute;
+      right: 12px;
+      position: relative;
+      text-align: right;
+      top: 28px;
       z-index: 2000;
       cursor: pointer;
     }
@@ -276,28 +287,35 @@
 
       margin-left: 5%;
       margin-right: 5%;
+      margin-top: 0;
       width: 90%;
-      height: 80%;
+      max-height: 80%;
       background: #ffffff;
       z-index: 1000;
       border: 1px solid black;
       .close_button {
-        right: 5px;
+        right: 10px;
+        position: absolute;
+        top: 5px;
+      }
+      #investor-legend {
+        margin-left: 1rem;
+        margin-top: 1rem !important;
       }
     }
   }
   div#investor-network {
     border: 2px solid #ddd;
     display: block;
-    max-width: 900px;
+    max-width: 1000px;
     min-height: 300px;
-    max-height: 460px;
+    max-height: 500px;
     cursor: all-scroll;
     overflow: hidden;
     &.network_fs {
       width: 100%;
       max-width: 100%;
-      height: 80%;
+      height: 60vh;
       max-height: 80%;
     }
   }
@@ -368,4 +386,6 @@
       border-radius: 50%;
     }
   }
+
+
 </style>

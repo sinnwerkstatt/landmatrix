@@ -1,9 +1,9 @@
 <template>
-  <div class="row my-1">
-    <div class="col-md-3 font-weight-bold">
+  <div class="form-field row">
+    <div class="label" :class="labelClasses">
       {{ formfield.label }}
     </div>
-    <div class="col-md-9">
+    <div class="val" :class="valClasses">
       <router-link
         v-if="formfield.related_model === 'Investor'"
         :to="{ name: 'investor_detail', params: { investor_id: val.id } }"
@@ -19,17 +19,9 @@
 </template>
 
 <script>
+  import {fieldMixin} from "./fieldMixin";
+
   export default {
-    props: ["formfield", "value", "readonly"],
-    data() {
-      return {
-        val: this.value,
-      };
-    },
-    methods: {
-      emitVal() {
-        this.$emit("input", this.val);
-      },
-    },
+    mixins: [fieldMixin],
   };
 </script>

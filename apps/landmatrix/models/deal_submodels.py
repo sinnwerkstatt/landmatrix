@@ -120,3 +120,6 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
 
     def __str__(self):
         return f"(#{self.deal_id}) {self.get_type_display()}"
+
+    class Meta:
+        ordering = ["date"]

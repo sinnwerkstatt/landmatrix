@@ -1,11 +1,16 @@
 <template>
-  <div class="row my-1">
-    <div class="col-md-3 font-weight-bold">
+  <div class="form-field row">
+    <div class="label" :class="labelClasses">
       {{ formfield.label }}
     </div>
-    <div class="col-md-9">
+    <div class="val" :class="valClasses">
       <div v-if="readonly">
+        <template v-if="formfield.type === 'url'">
+          <a :href="val" target="_blank">{{ val }}</a>
+        </template>
+        <template v-else>
         {{ parseVal(val) }}
+        </template>
       </div>
       <div v-else class="input-group">
         <input
@@ -38,18 +43,11 @@
 
 <script>
   import { flatten_choices } from "/utils";
+  import { fieldMixin } from "./fieldMixin";
 
   export default {
-    props: ["formfield", "value", "readonly"],
-    data() {
-      return {
-        val: this.value,
-      };
-    },
+    mixins: [fieldMixin],
     methods: {
-      emitVal() {
-        this.$emit("input", this.val);
-      },
       parseVal(val) {
         let choices = flatten_choices(this.formfield.choices);
         if (choices) return choices[val];

@@ -306,11 +306,12 @@ export const deal_sections = {
 
 export const deal_submodel_sections = {
   location: [
+    "level_of_accuracy",
     "name",
     "description",
     "point",
     "facility_name",
-    "level_of_accuracy",
+    "country",
     "comment",
   ],
   contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],

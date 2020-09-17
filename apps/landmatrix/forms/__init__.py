@@ -14,10 +14,12 @@ class VueForm:
     model: Model = None
     sections = {}
     attributes = {}
+    extra_display_fields = {}
 
     def __init__(self):
         self.modelfields = {f.name: f for f in self.model._meta.fields}
         self._attributes = self.attributes
+        self._extra_display_fields = self.extra_display_fields
 
     def _process_field(self, mfield):
         vname = gettext(mfield.verbose_name)
@@ -47,6 +49,7 @@ class VueForm:
         retfields = {}
         for name, mfield in self.modelfields.items():
             retfields[name] = self._process_field(mfield)
+        retfields.update(self._extra_display_fields)
         return retfields
 
     # def get_sections(self):

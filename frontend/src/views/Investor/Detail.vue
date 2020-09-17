@@ -7,7 +7,7 @@
     <div class="container" v-if="investor">
       <h2>General Info</h2>
       <div class="row">
-        <div class="col">
+        <div class="col-xl-6 mb-3">
           <Field
             :fieldname="fieldname"
             :readonly="true"
@@ -16,7 +16,7 @@
             model="investor"
           />
         </div>
-        <div class="col" :class="{ loading_wrapper: !involvements.length }">
+        <div class="col-lg-8 col-xl-6 mb-3" :class="{ loading_wrapper: !involvements.length }">
           <InvestorGraph
             v-if="involvements.length"
             :investor="investor"
@@ -25,8 +25,11 @@
         </div>
       </div>
 
-      <b-tabs content-class="mt-3">
-        <b-tab :title="`Involvements (${involvements.length})`">
+      <b-tabs content-class="mb-3">
+        <b-tab>
+          <template v-slot:title>
+            <h5 v-html="`Involvements (${involvements.length})`"></h5>
+          </template>
           <table class="table">
             <thead>
               <tr>
@@ -60,9 +63,10 @@
             </tbody>
           </table>
         </b-tab>
-        <b-tab
-          :title="`Deals (Involvements as Operating company) (${investor.deals.length})`"
-        >
+        <b-tab>
+          <template v-slot:title>
+            <h5 v-html="`Deals (Involvements as Operating company) (${investor.deals.length})`"></h5>
+          </template>
           <table class="table">
             <thead>
               <tr>

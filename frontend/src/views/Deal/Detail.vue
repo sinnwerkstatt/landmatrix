@@ -20,14 +20,14 @@
     <!--      </div>-->
     <!--    </div>-->
     <b-tabs
-      content-class="mt-3"
+      content-class="mb-3"
       vertical
       pills
       nav-wrapper-class="position-relative"
       nav-class="sticky-nav"
       :key="deal_id + deal_version"
     >
-      <DealLocationSection
+      <DealLocationsSection
         :deal="deal"
         :fields="deal_submodel_sections.location"
         :readonly="true"
@@ -60,19 +60,24 @@
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
         :readonly="true"
+        @activated="triggerInvestorGraphRefresh"
       >
-        <div
-          class="col"
-          :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"
-        >
-          <InvestorGraph
-            v-if="investor.involvements.length"
-            :investor="investor"
-            :showDeals="false"
-            :controls="false"
-            :depth="4"
-          ></InvestorGraph>
-          <div v-else class="loader"></div>
+        <div class="row">
+          <div class="col-md-12 col-lg-10 col-xl-9"
+            :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"
+          >
+            <template v-if="investor.involvements.length">
+              <h3 class="mb-2">Network of parent companies and tertiary investors/lenders</h3>
+              <InvestorGraph
+                :investor="investor"
+                :showDeals="false"
+                :controls="false"
+                :depth="4"
+                ref="investorGraph"
+              ></InvestorGraph>
+            </template>
+            <div v-else class="loader"></div>
+          </div>
         </div>
       </DealSection>
 
@@ -143,7 +148,7 @@
 <script>
   import DealSection from "/components/Deal/DealSection";
   import DealHistory from "/components/Deal/DealHistory";
-  import DealLocationSection from "/components/Deal/DealLocationsSection";
+  import DealLocationsSection from "/components/Deal/DealLocationsSection";
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
@@ -157,7 +162,7 @@
       InvestorGraph,
       DealHistory,
       DealSection,
-      DealLocationSection,
+      DealLocationsSection,
       DealSubmodelSection,
     },
     apollo: {
@@ -213,6 +218,11 @@
         return null;
       },
     },
+    methods: {
+      triggerInvestorGraphRefresh() {
+        this.$refs.investorGraph.refresh_graph();
+      }
+    },
     beforeRouteEnter(to, from, next) {
       let title = `Deal #${to.params.deal_id}`;
       store.dispatch("setPageContext", {
@@ -255,5 +265,12 @@
     width: 200px;
     height: 100%;
     background: rgba(255, 255, 255, 0.7);
+  }
+  .panel-body > h3 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+  }
+  .panel-body:first-child > h3 {
+    margin-top: 0.3em;
   }
 </style>
