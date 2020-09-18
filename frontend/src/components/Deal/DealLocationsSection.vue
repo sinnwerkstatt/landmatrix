@@ -2,13 +2,14 @@
   <DealSubmodelSection
     :title="$t('Locations')"
     :model_name="$t('Location')"
-    :entries="deal.locations"
+    :entries="entries"
     :fields="fields"
     :readonly="true"
     model="location"
     :active="true"
+    :narrow="true"
   >
-    <div class="col-lg-6 col-xs-12">
+    <div class="locations col-md-12 col-lg-5 col-xl-6">
       <big-map
         :containerStyle="{ 'max-height': '90%', height: '90%' }"
         :bounds="bounds"
@@ -37,6 +38,11 @@
       LGeoJson,
     },
     computed: {
+      entries () {
+        return this.deal.locations.map(l => {
+          return {...l, country: this.deal.country.name};
+        });
+      },
       bounds() {
         if (!this.deal) return null;
         let mybounds = L.geoJSON(this.deal.geojson).getBounds();
@@ -111,3 +117,12 @@
     },
   };
 </script>
+
+<style lang="scss">
+  .locations {
+    #bigMap {
+      max-height: 50vh;
+      margin-top: 2em;
+    }
+  }
+</style>

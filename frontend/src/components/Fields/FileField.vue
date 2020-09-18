@@ -1,9 +1,9 @@
 <template>
-  <div class="row" v-if="!file_not_public || user.is_authenticated">
-    <div class="col-md-3 font-weight-bold">
+  <div class="form-field row" v-if="!file_not_public || user.is_authenticated">
+    <div class="label" :class="labelClasses">
       {{ formfield.label }}
     </div>
-    <div class="col-md-9">
+    <div class="val" :class="valClasses">
       <div v-if="readonly">
         <a :href="`${MEDIA_URL}${val}`" target="_blank">
           <i :class="[file_not_public ? 'fas' : 'far', 'fa-file-pdf']"></i>
@@ -14,19 +14,17 @@
 </template>
 
 <script>
+  import {fieldMixin} from "./fieldMixin";
+
   export default {
-    props: ["formfield", "value", "readonly", "file_not_public"],
+    mixins: [fieldMixin],
     data() {
       return {
-        val: this.value,
         MEDIA_URL: MEDIA_URL,
         user: this.$store.state.page.user,
       };
     },
-    methods: {
-      emitVal() {
-        this.$emit("input", this.val);
-      },
-    },
   };
 </script>
+
+

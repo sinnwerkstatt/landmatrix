@@ -1,9 +1,9 @@
 <template>
-  <div class="row">
-    <div class="col-md-3 font-weight-bold">
+  <div class="form-field row">
+    <div class="label" :class="labelClasses">
       {{ formfield.label }}
     </div>
-    <div class="col-md-9">
+    <div class="val" :class="valClasses">
       <div v-if="readonly">
         {{ parseValues(val) }}
       </div>
@@ -13,18 +13,11 @@
 
 <script>
   import { flatten_choices } from "/utils";
+  import {fieldMixin} from "./fieldMixin";
 
   export default {
-    props: ["formfield", "value", "readonly"],
-    data() {
-      return {
-        val: this.value,
-      };
-    },
+    mixins: [fieldMixin],
     methods: {
-      emitVal() {
-        this.$emit("input", this.val);
-      },
       parseValues: function (value) {
         let ret = "";
 

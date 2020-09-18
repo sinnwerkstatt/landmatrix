@@ -1,5 +1,7 @@
 <template>
-  <div v-html="value"></div>
+  <div class="container">
+    <div v-html="value"></div>
+  </div>
 </template>
 
 <script>

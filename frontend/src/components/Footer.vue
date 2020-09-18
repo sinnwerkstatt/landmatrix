@@ -61,6 +61,7 @@
     font-family: "Open Sans", sans-serif;
     color: $lm_dark;
     font-weight: 400 !important;
+    margin-top: 2em;
 
     hr {
       border-top: 1px solid #9b9b9b;

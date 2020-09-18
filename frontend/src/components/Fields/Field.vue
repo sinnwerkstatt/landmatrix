@@ -7,6 +7,7 @@
     v-model="value"
     :file_not_public="file_not_public"
     v-if="!readonly || custom_is_null(value)"
+    :narrow="!!narrow"
   />
   </div>
 </template>
@@ -30,7 +31,7 @@
   import { mapState } from "vuex";
   export default {
     name: "Field",
-    props: ["fieldname", "model", "value", "readonly", "file_not_public"],
+    props: ["fieldname", "model", "value", "readonly", "file_not_public", "narrow"],
     components: {
       ArrayField,
       BooleanField,
@@ -75,3 +76,19 @@
     },
   };
 </script>
+
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .form-field {
+    margin-bottom: 0.7em;
+    line-height: 1.2;
+    .label {
+      font-weight: 500;
+    }
+    .val {
+      line-height: 1.2;
+      color: $lm_dark;
+    }
+  }
+</style>

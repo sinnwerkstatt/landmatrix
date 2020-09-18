@@ -1,12 +1,12 @@
 <template>
-  <div class="row">
-    <div class="col-md-3 font-weight-bold">
+  <div class="form-field row">
+    <div class="label" :class="labelClasses">
       {{ formfield.label }}
     </div>
-    <div class="col-md-9">
+    <div class="val" :class="valClasses">
       <div v-for="val in vals">
         <span v-if="val.date">[{{ val.date }}] </span>
-        <span class="font-weight-bold" v-html="parseValues(val)"></span>
+        <span class="" v-html="parseValues(val)"></span>
         <span class="mx-2" v-if="val.hectares">
           <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
         </span>
@@ -23,16 +23,16 @@
 
 <script>
   import { flatten_choices } from "/utils";
+  import {fieldMixin} from "./fieldMixin";
 
   export default {
-    props: ["formfield", "value", "readonly"],
+    mixins: [fieldMixin],
     data() {
       return {
         current: 0,
         vals: [{ date: null, value: null }],
       };
     },
-    computed: {},
     methods: {
       addSet() {
         this.vals.push({ date: null, value: null });

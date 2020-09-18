@@ -1,6 +1,6 @@
 <template>
   <div class="container" v-if="deal">
-    <b-tabs content-class="mt-3">
+    <b-tabs content-class="mb-3">
       <b-tab title="Location" active>
         <map-editor />
       </b-tab>
