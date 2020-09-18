@@ -17,9 +17,95 @@
       </button>
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/global/">{{ $t("Global") }}</a>
+          <li class="nav-item dropdown">
+            <a href="#" role="button" class="nav-link dropdown-toggle"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+               id="map-dropdown"
+            >
+              {{ $t("Data") }}
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/newdeal/map">
+                {{ $t("Map") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/data">
+                {{ $t("Deals") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/data/investors">
+                {{ $t("Investors") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/charts">
+                {{ $t("Charts") }}
+              </a>
+            </div>
           </li>
+          <li class="nav-item dropdown">
+            <a href="#" role="button" class="nav-link dropdown-toggle"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+               id="obs-dropdown"
+            >
+              {{ $t("Observatories") }}
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/newdeal/">
+                {{ $t("Region 1") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/">
+                {{ $t("Region 2") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/">
+                {{ $t("NLO 1") }}
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" role="button" class="nav-link dropdown-toggle"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+               id="res-dropdown"
+            >
+              {{ $t("Ressources") }}
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/newdeal/stay-informed/">
+                {{ $t("Cat 1") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/stay-informed/">
+                {{ $t("Cat 2") }}
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" role="button" class="nav-link dropdown-toggle"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+               id="about-dropdown"
+            >
+              {{ $t("About") }}
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/newdeal/the-land-matrix-initiative/">
+                {{ $t("Land Matrix Initiative") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/partners-and-donors/">
+                {{ $t("Partners and donors") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/privacy-policy/">
+                {{ $t("Privacy policy") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/disclaimer/">
+                {{ $t("Disclaimer") }}
+              </a>
+              <a class="dropdown-item" href="/newdeal/impressum-legal-notice/">
+                {{ $t("Impressum") }}
+              </a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newdeal/faq/">{{ $t("FAQ") }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
+          </li>
+<!--
           <NavbarSelect
             :title="$t('Regions')"
             :options="regions"
@@ -39,6 +125,7 @@
           <li class="nav-item">
             <a class="nav-link" href="/faq/">{{ $t("FAQ") }}</a>
           </li>
+-->
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
@@ -251,13 +338,15 @@
   @import "../scss/colors";
 
   .bg-light {
-    background-color: $lm_light !important;
+    background-color: white;
   }
 
   .navbar-light .navbar-nav .nav-item .nav-link {
-    font-size: 18px;
-    color: $lm_dark;
-    padding: 15px;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 500;
+    color: black;
+    padding: 0.5rem 1.1rem;
 
     &:hover {
       color: $primary;
@@ -269,22 +358,24 @@
   }
 
   .navbar {
-    border-bottom: 1px solid #bebebe;
+    border-bottom: 10px solid $lm_orange;
     padding: 0;
+    .dropdown-menu {
+      border: 1px solid $lm_orange;
+      border-radius: 0;
+      padding: 0;
+    }
   }
 
   .navbar-brand {
-    width: 180px;
-    height: 50px;
-    display: block;
-    padding: 5px;
-    margin-left: 0 !important;
-    margin-top: 8px;
-    margin-right: 40px;
-    margin-bottom: 15px;
-
+    margin-top: 2px;
+    margin-right: 1.5rem;
+    margin-left: 0.7rem;
     > img {
-      width: 100%;
+      height: 38px;
+      width: 144px;
+      min-width: 144px;
+      max-width: 144px;
     }
   }
 </style>
