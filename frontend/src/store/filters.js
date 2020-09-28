@@ -43,6 +43,24 @@ export default {
       },
     ],
   }),
+  getters: {
+    currentRegionId: state => {
+      let regionId = null;
+      let regionFilter = state.filters.filter(f => f.field === "country.fk_region_id");
+      if (regionFilter.length) {
+        regionId = parseInt(regionFilter[0].value);
+      }
+      return regionId;
+    },
+    currentCountryId: state => {
+      let countryId = null;
+      let countryFilter = state.filters.filter(f => f.field === "country");
+      if (countryFilter.length) {
+        countryId = parseInt(countryFilter[0].value);
+      }
+      return countryId;
+    },
+  },
   mutations: {
     setFilters(state, filters) {
       state.filters = filters;
@@ -59,6 +77,5 @@ export default {
     resetFilters(context) {
       context.commit("resetFilters");
     },
-  },
-  getters: {},
+  }
 };

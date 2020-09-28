@@ -9,7 +9,7 @@
       </a>
     </div>
     <div class="overlay-content">
-      asdf
+      <h2 v-if="currentItem">{{ currentItem.name }}</h2>
     </div>
   </div>
 </template>
@@ -22,6 +22,25 @@
         showScopeOverlay: false,
       };
     },
+    computed: {
+      currentItem() {
+        let item = {
+          name: "Global"
+        };
+        if (this.$store.getters.currentCountryId) {
+          let country = this.$store.state.page.countries.find(c => c.id === this.$store.getters.currentCountryId);
+          item = {
+            name: country.name,
+          }
+        } else if (this.$store.getters.currentRegionId) {
+          let region = this.$store.state.page.regions.find(r => r.id === this.$store.getters.currentRegionId);
+          item = {
+            name: region.name,
+          }
+        }
+        return item;
+      }
+    }
   };
 </script>
 
