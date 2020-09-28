@@ -81,6 +81,10 @@ class Country(models.Model):
     class Meta:
         ordering = ("name",)
 
+    @property
+    def country_page_id(self):
+        return self.countrypage.id if hasattr(self, "countrypage") else None
+
     def get_absolute_url(self):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
@@ -134,6 +138,10 @@ class Region(models.Model):
     @property
     def point_lat(self):
         return (self.point_lat_min + self.point_lat_max) / 2
+
+    @property
+    def region_page_id(self):
+        return self.regionpage.id if hasattr(self, "regionpage") else None
 
     def to_dict(self):
         return {"id": self.id, "name": self.name}

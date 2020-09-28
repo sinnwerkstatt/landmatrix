@@ -73,7 +73,7 @@ class RegionIndex(Page):
 
 
 class RegionPage(Page):
-    region = models.ForeignKey(
+    region = models.OneToOneField(
         DataRegion, null=True, blank=True, on_delete=models.SET_NULL
     )
 
@@ -101,7 +101,7 @@ class CountryIndex(Page):
 
 
 class CountryPage(Page):
-    country = models.ForeignKey(
+    country = models.OneToOneField(
         DataCountry, null=True, blank=True, on_delete=models.SET_NULL
     )
     body = NoWrapsStreamField(

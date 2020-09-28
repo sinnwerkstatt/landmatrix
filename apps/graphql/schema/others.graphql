@@ -8,12 +8,14 @@ type Country {
     fk_region: Region
     point_lat: Float
     point_lon: Float
+    country_page_id: Int
 }
 
 type Region {
     id: Int
     name: String
     slug: String
+    region_page_id: Int
 }
 
 type Currency {

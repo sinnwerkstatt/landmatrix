@@ -21,6 +21,14 @@ export const pageModule = {
     ],
     showBreadcrumbs: true,
   }),
+  getters: {
+    countriesWithPage: state => {
+      return state.countries.filter(c => c.country_page_id !== null);
+    },
+    regionsWithPage: state => {
+      return state.regions.filter(r => r.region_page_id !== null);
+    }
+  },
   mutations: {
     setUser(state, user) {
       state.user = user;

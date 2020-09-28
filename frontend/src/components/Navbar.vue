@@ -47,14 +47,12 @@
               {{ $t("Observatories") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("Region 1") }}
+              <a v-for="region in regions" class="dropdown-item" :href="`/newdeal/region/${region.slug}`">
+                {{ region.name }}
               </a>
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("Region 2") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("NLO 1") }}
+              <div class="dropdown-divider"></div>
+              <a v-for="country in countries" class="dropdown-item" :href="`/newdeal/country/${country.slug}`">
+                {{ country.name }}
               </a>
             </div>
           </li>
@@ -277,10 +275,10 @@
         return this.$store.state.page.user;
       },
       regions() {
-        return this.$store.state.page.regions;
+        return this.$store.getters.regionsWithPage;
       },
       countries() {
-        return this.$store.state.page.countries;
+        return this.$store.getters.countriesWithPage;
       },
       user_role() {
         if (this.user && this.user.groups.length) {
@@ -338,7 +336,7 @@
   @import "../scss/colors";
 
   .bg-light {
-    background-color: white;
+    background-color: white !important;
   }
 
   .navbar-light .navbar-nav .nav-item .nav-link {
