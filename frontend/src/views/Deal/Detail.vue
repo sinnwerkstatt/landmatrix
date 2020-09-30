@@ -280,7 +280,7 @@
       .nav-link {
         border-right: 1px solid $lm_orange;
         color: $lm_orange;
-        border-radius: 0y;
+        border-radius: 0;
 
         &.active {
           border-right-width: 3px;
