@@ -249,8 +249,9 @@
     },
   };
 </script>
-
 <style lang="scss">
+  @import "../../scss/colors";
+
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;
@@ -272,5 +273,21 @@
   }
   .panel-body:first-child > h3 {
     margin-top: 0.3em;
+  }
+
+  .nav-pills {
+    .nav-item {
+      .nav-link {
+        border-right: 1px solid $lm_orange;
+        color: $lm_orange;
+        border-radius: 0y;
+
+        &.active {
+          border-right-width: 3px;
+          background-color: inherit;
+          color: $lm_dark;
+        }
+      }
+    }
   }
 </style>
