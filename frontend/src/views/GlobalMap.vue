@@ -18,8 +18,8 @@
               <input type="radio" v-model="displayHectares" :value="false" />
               Number of deals
             </label>
-            <label>
-              <input type="radio" v-model="displayHectares" :value="true" />
+            <label style="color: gray !important;">
+              <input disabled type="radio" v-model="displayHectares" :value="true" />
               Area (ha)
             </label>
           </FilterCollapse>
@@ -40,6 +40,9 @@
         <ScopeBar></ScopeBar>
       </div>
     </div>
+    {{ this.$store.state.filters.filters }}
+    <hr />
+    {{ this.$store.getters.filtersForGQL }}
   </div>
 </template>
 
@@ -86,14 +89,19 @@
         variables() {
           return {
             limit: 0,
-            filters: this.$store.state.filters.filters,
+            filters: this.$store.getters.filtersForGQL,
           };
         },
       },
     },
     data() {
       return {
-        bigmap_options: { zoom: 2, zoomControl: false, gestureHandling: false },
+        bigmap_options: {
+          minZoom: 2,
+          zoom: 2,
+          zoomControl: false,
+          gestureHandling: false,
+        },
         deals: [],
         bigmap: null,
         current_zoom: 2,
@@ -155,45 +163,75 @@
       },
     },
     methods: {
+      styleCircle(circle, size, country_or_region_with_id) {
+        let circle_elem = circle.getElement();
+        let innertext = document.createElement("span");
+        innertext.className = "landmatrix-custom-circle-text";
+        innertext.innerHTML = `${size} deals`;
+        circle_elem.append(innertext);
+        let factor = Math.max(Math.log(size) * 16, 40);
+        Object.assign(circle_elem.style, {
+          height: `${factor}px`,
+          width: `${factor}px`,
+          background: primary_color,
+        });
+        let tooltip = document.createElement("span");
+        tooltip.className = "landmatrix-custom-circle-hover-text";
+        let coun_reg = this.$store.getters.getCountryOrRegion(
+          country_or_region_with_id
+        );
+        if (coun_reg) tooltip.innerHTML = coun_reg.name;
+        circle_elem.append(tooltip);
+      },
       refreshMap() {
         if (this.bigmap && this.markers) {
+          this.featureGroup.clearLayers();
           if (this.current_zoom < 3) {
-            this.featureGroup.clearLayers();
             Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
               ([key, val]) => {
-                let radius = Math.log(val.length) * 5 * this.current_zoom;
-                let circle = L.circleMarker(this.region_coords[key], {
-                  stroke: false,
-                  fillColor: primary_color,
-                  fillOpacity: 0.9,
-                  radius,
+                let circle = L.marker(this.region_coords[key], {
+                  icon: L.divIcon({ className: "landmatrix-custom-circle" }),
                   region_id: key,
                 });
-                circle.on("click", (e) => console.log(e.target.options.region_id));
+                circle.on("click", (e) => {
+                  this.$store.dispatch("setFilter", {
+                    filter: "region_id",
+                    value: +e.target.options.region_id,
+                  });
+                });
+
                 this.featureGroup.addLayer(circle);
+                this.styleCircle(circle, val.length, { type: "region", id: key });
               }
             );
-          } else if (this.current_zoom < 5) {
-            this.featureGroup.clearLayers();
+          } else if (this.current_zoom < 6) {
             Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
               ([key, val]) => {
-                let radius = Math.log(val.length) * 2.5 * this.current_zoom;
-                let circle = L.circleMarker(this.country_coords[key], {
-                  stroke: false,
-                  fillColor: primary_color,
-                  fillOpacity: 0.9,
-                  radius,
+                let circle = L.marker(this.country_coords[key], {
+                  icon: L.divIcon({ className: "landmatrix-custom-circle" }),
                   country_id: key,
                 });
-                circle.on("click", (e) => console.log(e.target.options.country_id));
+                circle.on("click", (e) => {
+                  this.$store.dispatch("setFilter", {
+                    filter: "country_id",
+                    value: +e.target.options.country_id,
+                  });
+                });
                 this.featureGroup.addLayer(circle);
+                this.styleCircle(circle, val.length, { type: "country", id: key });
               }
             );
           } else {
-            this.featureGroup.clearLayers();
-            this.markers.forEach((mark) => {
-              this.featureGroup.addLayer(mark);
-            });
+            Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
+              ([key, val]) => {
+                let mcluster = L.markerClusterGroup();
+                val.forEach((mark) => mcluster.addLayer(mark));
+                this.featureGroup.addLayer(mcluster);
+              }
+            );
+            // this.markers.forEach((mark) => {
+            //   this.featureGroup.addLayer(mark);
+            // });
           }
         }
       },
@@ -205,3 +243,31 @@
     },
   };
 </script>
+<style lang="scss">
+  .landmatrix-custom-circle {
+    opacity: 0.9;
+    font-size: 12px;
+    line-height: 12px;
+    border-radius: 50%;
+    border: 0;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    .landmatrix-custom-circle-hover-text {
+      display: none;
+    }
+    &:hover {
+      .landmatrix-custom-circle-text {
+        display: none;
+      }
+      .landmatrix-custom-circle-hover-text {
+        display: inline;
+      }
+    }
+  }
+
+  .leaflet-marker-icon .leaflet-div-icon {
+  }
+</style>
