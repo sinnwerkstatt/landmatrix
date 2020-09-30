@@ -1,26 +1,46 @@
 import Cookies from "js-cookie";
 
 const defaultFilters = {
-  // Filters
-  // Negotiation Status "Concluded"
+  region_id: null,
+  country_id: null,
   // Deal size greater or equal 200ha
   // OR?! { field: "intended_size", operation: "GE", value: "200" },
   // NOTE: this might not work like before because we leave out the "intended_size"
-  // Initiation Year unknown or >=2000
-
-  region_id: null,
-  country_id: null,
   deal_size_min: 200,
   deal_size_max: null,
+  // Negotiation Status "Concluded"
   negotiation_status: ["CONCLUDED"],
+  // Exclude Pure Contract Farming
+  nature_of_deal: ["OUTRIGHT_PURCHASE", "LEASE", "CONCESSION", "EXPLOITATION_PERMIT"],
   investor: null,
+  // Initiation Year unknown or >=2000
   initiation_year_min: 2000,
   initiation_year_max: null,
   initiation_year_unknown: true,
   implementation_status: [],
-  intention_of_investment: [],
+  // Exclude: Oil / Gas extraction & Mining
+  intention_of_investment: [
+    "BIOFUELS",
+    "FOOD_CROPS",
+    "FODDER",
+    "LIVESTOCK",
+    "NON_FOOD_AGRICULTURE",
+    "AGRICULTURE_UNSPECIFIED",
+    "TIMBER_PLANTATION",
+    "FOREST_LOGGING",
+    "CARBON",
+    "FORESTRY_UNSPECIFIED",
+    "TOURISM",
+    "INDUSTRY",
+    "CONVERSATION",
+    "LAND_SPECULATION",
+    "RENEWABLE_ENERGY",
+    "OTHER",
+  ],
   produce: [],
-  transnational: "True",
+  // Transnational True
+  transnational: true,
+  forest_concession: false,
 };
 
 const emptyFilters = {
@@ -29,6 +49,7 @@ const emptyFilters = {
   deal_size_min: null,
   deal_size_max: null,
   negotiation_status: [],
+  nature_of_deal: [],
   investor: null,
   initiation_year_min: null,
   initiation_year_max: null,
@@ -37,6 +58,7 @@ const emptyFilters = {
   intention_of_investment: [],
   produce: [],
   transnational: null,
+  forest_concession: null,
 };
 
 export default {
@@ -46,24 +68,11 @@ export default {
       return JSON.parse(Cookies.get("filters") || JSON.stringify(defaultFilters));
     })(),
     default_filters: [
-      // Exclude: Oil / Gas extraction & Mining
       {
         field: "current_intention_of_investment",
         operation: "OVERLAP",
         value: ["OIL_GAS_EXTRACTION", "MINING"],
         exclusion: true,
-      },
-      // Exclude Pure Contract Farming
-      {
-        field: "nature_of_deal",
-        operation: "CONTAINED_BY",
-        value: ["PURE_CONTRACT_FARMING"],
-        exclusion: true,
-      },
-      // Transnational
-      {
-        field: "transnational",
-        value: "True",
       },
     ],
   }),
@@ -142,71 +151,97 @@ export default {
           value: negstat,
         });
       }
-      // if (state.filters.implementation_status.length > 0) {
-      //   filters.push({
-      //     field: "current_implementation_status",
-      //     operation: "IN",
-      //     value: state.filters.implementation_status,
-      //   });
-      // }
-      //
+
+      if (state.filters.implementation_status.length > 0) {
+        filters.push({
+          field: "current_implementation_status",
+          operation: "IN",
+          value: state.filters.implementation_status,
+        });
+      }
+
       if (state.filters.investor) {
         filters.push({
           field: "operating_company",
           value: state.filters.investor.id.toString(),
         });
       }
-      // if (!!state.filters.initiation_year_min) {
-      //   filters.push({
-      //     field: "initiation_year",
-      //     operation: "GE",
-      //     value: state.filters.initiation_year_min.toString(),
-      //     allow_null: state.filters.initiation_year_unknown,
-      //   });
-      // }
-      // if (!!state.filters.initiation_year_max) {
-      //   filters.push({
-      //     field: "initiation_year",
-      //     operation: "LE",
-      //     value: state.filters.initiation_year_max.toString(),
-      //     allow_null: state.filters.initiation_year_unknown,
-      //   });
-      // }
-      // if (state.filters.intention_of_investment.length > 0) {
-      //   // exclude logic
-      //   // TODO: use the INTENTION_CHOICES from deal.py here too?
-      //   let invlist = [
-      //     "BIOFUELS",
-      //     "FOOD_CROPS",
-      //     "FODDER",
-      //     "LIVESTOCK",
-      //     "NON_FOOD_AGRICULTURE",
-      //     "AGRICULTURE_UNSPECIFIED",
-      //     "TIMBER_PLANTATION",
-      //     "FOREST_LOGGING",
-      //     "CARBON",
-      //     "FORESTRY_UNSPECIFIED",
-      //     "MINING",
-      //     "OIL_GAS_EXTRACTION",
-      //     "TOURISM",
-      //     "INDUSTRY",
-      //     "CONVERSATION",
-      //     "LAND_SPECULATION",
-      //     "RENEWABLE_ENERGY",
-      //     "OTHER",
-      //   ];
-      //   let flatflist = state.filters.intention_of_investment.map((x) => x.id);
-      //   let xlist = invlist.filter((i) => {
-      //     return !flatflist.includes(i);
-      //   });
-      //
-      //   filters.push({
-      //     field: "current_intention_of_investment",
-      //     operation: "OVERLAP",
-      //     value: xlist,
-      //     exclusion: true,
-      //   });
-      // }
+
+      if (state.filters.nature_of_deal.length > 0) {
+        let nature_of_deal_choices = [
+          "OUTRIGHT_PURCHASE",
+          "LEASE",
+          "CONCESSION",
+          "EXPLOITATION_PERMIT",
+          "PURE_CONTRACT_FARMING",
+        ];
+
+        let diflist = nature_of_deal_choices.filter(
+          (x) => !state.filters.nature_of_deal.includes(x)
+        );
+        if (diflist.length > 0) {
+          filters.push({
+            field: "nature_of_deal",
+            operation: "CONTAINED_BY",
+            value: diflist,
+            exclusion: true,
+          });
+        }
+      }
+
+      if (
+        state.filters.initiation_year_min &&
+        state.filters.initiation_year_min > 1970
+      ) {
+        filters.push({
+          field: "initiation_year",
+          operation: "GE",
+          value: state.filters.initiation_year_min.toString(),
+          allow_null: state.filters.initiation_year_unknown,
+        });
+      }
+      if (state.filters.initiation_year_max) {
+        filters.push({
+          field: "initiation_year",
+          operation: "LE",
+          value: state.filters.initiation_year_max.toString(),
+          allow_null: state.filters.initiation_year_unknown,
+        });
+      }
+
+      if (state.filters.intention_of_investment.length > 0) {
+        let intention_of_investment_choices = [
+          "BIOFUELS",
+          "FOOD_CROPS",
+          "FODDER",
+          "LIVESTOCK",
+          "NON_FOOD_AGRICULTURE",
+          "AGRICULTURE_UNSPECIFIED",
+          "TIMBER_PLANTATION",
+          "FOREST_LOGGING",
+          "CARBON",
+          "FORESTRY_UNSPECIFIED",
+          "MINING",
+          "OIL_GAS_EXTRACTION",
+          "TOURISM",
+          "INDUSTRY",
+          "CONVERSATION",
+          "LAND_SPECULATION",
+          "RENEWABLE_ENERGY",
+          "OTHER",
+        ];
+        let diflist = intention_of_investment_choices.filter(
+          (x) => !state.filters.intention_of_investment.includes(x)
+        );
+        if (diflist.length > 0) {
+          filters.push({
+            field: "current_intention_of_investment",
+            operation: "OVERLAP",
+            value: diflist,
+            exclusion: true,
+          });
+        }
+      }
       //
       // // if (state.filters.produce && state.filters.produce.length > 0) {
       // //   let crops = [];
@@ -224,12 +259,19 @@ export default {
       // //   }
       // //   console.log(state.filters.produce);
       // // }
-      if (state.filters.transnational) {
+      if (!(state.filters.transnational === null)) {
         filters.push({
           field: "transnational",
-          value: state.filters.transnational,
+          value: state.filters.transnational ? "True" : "False",
         });
       }
+      if (state.filters.forest_concession) {
+        filters.push({
+          field: "forest_concession",
+          value: state.filters.forest_concession ? "True" : "False",
+        });
+      }
+
       return filters;
     },
     currentRegionId: (state) => {

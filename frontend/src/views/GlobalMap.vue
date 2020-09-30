@@ -7,10 +7,24 @@
       >
         <BigMap
           :options="bigmap_options"
+          :center="[12,30]"
           :containerStyle="{ 'max-height': '100%', height: '100%' }"
           @ready="pinTheMap"
           :hideLayerSwitcher="true"
-        />
+        >
+          <div
+            v-if="$apollo.queries.deals.loading"
+            style="
+              font-size: 20px;
+              z-index: 500000;
+              position: absolute;
+              bottom: 10px;
+              left: 50%;
+            "
+          >
+            Loading...
+          </div>
+        </BigMap>
         <FilterBar :deals="deals">
           <h4>{{ $t("Map settings") }}</h4>
           <FilterCollapse title="Displayed Data">
@@ -40,9 +54,9 @@
         <ScopeBar></ScopeBar>
       </div>
     </div>
-    {{ this.$store.state.filters.filters }}
-    <hr />
-    {{ this.$store.getters.filtersForGQL }}
+    <!--    {{ this.$store.state.filters.filters }}-->
+    <!--    <hr />-->
+    <!--    {{ this.$store.getters.filtersForGQL }}-->
   </div>
 </template>
 
@@ -98,7 +112,7 @@
       return {
         bigmap_options: {
           minZoom: 2,
-          zoom: 2,
+          zoom: 3,
           zoomControl: false,
           gestureHandling: false,
         },

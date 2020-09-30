@@ -16,21 +16,29 @@
           <a @click="$store.dispatch('clearFilters')">Clear filters</a>
         </span>
 
-        <FilterCollapse :title="$t('Region')">
+        <FilterCollapse
+          :title="$t('Region')"
+          :clearable="region_id"
+          @click="region_id = null"
+        >
           <b-form-group>
             <b-form-radio
               v-model="region_id"
               name="regionRadio"
               :value="reg.id"
               v-for="reg in regions"
-              @change="country_id = null"
+              @input="country = null"
             >
-              {{ reg.name }}
+              {{ $t(reg.name) }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Country')">
+        <FilterCollapse
+          :title="$t('Country')"
+          :clearable="country"
+          @click="country = null"
+        >
           <multiselect
             v-model="country"
             :options="countries"
@@ -39,13 +47,17 @@
             @input="region_id = null"
           />
         </FilterCollapse>
-        <FilterCollapse :title="$t('Deal size')">
+        <FilterCollapse
+          :title="$t('Deal size')"
+          :clearable="deal_size_min || deal_size_max"
+          @click="deal_size_min = deal_size_max = null"
+        >
           <div class="input-group">
             <input
               v-model="deal_size_min"
               type="number"
               class="form-control"
-              placeholder="from"
+              :placeholder="$t('from')"
               aria-label="from"
               :max="deal_size_max"
             />
@@ -58,7 +70,7 @@
               type="number"
               v-model="deal_size_max"
               class="form-control"
-              placeholder="to"
+              :placeholder="$t('to')"
               aria-label="to"
               :min="deal_size_min"
             />
@@ -68,7 +80,11 @@
           </div>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Negotiation status')">
+        <FilterCollapse
+          :title="$t('Negotiation status')"
+          :clearable="negotiation_status.length > 0"
+          @click="negotiation_status = []"
+        >
           <div v-for="(nsname, nsval) in choices.negotiation_status" class="form-check">
             <input
               class="form-check-input"
@@ -78,12 +94,35 @@
               v-model="negotiation_status"
             />
             <label class="form-check-label" :for="nsval">
-              {{ nsname }}
+              {{ $t(nsname) }}
             </label>
           </div>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Investor')">
+        <FilterCollapse
+          :title="$t('Nature of Deal')"
+          :clearable="nature_of_deal.length > 0"
+          @click="nature_of_deal = []"
+        >
+          <div v-for="(isname, isval) in choices.nature_of_deal" class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              :value="isval"
+              :id="isval"
+              v-model="nature_of_deal"
+            />
+            <label class="form-check-label" :for="isval">
+              {{ $t(isname) }}
+            </label>
+          </div>
+        </FilterCollapse>
+
+        <FilterCollapse
+          :title="$t('Investor')"
+          :clearable="investor"
+          @click="investor = null"
+        >
           <div>
             <multiselect
               v-model="investor"
@@ -97,7 +136,11 @@
           </div>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Year of initiation')">
+        <FilterCollapse
+          :title="$t('Year of initiation')"
+          :clearable="initiation_year_min || initiation_year_max"
+          @click="initiation_year_min = initiation_year_max = null"
+        >
           <form class="form-inline">
             <div class="input-group">
               <input
@@ -106,6 +149,8 @@
                 class="form-control"
                 placeholder="from"
                 aria-label="from"
+                min="1970"
+                :max="year"
               />
             </div>
             <div class="input-group">
@@ -115,6 +160,8 @@
                 class="form-control"
                 placeholder="to"
                 aria-label="to"
+                min="1970"
+                :max="year"
               />
             </div>
             <label>
@@ -128,7 +175,11 @@
           </form>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Implementation status')">
+        <FilterCollapse
+          :title="$t('Implementation status')"
+          :clearable="implementation_status.length > 0"
+          @click="implementation_status = []"
+        >
           <div
             v-for="(isname, isval) in choices.implementation_status"
             class="form-check"
@@ -141,27 +192,38 @@
               v-model="implementation_status"
             />
             <label class="form-check-label" :for="isval">
-              {{ isname }}
+              {{ $t(isname) }}
             </label>
           </div>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Intention of Investment')">
-          <multiselect
-            v-model="intention_of_investment"
-            :options="intention_of_investment_choices"
-            :multiple="true"
-            :close-on-select="false"
-            placeholder="Intention"
-            :group-select="true"
-            group-label="type"
-            group-values="options"
-            track-by="id"
-            label="name"
-          />
+        <FilterCollapse
+          :title="$t('Intention of Investment')"
+          :clearable="intention_of_investment.length > 0"
+          @click="intention_of_investment = []"
+        >
+          <div v-for="(options, name) in choices.intention_of_investment">
+            <strong>{{ $t(name) }}</strong>
+            <div v-for="(isname, isval) in options" class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :value="isval"
+                :id="isval"
+                v-model="intention_of_investment"
+              />
+              <label class="form-check-label" :for="isval">
+                {{ $t(isname) }}
+              </label>
+            </div>
+          </div>
         </FilterCollapse>
 
-        <FilterCollapse :title="$t('Produce')">
+        <FilterCollapse
+          :title="$t('Produce')"
+          :clearable="produce.length > 0"
+          @click="produce = []"
+        >
           <multiselect
             v-model="produce"
             :options="produce_choices"
@@ -175,19 +237,23 @@
             label="name"
           />
         </FilterCollapse>
-        <FilterCollapse :title="$t('Transnational')">
+        <FilterCollapse
+          :title="$t('Transnational')"
+          :clearable="transnational"
+          @click="transnational = null"
+        >
           <b-form-group>
             <b-form-radio
               v-model="transnational"
               name="transnationalRadio"
-              value="True"
+              :value="true"
             >
               Transnational
             </b-form-radio>
             <b-form-radio
               v-model="transnational"
               name="transnationalRadio"
-              value="False"
+              :value="false"
             >
               Domestic
             </b-form-radio>
@@ -199,6 +265,23 @@
               Both
             </b-form-radio>
           </b-form-group>
+        </FilterCollapse>
+        <FilterCollapse
+          :title="$t('Forest Concession')"
+          :clearable="forest_concession"
+          @click="forest_concession = null"
+        >
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              v-model="forest_concession"
+              id="forest_concession"
+            />
+            <label class="form-check-label" :for="forest_concession">
+              {{ $t("Forest Concession") }}
+            </label>
+          </div>
         </FilterCollapse>
       </div>
       <div class="bottom-pane">
@@ -231,20 +314,56 @@
     },
     data() {
       return {
+        year: new Date().getFullYear(),
         showFilterOverlay: true,
         investors: [],
         defaultFilters: true,
         choices: {
           negotiation_status: {
-            CONCLUDED: this.$t("Concluded"),
-            INTENDED: this.$t("Intended"),
-            FAILED: this.$t("Failed"),
+            CONCLUDED: "Concluded",
+            INTENDED: "Intended",
+            FAILED: "Failed",
           },
           implementation_status: {
-            PROJECT_NOT_STARTED: this.$t("Project not started"),
-            STARTUP_PHASE: this.$t("Start-up phase"),
-            IN_OPERATION: this.$t("In Operation"),
-            PROJECT_ABANDONED: this.$t("Project abandoned"),
+            PROJECT_NOT_STARTED: "Project not started",
+            STARTUP_PHASE: "Start-up phase",
+            IN_OPERATION: "In Operation",
+            PROJECT_ABANDONED: "Project abandoned",
+          },
+          nature_of_deal: {
+            OUTRIGHT_PURCHASE: "Outright Purchase",
+            LEASE: "Lease",
+            CONCESSION: "Concession",
+            EXPLOITATION_PERMIT:
+              "Exploitation permit / license / concession (for mineral resources)",
+            PURE_CONTRACT_FARMING: "Pure contract farming",
+          },
+          intention_of_investment: {
+            Agriculture: {
+              BIOFUELS: "Biofuels",
+              FOOD_CROPS: "Food crops",
+              FODDER: "Fodder",
+              LIVESTOCK: "Livestock",
+              NON_FOOD_AGRICULTURE: "Non-food agricultural commodities",
+              AGRICULTURE_UNSPECIFIED: "Agriculture unspecified",
+            },
+            Forestry: {
+              TIMBER_PLANTATION: "Timber plantation",
+              FOREST_LOGGING: "Forest logging / management",
+              CARBON: "For carbon sequestration/REDD",
+              FORESTRY_UNSPECIFIED: "Forestry unspecified",
+            },
+
+            Other: {
+              MINING: "Mining",
+              OIL_GAS_EXTRACTION: "Oil / Gas extraction",
+              TOURISM: "Tourism",
+              INDUSTRY: "Industry",
+              CONVERSATION: "Conservation",
+              LAND_SPECULATION: "Land speculation",
+              RENEWABLE_ENERGY: "Renewable Energy",
+              OTHER: "Other",
+            },
           },
         },
       };
@@ -263,7 +382,10 @@
           return this.countries.find((c) => c.id === this.filters.country_id);
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "country_id", value: value.id });
+          this.$store.dispatch("setFilter", {
+            filter: "country_id",
+            value: value ? value.id : value,
+          });
         },
       },
       deal_size_min: {
@@ -288,6 +410,14 @@
         },
         set(value) {
           this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
+        },
+      },
+      nature_of_deal: {
+        get() {
+          return this.filters.nature_of_deal;
+        },
+        set(value) {
+          this.$store.dispatch("setFilter", { filter: "nature_of_deal", value });
         },
       },
       investor: {
@@ -358,6 +488,14 @@
         },
         set(value) {
           this.$store.dispatch("setFilter", { filter: "transnational", value });
+        },
+      },
+      forest_concession: {
+        get() {
+          return this.filters.forest_concession;
+        },
+        set(value) {
+          this.$store.dispatch("setFilter", { filter: "forest_concession", value });
         },
       },
       ...mapState({

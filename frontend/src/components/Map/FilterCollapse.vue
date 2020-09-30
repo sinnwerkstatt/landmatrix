@@ -1,8 +1,13 @@
 <template>
   <div class="filter-collapse">
     <div @click="shown = !shown">
+      <i class="fas" :class="[shown ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
       {{ title }}
-      <i class="fas" :class="[shown ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
+      <i
+        v-if="clearable"
+        class="fas fa-times fa-xs float-right text-primary"
+        @click.stop="$emit('click')"
+      />
     </div>
     <div v-if="shown">
       <slot></slot>
@@ -12,7 +17,7 @@
 <script>
   export default {
     name: "FilterCollapse",
-    props: ["title"],
+    props: ["title", "clearable"],
     data() {
       return {
         shown: false,
