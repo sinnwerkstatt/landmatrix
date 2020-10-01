@@ -10,7 +10,7 @@
     </div>
     <div class="overlay-content">
       <div class="main-pane">
-        <strong>{{ $t("Filter") }} ({{ deals.length }})</strong><br />
+        <strong>{{ $t("Filter") }}</strong><br />
         <span style="font-size: 0.8em;">
           <a @click="$store.dispatch('resetFilters')">Set default filters</a> |
           <a @click="$store.dispatch('clearFilters')">Clear filters</a>
