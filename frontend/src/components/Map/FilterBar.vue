@@ -1,16 +1,16 @@
 <template>
   <div class="filter-overlay" :class="{ collapsed: !showFilterOverlay }">
-    <div class="toggle-button">
-      <a href="#" @click.prevent="showFilterOverlay = !showFilterOverlay">
-        <i
-          class="fas"
-          :class="[showFilterOverlay ? 'fa-chevron-left' : 'fa-chevron-right']"
-        ></i>
-      </a>
-    </div>
+    <span class="wimpel" @click.prevent="showFilterOverlay = !showFilterOverlay">
+      <svg viewBox="0 0 2 20" width="20px">
+        <path d="M0,0 L2,2 L2,18 L0,20z"></path>
+        <text v-if="showFilterOverlay" x="0.3" y="11">&lsaquo;</text>
+        <text v-else x="0.3" y="11">&rsaquo;</text>
+      </svg>
+    </span>
     <div class="overlay-content">
       <div class="main-pane">
-        <strong>{{ $t("Filter") }}</strong><br />
+        <strong>{{ $t("Filter") }}</strong
+        ><br />
         <span style="font-size: 0.8em;">
           <a @click="$store.dispatch('resetFilters')">Set default filters</a> |
           <a @click="$store.dispatch('clearFilters')">Clear filters</a>
@@ -239,7 +239,7 @@
         </FilterCollapse>
         <FilterCollapse
           :title="$t('Transnational')"
-          :clearable="transnational"
+          :clearable="transnational !== null"
           @click="transnational = null"
         >
           <b-form-group>
@@ -268,20 +268,32 @@
         </FilterCollapse>
         <FilterCollapse
           :title="$t('Forest Concession')"
-          :clearable="forest_concession"
+          :clearable="forest_concession !== null"
           @click="forest_concession = null"
         >
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
+          <b-form-group>
+            <b-form-radio
               v-model="forest_concession"
-              id="forest_concession"
-            />
-            <label class="form-check-label" :for="forest_concession">
-              {{ $t("Forest Concession") }}
-            </label>
-          </div>
+              name="forest_concessionRadio"
+              :value="true"
+            >
+              {{ $t("Included") }}
+            </b-form-radio>
+            <b-form-radio
+              v-model="forest_concession"
+              name="forest_concessionRadio"
+              :value="false"
+            >
+              {{ $t("Excluded") }}
+            </b-form-radio>
+            <b-form-radio
+              v-model="forest_concession"
+              name="forest_concessionRadio"
+              :value="null"
+            >
+              {{ $t("Both") }}
+            </b-form-radio>
+          </b-form-group>
         </FilterCollapse>
       </div>
       <div class="bottom-pane">
@@ -557,6 +569,8 @@
   .filter-overlay {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
+    border-right: 1px solid $primary;
     top: 0;
     left: 0;
     bottom: 0;
@@ -590,7 +604,7 @@
     }
 
     &.collapsed {
-      width: 25px;
+      width: 0;
 
       .toggle-button {
         position: static;
@@ -612,6 +626,23 @@
 
     a {
       cursor: pointer;
+    }
+  }
+  .wimpel {
+    position: absolute;
+    top: 25vh;
+    cursor: pointer;
+    right: -20px;
+    svg {
+      filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
+      color: black;
+      path {
+        fill: $primary;
+      }
+      text {
+        font-size: 4px;
+        fill: white;
+      }
     }
   }
 </style>

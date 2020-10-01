@@ -1,9 +1,9 @@
 <template>
-  <div class="container" style="max-height: 90%; max-width: 100%;">
+  <div class="container" style="max-height: 90%; max-width: 100%; padding-top: 0;">
     <div class="row">
       <div
         class="col"
-        style="min-height: 500px; height: 70vh; border: 1px #6c757d dotted; padding: 0;"
+        style="min-height: 500px; height: 70vh; padding: 0;"
       >
         <BigMap
           :options="bigmap_options"
@@ -23,27 +23,34 @@
         <FilterBar :deals="deals">
           <h4>{{ $t("Map settings") }}</h4>
           <FilterCollapse title="Displayed Data">
-            <label>
-              <input type="radio" v-model="displayHectares" :value="false" />
-              Number of deals
-            </label>
-            <label>
-              <input type="radio" v-model="displayHectares" :value="true" />
-              Area (ha)
-            </label>
+            <b-form-group>
+              <b-form-radio
+                v-model="displayHectares"
+                name="displayHectaresRadio"
+                :value="false"
+              >
+                {{ $t("Number of deals") }}
+              </b-form-radio>
+              <b-form-radio
+                v-model="displayHectares"
+                name="displayHectaresRadio"
+                :value="true"
+              >
+                {{ $t("Area (ha)") }}
+              </b-form-radio>
+            </b-form-group>
           </FilterCollapse>
-          <FilterCollapse title="Base layer">
-            <ul class="layer-list">
-              <li v-for="layer in tileLayers">
-                <div v-if="layer.name === visibleLayer">{{ layer.name }}</div>
-                <a
-                  v-else
-                  @click.prevent="$store.dispatch('setCurrentLayer', layer.name)"
-                >
-                  {{ layer.name }}
-                </a>
-              </li>
-            </ul>
+          <FilterCollapse :title="$t('Base layer')">
+            <b-form-group>
+              <b-form-radio
+                v-model="visibleLayer"
+                name="layerSelectRadio"
+                :value="layer.name"
+                v-for="layer in tileLayers"
+              >
+                {{ layer.name }}
+              </b-form-radio>
+            </b-form-group>
           </FilterCollapse>
         </FilterBar>
         <ScopeBar></ScopeBar>
@@ -127,9 +134,17 @@
       };
     },
     computed: {
+      visibleLayer: {
+        get() {
+          return this.$store.state.map.visibleLayer;
+        },
+        set(value) {
+          this.$store.dispatch("setCurrentLayer", value);
+        },
+      },
       ...mapState({
         tileLayers: (state) => state.map.layers,
-        visibleLayer: (state) => state.map.visibleLayer,
+        // visibleLayer: (state) => state.map.visibleLayer,
         country_coords: (state) => {
           let coords = {};
           state.page.countries.forEach((country) => {
@@ -200,8 +215,8 @@
         Object.assign(circle_elem.style, {
           height: `${factor}px`,
           width: `${factor}px`,
-          left: `-${factor/2}px`,
-          top: `-${factor/2}px`,
+          left: `-${factor / 2}px`,
+          top: `-${factor / 2}px`,
           background: primary_color,
         });
         let tooltip = document.createElement("span");
@@ -278,6 +293,7 @@
             //   this.featureGroup.addLayer(mark);
             // });
           }
+          // this.bigmap.flyToBounds(this.featureGroup.getBounds().pad(1.5));
         }
       },
       pinTheMap(bigmap) {
