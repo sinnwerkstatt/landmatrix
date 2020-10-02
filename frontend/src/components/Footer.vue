@@ -1,26 +1,14 @@
 <template>
   <footer>
     <div class="container">
-      <div id="footer-nav" class="row">
-        <div
-          class="col-md-3"
-          v-for="footerCol in footerColumns"
-          v-html="footerCol"
-        ></div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <hr />
-        </div>
-      </div>
       <div id="footer-etc" class="row">
-        <div class="col-md-6">
-          <p>
+        <div class="col-12 text-center">
+          <p class="mb-0">
             <a :href="old_interface_view">&copy; {{ currentyear }}</a>
             The Land Matrix | All rights reserved
           </p>
         </div>
-        <div class="col-md-6 text-right">
+        <div class="social-buttons">
           <a target="_blank" href="https://twitter.com/Land_Matrix">
             <i class="lm-footer lm-twitter-square"></i>
           </a>
@@ -51,24 +39,33 @@
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "../scss/colors";
 
   footer {
-    background: $lm_grey;
-    padding: 10px;
-    font-size: 16px;
+    background: $lm_dark;
+    padding: 0 10px;
+    font-size: 14px;
     font-family: "Open Sans", sans-serif;
-    color: $lm_dark;
+    color: white;
     font-weight: 400 !important;
-    margin-top: 2em;
+    margin-top: 0;
 
+    .container {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
     hr {
       border-top: 1px solid #9b9b9b;
     }
 
     .lm-footer {
       font-size: 20px;
+    }
+    .social-buttons {
+      position: absolute;
+      right: 15px;
+      bottom: 1px;
     }
   }
 </style>

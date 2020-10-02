@@ -1,9 +1,9 @@
 <template>
-  <div class="container" style="max-height: 90%; max-width: 100%; padding-top: 0;">
+  <div class="container" style="max-height: 95%; max-width: 100%; padding-top: 0; padding-bottom: 0;">
     <div class="row">
       <div
         class="col"
-        style="min-height: 500px; height: 70vh; padding: 0;"
+        style="min-height: 500px; height: calc(100vh - 60px - 31px); padding: 0;"
       >
         <BigMap
           :options="bigmap_options"
