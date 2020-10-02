@@ -1,13 +1,13 @@
 <template>
   <div class="scope-overlay" :class="{ collapsed: !showScopeOverlay }">
-    <div class="toggle-button">
-      <a href="#" @click.prevent="showScopeOverlay = !showScopeOverlay">
-        <i
-          class="fas"
-          :class="[showScopeOverlay ? 'fa-chevron-left' : 'fa-chevron-right']"
-        ></i>
-      </a>
-    </div>
+    <span class="wimpel" @click.prevent="showScopeOverlay = !showScopeOverlay">
+      <svg viewBox="0 0 2 20" width="20px">
+        <path d="M0,0 L2,2 L2,18 L0,20z"></path>
+        <text x="0.3" y="11">
+          {{ showScopeOverlay ? "&lsaquo;" : "&rsaquo;" }}
+        </text>
+      </svg>
+    </span>
     <div class="overlay-content">
       <h2 v-if="currentItem">{{ currentItem.name }}</h2>
       <p v-if="currentItem.url">
@@ -132,7 +132,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../../scss/colors";
 
 .scope-overlay {
@@ -146,11 +146,13 @@ export default {
   display: flex;
   transition: width 0.5s;
   width: 20%;
+  filter: drop-shadow(-3px 3px 3px rgba(0, 0, 0, 0.3));
 
-  .toggle-button {
-    position: absolute;
-    left: -20px;
+
+  .wimpel {
     transform: rotateY(180deg);
+    left: -20px;
+    right: auto;
   }
 
   .overlay-content {

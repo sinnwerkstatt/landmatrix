@@ -569,22 +569,17 @@
   .filter-overlay {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
-    filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
-    border-right: 1px solid $primary;
+    filter: drop-shadow(3px -3px 3px rgba(0, 0, 0, 0.3));
     top: 0;
     left: 0;
     bottom: 0;
     z-index: 10;
     display: flex;
-
-    .toggle-button {
-      position: absolute;
-      right: 10px;
-    }
+    transition: width 0.5s;
+    width: 20%;
 
     .overlay-content {
-      width: 20vw;
-      max-width: 230px;
+      width: 100%;
       height: 100%;
       overflow-y: auto;
       padding: 0.5em;
@@ -592,6 +587,7 @@
       flex-direction: column;
 
       .main-pane {
+        width: 100%;
         align-self: flex-start;
       }
 
@@ -630,7 +626,7 @@
   }
   .wimpel {
     position: absolute;
-    top: 25vh;
+    top: calc(50% - 100px);
     cursor: pointer;
     right: -20px;
     svg {
