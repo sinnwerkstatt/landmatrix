@@ -1,4 +1,4 @@
-from blog.models import BlogPage
+from apps.blog.models import BlogPage
 from django.db import models
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.api import APIField

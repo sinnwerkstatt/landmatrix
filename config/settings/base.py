@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
-    "blog",
+    "apps.blog",
     "modelcluster",
     "taggit",
     "bootstrap3_datetime",

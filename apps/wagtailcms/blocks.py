@@ -1,7 +1,7 @@
 import json
 import re
 
-from blog.models import BlogPage
+from apps.blog.models import BlogPage
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
 from wagtail.core import blocks

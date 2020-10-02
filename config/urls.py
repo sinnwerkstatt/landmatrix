@@ -30,7 +30,7 @@ urlpatterns = [
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
     path("cms/", include("wagtail.admin.urls")),
-    path("news/", include("blog.urls", namespace="news")),
+    path("news/", include("apps.blog.urls", namespace="news")),
     path("documents/", include("wagtail.documents.urls")),
     path("data/", include("apps.grid.urls")),
     path("map/", include("apps.map.urls")),
