@@ -3,8 +3,9 @@
     <span class="wimpel" @click.prevent="showFilterOverlay = !showFilterOverlay">
       <svg viewBox="0 0 2 20" width="20px">
         <path d="M0,0 L2,2 L2,18 L0,20z"></path>
-        <text v-if="showFilterOverlay" x="0.3" y="11">&lsaquo;</text>
-        <text v-else x="0.3" y="11">&rsaquo;</text>
+        <text x="0.3" y="11">
+          {{ showFilterOverlay ? "&lsaquo;" : "&rsaquo;" }}
+        </text>
       </svg>
     </span>
     <div class="overlay-content">
@@ -12,8 +13,8 @@
         <strong>{{ $t("Filter") }}</strong
         ><br />
         <span style="font-size: 0.8em;">
-          <a @click="$store.dispatch('resetFilters')">Set default filters</a> |
-          <a @click="$store.dispatch('clearFilters')">Clear filters</a>
+          <a href="#" @click="$store.dispatch('resetFilters')">Set default filters</a> |
+          <a href="#" @click="$store.dispatch('clearFilters')">Clear filters</a>
         </span>
 
         <FilterCollapse
@@ -311,7 +312,6 @@
   export default {
     name: "FilterBar",
     components: { FilterCollapse },
-    props: ["deals"],
     apollo: {
       investors: {
         query: gql`

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
-import GlobalMap from "./views/GlobalMap";
+import DataMap from "./views/Data/GlobalMap";
+import DataList from "./views/Data/List";
 import DealList from "./views/Deal/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
@@ -32,9 +33,18 @@ const router = new Router({
       // },
     },
     {
+      path: "/list/",
+      name: "data_list",
+      component: DataList,
+      // beforeEnter(to, from, next) {
+      //   store.dispatch("fetchDeals", { limit: 1000 });
+      //   next();
+      // },
+    },
+    {
       path: "/map/",
       name: "map",
-      component: GlobalMap,
+      component: DataMap,
       beforeEnter(to, from, next) {
         store.dispatch("breadcrumbBar", false);
         next();
