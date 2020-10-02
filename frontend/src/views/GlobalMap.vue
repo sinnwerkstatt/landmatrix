@@ -1,10 +1,15 @@
 <template>
   <div class="container" style="max-height: 90%; max-width: 100%; padding-top: 0;">
     <div class="row">
-      <div
-        class="col"
-        style="min-height: 500px; height: 70vh; padding: 0;"
-      >
+      <div class="col" style="min-height: 500px; height: 70vh; padding: 0;">
+        <div class="lm-loading-container" v-if="$apollo.queries.deals.loading">
+          <div class="lds-facebook">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+        <ViewSwitcher></ViewSwitcher>
         <BigMap
           :options="bigmap_options"
           :center="[12, 30]"
@@ -12,13 +17,6 @@
           @ready="pinTheMap"
           :hideLayerSwitcher="true"
         >
-          <div class="lm-loading-container" v-if="$apollo.queries.deals.loading">
-            <div class="lds-facebook">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
         </BigMap>
         <FilterBar :deals="deals">
           <h4>{{ $t("Map settings") }}</h4>
@@ -73,10 +71,11 @@
   import FilterCollapse from "../components/Map/FilterCollapse";
   import { mapState } from "vuex";
   import { primary_color } from "../colors";
+  import ViewSwitcher from "../components/Data/ViewSwitcher";
 
   export default {
     name: "GlobalMap",
-    components: { FilterCollapse, ScopeBar, FilterBar, BigMap },
+    components: { ViewSwitcher, FilterCollapse, ScopeBar, FilterBar, BigMap },
     apollo: {
       deals: {
         query: gql`
