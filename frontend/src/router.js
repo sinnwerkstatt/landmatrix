@@ -7,7 +7,7 @@ import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
 import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
-import WagtailPage from "./views/WagtailPage";
+import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
 import InvestorList from "./views/Investor/List";
@@ -114,7 +114,7 @@ const router = new Router({
     {
       path: "*",
       name: "wagtail",
-      component: WagtailPage,
+      component: Wagtail,
     },
     {
       path: "*",

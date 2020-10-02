@@ -3,8 +3,11 @@ from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
 from taggit.models import Tag
+from wagtail.core.rich_text import expand_db_html
+from wagtail.images.models import SourceImageIOError
 from wagtail.snippets.models import register_snippet
 
 from .abstract import (
@@ -147,5 +150,27 @@ class BlogPage(BlogPageAbstract):
         context = get_blog_context(context)
         context["COMMENTS_APP"] = COMMENTS_APP
         return context
+
+    def get_dict(self, rendition_str):
+        try:
+            header_image = self.header_image.get_rendition(rendition_str).url
+        except (AttributeError, SourceImageIOError):
+            header_image = None
+
+        body = expand_db_html(self.body)
+        return {
+            "id": self.id,
+            "title": self.title,
+            "slug": self.slug,
+            "body": body,
+            "excerpt": Truncator(body).words(50, html=True, truncate=" …"),
+            "date": self.date,
+            "header_image": header_image,
+            "tags": [
+                {"id": tag.id, "name": tag.name, "slug": tag.slug}
+                for tag in self.tags.all()
+            ],
+            "categories": list(self.blog_categories.all().values()),
+        }
 
     parent_page_types = ["blog.BlogIndexPage"]

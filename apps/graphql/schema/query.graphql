@@ -55,6 +55,10 @@ type Query {
         country_id: Int,
         region_id: Int
     ): Statistics
+
+    blogpage(id: Int!): BlogPage!
+    blogpages(category: String): [BlogPage]
+    blogcategories: [BlogCategory]
 }
 
 type FormFieldSet {

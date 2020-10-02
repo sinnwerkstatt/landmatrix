@@ -1,0 +1,26 @@
+type BlogPage {
+    id: Int
+    title: String
+    slug: String
+    body: String
+    excerpt: String
+    date: Date
+    header_image: String
+    author: User
+    categories: [BlogCategory]
+    tags: [BlogTag]
+}
+
+type BlogCategory {
+    id: Int
+    name: String
+    slug: String
+    parent: BlogCategory
+    description: String
+}
+
+type BlogTag {
+    id: Int
+    name: String
+    slug: String
+}
