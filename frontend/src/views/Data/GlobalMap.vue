@@ -1,10 +1,8 @@
 <template>
-  <div class="container" style="max-height: 95%; max-width: 100%; padding-top: 0; padding-bottom: 0;">
-    <div class="row">
-      <div
-        class="col"
-        style="min-height: 500px; height: calc(100vh - 60px - 31px); padding: 0;"
-      >
+  <div>
+    <DataContainer>
+      <template v-slot:default>
+        <LoadingPulse v-if="$apollo.queries.deals.loading" />
         <BigMap
           :options="bigmap_options"
           :center="[12, 30]"
@@ -12,71 +10,61 @@
           @ready="pinTheMap"
           :hideLayerSwitcher="true"
         >
-          <div class="lm-loading-container" v-if="$apollo.queries.deals.loading">
-            <div class="lds-facebook">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
         </BigMap>
-        <FilterBar :deals="deals">
-          <h4>{{ $t("Map settings") }}</h4>
-          <FilterCollapse title="Displayed Data">
-            <b-form-group>
-              <b-form-radio
-                v-model="displayHectares"
-                name="displayHectaresRadio"
-                :value="false"
-              >
-                {{ $t("Number of deals") }}
-              </b-form-radio>
-              <b-form-radio
-                v-model="displayHectares"
-                name="displayHectaresRadio"
-                :value="true"
-              >
-                {{ $t("Area (ha)") }}
-              </b-form-radio>
-            </b-form-group>
-          </FilterCollapse>
-          <FilterCollapse :title="$t('Base layer')">
-            <b-form-group>
-              <b-form-radio
-                v-model="visibleLayer"
-                name="layerSelectRadio"
-                :value="layer.name"
-                v-for="layer in tileLayers"
-              >
-                {{ layer.name }}
-              </b-form-radio>
-            </b-form-group>
-          </FilterCollapse>
-        </FilterBar>
-        <ScopeBar></ScopeBar>
-      </div>
-    </div>
-    <!--    {{ this.$store.state.filters.filters }}-->
-    <!--    <hr />-->
-    <!--    {{ this.$store.getters.filtersForGQL }}-->
+      </template>
+      <template v-slot:FilterBar>
+        <h4>{{ $t("Map settings") }}</h4>
+        <FilterCollapse title="Displayed Data">
+          <b-form-group>
+            <b-form-radio
+              v-model="displayHectares"
+              name="displayHectaresRadio"
+              :value="false"
+            >
+              {{ $t("Number of deals") }}
+            </b-form-radio>
+            <b-form-radio
+              v-model="displayHectares"
+              name="displayHectaresRadio"
+              :value="true"
+            >
+              {{ $t("Area (ha)") }}
+            </b-form-radio>
+          </b-form-group>
+        </FilterCollapse>
+        <FilterCollapse :title="$t('Base layer')">
+          <b-form-group>
+            <b-form-radio
+              v-model="visibleLayer"
+              name="layerSelectRadio"
+              :value="layer.name"
+              v-for="layer in tileLayers"
+            >
+              {{ layer.name }}
+            </b-form-radio>
+          </b-form-group>
+        </FilterCollapse>
+      </template>
+    </DataContainer>
   </div>
 </template>
 
 <script>
-  import BigMap from "/components/BigMap";
-  import gql from "graphql-tag";
   import "leaflet";
   import "leaflet.markercluster";
   import { groupBy } from "lodash";
-  import FilterBar from "../components/Map/FilterBar";
-  import ScopeBar from "../components/Map/ScopeBar";
-  import FilterCollapse from "../components/Map/FilterCollapse";
+  import gql from "graphql-tag";
   import { mapState } from "vuex";
-  import { primary_color } from "../colors";
+  import { primary_color } from "/colors";
+
+  import BigMap from "/components/BigMap";
+  import DataContainer from "./DataContainer";
+  import FilterCollapse from "/components/Map/FilterCollapse";
+  import LoadingPulse from "/components/Data/LoadingPulse";
 
   export default {
     name: "GlobalMap",
-    components: { FilterCollapse, ScopeBar, FilterBar, BigMap },
+    components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
     apollo: {
       deals: {
         query: gql`
@@ -144,7 +132,6 @@
       },
       ...mapState({
         tileLayers: (state) => state.map.layers,
-        // visibleLayer: (state) => state.map.visibleLayer,
         country_coords: (state) => {
           let coords = {};
           state.page.countries.forEach((country) => {
@@ -328,57 +315,6 @@
 
       .landmatrix-custom-circle-hover-text {
         display: inline;
-      }
-    }
-  }
-
-  .lm-loading-container {
-    z-index: 500000;
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-  }
-
-  .lds-facebook {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
-
-    div {
-      display: inline-block;
-      position: absolute;
-      left: 8px;
-      width: 16px;
-      background: #ffffff;
-      animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
-
-      &:nth-child(1) {
-        left: 8px;
-        animation-delay: -0.24s;
-      }
-
-      &:nth-child(2) {
-        left: 32px;
-        animation-delay: -0.12s;
-      }
-
-      &:nth-child(3) {
-        left: 56px;
-        animation-delay: 0s;
-      }
-    }
-
-    @keyframes lds-facebook {
-      0% {
-        top: 8px;
-        height: 64px;
-        background: #fc941f;
-      }
-      50%,
-      100% {
-        top: 24px;
-        height: 32px;
       }
     }
   }
