@@ -34,32 +34,32 @@ export default {
   apollo: {
     deals: {
       query: gql`
-          query Deals($limit: Int!, $filters: [Filter]) {
-            deals(limit: $limit, filters: $filters) {
+        query Deals($limit: Int!, $filters: [Filter]) {
+          deals(limit: $limit, filters: $filters) {
+            id
+            deal_size
+            country {
               id
-              deal_size
-              country {
+              fk_region {
                 id
-                fk_region {
-                  id
-                }
-              }
-              # top_investors { id name }
-              intention_of_investment
-              current_negotiation_status
-              current_implementation_status
-              locations {
-                id
-                point
-                level_of_accuracy
               }
             }
+            # top_investors { id name }
+            intention_of_investment
+            current_negotiation_status
+            current_implementation_status
+            locations {
+              id
+              point
+              level_of_accuracy
+            }
           }
-        `,
+        }
+      `,
       variables() {
         return {
           limit: 0,
-          filters: this.$store.state.filters.filters,
+          filters: this.$store.getters.filtersForGQL,
         };
       },
     },
@@ -70,21 +70,25 @@ export default {
         name: "Global",
         url: "/newdeal/global"
       };
-      if (this.$store.getters.currentCountryId) {
-        let country = this.$store.state.page.countries.find(c => c.id === this.$store.getters.currentCountryId);
-        item = {
-          name: country.name,
+      if (this.$store.state.filters.filters.country_id) {
+        let country = this.$store.state.page.countries.find(c => c.id === this.$store.state.filters.filters.country_id);
+        if (country) {
+          item = {
+            name: country.name,
+          }
+          if (country.country_page_id) {
+            item.url = `/newdeal/country/${country.slug}`
+          }
         }
-        if (country.country_page_id) {
-          item.url = `/newdeal/country/${country.slug}`
-        }
-      } else if (this.$store.getters.currentRegionId) {
-        let region = this.$store.state.page.regions.find(r => r.id === this.$store.getters.currentRegionId);
-        item = {
-          name: region.name,
-        }
-        if (region.region_page_id) {
-          item.url = `/newdeal/region/${region.slug}`
+      } else if (this.$store.state.filters.filters.region_id) {
+        let region = this.$store.state.page.regions.find(r => r.id === this.$store.state.filters.filters.region_id);
+        if (region) {
+          item = {
+            name: region.name,
+          }
+          if (region.region_page_id) {
+            item.url = `/newdeal/region/${region.slug}`
+          }
         }
       }
       return item;

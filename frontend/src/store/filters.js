@@ -274,11 +274,5 @@ export default {
 
       return filters;
     },
-    currentRegionId: (state) => {
-      return state.filters.region_id;
-    },
-    currentCountryId: (state) => {
-      return state.filters.country_id;
-    },
   },
 };
