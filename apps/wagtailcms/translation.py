@@ -1,4 +1,4 @@
-from blog.models import BlogIndexPage
+from apps.blog.models import BlogIndexPage
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
