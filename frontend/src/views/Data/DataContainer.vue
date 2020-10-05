@@ -15,8 +15,8 @@
 </template>
 
 <script>
-  import FilterBar from "/components/Map/FilterBar";
-  import ScopeBar from "/components/Map/ScopeBar";
+  import FilterBar from "/components/Data/FilterBar";
+  import ScopeBar from "/components/Data/ScopeBar";
   import ViewSwitcher from "/components/Data/ViewSwitcher";
 
   export default {

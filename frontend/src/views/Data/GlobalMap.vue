@@ -59,7 +59,7 @@
 
   import BigMap from "/components/BigMap";
   import DataContainer from "./DataContainer";
-  import FilterCollapse from "/components/Map/FilterCollapse";
+  import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
 
   export default {
