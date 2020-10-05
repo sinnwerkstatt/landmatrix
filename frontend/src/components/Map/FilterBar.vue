@@ -327,7 +327,6 @@
     data() {
       return {
         year: new Date().getFullYear(),
-        showFilterOverlay: true,
         investors: [],
         defaultFilters: true,
         choices: {
@@ -381,6 +380,14 @@
       };
     },
     computed: {
+      showFilterOverlay: {
+        get() {
+          return this.$store.state.map.showFilterOverlay;
+        },
+        set(value) {
+          this.$store.dispatch("showFilterOverlay", value);
+        },
+      },
       region_id: {
         get() {
           return this.filters.region_id;
@@ -575,8 +582,9 @@
     bottom: 0;
     z-index: 10;
     display: flex;
-    transition: width 0.5s;
+    transition: width 0.5s, min-width 0.5s;
     width: 20%;
+    min-width: 220px;
 
     .overlay-content {
       width: 100%;
@@ -601,6 +609,7 @@
 
     &.collapsed {
       width: 0;
+      min-width: 0;
 
       .toggle-button {
         position: static;

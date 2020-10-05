@@ -27,7 +27,6 @@ export default {
   components: {StatusPieChart},
   data() {
     return {
-      showScopeOverlay: true,
       deals: []
     };
   },
@@ -65,6 +64,14 @@ export default {
     },
   },
   computed: {
+      showScopeOverlay: {
+        get() {
+          return this.$store.state.map.showScopeOverlay;
+        },
+        set(value) {
+          this.$store.dispatch("showScopeOverlay", value);
+        },
+      },
     currentItem() {
       let item = {
         name: "Global",
@@ -136,7 +143,7 @@ export default {
 @import "../../scss/colors";
 
 .scope-overlay {
-  border-left: 1px dotted $lm_dark;
+  //border-left: 1px dotted $lm_dark;
   position: absolute;
   background-color: rgba(255, 255, 255, 0.95);
   top: 0;
@@ -144,8 +151,9 @@ export default {
   bottom: 0;
   z-index: 10;
   display: flex;
-  transition: width 0.5s;
+  transition: width 0.5s, min-width 0.5s;
   width: 20%;
+  min-width: 220px;
   filter: drop-shadow(-3px 3px 3px rgba(0, 0, 0, 0.3));
 
 
@@ -156,16 +164,13 @@ export default {
   }
 
   .overlay-content {
-    width: 20vw;
-    max-width: 230px;
-    height: 100%;
     overflow-y: auto;
     padding: 0.7em;
   }
 
   &.collapsed {
-    width: 0px;
-
+    width: 0;
+    min-width: 0;
     .overlay-content {
       display: none;
     }

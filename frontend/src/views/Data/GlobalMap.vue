@@ -6,7 +6,7 @@
         <BigMap
           :options="bigmap_options"
           :center="[12, 30]"
-          :containerStyle="{ 'max-height': '100%', height: '100%' }"
+          :containerStyle="{ height: '100%' }"
           @ready="pinTheMap"
           :hideLayerSwitcher="true"
         >

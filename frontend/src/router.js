@@ -36,10 +36,14 @@ const router = new Router({
       path: "/list/",
       name: "data_list",
       component: DataList,
-      // beforeEnter(to, from, next) {
-      //   store.dispatch("fetchDeals", { limit: 1000 });
-      //   next();
-      // },
+      beforeEnter(to, from, next) {
+        store.dispatch("breadcrumbBar", false);
+        next();
+      },
+      beforeLeave(to, from, next) {
+        store.dispatch("breadcrumbBar", true);
+        next();
+      },
     },
     {
       path: "/map/",
