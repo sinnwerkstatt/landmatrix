@@ -1,5 +1,25 @@
-.richtext-image.left {
+.blog-body {
+  overflow: auto;
+}
+.richtext-image {
+  width: auto;
+  max-width: 40%;
+  height: auto;
+  &.left {
     float: left;
-    margin-right: 40px;
-    max-width: 50%;
+    margin-right: 3em;
+  }
+  &.right {
+    float: right;
+    margin-left: 40px;
+  }
+  &.fullwidth {
+    text-align: center;
+    max-width: 100%;
+    max-height: 700px;
+    width: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 }

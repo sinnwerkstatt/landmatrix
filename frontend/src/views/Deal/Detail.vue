@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="deal">
+  <div class="container deal-detail" v-if="deal">
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
@@ -275,17 +275,19 @@
     margin-top: 0.3em;
   }
 
-  .nav-pills {
-    .nav-item {
-      .nav-link {
-        border-right: 1px solid $lm_orange;
-        color: $lm_orange;
-        border-radius: 0;
+  .deal-detail {
+    .nav-pills {
+      .nav-item {
+        .nav-link {
+          border-right: 1px solid $lm_orange;
+          color: $lm_orange;
+          border-radius: 0;
 
-        &.active {
-          border-right-width: 3px;
-          background-color: inherit;
-          color: $lm_dark;
+          &.active {
+            border-right-width: 3px;
+            background-color: inherit;
+            color: $lm_dark;
+          }
         }
       }
     }

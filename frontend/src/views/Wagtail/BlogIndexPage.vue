@@ -1,20 +1,27 @@
 <template>
-  <div v-if="blogpages" class="container">
-    <div class="row">
-      <div class="col">
-        <label v-for="cat in blogcategories_with_all">
-          <input
-            type="radio"
-            v-model="category"
-            :value="cat.slug"
-            name="categoryRadio"
-          />
-          {{ $t(cat.name) }}
-        </label>
+  <div class="container">
+    <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
+    <!--    <div class="row " v-if="tag">-->
+    <!--      <div class="col text-center">-->
+    <!--        <i class="fas fa-tags"></i> {{tag}}-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <div class="row mb-4" v-if="blogcategories_with_all">
+      <div class="col text-center">
+        <ul class="nav nav-pills d-flex justify-content-center">
+          <li class="nav-item" v-for="cat in blogcategories_with_all">
+            <router-link
+              class="nav-link"
+              :class="{ active: category === cat.slug }"
+              :to="cat.slug ? `?category=${cat.slug}` : './'"
+              >{{ $t(cat.name) }}</router-link
+            >
+          </li>
+        </ul>
       </div>
     </div>
-    <div class="row">
-      <div v-for="article in filtered_articles" class="col-4 mb-3">
+    <div class="row" v-if="blogpages">
+      <div v-for="article in filtered_articles" class="col-md-6 col-lg-4 mb-3">
         <div class="card">
           <img
             v-if="article.header_image"
@@ -24,9 +31,7 @@
           />
           <div class="card-body">
             <h5 class="card-title">
-              <router-link :to="`/stay-informed/${article.slug}`">{{
-                article.title
-              }}</router-link>
+              <router-link :to="`${article.slug}/`">{{ article.title }}</router-link>
             </h5>
             <p class="card-text" v-html="article.excerpt"></p>
             <p class="card-text">
@@ -40,14 +45,16 @@
 </template>
 
 <script>
-  import axios from "axios";
   import gql from "graphql-tag";
+  import LoadingPulse from "../../components/Data/LoadingPulse";
 
   export default {
+    components: { LoadingPulse },
     data() {
       return {
         blogpages: null,
         category: null,
+        tag: null,
         blogcategories: [],
       };
     },
@@ -62,6 +69,9 @@
             header_image
             excerpt
             categories {
+              slug
+            }
+            tags {
               slug
             }
           }
@@ -87,7 +97,34 @@
             art.categories.map((c) => c.slug).includes(this.category)
           );
         }
+        if (this.tag) {
+          return this.blogpages.filter((art) =>
+            art.tags.map((c) => c.slug).includes(this.tag)
+          );
+        }
         return this.blogpages;
+      },
+    },
+    mounted() {
+      this.category = this.$route.query.category || null;
+      this.tag = this.$route.query.tag || null;
+      if (this.tag) {
+        this.$store.commit(
+          "setTitle",
+          `Stay Informed - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`
+        );
+      }
+    },
+    watch: {
+      $route(to, from) {
+        this.category = this.$route.query.category || null;
+        this.tag = this.$route.query.tag || null;
+        if (this.tag) {
+          this.$store.commit(
+            "setTitle",
+            `Stay Informed - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`
+          );
+        }
       },
     },
   };

@@ -1,7 +1,7 @@
 <template>
   <div class="container my-2" v-if="this.$store.state.page.showBreadcrumbs">
     <div class="row">
-      <div class="col-md-4 mr-auto">
+      <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
           <li v-for="bcrumb in this.$store.state.page.breadcrumbs" :key="bcrumb.name">
             <a v-if="bcrumb.link" :href="bcrumb.link">{{ bcrumb.name }}</a>

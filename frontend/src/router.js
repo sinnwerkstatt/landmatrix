@@ -140,5 +140,14 @@ const router = new Router({
   //   // }
   // ]
 });
+const DEFAULT_TITLE = 'Land Matrix';
+router.afterEach((to, from) => {
+    // Use next tick to handle router history correctly
+    // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+    Vue.nextTick(() => {
+        // document.title = to.meta.title || DEFAULT_TITLE;
+        document.title = store.state.page.title || DEFAULT_TITLE;
+    });
+});
 
 export default router;

@@ -612,18 +612,6 @@
     }
   }
 
-  ul.layer-list {
-    padding-left: 5px;
-    list-style: none;
-
-    div {
-      color: $primary;
-    }
-
-    a {
-      cursor: pointer;
-    }
-  }
   .wimpel {
     position: absolute;
     top: calc(50% - 100px);

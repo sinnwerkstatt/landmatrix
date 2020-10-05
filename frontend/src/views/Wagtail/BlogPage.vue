@@ -1,16 +1,19 @@
 <template>
   <div class="container" v-if="article">
-    <div class="meta date">
-      {{ article.date }}
-    </div>
-    <div v-html="article.body" />
-    <div class="meta">
-      <div v-if="article.tags.length > 0" class="tags">
-        Tags:
-
-        <a v-for="tag in article.tags" :href="tag.slug">{{ tag.name }}</a>
+    <div class="meta mb-3">
+      <div class="date d-inline-block mr-4">
+        <i class="far fa-calendar-alt"></i> {{ article.date }}
+      </div>
+      <div v-if="article.tags.length > 0" class="tags d-inline-block">
+        <router-link
+          v-for="tag in article.tags"
+          :to="`/stay-informed/?tag=${tag.slug}`"
+        >
+          <i class="fas fa-tags"></i> {{ tag.name }}
+        </router-link>
       </div>
     </div>
+    <div class="blog-body" v-html="article.body" />
   </div>
 </template>
 
@@ -32,7 +35,10 @@
               title
               body
               date
-              tags { slug name }
+              tags {
+                slug
+                name
+              }
             }
           }
         `,
