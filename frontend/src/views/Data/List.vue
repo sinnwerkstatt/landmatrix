@@ -3,7 +3,7 @@
     <DataContainer>
       <template v-slot:default>
         <LoadingPulse v-if="$apollo.queries.deals.loading" />
-        <div>
+        <div class="h-100">
           <div
             class="sideBuffer float-left"
             :class="{ collapsed: !$store.state.map.showFilterOverlay }"
@@ -12,18 +12,33 @@
             class="sideBuffer float-right"
             :class="{ collapsed: !$store.state.map.showScopeOverlay }"
           ></div>
-          <div style="overflow: hidden; padding: 1em;">
-            Bavaria ipsum dolor sit amet nia need hod dahoam Deandlgwand di Sauwedda
-            Marei auf’d Schellnsau. Amoi Reiwadatschi Graudwiggal woaß nia need fei
-            ozapfa, wea nia ausgähd, kummt nia hoam wuid a so a Schmarn. Engelgwand wo
-            hi Lewakaas, Schbozal sog i Guglhupf Milli fensdaln und bitt aba: Mamalad
-            back mas Blosmusi gwihss Ledahosn hogg di hera vo de i moan scho aa,
-            Spotzerl Schuabladdla unbandig! Leonhardifahrt umma jo mei is des schee
-            ghupft wia gsprunga Gaudi is des liab, sodala mehra. Boarischer wuid so
-            schee woaß Buam unbandig Bradwurschtsemmal mi. I waar soweid i hab an Buam
-            no a Maß, allerweil mim Watschnpladdla a Hoiwe? Des Greichats Fünferl
-            obandeln do des muas ma hoid kenna a bissal Schneid. Moand a bravs i hob di
-            narrisch gean und sei Heimatland, des auf gehds beim Schichtl.
+          <!--          <div style="float: bottom;min-height: 31px; "></div>-->
+          <div class="table-wrap" v-if="deals.length > 0">
+            <table class="sticky-header">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Target country</th>
+                  <th>Intention of investment</th>
+                  <th>Negotiation Status</th>
+                  <th>Deal size</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="deal in enriched_deals">
+                  <td>
+                    <router-link
+                      :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
+                      >{{ deal.id }}</router-link
+                    >
+                  </td>
+                  <td v-html="deal.country"></td>
+                  <td>{{ deal.intention_of_investment }}</td>
+                  <td>{{ deal.current_negotiation_status }}<br />TODO</td>
+                  <td class="text-right">{{ deal.deal_size }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </template>
@@ -77,6 +92,26 @@
         deals: [],
       };
     },
+    computed: {
+      enriched_deals() {
+        if (this.deals.length === 0) return [];
+        return this.deals.map((deal) => {
+          let cor = this.$store.getters.getCountryOrRegion({
+            type: "country",
+            id: deal.country.id,
+          });
+          cor = cor ? cor.name : "";
+
+          return {
+            id: deal.id,
+            country: `<a>${cor}</a>`,
+            intention_of_investment: deal.intention_of_investment,
+            current_negotiation_status: deal.current_negotiation_status,
+            deal_size: deal.deal_size.toLocaleString(),
+          };
+        });
+      },
+    },
   };
 </script>
 <style lang="scss">
@@ -90,7 +125,57 @@
       min-width: 0;
     }
   }
-  //.filterBuffer {
-  //  float: left;
+
+  .table-wrap {
+    padding: 0 23px 1em;
+    border-top: solid white 3em;
+    overflow-x: hidden;
+    max-height: 100%;
+    height: 100%;
+
+    overflow-y: auto;
+  }
+  table.sticky-header {
+    width: 100%;
+    overflow-y: auto;
+
+    height: 100px;
+    tr {
+      border: 1px solid #c9c9c9;
+    }
+    td {
+      padding: 0.5em;
+    }
+    th {
+      padding: 0.5em;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      background: #525252;
+      color: white;
+      //display: inline-block;
+    }
+  }
+
+  //::-webkit-scrollbar {
+  //  width: 14px;
+  //  height: 18px;
+  //}
+  //::-webkit-scrollbar-thumb {
+  //  height: 6px;
+  //  border: 4px solid rgba(0, 0, 0, 0);
+  //  background-clip: padding-box;
+  //  -webkit-border-radius: 7px;
+  //  background-color: rgba(0, 0, 0, 0.15);
+  //  -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05),
+  //    inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+  //}
+  //::-webkit-scrollbar-button {
+  //  width: 0;
+  //  height: 0;
+  //  display: none;
+  //}
+  //::-webkit-scrollbar-corner {
+  //  background-color: transparent;
   //}
 </style>
