@@ -13,7 +13,11 @@
       <p v-if="currentItem.url">
         <a :href="currentItem.url">Read more</a>
       </p>
-      <StatusPieChart :dealData="negotiationStatusData"></StatusPieChart>
+      <div class="toggle-buttons">
+        <a href="" @click.prevent="showDealCount=true" :class="{active: showDealCount}">No. of deals</a>
+        <a href="" @click.prevent="showDealCount=false" :class="{active: !showDealCount}">Deal size</a>
+      </div>
+      <StatusPieChart :title="'Negotiation Status'" :dealData="negotiationStatusData" :showDealCount="showDealCount"></StatusPieChart>
     </div>
   </div>
 </template>
@@ -22,12 +26,19 @@
 import StatusPieChart from "../Charts/StatusPieChart";
 import gql from "graphql-tag";
 
+function sum(items, prop){
+  return items.reduce(function (a, b) {
+    return a + b[prop];
+  }, 0);
+};
+
 export default {
   name: "ScopeBar",
   components: {StatusPieChart},
   data() {
     return {
       showScopeOverlay: true,
+      showDealCount: true,
       deals: []
     };
   },
@@ -93,39 +104,66 @@ export default {
       }
       return item;
     },
-    negotiationStatusData() {
+    dealFilteredByNegStatus() {
+      let filteredDeals = {
+        intended: this.deals.filter(
+          d => {
+            return ['EXPRESSION_OF_INTEREST', 'UNDER_NEGOTIATION', 'MEMORANDUM_OF_UNDERSTANDING'].includes(d.current_negotiation_status)
+          }
+        ),
+        concluded: this.deals.filter(
+          d => {
+            return ['ORAL_AGREEMENT', 'CONTRACT_SIGNED'].includes(d.current_negotiation_status)
+          }
+        ),
+        failed: this.deals.filter(
+          d => {
+            return ['NEGOTIATIONS_FAILED', 'CONTRACT_CANCELED'].includes(d.current_negotiation_status)
+          }
+        )
+      }
       if (this.deals.length) {
         return [
           {
             label: "Intended",
-            count: this.deals.filter(
-              d => {
-                return ['EXPRESSION_OF_INTEREST', 'UNDER_NEGOTIATION', 'MEMORANDUM_OF_UNDERSTANDING'].includes(d.current_negotiation_status)
-              }
-            ).length,
-            sum: 2357261,
+            count: filteredDeals.intended.length,
+            sum: sum(filteredDeals.intended, 'deal_size'),
+            color: "#FDB86A",
           },
           {
             label: "Concluded",
-            count: this.deals.filter(
-              d => {
-                return ['ORAL_AGREEMENT', 'CONTRACT_SIGNED'].includes(d.current_negotiation_status)
-              }
-            ).length,
-            sum: 3568599,
+            count: filteredDeals.concluded.length,
+            sum: sum(filteredDeals.concluded, 'deal_size'),
+            color: "#FC941F",
           },
           {
             label: "Failed",
-            count: this.deals.filter(
-              d => {
-                return ['NEGOTIATIONS_FAILED', 'CONTRACT_CANCELED'].includes(d.current_negotiation_status)
-              }
-            ).length,
-            sum: 35710546,
+            count: filteredDeals.failed.length,
+            sum: sum(filteredDeals.failed, 'deal_size'),
+            color: "#7D4A0F",
           },
         ];
       } else {
-        return null;
+        return [];
+      }
+    },
+    negotiationStatusData() {
+      if (this.dealFilteredByNegStatus) {
+        if (this.showDealCount) {
+          return this.dealFilteredByNegStatus.map(d => {
+            return {
+              value: d.count,
+              ...d
+            }
+          });
+        } else {
+          return this.dealFilteredByNegStatus.map(d => {
+            return {
+              value: d.sum,
+              ...d
+            }
+          });
+        }
       }
     }
   }
@@ -161,6 +199,26 @@ export default {
     height: 100%;
     overflow-y: auto;
     padding: 0.7em;
+
+    .toggle-buttons {
+      font-size: 0;
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      a {
+        padding: 0.3em 0.5em;
+        background-color: white;
+        border: 1px solid $lm_light;
+        color: black;
+        font-weight: bold;
+        font-size: 14px;
+
+        &.active {
+          background-color: $primary;
+          color: white;
+        }
+      }
+    }
   }
 
   &.collapsed {

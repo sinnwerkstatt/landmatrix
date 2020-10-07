@@ -1,15 +1,15 @@
 <template>
   <div class="chart-container">
+    <h5>{{ title }}</h5>
     <canvas id="myChart" ref="myChart"></canvas>
   </div>
 </template>
 
 <script>
   import Chart from "chart.js";
-  import ChartDataLabels from 'chartjs-plugin-datalabels';
 
   export default {
-    props: ["dealData"],
+    props: ["dealData", "title"],
     data: function () {
       return {
         canvasCtx: null,
@@ -21,27 +21,24 @@
         return {
           cutoutPercentage: 0,
           legend: {
-            display: false,
-            position: "top",
+            display: true,
+            position: "bottom",
+            align: "start",
+            fullWidth: false,
+            labels: {
+              boxWidth: 10,
+              padding: 5,
+            },
           },
           aspectRatio: 1,
           responsive: true,
           title: {
-            display: true,
-            text: "Status",
+            display: false,
+            text: this.title,
           },
           animation: {
             animateScale: true,
             animateRotate: true,
-          },
-          plugins: {
-            datalabels: {
-              anchor: "end",
-              offset: 10,
-              formatter: (value, context) => {
-                return this.dealData[context.dataIndex].label + ': ' + value;
-              }
-            },
           },
         };
       },
@@ -59,11 +56,12 @@
             //   backgroundColor: ["#83C3C2", "#153838", "#44B7B6", "#263838", "#318583"],
             // },
             {
-              label: "Number of deals",
               data: this.dealData.map((n) => {
-                return n.count;
+                return n.value;
               }),
-              backgroundColor: ["#FDB86A", "#7D4A0F", "#FC941F", "#7D5B34", "#C97718"],
+              backgroundColor:this.dealData.map((n) => {
+                return n.color;
+              }),
             },
           ],
         };

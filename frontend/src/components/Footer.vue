@@ -50,6 +50,7 @@
     color: white;
     font-weight: 400 !important;
     margin-top: 0;
+    position: relative;
 
     .container {
       padding-top: 5px;

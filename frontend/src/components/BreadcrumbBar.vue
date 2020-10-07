@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-2" v-if="this.$store.state.page.showBreadcrumbs">
+  <div class="container mb-2" v-if="this.$store.state.page.showBreadcrumbs">
     <div class="row">
       <div class="col-md-4 mr-auto">
         <ul class="breadcrumb">

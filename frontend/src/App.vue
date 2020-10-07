@@ -1,18 +1,20 @@
 <template>
   <div id="app">
     <Navbar />
-    <Messages />
-    <BreadcrumbBar />
-    <div v-if="$store.state.page.title" class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <h1>
-            <span v-html="$store.state.page.title"></span>
-          </h1>
+    <div class="content">
+      <Messages />
+      <BreadcrumbBar />
+      <div v-if="$store.state.page.title" class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>
+              <span v-html="$store.state.page.title"></span>
+            </h1>
+          </div>
         </div>
       </div>
+      <router-view />
     </div>
-    <router-view />
     <Footer />
   </div>
 </template>
@@ -28,7 +30,11 @@
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "scss/colors";
   @import "scss/fonts";
+
+  .content {
+    min-height: calc(100vh - 60px - 31px);
+  }
 </style>
