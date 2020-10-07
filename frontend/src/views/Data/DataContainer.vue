@@ -1,14 +1,12 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <ViewSwitcher />
-        <FilterBar>
-          <slot name="FilterBar"></slot>
-        </FilterBar>
-        <ScopeBar />
-        <slot></slot>
-      </div>
+  <div class="datacontainer">
+    <ViewSwitcher />
+    <FilterBar>
+      <slot name="FilterBar"></slot>
+    </FilterBar>
+    <ScopeBar />
+    <div class="main-content">
+      <slot></slot>
     </div>
     <!--    {{ this.$store.state.filters.filters }}-->
     <!--    <hr />-->
@@ -17,8 +15,8 @@
 </template>
 
 <script>
-  import FilterBar from "/components/Map/FilterBar";
-  import ScopeBar from "/components/Map/ScopeBar";
+  import FilterBar from "/components/Data/FilterBar";
+  import ScopeBar from "/components/Data/ScopeBar";
   import ViewSwitcher from "/components/Data/ViewSwitcher";
 
   export default {
@@ -27,14 +25,14 @@
   };
 </script>
 <style lang="scss" scoped>
-.container {
-  max-width: 100%;
-  padding-top: 0;
-  padding-bottom: 0;
-  > .row > .col {
-    min-height: 500px;
-    height: calc(100vh - 60px - 31px);
+  .datacontainer {
+    position: relative;
     padding: 0;
+    width: 100%;
+    height: calc(100vh - 60px - 31px);
+    .main-content {
+      width: 100%;
+      height: 100%;
+    }
   }
-}
 </style>

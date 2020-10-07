@@ -7,6 +7,11 @@ from ariadne import (
 )
 from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
 
+from apps.graphql.resolvers.blog import (
+    resolve_blogpages,
+    resolve_blogpage,
+    resolve_blogcategories,
+)
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
@@ -63,6 +68,9 @@ query.set_field("crops", resolve_crops)
 query.set_field("minerals", resolve_minerals)
 query.set_field("formfields", resolve_formfields)
 query.set_field("statistics", resolve_statistics)
+query.set_field("blogpages", resolve_blogpages)
+query.set_field("blogpage", resolve_blogpage)
+query.set_field("blogcategories", resolve_blogcategories)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

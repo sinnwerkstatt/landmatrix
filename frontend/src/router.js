@@ -7,7 +7,7 @@ import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
 import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
-import WagtailPage from "./views/WagtailPage";
+import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
 import InvestorList from "./views/Investor/List";
@@ -36,10 +36,14 @@ const router = new Router({
       path: "/list/",
       name: "data_list",
       component: DataList,
-      // beforeEnter(to, from, next) {
-      //   store.dispatch("fetchDeals", { limit: 1000 });
-      //   next();
-      // },
+      beforeEnter(to, from, next) {
+        store.dispatch("breadcrumbBar", false);
+        next();
+      },
+      beforeLeave(to, from, next) {
+        store.dispatch("breadcrumbBar", true);
+        next();
+      },
     },
     {
       path: "/map/",
@@ -114,7 +118,7 @@ const router = new Router({
     {
       path: "*",
       name: "wagtail",
-      component: WagtailPage,
+      component: Wagtail,
     },
     {
       path: "*",
@@ -139,6 +143,15 @@ const router = new Router({
   //     // component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
   //   // }
   // ]
+});
+const DEFAULT_TITLE = 'Land Matrix';
+router.afterEach((to, from) => {
+    // Use next tick to handle router history correctly
+    // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+    Vue.nextTick(() => {
+        // document.title = to.meta.title || DEFAULT_TITLE;
+        document.title = store.state.page.title || DEFAULT_TITLE;
+    });
 });
 
 export default router;

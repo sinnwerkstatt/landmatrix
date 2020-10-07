@@ -1,17 +1,25 @@
 <template>
-  <Streamfield :content="content" />
+  <component :is="pageType"></component>
 </template>
 
 <script>
-  import Streamfield from "/components/Streamfield";
   import store from "/store";
+  import WagtailPage from "./WagtailPage";
+  import BlogIndexPage from "./BlogIndexPage";
+  import BlogPage from "./BlogPage";
 
   export default {
-    components: { Streamfield },
+    componthisents: { BlogIndexPage, BlogPage, WagtailPage },
     computed: {
-      content() {
+      pageType() {
         let page = this.$store.state.page.wagtailPage;
-        return page ? page.body : null;
+        if (page.meta.type === "blog.BlogIndexPage") {
+          return BlogIndexPage;
+        }
+        if (page.meta.type === "blog.BlogPage") {
+          return BlogPage;
+        }
+        return WagtailPage;
       },
     },
     beforeRouteEnter: (to, from, next) => {

@@ -6,7 +6,7 @@
         <BigMap
           :options="bigmap_options"
           :center="[12, 30]"
-          :containerStyle="{ 'max-height': '100%', height: '100%' }"
+          :containerStyle="{ height: '100%' }"
           @ready="pinTheMap"
           :hideLayerSwitcher="true"
         >
@@ -59,7 +59,7 @@
 
   import BigMap from "/components/BigMap";
   import DataContainer from "./DataContainer";
-  import FilterCollapse from "/components/Map/FilterCollapse";
+  import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
 
   export default {

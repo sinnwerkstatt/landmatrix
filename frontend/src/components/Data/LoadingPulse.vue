@@ -10,10 +10,16 @@
 
 <style lang="scss">
   .lm-loading-container {
-    z-index: 500000;
+    z-index: 100;
     position: absolute;
-    bottom: -20px;
-    left: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(1,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .lds-facebook {
     display: inline-block;
@@ -26,7 +32,7 @@
       position: absolute;
       left: 8px;
       width: 16px;
-      background: #ffffff;
+      background: #fc941f;
       animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 
       &:nth-child(1) {
@@ -48,13 +54,13 @@
     @keyframes lds-facebook {
       0% {
         top: 8px;
-        height: 64px;
-        background: #fc941f;
+        height: 104px;
+        background: #fff;
       }
       50%,
       100% {
         top: 24px;
-        height: 32px;
+        height: 72px;
       }
     }
   }
