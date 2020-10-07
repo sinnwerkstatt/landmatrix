@@ -308,6 +308,11 @@
   import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse";
   import gql from "graphql-tag";
+  import {
+    implementation_status_choices,
+    intention_of_investment_choices,
+    nature_of_deal_choices,
+  } from "/choices";
 
   export default {
     name: "FilterBar",
@@ -335,47 +340,9 @@
             INTENDED: "Intended",
             FAILED: "Failed",
           },
-          implementation_status: {
-            PROJECT_NOT_STARTED: "Project not started",
-            STARTUP_PHASE: "Start-up phase",
-            IN_OPERATION: "In Operation",
-            PROJECT_ABANDONED: "Project abandoned",
-          },
-          nature_of_deal: {
-            OUTRIGHT_PURCHASE: "Outright Purchase",
-            LEASE: "Lease",
-            CONCESSION: "Concession",
-            EXPLOITATION_PERMIT:
-              "Exploitation permit / license / concession (for mineral resources)",
-            PURE_CONTRACT_FARMING: "Pure contract farming",
-          },
-          intention_of_investment: {
-            Agriculture: {
-              BIOFUELS: "Biofuels",
-              FOOD_CROPS: "Food crops",
-              FODDER: "Fodder",
-              LIVESTOCK: "Livestock",
-              NON_FOOD_AGRICULTURE: "Non-food agricultural commodities",
-              AGRICULTURE_UNSPECIFIED: "Agriculture unspecified",
-            },
-            Forestry: {
-              TIMBER_PLANTATION: "Timber plantation",
-              FOREST_LOGGING: "Forest logging / management",
-              CARBON: "For carbon sequestration/REDD",
-              FORESTRY_UNSPECIFIED: "Forestry unspecified",
-            },
-
-            Other: {
-              MINING: "Mining",
-              OIL_GAS_EXTRACTION: "Oil / Gas extraction",
-              TOURISM: "Tourism",
-              INDUSTRY: "Industry",
-              CONVERSATION: "Conservation",
-              LAND_SPECULATION: "Land speculation",
-              RENEWABLE_ENERGY: "Renewable Energy",
-              OTHER: "Other",
-            },
-          },
+          implementation_status: implementation_status_choices,
+          nature_of_deal: nature_of_deal_choices,
+          intention_of_investment: intention_of_investment_choices,
         },
       };
     },
@@ -529,20 +496,6 @@
         },
         dealFormfields: (state) => state.formfields.deal,
       }),
-      intention_of_investment_choices() {
-        if (!this.dealFormfields) return [];
-        return Object.entries(this.dealFormfields.intention_of_investment.choices).map(
-          ([k, v]) => {
-            return {
-              type: k,
-              options: Object.entries(v).map(([ke, ve]) => ({
-                name: ve,
-                id: ke,
-              })),
-            };
-          }
-        );
-      },
       produce_choices() {
         if (!this.dealFormfields) return [];
         return [

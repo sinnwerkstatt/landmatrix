@@ -20,7 +20,11 @@
                   <th>ID</th>
                   <th>Target country</th>
                   <th>Intention of investment</th>
-                  <th>Negotiation Status</th>
+                  <th>
+                    Negotiation Status<br /><span style="font-weight: normal;"
+                      >Implementation Status</span
+                    >
+                  </th>
                   <th>Deal size</th>
                 </tr>
               </thead>
@@ -33,8 +37,11 @@
                     >
                   </td>
                   <td v-html="deal.country"></td>
-                  <td>{{ deal.intention_of_investment }}</td>
-                  <td>{{ deal.current_negotiation_status }}<br />TODO</td>
+                  <td v-html="deal.intention_of_investment"></td>
+                  <td>
+                    {{ deal.current_negotiation_status }}<br />
+                    {{ deal.current_implementation_status }}
+                  </td>
                   <td class="text-right">{{ deal.deal_size }}</td>
                 </tr>
               </tbody>
@@ -50,6 +57,11 @@
   import gql from "graphql-tag";
   import DataContainer from "./DataContainer";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import {
+    implementation_status_choices,
+    intention_of_investment_map,
+    negotiation_status_map,
+  } from "/choices";
 
   export default {
     name: "DataList",
@@ -68,7 +80,7 @@
                 }
               }
               # top_investors { id name }
-              intention_of_investment
+              current_intention_of_investment
               current_negotiation_status
               current_implementation_status
               locations {
@@ -102,11 +114,30 @@
           });
           cor = cor ? cor.name : "";
 
+          let intentions;
+          if (deal.current_intention_of_investment) {
+            intentions = deal.current_intention_of_investment
+              .map((ioi) => {
+                let [intention, icon] = intention_of_investment_map[ioi];
+                return `<span class="ioi-label"><i class="${icon}"></i> ${this.$t(
+                  intention
+                )}</span> `;
+              })
+              .join(" ");
+          }
+          let [neg_status, neg_status_group] = negotiation_status_map[
+            deal.current_negotiation_status
+          ];
           return {
             id: deal.id,
             country: `<a>${cor}</a>`,
-            intention_of_investment: deal.intention_of_investment,
-            current_negotiation_status: deal.current_negotiation_status,
+            intention_of_investment: intentions,
+            current_negotiation_status: neg_status_group
+              ? `${neg_status_group} (${neg_status})`
+              : neg_status,
+            current_implementation_status: deal.current_implementation_status
+              ? implementation_status_choices[deal.current_implementation_status]
+              : "None",
             deal_size: deal.deal_size.toLocaleString(),
           };
         });
@@ -155,6 +186,14 @@
       color: white;
       //display: inline-block;
     }
+  }
+  .ioi-label {
+    background: #f4f4f4;
+    border-radius: 5px;
+    padding: 0.2em;
+    white-space: nowrap;
+    margin: 0.1em;
+    display: inline-block;
   }
 
   //::-webkit-scrollbar {
