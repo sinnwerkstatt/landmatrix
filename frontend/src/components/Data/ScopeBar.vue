@@ -37,7 +37,6 @@ export default {
   components: {StatusPieChart},
   data() {
     return {
-      showScopeOverlay: true,
       showDealCount: true,
       deals: []
     };
