@@ -17,7 +17,16 @@
         <a href="" @click.prevent="showDealCount=true" :class="{active: showDealCount}">No. of deals</a>
         <a href="" @click.prevent="showDealCount=false" :class="{active: !showDealCount}">Deal size</a>
       </div>
-      <StatusPieChart :title="'Negotiation Status'" :dealData="negotiationStatusData" :showDealCount="showDealCount"></StatusPieChart>
+      <div class="total">
+        {{ totalCount }}
+      </div>
+      <div class="chart-wrapper">
+        <h5>Negotiation Status</h5>
+        <StatusPieChart :dealData="negotiationStatusData" :showDealCount="showDealCount"></StatusPieChart>
+      </div>
+      <div class="get-involved">
+        <a href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
+      </div>
     </div>
   </div>
 </template>
@@ -25,6 +34,7 @@
 <script>
 import StatusPieChart from "../Charts/StatusPieChart";
 import gql from "graphql-tag";
+import numeral from "numeral/numeral"
 
 function sum(items, prop){
   return items.reduce(function (a, b) {
@@ -110,6 +120,13 @@ export default {
         }
       }
       return item;
+    },
+    totalCount() {
+      if (this.showDealCount) {
+        return numeral(this.deals.length).format("0,0");
+      } else {
+        return `${numeral(sum(this.deals, 'deal_size')).format('0,0')} ha`;
+      }
     },
     dealFilteredByNegStatus() {
       let filteredDeals = {
@@ -204,11 +221,20 @@ export default {
   .overlay-content {
     overflow-y: auto;
     padding: 0.7em;
+    width: 100%;
+    text-align: center;
+
+    h2, p, a {
+      text-align: left;
+    }
+
 
     .toggle-buttons {
       font-size: 0;
-      margin-top: 15px;
-      margin-bottom: 15px;
+      margin-top: 25px;
+      margin-bottom: 5px;
+      width: 100%;
+      text-align: center;
 
       a {
         padding: 0.3em 0.5em;
@@ -223,6 +249,23 @@ export default {
           color: white;
         }
       }
+    }
+    .total {
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .chart-wrapper {
+      width: 100%;
+      h5 {
+        text-align: left;
+      }
+    }
+    .get-involved {
+      margin-top: 2em;
+      text-align: left;
     }
   }
 

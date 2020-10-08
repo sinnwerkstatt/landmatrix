@@ -1,6 +1,5 @@
 <template>
   <div class="chart-container">
-    <h5>{{ title }}</h5>
     <canvas id="myChart" ref="myChart"></canvas>
   </div>
 </template>
@@ -9,7 +8,7 @@
   import Chart from "chart.js";
 
   export default {
-    props: ["dealData", "title"],
+    props: ["dealData"],
     data: function () {
       return {
         canvasCtx: null,
@@ -30,7 +29,7 @@
               padding: 5,
             },
           },
-          aspectRatio: 1,
+          aspectRatio: 1.3,
           responsive: true,
           title: {
             display: false,
@@ -48,13 +47,6 @@
             return n.label;
           }),
           datasets: [
-            // {
-            //   label: "Hectares",
-            //   data: neg_status.map((n) => {
-            //     return n.hectares;
-            //   }),
-            //   backgroundColor: ["#83C3C2", "#153838", "#44B7B6", "#263838", "#318583"],
-            // },
             {
               data: this.dealData.map((n) => {
                 return n.value;
@@ -71,7 +63,6 @@
       createChart() {
         if (this.dealData) {
           let chart_container = document.getElementById("myChart");
-          // this.canvasCtx = this.$refs.myChart.getContext("2d");
           this.chart = new Chart(chart_container, {
             type: "pie",
             data: this.chartdata,
@@ -105,8 +96,9 @@
 <style lang="scss" scoped>
 
   .chart-container{
-    width: 100%;
-    min-height: 300px;
+    width: 90%;
+    max-width: 200px;
+    margin: auto;
   }
 
 </style>
