@@ -238,19 +238,19 @@ class Filter(BaseFilter):
         return value
 
     def to_elasticsearch_match(self):
-        """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool
-            (for multiple matches) dictionary object.
-            Example: ('must', {'match': {'intention__value': 3},
-                                         '_filter_name': 'intention__value__is'})
-            Example2: ('must_not', {'bool':
-                          {'should': [
-                              {'match': {'intention__value': 3}},
-                              {'match': {'intention__value': 3}}
-                          ]},
-                       '_filter_name': 'intention__value__not_in'
-                      })
-            Note: This comes with an added '_filter_name' attribute for internal aggregation
-                  which needs to be removed. """
+        """Will return an elasticsearch operator term and an elasticsearch-format Match or Bool
+        (for multiple matches) dictionary object.
+        Example: ('must', {'match': {'intention__value': 3},
+                                     '_filter_name': 'intention__value__is'})
+        Example2: ('must_not', {'bool':
+                      {'should': [
+                          {'match': {'intention__value': 3}},
+                          {'match': {'intention__value': 3}}
+                      ]},
+                   '_filter_name': 'intention__value__not_in'
+                  })
+        Note: This comes with an added '_filter_name' attribute for internal aggregation
+              which needs to be removed."""
 
         key = self["key"] or "value"
         value = self.parse_value(self["value"], variable=self["variable"], key=key)

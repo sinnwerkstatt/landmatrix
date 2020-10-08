@@ -141,13 +141,13 @@ class ElasticSearchMixin:
 
     def format_filters(self, filters, initial_query=None, exclude=[]):
         """
-            Generates an elasticsearch-conform `bool` query from session filters.
-            This acts recursively for nested OR filter groups from preset filters
-            @param filters: A list of Filter or PresetFilter
-            @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be
-                added to this query instead of a new query. Use this for recursive calls.
-            @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}"
-                wrapper
+        Generates an elasticsearch-conform `bool` query from session filters.
+        This acts recursively for nested OR filter groups from preset filters
+        @param filters: A list of Filter or PresetFilter
+        @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be
+            added to this query instead of a new query. Use this for recursive calls.
+        @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}"
+            wrapper
         """
 
         proto_filters = {

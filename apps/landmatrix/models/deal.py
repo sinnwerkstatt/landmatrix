@@ -74,7 +74,8 @@ class DealManager(models.Manager):
 
 
 @reversion.register(
-    follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
+    follow=("locations", "contracts", "datasources"),
+    ignore_duplicates=True,
 )
 class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDealMixin):
     """ Deal """
@@ -370,7 +371,10 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
     )
     total_jobs_current = JSONField(
-        _("Current number of jobs (total)"), help_text=_("jobs"), blank=True, null=True,
+        _("Current number of jobs (total)"),
+        help_text=_("jobs"),
+        blank=True,
+        null=True,
     )
     total_jobs_current_employees = JSONField(
         _("Current number of employees (total)"),
@@ -549,7 +553,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
     recognition_status = ArrayField(
         models.CharField(
-            _("Recognition status of community land tenure"), max_length=100,
+            _("Recognition status of community land tenure"),
+            max_length=100,
         ),
         choices=RECOGNITION_STATUS_CHOICES,
         blank=True,
@@ -676,7 +681,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     materialized_benefits = ArrayField(
         models.CharField(
-            _("Materialized benefits for local communities"), max_length=100,
+            _("Materialized benefits for local communities"),
+            max_length=100,
         ),
         choices=BENEFITS_CHOICES,
         blank=True,
@@ -1133,7 +1139,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
                 for x in self.implementation_status
                 if x.get("date")
                 and x["value"]
-                in ("STARTUP_PHASE", "IN_OPERATION", "PROJECT_ABANDONED",)
+                in (
+                    "STARTUP_PHASE",
+                    "IN_OPERATION",
+                    "PROJECT_ABANDONED",
+                )
             ]
             if self.implementation_status
             else []

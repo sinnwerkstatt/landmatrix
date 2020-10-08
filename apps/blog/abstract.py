@@ -152,7 +152,10 @@ class BlogPageAbstract(Page):
         MultiFieldPanel(
             [
                 FieldRowPanel(
-                    [FieldPanel("go_live_at"), FieldPanel("expire_at"),],
+                    [
+                        FieldPanel("go_live_at"),
+                        FieldPanel("expire_at"),
+                    ],
                     classname="label-above",
                 ),
             ],
@@ -180,7 +183,10 @@ class BlogPageAbstract(Page):
     content_panels = [
         FieldPanel("title", classname="full title"),
         MultiFieldPanel(
-            [FieldPanel("tags"), FieldPanel("blog_categories"),],
+            [
+                FieldPanel("tags"),
+                FieldPanel("blog_categories"),
+            ],
             heading="Tags and Categories",
         ),
         ImageChooserPanel("header_image"),

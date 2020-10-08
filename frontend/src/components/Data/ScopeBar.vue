@@ -23,11 +23,15 @@
       </div>
       <div class="chart-wrapper">
         <h5>Negotiation Status</h5>
-        <StatusPieChart :dealData="negotiationStatusData"></StatusPieChart>
+        <StatusPieChart :dealData="negotiationStatusData" :displayLegend="true"></StatusPieChart>
       </div>
       <div class="chart-wrapper">
         <h5>Implementation Status</h5>
-        <StatusPieChart :dealData="implementationStatusData"></StatusPieChart>
+        <StatusPieChart :dealData="implementationStatusData" :displayLegend="true"></StatusPieChart>
+      </div>
+      <div class="chart-wrapper">
+        <h5>Produce</h5>
+        <StatusPieChart :dealData="produceData"></StatusPieChart>
       </div>
       <div class="get-involved">
         <a href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
@@ -54,7 +58,8 @@ export default {
   data() {
     return {
       showDealCount: true,
-      deals: []
+      deals: [],
+      dealsWithExtraInfo: []
     };
   },
   apollo: {
@@ -89,6 +94,24 @@ export default {
         };
       },
     },
+    dealsWithExtraInfo: {
+      query: gql`
+        query Deals($limit: Int!, $filters: [Filter]) {
+          dealsWithExtraInfo: deals(limit: $limit, filters: $filters) {
+            id
+            crops
+            animals
+            resources
+          }
+        }
+      `,
+      variables() {
+        return {
+          limit: 0,
+          filters: this.$store.getters.filtersForGQL,
+        };
+      },
+    }
   },
   computed: {
     showScopeOverlay: {
@@ -212,6 +235,48 @@ export default {
             value: this.showDealCount ? filteredDeals.length : sum(filteredDeals, 'deal_size')
           });
           i++;
+        }
+      }
+      return data;
+    },
+    produceData() {
+      let data = [];
+      let fields = ['crops', 'animals', 'resources']
+      let colors = ["#FC941F", "#7D4A0F", "black"]
+      if (this.dealsWithExtraInfo.length) {
+        let counts = {}
+        for (let deal of this.dealsWithExtraInfo) {
+          for (let field of fields) {
+            counts[field] = counts[field] || [];
+            for (let entry of deal[field]) {
+              for (let label of entry.value) {
+                counts[field][label] = (counts[field][label] + 1) || 1 ;
+              }
+            }
+          }
+        }
+        for (let field of fields) {
+          for (const [label, count] of Object.entries(counts[field])) {
+            if (count > 1) {
+              data.push({
+                label: label,
+                color: colors[fields.indexOf(field)],
+                value: count,
+              })
+            }
+          }
+        }
+        data.sort((a,b) => { return b.value - a.value})
+        let cutOffIndex = Math.min(15, data.length);
+        let other = data.slice(cutOffIndex, data.length);
+        data = data.slice(0,cutOffIndex);
+        if (other.length) {
+          let otherCount = sum(other, 'value');
+          data.push({
+            label: "Other",
+            color: "#FDB86A",
+            value: otherCount
+          });
         }
       }
       return data;

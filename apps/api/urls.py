@@ -65,7 +65,11 @@ urlpatterns = [
         FilterClearView.as_view(),
         name="api_filter_clear",
     ),
-    path("filter/clear/", FilterClearView.as_view(), name="api_filter_clear",),
+    path(
+        "filter/clear/",
+        FilterClearView.as_view(),
+        name="api_filter_clear",
+    ),
     path("filter/<di:doc_type>/", FilterListView.as_view(), name="api_filter_list"),
     path(
         "filter_preset/<di:doc_type>/",

@@ -98,8 +98,8 @@ class FilterWidgetAjaxView(APIView):
     doc_type = "deal"
 
     def get(self, request, *args, **kwargs):
-        """ render form to enter values for the requested field in the filter widget for the grid view
-            form to select operations is updated by the javascript function update_widget() in /media/js/main.js
+        """render form to enter values for the requested field in the filter widget for the grid view
+        form to select operations is updated by the javascript function update_widget() in /media/js/main.js
         """
         self.doc_type = kwargs.get("doc_type", "deal")
         self.field_name = self.request.GET.get("key_id", "")

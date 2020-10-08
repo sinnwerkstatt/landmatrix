@@ -8,7 +8,7 @@
   import Chart from "chart.js";
 
   export default {
-    props: ["dealData"],
+    props: ["dealData", "displayLegend"],
     data: function () {
       return {
         canvasCtx: null,
@@ -20,7 +20,7 @@
         return {
           cutoutPercentage: 0,
           legend: {
-            display: true,
+            display: this.displayLegend,
             position: "bottom",
             align: "start",
             fullWidth: false,
