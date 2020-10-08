@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <canvas id="myChart" ref="myChart"></canvas>
+    <canvas ref="chart-canvas"></canvas>
   </div>
 </template>
 
@@ -62,7 +62,7 @@
     methods: {
       createChart() {
         if (this.dealData) {
-          let chart_container = document.getElementById("myChart");
+          let chart_container = this.$refs['chart-canvas'];
           this.chart = new Chart(chart_container, {
             type: "pie",
             data: this.chartdata,

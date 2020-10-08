@@ -1,10 +1,11 @@
-from apps.blog.models import BlogPage
 from django.db import models
+from django import forms
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.api import APIField
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 
+from apps.blog.models import BlogPage
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.blocks import (
@@ -76,10 +77,17 @@ class RegionPage(Page):
     region = models.OneToOneField(
         DataRegion, null=True, blank=True, on_delete=models.SET_NULL
     )
-
+    short_description = models.CharField(
+        max_length=200, blank=True, null=True,
+        help_text='Displayed in sidebar of map'
+    )
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
-    promote_panels = [FieldPanel("region")] + Page.promote_panels
+    promote_panels = [
+                         FieldPanel("region"),
+                         FieldPanel("short_description", widget=forms.Textarea)
+                     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.RegionIndex"]
 
     api_fields = [APIField("body")]
@@ -104,12 +112,20 @@ class CountryPage(Page):
     country = models.OneToOneField(
         DataCountry, null=True, blank=True, on_delete=models.SET_NULL
     )
+    short_description = models.CharField(
+        max_length=200, blank=True, null=True,
+        help_text='Displayed in sidebar of map'
+    )
     body = NoWrapsStreamField(
         CONTENT_BLOCKS
         + [("columns_1_1", Columns1To1Block()), ("columns_3", ThreeColumnsBlock())]
     )
+
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
-    promote_panels = [FieldPanel("country")] + Page.promote_panels
+    promote_panels = [
+                         FieldPanel("country"),
+                         FieldPanel("short_description", widget=forms.Textarea)
+                     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.CountryIndex"]
 
     api_fields = [APIField("body")]

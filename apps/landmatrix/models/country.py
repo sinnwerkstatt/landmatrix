@@ -85,6 +85,10 @@ class Country(models.Model):
     def country_page_id(self):
         return self.countrypage.id if hasattr(self, "countrypage") else None
 
+    @property
+    def short_description(self):
+        return self.countrypage.short_description if hasattr(self, "countrypage") else None
+
     def get_absolute_url(self):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
@@ -142,6 +146,10 @@ class Region(models.Model):
     @property
     def region_page_id(self):
         return self.regionpage.id if hasattr(self, "regionpage") else None
+
+    @property
+    def short_description(self):
+        return self.regionpage.short_description if hasattr(self, "regionpage") else None
 
     def to_dict(self):
         return {"id": self.id, "name": self.name}

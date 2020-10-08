@@ -10,6 +10,7 @@
     </span>
     <div class="overlay-content">
       <h2 v-if="currentItem">{{ currentItem.name }}</h2>
+      <p class="mb-1" v-if="currentItem.short_description">{{ currentItem.short_description }}</p>
       <p v-if="currentItem.url">
         <a :href="currentItem.url">Read more</a>
       </p>
@@ -22,7 +23,11 @@
       </div>
       <div class="chart-wrapper">
         <h5>Negotiation Status</h5>
-        <StatusPieChart :dealData="negotiationStatusData" :showDealCount="showDealCount"></StatusPieChart>
+        <StatusPieChart :dealData="negotiationStatusData"></StatusPieChart>
+      </div>
+      <div class="chart-wrapper">
+        <h5>Implementation Status</h5>
+        <StatusPieChart :dealData="implementationStatusData"></StatusPieChart>
       </div>
       <div class="get-involved">
         <a href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
@@ -35,8 +40,9 @@
 import StatusPieChart from "../Charts/StatusPieChart";
 import gql from "graphql-tag";
 import numeral from "numeral/numeral"
+import {implementation_status_choices} from "../../choices";
 
-function sum(items, prop){
+function sum(items, prop) {
   return items.reduce(function (a, b) {
     return a + b[prop];
   }, 0);
@@ -85,14 +91,14 @@ export default {
     },
   },
   computed: {
-      showScopeOverlay: {
-        get() {
-          return this.$store.state.map.showScopeOverlay;
-        },
-        set(value) {
-          this.$store.dispatch("showScopeOverlay", value);
-        },
+    showScopeOverlay: {
+      get() {
+        return this.$store.state.map.showScopeOverlay;
       },
+      set(value) {
+        this.$store.dispatch("showScopeOverlay", value);
+      },
+    },
     currentItem() {
       let item = {
         name: "Global",
@@ -102,7 +108,7 @@ export default {
         let country = this.$store.state.page.countries.find(c => c.id === this.$store.state.filters.filters.country_id);
         if (country) {
           item = {
-            name: country.name,
+            ...country
           }
           if (country.country_page_id) {
             item.url = `/newdeal/country/${country.slug}`
@@ -112,7 +118,7 @@ export default {
         let region = this.$store.state.page.regions.find(r => r.id === this.$store.state.filters.filters.region_id);
         if (region) {
           item = {
-            name: region.name,
+            ...region
           }
           if (region.region_page_id) {
             item.url = `/newdeal/region/${region.slug}`
@@ -189,6 +195,26 @@ export default {
           });
         }
       }
+    },
+    implementationStatusData() {
+      let data = [];
+      if (this.deals.length) {
+        let i = 0;
+        let colors = ["#FDB86A", "#FC941F", "#7D4A0F", "black"];
+        for (const [key, label] of Object.entries(implementation_status_choices)) {
+          let filteredDeals = this.deals.filter(d => {
+              return d.current_implementation_status == key
+            }
+          )
+          data.push({
+            label: label,
+            color: colors[i],
+            value: this.showDealCount ? filteredDeals.length : sum(filteredDeals, 'deal_size')
+          });
+          i++;
+        }
+      }
+      return data;
     }
   }
 };
@@ -231,7 +257,7 @@ export default {
 
     .toggle-buttons {
       font-size: 0;
-      margin-top: 25px;
+      margin-top: 35px;
       margin-bottom: 5px;
       width: 100%;
       text-align: center;
@@ -250,6 +276,7 @@ export default {
         }
       }
     }
+
     .total {
       width: 100%;
       text-align: center;
@@ -257,12 +284,15 @@ export default {
       margin-top: 10px;
       margin-bottom: 10px;
     }
+
     .chart-wrapper {
       width: 100%;
+
       h5 {
         text-align: left;
       }
     }
+
     .get-involved {
       margin-top: 2em;
       text-align: left;
@@ -272,6 +302,7 @@ export default {
   &.collapsed {
     width: 0;
     min-width: 0;
+
     .overlay-content {
       display: none;
     }

@@ -9,6 +9,7 @@ type Country {
     point_lat: Float
     point_lon: Float
     country_page_id: Int
+    short_description: String
 }
 
 type Region {
@@ -16,6 +17,7 @@ type Region {
     name: String
     slug: String
     region_page_id: Int
+    short_description: String
 }
 
 type Currency {
