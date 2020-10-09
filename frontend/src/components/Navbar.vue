@@ -64,11 +64,8 @@
               {{ $t("Resources") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/stay-informed/">
-                {{ $t("Cat 1") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/stay-informed/">
-                {{ $t("Cat 2") }}
+              <a v-for="cat in blogcategories" class="dropdown-item" :href="`/newdeal/stay-informed/?category=${cat.slug}`">
+                {{ cat.name }}
               </a>
             </div>
           </li>
@@ -103,27 +100,6 @@
           <li class="nav-item">
             <a class="nav-link" href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
           </li>
-<!--
-          <NavbarSelect
-            :title="$t('Regions')"
-            :options="regions"
-            @select="openLink('region', $event)"
-          />
-          <NavbarSelect
-            :title="$t('Countries')"
-            :options="countries"
-            @select="openLink('country', $event)"
-          />
-          <li class="nav-item">
-            <a class="nav-link" href="/stay-informed/">{{ $t("Stay informed") }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/get-involved/">{{ $t("Get involved") }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/faq/">{{ $t("FAQ") }}</a>
-          </li>
--->
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
@@ -258,6 +234,7 @@
 </template>
 <script>
   import NavbarSelect from "/components/NavbarSelect";
+  import gql from "graphql-tag";
 
   export default {
     components: { NavbarSelect },
@@ -268,7 +245,19 @@
         login_failed_message: "",
         LANGUAGE: LANGUAGE,
         LANGUAGES: { en: "English", es: "Español", fr: "Français" },
+        blogcategories: [],
       };
+    },
+    apollo: {
+      blogcategories: gql`
+        query {
+          blogcategories {
+            id
+            name
+            slug
+          }
+        }
+      `,
     },
     computed: {
       user() {
