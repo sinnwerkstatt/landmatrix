@@ -1,14 +1,19 @@
 <template>
-  <div class="chart-container">
-    <canvas ref="chart-canvas"></canvas>
+  <div>
+    <div class="chart-container">
+      <canvas ref="chart-canvas"></canvas>
+    </div>
+    <Legend v-if="displayLegend || legends" :items="legendItems"></Legend>
   </div>
 </template>
 
 <script>
   import Chart from "chart.js";
+  import Legend from "./Legend.vue";
 
   export default {
-    props: ["dealData", "displayLegend"],
+    components: {Legend},
+    props: ["dealData", "displayLegend", "legends"],
     data: function () {
       return {
         canvasCtx: null,
@@ -20,16 +25,9 @@
         return {
           cutoutPercentage: 0,
           legend: {
-            display: this.displayLegend,
-            position: "bottom",
-            align: "start",
-            fullWidth: false,
-            labels: {
-              boxWidth: 10,
-              padding: 5,
-            },
+            display: false,
           },
-          aspectRatio: 1.3,
+          aspectRatio: 2,
           responsive: true,
           title: {
             display: false,
@@ -57,6 +55,10 @@
             },
           ],
         };
+      },
+      legendItems() {
+        if (this.legends) return this.legends;
+        else return this.dealData;
       }
     },
     methods: {

@@ -61,7 +61,7 @@
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                id="res-dropdown"
             >
-              {{ $t("Ressources") }}
+              {{ $t("Resources") }}
             </a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="/newdeal/stay-informed/">
@@ -362,6 +362,12 @@
       border: 1px solid $lm_orange;
       border-radius: 0;
       padding: 0;
+    }
+  }
+  .navbar-nav {
+    .navbar-text {
+      padding-top: 0.2rem;
+      padding-bottom: 0.2rem;
     }
   }
 
