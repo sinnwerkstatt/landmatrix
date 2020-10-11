@@ -29,53 +29,7 @@ function bilink(root) {
   return root;
 }
 
-function hierarchy(data, delimiter = ".") {
-  let root;
-  const map = new Map();
-  data.forEach(function find(data) {
-    const { name } = data;
-    // console.log(name);
-    if (map.has(name)) return map.get(name);
-    const i = name.lastIndexOf(delimiter);
-    map.set(name, data);
-    if (i >= 0) {
-      find({ name: name.substring(0, i), children: [] }).children.push(data);
-      data.name = name.substring(i + 1);
-    } else {
-      root = data;
-    }
-    return data;
-  });
-  return root;
-}
-
- function lama_hierarchy(data) {
-        var map = {};
-
-        function find(name, data) {
-            var node = map[name], i;
-            if (!node) {
-                node = map[name] = data || {name: name, children: []};
-                if (name.length) {
-                    node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
-                    node.parent.children.push(node);
-                    node.key = name.substring(i + 1);
-                }
-            }
-            return node;
-        }
-
-        data.forEach(function (d) {
-            find(d.name, d);
-        });
-
-        return map[""];
-    }
-export function LandMatrixRadialSpider(data, container) {
-  const data_hierarchical = lama_hierarchy(data);
-  console.log(data_hierarchical);
-
-  // let svg = d3.select("svg");
+export function LandMatrixRadialSpider(data_hierarchical, container) {
   const svg = d3
     .select(container)
     .attr("viewBox", [-width / 2, -width / 2, width, width]);

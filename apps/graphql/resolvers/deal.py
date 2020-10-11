@@ -206,22 +206,22 @@ def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
     }
     sorted_link_set = sorted(link_set, key=lambda x: x[0])
     res = defaultdict(list)
+    relevant_countries = set()
     for link in sorted_link_set:
         res[link[0]] += [link[1]]
+        relevant_countries.update(link)
 
-    country_dict = {
-        c.id: {
-            "id": c.id,
-            "name": f"{c.fk_region_id}.{c.name}",
-            "slug": c.slug,
-            "size": 1,
-        }
-        for c in Country.objects.all()
-    }
+    country_dict = {c.id: c for c in Country.objects.filter(id__in=relevant_countries)}
 
-    retval = []
+    regions = defaultdict(list)
     for cid, country in country_dict.items():
-        country["imports"] = [country_dict[x]["name"] for x in res[cid]]
-        retval += [country]
+        imports = []
+        for impo in res[cid]:
+            imp_c = country_dict[impo]
+            imports += [f"lama.{imp_c.fk_region_id}.{imp_c.name}"]
+        regions[country.fk_region_id] += [{"name": country.name, "imports": imports}]
 
-    return retval
+    return {
+        "name": "lama",
+        "children": [{"name": x, "children": y} for (x, y) in regions.items()],
+    }
