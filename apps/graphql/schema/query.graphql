@@ -55,6 +55,7 @@ type Query {
         country_id: Int,
         region_id: Int
     ): Statistics
+    transnational_deals: WebOfTransnationalDeals
 
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]

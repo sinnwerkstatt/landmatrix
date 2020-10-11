@@ -63,11 +63,14 @@
         @activated="triggerInvestorGraphRefresh"
       >
         <div class="row">
-          <div class="col-md-12 col-lg-10 col-xl-9"
+          <div
+            class="col-md-12 col-lg-10 col-xl-9"
             :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"
           >
             <template v-if="investor.involvements.length">
-              <h3 class="mb-2">Network of parent companies and tertiary investors/lenders</h3>
+              <h3 class="mb-2">
+                Network of parent companies and tertiary investors/lenders
+              </h3>
               <InvestorGraph
                 :investor="investor"
                 :showDeals="false"
@@ -132,15 +135,34 @@
         :readonly="true"
       />
 
+      <DealSection
+        :title="deal_sections.overall_comment.label"
+        :deal="deal"
+        :sections="deal_sections.overall_comment.subsections"
+        :readonly="true"
+      />
+
       <b-tab disabled>
         <template v-slot:title>
           <hr />
         </template>
       </b-tab>
 
+      <DealSection
+        :title="deal_sections.meta.label"
+        :deal="deal"
+        :sections="deal_sections.meta.subsections"
+        :readonly="true"
+      />
+
       <b-tab :title="$t('Deal History')">
         <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
       </b-tab>
+
+      <b-tab :title="$t('Comments')">
+        <DealComments :comments="deal.comments"></DealComments>
+      </b-tab>
+
     </b-tabs>
   </div>
 </template>
@@ -155,10 +177,12 @@
   import { deal_gql_query } from "./deal_fields";
   import gql from "graphql-tag";
   import store from "../../store";
+  import DealComments from "../../components/Deal/DealComments";
 
   export default {
     props: ["deal_id", "deal_version"],
     components: {
+      DealComments,
       InvestorGraph,
       DealHistory,
       DealSection,
@@ -171,6 +195,7 @@
         variables() {
           return {
             id: +this.deal_id,
+            version: +this.deal_version,
           };
         },
       },
@@ -221,7 +246,7 @@
     methods: {
       triggerInvestorGraphRefresh() {
         this.$refs.investorGraph.refresh_graph();
-      }
+      },
     },
     beforeRouteEnter(to, from, next) {
       let title = `Deal #${to.params.deal_id}`;

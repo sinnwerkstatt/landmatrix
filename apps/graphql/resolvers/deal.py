@@ -1,12 +1,16 @@
+from collections import defaultdict
 from typing import Any
 
 from ariadne import ObjectType
 from django.db.models import Sum
+from django.utils.html import linebreaks
+from django_comments.models import Comment
 from graphql import GraphQLResolveInfo
 from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Deal, Location, Country, Investor
+from apps.landmatrix.models import Deal, Country, Investor
+from apps.landmatrix.models.deal import DealTopInvestors
 from apps.utils import qs_values_to_dict
 
 
@@ -61,11 +65,13 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         return resolve_deal_version(version, fields)
 
     add_versions = False
-    has_no_known_investor = False
+    add_comments = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
             add_versions = True
+        elif "comments" in field:
+            add_comments = True
         else:
             filtered_fields += [field]
 
@@ -79,6 +85,16 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         deal["versions"] = [
             {"id": x.id, "deal": x.field_dict, "revision": x.revision}
             for x in Version.objects.get_for_object_reference(Deal, id)
+        ]
+    if add_comments:
+        deal["comments"] = [
+            {
+                "id": comm.id,
+                "comment": linebreaks(comm.comment),
+                "submit_date": comm.submit_date,
+                "userinfo": comm._get_userinfo(),
+            }
+            for comm in Comment.objects.filter(content_type_id=125, object_pk=id)
         ]
     return deal
 
@@ -175,3 +191,37 @@ def resolve_dealversions(
 
 def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))
+
+
+def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
+    deals_investors = (
+        DealTopInvestors.objects.all()
+        .prefetch_related("deal")
+        .prefetch_related("investor")
+    )
+    link_set = {
+        (x.deal.country_id, x.investor.country_id)
+        for x in deals_investors
+        if x.deal.country_id and x.investor.country_id
+    }
+    sorted_link_set = sorted(link_set, key=lambda x: x[0])
+    res = defaultdict(list)
+    for link in sorted_link_set:
+        res[link[0]] += [link[1]]
+
+    country_dict = {
+        c.id: {
+            "id": c.id,
+            "name": f"{c.fk_region_id}.{c.name}",
+            "slug": c.slug,
+            "size": 1,
+        }
+        for c in Country.objects.all()
+    }
+
+    retval = []
+    for cid, country in country_dict.items():
+        country["imports"] = [country_dict[x]["name"] for x in res[cid]]
+        retval += [country]
+
+    return retval

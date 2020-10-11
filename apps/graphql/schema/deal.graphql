@@ -207,6 +207,8 @@ type Deal {
 
     versions: [DealVersion]
 
+    comments: [DealComment]
+
     # for statistics only
     country_id: Int
     datasources_count: Int
@@ -271,4 +273,17 @@ type DealVersion {
     revision: Revision
 }
 
+type DealComment {
+    id: Int!
+    user: User
+    user_name: String
+    user_email: String
+    user_url: String
+    userinfo: Dict
+    comment: String
+    submit_date: DateTime
+    ip_address: String
+    is_public: Boolean!
+    is_removed: Boolean!
+}
 scalar Dict

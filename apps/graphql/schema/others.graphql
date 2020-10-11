@@ -69,3 +69,6 @@ type Statistics {
     deals_public_high_geo_accuracy: Int
     deals_public_polygons: Int
 }
+
+
+scalar WebOfTransnationalDeals

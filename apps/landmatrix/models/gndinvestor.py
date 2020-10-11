@@ -143,6 +143,33 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             investors.update(involvement.investor.get_top_investors(seen_investors))
         return investors
 
+    def get_affected_deals(self, seen_investors=None):
+        """
+        Get list of affected deals - this is the inverse of Top Investors
+        (all left-hand side deals of the network visualisation)
+        """
+        deals = set()
+        if seen_investors is None:
+            seen_investors = {self}
+
+        investor_ventures = self.ventures.filter(
+            investor__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            venture__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            role="PARENT",
+        ).exclude(venture__in=seen_investors)
+
+        for deal in self.deals.all():
+            deals.add(deal)
+
+        # if not investor_involvements:
+        #     investors.add(self)
+        for involvements in investor_ventures:
+            if involvements.venture in seen_investors:
+                continue
+            seen_investors.add(involvements.venture)
+            deals.update(involvements.venture.get_affected_deals(seen_investors))
+        return deals
+
     def to_dict(self):
         country = (
             {"name": self.country.name, "code": self.country.code_alpha2}

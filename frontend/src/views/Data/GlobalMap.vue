@@ -53,7 +53,6 @@
   import "leaflet";
   import "leaflet.markercluster";
   import { groupBy } from "lodash";
-  import gql from "graphql-tag";
   import { mapState } from "vuex";
   import { primary_color } from "/colors";
 
@@ -61,42 +60,13 @@
   import DataContainer from "./DataContainer";
   import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import { data_deal_query } from "./query";
 
   export default {
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
     apollo: {
-      deals: {
-        query: gql`
-          query Deals($limit: Int!, $filters: [Filter]) {
-            deals(limit: $limit, filters: $filters) {
-              id
-              deal_size
-              country {
-                id
-                fk_region {
-                  id
-                }
-              }
-              # top_investors { id name }
-              intention_of_investment
-              current_negotiation_status
-              current_implementation_status
-              locations {
-                id
-                point
-                level_of_accuracy
-              }
-            }
-          }
-        `,
-        variables() {
-          return {
-            limit: 0,
-            filters: this.$store.getters.filtersForGQL,
-          };
-        },
-      },
+      deals: data_deal_query,
     },
     data() {
       return {

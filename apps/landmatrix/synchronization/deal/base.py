@@ -15,7 +15,11 @@ from apps.landmatrix.synchronization.helpers import (
 
 
 def parse_general(deal, attrs):
-    deal.country_id = attrs.get("target_country")
+    deal.country_id = (
+        int(attrs.get("target_country"))
+        if attrs.get("target_country")
+        else attrs.get("target_country")
+    )
     deal.intended_size = (
         float(attrs.get("intended_size")) if attrs.get("intended_size") else None
     )

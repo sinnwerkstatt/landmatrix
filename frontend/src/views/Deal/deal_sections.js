@@ -302,6 +302,28 @@ export const deal_sections = {
       },
     ],
   },
+  overall_comment: {
+    label: "Overall comment",
+    subsections: [
+      {
+        name: "Overall comment",
+        fields: ["overall_comment"],
+      },
+    ],
+  },
+  meta: {
+    label: "Meta",
+    subsections: [
+      {
+        name: "Fully updated",
+        fields: ["fully_updated"],
+      },
+      {
+        name: "Confidential",
+        fields: ["confidential", "confidential_reason", "confidential_comment"],
+      },
+    ],
+  },
 };
 
 export const deal_submodel_sections = {

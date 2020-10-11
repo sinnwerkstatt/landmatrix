@@ -62,42 +62,13 @@
     intention_of_investment_map,
     negotiation_status_map,
   } from "/choices";
+  import { data_deal_query } from "./query";
 
   export default {
     name: "DataList",
     components: { LoadingPulse, DataContainer },
     apollo: {
-      deals: {
-        query: gql`
-          query Deals($limit: Int!, $filters: [Filter]) {
-            deals(limit: $limit, filters: $filters) {
-              id
-              deal_size
-              country {
-                id
-                fk_region {
-                  id
-                }
-              }
-              # top_investors { id name }
-              current_intention_of_investment
-              current_negotiation_status
-              current_implementation_status
-              locations {
-                id
-                point
-                level_of_accuracy
-              }
-            }
-          }
-        `,
-        variables() {
-          return {
-            limit: 0,
-            filters: this.$store.getters.filtersForGQL,
-          };
-        },
-      },
+      deals: data_deal_query,
     },
     data() {
       return {

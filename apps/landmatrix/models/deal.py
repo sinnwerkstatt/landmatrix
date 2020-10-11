@@ -965,6 +965,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
+    top_investors = models.ManyToManyField(Investor, related_name="+")
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     current_intention_of_investment = ArrayField(
@@ -1048,7 +1049,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.deal_size = self._calculate_deal_size()
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
-        # FIXME: This field is calculated on save but actually it might change when investors change
+        # FIXME: These fields are calculated on save but actually they might change when investors change
+        self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
@@ -1164,11 +1166,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             # unknown if we have no target country
             return None
 
-        if not self.top_investors:
+        top_investors = self.top_investors.all()
+        if not top_investors:
             # treat deals without investors as transnational
             return True
 
-        investors_countries = {i.country_id for i in self.top_investors if i.country_id}
+        investors_countries = {i.country_id for i in top_investors if i.country_id}
         if not len(investors_countries):
             # treat deals without investor countries as transnational
             return True
@@ -1200,14 +1203,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             return None
         return {"type": "FeatureCollection", "features": features}
 
-    @cached_property
-    def top_investors(self) -> Optional[Set["Investor"]]:
+    def _calculate_top_investors(self) -> Set["Investor"]:
         """
-        Get list of highest parent companies
+        Calculate highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
         if self.operating_company:
             return self.operating_company.get_top_investors()
+        return set()
 
     class IsNotPublic(Exception):
         pass
@@ -1242,3 +1245,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ).exists()
         )
         return oc_unknown and oc_has_no_known_parents
+
+
+class DealTopInvestors(models.Model):
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
+
+    class Meta:
+        managed = False
+        db_table = "landmatrix_deal_top_investors"

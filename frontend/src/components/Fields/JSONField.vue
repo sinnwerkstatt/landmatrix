@@ -4,8 +4,14 @@
       {{ formfield.label }}
     </div>
     <div class="val" :class="valClasses">
-      <div v-for="val in vals">
-        <span v-if="val.date">[{{ val.date }}] </span>
+      <div v-for="val in vals" :class="{'is-current':val.current}">
+        <span v-if="val.date || val.current">
+          [
+          <span v-if="val.date">{{ val.date }}</span>
+          <span v-if="val.date && val.current">,</span>
+          <span v-if="val.current">current</span>
+          ]
+        </span>
         <span class="" v-html="parseValues(val)"></span>
         <span class="mx-2" v-if="val.hectares">
           <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
@@ -77,6 +83,9 @@
 
   .input-group {
     padding: 0.4em;
+  }
+  .is-current {
+    font-weight: bold;
   }
 
   .current-value {

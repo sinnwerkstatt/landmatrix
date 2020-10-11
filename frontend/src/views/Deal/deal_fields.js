@@ -6,7 +6,10 @@ export const deal_gql_query = gql`
       id
       # General Info
       ## Land area
-      country { id name }
+      country {
+        id
+        name
+      }
       intended_size
       contract_size
       production_size
@@ -23,13 +26,19 @@ export const deal_gql_query = gql`
       implementation_status_comment
       ## Purchase price
       purchase_price
-      purchase_price_currency {id name}
+      purchase_price_currency {
+        id
+        name
+      }
       purchase_price_type
       purchase_price_area
       purchase_price_comment
       ## Leasing fees
       annual_leasing_fee
-      annual_leasing_fee_currency {id name}
+      annual_leasing_fee_currency {
+        id
+        name
+      }
       annual_leasing_fee_type
       annual_leasing_fee_area
       annual_leasing_fee_comment
@@ -70,8 +79,14 @@ export const deal_gql_query = gql`
       domestic_jobs_current_daily_workers
       domestic_jobs_created_comment
       # Investor info
-      operating_company {id name}
-      involved_actors {role value}
+      operating_company {
+        id
+        name
+      }
+      involved_actors {
+        role
+        value
+      }
       project_name
       investment_chain_comment
       # Local communities / indigenous peoples
@@ -124,11 +139,20 @@ export const deal_gql_query = gql`
       has_domestic_use
       domestic_use
       has_export
-      export_country1 {id name}
+      export_country1 {
+        id
+        name
+      }
       export_country1_ratio
-      export_country2 {id name}
+      export_country2 {
+        id
+        name
+      }
       export_country2_ratio
-      export_country3 {id name}
+      export_country3 {
+        id
+        name
+      }
       export_country3_ratio
       use_of_produce_comment
       in_country_processing
@@ -153,6 +177,13 @@ export const deal_gql_query = gql`
       vggt_applied_comment
       prai_applied
       prai_applied_comment
+      # Overall comment
+      overall_comment
+      # Meta
+      fully_updated
+      confidential
+      confidential_reason
+      confidential_comment
       locations {
         id
         name
@@ -189,15 +220,29 @@ export const deal_gql_query = gql`
       geojson
       versions {
         id
-        deal { fully_updated status draft_status }
+        deal {
+          fully_updated
+          status
+          draft_status
+        }
         revision {
           id
           date_created
-          user { id full_name }
+          user {
+            id
+            full_name
+          }
           comment
         }
+      }
+      comments {
+        id
+        userinfo
+        comment
+        submit_date
       }
       status
       draft_status
     }
-  }`;
+  }
+`;
