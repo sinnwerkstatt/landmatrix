@@ -1,48 +1,25 @@
 <template>
-  <div class="">
-    Web of Transnational deals and Global map of investments together O_O
+  <div>
     <div class="container" id="graph-div">
       <svg width="800"></svg>
     </div>
   </div>
 </template>
 
-<style scoped>
-  h1 {
-    text-align: center;
-  }
-
-  p {
-    max-width: 1000px;
-    margin: auto;
-    text-align: justify;
-  }
-
+<style lang="scss">
   #graph-div {
     text-align: center;
-  }
-
-  /* .node circle {
-  fill: #999;
-} */
-
-  .node text {
-    font: 10px sans-serif;
-  }
-
-  /* .node--internal circle {
-  fill: #555;
-} */
-
-  .node--internal text {
-    text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
-  }
-
-  .link {
-    fill: none;
-    stroke: #555;
-    stroke-opacity: 0.4;
-    stroke-width: 1.5px;
+    .link {
+      fill: none;
+      stroke: #555;
+      stroke-opacity: 0.4;
+      stroke-width: 4.5px;
+    }
+    svg {
+      text {
+        font-size: 14px;
+      }
+    }
   }
 </style>
 <script>

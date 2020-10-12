@@ -219,7 +219,9 @@ def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
         for impo in res[cid]:
             imp_c = country_dict[impo]
             imports += [f"lama.{imp_c.fk_region_id}.{imp_c.name}"]
-        regions[country.fk_region_id] += [{"name": country.name, "imports": imports}]
+        regions[country.fk_region_id] += [
+            {"id": country.id, "name": country.name, "imports": imports}
+        ]
 
     return {
         "name": "lama",

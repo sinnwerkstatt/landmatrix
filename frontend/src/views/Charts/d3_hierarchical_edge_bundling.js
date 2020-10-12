@@ -1,11 +1,12 @@
 // source https://observablehq.com/@d3/hierarchical-edge-bundling
 
 import * as d3 from "d3";
+import { primary_color } from "/colors";
 
 let width = 954;
 let radius = width / 2;
-let colorin = "#00f";
-let colorout = "#f00";
+let colorin = "#9c4ce8";
+let colorout = primary_color;
 let colornone = "#ccc";
 let tree = d3.cluster().size([2 * Math.PI, radius - 100]);
 let line = d3
@@ -14,6 +15,8 @@ let line = d3
   .radius((d) => d.y)
   .angle((d) => d.x);
 
+let selectedCountry = null;
+
 function id(node) {
   return `${node.parent ? id(node.parent) + "." : ""}${node.data.name}`;
 }
@@ -21,7 +24,6 @@ function id(node) {
 function bilink(root) {
   const map = new Map(root.leaves().map((d) => [id(d), d]));
   for (const d of root.leaves()) {
-    // console.log(d);
     d.incoming = [];
     d.outgoing = d.data.imports.map((i) => [d, map.get(i)]);
   }
@@ -45,23 +47,6 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     )
   );
 
-  function overed(event, d) {
-    link.style("mix-blend-mode", null);
-    d3.select(this).attr("font-weight", "bold");
-    d3.selectAll(d.incoming.map((d) => d.path))
-      .attr("stroke", colorin)
-      .raise();
-    d3.selectAll(d.incoming.map(([d]) => d.text))
-      .attr("fill", colorin)
-      .attr("font-weight", "bold");
-    d3.selectAll(d.outgoing.map((d) => d.path))
-      .attr("stroke", colorout)
-      .raise();
-    d3.selectAll(d.outgoing.map(([, d]) => d.text))
-      .attr("fill", colorout)
-      .attr("font-weight", "bold");
-  }
-
   const link = svg
     .append("g")
     .attr("stroke", colornone)
@@ -75,14 +60,37 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
       d.path = this;
     });
 
-  function outed(event, d) {
+  function mouseover_event(event, d) {
+    link.style("mix-blend-mode", null);
+    d3.select(this).attr("font-weight", "bold");
+    d3.selectAll(d.incoming.map((d) => d.path))
+      .attr("stroke", colorin)
+      .attr("stroke-width", 3)
+      .raise();
+    d3.selectAll(d.incoming.map(([d]) => d.text))
+      .attr("fill", colorin)
+      .attr("font-weight", "bold");
+    d3.selectAll(d.outgoing.map((d) => d.path))
+      .attr("stroke", colorout)
+      .attr("stroke-width", 3)
+      .raise();
+    d3.selectAll(d.outgoing.map(([, d]) => d.text))
+      .attr("fill", colorout)
+      .attr("font-weight", "bold");
+  }
+
+  function mouseout_event(event, d) {
     link.style("mix-blend-mode", "multiply");
     d3.select(this).attr("font-weight", null);
-    d3.selectAll(d.incoming.map((d) => d.path)).attr("stroke", null);
+    d3.selectAll(d.incoming.map((d) => d.path))
+      .attr("stroke", null)
+      .attr("stroke-width", 1);
     d3.selectAll(d.incoming.map(([d]) => d.text))
       .attr("fill", null)
       .attr("font-weight", null);
-    d3.selectAll(d.outgoing.map((d) => d.path)).attr("stroke", null);
+    d3.selectAll(d.outgoing.map((d) => d.path))
+      .attr("stroke", null)
+      .attr("stroke-width", 1);
     d3.selectAll(d.outgoing.map(([, d]) => d.text))
       .attr("fill", null)
       .attr("font-weight", null);
@@ -90,8 +98,6 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
 
   svg
     .append("g")
-    .attr("font-family", "sans-serif")
-    .attr("font-size", 10)
     .selectAll("g")
     .data(root.leaves())
     .join("g")
@@ -101,6 +107,7 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     )
     .append("text")
     .attr("dy", "0.31em")
+    .attr("data-id", (d) => d.data.id)
     .attr("x", (d) => (d.x < Math.PI ? 6 : -6))
     .attr("text-anchor", (d) => (d.x < Math.PI ? "start" : "end"))
     .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null))
@@ -108,13 +115,17 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     .each(function (d) {
       d.text = this;
     })
-    .on("mouseover", overed)
-    .on("mouseout", outed)
+    .on("mouseover", mouseover_event)
+    .on("mouseout", mouseout_event)
+    .on("mousedown", (d) => {
+      selectedCountry = d.target.dataset.id;
+      console.log("selected Country:", selectedCountry);
+    })
     .call((text) =>
       text.append("title").text(
-        (d) => `${id(d)}
-      ${d.outgoing.length} outgoing
-      ${d.incoming.length} incoming`
+        (d) => `${d.data.name}
+      ${d.outgoing.length} investing countries
+      investing in ${d.incoming.length} countries`
       )
     );
 }
