@@ -1030,7 +1030,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     @transaction.atomic
     def save(self, custom_modification_date=None, *args, **kwargs):
-        self.modified_at = custom_modification_date or timezone.now()
+        if custom_modification_date != "-SKIP-":
+            self.modified_at = custom_modification_date or timezone.now()
         if self.fully_updated:
             self.fully_updated_at = timezone.now()
 

@@ -55,7 +55,7 @@
               <router-link
                 v-for="region in regions"
                 class="dropdown-item"
-                :to="`/region/${region.slug}`"
+                :to="`/region/${region.slug}/`"
               >
                 {{ region.name }}
               </router-link>
@@ -63,7 +63,7 @@
               <router-link
                 v-for="country in countries"
                 class="dropdown-item"
-                :to="`/country/${country.slug}`"
+                :to="`/country/${country.slug}/`"
               >
                 {{ country.name }}
               </router-link>

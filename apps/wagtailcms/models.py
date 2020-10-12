@@ -89,7 +89,7 @@ class RegionPage(Page):
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.RegionIndex"]
 
-    api_fields = [APIField("body")]
+    api_fields = [APIField("body"), APIField("region")]
 
 
 class CountryIndex(Page):
@@ -126,4 +126,4 @@ class CountryPage(Page):
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.CountryIndex"]
 
-    api_fields = [APIField("body")]
+    api_fields = [APIField("body"), APIField("country")]
