@@ -10,6 +10,7 @@ type Country {
     point_lon: Float
     country_page_id: Int
     short_description: String
+    deals: [Deal]
 }
 
 type Region {

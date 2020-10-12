@@ -110,7 +110,7 @@
           return coords;
         },
         markers() {
-          let markers = [];
+          let markers_list = [];
           this.deals.map((deal) => {
             deal.locations.map((loc) => {
               if (loc.point) {
@@ -127,11 +127,11 @@
                   <a href="/newdeal/deal/${deal.id}">More details</a>
                 `;
                 marker.bindPopup(popupHtml);
-                markers.push(marker);
+                markers_list.push(marker);
               }
             });
           });
-          return markers;
+          return markers_list;
         },
       }),
     },
@@ -155,19 +155,27 @@
     methods: {
       styleCircle(circle, size, country_or_region_with_id) {
         let circle_elem = circle.getElement();
-        let innertextnode = document.createElement("span");
 
+        let innertextnode = document.createElement("span");
         innertextnode.className = "landmatrix-custom-circle-text";
+        let coun_reg = this.$store.getters.getCountryOrRegion(
+          country_or_region_with_id
+        );
+        if (coun_reg) innertextnode.innerHTML = coun_reg.name;
+        circle_elem.append(innertextnode);
+
+        let hoverlabel = document.createElement("span");
+        hoverlabel.className = "landmatrix-custom-circle-hover-text";
+        circle_elem.append(hoverlabel);
 
         let factor;
         if (this.displayHectares) {
-          innertextnode.innerHTML = `${size} hectares`;
+          hoverlabel.innerHTML = `${size} hectares`;
           factor = Math.max(Math.log(size) * 6, 40);
         } else {
-          innertextnode.innerHTML = `${size} deals`;
+          hoverlabel.innerHTML = `${size} deals`;
           factor = Math.max(Math.log(size) * 16, 40);
         }
-        circle_elem.append(innertextnode);
 
         Object.assign(circle_elem.style, {
           height: `${factor}px`,
@@ -176,17 +184,10 @@
           top: `-${factor / 2}px`,
           background: primary_color,
         });
-        let tooltip = document.createElement("span");
-        tooltip.className = "landmatrix-custom-circle-hover-text";
-        let coun_reg = this.$store.getters.getCountryOrRegion(
-          country_or_region_with_id
-        );
-        if (coun_reg) tooltip.innerHTML = coun_reg.name;
-        circle_elem.append(tooltip);
       },
       refreshMap() {
-        if (this.bigmap && this.markers) {
-          this.featureGroup.clearLayers();
+        this.featureGroup.clearLayers();
+        if (this.bigmap && this.markers.length > 0) {
           if (this.current_zoom < 3) {
             Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
               ([key, val]) => {
@@ -250,7 +251,7 @@
             //   this.featureGroup.addLayer(mark);
             // });
           }
-          // this.bigmap.flyToBounds(this.featureGroup.getBounds().pad(1.5));
+          this.bigmap.flyTo(this.featureGroup.getBounds().getCenter());
         }
       },
       pinTheMap(bigmap) {

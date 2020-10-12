@@ -7,11 +7,20 @@ from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop, Deal
 
 
 def resolve_countries(obj: Any, info: GraphQLResolveInfo):
-    countries = Country.objects.all()  # .filter(deal__status__in=(2, 3))
-    # countries = [{"title": r.name, "slug": r.slug} for r in Country.objects.all()]
 
-    # fields = get_fields(info)
-
+    countries = [
+        {
+            "id": c.id,
+            "name": c.name,
+            "slug": c.slug,
+            "point_lat": c.point_lat,
+            "point_lon": c.point_lon,
+            "country_page_id": c.country_page_id,
+            "short_description": c.short_description,
+            "deals": c.deal_set.all(),
+        }
+        for c in Country.objects.all()
+    ]
     return countries
 
 

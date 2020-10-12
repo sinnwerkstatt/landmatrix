@@ -42,7 +42,7 @@
         >
           <multiselect
             v-model="country"
-            :options="countries"
+            :options="countries_with_deals"
             label="name"
             placeholder="Country"
             @input="region_id = null"
@@ -496,6 +496,9 @@
         },
         dealFormfields: (state) => state.formfields.deal,
       }),
+      countries_with_deals() {
+        return this.countries.filter((c)=>{ return c.deals.length > 0});
+      },
       produce_choices() {
         if (!this.dealFormfields) return [];
         return [
