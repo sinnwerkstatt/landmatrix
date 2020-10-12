@@ -46,6 +46,23 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
         )
     )
   );
+  let defs = svg.append("defs");
+  const marker_factory = (name, color) =>
+    defs
+      .append("marker")
+      .attr("id", name)
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 0)
+      .attr("refY", 0)
+      .attr("markerWidth", 10)
+      .attr("markerHeight", 10)
+      .attr("orient", "auto-start-reverse")
+      .attr("markerUnits", "userSpaceOnUse")
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .style("fill", color);
+  marker_factory("incoming-marker", colorin);
+  marker_factory("outgoing-marker", colorout);
 
   const link = svg
     .append("g")
@@ -65,14 +82,17 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     d3.select(this).attr("font-weight", "bold");
     d3.selectAll(d.incoming.map((d) => d.path))
       .attr("stroke", colorin)
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 2.5)
+      .attr("marker-start", "url(#incoming-marker)")
       .raise();
     d3.selectAll(d.incoming.map(([d]) => d.text))
       .attr("fill", colorin)
       .attr("font-weight", "bold");
     d3.selectAll(d.outgoing.map((d) => d.path))
       .attr("stroke", colorout)
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 2.5)
+      .attr("marker-start", "url(#outgoing-marker)")
+
       .raise();
     d3.selectAll(d.outgoing.map(([, d]) => d.text))
       .attr("fill", colorout)
@@ -84,13 +104,16 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     d3.select(this).attr("font-weight", null);
     d3.selectAll(d.incoming.map((d) => d.path))
       .attr("stroke", null)
-      .attr("stroke-width", 1);
+      .attr("stroke-width", 1)
+      .attr("marker-start", null);
+
     d3.selectAll(d.incoming.map(([d]) => d.text))
       .attr("fill", null)
       .attr("font-weight", null);
     d3.selectAll(d.outgoing.map((d) => d.path))
       .attr("stroke", null)
-      .attr("stroke-width", 1);
+      .attr("stroke-width", 1)
+      .attr("marker-start", null);
     d3.selectAll(d.outgoing.map(([, d]) => d.text))
       .attr("fill", null)
       .attr("font-weight", null);
