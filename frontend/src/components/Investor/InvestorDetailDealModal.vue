@@ -16,9 +16,8 @@
           }"
           class="btn btn-primary deal-link float-right"
           target="_blank"
-          v-slot="{ href }"
         >
-          <a :href="href">More details about this deal</a>
+          More details about this deal
         </router-link>
       </div>
     </template>

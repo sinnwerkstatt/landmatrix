@@ -23,15 +23,15 @@ const router = new Router({
   mode: "history",
   base: "/newdeal/", //process.env.BASE_URL,
   routes: [
-    {
-      path: "/data/",
-      name: "deal_list",
-      component: DealList,
-      // beforeEnter(to, from, next) {
-      //   store.dispatch("fetchDeals", { limit: 1000 });
-      //   next();
-      // },
-    },
+    // {
+    //   path: "/data/",
+    //   name: "deal_list",
+    //   component: DealList,
+    //   // beforeEnter(to, from, next) {
+    //   //   store.dispatch("fetchDeals", { limit: 1000 });
+    //   //   next();
+    //   // },
+    // },
     {
       path: "/list/",
       name: "data_list",

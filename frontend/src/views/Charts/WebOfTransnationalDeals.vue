@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="container" id="graph-div">
+      <LoadingPulse v-if="$apollo.queries.transnational_deals.loading"/>
       <svg width="800"></svg>
     </div>
   </div>
@@ -26,9 +27,11 @@
   import store from "/store";
   import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
   import gql from "graphql-tag";
+  import LoadingPulse from "/components/Data/LoadingPulse";
 
   export default {
     name: "Charts",
+    components: { LoadingPulse },
     apollo: {
       transnational_deals: gql`
         query {
