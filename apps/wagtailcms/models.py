@@ -80,16 +80,23 @@ class RegionPage(Page):
     short_description = models.CharField(
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
+    introduction_text = models.TextField(
+        max_length=700, blank=True, null=True,
+        help_text="Introduction before 'Read more'"
+    )
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
-    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    content_panels = Page.content_panels + [
+        FieldPanel("introduction_text"),
+        StreamFieldPanel("body")
+    ]
     promote_panels = [
         FieldPanel("region"),
         FieldPanel("short_description", widget=forms.Textarea),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.RegionIndex"]
 
-    api_fields = [APIField("body"), APIField("region")]
+    api_fields = [APIField("introduction_text"), APIField("body"), APIField("region")]
 
 
 class CountryIndex(Page):
@@ -114,16 +121,22 @@ class CountryPage(Page):
     short_description = models.CharField(
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
+    introduction_text = models.TextField(
+        max_length=700, blank=True, null=True, help_text="Introduction before 'Read more'"
+    )
     body = NoWrapsStreamField(
         CONTENT_BLOCKS
         + [("columns_1_1", Columns1To1Block()), ("columns_3", ThreeColumnsBlock())]
     )
 
-    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    content_panels = Page.content_panels + [
+        FieldPanel("introduction_text"),
+        StreamFieldPanel("body")
+    ]
     promote_panels = [
         FieldPanel("country"),
         FieldPanel("short_description", widget=forms.Textarea),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.CountryIndex"]
 
-    api_fields = [APIField("body"), APIField("country")]
+    api_fields = [APIField("introduction_text"), APIField("body"), APIField("country")]

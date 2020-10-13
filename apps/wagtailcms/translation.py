@@ -31,7 +31,7 @@ class RegionIndexTR(TranslationOptions):
 
 @register(RegionPage)
 class RegionPageTR(TranslationOptions):
-    fields = ("body", "short_description")
+    fields = ("introduction_text", "body", "short_description")
 
 
 @register(CountryIndex)
@@ -41,7 +41,7 @@ class CountryIndexTR(TranslationOptions):
 
 @register(CountryPage)
 class CountryPageTR(TranslationOptions):
-    fields = ("body", "short_description")
+    fields = ("introduction_text", "body", "short_description")
 
 
 @register(BlogIndexPage)

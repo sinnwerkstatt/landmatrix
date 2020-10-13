@@ -47,12 +47,7 @@ import StatusPieChart from "../Charts/StatusPieChart";
 import gql from "graphql-tag";
 import numeral from "numeral/numeral"
 import {implementation_status_choices} from "../../choices";
-
-function sum(items, prop) {
-  return items.reduce(function (a, b) {
-    return a + b[prop];
-  }, 0);
-};
+import {prepareNegotianStatusData, sum} from "../../utils/data_processing";
 
 export default {
   name: "ScopeBar",
@@ -159,66 +154,18 @@ export default {
         return `${numeral(sum(this.deals, 'deal_size')).format('0,0')} ha`;
       }
     },
-    dealFilteredByNegStatus() {
-      let filteredDeals = {
-        intended: this.deals.filter(
-          d => {
-            return ['EXPRESSION_OF_INTEREST', 'UNDER_NEGOTIATION', 'MEMORANDUM_OF_UNDERSTANDING'].includes(d.current_negotiation_status)
-          }
-        ),
-        concluded: this.deals.filter(
-          d => {
-            return ['ORAL_AGREEMENT', 'CONTRACT_SIGNED'].includes(d.current_negotiation_status)
-          }
-        ),
-        failed: this.deals.filter(
-          d => {
-            return ['NEGOTIATIONS_FAILED', 'CONTRACT_CANCELED'].includes(d.current_negotiation_status)
-          }
-        )
-      }
-      if (this.deals.length) {
-        return [
-          {
-            label: "Intended",
-            count: filteredDeals.intended.length,
-            sum: sum(filteredDeals.intended, 'deal_size'),
-            color: "rgba(252,148,31,0.4)",
-          },
-          {
-            label: "Concluded",
-            count: filteredDeals.concluded.length,
-            sum: sum(filteredDeals.concluded, 'deal_size'),
-            color: "rgba(252,148,31,1)",
-          },
-          {
-            label: "Failed",
-            count: filteredDeals.failed.length,
-            sum: sum(filteredDeals.failed, 'deal_size'),
-            color: "#7D4A0F",
-          },
-        ];
-      } else {
-        return [];
-      }
+    dealsFilteredByNegStatus() {
+      return prepareNegotianStatusData(this.deals);
     },
     negotiationStatusData() {
-      if (this.dealFilteredByNegStatus) {
-        if (this.showDealCount) {
-          return this.dealFilteredByNegStatus.map(d => {
-            return {
-              value: d.count,
-              ...d
-            }
-          });
-        } else {
-          return this.dealFilteredByNegStatus.map(d => {
-            return {
-              value: d.sum,
-              ...d
-            }
-          });
-        }
+      if (this.showDealCount) {
+        return this.dealsFilteredByNegStatus.map(d => {
+          return {value: d.count, unit: "deals", ...d}
+        });
+      } else {
+        return this.dealsFilteredByNegStatus.map(d => {
+          return {value: d.size, unit: "ha", ...d}
+        });
       }
     },
     implementationStatusData() {
@@ -234,7 +181,8 @@ export default {
           data.push({
             label: label,
             color: colors[i],
-            value: this.showDealCount ? filteredDeals.length : sum(filteredDeals, 'deal_size')
+            value: this.showDealCount ? filteredDeals.length : sum(filteredDeals, 'deal_size'),
+            unit: this.showDealCount ? "deals" : "ha",
           });
           i++;
         }
@@ -285,6 +233,7 @@ export default {
         data.sort((a, b) => {
           return b.value - a.value
         })
+        let totalCount = sum(data, 'value');
         let cutOffIndex = Math.min(15, data.length);
         let other = data.slice(cutOffIndex, data.length);
         data = data.slice(0, cutOffIndex);
@@ -292,13 +241,18 @@ export default {
           if (d.label in this.produceLabelMap) {
             d.label = this.produceLabelMap[d.label];
           }
+          d.value = d.value/totalCount*100;
+          d.unit = "%";
+          d.precision = 1;
         }
         if (other.length) {
           let otherCount = sum(other, 'value');
           data.push({
             label: "Other",
             color: "rgba(252,148,31,0.4)",
-            value: otherCount
+            value: otherCount/totalCount*100,
+            unit: '%',
+            precision: 1,
           });
         }
       }
