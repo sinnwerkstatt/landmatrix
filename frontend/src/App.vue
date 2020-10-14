@@ -4,15 +4,6 @@
     <div class="content">
       <Messages />
       <BreadcrumbBar />
-      <div v-if="$store.state.page.title" class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <h1>
-              <span v-html="$store.state.page.title"></span>
-            </h1>
-          </div>
-        </div>
-      </div>
       <router-view />
     </div>
     <Footer />

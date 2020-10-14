@@ -7,19 +7,29 @@
   import WagtailPage from "./WagtailPage";
   import BlogIndexPage from "./BlogIndexPage";
   import BlogPage from "./BlogPage";
+  import ObservatoryPage from "./ObservatoryPage";
 
   export default {
-    componthisents: { BlogIndexPage, BlogPage, WagtailPage },
+    components: { BlogIndexPage, BlogPage, WagtailPage, ObservatoryPage },
     computed: {
       pageType() {
         let page = this.$store.state.page.wagtailPage;
-        if (page.meta.type === "blog.BlogIndexPage") {
-          return BlogIndexPage;
+        switch(page.meta.type) {
+          case "blog.BlogIndexPage":
+            return BlogIndexPage;
+            break;
+          case "blog.BlogPage":
+            return BlogPage;
+            break;
+          case "wagtailcms.RegionPage":
+            return ObservatoryPage;
+            break;
+          case "wagtailcms.CountryPage":
+            return ObservatoryPage;
+            break;
+          default:
+            return WagtailPage;
         }
-        if (page.meta.type === "blog.BlogPage") {
-          return BlogPage;
-        }
-        return WagtailPage;
       },
     },
     beforeRouteEnter: (to, from, next) => {

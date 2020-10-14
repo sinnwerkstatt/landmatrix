@@ -1,7 +1,5 @@
 <template>
-  <div class="container">
-    <div class="paragraph" v-html="value"></div>
-  </div>
+  <div class="paragraph" v-html="value"></div>
 </template>
 
 <script>

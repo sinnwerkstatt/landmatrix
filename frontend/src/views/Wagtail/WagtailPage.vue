@@ -1,12 +1,16 @@
 <template>
-  <Streamfield :content="content" />
+  <div>
+    <PageTitle :title="page.title"></PageTitle>
+    <Streamfield :content="content" />
+  </div>
 </template>
 
 <script>
   import Streamfield from "/components/Streamfield";
+  import PageTitle from "../../components/PageTitle";
 
   export default {
-    components: { Streamfield },
+    components: {PageTitle, Streamfield },
     computed: {
       content() {
         let page = this.$store.state.page.wagtailPage;
