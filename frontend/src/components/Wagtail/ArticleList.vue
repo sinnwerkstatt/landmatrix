@@ -20,7 +20,7 @@
             </div>
           </div>
         </div>
-        <button v-if="limit" @click.prevent="limit=0">
+        <button v-if="limit && limit < articles.length" @click.prevent="limit=0">
           Show all {{ articles.length }} {{ articlesLabel.toLowerCase() }}
         </button>
       </div>

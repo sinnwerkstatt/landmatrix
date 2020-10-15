@@ -56,7 +56,7 @@
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .twitter-timeline-username {
     font-weight: bold;
   }

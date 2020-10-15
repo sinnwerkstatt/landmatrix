@@ -63,7 +63,14 @@
       </div>
     </ArticleList>
     <ArticleList :articlesLabel="'News & publications'" :articles="filteredNewsPubs"></ArticleList>
-    <Twitter :value="null"></Twitter>
+    <div v-if="page.twitter_feed" class="container tweets">
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+          <h3>Latest tweets</h3>
+          <Twitter :value="page.twitter_feed"></Twitter>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -146,8 +153,15 @@ export default {
     page() {
       return this.$store.state.page.wagtailPage;
     },
+    locationItem() {
+      if (this.page.region) {
+        return this.$store.getters.getCountryOrRegion({type: 'region', id: this.page.region.id});
+      } else if (this.page.country) {
+        return this.$store.getters.getCountryOrRegion({type: 'country', id: this.page.country.id});
+      }
+    },
     slug() {
-      return 'africa';
+      return this.locationItem.slug;
     },
     content() {
       return this.page ? this.page.body : [];
@@ -156,7 +170,7 @@ export default {
       if (this.page.region) {
         return [{field: "country.fk_region_id", value: this.page.region.id.toString()}];
       } else if (this.page.country) {
-        return [{filter: "country_id", value: this.page.country.id.toString()}];
+        return [{field: "country_id", value: this.page.country.id.toString()}];
       }
     },
     totalCount() {
@@ -204,6 +218,7 @@ export default {
 @import "../../scss/colors";
 
 .observatory {
+  margin-bottom: 5em;
   h1 {
     font-size: 48px;
     font-weight: normal !important;
@@ -238,6 +253,10 @@ export default {
       font-size: 15px;
       margin-bottom: 0.5em;
     }
+  }
+
+  .tweets {
+    margin-bottom: 2em;
   }
 }
 </style>
