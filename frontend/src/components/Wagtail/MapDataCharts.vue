@@ -49,8 +49,8 @@
 
 <style lang="scss" scoped>
 .map-data-charts {
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 2em;
+  margin-bottom: 2em;
   .square {
     display: block;
     background-color: #F9F9F9;

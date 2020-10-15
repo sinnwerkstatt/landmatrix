@@ -6,10 +6,15 @@ from apps.blog.models import BlogPage, BlogCategory
 
 
 def resolve_blogpages(obj: Any, info: GraphQLResolveInfo, category=None):
-    blogpages = BlogPage.objects.live().order_by("-date", "-id")
+    qs = BlogPage.objects.live()
+
+    if category:
+        qs = qs.filter(blog_categories__slug=category)
+
+    blogpages = qs.order_by("-date", "-id")
     bp_list = []
     for bp in blogpages:
-        bp_list += [bp.get_dict("fill-300x150|jpegquality-60")]
+        bp_list += [bp.get_dict("fill-300x300|jpegquality-60")]
 
     return bp_list
 
