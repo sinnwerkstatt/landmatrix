@@ -39,18 +39,26 @@
         </div>
       </div>
     </div>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-11 col-lg-9 col-xl-7">
+          <MapDataCharts></MapDataCharts>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import Streamfield from "/components/Streamfield";
-import StatusPieChart from "../../components/Charts/StatusPieChart";
+import numeral from "numeral";
 import gql from "graphql-tag";
 import {prepareNegotianStatusData, sum} from "../../utils/data_processing";
-import numeral from "numeral";
+import Streamfield from "/components/Streamfield";
+import StatusPieChart from "../../components/Charts/StatusPieChart";
+import MapDataCharts from "../../components/Wagtail/MapDataCharts";
 
 export default {
-  components: {StatusPieChart, Streamfield},
+  components: {StatusPieChart, Streamfield, MapDataCharts},
   data() {
     return {
       readMore: false,
@@ -172,6 +180,9 @@ export default {
 </style>
 <style lang="scss">
 .observatory {
+  h3 {
+    font-size: 24px;
+  }
   .charts {
     .legend {
       text-align: center;
