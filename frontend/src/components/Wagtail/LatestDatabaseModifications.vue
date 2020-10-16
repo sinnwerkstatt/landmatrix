@@ -45,7 +45,7 @@
       modifications: {
         query: gql`
           query Deals($limit: Int!, $filters: [Filter]) {
-            deals(sort: "-modified_at", limit: $limit, filters: $filters) {
+            modifications:deals(sort: "-modified_at", limit: $limit, filters: $filters) {
               id
               country {
                 name

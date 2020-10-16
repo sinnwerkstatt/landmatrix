@@ -1,11 +1,10 @@
-from django.db import models
 from django import forms
+from django.db import models
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.api import APIField
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 
-from apps.blog.models import BlogPage
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.blocks import (
@@ -18,6 +17,7 @@ from apps.wagtailcms.blocks import (
     get_country_or_region,
 )
 from apps.wagtailcms.serializers import APIRichTextSerializer
+from apps.wagtailcms.twitter import TwitterTimeline
 
 
 class WagtailRootPage(Page):
@@ -80,6 +80,7 @@ class RegionPage(Page):
     short_description = models.CharField(
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
+    twitter_username = models.CharField(max_length=200, blank=True, null=True)
     introduction_text = models.TextField(
         max_length=700,
         blank=True,
@@ -95,10 +96,26 @@ class RegionPage(Page):
     promote_panels = [
         FieldPanel("region"),
         FieldPanel("short_description", widget=forms.Textarea),
+        FieldPanel("twitter_username"),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.RegionIndex"]
 
-    api_fields = [APIField("introduction_text"), APIField("body"), APIField("region")]
+    @property
+    def twitter_feed(self):
+        if self.twitter_username:
+            tweets = TwitterTimeline().get_timeline(self.twitter_username)
+            if tweets:
+                return {
+                    "username": self.twitter_username,
+                    "timeline": tweets,
+                }
+
+    api_fields = [
+        APIField("introduction_text"),
+        APIField("body"),
+        APIField("region"),
+        APIField("twitter_feed"),
+    ]
 
 
 class CountryIndex(Page):
@@ -123,6 +140,7 @@ class CountryPage(Page):
     short_description = models.CharField(
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
+    twitter_username = models.CharField(max_length=200, blank=True, null=True)
     introduction_text = models.TextField(
         max_length=700,
         blank=True,
@@ -141,7 +159,22 @@ class CountryPage(Page):
     promote_panels = [
         FieldPanel("country"),
         FieldPanel("short_description", widget=forms.Textarea),
+        FieldPanel("twitter_username"),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.CountryIndex"]
 
-    api_fields = [APIField("introduction_text"), APIField("body"), APIField("country")]
+    def twitter_feed(self):
+        if self.twitter_username:
+            tweets = TwitterTimeline().get_timeline(self.twitter_username)
+            if tweets:
+                return {
+                    "username": self.twitter_username,
+                    "timeline": tweets,
+                }
+
+    api_fields = [
+        APIField("introduction_text"),
+        APIField("body"),
+        APIField("country"),
+        APIField("twitter_feed"),
+    ]

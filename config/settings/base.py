@@ -224,3 +224,6 @@ TWITTER_TIMELINE = (
     if env("DJANGO_TWITTER_CONSUMER_KEY", default="")
     else None
 )
+
+TWITTER_DEFAULT_USERNAME = "land_matrix"
+TWITTER_DEFAULT_COUNT = 5

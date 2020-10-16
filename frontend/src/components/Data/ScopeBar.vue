@@ -35,7 +35,9 @@
           <StatusPieChart :dealData="produceData" :legends="produceDataLegendItems"></StatusPieChart>
         </div>
         <div class="get-involved">
-          <a href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
+          <router-link :to="`/get-involved/`">{{
+            $t("Contribute")
+          }}</router-link>
         </div>
       </div>
     </div>

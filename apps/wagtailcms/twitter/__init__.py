@@ -10,7 +10,9 @@ class TwitterTimeline:
     KEY_LT = "twitter/twitter/timeline_longterm"
     KEY_US = "twitter/twitter/username"
 
-    def __init__(self, count=20, cache_timeout=600, cache_long_term_timeout=86400):
+    def __init__(self, count=0, cache_timeout=600, cache_long_term_timeout=86400):
+        if count == 0:
+            count = settings.TWITTER_DEFAULT_COUNT
         self.count = count
         self.cache_timeout = cache_timeout
         self.cache_long_term_timeout = cache_long_term_timeout
@@ -82,7 +84,9 @@ class TwitterTimeline:
             stati.append(update)
         return stati
 
-    def get_timeline(self, username):
+    def get_timeline(self, username=None):
+        if username is None:
+            username = settings.TWITTER_DEFAULT_USERNAME
         result = cache.get(self.KEY)
         cached_username = cache.get(self.KEY_US)
         if not result or cached_username != username:

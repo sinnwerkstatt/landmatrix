@@ -22,7 +22,7 @@
     left: 0;
     right: 0;
     text-align: center;
-    z-index: 5000;
+    z-index: 1000;
     font-size: 0;
     filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.5));
     a {
