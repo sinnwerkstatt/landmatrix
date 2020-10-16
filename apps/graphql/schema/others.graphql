@@ -7,7 +7,11 @@ type Country {
     high_income: Boolean
     fk_region: Region
     point_lat: Float
+    point_lat_min: Float
+    point_lat_max: Float
     point_lon: Float
+    point_lon_min: Float
+    point_lon_max: Float
     country_page_id: Int
     short_description: String
     deals: [Deal]
@@ -17,6 +21,12 @@ type Region {
     id: Int
     name: String
     slug: String
+    point_lat: Float
+    point_lat_min: Float
+    point_lat_max: Float
+    point_lon: Float
+    point_lon_min: Float
+    point_lon_max: Float
     region_page_id: Int
     short_description: String
 }

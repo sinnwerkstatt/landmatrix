@@ -81,14 +81,16 @@ class RegionPage(Page):
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
     introduction_text = models.TextField(
-        max_length=700, blank=True, null=True,
-        help_text="Introduction before 'Read more'"
+        max_length=700,
+        blank=True,
+        null=True,
+        help_text="Introduction before 'Read more'",
     )
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
     content_panels = Page.content_panels + [
         FieldPanel("introduction_text"),
-        StreamFieldPanel("body")
+        StreamFieldPanel("body"),
     ]
     promote_panels = [
         FieldPanel("region"),
@@ -122,7 +124,10 @@ class CountryPage(Page):
         max_length=200, blank=True, null=True, help_text="Displayed in sidebar of map"
     )
     introduction_text = models.TextField(
-        max_length=700, blank=True, null=True, help_text="Introduction before 'Read more'"
+        max_length=700,
+        blank=True,
+        null=True,
+        help_text="Introduction before 'Read more'",
     )
     body = NoWrapsStreamField(
         CONTENT_BLOCKS
@@ -131,7 +136,7 @@ class CountryPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("introduction_text"),
-        StreamFieldPanel("body")
+        StreamFieldPanel("body"),
     ]
     promote_panels = [
         FieldPanel("country"),

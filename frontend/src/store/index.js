@@ -26,8 +26,8 @@ const store = new Vuex.Store({
   actions: {
     fetchBasicInfo(context) {
       let query = `{
-        countries { id name slug point_lat point_lon country_page_id short_description deals {id} }
-        regions { id name slug region_page_id short_description }
+        countries { id name slug point_lat point_lon point_lat_min point_lon_min point_lat_max point_lon_max country_page_id short_description deals {id} }
+        regions { id name slug point_lat_min point_lon_min point_lat_max point_lon_max region_page_id short_description }
         me {
           full_name
           username
