@@ -260,6 +260,11 @@
         bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
       },
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.$store.dispatch("showScopeOverlay", true);
+      })
+    },
   };
 </script>
 <style lang="scss">

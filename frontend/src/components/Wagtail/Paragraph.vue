@@ -1,5 +1,9 @@
 <template>
-  <div class="paragraph" v-html="value"></div>
+  <div class="container">
+    <div class="row">
+      <div class="paragraph" v-html="value"></div>
+    </div>
+  </div>
 </template>
 
 <script>

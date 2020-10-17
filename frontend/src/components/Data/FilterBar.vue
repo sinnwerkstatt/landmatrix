@@ -583,6 +583,7 @@
     cursor: pointer;
     right: -20px;
     svg {
+      opacity: 0.8;
       filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
       color: black;
       path {

@@ -254,7 +254,7 @@
         title,
         breadcrumbs: [
           { link: { name: "wagtail" }, name: "Home" },
-          { link: { name: "data_list" }, name: "Data" },
+          { link: { name: "list_deals" }, name: "Deals" },
           { name: title },
         ],
       });
@@ -266,7 +266,7 @@
         title,
         breadcrumbs: [
           { link: { name: "wagtail" }, name: "Home" },
-          { link: { name: "data_list" }, name: "Data" },
+          { link: { name: "list_deals" }, name: "Deals" },
           { name: title },
         ],
       });

@@ -23,18 +23,52 @@ const router = new Router({
   mode: "history",
   base: "/newdeal/", //process.env.BASE_URL,
   routes: [
-    // {
-    //   path: "/data/",
-    //   name: "deal_list",
-    //   component: DealList,
-    //   // beforeEnter(to, from, next) {
-    //   //   store.dispatch("fetchDeals", { limit: 1000 });
-    //   //   next();
-    //   // },
-    // },
+    {
+      path: "/map/",
+      name: "map",
+      component: DataMap,
+      beforeEnter(to, from, next) {
+        store.dispatch("breadcrumbBar", false);
+        next();
+      },
+      beforeLeave(to, from, next) {
+        store.dispatch("breadcrumbBar", true);
+        next();
+      },
+    },
+    {
+      path: "/data/",
+      redirect: { name: 'list_deals' }
+    },
+    {
+      path: "/data/investors/",
+      redirect: { name: 'list_investors' }
+    },
+    {
+      path: "/charts/",
+      component: Charts,
+      children: [
+        { path: "", name: "charts", redirect: { name: "web-of-transnational-deals" } },
+        {
+          path: "web-of-transnational-deals/",
+          name: "web-of-transnational-deals",
+          component: WebOfTransnationalDeals,
+        },
+
+        {
+          path: "dynamics/",
+          name: "dynamics-overview",
+          component: DynamicsOverview,
+        },
+      ],
+    },
     {
       path: "/list/",
-      name: "data_list",
+      redirect: { name: 'list_deals' }
+    },
+    {
+      path: "/list/deals/",
+      name: "list_deals",
       component: DataList,
       beforeEnter(to, from, next) {
         store.dispatch("breadcrumbBar", false);
@@ -46,9 +80,9 @@ const router = new Router({
       },
     },
     {
-      path: "/map/",
-      name: "map",
-      component: DataMap,
+      path: "/list/investors/",
+      name: "list_investors",
+      component: DataList,
       beforeEnter(to, from, next) {
         store.dispatch("breadcrumbBar", false);
         next();
@@ -77,33 +111,10 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/data/investors/",
-      name: "investor_list",
-      component: InvestorList,
-    },
-    {
       path: "/investor/:investor_id/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,
-    },
-    {
-      path: "/charts/",
-      component: Charts,
-      children: [
-        { path: "", name: "charts", redirect: { name: "web-of-transnational-deals" } },
-        {
-          path: "web-of-transnational-deals/",
-          name: "web-of-transnational-deals",
-          component: WebOfTransnationalDeals,
-        },
-
-        {
-          path: "dynamics/",
-          name: "dynamics-overview",
-          component: DynamicsOverview,
-        },
-      ],
     },
     {
       path: "/dashboard/",

@@ -271,8 +271,8 @@
         blogcategories: [],
         data_links: [
           { name: "Map", link: { name: "map" } },
-          { name: "Deals", link: { name: "data_list" } },
-          { name: "Investors", link: "/data/investors/" },
+          { name: "Deals", link: { name: "list_deals" } },
+          { name: "Investors", link: { name: "list_investors" } },
           { name: "Charts", link: { name: "web-of-transnational-deals" } },
         ],
         about_links: [

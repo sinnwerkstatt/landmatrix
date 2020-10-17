@@ -14,7 +14,7 @@
       </router-link>
     </div>
     <div class="data col-4">
-      <router-link :to="{name: 'data_list'}" class="square">
+      <router-link :to="{name: 'list_deals'}" class="square">
         <div>
           <h3 class="title">Data</h3>
           <div class="icon">

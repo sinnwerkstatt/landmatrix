@@ -12,9 +12,11 @@
   export default {
     components: {PageTitle, Streamfield },
     computed: {
+      page() {
+        return this.$store.state.page.wagtailPage;
+      },
       content() {
-        let page = this.$store.state.page.wagtailPage;
-        return page ? page.body : [];
+        return this.page ? this.page.body : [];
       },
     },
   };
