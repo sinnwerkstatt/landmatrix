@@ -66,6 +66,7 @@ const ZOOM_LEVEL = {
   REGION_CLUSTERS: 2,
   COUNTRY_CLUSTERS: 3,
   DEAL_CLUSTERS: 5,
+  DEAL_PINS: 8,
 }
 
 export default {
@@ -269,6 +270,8 @@ export default {
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               let mcluster = L.markerClusterGroup({
+                //disableClusteringAtZoom: ZOOM_LEVEL.DEAL_PINS, // spiderfy will not work anymore :(
+                chunkedLoading: true,
                 // iconCreateFunction: function (cluster) {
                 //   return L.divIcon({
                 //     html: `<span class='landmatrix-custom-circle'>${cluster.getChildCount()} deals</span>`,
