@@ -108,6 +108,8 @@ export default {
     },
     ...mapState({
       tileLayers: (state) => state.map.layers,
+      region_id: (state) => state.filters.filters.region_id,
+      country_id: (state) => state.filters.filters.country_id,
       country_coords: (state) => {
         let coords = {};
         state.page.countries.forEach((country) => {
@@ -163,21 +165,19 @@ export default {
       // TODO: Make sure that countries/regions are loaded before deals?!
       this.refreshMap();
     },
-    '$store.state.filters.filters.region_id': function() {
+    region_id() {
       this.flyToCountryOrRegion();
     },
-    '$store.state.filters.filters.country_id': function() {
+    country_id() {
       this.flyToCountryOrRegion();
     }
   },
   methods: {
     flyToCountryOrRegion() {
-      let region_id = this.$store.state.filters.filters.region_id;
-      let country_id = this.$store.state.filters.filters.country_id;
-      if (country_id) {
-        this.bigmap.flyTo(this.country_coords[country_id], ZOOM_LEVEL.DEAL_CLUSTERS);
-      } else if (region_id) {
-        this.bigmap.flyTo(this.region_coords[region_id], ZOOM_LEVEL.COUNTRY_CLUSTERS);
+      if (this.country_id) {
+        this.bigmap.flyTo(this.country_coords[this.country_id], ZOOM_LEVEL.DEAL_CLUSTERS);
+      } else if (this.region_id) {
+        this.bigmap.flyTo(this.region_coords[this.region_id], ZOOM_LEVEL.COUNTRY_CLUSTERS);
       } else {
         this.bigmap.flyTo([0,0], ZOOM_LEVEL.REGION_CLUSTERS);
       }
@@ -218,7 +218,7 @@ export default {
       this.featureGroup.clearLayers();
       if (this.bigmap && this.markers.length > 0) {
         this.current_zoom = this.bigmap.getZoom();
-        if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS) {
+        if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !this.country_id) {
           // cluster by Region
           Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
             ([key, val]) => {
@@ -275,6 +275,10 @@ export default {
                 //
                 //   });
                 // },
+              });
+              mcluster.on('clusterclick', (a) => {
+                let bounds = a.layer.getBounds().pad(0.5);
+                this.bigmap.fitBounds(bounds);
               });
               val.forEach((mark) => mcluster.addLayer(mark));
               this.featureGroup.addLayer(mcluster);
