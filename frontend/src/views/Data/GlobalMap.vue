@@ -62,6 +62,12 @@ import FilterCollapse from "/components/Data/FilterCollapse";
 import LoadingPulse from "/components/Data/LoadingPulse";
 import {data_deal_query} from "./query";
 
+const ZOOM_LEVEL = {
+  REGION_CLUSTERS: 2,
+  COUNTRY_CLUSTERS: 3,
+  DEAL_CLUSTERS: 5,
+}
+
 export default {
   name: "GlobalMap",
   components: {LoadingPulse, FilterCollapse, DataContainer, BigMap},
@@ -71,14 +77,14 @@ export default {
   data() {
     return {
       bigmap_options: {
-        minZoom: 2,
-        zoom: 3,
+        minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
+        zoom: ZOOM_LEVEL.REGION_CLUSTERS,
         zoomControl: false,
         gestureHandling: false,
       },
       deals: [],
       bigmap: null,
-      current_zoom: 2,
+      current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
       featureGroup: L.featureGroup(),
       displayHectares: false,
       region_coords: {
@@ -156,9 +162,26 @@ export default {
       // filtered deals (e.g. single country)
       // TODO: Make sure that countries/regions are loaded before deals?!
       this.refreshMap();
+    },
+    '$store.state.filters.filters.region_id': function() {
+      this.flyToCountryOrRegion();
+    },
+    '$store.state.filters.filters.country_id': function() {
+      this.flyToCountryOrRegion();
     }
   },
   methods: {
+    flyToCountryOrRegion() {
+      let region_id = this.$store.state.filters.filters.region_id;
+      let country_id = this.$store.state.filters.filters.country_id;
+      if (country_id) {
+        this.bigmap.flyTo(this.country_coords[country_id], ZOOM_LEVEL.DEAL_CLUSTERS);
+      } else if (region_id) {
+        this.bigmap.flyTo(this.region_coords[region_id], ZOOM_LEVEL.COUNTRY_CLUSTERS);
+      } else {
+        this.bigmap.flyTo([0,0], ZOOM_LEVEL.REGION_CLUSTERS);
+      }
+    },
     styleCircle(circle, size, country_or_region_with_id) {
       let circle_elem = circle.getElement();
 
@@ -194,7 +217,9 @@ export default {
     refreshMap() {
       this.featureGroup.clearLayers();
       if (this.bigmap && this.markers.length > 0) {
-        if (this.current_zoom < 3) {
+        this.current_zoom = this.bigmap.getZoom();
+        if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS) {
+          // cluster by Region
           Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
             ([key, val]) => {
               let circle = L.marker(this.region_coords[key], {
@@ -221,7 +246,8 @@ export default {
               this.styleCircle(circle, xval, {type: "region", id: key});
             }
           );
-        } else if (this.current_zoom < 6) {
+        } else if (this.current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS) {
+          // cluster by country
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               let circle = L.marker(this.country_coords[key], {
@@ -239,6 +265,7 @@ export default {
             }
           );
         } else {
+          // cluster deals with markercluster
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               let mcluster = L.markerClusterGroup({
@@ -257,7 +284,6 @@ export default {
           //   this.featureGroup.addLayer(mark);
           // });
         }
-        this.bigmap.flyTo(this.featureGroup.getBounds().getCenter());
       }
     },
     pinTheMap(bigmap) {
