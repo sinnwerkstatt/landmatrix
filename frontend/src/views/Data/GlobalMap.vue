@@ -96,6 +96,7 @@ export default {
         150: [52.0055, 37.9587],
         419: [-4.442, -61.3269],
       },
+      skipMapRefresh: false,
     };
   },
   computed: {
@@ -165,6 +166,7 @@ export default {
       // filtered deals (e.g. single country)
       // TODO: Make sure that countries/regions are loaded before deals?!
       this.refreshMap();
+      this.flyToCountryOrRegion();
     },
     region_id() {
       this.flyToCountryOrRegion();
@@ -175,12 +177,30 @@ export default {
   },
   methods: {
     flyToCountryOrRegion() {
+      let coords = [0,0]
+      let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
       if (this.country_id) {
-        this.bigmap.flyTo(this.country_coords[this.country_id], ZOOM_LEVEL.DEAL_CLUSTERS);
+        coords = this.country_coords[this.country_id];
+        zoom = ZOOM_LEVEL.DEAL_CLUSTERS;
       } else if (this.region_id) {
-        this.bigmap.flyTo(this.region_coords[this.region_id], ZOOM_LEVEL.COUNTRY_CLUSTERS);
+        coords = this.region_coords[this.region_id];
+        zoom = ZOOM_LEVEL.COUNTRY_CLUSTERS;
+      }
+      if (zoom < this.current_zoom) {
+        // zooming out, apply filter after flying to avoid loading of pins for entire
+        // region
+        this.skipMapRefresh = true;
+        this.bigmap.flyTo(coords, zoom);
+        window.setTimeout(() => {
+          this.skipMapRefresh = false;
+          this.refreshMap();
+        }, 1000);
       } else {
-        this.bigmap.flyTo([0,0], ZOOM_LEVEL.REGION_CLUSTERS);
+        // zooming in, apply filter before flying
+        this.refreshMap();
+        window.setTimeout(() => {
+          this.bigmap.flyTo(coords, zoom);
+        }, 700);
       }
     },
     styleCircle(circle, size, country_or_region_with_id) {
@@ -216,6 +236,7 @@ export default {
       });
     },
     refreshMap() {
+      if (this.skipMapRefresh) return;
       this.featureGroup.clearLayers();
       if (this.bigmap && this.markers.length > 0) {
         this.current_zoom = this.bigmap.getZoom();
