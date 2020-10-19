@@ -247,29 +247,25 @@
       triggerInvestorGraphRefresh() {
         this.$refs.investorGraph.refresh_graph();
       },
+      updatePageContext(to) {
+        let title = `Deal #${to.params.deal_id}`;
+        this.$store.dispatch("setPageContext", {
+          title,
+          breadcrumbs: [
+            { link: { name: "wagtail" }, name: "Home" },
+            { link: { name: "list_deals" }, name: "Deals" },
+            { name: title },
+          ],
+        });
+      }
     },
     beforeRouteEnter(to, from, next) {
-      let title = `Deal #${to.params.deal_id}`;
-      store.dispatch("setPageContext", {
-        title,
-        breadcrumbs: [
-          { link: { name: "wagtail" }, name: "Home" },
-          { link: { name: "list_deals" }, name: "Deals" },
-          { name: title },
-        ],
+      next(vm => {
+        vm.updatePageContext(to);
       });
-      next();
     },
     beforeRouteUpdate(to, from, next) {
-      let title = `Deal #${to.params.deal_id}`;
-      store.dispatch("setPageContext", {
-        title,
-        breadcrumbs: [
-          { link: { name: "wagtail" }, name: "Home" },
-          { link: { name: "list_deals" }, name: "Deals" },
-          { name: title },
-        ],
-      });
+      this.updatePageContext(to)
       next();
     },
   };

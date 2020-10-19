@@ -12,11 +12,9 @@ $map-height: 75vh;
 .map-container {
   position: relative;
   height: $map-height;
-  min-height: 500px;
 
   #map {
     height: $map-height;
-    min-height: 500px;
     display: block;
     margin-left: auto;
     margin-right: auto
@@ -74,7 +72,6 @@ $map-height: 75vh;
 .map-overlay-content {
   width: 250px;
   height: $map-height;
-  min-height: 500px;
   padding-right: 1rem;
   background-color: white;
   float: left;

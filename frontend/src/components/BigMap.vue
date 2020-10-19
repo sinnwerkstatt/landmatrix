@@ -84,7 +84,6 @@
           "margin-right": "auto",
           position: "relative",
           // height: "75vh",
-          "min-height": "500px",
           ...this.containerStyle,
         };
       },

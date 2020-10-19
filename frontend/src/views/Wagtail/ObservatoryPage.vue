@@ -161,7 +161,7 @@ export default {
       }
     },
     slug() {
-      return this.locationItem.slug;
+      return this.locationItem ? this.locationItem.slug : null;
     },
     content() {
       return this.page ? this.page.body : [];
@@ -193,11 +193,13 @@ export default {
       });
     },
     filteredCountryProfiles() {
+      if (!this.slug) return [];
       return this.articles.filter(a => {
         return a.tags.find(t => { return t.slug === this.slug }) && a.categories.find(c => { return c.slug === "country-profile"; });
       }).sort((a,b) => a.date < b.date);
     },
     filteredNewsPubs() {
+      if (!this.slug) return [];
       return this.articles.filter(a => {
         return a.tags.find(t => { return t.slug === this.slug }) && a.categories.find(c => { return ["news", "publications"].includes(c.slug); });
       }).sort((a,b) => a.date < b.date);

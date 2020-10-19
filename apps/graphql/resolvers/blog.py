@@ -14,7 +14,7 @@ def resolve_blogpages(obj: Any, info: GraphQLResolveInfo, category=None):
     blogpages = qs.order_by("-date", "-id")
     bp_list = []
     for bp in blogpages:
-        bp_list += [bp.get_dict("fill-300x300|jpegquality-60")]
+        bp_list += [bp.get_dict("fill-500x500|jpegquality-60")]
 
     return bp_list
 

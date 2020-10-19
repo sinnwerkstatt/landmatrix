@@ -2,7 +2,6 @@ import Vue from "vue";
 import Router from "vue-router";
 import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
-import DealList from "./views/Deal/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
 import Charts from "./views/Charts/Base";
@@ -10,7 +9,6 @@ import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
-import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
 
 import store from "/store";
@@ -27,28 +25,23 @@ const router = new Router({
       path: "/map/",
       name: "map",
       component: DataMap,
-      beforeEnter(to, from, next) {
-        store.dispatch("breadcrumbBar", false);
-        next();
-      },
-      beforeLeave(to, from, next) {
-        store.dispatch("breadcrumbBar", true);
-        next();
+      meta: {
+        hideBreadcrumbs: true,
       },
     },
     {
       path: "/data/",
-      redirect: { name: 'list_deals' }
+      redirect: {name: 'list_deals'}
     },
     {
       path: "/data/investors/",
-      redirect: { name: 'list_investors' }
+      redirect: {name: 'list_investors'}
     },
     {
       path: "/charts/",
       component: Charts,
       children: [
-        { path: "", name: "charts", redirect: { name: "web-of-transnational-deals" } },
+        {path: "", name: "charts", redirect: {name: "web-of-transnational-deals"}},
         {
           path: "web-of-transnational-deals/",
           name: "web-of-transnational-deals",
@@ -64,32 +57,22 @@ const router = new Router({
     },
     {
       path: "/list/",
-      redirect: { name: 'list_deals' }
+      redirect: {name: 'list_deals'}
     },
     {
       path: "/list/deals/",
       name: "list_deals",
       component: DataList,
-      beforeEnter(to, from, next) {
-        store.dispatch("breadcrumbBar", false);
-        next();
-      },
-      beforeLeave(to, from, next) {
-        store.dispatch("breadcrumbBar", true);
-        next();
+      meta: {
+        hideBreadcrumbs: true,
       },
     },
     {
       path: "/list/investors/",
       name: "list_investors",
       component: DataList,
-      beforeEnter(to, from, next) {
-        store.dispatch("breadcrumbBar", false);
-        next();
-      },
-      beforeLeave(to, from, next) {
-        store.dispatch("breadcrumbBar", true);
-        next();
+      meta: {
+        hideBreadcrumbs: true,
       },
     },
     {
@@ -157,12 +140,17 @@ const router = new Router({
 });
 const DEFAULT_TITLE = 'Land Matrix';
 router.afterEach((to, from) => {
-    // Use next tick to handle router history correctly
-    // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
-    Vue.nextTick(() => {
-        // document.title = to.meta.title || DEFAULT_TITLE;
-        document.title = store.state.page.title || DEFAULT_TITLE;
-    });
+  // Use next tick to handle router history correctly
+  // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+  Vue.nextTick(() => {
+    // document.title = to.meta.title || DEFAULT_TITLE;
+    document.title = store.state.page.title || DEFAULT_TITLE;
+    if (to.matched.some(record => record.meta.hideBreadcrumbs)) {
+      store.dispatch("breadcrumbBar", false);
+    } else {
+      store.dispatch("breadcrumbBar", true);
+    }
+  });
 });
 
 export default router;

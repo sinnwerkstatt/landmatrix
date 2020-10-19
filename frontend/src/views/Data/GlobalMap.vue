@@ -294,6 +294,7 @@ export default {
     .landmatrix-custom-circle-text {
       display: none;
     }
+    z-index: 500 !important;
 
     .landmatrix-custom-circle-hover-text {
       display: inline;

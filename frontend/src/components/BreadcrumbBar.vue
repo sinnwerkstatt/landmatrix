@@ -4,7 +4,7 @@
       <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
           <li v-for="bcrumb in this.$store.state.page.breadcrumbs" :key="bcrumb.name">
-            <a v-if="bcrumb.link" :href="bcrumb.link">{{ bcrumb.name }}</a>
+            <a v-if="bcrumb.link" :href="getUrl(bcrumb.link)">{{ bcrumb.name }}</a>
             <template v-else>{{ bcrumb.name }}</template>
           </li>
         </ul>
@@ -24,7 +24,13 @@
 </template>
 
 <script>
-  export default {};
+  export default {
+    methods: {
+      getUrl(route_name) {
+        return this.$router.resolve(route_name).href;
+      }
+    }
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -34,7 +40,7 @@
     clear: both;
     background: none;
     margin: 0 0 10px;
-    padding: 0;
+    padding: 5px 0 0 0;
     font-size: 14px;
     list-style: none;
     border-radius: 4px;
