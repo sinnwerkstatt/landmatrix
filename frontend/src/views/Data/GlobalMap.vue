@@ -331,4 +331,28 @@ export default {
     }
   }
 }
+.vue2leaflet-map {
+  .marker-cluster-small {
+    background-color: rgba(252, 215, 172, 0.5);
+    div {
+      background-color: rgba(252, 215, 172, 0.8)
+    }
+  }
+
+  .marker-cluster-medium {
+    background-color: rgba(254, 170, 75, 0.5);
+    div {
+      background-color: rgba(254, 170, 75, 0.8);
+    }
+  }
+
+  .marker-cluster-large {
+    background-color: rgba(252, 148, 31, 0.8);
+
+    div {
+      background-color: rgba(252, 148, 31, 0.8);
+    }
+  }
+}
+
 </style>
