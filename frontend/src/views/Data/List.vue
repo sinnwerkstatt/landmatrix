@@ -2,7 +2,7 @@
   <div>
     <DataContainer>
       <template v-slot:default>
-        <LoadingPulse v-if="$apollo.queries.deals.loading" />
+        <LoadingPulse v-if="$apollo.loading"/>
         <div class="h-100">
           <div
             class="sideBuffer float-left"
@@ -12,7 +12,7 @@
             class="sideBuffer float-right"
             :class="{ collapsed: !$store.state.map.showScopeOverlay }"
           ></div>
-          <Table :deals="deals" :targetModel="targetModel"></Table>
+          <Table :targetModel="targetModel"></Table>
         </div>
       </template>
     </DataContainer>
@@ -20,47 +20,38 @@
 </template>
 
 <script>
-  import DataContainer from "./DataContainer";
-  import LoadingPulse from "/components/Data/LoadingPulse";
-  import Table from "/components/Data/Table";
-  import { data_deal_query } from "./query";
+import DataContainer from "./DataContainer";
+import Table from "/components/Data/Table";
 
-  export default {
-    name: "DataList",
-    components: { LoadingPulse, DataContainer, Table },
-    apollo: {
-      deals: data_deal_query,
-    },
-    data() {
-      return {
-        deals: [],
-      };
-    },
-    computed: {
-      targetModel() {
-        if (this.$route.name === 'list_investors') {
-          return "investor";
-        } else {
-          return "deal";
-        }
+export default {
+  name: "DataList",
+  components: {DataContainer, Table},
+  computed: {
+    targetModel() {
+      if (this.$route.name === 'list_investors') {
+        return "investor";
+      } else {
+        return "deal";
       }
-    },
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        vm.$store.dispatch("showScopeOverlay", false);
-      })
-    },
-  };
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.dispatch("showScopeOverlay", false);
+    })
+  },
+};
 </script>
 <style lang="scss">
-  .sideBuffer {
-    min-width: 230px;
-    width: 20%;
-    min-height: 3px;
-    transition: width 0.5s, min-width 0.5s;
-    &.collapsed {
-      width: 0;
-      min-width: 0;
-    }
+.sideBuffer {
+  min-width: 230px;
+  width: 20%;
+  min-height: 3px;
+  transition: width 0.5s, min-width 0.5s;
+
+  &.collapsed {
+    width: 0;
+    min-width: 0;
   }
+}
 </style>

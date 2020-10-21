@@ -50,6 +50,7 @@ import gql from "graphql-tag";
 import numeral from "numeral/numeral"
 import {implementation_status_choices} from "../../choices";
 import {prepareNegotianStatusData, sum} from "../../utils/data_processing";
+import {data_deal_query} from "../../views/Data/query";
 
 export default {
   name: "ScopeBar",
@@ -62,37 +63,7 @@ export default {
     };
   },
   apollo: {
-    deals: {
-      query: gql`
-        query Deals($limit: Int!, $filters: [Filter]) {
-          deals(limit: $limit, filters: $filters) {
-            id
-            deal_size
-            country {
-              id
-              fk_region {
-                id
-              }
-            }
-            # top_investors { id name }
-            intention_of_investment
-            current_negotiation_status
-            current_implementation_status
-            locations {
-              id
-              point
-              level_of_accuracy
-            }
-          }
-        }
-      `,
-      variables() {
-        return {
-          limit: 0,
-          filters: this.$store.getters.filtersForGQL,
-        };
-      },
-    },
+    deals: data_deal_query,
     dealsWithExtraInfo: {
       query: gql`
         query Deals($limit: Int!, $filters: [Filter]) {
@@ -261,7 +232,7 @@ export default {
       return data;
     },
     produceLabelMap() {
-      if (this.$store.state.formfields) {
+      if (this.$store.state.formfields && "deal" in this.$store.state.formfields) {
         return {
           ...this.$store.state.formfields.deal.crops.choices,
           ...this.$store.state.formfields.deal.animals.choices,

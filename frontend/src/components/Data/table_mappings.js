@@ -2,6 +2,7 @@ import {
   implementation_status_choices,
   intention_of_investment_map,
   negotiation_status_map,
+  classification_choices,
 } from "/choices";
 
 export const getDealValue = function(component, deal, fieldName) {
@@ -9,7 +10,7 @@ export const getDealValue = function(component, deal, fieldName) {
     case('id'): {
       let location = {name: 'deal_detail', params: {deal_id: deal.id}};
       let url = component.$router.resolve(location).href;
-      return `<a href="${url}">${deal.id}</a>`;
+      return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
     }
     case('deal_size'): {
       return deal.deal_size.toLocaleString();
@@ -64,7 +65,7 @@ export const getInvestorValue = function(component, investor, fieldName) {
     case('id'): {
       let location = {name: 'investor_detail', params: {investor_id: investor.id}};
       let url = component.$router.resolve(location).href;
-      return `<a href="${url}">${investor.id}</a>`;
+      return `<a class="label label-investor" href="${url}">${investor.id}</a>`;
     }
     case('country'): {
       let country = null;
@@ -76,6 +77,8 @@ export const getInvestorValue = function(component, investor, fieldName) {
       }
       return country ? country.name : "";
     }
+    case('classification'):
+      return classification_choices[investor[fieldName]];
     case('deals'): {
       return investor.deals.length;
     }

@@ -65,7 +65,8 @@
     "numeral": "^2.0.6",
     "vue-apollo": "^3.0.4",
     "vue-i18n": "^8.20.0",
-    "vue-json-csv": "^1.2.11"
+    "vue-json-csv": "^1.2.11",
+    "vue-scroll-loader": "^2.2.0"
   },
   "prettier": {
     "vueIndentScriptAndStyle": true,

@@ -8,9 +8,10 @@ import VCalendar from "v-calendar";
 import dayjs from "dayjs";
 import VueApollo from "vue-apollo";
 import { apolloClient } from "./apolloclient";
+import ScrollLoader from "vue-scroll-loader";
 import VueI18n from "vue-i18n";
-import es_messages from './i18n_messages.es.json';
-import fr_messages from './i18n_messages.fr.json';
+import es_messages from "./i18n_messages.es.json";
+import fr_messages from "./i18n_messages.fr.json";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
@@ -45,6 +46,7 @@ Vue.use(BootstrapVue);
 Vue.use(VCalendar);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
+Vue.use(ScrollLoader);
 
 Vue.component("multiselect", Multiselect);
 

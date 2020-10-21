@@ -95,3 +95,23 @@ export const intention_of_investment_map = {
   RENEWABLE_ENERGY: ["Renewable Energy", "fas fa-wind"],
   OTHER: ["Other", ""],
 };
+
+export const classification_choices = {
+  GOVERNMENT: "Government",
+  GOVERNMENT_INSTITUTION: "Government institution",
+  STATE_OWNED_COMPANY: "State-/government (owned) company",
+  SEMI_STATE_OWNED_COMPANY: "Semi state-owned company",
+  ASSET_MANAGEMENT_FIRM: "Asset management firm",
+  BILATERAL_DEVELOPMENT_BANK: "Bilateral Development Bank / Development Finance Institution",
+  STOCK_EXCHANGE_LISTED_COMPANY: "Stock-exchange listed company",
+  COMMERCIAL_BANK: "Commercial Bank",
+  INSURANCE_FIRM: "Insurance firm",
+  INVESTMENT_BANK: "Investment Bank",
+  INVESTMENT_FUND: "Investment fund",
+  MULTILATERAL_DEVELOPMENT_BANK: "Multilateral Development Bank (MDB)",
+  PRIVATE_COMPANY: "Private company",
+  PRIVATE_EQUITY_FIRM: "Private equity firm",
+  INDIVIDUAL_ENTREPRENEUR: "Individual entrepreneur",
+  NON_PROFIT: "Non - Profit organization (e.g. Church, University etc.)",
+  OTHER: "Other (please specify in comment field)",
+}

@@ -223,7 +223,7 @@ export default {
         hoverlabel.innerHTML = `${size} hectares`;
         factor = Math.max(Math.log(size) * 6, 40);
       } else {
-        hoverlabel.innerHTML = `${size} deals`;
+        hoverlabel.innerHTML = `<b>${size}</b> deal locations`;
         factor = Math.max(Math.log(size) * 16, 40);
       }
 
@@ -342,6 +342,7 @@ export default {
 
   .landmatrix-custom-circle-hover-text {
     display: none;
+    padding: 5px;
   }
 
   &:hover {

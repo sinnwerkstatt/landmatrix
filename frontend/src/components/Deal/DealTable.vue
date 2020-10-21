@@ -44,6 +44,8 @@
 </template>
 
 <script>
+  import {sortAnything} from "../../utils";
+
   const slugify = require("slugify");
 
   const STATUS_MAP = {
@@ -95,19 +97,7 @@
         return 0;
       },
       dt_deals() {
-        let sfield = this.sortField;
-        let sasc = this.sortAscending;
-        function sortAnything(a, b) {
-          let fieldx = sasc ? a[sfield] : b[sfield];
-          let fieldy = sasc ? b[sfield] : a[sfield];
-
-          let field_type = typeof fieldx;
-          if (field_type === typeof "") {
-            return fieldx.localeCompare(fieldy);
-          }
-          return fieldy - fieldx;
-        }
-        let deals = this.deals.sort(sortAnything);
+        let deals = sortAnything(this.deals, this.sortField, this.sortAscending);
 
         if (this.pageSize) {
           return deals.slice(

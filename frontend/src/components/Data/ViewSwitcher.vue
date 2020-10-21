@@ -12,11 +12,11 @@
             aria-haspopup="true"
             aria-expanded="false"
             id="viewswitch-data-dropdown"
-            :class="{'router-link-active': isListRoute}"
+            :class="{'router-link-active': isListRoute, 'investors': dataItemName===label.investors}"
           >{{ dataItemName }}</a>
           <span class="dropdown-menu">
-            <router-link v-if="dataItemName!=label.deals" :to="{name:'list_deals'}" class="dropdown-item">{{ label.deals }}</router-link>
-            <router-link v-if="dataItemName!=label.investors" :to="{name:'list_investors'}" class="dropdown-item">{{ label.investors }}</router-link>
+            <router-link v-if="dataItemName!==label.deals" :to="{name:'list_deals'}" class="dropdown-item deals">{{ label.deals }}</router-link>
+            <router-link v-if="dataItemName!==label.investors" :to="{name:'list_investors'}" class="dropdown-item investors">{{ label.investors }}</router-link>
           </span>
         </li>
       </ul>
@@ -64,7 +64,7 @@
     left: 0;
     right: 0;
     text-align: center;
-    z-index: 1000;
+    z-index: 100;
     font-size: 0;
     filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.5));
 
@@ -84,6 +84,9 @@
           &.router-link-active {
             background-color: $primary;
             color: white;
+            &.investors {
+              background-color: $lm_investor;
+            }
             &:hover {
               color: black;
             }
@@ -107,9 +110,15 @@
               &.router-link-exact-active {
                 background-color: $primary;
                 color: white;
+                &.investors {
+                  background-color: $lm_investor;
+                }
               }
               &:hover {
                 color: $lm_orange;
+              }
+              &.investors:hover {
+                color: $lm_investor;
               }
             }
           }

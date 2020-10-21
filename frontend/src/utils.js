@@ -35,4 +35,30 @@ function derive_status(status, draft_status) {
   return st;
 }
 
-export { flatten_choices, derive_status };
+function sortAnything(list, sortField, sortAscending) {
+  const objCompareAttribs = ['name', 'id'];
+  function sortFunction(a, b) {
+    let fieldx = sortAscending ? a[sortField] : b[sortField];
+    let fieldy = sortAscending ? b[sortField] : a[sortField];
+
+    let field_type = typeof fieldx;
+    if (fieldy === null) return true;
+    if (fieldx === null) return false;
+    if (field_type === typeof "") {
+      return fieldx.localeCompare(fieldy);
+    } else if (Array.isArray(fieldx)) {
+      return fieldx.length < fieldy.length;
+    } else if (field_type === "object") {
+      for (let key of objCompareAttribs) {
+        if (key in fieldx && key in fieldy) {
+          return fieldy[key] < fieldx[key];
+        }
+      }
+      return Object.keys(fieldx).length < Object.keys(fieldy).length;
+    }
+    return fieldy < fieldx;
+  }
+  return list.sort(sortFunction);
+}
+
+export { flatten_choices, derive_status, sortAnything };
