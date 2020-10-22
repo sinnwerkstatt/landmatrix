@@ -1,18 +1,18 @@
 import Vue from "vue";
 import Router from "vue-router";
+import store from "/store";
 import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
 import Charts from "./views/Charts/Base";
 import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
+import ProduceInfoTreeMap from "./views/Charts/ProduceInfoTreeMap";
+import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
 import InvestorDetail from "./views/Investor/Detail";
-
-import store from "/store";
-import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import CaseStatistics from "/views/Manager/CaseStatistics";
 
 Vue.use(Router);
@@ -47,11 +47,15 @@ const router = new Router({
           name: "web-of-transnational-deals",
           component: WebOfTransnationalDeals,
         },
-
         {
           path: "dynamics/",
           name: "dynamics-overview",
           component: DynamicsOverview,
+        },
+        {
+          path: "produce-info/",
+          name: "produce-info",
+          component: ProduceInfoTreeMap,
         },
       ],
     },

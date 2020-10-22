@@ -31,3 +31,22 @@ export const data_deal_query = {
     };
   },
 };
+
+export const data_deal_produce_query = {
+  query: gql`
+    query Deals($limit: Int!, $filters: [Filter]) {
+      dealsWithProduceInfo: deals(limit: $limit, filters: $filters) {
+        id
+        crops
+        animals
+        resources
+      }
+    }
+  `,
+  variables() {
+    return {
+      limit: 0,
+      filters: this.$store.getters.filtersForGQL,
+    };
+  },
+};

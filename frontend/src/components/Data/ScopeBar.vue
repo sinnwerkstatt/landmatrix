@@ -36,8 +36,9 @@
         </div>
         <div class="get-involved">
           <router-link :to="`/get-involved/`">{{
-            $t("Contribute")
-          }}</router-link>
+              $t("Contribute")
+            }}
+          </router-link>
         </div>
       </div>
     </div>
@@ -46,11 +47,10 @@
 
 <script>
 import StatusPieChart from "../Charts/StatusPieChart";
-import gql from "graphql-tag";
 import numeral from "numeral/numeral"
 import {implementation_status_choices} from "../../choices";
 import {prepareNegotianStatusData, sum} from "../../utils/data_processing";
-import {data_deal_query} from "../../views/Data/query";
+import {data_deal_produce_query, data_deal_query} from "../../views/Data/query";
 
 export default {
   name: "ScopeBar",
@@ -59,29 +59,12 @@ export default {
     return {
       showDealCount: true,
       deals: [],
-      dealsWithExtraInfo: []
+      dealsWithProduceInfo: []
     };
   },
   apollo: {
     deals: data_deal_query,
-    dealsWithExtraInfo: {
-      query: gql`
-        query Deals($limit: Int!, $filters: [Filter]) {
-          dealsWithExtraInfo: deals(limit: $limit, filters: $filters) {
-            id
-            crops
-            animals
-            resources
-          }
-        }
-      `,
-      variables() {
-        return {
-          limit: 0,
-          filters: this.$store.getters.filtersForGQL,
-        };
-      },
-    }
+    dealsWithProduceInfo: data_deal_produce_query,
   },
   computed: {
     showScopeOverlay: {
@@ -180,9 +163,9 @@ export default {
       let data = [];
       let fields = ['crops', 'animals', 'resources']
       let colors = ["#FC941F", "#7D4A0F", "black"]
-      if (this.dealsWithExtraInfo.length) {
+      if (this.dealsWithProduceInfo.length) {
         let counts = {}
-        for (let deal of this.dealsWithExtraInfo) {
+        for (let deal of this.dealsWithProduceInfo) {
           for (let field of fields) {
             counts[field] = counts[field] || [];
             for (let entry of deal[field]) {
@@ -214,7 +197,7 @@ export default {
           if (d.label in this.produceLabelMap) {
             d.label = this.produceLabelMap[d.label];
           }
-          d.value = d.value/totalCount*100;
+          d.value = d.value / totalCount * 100;
           d.unit = "%";
           d.precision = 1;
         }
@@ -223,7 +206,7 @@ export default {
           data.push({
             label: "Other",
             color: "rgba(252,148,31,0.4)",
-            value: otherCount/totalCount*100,
+            value: otherCount / totalCount * 100,
             unit: '%',
             precision: 1,
           });
