@@ -32,11 +32,10 @@
 <style type="scss" scoped>
 .message-container {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 4em;
+  left: 3em;
+  right: 3em;
   z-index: 20000;
   opacity: 0.95;
-  width: 100%;
-  padding: 4em 3em;
 }
 </style>
