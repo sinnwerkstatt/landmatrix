@@ -35,7 +35,7 @@
   top: 4em;
   left: 3em;
   right: 3em;
-  z-index: 20000;
+  z-index: 1000;
   opacity: 0.95;
 }
 </style>
