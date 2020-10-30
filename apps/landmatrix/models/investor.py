@@ -3,7 +3,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django_prometheus.models import ExportModelOperationsMixin
 from multiselectfield import MultiSelectField
 from sentry_sdk import capture_message
 
@@ -444,7 +443,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
         return self.filter(public_filter | public_or_pending_filter)
 
 
-class HistoricalInvestor(ExportModelOperationsMixin("investor"), InvestorBase):
+class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey(
         "auth.User", blank=True, null=True, on_delete=models.SET_NULL
@@ -757,10 +756,7 @@ class InvestorVentureInvolvementBase(models.Model):
         abstract = True
 
 
-class HistoricalInvestorVentureInvolvement(
-    ExportModelOperationsMixin("investor_venture_involvement"),
-    InvestorVentureInvolvementBase,
-):
+class HistoricalInvestorVentureInvolvement(InvestorVentureInvolvementBase):
     # FIXME: related names are named the wrong way here
     fk_venture = models.ForeignKey(
         HistoricalInvestor,
@@ -841,10 +837,7 @@ class InvestorActivityInvolvementBase(models.Model):
         abstract = True
 
 
-class HistoricalInvestorActivityInvolvement(
-    ExportModelOperationsMixin("investor_activity_involvement"),
-    InvestorActivityInvolvementBase,
-):
+class HistoricalInvestorActivityInvolvement(InvestorActivityInvolvementBase):
     fk_activity = models.ForeignKey(
         "HistoricalActivity",
         verbose_name=_("Activity"),

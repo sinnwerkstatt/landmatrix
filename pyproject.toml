@@ -72,7 +72,6 @@ python-dateutil = "*"
 doit = "*"
 celery = "*"
 libsass = "*"
-django-prometheus = "*"
 gunicorn = { version = "*", optional = true }
 sentry_sdk = { version = "*", optional = true }
 

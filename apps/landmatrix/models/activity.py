@@ -6,7 +6,6 @@ from django.db import models, transaction
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django_prometheus.models import ExportModelOperationsMixin
 from sentry_sdk import capture_message
 
 from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
@@ -810,7 +809,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         )
 
 
-class HistoricalActivity(ExportModelOperationsMixin("activity"), ActivityBase):
+class HistoricalActivity(ActivityBase):
     """
     All versions (including the current) of activities
 

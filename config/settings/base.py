@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     "apps.feeds",
     "impersonate",
     "celery",
-    "django_prometheus",
     # green new deal
     "wagtail.api.v2",
     "reversion",
@@ -94,7 +93,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -111,7 +109,6 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
     "django.middleware.cache.FetchFromCacheMiddleware",
-    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 TEMPLATES = [

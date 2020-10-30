@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django_prometheus import exports
 from django_registration.backends.activation.views import RegistrationView
 
 from apps.grid.views.deal_comparison import DealComparisonView
@@ -59,11 +58,6 @@ urlpatterns = [
         name="compare_investors",
     ),
     path("editor/", include("apps.editor.urls")),
-    path(
-        "prometheus/metrics/",
-        exports.ExportToDjangoView,
-        name="prometheus-django-metrics",
-    ),
     path("graphql/", include("apps.graphql.urls")),
     path("wagtailapi/v2/", api_router.urls),
     # path("api/", include("apps.landmatrix.urlsapi")),
