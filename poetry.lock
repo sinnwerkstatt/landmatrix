@@ -488,6 +488,18 @@ django = ">1.11,<4.0"
 
 [[package]]
 category = "main"
+description = "Full featured redis cache backend for Django."
+name = "django-redis"
+optional = false
+python-versions = ">=3.5"
+version = "4.12.1"
+
+[package.dependencies]
+Django = ">=2.2"
+redis = ">=3.0.0"
+
+[[package]]
+category = "main"
 description = "An extensible user-registration application for Django"
 name = "django-registration"
 optional = false
@@ -1251,6 +1263,7 @@ urllib3 = ">=1.8,<2.0"
 reference = "3ff807e0da747bac3ec6ef1035511d98223d6d5b"
 type = "git"
 url = "https://github.com/sinnwerkstatt/pyelasticsearch"
+
 [[package]]
 category = "dev"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1767,7 +1780,7 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pyt
 production = ["gunicorn", "sentry_sdk"]
 
 [metadata]
-content-hash = "12f7783b8e54bacf6591273a64b578ef06f63fcbb2539c57a410d0096a90fc8a"
+content-hash = "b490c15ef794421ef4716fc39f478d79742b87395251433000909c234eb1bf65"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1960,6 +1973,10 @@ django-prometheus = [
 ]
 django-recaptcha = [
     {file = "django_recaptcha-2.0.6-py2.py3-none-any.whl", hash = "sha256:567784963fd5400feaf92e8951d8dbbbdb4b4c48a76e225d4baa63a2c9d2cd8c"},
+]
+django-redis = [
+    {file = "django-redis-4.12.1.tar.gz", hash = "sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63"},
+    {file = "django_redis-4.12.1-py3-none-any.whl", hash = "sha256:1133b26b75baa3664164c3f44b9d5d133d1b8de45d94d79f38d1adc5b1d502e5"},
 ]
 django-registration = [
     {file = "django-registration-3.1.1.tar.gz", hash = "sha256:44ca3d63869c91174cef9ccf244ec87ad296e3d705983e9e98150cee03938dda"},
