@@ -22,10 +22,11 @@
 <script>
 import DataContainer from "./DataContainer";
 import Table from "/components/Data/Table";
+import LoadingPulse from "/components/Data/LoadingPulse";
 
 export default {
   name: "DataList",
-  components: {DataContainer, Table},
+  components: {DataContainer, Table, LoadingPulse},
   computed: {
     targetModel() {
       if (this.$route.name === 'list_investors') {

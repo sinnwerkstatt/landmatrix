@@ -1,4 +1,4 @@
-function flatten_choices(choices) {
+export function flatten_choices(choices) {
   if (choices) {
     let newchoices = {};
     for (let [key, value] of Object.entries(choices)) {
@@ -14,7 +14,7 @@ function flatten_choices(choices) {
   }
 }
 
-function derive_status(status, draft_status) {
+export function derive_status(status, draft_status) {
   let status_map = {
     1: "Draft",
     2: "Live",
@@ -35,30 +35,33 @@ function derive_status(status, draft_status) {
   return st;
 }
 
-function sortAnything(list, sortField, sortAscending) {
-  const objCompareAttribs = ['name', 'id'];
+export function sortAnything(list, sortField, sortAscending) {
   function sortFunction(a, b) {
     let fieldx = sortAscending ? a[sortField] : b[sortField];
     let fieldy = sortAscending ? b[sortField] : a[sortField];
 
-    let field_type = typeof fieldx;
-    if (fieldy === null) return true;
-    if (fieldx === null) return false;
-    if (field_type === typeof "") {
-      return fieldx.localeCompare(fieldy);
-    } else if (Array.isArray(fieldx)) {
-      return fieldx.length < fieldy.length;
-    } else if (field_type === "object") {
-      for (let key of objCompareAttribs) {
-        if (key in fieldx && key in fieldy) {
-          return fieldy[key] < fieldx[key];
+    if (fieldy === null) return -1;
+    if (fieldx === null) return 1;
+
+    switch (typeof fieldx) {
+      case "number":
+        return fieldy - fieldx;
+      case "string":
+        return fieldx.localeCompare(fieldy);
+      case "object": {
+        console.log(fieldx);
+        console.log(fieldy);
+        if (Array.isArray(fieldx)) {
+          console.log("it's an array!");
+          return fieldx.length - fieldy.length;
         }
+        for (let key of ["name", "id"]) {
+          if (key in fieldx && key in fieldy) return fieldy[key] - fieldx[key];
+        }
+        return Object.keys(fieldx).length - Object.keys(fieldy).length;
       }
-      return Object.keys(fieldx).length < Object.keys(fieldy).length;
     }
-    return fieldy < fieldx;
+    return fieldy - fieldx;
   }
   return list.sort(sortFunction);
 }
-
-export { flatten_choices, derive_status, sortAnything };

@@ -12,9 +12,9 @@ export const getDealValue = function(component, deal, fieldName) {
       let url = component.$router.resolve(location).href;
       return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
     }
-    case('deal_size'): {
-      return deal.deal_size.toLocaleString();
-    }
+    case('deal_size'): return deal.deal_size.toLocaleString();
+    case('intended_size'): return deal.intended_size? deal.intended_size.toLocaleString(): null;
+
     case('country'): {
       let country = component.$store.getters.getCountryOrRegion({
         type: "country",
