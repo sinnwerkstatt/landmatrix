@@ -17,6 +17,7 @@
   import Footer from "/components/Footer";
 
   export default {
+    name: "Landmatrix",
     components: { Navbar, Messages, BreadcrumbBar, Footer },
   };
 </script>
