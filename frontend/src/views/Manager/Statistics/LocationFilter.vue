@@ -25,12 +25,10 @@
 </template>
 
 <script>
-export default {
-  name: "LocationFilter",
-  props: ['regions', 'countries', 'selectedRegion', 'selectedCountry'],
-}
+  export default {
+    name: "LocationFilter",
+    props: ["regions", "countries", "selectedRegion", "selectedCountry"],
+  };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

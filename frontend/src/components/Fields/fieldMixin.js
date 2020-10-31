@@ -13,17 +13,17 @@ export const fieldMixin = {
   computed: {
     labelClasses() {
       if (this.narrow) {
-        return ['col-md-6']
+        return ["col-md-6"];
       } else {
-        return ['col-md-5 col-lg-4'];
+        return ["col-md-5 col-lg-4"];
       }
     },
     valClasses() {
       if (this.narrow) {
-        return ['col-md-6']
+        return ["col-md-6"];
       } else {
-        return ['col-md-7 col-lg-8'];
+        return ["col-md-7 col-lg-8"];
       }
-    }
-  }
+    },
+  },
 };

@@ -63,7 +63,7 @@
   ];
 
   export default {
-    components: {StatusPieChart, ImplementationStatusChart },
+    components: { StatusPieChart, ImplementationStatusChart },
     data: function () {
       return {
         canvasCtx: null,

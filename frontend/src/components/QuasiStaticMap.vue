@@ -27,13 +27,13 @@
     props: ["country_id", "region_id"],
     methods: {
       bigMapReady(map) {
-        let type = 'region'
-        let id = this.region_id
+        let type = "region";
+        let id = this.region_id;
         if (this.country_id) {
-          type = 'country'
-          id = this.country_id
+          type = "country";
+          id = this.country_id;
         }
-        let roc = this.$store.getters.getCountryOrRegion({ type: type, id:id });
+        let roc = this.$store.getters.getCountryOrRegion({ type: type, id: id });
         console.log("x", roc);
         map.fitBounds([
           [roc.point_lat_min, roc.point_lon_min],

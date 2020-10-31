@@ -1,14 +1,14 @@
 <template>
   <div>
-  <component
-    :is="formfield.class"
-    :formfield="formfield"
-    :readonly="!!readonly"
-    v-model="value"
-    :file_not_public="file_not_public"
-    v-if="!readonly || custom_is_null(value)"
-    :narrow="!!narrow"
-  />
+    <component
+      :is="formfield.class"
+      :formfield="formfield"
+      :readonly="!!readonly"
+      v-model="value"
+      :file_not_public="file_not_public"
+      v-if="!readonly || custom_is_null(value)"
+      :narrow="!!narrow"
+    />
   </div>
 </template>
 
@@ -50,14 +50,20 @@
       URLField,
     },
     computed: {
-      formfield(){
+      formfield() {
         switch (this.model) {
-          case "contract": return this.formfields.contract[this.fieldname];
-          case "datasource": return this.formfields.datasource[this.fieldname];
-          case "location": return this.formfields.location[this.fieldname];
-          case "investor": return this.formfields.investor[this.fieldname];
-          case "involvement": return this.formfields.involvement[this.fieldname];
-          default: return this.formfields.deal[this.fieldname]
+          case "contract":
+            return this.formfields.contract[this.fieldname];
+          case "datasource":
+            return this.formfields.datasource[this.fieldname];
+          case "location":
+            return this.formfields.location[this.fieldname];
+          case "investor":
+            return this.formfields.investor[this.fieldname];
+          case "involvement":
+            return this.formfields.involvement[this.fieldname];
+          default:
+            return this.formfields.deal[this.fieldname];
         }
       },
       ...mapState({

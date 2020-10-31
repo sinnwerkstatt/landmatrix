@@ -115,16 +115,13 @@
         this.tag = this.$route.query.tag || null;
         let title = "Stay Informed";
         if (this.tag) {
-          title += ` - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`
+          title += ` - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`;
         }
         return title;
       },
       updatePageTitle() {
-        this.$store.commit(
-          "setTitle",
-          this.pageTitle()
-        );
-      }
+        this.$store.commit("setTitle", this.pageTitle());
+      },
     },
     mounted() {
       this.updatePageTitle();

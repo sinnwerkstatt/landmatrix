@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle  v-if="article" :title="article.title"></PageTitle>
+    <PageTitle v-if="article" :title="article.title"></PageTitle>
 
     <div class="container" v-if="article">
       <div class="meta mb-3">
@@ -23,7 +23,7 @@
 
 <script>
   import gql from "graphql-tag";
-  import PageTitle from "../../components/PageTitle"
+  import PageTitle from "../../components/PageTitle";
 
   export default {
     components: { PageTitle },

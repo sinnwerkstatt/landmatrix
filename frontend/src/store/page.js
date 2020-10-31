@@ -86,9 +86,7 @@ export const pageModule = {
             let title;
             if (response.data.meta.type === "wagtailcms.WagtailRootPage") {
               title = null;
-              breadcrumbs = [
-                { name: "Home" },
-              ];
+              breadcrumbs = [{ name: "Home" }];
             } else {
               title = response.data.title;
               breadcrumbs = [

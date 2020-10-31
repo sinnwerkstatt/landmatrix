@@ -36,7 +36,11 @@
               <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
-          <td v-for="field in fields" :key="field" v-html="displayField(deal, field)"></td>
+          <td
+            v-for="field in fields"
+            :key="field"
+            v-html="displayField(deal, field)"
+          ></td>
         </tr>
       </tbody>
     </table>
@@ -44,7 +48,7 @@
 </template>
 
 <script>
-  import {sortAnything} from "../../utils";
+  import { sortAnything } from "../../utils";
 
   const slugify = require("slugify");
 
@@ -85,7 +89,7 @@
           created_at: "Created at",
           modified_at: "Last modified at",
           fully_updated_at: "Fully updated at",
-          cached_has_no_known_investor: "Has no known investor"
+          cached_has_no_known_investor: "Has no known investor",
         },
       };
     },

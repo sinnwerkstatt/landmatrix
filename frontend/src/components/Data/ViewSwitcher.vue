@@ -3,30 +3,48 @@
     <div class="navbar navbar-expand">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link :to="{name:'map'}" class="nav-link">{{ $t("Map") }}</router-link>
+          <router-link :to="{ name: 'map' }" class="nav-link">
+            {{ $t("Map") }}
+          </router-link>
         </li>
         <li class="nav-item dropdown">
-          <a href=""
+          <a
+            href=""
             class="nav-link dropdown-toggle"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
             id="viewswitch-data-dropdown"
-            :class="{'router-link-active': isListRoute, 'investors': dataItemName===label.investors}"
-          >{{ dataItemName }}</a>
+            :class="{
+              'router-link-active': isListRoute,
+              investors: dataItemName === label.investors,
+            }"
+            >{{ dataItemName }}</a
+          >
           <span class="dropdown-menu">
-            <router-link v-if="dataItemName!==label.deals" :to="{name:'list_deals'}" class="dropdown-item deals">{{ label.deals }}</router-link>
-            <router-link v-if="dataItemName!==label.investors" :to="{name:'list_investors'}" class="dropdown-item investors">{{ label.investors }}</router-link>
+            <router-link
+              v-if="dataItemName !== label.deals"
+              :to="{ name: 'list_deals' }"
+              class="dropdown-item deals"
+              >{{ label.deals }}</router-link
+            >
+            <router-link
+              v-if="dataItemName !== label.investors"
+              :to="{ name: 'list_investors' }"
+              class="dropdown-item investors"
+              >{{ label.investors }}</router-link
+            >
           </span>
         </li>
         <li class="nav-item">
-          <router-link :to="{name:'charts'}" class="nav-link">{{ $t("Charts") }}</router-link>
+          <router-link :to="{ name: 'charts' }" class="nav-link">
+            {{ $t("Charts") }}
+          </router-link>
         </li>
       </ul>
     </div>
   </div>
 </template>
-
 
 <script>
   export default {
@@ -36,12 +54,12 @@
         label: {
           deals: this.$t("Deals"),
           investors: this.$t("Investors"),
-        }
+        },
       };
     },
     computed: {
       isListRoute() {
-        return ['list_deals', 'list_investors'].includes(this.$route.name);
+        return ["list_deals", "list_investors"].includes(this.$route.name);
       },
       dataItemName() {
         if (this.$route.name === "list_deals") {
@@ -51,9 +69,9 @@
         } else {
           return this.$t("Data");
         }
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -140,6 +158,5 @@
         }
       }
     }
-
   }
 </style>

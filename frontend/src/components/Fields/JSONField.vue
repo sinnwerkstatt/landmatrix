@@ -4,7 +4,7 @@
       {{ formfield.label }}
     </div>
     <div class="val" :class="valClasses">
-      <div v-for="val in vals" :class="{'is-current':val.current}">
+      <div v-for="val in vals" :class="{ 'is-current': val.current }">
         <span v-if="val.date || val.current">
           [
           <span v-if="val.date">{{ val.date }}</span>
@@ -29,7 +29,7 @@
 
 <script>
   import { flatten_choices } from "/utils";
-  import {fieldMixin} from "./fieldMixin";
+  import { fieldMixin } from "./fieldMixin";
 
   export default {
     mixins: [fieldMixin],

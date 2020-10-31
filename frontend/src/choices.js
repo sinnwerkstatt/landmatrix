@@ -102,7 +102,8 @@ export const classification_choices = {
   STATE_OWNED_COMPANY: "State-/government (owned) company",
   SEMI_STATE_OWNED_COMPANY: "Semi state-owned company",
   ASSET_MANAGEMENT_FIRM: "Asset management firm",
-  BILATERAL_DEVELOPMENT_BANK: "Bilateral Development Bank / Development Finance Institution",
+  BILATERAL_DEVELOPMENT_BANK:
+    "Bilateral Development Bank / Development Finance Institution",
   STOCK_EXCHANGE_LISTED_COMPANY: "Stock-exchange listed company",
   COMMERCIAL_BANK: "Commercial Bank",
   INSURANCE_FIRM: "Insurance firm",
@@ -114,4 +115,4 @@ export const classification_choices = {
   INDIVIDUAL_ENTREPRENEUR: "Individual entrepreneur",
   NON_PROFIT: "Non - Profit organization (e.g. Church, University etc.)",
   OTHER: "Other (please specify in comment field)",
-}
+};

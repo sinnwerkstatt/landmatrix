@@ -19,8 +19,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import "./scss/main.scss";
 
@@ -79,15 +79,13 @@ Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
 
-
 // Create VueI18n instance with options
 const i18n = new VueI18n({
   locale: LANGUAGE || "en",
-  fallbackLocale: 'en',
+  fallbackLocale: "en",
   messages: { es: es_messages, fr: fr_messages },
   silentTranslationWarn: true,
-})
-
+});
 
 export default new Vue({
   router,

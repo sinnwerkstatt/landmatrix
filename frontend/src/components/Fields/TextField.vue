@@ -9,7 +9,7 @@
           <a :href="val" target="_blank">{{ val }}</a>
         </template>
         <template v-else>
-        {{ parseVal(val) }}
+          {{ parseVal(val) }}
         </template>
       </div>
       <div v-else class="input-group">

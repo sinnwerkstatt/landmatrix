@@ -16,7 +16,10 @@
             model="investor"
           />
         </div>
-        <div class="col-lg-8 col-xl-6 mb-3" :class="{ loading_wrapper: !involvements.length }">
+        <div
+          class="col-lg-8 col-xl-6 mb-3"
+          :class="{ loading_wrapper: !involvements.length }"
+        >
           <InvestorGraph
             v-if="involvements.length"
             :investor="investor"
@@ -65,7 +68,11 @@
         </b-tab>
         <b-tab>
           <template v-slot:title>
-            <h5 v-html="`Deals (Involvements as Operating company) (${investor.deals.length})`"></h5>
+            <h5
+              v-html="
+                `Deals (Involvements as Operating company) (${investor.deals.length})`
+              "
+            ></h5>
           </template>
           <table class="table">
             <thead>

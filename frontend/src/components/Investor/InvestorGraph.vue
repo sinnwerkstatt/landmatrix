@@ -3,7 +3,9 @@
     <InvestorDetailInvestorModal v-model="showInvestorModal" :investor="modalData" />
     <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
-    <p class="mb-0 font-italic small">Please right-click the nodes to get more details.</p>
+    <p class="mb-0 font-italic small">
+      Please right-click the nodes to get more details.
+    </p>
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
         <a class="" @click="fullscreen_switch">
@@ -39,10 +41,16 @@
             </label>
           </div>
         </div>
-        <div id="investor-legend" class="mt-1" :class="{ 'col-sm-6': controls, 'col-sm-12': !controls }">
+        <div
+          id="investor-legend"
+          class="mt-1"
+          :class="{ 'col-sm-6': controls, 'col-sm-12': !controls }"
+        >
           <h6>Legend</h6>
           <ul class="list-unstyled">
-            <li v-if="showDeals"><span class="legend-icon deal"></span>Is operating company of</li>
+            <li v-if="showDeals">
+              <span class="legend-icon deal"></span>Is operating company of
+            </li>
             <li><span class="legend-icon parent"></span>Is parent company of</li>
             <li>
               <span class="legend-icon tertiary"></span>Is tertiary investor/lender of
@@ -184,7 +192,7 @@
         window.setTimeout(() => {
           cy.layout(cyconfig.layout).run();
           this.add_rightclick_modal();
-        },200);
+        }, 200);
       },
       add_rightclick_modal() {
         cy.nodes().on("cxttap", (e) => {
@@ -267,7 +275,7 @@
 </script>
 
 <style lang="scss">
-  .investor-graph{
+  .investor-graph {
     max-width: 1000px;
   }
   #investor-network-wrapper {
@@ -386,6 +394,4 @@
       border-radius: 50%;
     }
   }
-
-
 </style>

@@ -28,8 +28,8 @@
     methods: {
       getUrl(route_name) {
         return this.$router.resolve(route_name).href;
-      }
-    }
+      },
+    },
   };
 </script>
 

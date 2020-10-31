@@ -7,10 +7,7 @@
         <div v-for="article in limitedArticles">
           <div class="article row">
             <div class="col-3">
-              <img
-                v-if="article.header_image"
-                :src="article.header_image"
-              />
+              <img v-if="article.header_image" :src="article.header_image" />
             </div>
             <div class="col-9">
               <h5 class="title">
@@ -20,7 +17,7 @@
             </div>
           </div>
         </div>
-        <button v-if="limit && limit < articles.length" @click.prevent="limit=0">
+        <button v-if="limit && limit < articles.length" @click.prevent="limit = 0">
           Show all {{ articles.length }} {{ articlesLabel.toLowerCase() }}
         </button>
       </div>
@@ -40,12 +37,12 @@
     computed: {
       limitedArticles() {
         if (this.limit) {
-          return this.articles.slice(0,this.limit);
+          return this.articles.slice(0, this.limit);
         } else {
           return this.articles;
         }
-      }
-    }
+      },
+    },
   };
 </script>
 
@@ -65,7 +62,9 @@
       }
     }
     .article {
-      img { height: auto; }
+      img {
+        height: auto;
+      }
       margin-bottom: 1em;
     }
     button {

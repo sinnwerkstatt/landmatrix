@@ -10,7 +10,7 @@
   import PageTitle from "../../components/PageTitle";
 
   export default {
-    components: {PageTitle, Streamfield },
+    components: { PageTitle, Streamfield },
     computed: {
       page() {
         return this.$store.state.page.wagtailPage;

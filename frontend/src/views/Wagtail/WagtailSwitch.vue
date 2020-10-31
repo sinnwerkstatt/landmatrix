@@ -14,7 +14,7 @@
     computed: {
       pageType() {
         let page = this.$store.state.page.wagtailPage;
-        switch(page.meta.type) {
+        switch (page.meta.type) {
           case "blog.BlogIndexPage":
             return BlogIndexPage;
             break;

@@ -29,7 +29,6 @@
               Produce Info
             </router-link>
           </li>
-
         </ul>
       </div>
     </div>

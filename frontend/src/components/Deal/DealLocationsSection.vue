@@ -38,9 +38,9 @@
       LGeoJson,
     },
     computed: {
-      entries () {
-        return this.deal.locations.map(l => {
-          return {...l, country: this.deal.country.name};
+      entries() {
+        return this.deal.locations.map((l) => {
+          return { ...l, country: this.deal.country.name };
         });
       },
       bounds() {

@@ -162,7 +162,6 @@
       <b-tab :title="$t('Comments')">
         <DealComments :comments="deal.comments"></DealComments>
       </b-tab>
-
     </b-tabs>
   </div>
 </template>
@@ -257,15 +256,15 @@
             { name: title },
           ],
         });
-      }
+      },
     },
     beforeRouteEnter(to, from, next) {
-      next(vm => {
+      next((vm) => {
         vm.updatePageContext(to);
       });
     },
     beforeRouteUpdate(to, from, next) {
-      this.updatePageContext(to)
+      this.updatePageContext(to);
       next();
     },
   };

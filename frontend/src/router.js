@@ -40,11 +40,11 @@ const router = new Router({
     },
     {
       path: "/data/",
-      redirect: {name: 'list_deals'}
+      redirect: { name: "list_deals" },
     },
     {
       path: "/data/investors/",
-      redirect: {name: 'list_investors'}
+      redirect: { name: "list_investors" },
     },
     // {
     //   path: "/charts/",
@@ -70,7 +70,7 @@ const router = new Router({
     // },
     {
       path: "/list/",
-      redirect: {name: 'list_deals'}
+      redirect: { name: "list_deals" },
     },
     {
       path: "/list/deals/",
@@ -151,14 +151,14 @@ const router = new Router({
   //   // }
   // ]
 });
-const DEFAULT_TITLE = 'Land Matrix';
+const DEFAULT_TITLE = "Land Matrix";
 router.afterEach((to, from) => {
   // Use next tick to handle router history correctly
   // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
   Vue.nextTick(() => {
     // document.title = to.meta.title || DEFAULT_TITLE;
     document.title = store.state.page.title || DEFAULT_TITLE;
-    if (to.matched.some(record => record.meta.hideBreadcrumbs)) {
+    if (to.matched.some((record) => record.meta.hideBreadcrumbs)) {
       store.dispatch("breadcrumbBar", false);
     } else {
       store.dispatch("breadcrumbBar", true);

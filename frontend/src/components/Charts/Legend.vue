@@ -8,16 +8,16 @@
 </template>
 
 <script>
-export default {
-  props: ["items"],
-  methods: {
-    getStyle(item) {
-      return {
-        backgroundColor: item.color,
-      }
-    }
-  }
-}
+  export default {
+    props: ["items"],
+    methods: {
+      getStyle(item) {
+        return {
+          backgroundColor: item.color,
+        };
+      },
+    },
+  };
 </script>
 <style lang="scss" scoped>
   .legend {
@@ -38,7 +38,7 @@ export default {
         height: 0.8em;
       }
       .label {
-        margin-left: 0px;
+        margin-left: 0;
       }
     }
   }

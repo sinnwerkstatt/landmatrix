@@ -1,10 +1,10 @@
 <template>
   <div class="lm-loading-container">
-  <div class="lds-facebook">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
+    <div class="lds-facebook">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
   </div>
 </template>
 
@@ -16,7 +16,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(1,0,0,0.7);
+    background: rgba(1, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
