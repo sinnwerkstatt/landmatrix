@@ -4,7 +4,7 @@
     <FilterBar>
       <slot name="FilterBar"></slot>
     </FilterBar>
-    <ScopeBar />
+    <ChartsScopeBar />
     <div class="main-content">
       <slot></slot>
     </div>
@@ -16,15 +16,15 @@
 
 <script>
   import FilterBar from "/components/Data/FilterBar";
-  import ScopeBar from "/components/Data/ScopeBar";
+  import ChartsScopeBar from "/components/Data/ChartsScopeBar";
   import ViewSwitcher from "/components/Data/ViewSwitcher";
 
   export default {
     name: "DataContainer",
-    components: { ScopeBar, FilterBar, ViewSwitcher },
+    components: { ChartsScopeBar, FilterBar, ViewSwitcher },
   };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
   .datacontainer {
     position: relative;
     padding: 0;

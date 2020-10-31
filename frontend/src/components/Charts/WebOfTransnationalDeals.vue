@@ -1,22 +1,25 @@
 <template>
-  <div>
-    <div class="container" id="graph-div">
-      <LoadingPulse v-if="$apollo.queries.transnational_deals.loading"/>
-      <svg width="800"></svg>
+  <div style="height: 100%;">
+    <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
+    <div id="svg-container">
+      <svg id="svgweb" width="800"></svg>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-  #graph-div {
+  #svg-container {
     text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
     .link {
       fill: none;
       stroke: #555;
       stroke-opacity: 0.4;
       stroke-width: 4.5px;
     }
-    svg {
+    #svgweb {
       text {
         font-size: 14px;
       }
@@ -30,7 +33,7 @@
   import LoadingPulse from "/components/Data/LoadingPulse";
 
   export default {
-    name: "Charts",
+    name: "WebOfTransnationalDeals",
     components: { LoadingPulse },
     apollo: {
       transnational_deals: gql`
@@ -58,7 +61,7 @@
     },
     watch: {
       transnational_deals() {
-        LandMatrixRadialSpider(this.transnational_deals, "svg");
+        LandMatrixRadialSpider(this.transnational_deals, "#svgweb");
       },
     },
     // mounted() {

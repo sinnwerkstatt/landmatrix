@@ -19,6 +19,9 @@
             <router-link v-if="dataItemName!==label.investors" :to="{name:'list_investors'}" class="dropdown-item investors">{{ label.investors }}</router-link>
           </span>
         </li>
+        <li class="nav-item">
+          <router-link :to="{name:'charts'}" class="nav-link">{{ $t("Charts") }}</router-link>
+        </li>
       </ul>
     </div>
   </div>

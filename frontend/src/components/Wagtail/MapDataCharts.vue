@@ -27,7 +27,7 @@
       </router-link>
     </div>
     <div class="charts col-4">
-      <router-link :to="{name: 'web-of-transnational-deals'}" class="square">
+      <router-link :to="{name: 'charts'}" class="square">
         <div>
           <h3 class="title">Charts</h3>
           <div class="icon">

@@ -273,7 +273,7 @@
           { name: "Map", link: { name: "map" } },
           { name: "Deals", link: { name: "list_deals" } },
           { name: "Investors", link: { name: "list_investors" } },
-          { name: "Charts", link: { name: "web-of-transnational-deals" } },
+          { name: "Charts", link: { name: "charts" } },
         ],
         about_links: [
           { name: "Land Matrix Initiative", link: "/the-land-matrix-initiative/" },

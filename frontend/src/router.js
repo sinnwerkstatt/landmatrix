@@ -2,13 +2,14 @@ import Vue from "vue";
 import Router from "vue-router";
 import store from "/store";
 import DataMap from "./views/Data/GlobalMap";
+import DataCharts from "./views/Data/Charts";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
-import Charts from "./views/Charts/Base";
-import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
-import ProduceInfoTreeMap from "./views/Charts/ProduceInfoTreeMap";
-import DynamicsOverview from "/views/Charts/DynamicsOverview";
+// import Charts from "./views/Charts/Base";
+// import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
+// import ProduceInfoTreeMap from "./views/Charts/ProduceInfoTreeMap";
+// import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
@@ -30,6 +31,14 @@ const router = new Router({
       },
     },
     {
+      path: "/charts/",
+      name: "charts",
+      component: DataCharts,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
       path: "/data/",
       redirect: {name: 'list_deals'}
     },
@@ -37,28 +46,28 @@ const router = new Router({
       path: "/data/investors/",
       redirect: {name: 'list_investors'}
     },
-    {
-      path: "/charts/",
-      component: Charts,
-      children: [
-        {path: "", name: "charts", redirect: {name: "web-of-transnational-deals"}},
-        {
-          path: "web-of-transnational-deals/",
-          name: "web-of-transnational-deals",
-          component: WebOfTransnationalDeals,
-        },
-        {
-          path: "dynamics/",
-          name: "dynamics-overview",
-          component: DynamicsOverview,
-        },
-        {
-          path: "produce-info/",
-          name: "produce-info",
-          component: ProduceInfoTreeMap,
-        },
-      ],
-    },
+    // {
+    //   path: "/charts/",
+    //   component: Charts,
+    //   children: [
+    //     {path: "", name: "charts", redirect: {name: "web-of-transnational-deals"}},
+    //     {
+    //       path: "web-of-transnational-deals/",
+    //       name: "web-of-transnational-deals",
+    //       component: WebOfTransnationalDeals,
+    //     },
+    //     {
+    //       path: "dynamics/",
+    //       name: "dynamics-overview",
+    //       component: DynamicsOverview,
+    //     },
+    //     {
+    //       path: "produce-info/",
+    //       name: "produce-info",
+    //       component: ProduceInfoTreeMap,
+    //     },
+    //   ],
+    // },
     {
       path: "/list/",
       redirect: {name: 'list_deals'}
