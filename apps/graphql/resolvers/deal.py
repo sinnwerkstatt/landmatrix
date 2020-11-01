@@ -194,6 +194,32 @@ def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
 
 
 def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
+    LONG_COUNTRIES = {
+        "United States of America": "USA*",
+        "United Kingdom of Great Britain and Northern Ireland": "UK*",
+        "China, Hong Kong Special Administrative Region": "China, Hong Kong*",
+        "China, Macao Special Administrative Region": "China, Macao*",
+        "Lao People's Democratic Republic": "Laos*",
+        "United Republic of Tanzania": "Tanzania*",
+        "Democratic Republic of the Congo": "DRC*",
+        "Bolivia (Plurinational State of)": "Bolivia*",
+        "The Former Yugoslav Republic of Macedonia": "Macedonia*",
+        "Venezuela (Bolivarian Republic of)": "Venezuela*",
+        "Republic of Moldova": "Moldova*",
+        "United Arab Emirates": "Arab Emirates*",
+        "Solomon Islands": "Solomon Iss*",
+        "Russian Federation": "Russian Fed*",
+        "Dominican Republic": "Dominican Rep*",
+        "Papua New Guinea": "Papua New*",
+        "Democratic People's Republic of Korea": "North Korea*",
+        "Korea, Dem. People's Rep.": "North Korea*",
+        "United States Virgin Islands": "Virgin Iss*",
+        "Iran (Islamic Republic of)": "Iran*",
+        "Syrian Arab Republic": "Syria*",
+        "Republic of Korea": "South Korea*",
+        "British Virgin Islands": "British Virgin Iss*",
+    }
+
     deals_investors = (
         DealTopInvestors.objects.all()
         .prefetch_related("deal")
@@ -218,9 +244,11 @@ def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
         imports = []
         for impo in res[cid]:
             imp_c = country_dict[impo]
-            imports += [f"lama.{imp_c.fk_region_id}.{imp_c.name}"]
+            short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
+            imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]
+        short_name = LONG_COUNTRIES.get(country.name, country.name)
         regions[country.fk_region_id] += [
-            {"id": country.id, "name": country.name, "imports": imports}
+            {"id": country.id, "name": short_name, "imports": imports}
         ]
 
     return {

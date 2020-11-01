@@ -48,7 +48,7 @@
     min-width: 230px;
     width: 20%;
     min-height: 3px;
-    transition: width 0.5s, min-width 0.5s;
+    //transition: width 0.5s, min-width 0.5s;
 
     &.collapsed {
       width: 0;

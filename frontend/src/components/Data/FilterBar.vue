@@ -540,7 +540,7 @@
     bottom: 0;
     z-index: 110;
     display: flex;
-    transition: width 0.5s, min-width 0.5s;
+    //transition: width 0.5s, min-width 0.5s;
     width: 20%;
     min-width: 220px;
 

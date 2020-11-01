@@ -31,7 +31,7 @@ function bilink(root) {
   return root;
 }
 
-export function LandMatrixRadialSpider(data_hierarchical, container) {
+export function LandMatrixRadialSpider(data_hierarchical, container, updateCountryFn) {
   const svg = d3
     .select(container)
     .attr("viewBox", [-width / 2, -width / 2, width, width]);
@@ -92,7 +92,6 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
       .attr("stroke", colorout)
       .attr("stroke-width", 2.5)
       .attr("marker-start", "url(#outgoing-marker)")
-
       .raise();
     d3.selectAll(d.outgoing.map(([, d]) => d.text))
       .attr("fill", colorout)
@@ -141,8 +140,9 @@ export function LandMatrixRadialSpider(data_hierarchical, container) {
     .on("mouseover", mouseover_event)
     .on("mouseout", mouseout_event)
     .on("mousedown", (d) => {
-      selectedCountry = d.target.dataset.id;
-      console.log("selected Country:", selectedCountry);
+      selectedCountry =
+        selectedCountry !== d.target.dataset.id ? d.target.dataset.id : null;
+      updateCountryFn(selectedCountry);
     })
     .call((text) =>
       text.append("title").text(

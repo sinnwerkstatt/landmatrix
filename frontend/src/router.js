@@ -2,12 +2,12 @@ import Vue from "vue";
 import Router from "vue-router";
 import store from "/store";
 import DataMap from "./views/Data/GlobalMap";
-import DataCharts from "./views/Data/Charts";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
 // import Charts from "./views/Charts/Base";
 // import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
+import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
 // import ProduceInfoTreeMap from "./views/Charts/ProduceInfoTreeMap";
 // import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
@@ -33,7 +33,12 @@ const router = new Router({
     {
       path: "/charts/",
       name: "charts",
-      component: DataCharts,
+      redirect: { name: "web-of-transnational-deals" },
+    },
+    {
+      path: "/charts/web-of-transnational-deals/",
+      name: "web-of-transnational-deals",
+      component: WebOfTransnationalDeals,
       meta: {
         hideBreadcrumbs: true,
       },
@@ -50,12 +55,6 @@ const router = new Router({
     //   path: "/charts/",
     //   component: Charts,
     //   children: [
-    //     {path: "", name: "charts", redirect: {name: "web-of-transnational-deals"}},
-    //     {
-    //       path: "web-of-transnational-deals/",
-    //       name: "web-of-transnational-deals",
-    //       component: WebOfTransnationalDeals,
-    //     },
     //     {
     //       path: "dynamics/",
     //       name: "dynamics-overview",

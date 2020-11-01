@@ -49,7 +49,7 @@
     bottom: 0;
     z-index: 10;
     display: flex;
-    transition: width 0.5s, min-width 0.5s;
+    //transition: width 0.5s, min-width 0.5s;
     width: 20%;
     min-width: 220px;
     filter: drop-shadow(-3px 3px 3px rgba(0, 0, 0, 0.3));
