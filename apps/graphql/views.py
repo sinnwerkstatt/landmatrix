@@ -9,7 +9,7 @@ class GraphQLGETView(GraphQLView):
     @staticmethod
     def extract_data_from_get_request(request: HttpRequest):
         get_ret = request.GET.dict()
-        get_ret["variables"] = json.loads(get_ret.get("variables", {}))
+        get_ret["variables"] = json.loads(get_ret.get("variables", "null"))
         return get_ret
 
     def get(self, request, *args, **kwargs):

@@ -49,10 +49,7 @@ export function sortAnything(list, sortField, sortAscending) {
       case "string":
         return fieldx.localeCompare(fieldy);
       case "object": {
-        console.log(fieldx);
-        console.log(fieldy);
         if (Array.isArray(fieldx)) {
-          console.log("it's an array!");
           return fieldx.length - fieldy.length;
         }
         for (let key of ["name", "id"]) {

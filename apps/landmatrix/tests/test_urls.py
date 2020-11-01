@@ -160,7 +160,7 @@ class UrlsTest(ElasticSearchFixtureMixin, TestCase):
         """
         credentials = {"username": "administrator", "password": "test"}
         self.assert_urls_available(
-            allowed_http_codes=(200, 302, 403, 404, 405),
+            allowed_http_codes=(200, 302, 400, 403, 404, 405),
             credentials=credentials,
             default_kwargs=self.default_kwargs,
         )
@@ -174,7 +174,7 @@ class UrlsTest(ElasticSearchFixtureMixin, TestCase):
         """
         credentials = {"username": "editor", "password": "test"}
         self.assert_urls_available(
-            allowed_http_codes=(200, 302, 403, 404, 405),
+            allowed_http_codes=(200, 302, 400, 403, 404, 405),
             credentials=credentials,
             default_kwargs=self.default_kwargs,
         )
@@ -188,7 +188,7 @@ class UrlsTest(ElasticSearchFixtureMixin, TestCase):
         """
         credentials = {"username": "reporter", "password": "test"}
         self.assert_urls_available(
-            allowed_http_codes=(200, 302, 403, 404, 405),
+            allowed_http_codes=(200, 302, 400, 403, 404, 405),
             credentials=credentials,
             default_kwargs=self.default_kwargs,
         )
