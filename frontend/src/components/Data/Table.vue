@@ -93,6 +93,7 @@
 
   const DEFAULT_DISPLAY_FIELDS = {
     deal: [
+      "modified_at",
       "id",
       "country",
       "intention_of_investment",
@@ -101,7 +102,14 @@
       "deal_size",
       "intended_size",
     ],
-    investor: ["id", "name", "country", "classification", "deals"],
+    investor: [
+      "modified_at",
+      "id",
+      "name",
+      "country",
+      "classification",
+      "deals"
+    ],
   };
 
   export default {
@@ -128,8 +136,8 @@
         page: 1,
         pageSize: 30,
         rows: [],
-        sortField: "id",
-        sortAscending: true,
+        sortField: "modified_at",
+        sortAscending: false,
       };
     },
     apollo: {
@@ -280,13 +288,13 @@
     methods: {
       getLabel(fieldName, targetModel = null) {
         if (!targetModel) targetModel = this.targetModel;
-        if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
-          return this.formfields[targetModel][fieldName].label;
-        } else if (
+        if (
           this.extraFieldLabels[targetModel] &&
           fieldName in this.extraFieldLabels[targetModel]
         ) {
           return this.extraFieldLabels[targetModel][fieldName];
+        } else if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
+          return this.formfields[targetModel][fieldName].label;
         } else {
           return fieldName;
         }
@@ -332,8 +340,8 @@
         }
       },
       targetModel() {
-        this.sortField = "id";
-        this.sortAscending = true;
+        this.sortField = "modified_at";
+        this.sortAscending = false;
       },
     },
   };

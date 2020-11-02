@@ -4,9 +4,15 @@ import {
   negotiation_status_map,
   classification_choices,
 } from "/choices";
+import dayjs from "dayjs";
 
 export const getDealValue = function (component, deal, fieldName) {
   switch (fieldName) {
+    case "modified_at":
+    case "created_at":
+    case "fully_updated_at": {
+      return dayjs(deal[fieldName]).format("YYYY-MM-DD");
+    }
     case "id": {
       let location = { name: "deal_detail", params: { deal_id: deal.id } };
       let url = component.$router.resolve(location).href;
@@ -61,6 +67,10 @@ export const getDealValue = function (component, deal, fieldName) {
 
 export const getInvestorValue = function (component, investor, fieldName) {
   switch (fieldName) {
+    case "modified_at":
+    case "created_at": {
+      return dayjs(investor[fieldName]).format("YYYY-MM-DD");
+    }
     case "id": {
       let location = { name: "investor_detail", params: { investor_id: investor.id } };
       let url = component.$router.resolve(location).href;
@@ -87,8 +97,11 @@ export const getInvestorValue = function (component, investor, fieldName) {
   }
 };
 
-export const dealExtraFieldLabels = {};
+export const dealExtraFieldLabels = {
+  modified_at: "Updated",
+};
 
 export const investorExtraFieldLabels = {
+  modified_at: "Updated",
   deals: "Deals",
 };
