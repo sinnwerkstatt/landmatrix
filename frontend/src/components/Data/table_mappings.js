@@ -79,10 +79,14 @@ export const getInvestorValue = function (component, investor, fieldName) {
     case "country": {
       let country = null;
       if (investor.country) {
-        country = component.$store.getters.getCountryOrRegion({
-          type: "country",
-          id: investor.country.id,
-        });
+        if (investor.country.name) {
+          return investor.country.name;
+        } else {
+          country = component.$store.getters.getCountryOrRegion({
+            type: "country",
+            id: investor.country.id,
+          });
+        }
       }
       return country ? country.name : "";
     }

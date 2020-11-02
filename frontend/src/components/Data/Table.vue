@@ -100,7 +100,6 @@
       "current_negotiation_status",
       "current_implementation_status",
       "deal_size",
-      "intended_size",
     ],
     investor: [
       "modified_at",

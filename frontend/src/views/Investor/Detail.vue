@@ -24,7 +24,7 @@
             v-if="involvements.length"
             :investor="investor"
           ></InvestorGraph>
-          <div v-else class="loader"></div>
+          <div v-else class="loader" style="height: 400px;"></div>
         </div>
       </div>
 
@@ -33,12 +33,12 @@
           <template v-slot:title>
             <h5 v-html="`Involvements (${involvements.length})`"></h5>
           </template>
-          <table class="table">
+          <table class="table data-table">
             <thead>
               <tr>
                 <th>Investor ID</th>
                 <th>Name</th>
-                <th>Country</th>
+                <th>Country of registration</th>
                 <th>Classification</th>
                 <th>Relationship</th>
                 <th>Ownership share</th>
@@ -46,20 +46,10 @@
             </thead>
             <tbody>
               <tr v-for="involvement in involvements">
-                <td>
-                  <router-link
-                    :to="{
-                      name: 'investor_detail',
-                      params: { investor_id: involvement.investor.id },
-                    }"
-                    v-slot="{ href }"
-                  >
-                    <a :href="href">#{{ involvement.investor.id }}</a>
-                  </router-link>
-                </td>
-                <td>{{ involvement.investor.name }}</td>
-                <td>{{ involvement.investor.country.name }}</td>
-                <td>{{ involvement.investor.classification }}</td>
+                <td v-html="investorValue(involvement, 'id')"></td>
+                <td v-html="investorValue(involvement.investor, 'name')"></td>
+                <td v-html="investorValue(involvement.investor, 'country')"></td>
+                <td v-html="investorValue(involvement.investor, 'classification')"></td>
                 <td>{{ detect_role(involvement) }}</td>
                 <td>{{ involvement.percentage }}</td>
               </tr>
@@ -74,31 +64,25 @@
               "
             ></h5>
           </template>
-          <table class="table">
+          <table class="table data-table">
             <thead>
               <tr>
                 <th>Deal ID</th>
-                <th>Country</th>
-                <th>Classification</th>
-                <th>Relationship</th>
-                <th>Ownership share</th>
+                <th>Target country</th>
+                <th>Intention of investment</th>
+                <th>Current negotiation status</th>
+                <th>Current implementation status</th>
+                <th>Deal size</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="deal in investor.deals">
-                <td>
-                  <router-link
-                    :to="{
-                      name: 'deal_detail',
-                      params: { deal_id: deal.id },
-                    }"
-                    v-slot="{ href }"
-                  >
-                    <a :href="href">#{{ deal.id }}</a>
-                  </router-link>
-                </td>
-                <td>{{ deal.country.name }}</td>
-                <td>{{ deal }}</td>
+              <tr v-for="deal in deals">
+                <td v-html="dealValue(deal, 'id')"></td>
+                <td v-html="dealValue(deal, 'country')"></td>
+                <td v-html="dealValue(deal, 'intention_of_investment')"></td>
+                <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
+                <td v-html="dealValue(deal, 'current_implementation_status')"></td>
+                <td v-html="dealValue(deal, 'deal_size')"></td>
               </tr>
             </tbody>
           </table>
@@ -112,6 +96,7 @@
   import store from "/store";
   import gql from "graphql-tag";
   import { mapState } from "vuex";
+  import { getDealValue, getInvestorValue } from "/components/Data/table_mappings";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import Field from "/components/Fields/Field";
 
@@ -135,13 +120,16 @@
         deals {
           id
           country {
-            name
+            id
           }
           recognition_status
           nature_of_deal
           intention_of_investment
           negotiation_status
           implementation_status
+          current_intention_of_investment
+          current_negotiation_status
+          current_implementation_status
           deal_size
         }
         involvements(depth: $depth)
@@ -153,17 +141,6 @@
     name: "InvestorDetail",
     components: { InvestorGraph, Field },
     props: ["investor_id"],
-    apollo: {
-      investor() {
-        return {
-          query: investor_query,
-          variables: {
-            investorID: +this.investor_id,
-            depth: 0,
-          },
-        };
-      },
-    },
     data() {
       return {
         investor: null,
@@ -177,6 +154,17 @@
         ],
       };
     },
+    apollo: {
+      investor() {
+        return {
+          query: investor_query,
+          variables: {
+            investorID: +this.investor_id,
+            depth: 0,
+          },
+        };
+      },
+    },
     computed: {
       ...mapState({
         investor_fields: (state) => state.investor.investor_fields,
@@ -184,6 +172,9 @@
       involvements() {
         return this.investor.involvements || [];
       },
+      deals() {
+        return this.investor.deals.sort((a,b) => { return a.id - b.id;})
+      }
     },
     methods: {
       detect_role(investor) {
@@ -199,6 +190,12 @@
             return "Involved in as Tertiary investor/lender";
         }
       },
+      investorValue(investor, fieldName) {
+        return getInvestorValue(this, investor, fieldName);
+      },
+      dealValue(deal, fieldName) {
+        return getDealValue(this, deal, fieldName);
+      }
     },
     mounted() {
       this.$apollo.addSmartQuery("investor", {
@@ -225,10 +222,12 @@
   };
 </script>
 
-<style>
+<style lang="scss">
+  @import "../../scss/colors";
   .loading_wrapper {
     background: grey;
     width: 100%;
-    height: 100%;
+    min-height: 250px;
+    color: $lm_orange;
   }
 </style>
