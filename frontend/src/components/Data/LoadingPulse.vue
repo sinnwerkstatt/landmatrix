@@ -26,6 +26,7 @@
     position: relative;
     width: 80px;
     height: 80px;
+    margin-top: -40px;
 
     div {
       display: inline-block;
