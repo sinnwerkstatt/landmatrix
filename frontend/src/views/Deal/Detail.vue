@@ -75,7 +75,7 @@
                 :investor="investor"
                 :showDeals="false"
                 :controls="false"
-                :depth="4"
+                :initDepth="4"
                 ref="investorGraph"
               ></InvestorGraph>
             </template>
