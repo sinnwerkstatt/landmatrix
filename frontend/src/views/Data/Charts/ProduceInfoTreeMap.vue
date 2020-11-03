@@ -1,23 +1,19 @@
 <template>
-  <div class="container" id="graph-div">
+  <ChartsContainer>
     <LoadingPulse v-if="$apollo.loading" />
-    <div class="row">
-      <div
-        id="produce-info"
-        class="col-md-12"
-        style="min-height: 400px; height: 70vh;"
-      ></div>
+    <div id="produce-info">
+      <svg id="produceinfosvg"></svg>
     </div>
-  </div>
+  </ChartsContainer>
 </template>
 
 <script>
   import LoadingPulse from "/components/Data/LoadingPulse";
-  import { data_deal_produce_query, data_deal_query } from "../Data/query";
-  import $ from "jquery";
+  import { data_deal_produce_query, data_deal_query } from "../query";
   import * as d3 from "d3";
+  import ChartsContainer from "./ChartsContainer";
 
-  var count = 0;
+  let count = 0;
 
   function domUid(name) {
     return new Id("O-" + (name == null ? "" : name + "-") + ++count);
@@ -35,22 +31,13 @@
   function buildTreeChart(treeData) {
     let format = d3.format(",d");
 
-    let containerId = "produce-info",
-      $chartContainer = $("#" + containerId);
-
-    let width = $chartContainer.width(),
-      height = $chartContainer.height();
-
+    let elemx = document.getElementById("produce-info");
+    let width = elemx.offsetWidth;
+    let height = elemx.offsetHeight;
+    console.log("widht", width);
     let svg = d3
-      .select("#" + containerId)
-      .html("")
-      .append("div")
-      .attr("class", "chart")
-      .style("width", width + "px")
-      .style("height", height + "px")
-      .append("svg:svg")
-      .attr("width", width)
-      .attr("height", height)
+      .select("#produceinfosvg")
+      .attr("viewBox", [0, 0, width, height])
       .append("svg:g")
       .attr("transform", "translate(.5,.5)");
 
@@ -116,7 +103,7 @@
 
   export default {
     name: "ProduceInfoTreeMap",
-    components: { LoadingPulse },
+    components: { ChartsContainer, LoadingPulse },
     data() {
       return {
         deals: [],
@@ -209,12 +196,24 @@
       },
     },
     created() {
-      window.addEventListener("resize", this.drawChart);
+      // window.addEventListener("resize", this.drawChart);
     },
     destroyed() {
-      window.removeEventListener("resize", this.drawChart);
+      // window.removeEventListener("resize", this.drawChart);
     },
   };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+  #produce-info {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 4em 1em 1em;
+
+    #produceinfosvg {
+      width: 800px;
+    }
+  }
+</style>

@@ -36,11 +36,35 @@
             >
           </span>
         </li>
-        <li class="nav-item">
-          <router-link :to="{ name: 'charts' }" class="nav-link">
-            {{ $t("Charts") }}
-          </router-link>
+        <li class="nav-item dropdown">
+          <a
+            href=""
+            class="nav-link dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            id="viewswitch-charts-dropdown"
+            :class="{
+              'router-link-active': isListRoute,
+              investors: dataItemName === label.investors,
+            }"
+            >Charts</a
+          >
+          <span class="dropdown-menu">
+            <router-link
+
+              :to="{ name: 'web-of-transnational-deals' }"
+              class="dropdown-item deals"
+              >Web of Transnational Deals</router-link
+            >
+            <router-link
+              :to="{ name: 'produce-info' }"
+              class="dropdown-item investors"
+              >Produce Info Map</router-link
+            >
+          </span>
         </li>
+
       </ul>
     </div>
   </div>

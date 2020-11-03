@@ -1,13 +1,9 @@
 <template>
   <ChartsContainer>
-    <template #default="{ changeDeal }">
-    <div style="height: 100%;">
-      <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
-      <div id="svg-container">
-        <svg id="svgweb" width="800"></svg>
-      </div>
+    <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
+    <div id="svg-container">
+      <svg id="svgweb" width="800"></svg>
     </div>
-      </template>
   </ChartsContainer>
 </template>
 
@@ -47,13 +43,9 @@
     // },
     watch: {
       transnational_deals() {
-        LandMatrixRadialSpider(
-          this.transnational_deals,
-          "#svgweb",
-          (country) => {
-            this.$store.dispatch('selectChartSelectedCountry', country);
-          }
-        );
+        LandMatrixRadialSpider(this.transnational_deals, "#svgweb", (country) => {
+          this.$store.dispatch("selectChartSelectedCountry", country);
+        });
       },
     },
     // mounted() {

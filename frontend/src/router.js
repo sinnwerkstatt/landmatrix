@@ -8,7 +8,7 @@ import DealDetail from "./views/Deal/Detail";
 // import Charts from "./views/Charts/Base";
 // import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
-// import ProduceInfoTreeMap from "./views/Charts/ProduceInfoTreeMap";
+import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
 // import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
@@ -44,6 +44,14 @@ const router = new Router({
       },
     },
     {
+      path: "/charts/produce-info/",
+      name: "produce-info",
+      component: ProduceInfoTreeMap,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
       path: "/data/",
       redirect: { name: "list_deals" },
     },
@@ -60,11 +68,7 @@ const router = new Router({
     //       name: "dynamics-overview",
     //       component: DynamicsOverview,
     //     },
-    //     {
-    //       path: "produce-info/",
-    //       name: "produce-info",
-    //       component: ProduceInfoTreeMap,
-    //     },
+
     //   ],
     // },
     {
