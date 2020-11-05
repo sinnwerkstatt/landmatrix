@@ -14,7 +14,7 @@
       </template>
       <template v-slot:FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse title="Displayed Data">
+        <FilterCollapse title="Displayed Data" :initExpanded="true">
           <b-form-group>
             <b-form-radio
               v-model="displayHectares"

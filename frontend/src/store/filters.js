@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { arraysAreEqual } from "../utils";
 
 const defaultFilters = {
   region_id: null,
@@ -61,6 +62,23 @@ const emptyFilters = {
   forest_concession: null,
 };
 
+const DEFAULT_FILTER_IGNORED_KEYS = ["region_id", "country_id"];
+
+const isDefaultFilter = (filters) => {
+  let defaultKeys = Object.keys(defaultFilters);
+  for (let key of Object.keys(filters)) {
+    if (DEFAULT_FILTER_IGNORED_KEYS.includes(key)) continue;
+    else if (defaultKeys.includes(key)) {
+      if (Array.isArray(defaultFilters[key])) {
+        if (!arraysAreEqual(defaultFilters[key], filters[key])) return false;
+      } else {
+        if (defaultFilters[key] !== filters[key]) return false;
+      }
+    } else return false;
+  }
+  return true;
+};
+
 export default {
   state: () => ({
     filters: (() => {
@@ -75,16 +93,32 @@ export default {
         exclusion: true,
       },
     ],
+    isDefaultFilter: Cookies.get("filters")
+      ? isDefaultFilter(JSON.parse(Cookies.get("filters")))
+      : true,
   }),
   mutations: {
     setFilter(state, { filter, value }) {
       state.filters[filter] = value;
+      if (!DEFAULT_FILTER_IGNORED_KEYS.includes(filter)) {
+        state.isDefaultFilter = isDefaultFilter(state.filters);
+      }
     },
     resetFilters(state) {
+      let region_id = state.filters.region_id;
+      let country_id = state.filters.country_id;
       state.filters = JSON.parse(JSON.stringify(defaultFilters));
+      state.isDefaultFilter = true;
+      state.filters.region_id = region_id;
+      state.filters.country_id = country_id;
     },
     clearFilters(state) {
+      let region_id = state.filters.region_id;
+      let country_id = state.filters.country_id;
       state.filters = emptyFilters;
+      state.isDefaultFilter = false;
+      state.filters.region_id = region_id;
+      state.filters.country_id = country_id;
     },
   },
   actions: {

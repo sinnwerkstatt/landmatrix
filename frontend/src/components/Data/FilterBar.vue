@@ -10,11 +10,15 @@
     </span>
     <div class="overlay-content">
       <div class="main-pane">
-        <strong>{{ $t("Filter") }}</strong
-        ><br />
+        <h3>{{ $t("Filter") }}</h3>
         <span style="font-size: 0.8em;">
-          <a href="#" @click="$store.dispatch('resetFilters')">Set default filters</a> |
-          <a href="#" @click="$store.dispatch('clearFilters')">Clear filters</a>
+          <b-form-checkbox class="default-filter-switch" :class="{active: isDefaultFilter}"
+                           name="check-button" switch
+                           v-model="isDefaultFilter"
+                           @change="toggleDefaultFilter"
+          >
+            Default filter
+          </b-form-checkbox>
         </span>
 
         <FilterCollapse
@@ -28,7 +32,7 @@
               name="regionRadio"
               :value="reg.id"
               v-for="reg in regions"
-              @input="country = null"
+              @change="country = null"
             >
               {{ $t(reg.name) }}
             </b-form-radio>
@@ -45,7 +49,7 @@
             :options="countries_with_deals"
             label="name"
             placeholder="Country"
-            @input="region_id = null"
+            @change="region_id = null"
           />
         </FilterCollapse>
         <FilterCollapse
@@ -87,16 +91,18 @@
           @click="negotiation_status = []"
         >
           <div v-for="(nsname, nsval) in choices.negotiation_status" class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              :value="nsval"
-              :id="nsval"
-              v-model="negotiation_status"
-            />
-            <label class="form-check-label" :for="nsval">
-              {{ $t(nsname) }}
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input
+                class="form-check-input custom-control-input"
+                type="checkbox"
+                :value="nsval"
+                :id="nsval"
+                v-model="negotiation_status"
+              />
+              <label class="form-check-label custom-control-label" :for="nsval">
+                {{ $t(nsname) }}
+              </label>
+            </div>
           </div>
         </FilterCollapse>
 
@@ -106,16 +112,18 @@
           @click="nature_of_deal = []"
         >
           <div v-for="(isname, isval) in choices.nature_of_deal" class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              :value="isval"
-              :id="isval"
-              v-model="nature_of_deal"
-            />
-            <label class="form-check-label" :for="isval">
-              {{ $t(isname) }}
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input
+                class="form-check-input custom-control-input"
+                type="checkbox"
+                :value="isval"
+                :id="isval"
+                v-model="nature_of_deal"
+              />
+              <label class="form-check-label custom-control-label" :for="isval">
+                {{ $t(isname) }}
+              </label>
+            </div>
           </div>
         </FilterCollapse>
 
@@ -165,14 +173,18 @@
                 :max="year"
               />
             </div>
-            <label>
+            <div class="custom-control custom-checkbox">
               <input
                 type="checkbox"
+                class="custom-control-input"
                 :disabled="!initiation_year_min && !initiation_year_max"
                 v-model="initiation_year_unknown"
+                id="initiation_year_unknown"
               />
-              Include unknown years
-            </label>
+              <label class="custom-control-label" for="initiation_year_unknown">
+                Include unknown years
+              </label>
+            </div>
           </form>
         </FilterCollapse>
 
@@ -185,16 +197,18 @@
             v-for="(isname, isval) in choices.implementation_status"
             class="form-check"
           >
-            <input
-              class="form-check-input"
-              type="checkbox"
-              :value="isval"
-              :id="isval"
-              v-model="implementation_status"
-            />
-            <label class="form-check-label" :for="isval">
-              {{ $t(isname) }}
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input
+                class="form-check-input custom-control-input"
+                type="checkbox"
+                :value="isval"
+                :id="isval"
+                v-model="implementation_status"
+              />
+              <label class="form-check-label custom-control-label" :for="isval">
+                {{ $t(isname) }}
+              </label>
+            </div>
           </div>
         </FilterCollapse>
 
@@ -206,16 +220,18 @@
           <div v-for="(options, name) in choices.intention_of_investment">
             <strong>{{ $t(name) }}</strong>
             <div v-for="(isname, isval) in options" class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                :value="isval"
-                :id="isval"
-                v-model="intention_of_investment"
-              />
-              <label class="form-check-label" :for="isval">
-                {{ $t(isname) }}
-              </label>
+              <div class="custom-control custom-checkbox">
+                <input
+                  class="form-check-input custom-control-input"
+                  type="checkbox"
+                  :value="isval"
+                  :id="isval"
+                  v-model="intention_of_investment"
+                />
+                <label class="form-check-label custom-control-label" :for="isval">
+                  {{ $t(isname) }}
+                </label>
+              </div>
             </div>
           </div>
         </FilterCollapse>
@@ -308,11 +324,7 @@
   import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse";
   import gql from "graphql-tag";
-  import {
-    implementation_status_choices,
-    intention_of_investment_choices,
-    nature_of_deal_choices,
-  } from "/choices";
+  import { implementation_status_choices, intention_of_investment_choices, nature_of_deal_choices } from "/choices";
 
   export default {
     name: "FilterBar",
@@ -326,24 +338,23 @@
               name
             }
           }
-        `,
-      },
+        `
+      }
     },
     data() {
       return {
         year: new Date().getFullYear(),
         investors: [],
-        defaultFilters: true,
         choices: {
           negotiation_status: {
             CONCLUDED: "Concluded",
             INTENDED: "Intended",
-            FAILED: "Failed",
+            FAILED: "Failed"
           },
           implementation_status: implementation_status_choices,
           nature_of_deal: nature_of_deal_choices,
-          intention_of_investment: intention_of_investment_choices,
-        },
+          intention_of_investment: intention_of_investment_choices
+        }
       };
     },
     computed: {
@@ -353,148 +364,179 @@
         },
         set(value) {
           this.$store.dispatch("showFilterOverlay", value);
-        },
+        }
       },
       region_id: {
         get() {
           return this.filters.region_id;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "region_id", value });
-        },
+          if (value !== this.filters.region_id) {
+            this.$store.dispatch("setFilter", { filter: "region_id", value });
+          }
+        }
       },
       country: {
         get() {
           return this.countries.find((c) => c.id === this.filters.country_id);
         },
         set(value) {
-          this.$store.dispatch("setFilter", {
-            filter: "country_id",
-            value: value ? value.id : value,
-          });
-        },
+          if ((value ? value.id : value) !== this.filters.country_id) {
+            this.$store.dispatch("setFilter", {
+              filter: "country_id",
+              value: value ? value.id : value
+            });
+          }
+        }
       },
       deal_size_min: {
         get() {
           return this.filters.deal_size_min;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "deal_size_min", value });
-        },
+          if (value !== this.filters.deal_size_min) {
+            this.$store.dispatch("setFilter", { filter: "deal_size_min", value });
+          }
+        }
       },
       deal_size_max: {
         get() {
           return this.filters.deal_size_max;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "deal_size_max", value });
-        },
+          if (value !== this.filters.deal_size_max) {
+            this.$store.dispatch("setFilter", { filter: "deal_size_max", value });
+          }
+        }
       },
       negotiation_status: {
         get() {
           return this.filters.negotiation_status;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
-        },
+          if (value !== this.filters.negotiation_status) {
+            this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
+          }
+        }
       },
       nature_of_deal: {
         get() {
           return this.filters.nature_of_deal;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "nature_of_deal", value });
-        },
+          if (value !== this.filters.nature_of_deal) {
+            this.$store.dispatch("setFilter", { filter: "nature_of_deal", value });
+          }
+        }
       },
       investor: {
         get() {
           return this.filters.investor;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "investor", value });
-        },
+          if (value !== this.filters.investor) {
+            this.$store.dispatch("setFilter", { filter: "investor", value });
+          }
+        }
       },
       initiation_year_min: {
         get() {
           return this.filters.initiation_year_min;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "initiation_year_min", value });
-        },
+          if (value !== this.filters.initiation_year_min) {
+            this.$store.dispatch("setFilter", { filter: "initiation_year_min", value });
+          }
+        }
       },
       initiation_year_max: {
         get() {
           return this.filters.initiation_year_max;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "initiation_year_max", value });
-        },
+          if (value !== this.filters.initiation_year_max) {
+            this.$store.dispatch("setFilter", { filter: "initiation_year_max", value });
+          }
+        }
       },
       initiation_year_unknown: {
         get() {
           return this.filters.initiation_year_unknown;
         },
         set(value) {
-          this.$store.dispatch("setFilter", {
-            filter: "initiation_year_unknown",
-            value,
-          });
-        },
+          if (value !== this.filters.initiation_year_unknown) {
+            this.$store.dispatch("setFilter", {
+              filter: "initiation_year_unknown",
+              value
+            });
+          }
+        }
       },
       implementation_status: {
         get() {
           return this.filters.implementation_status;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "implementation_status", value });
-        },
+          if (value !== this.filters.implementation_status) {
+            this.$store.dispatch("setFilter", { filter: "implementation_status", value });
+          }
+        }
       },
       intention_of_investment: {
         get() {
           return this.filters.intention_of_investment;
         },
         set(value) {
-          this.$store.dispatch("setFilter", {
-            filter: "intention_of_investment",
-            value,
-          });
-        },
+          if (value !== this.filters.intention_of_investment) {
+            this.$store.dispatch("setFilter", {
+              filter: "intention_of_investment",
+              value
+            });
+          }
+        }
       },
       produce: {
         get() {
           return this.filters.produce;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "produce", value });
-        },
+          if (value !== this.filters.produce) {
+            this.$store.dispatch("setFilter", { filter: "produce", value });
+          }
+        }
       },
       transnational: {
         get() {
           return this.filters.transnational;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "transnational", value });
-        },
+          if (value !== this.filters.transnational) {
+            this.$store.dispatch("setFilter", { filter: "transnational", value });
+          }
+        }
       },
       forest_concession: {
         get() {
           return this.filters.forest_concession;
         },
         set(value) {
-          this.$store.dispatch("setFilter", { filter: "forest_concession", value });
-        },
+          if (value !== this.filters.forest_concession) {
+            this.$store.dispatch("setFilter", { filter: "forest_concession", value });
+          }
+        }
       },
       ...mapState({
         filters: (state) => state.filters.filters,
+        isDefaultFilter: (state) => state.filters.isDefaultFilter,
         countries: (state) => state.page.countries,
         regions: (state) => {
           let global = {
             id: null,
-            name: "Global",
+            name: "Global"
           };
           return [global, ...state.page.regions];
         },
-        dealFormfields: (state) => state.formfields.deal,
+        dealFormfields: (state) => state.formfields.deal
       }),
       countries_with_deals() {
         return this.countries.filter((c) => {
@@ -508,23 +550,29 @@
             type: this.$t("Crop"),
             options: Object.entries(
               this.dealFormfields.crops.choices
-            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k })),
+            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k }))
           },
           {
             type: this.$t("Livestock"),
             options: Object.entries(
               this.dealFormfields.animals.choices
-            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k })),
+            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k }))
           },
           {
             type: this.$t("Minerals"),
             options: Object.entries(
               this.dealFormfields.resources.choices
-            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
-          },
+            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k }))
+          }
         ];
-      },
+      }
     },
+    methods: {
+      toggleDefaultFilter(checked) {
+        if (checked) this.$store.dispatch("resetFilters");
+        else this.$store.dispatch("clearFilters");
+      }
+    }
   };
 </script>
 
@@ -543,6 +591,13 @@
     //transition: width 0.5s, min-width 0.5s;
     width: 20%;
     min-width: 220px;
+    font-size: 0.9rem;
+
+    h3 {
+      color: black;
+      margin-top: 0.5em;
+      margin-bottom: 0.2em;
+    }
 
     .overlay-content {
       width: 100%;
@@ -577,6 +632,90 @@
         display: none;
       }
     }
+
+    .default-filter-switch {
+      &.active {
+        color: $lm_orange;
+      }
+
+      label.custom-control-label {
+        font-size: 0.9rem;
+
+
+        &:before {
+          font-size: 0.8rem;
+          background-color: rgba(black, 0.1);
+          border-width: 0;
+          width: 1.9em;
+          height: 0.65em;
+          margin-top: 0.2em;
+          margin-left: 0.15em;
+
+          &:focus {
+            outline: none;
+
+          }
+        }
+
+        &:after {
+          margin-top: -0.1em;
+          background-color: white;
+          box-shadow: 0px 1px 2px rgba(black, 0.3);
+        }
+      }
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label {
+      &:before {
+        background-color: rgba($lm_orange, 0.1)
+      }
+
+      &:after {
+        background-color: $lm_orange;
+        box-shadow: 0px 0px 0px 1px rgba($lm_orange, 0.7);
+      }
+    }
+
+    .custom-control-input:focus ~ .custom-control-label {
+      &:before {
+        box-shadow: none;
+      }
+    }
+
+
+    .form-check {
+      padding:0;
+      .custom-control.custom-checkbox {
+        min-height: 0;
+        padding-left: 1.3rem;
+        label.custom-control-label {
+          &:hover {
+            cursor: pointer;
+          }
+          line-height: 1.2;
+          &:before, &:after {
+            top: 1px;
+            left: -1.3rem;
+          }
+        }
+      }
+      .custom-control-input:focus ~ .custom-control-label {
+        &:before {
+          border-color: #adb5bd;
+        }
+      }
+      .custom-control-input:checked ~ .custom-control-label {
+        &:before {
+          background-color: rgba($lm_orange, 1);
+          border-color: transparent;
+        }
+      }
+      &:not(:first-child) {
+        .custom-control.custom-checkbox {
+          margin-top: 2px;
+        }
+      }
+    }
   }
 
   .wimpel {
@@ -584,13 +723,16 @@
     top: calc(50% - 100px);
     cursor: pointer;
     right: -20px;
+
     svg {
       opacity: 0.8;
       filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
       color: black;
+
       path {
         fill: $primary;
       }
+
       text {
         font-size: 4px;
         fill: white;
