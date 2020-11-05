@@ -178,7 +178,7 @@
         let data = [];
         let fields = ["crops", "animals", "resources"];
         let colors = ["#FC941F", "#7D4A0F", "black"];
-        if (this.dealsWithProduceInfo.length) {
+        if (this.produceLabelMap && this.dealsWithProduceInfo.length) {
           let counts = {};
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {

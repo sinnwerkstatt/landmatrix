@@ -3,7 +3,7 @@
     <LoadingPulse v-if="$apollo.loading" />
     <div class="table-config">
       <a href="" @click.prevent v-b-modal.modal-select-fields
-        ><i class="fa fa-cog"></i
+      ><i class="fa fa-cog"></i
       ></a>
       <b-modal
         id="modal-select-fields"
@@ -36,26 +36,26 @@
       </div>
       <table class="sticky-header" :class="[this.targetModel]">
         <thead>
-          <tr>
-            <th
-              v-for="fieldName in currentFields"
-              :key="fieldName"
-              @click="setSort(fieldName)"
-              :class="{ selected: sortField === fieldName, asc: sortAscending }"
-            >
-              {{ getLabel(fieldName) }}
-            </th>
-          </tr>
+        <tr>
+          <th
+            v-for="fieldName in currentFields"
+            :key="fieldName"
+            @click="setSort(fieldName)"
+            :class="{ selected: sortField === fieldName, asc: sortAscending }"
+          >
+            {{ getLabel(fieldName) }}
+          </th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="obj in rows">
-            <td
-              v-for="fieldName in currentFields"
-              :key="fieldName"
-              :style="getStyle(obj, fieldName)"
-              v-html="getValue(obj, fieldName)"
-            ></td>
-          </tr>
+        <tr v-for="obj in rows">
+          <td
+            v-for="fieldName in currentFields"
+            :key="fieldName"
+            :style="getStyle(obj, fieldName)"
+            v-html="getValue(obj, fieldName)"
+          ></td>
+        </tr>
         </tbody>
       </table>
       <scroll-loader
@@ -71,12 +71,7 @@
 <script>
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { mapState } from "vuex";
-  import {
-    dealExtraFieldLabels,
-    getDealValue,
-    getInvestorValue,
-    investorExtraFieldLabels,
-  } from "./table_mappings";
+  import { dealExtraFieldLabels, getDealValue, getInvestorValue, investorExtraFieldLabels } from "./table_mappings";
   import gql from "graphql-tag";
   import { data_deal_query } from "/views/Data/query";
   import { sortAnything } from "../../utils";
@@ -88,7 +83,7 @@
     "current_intention_of_investment",
     "current_negotiation_status",
     "current_implementation_status",
-    "locations",
+    "locations"
   ];
 
   const DEFAULT_DISPLAY_FIELDS = {
@@ -99,7 +94,7 @@
       "intention_of_investment",
       "current_negotiation_status",
       "current_implementation_status",
-      "deal_size",
+      "deal_size"
     ],
     investor: [
       "modified_at",
@@ -108,7 +103,7 @@
       "country",
       "classification",
       "deals"
-    ],
+    ]
   };
 
   export default {
@@ -122,11 +117,11 @@
         displayFields: { ...DEFAULT_DISPLAY_FIELDS },
         valueMappings: {
           deal: getDealValue,
-          investor: getInvestorValue,
+          investor: getInvestorValue
         },
         extraFieldLabels: {
           deal: dealExtraFieldLabels,
-          investor: investorExtraFieldLabels,
+          investor: investorExtraFieldLabels
         },
         extraDealData: [],
         dealApiFields: [],
@@ -136,29 +131,30 @@
         pageSize: 30,
         rows: [],
         sortField: "modified_at",
-        sortAscending: false,
+        sortAscending: false
       };
     },
     apollo: {
       deals: data_deal_query,
       extraDealData: {
+        skip() {
+          return !this.extraDealFields.length;
+        },
         query() {
           return gql`
-        query Deals($limit: Int!, $filters: [Filter]) {
-          extraDealData:deals(limit: $limit, filters: $filters) {
-            id ${this.displayFields.deal
-              .filter((f) => !DEAL_DEFAULT_QUERY_FIELDS.includes(f))
-              .join(" ")}
-          }
-        }
-      `;
+            query Deals($limit: Int!, $filters: [Filter]) {
+              extraDealData:deals(limit: $limit, filters: $filters) {
+                id ${this.extraDealFields.join(" ")}
+              }
+            }
+          `;
         },
         variables() {
           return {
             limit: 0,
-            filters: this.$store.getters.filtersForGQL,
+            filters: this.$store.getters.filtersForGQL
           };
-        },
+        }
       },
       investors: {
         skip() {
@@ -193,9 +189,9 @@
         variables() {
           return {
             limit: 0,
-            filters: this.investorFilters,
+            filters: this.investorFilters
           };
-        },
+        }
       },
       dealApiFields: {
         query: gql`
@@ -207,7 +203,7 @@
             }
           }
         `,
-        update: (data) => data.__type.fields.map((f) => f.name),
+        update: (data) => data.__type.fields.map((f) => f.name)
       },
       investorApiFields: {
         query: gql`
@@ -219,13 +215,17 @@
             }
           }
         `,
-        update: (data) => data.__type.fields.map((f) => f.name),
-      },
+        update: (data) => data.__type.fields.map((f) => f.name)
+      }
     },
     computed: {
       ...mapState({
-        formfields: (state) => state.formfields,
+        formfields: (state) => state.formfields
       }),
+      extraDealFields() {
+        return this.displayFields.deal
+          .filter((f) => !DEAL_DEFAULT_QUERY_FIELDS.includes(f));
+      },
       currentFields() {
         return this.displayFields[this.targetModel];
       },
@@ -242,29 +242,63 @@
         }
       },
       investorFilters() {
-        return [
-          {
-            field: "deals.id",
-            operation: "IN",
-            value: this.deals.map((d) => d.id.toString()),
-          },
-        ];
+        if (this.fetchAllInvestors) {
+          return [];
+        } else {
+          return [
+            {
+              field: "deals.id",
+              operation: "IN",
+              value: this.deals.map((d) => d.id.toString())
+            }
+          ];
+        }
       },
-      uniqueInvestors() {
+      fetchAllInvestors() {
+        return this.deals.length > 1000;
+      },
+      filteredInvestors() {
         return this.investors.filter((investor, index, self) => {
-          return self.indexOf(investor) === index;
+          // remove duplicates
+          if (self.indexOf(investor) !== index) return false;
+          // filter on client
+          if (this.fetchAllInvestors) {
+            return investor.deals.some(d => this.dealIds.includes(d.id));
+          }
+          return true;
         });
       },
+      dealIds() {
+        return this.deals.map(d => d.id);
+      },
+      dealsLoaded() {
+        if (this.extraDealFields.length) {
+          if (!this.extraDealData.length || this.$apollo.queries.extraDealData.loading || this.deals.length !== this.extraDealData.length) {
+            return false;
+          }
+        }
+        return !this.$apollo.queries.deals.loading && this.deals.length;
+      },
       extendedDeals() {
-        if (this.extraDealData.length) {
-          return this.deals.map((d) => {
-            return {
-              ...d,
-              ...this.extraDealData.find((e) => e.id === d.id),
-            };
-          });
+        if (this.dealsLoaded) {
+          if (this.extraDealData.length) {
+            let idMap = {}
+            // map by id first, searching each time is too expensive
+            for (let extraData of this.extraDealData) {
+              idMap[extraData.id] = extraData;
+            }
+            for (let deal of this.deals) {
+              let extraData = idMap[deal.id];
+              for (let field of this.extraDealFields) {
+                deal[field] = extraData[field];
+              }
+            }
+            return this.deals;
+          } else {
+            return this.deals;
+          }
         } else {
-          return this.deals;
+          return [];
         }
       },
       rowData() {
@@ -272,9 +306,10 @@
         if (this.targetModel === "deal") {
           data = this.extendedDeals;
         } else if (this.targetModel === "investor") {
-          data = this.uniqueInvestors;
+          data = this.filteredInvestors;
         }
-        return sortAnything(data, this.sortField, this.sortAscending);
+        data = sortAnything(data, this.sortField, this.sortAscending);
+        return data;
       },
       modelLabel() {
         if (this.targetModel === "investor") {
@@ -282,7 +317,7 @@
         } else {
           return this.$t("Deals");
         }
-      },
+      }
     },
     methods: {
       getLabel(fieldName, targetModel = null) {
@@ -330,7 +365,7 @@
         this.rows = [];
         this.page = 1;
         this.disableScrollLoader = false;
-      },
+      }
     },
     watch: {
       rowData() {
@@ -341,8 +376,8 @@
       targetModel() {
         this.sortField = "modified_at";
         this.sortAscending = false;
-      },
-    },
+      }
+    }
   };
 </script>
 <style lang="scss" scoped>
@@ -398,9 +433,11 @@
         color: white;
         vertical-align: bottom;
         min-width: 60px;
+
         &:hover {
           cursor: pointer;
         }
+
         &.selected {
           font-weight: 600;
           color: $lm_orange;

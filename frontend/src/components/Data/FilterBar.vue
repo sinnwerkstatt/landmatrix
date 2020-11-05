@@ -15,7 +15,6 @@
           <b-form-checkbox class="default-filter-switch" :class="{active: isDefaultFilter}"
                            name="check-button" switch
                            v-model="isDefaultFilter"
-                           @change="toggleDefaultFilter"
           >
             Default filter
           </b-form-checkbox>
@@ -525,9 +524,18 @@
           }
         }
       },
+      isDefaultFilter: {
+        get() {
+          return this.$store.state.filters.isDefaultFilter;
+        },
+        set(value) {
+          if (value) this.$store.dispatch("resetFilters");
+          else this.$store.dispatch("clearFilters");
+        }
+      },
+
       ...mapState({
         filters: (state) => state.filters.filters,
-        isDefaultFilter: (state) => state.filters.isDefaultFilter,
         countries: (state) => state.page.countries,
         regions: (state) => {
           let global = {
@@ -567,12 +575,6 @@
         ];
       }
     },
-    methods: {
-      toggleDefaultFilter(checked) {
-        if (checked) this.$store.dispatch("resetFilters");
-        else this.$store.dispatch("clearFilters");
-      }
-    }
   };
 </script>
 
@@ -641,6 +643,9 @@
       label.custom-control-label {
         font-size: 0.9rem;
 
+        &:hover {
+          cursor: pointer;
+        }
 
         &:before {
           font-size: 0.8rem;
