@@ -13,6 +13,9 @@ class GraphQLGETView(GraphQLView):
         return get_ret
 
     def get(self, request, *args, **kwargs):
+        # show GraphiQL if no GET-parameters are given
+        if not request.GET:
+            return super(GraphQLGETView, self).get(request, *args, **kwargs)
         if not self.schema:
             raise ValueError("GraphQLView was initialized without schema.")
         try:
