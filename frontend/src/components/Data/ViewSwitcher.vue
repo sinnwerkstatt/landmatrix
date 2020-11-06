@@ -45,23 +45,17 @@
             aria-expanded="false"
             id="viewswitch-charts-dropdown"
             :class="{
-              'router-link-active': isListRoute,
-              investors: dataItemName === label.investors,
+              'router-link-active': isChartRoute,
             }"
             >Charts</a
           >
-          <span class="dropdown-menu">
-            <router-link
-
-              :to="{ name: 'web-of-transnational-deals' }"
-              class="dropdown-item deals"
-              >Web of Transnational Deals</router-link
+          <span class="dropdown-menu charts">
+            <router-link v-for="entry in chartEntries"
+              :to="{ name: entry.route_name }"
+              class="dropdown-item"
             >
-            <router-link
-              :to="{ name: 'produce-info' }"
-              class="dropdown-item investors"
-              >Produce Info Map</router-link
-            >
+              {{$t(entry.title)}}
+            </router-link>
           </span>
         </li>
 
@@ -71,6 +65,16 @@
 </template>
 
 <script>
+  const CHART_ENTRIES = [
+    {
+      title: "Web of Transnational Deals",
+      route_name: "web-of-transnational-deals"
+    }, {
+      title: "Produce Info Map",
+      route_name: "produce-info"
+    }
+  ]
+
   export default {
     name: "ViewSwitcher",
     data() {
@@ -79,11 +83,15 @@
           deals: this.$t("Deals"),
           investors: this.$t("Investors"),
         },
-      };
+        chartEntries: CHART_ENTRIES,
+     };
     },
     computed: {
       isListRoute() {
         return ["list_deals", "list_investors"].includes(this.$route.name);
+      },
+      isChartRoute() {
+        return this.chartEntries.map(e => e.route_name).includes(this.$route.name);
       },
       dataItemName() {
         if (this.$route.name === "list_deals") {
@@ -141,6 +149,11 @@
           }
         }
         &.dropdown {
+          &.show {
+            .nav-link:not(.router-link-active) {
+              color: $lm_orange;
+            }
+          }
           .dropdown-menu {
             margin: 0;
             padding: 0;
@@ -158,6 +171,9 @@
                 &.investors {
                   background-color: $lm_investor;
                 }
+                &:hover {
+                  color: black;
+                }
               }
               &:hover {
                 color: $lm_orange;
@@ -165,6 +181,11 @@
               &.investors:hover {
                 color: $lm_investor;
               }
+            }
+            &.charts {
+              width: auto;
+              right: 0;
+              left: auto;
             }
           }
         }
