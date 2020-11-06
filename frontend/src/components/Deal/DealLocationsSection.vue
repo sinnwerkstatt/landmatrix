@@ -35,7 +35,7 @@
     components: {
       DealSubmodelSection,
       BigMap,
-      LGeoJson,
+      LGeoJson
     },
     computed: {
       entries() {
@@ -60,7 +60,7 @@
       },
       geojson_options() {
         return {
-          onEachFeature: this.onEachFeatureFunction,
+          onEachFeature: this.onEachFeatureFunction
           // pointToLayer: function (feature, latlng) {
           //   return L.circleMarker(latlng, {
           //     radius: 8,
@@ -83,16 +83,16 @@
           contract_area: {
             dashArray: "5, 5",
             dashOffset: "0",
-            fillColor: "#ffec03",
+            fillColor: "#ffec03"
           },
           intended_area: {
             dashArray: "5, 5",
             dashOffset: "0",
-            fillColor: "#ff8900",
+            fillColor: "#ff8900"
           },
           production_area: {
-            fillColor: "#ff0000",
-          },
+            fillColor: "#ff0000"
+          }
         };
         return (feature, layer) => {
           return {
@@ -100,10 +100,10 @@
             color: "#000000",
             opacity: 1,
             fillOpacity: 0.2,
-            ...styles[feature.properties.type],
+            ...styles[feature.properties.type]
           };
         };
-      },
+      }
     },
     methods: {
       custom_is_null(field) {
@@ -113,16 +113,20 @@
           field === "" ||
           (Array.isArray(field) && field.length === 0)
         );
-      },
-    },
+      }
+    }
   };
 </script>
 
 <style lang="scss">
   .locations {
-    #bigMap {
-      max-height: 50vh;
-      margin-top: 2em;
+    .map-container {
+      min-height: 250px;
+
+      #bigMap {
+        max-height: 50vh;
+        margin-top: 2em;
+      }
     }
   }
 </style>
