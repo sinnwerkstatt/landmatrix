@@ -204,7 +204,7 @@
             investor(id: $id) {
               id
               name
-              involvements(depth: 3, include_ventures: false)
+              involvements(depth: 5, include_ventures: false)
             }
           }
         `,

@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block content %}
+<h2>Deals</h2>
+<table>
+  <thead>
+    <tr>
+      {% for xheader in deal_headers %}
+      <th>{{ xheader }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for xitem in deals %}
+    <tr>
+      {% for field in xitem %}
+      <th>{{ field }}</th>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Investors</h2>
+<table>
+  <thead>
+    <tr>
+      {% for xheader in investor_headers %}
+      <th>{{ xheader }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for xitem in investors %}
+    <tr>
+      {% for field in xitem %}
+      <th>{{ field }}</th>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Involvements</h2>
+<table>
+  <thead>
+    <tr>
+      {% for xheader in involvement_headers %}
+      <th>{{ xheader }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for xitem in involvements %}
+    <tr>
+      {% for field in xitem %}
+      <th>{{ field }}</th>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
