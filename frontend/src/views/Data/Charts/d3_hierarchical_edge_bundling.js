@@ -5,8 +5,8 @@ import { primary_color } from "/colors";
 
 let width = 954;
 let radius = width / 2;
-let colorin = "#9c4ce8";
-let colorout = primary_color;
+let colorin = primary_color;
+let colorout = "#4820d7";
 let colornone = "#ccc";
 let tree = d3.cluster().size([2 * Math.PI, radius - 100]);
 let line = d3
