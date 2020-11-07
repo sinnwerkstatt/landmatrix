@@ -16,11 +16,14 @@ from apps.landmatrix.models.mixins import (
 
 
 class InvestorManager(models.Manager):
+    def public(self):
+        return self.get_queryset().filter(status__in=(2, 3), is_actually_unknown=False)
+
     def visible(self, user=None):
         qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
             return qs
-        return qs.filter(status__in=(2, 3)).exclude(name="")
+        return qs.filter(status__in=(2, 3), is_actually_unknown=False)
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
@@ -145,7 +148,7 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
 
     def get_affected_deals(self, seen_investors=None):
         """
-        Get list of affected deals - this is the inverse of Top Investors
+        Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
         """
         deals = set()
@@ -203,12 +206,14 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         }
 
 
-class InvolvementManager(models.Manager):
-    def visible(self, user=None):
-        qs = self.get_queryset()
-        if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3))
+class InvestorVentureInvolvementManager(models.Manager):
+    def public(self):
+        return self.get_queryset().filter(
+            investor__status__in=(2, 3),
+            investor__is_actually_unknown=False,
+            venture__status__in=(2, 3),
+            venture__is_actually_unknown=False,
+        )
 
 
 @reversion.register(ignore_duplicates=True)
@@ -301,7 +306,7 @@ class InvestorVentureInvolvement(
 
     old_id = models.IntegerField(null=True, blank=True)
 
-    objects = InvolvementManager()
+    objects = InvestorVentureInvolvementManager()
 
     class Meta:
         verbose_name = _("Investor Venture Involvement")

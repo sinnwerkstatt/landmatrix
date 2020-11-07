@@ -964,6 +964,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
+    # is_public = models.BooleanField(default=False)
     top_investors = models.ManyToManyField(Investor, related_name="+")
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
@@ -1050,6 +1051,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
         # FIXME: These fields are calculated on save but actually they might change when investors change
+        # self.is_public = self.is_public_deal()
         self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
@@ -1245,6 +1247,37 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ).exists()
         )
         return oc_unknown and oc_has_no_known_parents
+
+    def legacy_download_list_format(self) -> list:
+        # try:
+        #     public = deal.is_public_deal() and "Yes"
+        # except Deal.IsNotPublic:
+        #     public = "No"
+        public = "Yes"  # FIXME!
+        top_investors = "|".join(
+            [
+                "#".join(
+                    [
+                        ti.name.replace("#", "").replace("\n", "").strip(),
+                        str(ti.id),
+                        ti.country.name if ti.country else "",
+                    ]
+                )
+                for ti in self.top_investors.all()
+            ]
+        )
+        return [
+            self.id,
+            public,
+            "transnational" if self.transnational else "domestic",
+            self.deal_size,
+            self.current_contract_size or "0",
+            self.current_production_size or "0",
+            self.get_current_negotiation_status_display(),
+            self.get_current_implementation_status_display(),
+            self.fully_updated_at,
+            top_investors,
+        ]
 
 
 class DealTopInvestors(models.Model):

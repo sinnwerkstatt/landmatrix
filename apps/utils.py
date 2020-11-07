@@ -46,3 +46,13 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
 
         results += [richdeal]
     return results
+
+
+def arrayfield_choices_display(field, choices: tuple) -> list:
+    if not field:
+        return []
+    choices_dict = dict(choices)
+    ret = []
+    for value in field:
+        ret += [str(choices_dict.get(value, value))]
+    return ret
