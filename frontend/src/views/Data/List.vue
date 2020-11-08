@@ -15,6 +15,14 @@
           <Table :targetModel="targetModel"></Table>
         </div>
       </template>
+      <template v-slot:FilterBar>
+        <h4>{{ $t("Data") }}</h4>
+        <FilterCollapse title="Download" :initExpanded="true">
+          <a :href="`/api/legacy_export/?filters=${filters}&format=xlsx`">XLSX</a><br />
+          <a :href="`/api/legacy_export/?filters=${filters}&format=csv`">CSV</a>
+        </FilterCollapse>
+        <FilterCollapse :title="$t('Columns')"> </FilterCollapse>
+      </template>
     </DataContainer>
   </div>
 </template>
@@ -23,11 +31,15 @@
   import DataContainer from "./DataContainer";
   import Table from "/components/Data/Table";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import FilterCollapse from "/components/Data/FilterCollapse";
 
   export default {
     name: "DataList",
-    components: { DataContainer, Table, LoadingPulse },
+    components: { FilterCollapse, DataContainer, Table, LoadingPulse },
     computed: {
+      filters() {
+        return JSON.stringify(this.$store.getters.filtersForGQL);
+      },
       targetModel() {
         if (this.$route.name === "list_investors") {
           return "investor";

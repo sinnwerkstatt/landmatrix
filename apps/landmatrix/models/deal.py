@@ -29,15 +29,7 @@ class DealManager(models.Manager):
     def public(self):
         qs = self.get_queryset()
         qs = qs.filter(status__in=(2, 3))
-        qs = qs.exclude(confidential=True)
-        qs = qs.exclude(Q(country=None) | Q(country__high_income=True))
-        qs = qs.exclude(datasources=None)
-        qs = qs.exclude(operating_company=None)
-        qs = qs.exclude(
-            Q(operating_company__is_actually_unknown=True)
-            & ~Q(operating_company__investors__investor__is_actually_unknown=False)
-        )
-        # TODO: Open question: just role = "PARENT"?
+        qs = qs.filter(is_public=True)
         return qs
 
     # def with_public_status(self, user=None):
@@ -964,6 +956,18 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
+    is_public = models.BooleanField(default=False)
+    NOT_PUBLIC_REASON_CHOICES = (
+        ("CONFIDENTIAL", "Confidential Flag"),
+        ("NO_COUNTRY", "No Country"),
+        ("HIGH_INCOME_COUNTRY", "High-Income Country"),
+        ("NO_DATASOURCES", "No Datasources"),
+        ("NO_OPERATING_COMPANY", "No Operating Company"),
+        ("NO_KNOWN_INVESTOR", "No Known Investor"),
+    )
+    not_public_reason = models.CharField(
+        max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
+    )
     top_investors = models.ManyToManyField(Investor, related_name="+")
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
@@ -1049,12 +1053,21 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.deal_size = self._calculate_deal_size()
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
-        # FIXME: These fields are calculated on save but actually they might change when investors change
+        self.recalculate_calculated_fields(save_after=False, *args, **kwargs)
+        super().save(*args, **kwargs)
+
+    def recalculate_calculated_fields(self, save_after=True, *args, **kwargs):
+        # With the help of signals these fields are recalculated on changes to:
+        # Location, Contract, DataSource
+        # as well as Investor and InvestorVentureInvolvement
+        self.not_public_reason = self._calculate_public_state()
+        self.is_public = self.not_public_reason == ""
         self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
-        super().save(*args, **kwargs)
+        if save_after:
+            super().save(*args, **kwargs)
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)
@@ -1212,28 +1225,29 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             return self.operating_company.get_top_investors()
         return set()
 
-    class IsNotPublic(Exception):
-        pass
-
-    def is_public_deal(self):
-        # 1. Flag "confidential"
+    def _calculate_public_state(self) -> str:
+        """
+        :return: A string with a value if not public, or empty if public
+        """
         if self.confidential:
-            raise self.IsNotPublic("Confidential Flag")
-        # 2. Minimum information missing?
-        # No Country or High Income Country?
-        if not self.country or self.country.high_income:
-            raise self.IsNotPublic("No Country or High-Income Country")
-        # No DataSource?
+            # 1. Flag "confidential"
+            return "CONFIDENTIAL"
+        if not self.country:
+            # No Country
+            return "NO_COUNTRY"
+        if self.country.high_income:
+            # High Income Country
+            return "HIGH_INCOME_COUNTRY"
         if not self.datasources.exists():
-            raise self.IsNotPublic("No Datasources")
-        # 3. No operating company?
+            # No DataSource
+            return "NO_DATASOURCES"
         if not self.operating_company:
-            raise self.IsNotPublic("No Operating Company")
-        # 4A. Unknown operating company AND no known operating company parents
-
+            # 3. No operating company
+            return "NO_OPERATING_COMPANY"
         if self._has_no_known_investor():
-            raise self.IsNotPublic("No known investor")
-        return True
+            # 4. Unknown operating company AND no known operating company parents
+            return "NO_KNOWN_INVESTOR"
+        return ""
 
     def _has_no_known_investor(self) -> bool:
         if not self.operating_company:
@@ -1245,6 +1259,32 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ).exists()
         )
         return oc_unknown and oc_has_no_known_parents
+
+    def legacy_download_list_format(self) -> list:
+        top_investors = "|".join(
+            [
+                "#".join(
+                    [
+                        ti.name.replace("#", "").replace("\n", "").strip(),
+                        str(ti.id),
+                        ti.country.name if ti.country else "",
+                    ]
+                )
+                for ti in self.top_investors.all()
+            ]
+        )
+        return [
+            self.id,
+            "Yes" if self.is_public else "No",
+            "transnational" if self.transnational else "domestic",
+            self.deal_size,
+            self.current_contract_size or "0",
+            self.current_production_size or "0",
+            self.get_current_negotiation_status_display(),
+            self.get_current_implementation_status_display(),
+            self.fully_updated_at,
+            top_investors,
+        ]
 
 
 class DealTopInvestors(models.Model):

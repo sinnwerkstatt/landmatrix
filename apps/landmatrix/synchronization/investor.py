@@ -81,24 +81,26 @@ def _create_involvements_for_investor(investor, histvestor):
     )
 
     for histvolvement in involves:
-        ivi = InvestorVentureInvolvement.objects.create(
+        types = (
+            [INVESTMENT_MAP[x] for x in list(histvolvement.investment_type)]
+            if histvolvement.investment_type
+            else None
+        )
+
+        InvestorVentureInvolvement.objects.create(
             investor_id=histvolvement.fk_investor.investor_identifier,
             venture_id=investor.id,
             role=ROLE_MAP[histvolvement.role],
+            investment_type=types,
             status=histvolvement.fk_status_id,
+            percentage=histvolvement.percentage,
+            loans_amount=histvolvement.loans_amount,
+            loans_currency_id=histvolvement.loans_currency_id,
+            loans_date=histvolvement.loans_date or "",
+            parent_relation=PARENTAL_RELATION_MAP[histvolvement.parent_relation],
+            comment=histvolvement.comment or "",
+            old_id=histvolvement.pk,
         )
-        if histvolvement.investment_type:
-            types = [INVESTMENT_MAP[x] for x in list(histvolvement.investment_type)]
-            ivi.investment_type = types
-        else:
-            ivi.investment_type = None
-        ivi.percentage = histvolvement.percentage
-        ivi.loans_amount = histvolvement.loans_amount
-        ivi.loans_currency_id = histvolvement.loans_currency_id
-        ivi.loans_date = histvolvement.loans_date or ""
-        ivi.parent_relation = PARENTAL_RELATION_MAP[histvolvement.parent_relation]
-        ivi.comment = histvolvement.comment or ""
-        ivi.old_id = histvolvement.pk
 
 
 ROLE_MAP = {"ST": "PARENT", "IN": "LENDER"}

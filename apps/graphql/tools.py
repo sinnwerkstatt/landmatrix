@@ -45,7 +45,7 @@ def parse_filters(filters):
     ret = Q()
     for filtr in filters:
         field = filtr["field"].replace(".", "__")
-        op = filtr.get("operation", "EQ")
+        op = filtr.get("operation") or "EQ"
         val = filtr["value"]
         if op in ["EQ", "LT", "LE", "GE", "GT"] and len(val) == 1:
             val = val[0]

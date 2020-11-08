@@ -1,5 +1,8 @@
 import json
+import zipfile
+from io import BytesIO
 
+import unicodecsv as csv
 from django.http import HttpResponse
 from django.shortcuts import render
 from openpyxl import Workbook
@@ -8,8 +11,9 @@ from openpyxl.utils.exceptions import IllegalCharacterError
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Deal, Investor, InvestorVentureInvolvement
 from apps.landmatrix.utils import InvolvementNetwork
+from apps.utils import arrayfield_choices_display
 
-heads = [
+deal_headers = [
     "Deal ID",
     "Is public",
     "Deal scope",
@@ -22,6 +26,31 @@ heads = [
     "Top parent companies",
 ]
 
+investor_headers = [
+    "Investor ID",
+    "Name",
+    "Country of registration/origin",
+    "Classification",
+    "Investor homepage",
+    "Opencorporates link",
+    "Comment",
+    "Action comment",
+]
+
+involvement_headers = [
+    "Investor ID Downstream",
+    "Investor Name Downstream",
+    "Investor ID Upstream",
+    "Investor Name Upstream",
+    "Relation type",
+    "Investment type",
+    "Ownership share",
+    "Loan amount",
+    "Loan currency",
+    "Loan date",
+    "Comment",
+]
+
 
 class DataDownload:
     def __init__(self, request):
@@ -31,119 +60,98 @@ class DataDownload:
         self.return_format = self.request.GET.get("format", "html")
 
         if deal_id:
-            deal = Deal.objects.get(id=deal_id)
-            try:
-                public = deal.is_public_deal() and "Yes"
-            except Deal.IsNotPublic:
-                public = "No"
-            top_investors = "|".join(
-                [
-                    "#".join(
-                        [
-                            ti.name.replace("#", "").replace("\n", "").strip(),
-                            str(ti.id),
-                            ti.country.name if ti.country else "",
-                        ]
-                    )
-                    for ti in deal.top_investors.all()
-                ]
-            )
-            self.deals = [
-                [
-                    deal.id,
-                    public,
-                    "transnational" if deal.transnational else "domestic",
-                    deal.deal_size,
-                    deal.current_contract_size or "0",
-                    deal.current_production_size or "0",
-                    deal.get_current_negotiation_status_display(),
-                    deal.get_current_implementation_status_display(),
-                    deal.fully_updated_at,
-                    top_investors,
-                ]
-            ]
-
-            (
-                self.investors,
-                self.involvements,
-            ) = InvolvementNetwork().flat_view_for_download(deal.operating_company)
-
+            self._single_deal(deal_id)
         else:
-            self.filters = json.loads(filters)
-            self.deals = (
-                Deal.objects.public().filter(parse_filters(self.filters)).order_by("id")
-            )
-            self.investors = Investor.objects.all()
-            self.involvements = InvestorVentureInvolvement.objects.all()
+            self._multiple_deals(filters)
+
+    def _single_deal(self, deal_id):
+        deal = Deal.objects.get(id=deal_id)
+        self.deals = [deal.legacy_download_list_format()]
+        (
+            self.investors,
+            self.involvements,
+        ) = InvolvementNetwork().flat_view_for_download(deal.operating_company)
+        self.filename = f"deal_{deal_id}"
+
+    def _multiple_deals(self, filters):
+        self.filters = json.loads(filters)
+        self.deals = [
+            deal.legacy_download_list_format()
+            for deal in Deal.objects.public()
+            .filter(parse_filters(self.filters))
+            .prefetch_related("top_investors")
+            .prefetch_related("top_investors__country")
+            .order_by("id")
+        ]
+
+        self.investors = [
+            [
+                investor.id,
+                investor.name,
+                investor.country.name if investor.country else "",
+                investor.get_classification_display(),
+                investor.homepage,
+                investor.opencorporates,
+                investor.comment,
+                "",  # TODO. get action comment here? really? :S
+            ]
+            for investor in Investor.objects.public()
+            .order_by("id")
+            .prefetch_related("country")
+        ]
+
+        self.involvements = [
+            [
+                involvement.venture_id,
+                involvement.venture.name,
+                involvement.investor_id,
+                involvement.investor.name,
+                involvement.get_role_display(),
+                "|".join(
+                    arrayfield_choices_display(
+                        involvement.investment_type, involvement.INVESTMENT_TYPE_CHOICES
+                    )
+                ),
+                involvement.percentage,
+                involvement.loans_amount,
+                involvement.loans_currency,
+                involvement.loans_date,
+                # involvement.get_parent_relation_display(),
+                involvement.comment,
+            ]
+            for involvement in InvestorVentureInvolvement.objects.public()
+            .prefetch_related("investor")
+            .prefetch_related("venture")
+            .prefetch_related("loans_currency")
+        ]
+        self.filename = "export"
 
     def get_response(self):
         if self.return_format == "xlsx":
             return self.xlsx()
+        if self.return_format == "csv":
+            return self.csv()
         return self.html()
-
-    @property
-    def deal_headers(self):
-        return [
-            "Deal ID",
-            "Is public",
-            "Deal scope",
-            "Deal size",
-            "Current size under contract",
-            "Current size in operation (production)",
-            "Current negotiation status",
-            "Current implementation status",
-            "Fully updated",
-            "Top parent companies",
-        ]
-
-    @property
-    def investor_headers(self):
-        return [
-            "Investor ID",
-            "Name",
-            "Country of registration/origin",
-            "Classification",
-            "Investor homepage",
-            "Opencorporates link",
-            "Comment",
-            "Action comment",
-        ]
-
-    @property
-    def involvement_headers(self):
-        return [
-            "Investor ID Downstream",
-            "Investor Name Downstream",
-            "Investor ID Upstream",
-            "Investor Name Upstream",
-            "Relation type",
-            "Investment type",
-            "Ownership share",
-            "Loan amount",
-            "Loan currency",
-            "Loan date",
-            "Comment",
-        ]
 
     def html(self):
         ctx = {
-            "deal_headers": self.deal_headers,
+            "deal_headers": deal_headers,
             "deals": self.deals,
-            "investor_headers": self.investor_headers,
+            "investor_headers": investor_headers,
             "investors": self.investors,
-            "involvement_headers": self.involvement_headers,
+            "involvement_headers": involvement_headers,
             "involvements": self.involvements,
         }
         return render(self.request, "landmatrix/export_table.html", ctx)
 
     def xlsx(self):
         response = HttpResponse(content_type="application/ms-excel")
-        response["Content-Disposition"] = f"attachment; filename={'export.xlsx'}"
+        response["Content-Disposition"] = f'attachment; filename="{self.filename}.xlsx"'
         wb = Workbook(write_only=True)
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
-        ws_deals.append(self.deal_headers)
+        ws_deals.append(deal_headers)
         for item in self.deals:
             try:
                 ws_deals.append(item)
@@ -154,15 +162,48 @@ class DataDownload:
 
         # Involvements tab
         ws_involvements = wb.create_sheet(title="Involvements")
-        ws_involvements.append(self.involvement_headers)
+        ws_involvements.append(involvement_headers)
         for item in self.involvements:
             ws_involvements.append(item)
 
         # Investors tab
         ws_investors = wb.create_sheet(title="Investors")
-        ws_investors.append(self.investor_headers)
+        ws_investors.append(investor_headers)
         for item in self.investors:
             ws_investors.append(item)
 
         wb.save(response)
+        return response
+
+    @staticmethod
+    def _csv_writer(data):
+        # Deals CSV
+        file = BytesIO()
+        writer = csv.writer(file, delimiter=";")  # encoding='cp1252'
+        for item in data:
+            writer.writerow(item)
+        file.seek(0)
+        return file.getvalue()
+
+    def csv(self):
+        result = BytesIO()
+        zip_file = zipfile.ZipFile(result, "w")
+
+        # Deals CSV
+        deals_data = [deal_headers] + self.deals
+        zip_file.writestr("deals.csv", self._csv_writer(deals_data))
+
+        # Involvements CSV
+        involvements_data = [involvement_headers] + self.involvements
+        zip_file.writestr("involvements.csv", self._csv_writer(involvements_data))
+
+        # Investors CSV
+        investors_data = [investor_headers] + self.investors
+        zip_file.writestr("investors.csv", self._csv_writer(investors_data))
+
+        zip_file.close()
+        response = HttpResponse(
+            result.getvalue(), content_type="application/x-zip-compressed"
+        )
+        response["Content-Disposition"] = f'attachment; filename="{self.filename}.zip"'
         return response

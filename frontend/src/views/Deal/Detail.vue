@@ -163,6 +163,13 @@
       <b-tab :title="$t('Comments')">
         <DealComments :comments="deal.comments"></DealComments>
       </b-tab>
+
+      <b-tab :title="$t('Actions')">
+        <h4><i class="fa fa-download"></i> Download</h4>
+        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=xlsx`">XLSX</a><br>
+        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=csv`">CSV</a>
+
+      </b-tab>
     </b-tabs>
   </div>
 </template>
