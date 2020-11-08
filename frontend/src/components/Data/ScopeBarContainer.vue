@@ -52,6 +52,7 @@
     //transition: width 0.5s, min-width 0.5s;
     width: 20%;
     min-width: 220px;
+    max-width: 300px;
     filter: drop-shadow(-3px 3px 3px rgba(0, 0, 0, 0.3));
 
     .wimpel {

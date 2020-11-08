@@ -593,6 +593,7 @@
     //transition: width 0.5s, min-width 0.5s;
     width: 20%;
     min-width: 220px;
+    max-width: 300px;
     font-size: 0.9rem;
 
     h3 {
@@ -605,6 +606,7 @@
       width: 100%;
       height: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 0.5em;
       display: flex;
       flex-direction: column;

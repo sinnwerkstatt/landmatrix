@@ -386,10 +386,11 @@
   .data-table {
     height: 100%;
     max-height: 100%;
+    background-color: darken(white, 10);
 
     .table-wrap {
       padding: 0 15px 2em 27px;
-      border-top: solid white 3.4em;
+      border-top: solid darken(white, 10) 3.4em;
       overflow-x: hidden;
       max-height: 100%;
       height: 100%;
@@ -419,6 +420,12 @@
 
       tr {
         border: 1px solid #c9c9c9;
+        &:nth-child(even) {
+          background-color: white;
+        }
+        &:nth-child(odd) {
+          background-color: darken(white, 2);
+        }
       }
 
       td {
@@ -433,21 +440,24 @@
         color: white;
         vertical-align: bottom;
         min-width: 60px;
+        font-weight: normal;
 
         &:hover {
           cursor: pointer;
         }
 
         &.selected {
-          font-weight: 600;
+          font-weight: normal;
           color: $lm_orange;
 
           &.asc:before {
+            font-weight: 600;
             content: "\f077";
             font-family: "Font Awesome 5 Free";
           }
 
           &:not(.asc):before {
+            font-weight: 600;
             content: "\f078";
             font-family: "Font Awesome 5 Free";
           }
@@ -516,6 +526,7 @@
       white-space: nowrap;
       margin: 0.1em;
       display: inline-block;
+      border: 1px solid rgba(0,0,0,0.1);
     }
 
     .loader {
