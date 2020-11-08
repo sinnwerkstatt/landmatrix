@@ -1,97 +1,112 @@
 <template>
-  <div>
-    <div class="container">
-      <h2>General Info</h2>
-      <div class="row" v-if="!investor" style="height: 100%;">
-        <LoadingPulse />
-      </div>
-      <div v-if="investor" class="row">
-        <div class="col-xl-6 mb-3">
-          <Field
-            :fieldname="fieldname"
-            :readonly="true"
-            v-model="investor[fieldname]"
-            v-for="fieldname in fields"
-            model="investor"
-          />
-        </div>
-        <div
-          class="col-lg-8 col-xl-6 mb-3"
-          :class="{ loading_wrapper: !graphDataIsReady }"
-        >
-          <div v-if="!graphDataIsReady" style="height: 400px;">
-            <LoadingPulse />
-          </div>
-          <InvestorGraph
-            v-else
-            :investor="investor"
-            @newDepth="onNewDepth"
-            :initDepth="depth"
-          ></InvestorGraph>
-        </div>
-      </div>
-
-      <b-tabs v-if="graphDataIsReady" content-class="mb-3">
-        <b-tab>
-          <template v-slot:title>
-            <h5 v-html="`Involvements (${involvements.length})`"></h5>
-          </template>
-          <table class="table data-table">
-            <thead>
-            <tr>
-              <th>Investor ID</th>
-              <th>Name</th>
-              <th>Country of registration</th>
-              <th>Classification</th>
-              <th>Relationship</th>
-              <th>Ownership share</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="involvement in involvements">
-              <td v-html="investorValue(involvement.investor, 'id')"></td>
-              <td v-html="investorValue(involvement.investor, 'name')"></td>
-              <td v-html="investorValue(involvement.investor, 'country')"></td>
-              <td v-html="investorValue(involvement.investor, 'classification')"></td>
-              <td>{{ detect_role(involvement) }}</td>
-              <td>{{ involvement.percentage }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </b-tab>
-        <b-tab v-if="'deals' in investor">
-          <template v-slot:title>
-            <h5
-              v-html="
-                `Deals (Involvements as Operating company) (${investor.deals.length})`
-              "
-            ></h5>
-          </template>
-          <table class="table data-table">
-            <thead>
-            <tr>
-              <th>Deal ID</th>
-              <th>Target country</th>
-              <th>Intention of investment</th>
-              <th>Current negotiation status</th>
-              <th>Current implementation status</th>
-              <th>Deal size</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="deal in deals">
-              <td v-html="dealValue(deal, 'id')"></td>
-              <td v-html="dealValue(deal, 'country')"></td>
-              <td v-html="dealValue(deal, 'intention_of_investment')"></td>
-              <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
-              <td v-html="dealValue(deal, 'current_implementation_status')"></td>
-              <td v-html="dealValue(deal, 'deal_size')"></td>
-            </tr>
-            </tbody>
-          </table>
-        </b-tab>
-      </b-tabs>
+  <div class="container investor-detail">
+    <div class="row" v-if="!investor" style="height: 100%;">
+      <LoadingPulse />
     </div>
+    <div class="row sticky-top">
+      <div class="col-sm-5 col-md-3">
+        <h1>Investor #{{ investor.id }}</h1>
+      </div>
+      <div class="col-sm-7 col-md-9 panel-container">
+        <div class="meta-panel">
+          <div class="field">
+            <div class="label">Created:</div>
+            <div class="val">{{ getInvestorValue("created_at") }}</div>
+          </div>
+          <div class="field">
+            <div class="label">Last update:</div>
+            <div class="val">{{ getInvestorValue("modified_at") }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="investor" class="row">
+      <div class="col-xl-6 mb-3">
+        <Field
+          :fieldname="fieldname"
+          :readonly="true"
+          v-model="investor[fieldname]"
+          v-for="fieldname in fields"
+          model="investor"
+        />
+      </div>
+      <div
+        class="col-lg-8 col-xl-6 mb-3"
+        :class="{ loading_wrapper: !graphDataIsReady }"
+      >
+        <div v-if="!graphDataIsReady" style="height: 400px;">
+          <LoadingPulse />
+        </div>
+        <InvestorGraph
+          v-else
+          :investor="investor"
+          @newDepth="onNewDepth"
+          :initDepth="depth"
+        ></InvestorGraph>
+      </div>
+    </div>
+
+    <b-tabs v-if="graphDataIsReady" content-class="mb-3">
+      <b-tab>
+        <template v-slot:title>
+          <h5 v-html="`Involvements (${involvements.length})`"></h5>
+        </template>
+        <table class="table data-table">
+          <thead>
+          <tr>
+            <th>Investor ID</th>
+            <th>Name</th>
+            <th>Country of registration</th>
+            <th>Classification</th>
+            <th>Relationship</th>
+            <th>Ownership share</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="involvement in involvements">
+            <td v-html="investorValue(involvement.investor, 'id')"></td>
+            <td v-html="investorValue(involvement.investor, 'name')"></td>
+            <td v-html="investorValue(involvement.investor, 'country')"></td>
+            <td v-html="investorValue(involvement.investor, 'classification')"></td>
+            <td>{{ detect_role(involvement) }}</td>
+            <td>{{ involvement.percentage }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </b-tab>
+      <b-tab v-if="'deals' in investor">
+        <template v-slot:title>
+          <h5
+            v-html="
+              `Deals (Involvements as Operating company) (${investor.deals.length})`
+            "
+          ></h5>
+        </template>
+        <table class="table data-table">
+          <thead>
+          <tr>
+            <th>Deal ID</th>
+            <th>Target country</th>
+            <th>Intention of investment</th>
+            <th>Current negotiation status</th>
+            <th>Current implementation status</th>
+            <th>Deal size</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="deal in deals">
+            <td v-html="dealValue(deal, 'id')"></td>
+            <td v-html="dealValue(deal, 'country')"></td>
+            <td v-html="dealValue(deal, 'intention_of_investment')"></td>
+            <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
+            <td v-html="dealValue(deal, 'current_implementation_status')"></td>
+            <td v-html="dealValue(deal, 'deal_size')"></td>
+          </tr>
+          </tbody>
+        </table>
+      </b-tab>
+    </b-tabs>
   </div>
 </template>
 
@@ -103,6 +118,7 @@
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import Field from "/components/Fields/Field";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import { getFieldValue } from "../../components/Fields/fieldHelpers";
 
   let investor_query = gql`
     query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
@@ -174,7 +190,8 @@
     },
     computed: {
       ...mapState({
-        investor_fields: (state) => state.investor.investor_fields
+        investor_fields: (state) => state.investor.investor_fields,
+        formFields: (state) => state.formfields
       }),
       involvements() {
         return this.investor.involvements || [];
@@ -194,6 +211,9 @@
       }
     },
     methods: {
+      getInvestorValue(fieldName, subModel) {
+        return getFieldValue(this.investor, this.formFields, fieldName, "investor");
+      },
       detect_role(investor) {
         if (investor.role === "PARENT") {
           if (investor.involvement_type === "INVESTOR") return "Parent company";
@@ -246,5 +266,17 @@
 </script>
 
 <style lang="scss">
-  //@import "../../scss/colors";
+  @import "../../scss/colors";
+
+  .investor-detail {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+
+      &:before {
+        display: none;
+      }
+    }
+  }
 </style>

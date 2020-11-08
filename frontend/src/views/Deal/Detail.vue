@@ -3,7 +3,28 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
-    <h1>Deal #{{ deal.id }}</h1>
+    <div class="row sticky-top">
+      <div class="col-sm-5 col-md-3">
+        <h1>Deal #{{ deal.id }}</h1>
+      </div>
+      <div class="col-sm-7 col-md-9 panel-container">
+        <div class="meta-panel">
+          <div class="field">
+            <div class="label">Created:</div>
+            <div class="val">{{ getDealValue("created_at") }}</div>
+          </div>
+          <div class="field">
+            <div class="label">Last update:</div>
+            <div class="val">{{ getDealValue("modified_at") }}</div>
+          </div>
+          <div class="field">
+            <div class="label">Last full update:</div>
+            <div class="val">{{ getDealValue("fully_updated_at") }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
     <!--    <div class="quicknav">-->
     <!--      <div v-for="(version, i) in deal.versions">-->
@@ -21,10 +42,11 @@
     <!--      </div>-->
     <!--    </div>-->
     <b-tabs
+      id="tabNav"
       content-class="mb-3"
       vertical
       pills
-      nav-wrapper-class="position-relative"
+      nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
       nav-class="sticky-nav"
       :key="deal_id + deal_version"
     >
@@ -149,13 +171,6 @@
         </template>
       </b-tab>
 
-      <DealSection
-        :title="deal_sections.meta.label"
-        :deal="deal"
-        :sections="deal_sections.meta.subsections"
-        :readonly="true"
-      />
-
       <b-tab :title="$t('Deal History')">
         <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
       </b-tab>
@@ -183,8 +198,9 @@
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import { deal_gql_query } from "./deal_fields";
   import gql from "graphql-tag";
-  import store from "../../store";
   import DealComments from "../../components/Deal/DealComments";
+  import { mapState } from "vuex";
+  import { getFieldValue } from "../../components/Fields/fieldHelpers";
 
   export default {
     props: ["deal_id", "deal_version"],
@@ -194,7 +210,16 @@
       DealHistory,
       DealSection,
       DealLocationsSection,
-      DealSubmodelSection,
+      DealSubmodelSection
+    },
+    data() {
+      return {
+        deal: null,
+        loading: false,
+        deal_sections,
+        deal_submodel_sections,
+        investor: { involvements: [] }
+      };
     },
     apollo: {
       deal: {
@@ -202,9 +227,9 @@
         variables() {
           return {
             id: +this.deal_id,
-            version: +this.deal_version,
+            version: +this.deal_version
           };
-        },
+        }
       },
       investor: {
         query: gql`
@@ -218,24 +243,15 @@
         `,
         variables() {
           return {
-            id: +this.deal.operating_company.id,
+            id: +this.deal.operating_company.id
           };
         },
         skip() {
           if (!this.deal) return true;
           if (!this.deal.operating_company) return true;
           return !this.deal.operating_company.id;
-        },
-      },
-    },
-    data() {
-      return {
-        deal: null,
-        loading: false,
-        deal_sections,
-        deal_submodel_sections,
-        investor: { involvements: [] },
-      };
+        }
+      }
     },
     computed: {
       not_public() {
@@ -249,8 +265,14 @@
         }
         return null;
       },
+      ...mapState({
+        formFields: (state) => state.formfields
+      })
     },
     methods: {
+      getDealValue(fieldName, subModel) {
+        return getFieldValue(this.deal, this.formFields, fieldName);
+      },
       triggerInvestorGraphRefresh() {
         this.$refs.investorGraph.refresh_graph();
       },
@@ -261,10 +283,10 @@
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
             { link: { name: "list_deals" }, name: "Deals" },
-            { name: title },
-          ],
+            { name: title }
+          ]
         });
-      },
+      }
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -274,7 +296,7 @@
     beforeRouteUpdate(to, from, next) {
       this.updatePageContext(to);
       next();
-    },
+    }
   };
 </script>
 <style lang="scss">
@@ -283,7 +305,7 @@
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;
-    top: 10%;
+    top: 8em;
     z-index: 99;
   }
 
@@ -295,10 +317,12 @@
     height: 100%;
     background: rgba(255, 255, 255, 0.7);
   }
+
   .panel-body > h3 {
     margin-top: 1em;
     margin-bottom: 0.5em;
   }
+
   .panel-body:first-child > h3 {
     margin-top: 0.3em;
   }
@@ -308,10 +332,12 @@
       color: $lm_dark;
       text-align: left;
       text-transform: none;
+
       &:before {
         display: none;
       }
     }
+
     .nav-pills {
       .nav-item {
         .nav-link {
@@ -325,6 +351,42 @@
             background-color: inherit;
             color: $lm_dark;
           }
+        }
+      }
+    }
+
+    .sticky-top {
+      top: 5em;
+    }
+  }
+
+  .panel-container {
+    text-align: right;
+
+    .meta-panel {
+      text-align: left;
+      display: inline-block;
+      background-color: darken(white, 2);
+      padding: 0.5em 1em;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.25);
+
+      .field {
+        display: inline-block;
+
+        &:not(:last-child) {
+          margin-right: 1em;
+        }
+
+        .label {
+          display: inline-block;
+          color: rgba(0, 0, 0, 0.3);
+        }
+
+        .val {
+          display: inline-block;
+          font-style: italic;
         }
       }
     }

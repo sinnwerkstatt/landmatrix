@@ -180,7 +180,10 @@ export const deal_gql_query = gql`
       # Overall comment
       overall_comment
       # Meta
+      created_at
+      modified_at
       fully_updated
+      fully_updated_at
       confidential
       confidential_reason
       confidential_comment
