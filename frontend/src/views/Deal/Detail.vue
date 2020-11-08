@@ -3,6 +3,7 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
+    <h1>Deal #{{ deal.id }}</h1>
     <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
     <!--    <div class="quicknav">-->
     <!--      <div v-for="(version, i) in deal.versions">-->
@@ -296,9 +297,18 @@
   }
 
   .deal-detail {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+      &:before {
+        display: none;
+      }
+    }
     .nav-pills {
       .nav-item {
         .nav-link {
+          padding-left: 0;
           border-right: 1px solid $lm_orange;
           color: $lm_orange;
           border-radius: 0;
