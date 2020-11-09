@@ -38,7 +38,7 @@ export const getDealValue = function (component, deal, fieldName) {
             let [intention, icon] = intention_of_investment_map[ioi];
             return `<span class="ioi-label"><i class="${icon}"></i> ${component.$t(
               intention
-            )}</span> `;
+            )}</span>`;
           })
           .join(" ");
       }

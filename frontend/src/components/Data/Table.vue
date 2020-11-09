@@ -387,6 +387,8 @@
     height: 100%;
     max-height: 100%;
     background-color: darken(white, 10);
+    font-size: 0.9rem;
+    line-height: 1.1;
 
     .table-wrap {
       padding: 0 15px 2em 27px;
@@ -429,7 +431,7 @@
       }
 
       td {
-        padding: 0.5em;
+        padding: 0.3em 0.3em;
       }
 
       th {
@@ -520,13 +522,14 @@
     }
 
     .ioi-label {
-      background: #f4f4f4;
+      background: rgba(0,0,0,0.05);
       border-radius: 5px;
-      padding: 0.2em;
+      padding: 0.15em 0.35em;
       white-space: nowrap;
-      margin: 0.1em;
+      margin: 0.2em 0.05em 0 0;
       display: inline-block;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.05);
+      color: rgba(black, 0.7)
     }
 
     .loader {
