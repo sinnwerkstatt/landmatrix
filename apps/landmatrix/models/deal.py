@@ -8,6 +8,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from reversion.models import Version
 
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
@@ -1273,6 +1274,16 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
                 for ti in self.top_investors.all()
             ]
         )
+
+        operating_company_country = ''
+        if self.operating_company.country:
+            operating_company_country = self.operating_company.country.name
+
+        operating_company_action_comment = ''
+        versions = Version.objects.get_for_object(self)
+        if versions:
+            operating_company_action_comment = versions[0].revision.comment
+
         return [
             self.id,
             "Yes" if self.is_public else "No",
@@ -1284,6 +1295,14 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             self.get_current_implementation_status_display(),
             self.fully_updated_at,
             top_investors,
+            self.operating_company.id,
+            self.operating_company.name,
+            operating_company_country,
+            self.operating_company.get_classification_display(),
+            self.operating_company.homepage,
+            self.operating_company.opencorporates,
+            self.operating_company.comment,
+            operating_company_action_comment,
         ]
 
 

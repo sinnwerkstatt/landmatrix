@@ -103,8 +103,6 @@ class InvolvementNetwork:
                     involvement["loans_amount"],
                     involvement["loans_currency"],
                     involvement["loans_date"],
-                    involvement["parent_relation"],
-                    involvement["involvement_type"],
                     involvement["comment"],
                 ]
             ] + y

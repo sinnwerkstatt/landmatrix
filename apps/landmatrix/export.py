@@ -1,3 +1,4 @@
+import gc
 import json
 import zipfile
 from io import BytesIO
@@ -24,6 +25,14 @@ deal_headers = [
     "Current implementation status",
     "Fully updated",
     "Top parent companies",
+    "Operating company: Investor ID",
+    "Operating company: Name",
+    "Operating company: Country of registration/origin",
+    "Operating company: Classification",
+    "Operating company: Investor homepage",
+    "Operating company: Opencorporates link",
+    "Operating company: Comment",
+    "Operating company: Action comment"
 ]
 
 investor_headers = [
@@ -74,16 +83,23 @@ class DataDownload:
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filters):
-        self.filters = json.loads(filters)
+        self.filters = []
+        if filters:
+            self.filters = json.loads(filters)
+
+        deal_qs = Deal.objects.public()\
+            .filter(parse_filters(self.filters))\
+            .prefetch_related("top_investors")\
+            .prefetch_related("top_investors__country")\
+            .order_by("id")
         self.deals = [
             deal.legacy_download_list_format()
-            for deal in Deal.objects.public()
-            .filter(parse_filters(self.filters))
-            .prefetch_related("top_investors")
-            .prefetch_related("top_investors__country")
-            .order_by("id")
+            for deal in queryset_iterator(deal_qs)
         ]
 
+        investor_qs = Investor.objects.public()\
+            .order_by("id")\
+            .prefetch_related("country")
         self.investors = [
             [
                 investor.id,
@@ -95,11 +111,13 @@ class DataDownload:
                 investor.comment,
                 "",  # TODO. get action comment here? really? :S
             ]
-            for investor in Investor.objects.public()
-            .order_by("id")
-            .prefetch_related("country")
+            for investor in queryset_iterator(investor_qs)
         ]
 
+        involvement_qs = InvestorVentureInvolvement.objects.public()\
+            .prefetch_related("investor")\
+            .prefetch_related("venture")\
+            .prefetch_related("loans_currency")
         self.involvements = [
             [
                 involvement.venture_id,
@@ -119,10 +137,7 @@ class DataDownload:
                 # involvement.get_parent_relation_display(),
                 involvement.comment,
             ]
-            for involvement in InvestorVentureInvolvement.objects.public()
-            .prefetch_related("investor")
-            .prefetch_related("venture")
-            .prefetch_related("loans_currency")
+            for involvement in queryset_iterator(involvement_qs)
         ]
         self.filename = "export"
 
@@ -207,3 +222,26 @@ class DataDownload:
         )
         response["Content-Disposition"] = f'attachment; filename="{self.filename}.zip"'
         return response
+
+
+def queryset_iterator(queryset, chunksize=1000):
+    '''''
+    https://www.djangosnippets.org/snippets/1949/
+
+    Iterate over a Django Queryset ordered by the primary key
+
+    This method loads a maximum of chunksize (default: 1000) rows in it's
+    memory at the same time while django normally would load all rows in it's
+    memory. Using the iterator() method only causes it to not preload all the
+    classes.
+
+    Note that the implementation of the iterator does not support ordered query sets.
+    '''
+    pk = 0
+    last_pk = queryset.order_by('-pk')[0].pk
+    queryset = queryset.order_by('pk')
+    while pk < last_pk:
+        for row in queryset.filter(pk__gt=pk)[:chunksize]:
+            pk = row.pk
+            yield row
+        gc.collect()
