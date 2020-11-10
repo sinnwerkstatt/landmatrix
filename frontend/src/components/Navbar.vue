@@ -306,7 +306,7 @@
         return this.$store.getters.countriesWithPage;
       },
       user_role() {
-        if (this.user && this.user.groups.length) {
+        if (this.user && this.user.groups && this.user.groups.length) {
           let groupi = this.user.groups
             .map((g) => g.name)
             .filter((name) => {

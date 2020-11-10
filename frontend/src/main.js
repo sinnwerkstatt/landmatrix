@@ -69,7 +69,8 @@ Vue.component("wagtail-latest_database_modifications", LatestDatabaseModificatio
 Vue.component("wagtail-statistics", Statistics);
 // Vue.component("wagtail-", );
 
-store.dispatch("fetchBasicInfo");
+store.dispatch("fetchMe");
+store.dispatch("fetchCountriesAndRegions");
 // This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
 store.dispatch("fetchWagtailRootPage");
 store.dispatch("fetchFields", LANGUAGE || "en");
