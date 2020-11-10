@@ -12,7 +12,7 @@ from openpyxl.utils.exceptions import IllegalCharacterError
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Deal, Investor, InvestorVentureInvolvement
 from apps.landmatrix.utils import InvolvementNetwork
-from apps.utils import arrayfield_choices_display
+from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
 deal_headers = [
     "Deal ID",
@@ -32,8 +32,53 @@ deal_headers = [
     "Operating company: Investor homepage",
     "Operating company: Opencorporates link",
     "Operating company: Comment",
-    "Operating company: Action comment"
 ]
+deal_fields = [
+    'id',
+    'is_public',
+    'transnational',
+    'deal_size',
+    'current_contract_size',
+    'current_production_size',
+    'current_negotiation_status',
+    'current_implementation_status',
+    'fully_updated_at',
+    'top_investors',
+    'operating_company__id',
+    'operating_company__name',
+    'operating_company__country__name',
+    'operating_company__classification',
+    'operating_company__homepage',
+    'operating_company__opencorporates',
+    'operating_company__comment',
+]
+neg_choices = []
+for (k, v) in Deal._meta.get_field("current_negotiation_status").choices:
+    if type(v) is tuple:
+        neg_choices.extend([t for t in v])
+    else:
+        neg_choices.append((k, v))
+
+deal_choices_fields = {
+    "current_negotiation_status": dict(neg_choices),
+    "current_implementation_status": dict(
+        Deal._meta.get_field("current_implementation_status").choices),
+    "investor_classification": dict(Investor._meta.get_field("classification").choices),
+}
+deal_sub_fiels = {
+    'top_investors': [
+        'top_investors__id',
+        'top_investors__name',
+        'top_investors__country__name'
+    ]
+}
+deal_flattened_fields = []
+for f in deal_fields:
+    if f in deal_sub_fiels:
+        for sf in deal_sub_fiels[f]:
+            deal_flattened_fields.append(sf)
+    else:
+        deal_flattened_fields.append(f)
 
 investor_headers = [
     "Investor ID",
@@ -45,8 +90,22 @@ investor_headers = [
     "Comment",
     "Action comment",
 ]
+investor_fields = [
+    "id",
+    "name",
+    "country__name",
+    "classification",
+    "homepage",
+    "opencorporates",
+    "comment",
+]
+investor_choices_fields = {
+    "classification": dict(Investor._meta.get_field("classification").choices)
+}
+
 
 involvement_headers = [
+    "Involvement ID",
     "Investor ID Downstream",
     "Investor Name Downstream",
     "Investor ID Upstream",
@@ -59,6 +118,23 @@ involvement_headers = [
     "Loan date",
     "Comment",
 ]
+involvement_fields = [
+    "id",
+    "venture_id",
+    "venture__name",
+    "investor_id",
+    "investor__name",
+    "role",
+    "investment_type",
+    "percentage",
+    "loans_amount",
+    "loans_currency",
+    "loans_date",
+    "comment",
+]
+involvement_choices_fields = {
+    "role": dict(InvestorVentureInvolvement._meta.get_field("role").choices),
+}
 
 
 class DataDownload:
@@ -87,57 +163,28 @@ class DataDownload:
         if filters:
             self.filters = json.loads(filters)
 
-        deal_qs = Deal.objects.public()\
-            .filter(parse_filters(self.filters))\
-            .prefetch_related("top_investors")\
-            .prefetch_related("top_investors__country")\
+        deal_qs = Deal.objects.public() \
+            .filter(parse_filters(self.filters)) \
             .order_by("id")
         self.deals = [
-            deal.legacy_download_list_format()
-            for deal in queryset_iterator(deal_qs)
+            self.deal_download_format(deal_dict)
+            for deal_dict in
+            qs_values_to_dict(deal_qs, deal_flattened_fields, deal_sub_fiels.keys())
         ]
 
-        investor_qs = Investor.objects.public()\
-            .order_by("id")\
-            .prefetch_related("country")
+        self.involvements = []
+        self.investors = []
+        investor_qs = Investor.objects.public().order_by("id")
         self.investors = [
-            [
-                investor.id,
-                investor.name,
-                investor.country.name if investor.country else "",
-                investor.get_classification_display(),
-                investor.homepage,
-                investor.opencorporates,
-                investor.comment,
-                "",  # TODO. get action comment here? really? :S
-            ]
-            for investor in queryset_iterator(investor_qs)
+            self.investor_download_format(investor_dict)
+            for investor_dict in qs_values_to_dict(investor_qs, investor_fields, [])
         ]
 
-        involvement_qs = InvestorVentureInvolvement.objects.public()\
-            .prefetch_related("investor")\
-            .prefetch_related("venture")\
-            .prefetch_related("loans_currency")
+        involvement_qs = InvestorVentureInvolvement.objects.public().order_by("id")
         self.involvements = [
-            [
-                involvement.venture_id,
-                involvement.venture.name,
-                involvement.investor_id,
-                involvement.investor.name,
-                involvement.get_role_display(),
-                "|".join(
-                    arrayfield_choices_display(
-                        involvement.investment_type, involvement.INVESTMENT_TYPE_CHOICES
-                    )
-                ),
-                involvement.percentage,
-                involvement.loans_amount,
-                involvement.loans_currency,
-                involvement.loans_date,
-                # involvement.get_parent_relation_display(),
-                involvement.comment,
-            ]
-            for involvement in queryset_iterator(involvement_qs)
+            self.involvement_download_format(involvement_dict)
+            for involvement_dict in
+            qs_values_to_dict(involvement_qs, involvement_fields, [])
         ]
         self.filename = "export"
 
@@ -223,25 +270,84 @@ class DataDownload:
         response["Content-Disposition"] = f'attachment; filename="{self.filename}.zip"'
         return response
 
+    def deal_download_format(self, data):
+        data["is_public"] = "Yes" if data["is_public"] else "No"
+        data["transnational"] = "transnational" if data["transnational"] else "domestic"
 
-def queryset_iterator(queryset, chunksize=1000):
-    '''''
-    https://www.djangosnippets.org/snippets/1949/
+        # flatten top investors
+        data['top_investors'] = "|".join(
+            [
+                "#".join(
+                    [
+                        ti['name'].replace("#", "").replace("\n", "").strip(),
+                        str(ti['id']),
+                        ti['country__name'] if 'country__name' in ti else "",
+                    ]
+                )
+                for ti in data['top_investors']
+            ]
+        )
+        # map operating company fields
+        data['operating_company__id'] = data['operating_company']['id']
+        data['operating_company__name'] = data['operating_company']['name']
+        if 'country' in data['operating_company']:
+            data['operating_company__country__name'] = \
+                data['operating_company']['country']['name']
+        if 'classification' in data['operating_company']:
+            data['operating_company__classification'] = \
+                str(deal_choices_fields['investor_classification'][
+                        data['operating_company']['classification']])
+        data['operating_company__homepage'] = data['operating_company'][
+            'homepage']
+        data['operating_company__opencorporates'] = data['operating_company'][
+            'opencorporates']
+        data['operating_company__comment'] = data['operating_company'][
+            'comment']
 
-    Iterate over a Django Queryset ordered by the primary key
+        row = []
+        for field in deal_fields:
+            if field not in data:
+                # empty fields
+                data[field] = ''
+            elif field in deal_choices_fields:
+                # fields with choices
+                data[field] = str(deal_choices_fields[field][data[field]])
+            row.append(data[field])
+        return row
 
-    This method loads a maximum of chunksize (default: 1000) rows in it's
-    memory at the same time while django normally would load all rows in it's
-    memory. Using the iterator() method only causes it to not preload all the
-    classes.
+    def investor_download_format(self, data):
+        if "country" in data:
+            data["country__name"] = data["country"]["name"]
 
-    Note that the implementation of the iterator does not support ordered query sets.
-    '''
-    pk = 0
-    last_pk = queryset.order_by('-pk')[0].pk
-    queryset = queryset.order_by('pk')
-    while pk < last_pk:
-        for row in queryset.filter(pk__gt=pk)[:chunksize]:
-            pk = row.pk
-            yield row
-        gc.collect()
+        row = []
+        for field in investor_fields:
+            if field not in data:
+                # empty fields
+                data[field] = ''
+            elif field in investor_choices_fields:
+                # fields with choices
+                data[field] = str(investor_choices_fields[field][data[field]])
+            row.append(data[field])
+        return row
+
+    def involvement_download_format(self, data):
+        data['venture__name'] = data['venture']['name']
+        data['investor__name'] = data['investor']['name']
+
+        if 'investment_type' in data:
+            data['investment_type'] = "|".join(
+                arrayfield_choices_display(data['investment_type'],
+                                           Investor._meta.get_field(
+                                               "investment_type").choices
+                                           )
+            ),
+        row = []
+        for field in involvement_fields:
+            if field not in data:
+                # empty fields
+                data[field] = ''
+            elif field in involvement_choices_fields:
+                # fields with choices
+                data[field] = str(involvement_choices_fields[field][data[field]])
+            row.append(data[field])
+        return row
