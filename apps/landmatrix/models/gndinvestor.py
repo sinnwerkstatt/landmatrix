@@ -16,14 +16,20 @@ from apps.landmatrix.models.mixins import (
 
 
 class InvestorManager(models.Manager):
+    def active(self):
+        return self.get_queryset().filter(
+            status__in=(2, 3)
+        )
+
     def public(self):
-        return self.get_queryset().filter(status__in=(2, 3), is_actually_unknown=False)
+        return self.active().filter(
+            is_actually_unknown=False
+        )
 
     def visible(self, user=None):
-        qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3), is_actually_unknown=False)
+            return self.active()
+        return self.public()
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
@@ -207,13 +213,22 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
 
 
 class InvestorVentureInvolvementManager(models.Manager):
-    def public(self):
+    def active(self):
         return self.get_queryset().filter(
             investor__status__in=(2, 3),
+            venture__status__in=(2, 3)
+        )
+
+    def public(self):
+        return self.active().filter(
             investor__is_actually_unknown=False,
-            venture__status__in=(2, 3),
             venture__is_actually_unknown=False,
         )
+
+    def visible(self, user=None):
+        if user and (user.is_staff or user.is_superuser):
+            return self.active()
+        return self.public()
 
 
 @reversion.register(ignore_duplicates=True)

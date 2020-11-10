@@ -112,8 +112,8 @@ def resolve_deals(
 
     # only logged in users are allowed to see not public deals
     # TODO: access should be more fine-grained?!
-    if info.context.user.is_anonymous or public:
-        qs = qs.public()
+    if public:
+        qs = qs.visible(info.context.user)
 
     qs = qs.order_by(sort)
     if filters:

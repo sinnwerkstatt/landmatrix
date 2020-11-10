@@ -20,18 +20,21 @@ from apps.landmatrix.models.mixins import (
 
 
 class DealManager(models.Manager):
-    # TODO throw me out.
-    def visible(self, user=None):
-        qs = self.get_queryset()
-        if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3), confidential=False)
+    def active(self):
+        return self.get_queryset().filter(
+            status__in=(2, 3)
+        )
 
     def public(self):
-        qs = self.get_queryset()
-        qs = qs.filter(status__in=(2, 3))
-        qs = qs.filter(is_public=True)
-        return qs
+        return self.active().filter(
+            is_public=True
+        )
+
+    # TODO throw me out. | ROD: Really? - need to clarify!!
+    def visible(self, user=None):
+        if user and (user.is_staff or user.is_superuser):
+            return self.active()
+        return self.public()
 
     # def with_public_status(self, user=None):
     #     if not (user or user.is_staff or user.is_superuser):

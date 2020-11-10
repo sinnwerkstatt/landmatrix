@@ -26,7 +26,8 @@ def resolve_investor(obj: Any, info: GraphQLResolveInfo, id):
 
 
 def resolve_investors(obj, info: GraphQLResolveInfo, filters=None, sort="id", limit=20):
-    qs = _resolve_investors_prefetching(info).order_by(sort)
+    qs = _resolve_investors_prefetching(info)
+    qs = qs.order_by(sort)
     if filters:
         qs = qs.filter(parse_filters(filters))
 

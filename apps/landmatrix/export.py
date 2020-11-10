@@ -1,4 +1,3 @@
-import gc
 import json
 import zipfile
 from io import BytesIO
@@ -104,7 +103,6 @@ investor_choices_fields = {
     "classification": dict(Investor._meta.get_field("classification").choices)
 }
 
-
 involvement_headers = [
     "Involvement ID",
     "Investor ID Downstream",
@@ -141,6 +139,7 @@ involvement_choices_fields = {
 class DataDownload:
     def __init__(self, request):
         self.request = request
+        self.user = request.user
         deal_id = self.request.GET.get("deal_id")
         filters = self.request.GET.get("filters")
         self.return_format = self.request.GET.get("format", "html")
@@ -164,29 +163,34 @@ class DataDownload:
         if filters:
             self.filters = json.loads(filters)
 
-        deal_qs = (
-            Deal.objects.public().filter(parse_filters(self.filters)).order_by("id")
-        )
+        qs = Deal.objects\
+            .visible(self.user)\
+            .filter(parse_filters(self.filters))\
+            .order_by("id")
         self.deals = [
-            self.deal_download_format(deal_dict)
-            for deal_dict in qs_values_to_dict(
-                deal_qs, deal_flattened_fields, deal_sub_fiels.keys()
+            self.deal_download_format(dict)
+            for dict in qs_values_to_dict(
+                qs, deal_flattened_fields, deal_sub_fiels.keys()
             )
         ]
 
-        self.involvements = []
-        self.investors = []
-        investor_qs = Investor.objects.public().order_by("id")
+        qs = Investor.objects\
+            .visible(self.user)\
+            .order_by("id")
         self.investors = [
-            self.investor_download_format(investor_dict)
-            for investor_dict in qs_values_to_dict(investor_qs, investor_fields, [])
+            self.investor_download_format(dict)
+            for dict in qs_values_to_dict(
+                qs, investor_fields, []
+            )
         ]
 
-        involvement_qs = InvestorVentureInvolvement.objects.public().order_by("id")
+        qs = InvestorVentureInvolvement.objects\
+            .visible(self.user)\
+            .order_by("id")
         self.involvements = [
-            self.involvement_download_format(involvement_dict)
-            for involvement_dict in qs_values_to_dict(
-                involvement_qs, involvement_fields, []
+            self.involvement_download_format(dict)
+            for dict in qs_values_to_dict(
+                qs, involvement_fields, []
             )
         ]
         self.filename = "export"
@@ -275,7 +279,8 @@ class DataDownload:
 
     def deal_download_format(self, data):
         data["is_public"] = "Yes" if data["is_public"] else "No"
-        data["transnational"] = "transnational" if data["transnational"] else "domestic"
+        if "transnational" in data:
+            data["transnational"] = "transnational" if data["transnational"] else "domestic"
 
         # flatten top investors
         data["top_investors"] = "|".join(
@@ -291,23 +296,24 @@ class DataDownload:
             ]
         )
         # map operating company fields
-        data["operating_company__id"] = data["operating_company"]["id"]
-        data["operating_company__name"] = data["operating_company"]["name"]
-        if "country" in data["operating_company"]:
-            data["operating_company__country__name"] = data["operating_company"][
-                "country"
-            ]["name"]
-        if "classification" in data["operating_company"]:
-            data["operating_company__classification"] = str(
-                deal_choices_fields["investor_classification"][
-                    data["operating_company"]["classification"]
-                ]
-            )
-        data["operating_company__homepage"] = data["operating_company"]["homepage"]
-        data["operating_company__opencorporates"] = data["operating_company"][
-            "opencorporates"
-        ]
-        data["operating_company__comment"] = data["operating_company"]["comment"]
+        if "operating_company" in data:
+            data["operating_company__id"] = data["operating_company"]["id"]
+            data["operating_company__name"] = data["operating_company"]["name"]
+            if "country" in data["operating_company"]:
+                data["operating_company__country__name"] = data["operating_company"][
+                    "country"
+                ]["name"]
+            if "classification" in data["operating_company"]:
+                data["operating_company__classification"] = str(
+                    deal_choices_fields["investor_classification"][
+                        data["operating_company"]["classification"]
+                    ]
+                )
+            data["operating_company__homepage"] = data["operating_company"]["homepage"]
+            data["operating_company__opencorporates"] = data["operating_company"][
+                "opencorporates"
+            ]
+            data["operating_company__comment"] = data["operating_company"]["comment"]
 
         row = []
         for field in deal_fields:
