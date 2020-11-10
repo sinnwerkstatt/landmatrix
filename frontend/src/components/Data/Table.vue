@@ -128,7 +128,7 @@
         investorApiFields: [],
         disableScrollLoader: false,
         page: 1,
-        pageSize: 30,
+        pageSize: 50,
         rows: [],
         sortField: "modified_at",
         sortAscending: false
