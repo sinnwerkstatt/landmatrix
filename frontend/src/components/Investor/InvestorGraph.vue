@@ -1,9 +1,11 @@
 <template>
-  <div class="investor-graph" v-if="investor.involvements.length">
+  <div class="investor-graph" v-if="investor.involvements">
     <InvestorDetailInvestorModal v-model="showInvestorModal" :investor="modalData" />
     <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
-    <p class="mb-0 font-italic small">Please right-click the nodes to get more details.</p>
+    <p class="mb-0 font-italic small">
+      Please right-click the nodes to get more details.
+    </p>
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
         <a class="" @click="fullscreen_switch">
@@ -39,10 +41,16 @@
             </label>
           </div>
         </div>
-        <div id="investor-legend" class="mt-1" :class="{ 'col-sm-6': controls, 'col-sm-12': !controls }">
+        <div
+          id="investor-legend"
+          class="mt-1"
+          :class="{ 'col-sm-6': controls, 'col-sm-12': !controls }"
+        >
           <h6>Legend</h6>
           <ul class="list-unstyled">
-            <li v-if="showDeals"><span class="legend-icon deal"></span>Is operating company of</li>
+            <li v-if="showDeals">
+              <span class="legend-icon deal"></span>Is operating company of
+            </li>
             <li><span class="legend-icon parent"></span>Is parent company of</li>
             <li>
               <span class="legend-icon tertiary"></span>Is tertiary investor/lender of
@@ -57,12 +65,16 @@
 <script>
   import cytoscape from "cytoscape";
   import coseBilkent from "cytoscape-cose-bilkent";
+  import popper from "cytoscape-popper";
+  import tippy from "tippy.js";
   import { pick } from "lodash";
   import { investor_color, primary_color } from "../../colors";
   import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
   import InvestorDetailDealModal from "./InvestorDetailDealModal";
+  import { classification_choices } from "/choices";
 
   cytoscape.use(coseBilkent);
+  cytoscape.use(popper);
 
   let cy = null;
 
@@ -73,7 +85,7 @@
       name: "cose-bilkent",
       quality: "proof",
       nodeDimensionsIncludeLabels: true,
-      animate: "end",
+      animate: "end"
     },
     style: [
       {
@@ -88,9 +100,9 @@
           "text-valign": "center",
           "font-size": "9pt",
           "text-wrap": "wrap",
-          "text-max-width": "120px",
+          "text-max-width": "120px"
           // "shape": "ellipse",
-        },
+        }
       },
       {
         selector: "edge",
@@ -101,10 +113,10 @@
           "target-arrow-shape": (obj) => {
             return obj.data("target_arrow_shape") || "none  ";
           },
-          "curve-style": "bezier",
-        },
-      },
-    ],
+          "curve-style": "bezier"
+        }
+      }
+    ]
   };
 
   const investor_fields = [
@@ -113,7 +125,7 @@
     "comment",
     "country",
     "classification",
-    "homepage",
+    "homepage"
   ];
   const involvement_fields = [
     "role",
@@ -124,8 +136,41 @@
     "loans_currency",
     "loans_date",
     "parent_relation",
-    "comment",
+    "comment"
   ];
+
+  function makePopper(ele) {
+    let ref = ele.popperRef(); // used only for positioning
+    if (ref) {
+
+      // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
+      // https://github.com/atomiks/tippyjs/issues/661
+      let dummyDomEle = document.createElement("div");
+
+      content.innerHTML = `#${ele.data().id}`;
+      ele.tippy = tippy(dummyDomEle, {
+        trigger: "manual", // call show() and hide() yourself
+        lazy: false, // needed for onCreate()
+        onCreate: instance => {
+          instance.popperInstance.reference = ref;
+        }, // needed for `ref` positioning
+        content: () => {
+          let tipEl = document.createElement("div");
+          tipEl.classList.add("g-tooltip");
+          if (ele.data().dealNode) {
+            tipEl.classList.add("deal");
+            tipEl.innerHTML = `Deal ${ele.data().name}`;
+          } else {
+            let content = `<span class="name">${ele.data().name} (#${ele.data().id})</span>`;
+            if ('country' in ele.data()) content += `${ele.data().country.name}, `;
+            if ('classification' in ele.data() && classification_choices[ele.data().classification]) content += classification_choices[ele.data().classification];
+            tipEl.innerHTML = content;
+          }
+          return tipEl;
+        }
+      });
+    }
+  }
 
   export default {
     name: "InvestorGraph",
@@ -134,25 +179,25 @@
       investor: Object,
       showDeals: {
         type: Boolean,
-        default: true,
+        default: true
       },
       controls: {
         type: Boolean,
-        default: true,
+        default: true
       },
-      depth: {
+      initDepth: {
         type: Number,
-        default: 1,
-      },
+        default: 1
+      }
     },
     data() {
       return {
-        // depth: 1,
-        maxDepth: 4,
+        depth: this.initDepth,
+        maxDepth: 7,
         modalData: {},
         network_fs: false,
         showInvestorModal: false,
-        showDealModal: false,
+        showDealModal: false
       };
     },
     computed: {
@@ -162,14 +207,14 @@
             data: {
               ...pick(this.investor, investor_fields),
               bgcolor: investor_color,
-              rootNode: true,
-            },
-          },
+              rootNode: true
+            }
+          }
         ];
         this.build_graph(this.investor, elements, this.depth);
 
         return elements;
-      },
+      }
     },
     methods: {
       fullscreen_switch() {
@@ -179,15 +224,26 @@
         });
       },
       refresh_graph() {
+        this.$emit("newDepth", this.depth);
         cy.elements().remove();
         cy.add(this.elements);
         window.setTimeout(() => {
           cy.layout(cyconfig.layout).run();
           this.add_rightclick_modal();
-        },200);
+        }, 200);
       },
       add_rightclick_modal() {
+        cy.ready(() => {
+          cy.nodes().forEach(function(ele) {
+            makePopper(ele);
+          });
+          cy.nodes().unbind("mouseover");
+          cy.nodes().bind("mouseover", (event) => event.target.tippy.show());
+          cy.nodes().unbind("mouseout");
+          cy.nodes().bind("mouseout", (event) => event.target.tippy.hide());
+        });
         cy.nodes().on("cxttap", (e) => {
+          e.preventDefault();
           this.modalData = e.target.data();
           // delay to avoid context menu from opening
           window.setTimeout(() => {
@@ -202,7 +258,6 @@
 
         if (this.showDeals) {
           investor.deals.forEach((deal) => {
-            console.log(deal);
             let deal_node = {
               data: {
                 ...deal,
@@ -210,30 +265,29 @@
                 id: "D" + deal.id,
                 name: "#" + deal.id,
                 bgcolor: primary_color,
-                dealNode: true,
-              },
+                dealNode: true
+              }
             };
             let deal_edge = {
               data: {
                 id: `${investor.id}_D${deal.id}`,
                 source: investor.id,
                 target: "D" + deal.id,
-                edge_color: primary_color,
-              },
+                edge_color: primary_color
+              }
             };
 
             elements.push(deal_node);
             elements.push(deal_edge);
           });
         }
-
         if (!investor.involvements || !investor.involvements.length) return;
         investor.involvements.forEach((involvement) => {
           let investor_node = {
             data: {
               ...pick(involvement.investor, investor_fields),
-              involvement: pick(involvement, involvement_fields),
-            },
+              involvement: pick(involvement, involvement_fields)
+            }
           };
           let investor_edge = {
             data: {
@@ -242,8 +296,8 @@
               ...(involvement.involvement_type === "VENTURE"
                 ? { source: investor.id, target: involvement.investor.id }
                 : { source: involvement.investor.id, target: investor.id }),
-              target_arrow_shape: "triangle",
-            },
+              target_arrow_shape: "triangle"
+            }
           };
 
           elements.push(investor_node);
@@ -256,35 +310,40 @@
         cy = cytoscape({
           container: document.getElementById("investor-network"),
           elements: this.elements,
-          ...cyconfig,
+          ...cyconfig
         });
-      },
+        this.add_rightclick_modal();
+      }
     },
     mounted() {
       this.do_the_graph();
-    },
+    }
   };
 </script>
 
 <style lang="scss">
-  .investor-graph{
+  @import "../../scss/colors";
+
+  .investor-graph {
     max-width: 1000px;
   }
+
   #investor-network-wrapper {
-    margin-top: -20px;
+    position: relative;
+
     .close_button {
       right: 12px;
-      position: relative;
+      position: absolute;
       text-align: right;
-      top: 28px;
+      top: 7px;
       z-index: 2000;
       cursor: pointer;
     }
+
     &.network_fs {
       position: fixed;
       top: 100px;
       left: 0;
-
       margin-left: 5%;
       margin-right: 5%;
       margin-top: 0;
@@ -293,17 +352,19 @@
       background: #ffffff;
       z-index: 1000;
       border: 1px solid black;
+
       .close_button {
         right: 10px;
-        position: absolute;
         top: 5px;
       }
+
       #investor-legend {
         margin-left: 1rem;
         margin-top: 1rem !important;
       }
     }
   }
+
   div#investor-network {
     border: 2px solid #ddd;
     display: block;
@@ -312,6 +373,7 @@
     max-height: 500px;
     cursor: all-scroll;
     overflow: hidden;
+
     &.network_fs {
       width: 100%;
       max-width: 100%;
@@ -387,5 +449,21 @@
     }
   }
 
+  .g-tooltip {
+    background-color: $lm_investor;
+    color: white;
+    border-radius: 3px;
+    padding: 3px 7px;
+    margin-top: -5px;
+    text-align: center;
 
+    .name {
+      font-weight: bold;
+      display: block;
+    }
+
+    &.deal {
+      background-color: $lm_orange;
+    }
+  }
 </style>

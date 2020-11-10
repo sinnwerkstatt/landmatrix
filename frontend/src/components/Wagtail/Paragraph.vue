@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <div class="paragraph" v-html="value"></div>
+    <div class="row">
+      <div class="paragraph" v-html="value"></div>
+    </div>
   </div>
 </template>
 

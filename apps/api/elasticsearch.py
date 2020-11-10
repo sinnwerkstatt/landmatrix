@@ -70,8 +70,8 @@ _landmatrix_mappings = None
 
 
 def get_elasticsearch_properties(doc_type=None):
-    """ Generates a list of elasticsearch document properties from all filter fields in the
-    attribute model forms. doc_type can be deal, location, contract, data_source, involvement or investor """
+    """Generates a list of elasticsearch document properties from all filter fields in the
+    attribute model forms. doc_type can be deal, location, contract, data_source, involvement or investor"""
     global _landmatrix_mappings
 
     if _landmatrix_mappings is None:
@@ -981,8 +981,8 @@ class ElasticSearch(object):
         self.conn.refresh(self.index_name)
 
     def search(self, query, doc_type="deal", sort=[], aggs={}):
-        """ Executes paginated queries until all results have been retrieved.
-            @return: The full list of hits. """
+        """Executes paginated queries until all results have been retrieved.
+        @return: The full list of hits."""
         results = []
 
         scroll_id = None

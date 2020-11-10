@@ -1,18 +1,11 @@
 <template>
   <div id="app">
     <Navbar />
-    <Messages />
-    <BreadcrumbBar />
-    <div v-if="$store.state.page.title" class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <h1>
-            <span v-html="$store.state.page.title"></span>
-          </h1>
-        </div>
-      </div>
+    <div class="content">
+      <Messages />
+      <BreadcrumbBar />
+      <router-view />
     </div>
-    <router-view />
     <Footer />
   </div>
 </template>
@@ -24,11 +17,16 @@
   import Footer from "/components/Footer";
 
   export default {
+    name: "Landmatrix",
     components: { Navbar, Messages, BreadcrumbBar, Footer },
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "scss/colors";
   @import "scss/fonts";
+
+  .content {
+    min-height: calc(100vh - 60px - 31px);
+  }
 </style>

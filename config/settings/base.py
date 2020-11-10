@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
-    "blog",
+    "apps.blog",
     "modelcluster",
     "taggit",
     "bootstrap3_datetime",
@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     "apps.feeds",
     "impersonate",
     "celery",
-    "django_prometheus",
     # green new deal
     "wagtail.api.v2",
     "reversion",
@@ -94,7 +93,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    # "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -109,7 +108,7 @@ MIDDLEWARE = [
     "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
-    "django_prometheus.middleware.PrometheusAfterMiddleware",
+    # "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
 TEMPLATES = [
@@ -224,3 +223,6 @@ TWITTER_TIMELINE = (
     if env("DJANGO_TWITTER_CONSUMER_KEY", default="")
     else None
 )
+
+TWITTER_DEFAULT_USERNAME = "land_matrix"
+TWITTER_DEFAULT_COUNT = 5

@@ -17,17 +17,21 @@ const store = new Vuex.Store({
   },
   state: {
     formfields: {},
+    chartSelectedCountry: null,
   },
   mutations: {
     setFields(state, fields) {
       state.formfields = fields;
     },
+    selectChartSelectedCountry(state, country) {
+      state.chartSelectedCountry = country;
+    }
   },
   actions: {
     fetchBasicInfo(context) {
       let query = `{
-        countries { id name slug point_lat point_lon }
-        regions { id name slug }
+        countries { id name slug point_lat point_lon point_lat_min point_lon_min point_lat_max point_lon_max country_page_id short_description deals {id} }
+        regions { id name slug point_lat_min point_lon_min point_lat_max point_lon_max region_page_id short_description }
         me {
           full_name
           username
@@ -54,6 +58,9 @@ const store = new Vuex.Store({
       axios.get(url).then((response) => {
         context.commit("setMessages", response.data.messages);
       });
+    },
+    selectChartSelectedCountry(context, country) {
+      context.commit("selectChartSelectedCountry", country)
     },
     login(context, { username, password }) {
       let query = `mutation {

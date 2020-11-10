@@ -1,103 +1,112 @@
 <template>
-  <div>
-    <div class="loadingscreen" v-if="!investor">
-      <div class="loader"></div>
+  <div class="container investor-detail">
+    <div class="row" v-if="!investor" style="height: 100%;">
+      <LoadingPulse />
     </div>
-    <div class="container" v-if="investor"></div>
-    <div class="container" v-if="investor">
-      <h2>General Info</h2>
-      <div class="row">
-        <div class="col-xl-6 mb-3">
-          <Field
-            :fieldname="fieldname"
-            :readonly="true"
-            v-model="investor[fieldname]"
-            v-for="fieldname in fields"
-            model="investor"
-          />
-        </div>
-        <div class="col-lg-8 col-xl-6 mb-3" :class="{ loading_wrapper: !involvements.length }">
-          <InvestorGraph
-            v-if="involvements.length"
-            :investor="investor"
-          ></InvestorGraph>
-          <div v-else class="loader"></div>
+    <div class="row sticky-top">
+      <div class="col-sm-5 col-md-3">
+        <h1>Investor #{{ investor.id }}</h1>
+      </div>
+      <div class="col-sm-7 col-md-9 panel-container">
+        <div class="meta-panel">
+          <div class="field">
+            <div class="label">Created:</div>
+            <div class="val">{{ getInvestorValue("created_at") }}</div>
+          </div>
+          <div class="field">
+            <div class="label">Last update:</div>
+            <div class="val">{{ getInvestorValue("modified_at") }}</div>
+          </div>
         </div>
       </div>
-
-      <b-tabs content-class="mb-3">
-        <b-tab>
-          <template v-slot:title>
-            <h5 v-html="`Involvements (${involvements.length})`"></h5>
-          </template>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Investor ID</th>
-                <th>Name</th>
-                <th>Country</th>
-                <th>Classification</th>
-                <th>Relationship</th>
-                <th>Ownership share</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="involvement in involvements">
-                <td>
-                  <router-link
-                    :to="{
-                      name: 'investor_detail',
-                      params: { investor_id: involvement.investor.id },
-                    }"
-                    v-slot="{ href }"
-                  >
-                    <a :href="href">#{{ involvement.investor.id }}</a>
-                  </router-link>
-                </td>
-                <td>{{ involvement.investor.name }}</td>
-                <td>{{ involvement.investor.country.name }}</td>
-                <td>{{ involvement.investor.classification }}</td>
-                <td>{{ detect_role(involvement) }}</td>
-                <td>{{ involvement.percentage }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </b-tab>
-        <b-tab>
-          <template v-slot:title>
-            <h5 v-html="`Deals (Involvements as Operating company) (${investor.deals.length})`"></h5>
-          </template>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Deal ID</th>
-                <th>Country</th>
-                <th>Classification</th>
-                <th>Relationship</th>
-                <th>Ownership share</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="deal in investor.deals">
-                <td>
-                  <router-link
-                    :to="{
-                      name: 'deal_detail',
-                      params: { deal_id: deal.id },
-                    }"
-                    v-slot="{ href }"
-                  >
-                    <a :href="href">#{{ deal.id }}</a>
-                  </router-link>
-                </td>
-                <td>{{ deal.country.name }}</td>
-                <td>{{ deal }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </b-tab>
-      </b-tabs>
     </div>
+
+    <div v-if="investor" class="row">
+      <div class="col-xl-6 mb-3">
+        <Field
+          :fieldname="fieldname"
+          :readonly="true"
+          v-model="investor[fieldname]"
+          v-for="fieldname in fields"
+          model="investor"
+        />
+      </div>
+      <div
+        class="col-lg-8 col-xl-6 mb-3"
+        :class="{ loading_wrapper: !graphDataIsReady }"
+      >
+        <div v-if="!graphDataIsReady" style="height: 400px;">
+          <LoadingPulse />
+        </div>
+        <InvestorGraph
+          v-else
+          :investor="investor"
+          @newDepth="onNewDepth"
+          :initDepth="depth"
+        ></InvestorGraph>
+      </div>
+    </div>
+
+    <b-tabs v-if="graphDataIsReady" content-class="mb-3">
+      <b-tab>
+        <template v-slot:title>
+          <h5 v-html="`Involvements (${involvements.length})`"></h5>
+        </template>
+        <table class="table data-table">
+          <thead>
+          <tr>
+            <th>Investor ID</th>
+            <th>Name</th>
+            <th>Country of registration</th>
+            <th>Classification</th>
+            <th>Relationship</th>
+            <th>Ownership share</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="involvement in involvements">
+            <td v-html="investorValue(involvement.investor, 'id')"></td>
+            <td v-html="investorValue(involvement.investor, 'name')"></td>
+            <td v-html="investorValue(involvement.investor, 'country')"></td>
+            <td v-html="investorValue(involvement.investor, 'classification')"></td>
+            <td>{{ detect_role(involvement) }}</td>
+            <td>{{ involvement.percentage }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </b-tab>
+      <b-tab v-if="'deals' in investor">
+        <template v-slot:title>
+          <h5
+            v-html="
+              `Deals (Involvements as Operating company) (${investor.deals.length})`
+            "
+          ></h5>
+        </template>
+        <table class="table data-table">
+          <thead>
+          <tr>
+            <th>Deal ID</th>
+            <th>Target country</th>
+            <th>Intention of investment</th>
+            <th>Current negotiation status</th>
+            <th>Current implementation status</th>
+            <th>Deal size</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="deal in deals">
+            <td v-html="dealValue(deal, 'id')"></td>
+            <td v-html="dealValue(deal, 'country')"></td>
+            <td v-html="dealValue(deal, 'intention_of_investment')"></td>
+            <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
+            <td v-html="dealValue(deal, 'current_implementation_status')"></td>
+            <td v-html="dealValue(deal, 'deal_size')"></td>
+          </tr>
+          </tbody>
+        </table>
+      </b-tab>
+    </b-tabs>
   </div>
 </template>
 
@@ -105,11 +114,14 @@
   import store from "/store";
   import gql from "graphql-tag";
   import { mapState } from "vuex";
+  import { getDealValue, getInvestorValue } from "/components/Data/table_mappings";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import Field from "/components/Fields/Field";
+  import LoadingPulse from "/components/Data/LoadingPulse";
+  import { getFieldValue } from "../../components/Fields/fieldHelpers";
 
   let investor_query = gql`
-    query Investor($investorID: Int!, $depth: Int) {
+    query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
       investor(id: $investorID) {
         id
         name
@@ -125,16 +137,19 @@
         status
         created_at
         modified_at
-        deals {
+        deals @include(if: $includeDeals) {
           id
           country {
-            name
+            id
           }
           recognition_status
           nature_of_deal
           intention_of_investment
           negotiation_status
           implementation_status
+          current_intention_of_investment
+          current_negotiation_status
+          current_implementation_status
           deal_size
         }
         involvements(depth: $depth)
@@ -144,19 +159,8 @@
 
   export default {
     name: "InvestorDetail",
-    components: { InvestorGraph, Field },
+    components: { LoadingPulse, InvestorGraph, Field },
     props: ["investor_id"],
-    apollo: {
-      investor() {
-        return {
-          query: investor_query,
-          variables: {
-            investorID: +this.investor_id,
-            depth: 0,
-          },
-        };
-      },
-    },
     data() {
       return {
         investor: null,
@@ -166,19 +170,50 @@
           "classification",
           "homepage",
           "opencorporates",
-          "comment",
+          "comment"
         ],
+        depth: 0,
+        includeDealsInQuery: false
       };
+    },
+    apollo: {
+      investor: {
+        query: investor_query,
+        variables() {
+          return {
+            investorID: +this.investor_id,
+            depth: this.depth,
+            includeDeals: this.includeDealsInQuery
+          };
+        }
+      }
     },
     computed: {
       ...mapState({
         investor_fields: (state) => state.investor.investor_fields,
+        formFields: (state) => state.formfields
       }),
       involvements() {
         return this.investor.involvements || [];
       },
+      deals() {
+        if ("deals" in this.investor) {
+          return this.investor.deals.sort((a, b) => {
+            return a.id - b.id;
+          });
+        } else return [];
+      },
+      graphDataIsReady() {
+        return this.investor && "involvements" in this.investor && this.investor && "deals" in this.investor && !this.$apollo.queries.investor.loading;
+      },
+      tableDataIsReady() {
+        return this.investor && "involvements" in this.investor && this.investor && "deals" in this.investor;
+      }
     },
     methods: {
+      getInvestorValue(fieldName, subModel) {
+        return getFieldValue(this.investor, this.formFields, fieldName, "investor");
+      },
       detect_role(investor) {
         if (investor.role === "PARENT") {
           if (investor.involvement_type === "INVESTOR") return "Parent company";
@@ -192,36 +227,56 @@
             return "Involved in as Tertiary investor/lender";
         }
       },
-    },
-    mounted() {
-      this.$apollo.addSmartQuery("investor", {
-        query: investor_query,
-        variables: {
-          investorID: +this.investor_id,
-          depth: 3,
-        },
-      });
+      investorValue(investor, fieldName) {
+        return getInvestorValue(this, investor, fieldName);
+      },
+      dealValue(deal, fieldName) {
+        return getDealValue(this, deal, fieldName);
+      },
+      onNewDepth(value) {
+        if (value > this.depth) {
+          this.depth = +value;
+        }
+      }
     },
     watch: {
+      investor_id(investor_id, oldInvestorId) {
+        if (investor_id !== oldInvestorId) {
+          this.includeDealsInQuery = false;
+        }
+      },
       investor(investor, oldInvestor) {
+        if (!oldInvestor) {
+          // initial load complete, also load deals
+          this.includeDealsInQuery = true;
+          this.depth = 1;
+        }
         let title = `${investor.name} <small>(#${investor.id})</small>`;
         store.dispatch("setPageContext", {
           title,
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
-            { link: { name: "investor_list" }, name: "Data" },
-            { name: `Investor #${investor.id}` },
-          ],
+            { link: { name: "list_investors" }, name: "Data" },
+            { name: `Investor #${investor.id}` }
+          ]
         });
-      },
-    },
+      }
+    }
   };
 </script>
 
-<style>
-  .loading_wrapper {
-    background: grey;
-    width: 100%;
-    height: 100%;
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .investor-detail {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+
+      &:before {
+        display: none;
+      }
+    }
   }
 </style>

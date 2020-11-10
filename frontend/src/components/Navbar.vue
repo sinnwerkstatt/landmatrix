@@ -1,9 +1,9 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">
+      <router-link class="navbar-brand" :to="'/'">
         <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
-      </a>
+      </router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -18,114 +18,109 @@
       <div class="collapse navbar-collapse" id="main-navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
-            <a href="#" role="button" class="nav-link dropdown-toggle"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-               id="map-dropdown"
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="map-dropdown"
             >
               {{ $t("Data") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/map">
-                {{ $t("Map") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/data">
-                {{ $t("Deals") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/data/investors">
-                {{ $t("Investors") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/charts">
-                {{ $t("Charts") }}
-              </a>
+              <router-link
+                v-for="data_link in data_links"
+                :to="data_link.link"
+                class="dropdown-item"
+              >
+                {{ $t(data_link.name) }}
+              </router-link>
             </div>
           </li>
           <li class="nav-item dropdown">
-            <a href="#" role="button" class="nav-link dropdown-toggle"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-               id="obs-dropdown"
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="obs-dropdown"
             >
               {{ $t("Observatories") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("Region 1") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("Region 2") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/">
-                {{ $t("NLO 1") }}
-              </a>
+              <router-link
+                v-for="region in regions"
+                class="dropdown-item"
+                :to="`/region/${region.slug}/`"
+              >
+                {{ region.name }}
+              </router-link>
+              <div class="dropdown-divider"></div>
+              <router-link
+                v-for="country in countries"
+                class="dropdown-item"
+                :to="`/country/${country.slug}/`"
+              >
+                {{ country.name }}
+              </router-link>
             </div>
           </li>
           <li class="nav-item dropdown">
-            <a href="#" role="button" class="nav-link dropdown-toggle"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-               id="res-dropdown"
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="res-dropdown"
             >
-              {{ $t("Ressources") }}
+              {{ $t("Resources") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/stay-informed/">
-                {{ $t("Cat 1") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/stay-informed/">
-                {{ $t("Cat 2") }}
-              </a>
+              <router-link
+                v-for="cat in blogcategories"
+                class="dropdown-item"
+                :to="`/stay-informed/?category=${cat.slug}`"
+              >
+                {{ cat.name }}
+              </router-link>
             </div>
           </li>
           <li class="nav-item dropdown">
-            <a href="#" role="button" class="nav-link dropdown-toggle"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-               id="about-dropdown"
+            <a
+              href="#"
+              role="button"
+              class="nav-link dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              id="about-dropdown"
             >
               {{ $t("About") }}
             </a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="/newdeal/the-land-matrix-initiative/">
-                {{ $t("Land Matrix Initiative") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/partners-and-donors/">
-                {{ $t("Partners and donors") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/privacy-policy/">
-                {{ $t("Privacy policy") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/disclaimer/">
-                {{ $t("Disclaimer") }}
-              </a>
-              <a class="dropdown-item" href="/newdeal/impressum-legal-notice/">
-                {{ $t("Impressum") }}
-              </a>
+              <router-link
+                v-for="about_link in about_links"
+                :to="about_link.link"
+                class="dropdown-item"
+              >
+                {{ $t(about_link.name) }}
+              </router-link>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/newdeal/faq/">{{ $t("FAQ") }}</a>
+            <router-link class="nav-link" :to="`/faq/`">{{ $t("FAQ") }}</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/newdeal/get-involved/">{{ $t("Contribute") }}</a>
+            <router-link class="nav-link" :to="`/get-involved/`">{{
+              $t("Contribute")
+            }}</router-link>
           </li>
-<!--
-          <NavbarSelect
-            :title="$t('Regions')"
-            :options="regions"
-            @select="openLink('region', $event)"
-          />
-          <NavbarSelect
-            :title="$t('Countries')"
-            :options="countries"
-            @select="openLink('country', $event)"
-          />
-          <li class="nav-item">
-            <a class="nav-link" href="/stay-informed/">{{ $t("Stay informed") }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/get-involved/">{{ $t("Get involved") }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/faq/">{{ $t("FAQ") }}</a>
-          </li>
--->
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
@@ -191,7 +186,9 @@
               <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
               <a class="dropdown-item" href="/manage/">{{ $t("Manage") }}</a>
               <a class="dropdown-item" href="/deal/add/">{{ $t("Add a deal") }}</a>
-              <a class="dropdown-item" href="/newdeal/case_statistics/">{{ $t("Case statistics") }}</a>
+              <a class="dropdown-item" href="/newdeal/case_statistics/">{{
+                $t("Case statistics")
+              }}</a>
               <a class="dropdown-item" @click.prevent="dispatchLogout">{{
                 $t("Logout")
               }}</a>
@@ -260,6 +257,7 @@
 </template>
 <script>
   import NavbarSelect from "/components/NavbarSelect";
+  import gql from "graphql-tag";
 
   export default {
     components: { NavbarSelect },
@@ -270,17 +268,42 @@
         login_failed_message: "",
         LANGUAGE: LANGUAGE,
         LANGUAGES: { en: "English", es: "Español", fr: "Français" },
+        blogcategories: [],
+        data_links: [
+          { name: "Map", link: { name: "map" } },
+          { name: "Deals", link: { name: "list_deals" } },
+          { name: "Investors", link: { name: "list_investors" } },
+          { name: "Charts", link: { name: "charts" } },
+        ],
+        about_links: [
+          { name: "Land Matrix Initiative", link: "/the-land-matrix-initiative/" },
+          { name: "Partners and donors", link: "/partners-and-donors/" },
+          { name: "Privacy policy", link: "/privacy-policy/" },
+          { name: "Disclaimer", link: "/disclaimer/" },
+          { name: "Impressum", link: "/impressum-legal-notice/" },
+        ],
       };
+    },
+    apollo: {
+      blogcategories: gql`
+        query {
+          blogcategories {
+            id
+            name
+            slug
+          }
+        }
+      `,
     },
     computed: {
       user() {
         return this.$store.state.page.user;
       },
       regions() {
-        return this.$store.state.page.regions;
+        return this.$store.getters.regionsWithPage;
       },
       countries() {
-        return this.$store.state.page.countries;
+        return this.$store.getters.countriesWithPage;
       },
       user_role() {
         if (this.user && this.user.groups.length) {
@@ -310,10 +333,11 @@
       },
     },
     methods: {
-      openLink(target_url, option) {
-        window.location.href = `/${target_url}/${option.slug}/`;
-        // this.$router.push(`/${target_url}/${option.slug}/`);
-      },
+      // seems obsolete.
+      // openLink(target_url, option) {
+      //   window.location.href = `/${target_url}/${option.slug}/`;
+      //   // this.$router.push(`/${target_url}/${option.slug}/`);
+      // },
       dispatchLogout() {
         this.$store.dispatch("logout");
       },
@@ -338,7 +362,7 @@
   @import "../scss/colors";
 
   .bg-light {
-    background-color: white;
+    background-color: white !important;
   }
 
   .navbar-light .navbar-nav .nav-item .nav-link {
@@ -364,6 +388,12 @@
       border: 1px solid $lm_orange;
       border-radius: 0;
       padding: 0;
+    }
+  }
+  .navbar-nav {
+    .navbar-text {
+      padding-top: 0.2rem;
+      padding-bottom: 0.2rem;
     }
   }
 

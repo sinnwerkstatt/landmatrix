@@ -16,11 +16,16 @@ from apps.landmatrix.models.mixins import (
 
 
 class InvestorManager(models.Manager):
+    def active(self):
+        return self.get_queryset().filter(status__in=(2, 3))
+
+    def public(self):
+        return self.active().filter(is_actually_unknown=False)
+
     def visible(self, user=None):
-        qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3)).exclude(name="")
+            return self.active()
+        return self.public()
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
@@ -143,6 +148,33 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
             investors.update(involvement.investor.get_top_investors(seen_investors))
         return investors
 
+    def get_affected_deals(self, seen_investors=None):
+        """
+        Get list of affected deals - this is like Top Investors, only downwards
+        (all left-hand side deals of the network visualisation)
+        """
+        deals = set()
+        if seen_investors is None:
+            seen_investors = {self}
+
+        investor_ventures = self.ventures.filter(
+            investor__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            venture__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
+            role="PARENT",
+        ).exclude(venture__in=seen_investors)
+
+        for deal in self.deals.all():
+            deals.add(deal)
+
+        # if not investor_involvements:
+        #     investors.add(self)
+        for involvements in investor_ventures:
+            if involvements.venture in seen_investors:
+                continue
+            seen_investors.add(involvements.venture)
+            deals.update(involvements.venture.get_affected_deals(seen_investors))
+        return deals
+
     def to_dict(self):
         country = (
             {"name": self.country.name, "code": self.country.code_alpha2}
@@ -176,12 +208,22 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         }
 
 
-class InvolvementManager(models.Manager):
+class InvestorVentureInvolvementManager(models.Manager):
+    def active(self):
+        return self.get_queryset().filter(
+            investor__status__in=(2, 3), venture__status__in=(2, 3)
+        )
+
+    def public(self):
+        return self.active().filter(
+            investor__is_actually_unknown=False,
+            venture__is_actually_unknown=False,
+        )
+
     def visible(self, user=None):
-        qs = self.get_queryset()
         if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3))
+            return self.active()
+        return self.public()
 
 
 @reversion.register(ignore_duplicates=True)
@@ -274,7 +316,7 @@ class InvestorVentureInvolvement(
 
     old_id = models.IntegerField(null=True, blank=True)
 
-    objects = InvolvementManager()
+    objects = InvestorVentureInvolvementManager()
 
     class Meta:
         verbose_name = _("Investor Venture Involvement")

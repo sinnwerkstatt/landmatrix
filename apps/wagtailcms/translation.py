@@ -1,4 +1,4 @@
-from blog.models import BlogIndexPage
+from apps.blog.models import BlogPage, BlogIndexPage
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
@@ -31,7 +31,7 @@ class RegionIndexTR(TranslationOptions):
 
 @register(RegionPage)
 class RegionPageTR(TranslationOptions):
-    fields = ("body",)
+    fields = ("introduction_text", "body", "short_description")
 
 
 @register(CountryIndex)
@@ -41,7 +41,7 @@ class CountryIndexTR(TranslationOptions):
 
 @register(CountryPage)
 class CountryPageTR(TranslationOptions):
-    fields = ("body",)
+    fields = ("introduction_text", "body", "short_description")
 
 
 @register(BlogIndexPage)

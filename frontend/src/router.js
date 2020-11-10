@@ -1,19 +1,19 @@
 import Vue from "vue";
 import Router from "vue-router";
-import GlobalMap from "./views/GlobalMap";
-import DealList from "./views/Deal/List";
+import store from "/store";
+import DataMap from "./views/Data/GlobalMap";
+import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
-import Charts from "./views/Charts/Base";
-import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
-import WagtailPage from "./views/WagtailPage";
+// import Charts from "./views/Charts/Base";
+// import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
+import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
+import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
+// import DynamicsOverview from "/views/Charts/DynamicsOverview";
+import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
-import InvestorList from "./views/Investor/List";
 import InvestorDetail from "./views/Investor/Detail";
-
-import store from "/store";
-import DynamicsOverview from "/views/Charts/DynamicsOverview";
 import CaseStatistics from "/views/Manager/CaseStatistics";
 
 Vue.use(Router);
@@ -23,25 +23,72 @@ const router = new Router({
   base: "/newdeal/", //process.env.BASE_URL,
   routes: [
     {
-      path: "/data/",
-      name: "deal_list",
-      component: DealList,
-      // beforeEnter(to, from, next) {
-      //   store.dispatch("fetchDeals", { limit: 1000 });
-      //   next();
-      // },
-    },
-    {
       path: "/map/",
       name: "map",
-      component: GlobalMap,
-      beforeEnter(to, from, next) {
-        store.dispatch("breadcrumbBar", false);
-        next();
+      component: DataMap,
+      meta: {
+        hideBreadcrumbs: true,
       },
-      beforeLeave(to, from, next) {
-        store.dispatch("breadcrumbBar", true);
-        next();
+    },
+    {
+      path: "/charts/",
+      name: "charts",
+      redirect: { name: "web-of-transnational-deals" },
+    },
+    {
+      path: "/charts/web-of-transnational-deals/",
+      name: "web-of-transnational-deals",
+      component: WebOfTransnationalDeals,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/charts/produce-info/",
+      name: "produce-info",
+      component: ProduceInfoTreeMap,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/data/",
+      redirect: { name: "list_deals" },
+    },
+    {
+      path: "/data/investors/",
+      redirect: { name: "list_investors" },
+    },
+    // {
+    //   path: "/charts/",
+    //   component: Charts,
+    //   children: [
+    //     {
+    //       path: "dynamics/",
+    //       name: "dynamics-overview",
+    //       component: DynamicsOverview,
+    //     },
+
+    //   ],
+    // },
+    {
+      path: "/list/",
+      redirect: { name: "list_deals" },
+    },
+    {
+      path: "/list/deals/",
+      name: "list_deals",
+      component: DataList,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/list/investors/",
+      name: "list_investors",
+      component: DataList,
+      meta: {
+        hideBreadcrumbs: true,
       },
     },
     {
@@ -63,33 +110,10 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/data/investors/",
-      name: "investor_list",
-      component: InvestorList,
-    },
-    {
       path: "/investor/:investor_id/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,
-    },
-    {
-      path: "/charts/",
-      component: Charts,
-      children: [
-        { path: "", name: "charts", redirect: { name: "web-of-transnational-deals" } },
-        {
-          path: "web-of-transnational-deals/",
-          name: "web-of-transnational-deals",
-          component: WebOfTransnationalDeals,
-        },
-
-        {
-          path: "dynamics/",
-          name: "dynamics-overview",
-          component: DynamicsOverview,
-        },
-      ],
     },
     {
       path: "/dashboard/",
@@ -104,7 +128,7 @@ const router = new Router({
     {
       path: "*",
       name: "wagtail",
-      component: WagtailPage,
+      component: Wagtail,
     },
     {
       path: "*",
@@ -129,6 +153,20 @@ const router = new Router({
   //     // component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
   //   // }
   // ]
+});
+const DEFAULT_TITLE = "Land Matrix";
+router.afterEach((to, from) => {
+  // Use next tick to handle router history correctly
+  // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+  Vue.nextTick(() => {
+    // document.title = to.meta.title || DEFAULT_TITLE;
+    document.title = store.state.page.title || DEFAULT_TITLE;
+    if (to.matched.some((record) => record.meta.hideBreadcrumbs)) {
+      store.dispatch("breadcrumbBar", false);
+    } else {
+      store.dispatch("breadcrumbBar", true);
+    }
+  });
 });
 
 export default router;

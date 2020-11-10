@@ -15,12 +15,28 @@ export const pageModule = {
       // { route: "map", icon: "fa fa-map-marker", name: "Map" },
       // { route: "deal_list", icon: "fa fa-table", name: "Data" },
       // { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
-      { route: "/map/", icon: "fa fa-map-marker", name: "Map" },
-      { route: "/data/", icon: "fa fa-table", name: "Data" },
-      { route: "/charts/", icon: "far fa-chart-bar", name: "Charts" },
+      { route: "/newdeal/map/", icon: "fa fa-map-marker", name: "Map" },
+      { route: "/newdeal/data/", icon: "fa fa-table", name: "Data" },
+      { route: "/newdeal/charts/", icon: "far fa-chart-bar", name: "Charts" },
     ],
     showBreadcrumbs: true,
   }),
+  getters: {
+    countriesWithPage: (state) => {
+      return state.countries.filter((c) => c.country_page_id !== null);
+    },
+    regionsWithPage: (state) => {
+      return state.regions.filter((r) => r.region_page_id !== null);
+    },
+    getCountryOrRegion: (state) => ({ type, id }) => {
+      return type === "region"
+        ? state.regions.find((region) => region.id === +id)
+        : state.countries.find((countries) => countries.id === +id);
+    },
+    getRegionById: (state) => (id) => {
+      return state.regions.find((region) => region.id === +id);
+    },
+  },
   mutations: {
     setUser(state, user) {
       state.user = user;
@@ -70,7 +86,7 @@ export const pageModule = {
             let title;
             if (response.data.meta.type === "wagtailcms.WagtailRootPage") {
               title = null;
-              breadcrumbs = [];
+              breadcrumbs = [{ name: "Home" }];
             } else {
               title = response.data.title;
               breadcrumbs = [
@@ -99,6 +115,6 @@ export const pageModule = {
     },
     breadcrumbBar(context, visible) {
       context.commit("breadcrumbBar", visible);
-    }
+    },
   },
 };

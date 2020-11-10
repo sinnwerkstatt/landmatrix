@@ -27,9 +27,8 @@
           }"
           class="btn btn-investor investor-link float-right"
           target="_blank"
-          v-slot="{ href }"
         >
-          <a :href="href">More details about this investor</a>
+          More details about this investor
         </router-link>
       </div>
     </template>

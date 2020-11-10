@@ -20,6 +20,7 @@ stages:
 django formatting and linting:
   stage: test
   script:
+    - poetry config experimental.new-installer false
     - poetry install -E production
     - yarn install --frozen-lockfile
     - black . --check
@@ -40,6 +41,7 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
+    - poetry config experimental.new-installer false
     - poetry install -E production
     - yarn install --frozen-lockfile
     - poetry run doit -n 4 update

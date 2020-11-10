@@ -14,6 +14,7 @@ $theme-colors: (
 
 @import "multiselect";
 @import "loadingscreen";
+@import "wagtail";
 
 body {
   font-family: Open Sans, Arial, sans-serif;
@@ -21,7 +22,7 @@ body {
 
 a {
   font-family: "Open Sans", sans-serif;
-  color: $lm_dark;
+  color: $lm_orange;
 
   &:hover {
     color: var(--primary);

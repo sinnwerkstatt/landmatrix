@@ -18,43 +18,91 @@
           <router-link
             :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
             class="label label-default"
-            v-slot="{ href }"
           >
-            <a :href="href">{{ deal.id }}</a>
+            {{ deal.id }}
           </router-link>
         </td>
-        <td>{{ deal.timestamp }}</td>
-        <td>{{ deal.status }}</td>
-        <td>{{ deal.country }}</td>
+        <td>{{ dayjs(deal.modified_at).format("YYYY-MM-DD") }}</td>
+        <td>{{ $t(parse_status(deal.status)) }}</td>
+        <td>{{ deal.country ? deal.country.name : "" }}</td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
-  import axios from "axios";
-
+  import gql from "graphql-tag";
+  import dayjs from "dayjs";
   export default {
     props: ["value"],
     data: function () {
       return {
         modifications: [],
+        deals: [],
       };
     },
-    created() {
-      let query = `{ deals(sort:"-timestamp", limit: ${this.value.limit})
-      { id country { name } status timestamp }
-      }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        this.modifications = response.data.data.deals.map((d) => {
+    apollo: {
+      modifications: {
+        query: gql`
+          query Deals($limit: Int!, $filters: [Filter]) {
+            modifications: deals(
+              sort: "-modified_at"
+              limit: $limit
+              filters: $filters
+            ) {
+              id
+              country {
+                name
+              }
+              status
+              modified_at
+            }
+          }
+        `,
+        update: (data) => data.deals,
+        variables() {
           return {
-            id: d.id,
-            timestamp: d.timestamp.split("T")[0],
-            country: d.country.name,
-            status: "TODO",
+            limit: +this.value.limit,
+            filters: this.current_region_or_country,
           };
-        });
-      });
+        },
+      },
+    },
+    computed: {
+      current_region_or_country() {
+        let wtpage = this.$store.state.page.wagtailPage;
+        if (wtpage.meta.type === "wagtailcms.RegionPage") {
+          return [
+            {
+              field: "country.fk_region_id",
+              value: wtpage.region.id.toString(),
+            },
+          ];
+        }
+        if (wtpage.meta.type === "wagtailcms.CountryPage") {
+          return [
+            {
+              field: "country_id",
+              value: wtpage.country.id.toString(),
+            },
+          ];
+        }
+
+        return [];
+      },
+    },
+    methods: {
+      dayjs,
+      parse_status(status) {
+        return {
+          1: "Draft",
+          2: "Live",
+          3: "Updated",
+          4: "Deleted",
+          5: "Rejected",
+          6: "To Delete",
+        }[status];
+      },
     },
   };
 </script>

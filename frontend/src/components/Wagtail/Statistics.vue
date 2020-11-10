@@ -1,53 +1,57 @@
 <template>
   <div>
     <div id="stats">
-      <div class="col-sm-12 text-center">
-        <h3>
-          We currently have information about:
-          <a
-            class="toggle-tooltip bottom"
-            href="/about/#what-is-a-land-deal"
-            data-original-title=""
-            title=""
-            ><i class="icon icon-question-sign"></i
-          ></a>
-        </h3>
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>
+            We currently have information about:
+            <a
+              class="toggle-tooltip bottom"
+              href="/about/#what-is-a-land-deal"
+              data-original-title=""
+              title=""
+              ><i class="icon icon-question-sign"></i
+            ></a>
+          </h3>
+        </div>
       </div>
-      <div class="col-sm-6">
-        <h4>Size</h4>
-        <p class="number number-concluded">0 ha</p>
-        <div class="progress progress-concluded">
-          <div class="bar" style="width: 0;"></div>
+      <div class="row">
+        <div class="col-sm-6">
+          <h4>Size</h4>
+          <p class="number number-concluded">0 ha</p>
+          <div class="progress progress-concluded">
+            <div class="bar" style="width: 0;"></div>
+          </div>
+          <p class="percentage percentage-concluded">0%</p>
+          <p class="number number-intended">0 ha</p>
+          <div class="progress progress-intended">
+            <div class="bar" style="width: 0;"></div>
+          </div>
+          <p class="percentage percentage-intended">0%</p>
+          <p class="number number-failed">0 ha</p>
+          <div class="progress progress-failed">
+            <div class="bar" style="width: 0;"></div>
+          </div>
+          <p class="percentage percentage-failed">0%</p>
         </div>
-        <p class="percentage percentage-concluded">0%</p>
-        <p class="number number-intended">0 ha</p>
-        <div class="progress progress-intended">
-          <div class="bar" style="width: 0;"></div>
+        <div class="col-sm-6">
+          <h4>No of deals</h4>
+          <p class="number number-concluded">0</p>
+          <div class="progress progress-concluded">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+          <p class="percentage percentage-concluded">0%</p>
+          <p class="number number-intended">0</p>
+          <div class="progress progress-intended">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+          <p class="percentage percentage-intended">0%</p>
+          <p class="number number-failed">0</p>
+          <div class="progress progress-failed">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+          <p class="percentage percentage-failed">0%</p>
         </div>
-        <p class="percentage percentage-intended">0%</p>
-        <p class="number number-failed">0 ha</p>
-        <div class="progress progress-failed">
-          <div class="bar" style="width: 0;"></div>
-        </div>
-        <p class="percentage percentage-failed">0%</p>
-      </div>
-      <div class="col-sm-6">
-        <h4>Number of deals</h4>
-        <p class="number number-concluded">0</p>
-        <div class="progress progress-concluded">
-          <div class="bar" style="width: 0%;"></div>
-        </div>
-        <p class="percentage percentage-concluded">0%</p>
-        <p class="number number-intended">0</p>
-        <div class="progress progress-intended">
-          <div class="bar" style="width: 0%;"></div>
-        </div>
-        <p class="percentage percentage-intended">0%</p>
-        <p class="number number-failed">0</p>
-        <div class="progress progress-failed">
-          <div class="bar" style="width: 0%;"></div>
-        </div>
-        <p class="percentage percentage-failed">0%</p>
       </div>
       <div class="well-square legend">
         <ul class="list-inline">

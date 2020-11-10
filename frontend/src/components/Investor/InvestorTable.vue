@@ -36,7 +36,11 @@
               <a :href="href">{{ data.id }}</a>
             </router-link>
           </td>
-          <td v-for="field in fields" :key="field" v-html="displayField(data, field)"></td>
+          <td
+            v-for="field in fields"
+            :key="field"
+            v-html="displayField(data, field)"
+          ></td>
         </tr>
       </tbody>
     </table>
@@ -80,7 +84,7 @@
           status: "Status",
           draft_status: "Draft status",
           created_at: "Created at",
-          modified_at: "Last modified at"
+          modified_at: "Last modified at",
         },
       };
     },

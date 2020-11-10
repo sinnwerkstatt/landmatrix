@@ -25,9 +25,10 @@
             </router-link>
           </li>
           <li class="nav-item">
-            <a class="dropdown-item" href="/charts/produce-info/">Produce Info</a>
+            <router-link class="nav-link" :to="{ name: 'produce-info' }">
+              Produce Info
+            </router-link>
           </li>
-
         </ul>
       </div>
     </div>

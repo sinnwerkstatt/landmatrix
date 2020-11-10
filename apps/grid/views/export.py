@@ -117,8 +117,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 parents = []
                 for investor in investors:
                     # Check if there are parent companies for investor
-                    parent_investors = HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=investor
+                    parent_investors = (
+                        HistoricalInvestorVentureInvolvement.objects.filter(
+                            fk_venture=investor
+                        )
                     )
                     if not request.user.is_authenticated:
                         parent_investors = parent_investors.filter(
@@ -166,8 +168,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 parents = []
                 for involvement in involvements:
                     # Check if there are parent companies for investor
-                    parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=involvement.fk_investor
+                    parent_involvements = (
+                        HistoricalInvestorVentureInvolvement.objects.filter(
+                            fk_venture=involvement.fk_investor
+                        )
                     )
                     if not request.user.is_authenticated:
                         parent_involvements = parent_involvements.filter(

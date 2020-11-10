@@ -7,8 +7,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
+from reversion.models import Version
 
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
@@ -20,26 +20,17 @@ from apps.landmatrix.models.mixins import (
 
 
 class DealManager(models.Manager):
-    # TODO throw me out.
-    def visible(self, user=None):
-        qs = self.get_queryset()
-        if user and (user.is_staff or user.is_superuser):
-            return qs
-        return qs.filter(status__in=(2, 3), confidential=False)
+    def active(self):
+        return self.get_queryset().filter(status__in=(2, 3))
 
     def public(self):
-        qs = self.get_queryset()
-        qs = qs.filter(status__in=(2, 3))
-        qs = qs.exclude(confidential=True)
-        qs = qs.exclude(Q(country=None) | Q(country__high_income=True))
-        qs = qs.exclude(datasources=None)
-        qs = qs.exclude(operating_company=None)
-        qs = qs.exclude(
-            Q(operating_company__is_actually_unknown=True)
-            & ~Q(operating_company__investors__investor__is_actually_unknown=False)
-        )
-        # TODO: Open question: just role = "PARENT"?
-        return qs
+        return self.active().filter(is_public=True)
+
+    # TODO throw me out. | ROD: Really? - need to clarify!!
+    def visible(self, user=None):
+        if user and (user.is_staff or user.is_superuser):
+            return self.active()
+        return self.public()
 
     # def with_public_status(self, user=None):
     #     if not (user or user.is_staff or user.is_superuser):
@@ -74,7 +65,8 @@ class DealManager(models.Manager):
 
 
 @reversion.register(
-    follow=("locations", "contracts", "datasources"), ignore_duplicates=True,
+    follow=("locations", "contracts", "datasources"),
+    ignore_duplicates=True,
 )
 class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDealMixin):
     """ Deal """
@@ -370,7 +362,10 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         null=True,
     )
     total_jobs_current = JSONField(
-        _("Current number of jobs (total)"), help_text=_("jobs"), blank=True, null=True,
+        _("Current number of jobs (total)"),
+        help_text=_("jobs"),
+        blank=True,
+        null=True,
     )
     total_jobs_current_employees = JSONField(
         _("Current number of employees (total)"),
@@ -549,7 +544,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     )
     recognition_status = ArrayField(
         models.CharField(
-            _("Recognition status of community land tenure"), max_length=100,
+            _("Recognition status of community land tenure"),
+            max_length=100,
         ),
         choices=RECOGNITION_STATUS_CHOICES,
         blank=True,
@@ -676,7 +672,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     materialized_benefits = ArrayField(
         models.CharField(
-            _("Materialized benefits for local communities"), max_length=100,
+            _("Materialized benefits for local communities"),
+            max_length=100,
         ),
         choices=BENEFITS_CHOICES,
         blank=True,
@@ -959,6 +956,19 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     "terms"
 
     """ # CALCULATED FIELDS # """
+    is_public = models.BooleanField(default=False)
+    NOT_PUBLIC_REASON_CHOICES = (
+        ("CONFIDENTIAL", "Confidential Flag"),
+        ("NO_COUNTRY", "No Country"),
+        ("HIGH_INCOME_COUNTRY", "High-Income Country"),
+        ("NO_DATASOURCES", "No Datasources"),
+        ("NO_OPERATING_COMPANY", "No Operating Company"),
+        ("NO_KNOWN_INVESTOR", "No Known Investor"),
+    )
+    not_public_reason = models.CharField(
+        max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
+    )
+    top_investors = models.ManyToManyField(Investor, related_name="+")
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     current_intention_of_investment = ArrayField(
@@ -1023,7 +1033,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
 
     @transaction.atomic
     def save(self, custom_modification_date=None, *args, **kwargs):
-        self.modified_at = custom_modification_date or timezone.now()
+        if custom_modification_date != "-SKIP-":
+            self.modified_at = custom_modification_date or timezone.now()
         if self.fully_updated:
             self.fully_updated_at = timezone.now()
 
@@ -1042,11 +1053,21 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.deal_size = self._calculate_deal_size()
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
-        # FIXME: This field is calculated on save but actually it might change when investors change
+        self.recalculate_calculated_fields(save_after=False, *args, **kwargs)
+        super().save(*args, **kwargs)
+
+    def recalculate_calculated_fields(self, save_after=True, *args, **kwargs):
+        # With the help of signals these fields are recalculated on changes to:
+        # Location, Contract, DataSource
+        # as well as Investor and InvestorVentureInvolvement
+        self.not_public_reason = self._calculate_public_state()
+        self.is_public = self.not_public_reason == ""
+        self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
-        super().save(*args, **kwargs)
+        if save_after:
+            super().save(*args, **kwargs)
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)
@@ -1133,7 +1154,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
                 for x in self.implementation_status
                 if x.get("date")
                 and x["value"]
-                in ("STARTUP_PHASE", "IN_OPERATION", "PROJECT_ABANDONED",)
+                in (
+                    "STARTUP_PHASE",
+                    "IN_OPERATION",
+                    "PROJECT_ABANDONED",
+                )
             ]
             if self.implementation_status
             else []
@@ -1154,11 +1179,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             # unknown if we have no target country
             return None
 
-        if not self.top_investors:
+        top_investors = self.top_investors.all()
+        if not top_investors:
             # treat deals without investors as transnational
             return True
 
-        investors_countries = {i.country_id for i in self.top_investors if i.country_id}
+        investors_countries = {i.country_id for i in top_investors if i.country_id}
         if not len(investors_countries):
             # treat deals without investor countries as transnational
             return True
@@ -1190,37 +1216,38 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             return None
         return {"type": "FeatureCollection", "features": features}
 
-    @cached_property
-    def top_investors(self) -> Optional[Set["Investor"]]:
+    def _calculate_top_investors(self) -> Set["Investor"]:
         """
-        Get list of highest parent companies
+        Calculate highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
         if self.operating_company:
             return self.operating_company.get_top_investors()
+        return set()
 
-    class IsNotPublic(Exception):
-        pass
-
-    def is_public_deal(self):
-        # 1. Flag "confidential"
+    def _calculate_public_state(self) -> str:
+        """
+        :return: A string with a value if not public, or empty if public
+        """
         if self.confidential:
-            raise self.IsNotPublic("Confidential Flag")
-        # 2. Minimum information missing?
-        # No Country or High Income Country?
-        if not self.country or self.country.high_income:
-            raise self.IsNotPublic("No Country or High-Income Country")
-        # No DataSource?
+            # 1. Flag "confidential"
+            return "CONFIDENTIAL"
+        if not self.country:
+            # No Country
+            return "NO_COUNTRY"
+        if self.country.high_income:
+            # High Income Country
+            return "HIGH_INCOME_COUNTRY"
         if not self.datasources.exists():
-            raise self.IsNotPublic("No Datasources")
-        # 3. No operating company?
+            # No DataSource
+            return "NO_DATASOURCES"
         if not self.operating_company:
-            raise self.IsNotPublic("No Operating Company")
-        # 4A. Unknown operating company AND no known operating company parents
-
+            # 3. No operating company
+            return "NO_OPERATING_COMPANY"
         if self._has_no_known_investor():
-            raise self.IsNotPublic("No known investor")
-        return True
+            # 4. Unknown operating company AND no known operating company parents
+            return "NO_KNOWN_INVESTOR"
+        return ""
 
     def _has_no_known_investor(self) -> bool:
         if not self.operating_company:
@@ -1232,3 +1259,56 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ).exists()
         )
         return oc_unknown and oc_has_no_known_parents
+
+    def legacy_download_list_format(self) -> list:
+        top_investors = "|".join(
+            [
+                "#".join(
+                    [
+                        ti.name.replace("#", "").replace("\n", "").strip(),
+                        str(ti.id),
+                        ti.country.name if ti.country else "",
+                    ]
+                )
+                for ti in self.top_investors.all()
+            ]
+        )
+
+        operating_company_country = ""
+        if self.operating_company.country:
+            operating_company_country = self.operating_company.country.name
+
+        operating_company_action_comment = ""
+        versions = Version.objects.get_for_object(self)
+        if versions:
+            operating_company_action_comment = versions[0].revision.comment
+
+        return [
+            self.id,
+            "Yes" if self.is_public else "No",
+            "transnational" if self.transnational else "domestic",
+            self.deal_size,
+            self.current_contract_size or "0",
+            self.current_production_size or "0",
+            self.get_current_negotiation_status_display(),
+            self.get_current_implementation_status_display(),
+            self.fully_updated_at,
+            top_investors,
+            self.operating_company.id,
+            self.operating_company.name,
+            operating_company_country,
+            self.operating_company.get_classification_display(),
+            self.operating_company.homepage,
+            self.operating_company.opencorporates,
+            self.operating_company.comment,
+            operating_company_action_comment,
+        ]
+
+
+class DealTopInvestors(models.Model):
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
+
+    class Meta:
+        managed = False
+        db_table = "landmatrix_deal_top_investors"

@@ -13,7 +13,7 @@
 
 <script>
   import { flatten_choices } from "/utils";
-  import {fieldMixin} from "./fieldMixin";
+  import { fieldMixin } from "./fieldMixin";
 
   export default {
     mixins: [fieldMixin],

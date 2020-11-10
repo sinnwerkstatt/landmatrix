@@ -45,16 +45,16 @@ def parse_filters(filters):
     ret = Q()
     for filtr in filters:
         field = filtr["field"].replace(".", "__")
-        op = filtr["operation"] or "EQ"
+        op = filtr.get("operation") or "EQ"
         val = filtr["value"]
         if op in ["EQ", "LT", "LE", "GE", "GT"] and len(val) == 1:
             val = val[0]
         operation = filter_ops[op]
 
         filter_operation = Q(**{f"{field}{operation}": val})
-        if filtr["allow_null"]:
+        if filtr.get("allow_null"):
             filter_operation |= Q(**{f"{field}": None})
-        if filtr["exclusion"]:
+        if filtr.get("exclusion"):
             filter_operation = ~filter_operation
         ret &= filter_operation
     return ret

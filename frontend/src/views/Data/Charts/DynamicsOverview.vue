@@ -12,6 +12,7 @@
 <script>
   import store from "/store";
   import ImplementationStatusChart from "../../components/Charts/ImplementationStatusChart";
+  import StatusPieChart from "../../components/Charts/StatusPieChart";
 
   let neg_status = [
     {
@@ -62,7 +63,7 @@
   ];
 
   export default {
-    components: { ImplementationStatusChart },
+    components: { StatusPieChart, ImplementationStatusChart },
     data: function () {
       return {
         canvasCtx: null,

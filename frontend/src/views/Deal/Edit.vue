@@ -35,7 +35,7 @@
     },
     computed: {
       deal() {
-        return { }
+        return {};
       },
     },
     beforeRouteEnter(to, from, next) {

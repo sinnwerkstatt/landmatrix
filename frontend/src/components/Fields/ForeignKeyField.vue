@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import {fieldMixin} from "./fieldMixin";
+  import { fieldMixin } from "./fieldMixin";
 
   export default {
     mixins: [fieldMixin],

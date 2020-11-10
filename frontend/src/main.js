@@ -8,9 +8,10 @@ import VCalendar from "v-calendar";
 import dayjs from "dayjs";
 import VueApollo from "vue-apollo";
 import { apolloClient } from "./apolloclient";
+import ScrollLoader from "vue-scroll-loader";
 import VueI18n from "vue-i18n";
-import es_messages from './i18n_messages.es.json';
-import fr_messages from './i18n_messages.fr.json';
+import es_messages from "./i18n_messages.es.json";
+import fr_messages from "./i18n_messages.fr.json";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
@@ -18,8 +19,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import "./scss/main.scss";
 
@@ -45,6 +46,7 @@ Vue.use(BootstrapVue);
 Vue.use(VCalendar);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
+Vue.use(ScrollLoader);
 
 Vue.component("multiselect", Multiselect);
 
@@ -77,15 +79,13 @@ Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
 
-
 // Create VueI18n instance with options
 const i18n = new VueI18n({
   locale: LANGUAGE || "en",
-  fallbackLocale: 'en',
+  fallbackLocale: "en",
   messages: { es: es_messages, fr: fr_messages },
   silentTranslationWarn: true,
-})
-
+});
 
 export default new Vue({
   router,

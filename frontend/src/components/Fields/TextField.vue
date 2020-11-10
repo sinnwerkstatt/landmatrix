@@ -9,7 +9,7 @@
           <a :href="val" target="_blank">{{ val }}</a>
         </template>
         <template v-else>
-        {{ parseVal(val) }}
+          {{ parseVal(val) }}
         </template>
       </div>
       <div v-else class="input-group">
@@ -44,14 +44,13 @@
 <script>
   import { flatten_choices } from "/utils";
   import { fieldMixin } from "./fieldMixin";
+  import { parseFormFieldValue } from "./fieldHelpers";
 
   export default {
     mixins: [fieldMixin],
     methods: {
       parseVal(val) {
-        let choices = flatten_choices(this.formfield.choices);
-        if (choices) return choices[val];
-        else return val;
+        return parseFormFieldValue(this.formfield, val);
       },
     },
   };
