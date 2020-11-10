@@ -337,7 +337,7 @@ class DataDownload:
         if 'investment_type' in data:
             data['investment_type'] = "|".join(
                 arrayfield_choices_display(data['investment_type'],
-                                           Investor._meta.get_field(
+                                           InvestorVentureInvolvement._meta.get_field(
                                                "investment_type").choices
                                            )
             ),
