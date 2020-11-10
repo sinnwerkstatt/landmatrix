@@ -17,14 +17,10 @@ from apps.landmatrix.models.mixins import (
 
 class InvestorManager(models.Manager):
     def active(self):
-        return self.get_queryset().filter(
-            status__in=(2, 3)
-        )
+        return self.get_queryset().filter(status__in=(2, 3))
 
     def public(self):
-        return self.active().filter(
-            is_actually_unknown=False
-        )
+        return self.active().filter(is_actually_unknown=False)
 
     def visible(self, user=None):
         if user and (user.is_staff or user.is_superuser):
@@ -215,8 +211,7 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
 class InvestorVentureInvolvementManager(models.Manager):
     def active(self):
         return self.get_queryset().filter(
-            investor__status__in=(2, 3),
-            venture__status__in=(2, 3)
+            investor__status__in=(2, 3), venture__status__in=(2, 3)
         )
 
     def public(self):

@@ -163,10 +163,11 @@ class DataDownload:
         if filters:
             self.filters = json.loads(filters)
 
-        qs = Deal.objects\
-            .visible(self.user)\
-            .filter(parse_filters(self.filters))\
+        qs = (
+            Deal.objects.visible(self.user)
+            .filter(parse_filters(self.filters))
             .order_by("id")
+        )
         self.deals = [
             self.deal_download_format(dict)
             for dict in qs_values_to_dict(
@@ -174,24 +175,16 @@ class DataDownload:
             )
         ]
 
-        qs = Investor.objects\
-            .visible(self.user)\
-            .order_by("id")
+        qs = Investor.objects.visible(self.user).order_by("id")
         self.investors = [
             self.investor_download_format(dict)
-            for dict in qs_values_to_dict(
-                qs, investor_fields, []
-            )
+            for dict in qs_values_to_dict(qs, investor_fields, [])
         ]
 
-        qs = InvestorVentureInvolvement.objects\
-            .visible(self.user)\
-            .order_by("id")
+        qs = InvestorVentureInvolvement.objects.visible(self.user).order_by("id")
         self.involvements = [
             self.involvement_download_format(dict)
-            for dict in qs_values_to_dict(
-                qs, involvement_fields, []
-            )
+            for dict in qs_values_to_dict(qs, involvement_fields, [])
         ]
         self.filename = "export"
 
@@ -280,7 +273,9 @@ class DataDownload:
     def deal_download_format(self, data):
         data["is_public"] = "Yes" if data["is_public"] else "No"
         if "transnational" in data:
-            data["transnational"] = "transnational" if data["transnational"] else "domestic"
+            data["transnational"] = (
+                "transnational" if data["transnational"] else "domestic"
+            )
 
         # flatten top investors
         data["top_investors"] = "|".join(

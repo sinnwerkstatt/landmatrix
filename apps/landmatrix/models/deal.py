@@ -21,14 +21,10 @@ from apps.landmatrix.models.mixins import (
 
 class DealManager(models.Manager):
     def active(self):
-        return self.get_queryset().filter(
-            status__in=(2, 3)
-        )
+        return self.get_queryset().filter(status__in=(2, 3))
 
     def public(self):
-        return self.active().filter(
-            is_public=True
-        )
+        return self.active().filter(is_public=True)
 
     # TODO throw me out. | ROD: Really? - need to clarify!!
     def visible(self, user=None):
