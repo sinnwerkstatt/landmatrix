@@ -1275,11 +1275,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             ]
         )
 
-        operating_company_country = ''
+        operating_company_country = ""
         if self.operating_company.country:
             operating_company_country = self.operating_company.country.name
 
-        operating_company_action_comment = ''
+        operating_company_action_comment = ""
         versions = Version.objects.get_for_object(self)
         if versions:
             operating_company_action_comment = versions[0].revision.comment

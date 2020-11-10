@@ -34,23 +34,23 @@ deal_headers = [
     "Operating company: Comment",
 ]
 deal_fields = [
-    'id',
-    'is_public',
-    'transnational',
-    'deal_size',
-    'current_contract_size',
-    'current_production_size',
-    'current_negotiation_status',
-    'current_implementation_status',
-    'fully_updated_at',
-    'top_investors',
-    'operating_company__id',
-    'operating_company__name',
-    'operating_company__country__name',
-    'operating_company__classification',
-    'operating_company__homepage',
-    'operating_company__opencorporates',
-    'operating_company__comment',
+    "id",
+    "is_public",
+    "transnational",
+    "deal_size",
+    "current_contract_size",
+    "current_production_size",
+    "current_negotiation_status",
+    "current_implementation_status",
+    "fully_updated_at",
+    "top_investors",
+    "operating_company__id",
+    "operating_company__name",
+    "operating_company__country__name",
+    "operating_company__classification",
+    "operating_company__homepage",
+    "operating_company__opencorporates",
+    "operating_company__comment",
 ]
 neg_choices = []
 for (k, v) in Deal._meta.get_field("current_negotiation_status").choices:
@@ -62,14 +62,15 @@ for (k, v) in Deal._meta.get_field("current_negotiation_status").choices:
 deal_choices_fields = {
     "current_negotiation_status": dict(neg_choices),
     "current_implementation_status": dict(
-        Deal._meta.get_field("current_implementation_status").choices),
+        Deal._meta.get_field("current_implementation_status").choices
+    ),
     "investor_classification": dict(Investor._meta.get_field("classification").choices),
 }
 deal_sub_fiels = {
-    'top_investors': [
-        'top_investors__id',
-        'top_investors__name',
-        'top_investors__country__name'
+    "top_investors": [
+        "top_investors__id",
+        "top_investors__name",
+        "top_investors__country__name",
     ]
 }
 deal_flattened_fields = []
@@ -163,13 +164,14 @@ class DataDownload:
         if filters:
             self.filters = json.loads(filters)
 
-        deal_qs = Deal.objects.public() \
-            .filter(parse_filters(self.filters)) \
-            .order_by("id")
+        deal_qs = (
+            Deal.objects.public().filter(parse_filters(self.filters)).order_by("id")
+        )
         self.deals = [
             self.deal_download_format(deal_dict)
-            for deal_dict in
-            qs_values_to_dict(deal_qs, deal_flattened_fields, deal_sub_fiels.keys())
+            for deal_dict in qs_values_to_dict(
+                deal_qs, deal_flattened_fields, deal_sub_fiels.keys()
+            )
         ]
 
         self.involvements = []
@@ -183,8 +185,9 @@ class DataDownload:
         involvement_qs = InvestorVentureInvolvement.objects.public().order_by("id")
         self.involvements = [
             self.involvement_download_format(involvement_dict)
-            for involvement_dict in
-            qs_values_to_dict(involvement_qs, involvement_fields, [])
+            for involvement_dict in qs_values_to_dict(
+                involvement_qs, involvement_fields, []
+            )
         ]
         self.filename = "export"
 
@@ -275,40 +278,42 @@ class DataDownload:
         data["transnational"] = "transnational" if data["transnational"] else "domestic"
 
         # flatten top investors
-        data['top_investors'] = "|".join(
+        data["top_investors"] = "|".join(
             [
                 "#".join(
                     [
-                        ti['name'].replace("#", "").replace("\n", "").strip(),
-                        str(ti['id']),
-                        ti['country__name'] if 'country__name' in ti else "",
+                        ti["name"].replace("#", "").replace("\n", "").strip(),
+                        str(ti["id"]),
+                        ti["country__name"] if "country__name" in ti else "",
                     ]
                 )
-                for ti in data['top_investors']
+                for ti in data["top_investors"]
             ]
         )
         # map operating company fields
-        data['operating_company__id'] = data['operating_company']['id']
-        data['operating_company__name'] = data['operating_company']['name']
-        if 'country' in data['operating_company']:
-            data['operating_company__country__name'] = \
-                data['operating_company']['country']['name']
-        if 'classification' in data['operating_company']:
-            data['operating_company__classification'] = \
-                str(deal_choices_fields['investor_classification'][
-                        data['operating_company']['classification']])
-        data['operating_company__homepage'] = data['operating_company'][
-            'homepage']
-        data['operating_company__opencorporates'] = data['operating_company'][
-            'opencorporates']
-        data['operating_company__comment'] = data['operating_company'][
-            'comment']
+        data["operating_company__id"] = data["operating_company"]["id"]
+        data["operating_company__name"] = data["operating_company"]["name"]
+        if "country" in data["operating_company"]:
+            data["operating_company__country__name"] = data["operating_company"][
+                "country"
+            ]["name"]
+        if "classification" in data["operating_company"]:
+            data["operating_company__classification"] = str(
+                deal_choices_fields["investor_classification"][
+                    data["operating_company"]["classification"]
+                ]
+            )
+        data["operating_company__homepage"] = data["operating_company"]["homepage"]
+        data["operating_company__opencorporates"] = data["operating_company"][
+            "opencorporates"
+        ]
+        data["operating_company__comment"] = data["operating_company"]["comment"]
 
         row = []
         for field in deal_fields:
             if field not in data:
                 # empty fields
-                data[field] = ''
+                data[field] = ""
             elif field in deal_choices_fields:
                 # fields with choices
                 data[field] = str(deal_choices_fields[field][data[field]])
@@ -323,7 +328,7 @@ class DataDownload:
         for field in investor_fields:
             if field not in data:
                 # empty fields
-                data[field] = ''
+                data[field] = ""
             elif field in investor_choices_fields:
                 # fields with choices
                 data[field] = str(investor_choices_fields[field][data[field]])
@@ -331,21 +336,23 @@ class DataDownload:
         return row
 
     def involvement_download_format(self, data):
-        data['venture__name'] = data['venture']['name']
-        data['investor__name'] = data['investor']['name']
+        data["venture__name"] = data["venture"]["name"]
+        data["investor__name"] = data["investor"]["name"]
 
-        if 'investment_type' in data:
-            data['investment_type'] = "|".join(
-                arrayfield_choices_display(data['investment_type'],
-                                           InvestorVentureInvolvement._meta.get_field(
-                                               "investment_type").choices
-                                           )
-            ),
+        if "investment_type" in data:
+            data["investment_type"] = "|".join(
+                arrayfield_choices_display(
+                    data["investment_type"],
+                    InvestorVentureInvolvement._meta.get_field(
+                        "investment_type"
+                    ).choices,
+                )
+            )
         row = []
         for field in involvement_fields:
             if field not in data:
                 # empty fields
-                data[field] = ''
+                data[field] = ""
             elif field in involvement_choices_fields:
                 # fields with choices
                 data[field] = str(involvement_choices_fields[field][data[field]])
