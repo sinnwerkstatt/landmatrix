@@ -83,3 +83,4 @@ type Statistics {
 
 
 scalar WebOfTransnationalDeals
+scalar CountryInvestments

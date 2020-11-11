@@ -1,8 +1,5 @@
-from collections import defaultdict
-from typing import Any
-
 from ariadne import ObjectType
-from django.db.models import Sum
+from ariadne.exceptions import HttpBadRequestError
 from django.utils.html import linebreaks
 from django_comments.models import Comment
 from graphql import GraphQLResolveInfo
@@ -10,7 +7,6 @@ from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country, Investor
-from apps.landmatrix.models.deal import DealTopInvestors
 from apps.utils import qs_values_to_dict
 
 
@@ -75,8 +71,11 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         else:
             filtered_fields += [field]
 
+    visible_deals = Deal.objects.visible(info.context.user).filter(id=id)
+    if not visible_deals:
+        return
     deal = qs_values_to_dict(
-        Deal.objects.visible(info.context.user).filter(id=id),
+        visible_deals,
         filtered_fields,
         ["locations", "datasources", "contracts"],
     )[0]
@@ -172,86 +171,3 @@ def resolve_dealversions(
         }
         for x in qs
     ]
-
-
-# def resolve_locations(obj, info: GraphQLResolveInfo, filters=None, limit=20):
-#     qs = Location.objects.visible(info.context.user)
-#
-#     fields = get_fields(info, exclude=["__typename"])
-#     if "deal" in fields:
-#         qs = qs.select_related("deal")
-#
-#     if filters:
-#         qs = qs.filter(parse_filters(filters))
-#
-#     if limit != 0:
-#         qs = qs[:limit]
-#     return qs
-
-
-def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
-    neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))
-
-
-def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
-    LONG_COUNTRIES = {
-        "United States of America": "USA*",
-        "United Kingdom of Great Britain and Northern Ireland": "UK*",
-        "China, Hong Kong Special Administrative Region": "China, Hong Kong*",
-        "China, Macao Special Administrative Region": "China, Macao*",
-        "Lao People's Democratic Republic": "Laos*",
-        "United Republic of Tanzania": "Tanzania*",
-        "Democratic Republic of the Congo": "DRC*",
-        "Bolivia (Plurinational State of)": "Bolivia*",
-        "The Former Yugoslav Republic of Macedonia": "Macedonia*",
-        "Venezuela (Bolivarian Republic of)": "Venezuela*",
-        "Republic of Moldova": "Moldova*",
-        "United Arab Emirates": "Arab Emirates*",
-        "Solomon Islands": "Solomon Iss*",
-        "Russian Federation": "Russian Fed*",
-        "Dominican Republic": "Dominican Rep*",
-        "Papua New Guinea": "Papua New*",
-        "Democratic People's Republic of Korea": "North Korea*",
-        "Korea, Dem. People's Rep.": "North Korea*",
-        "United States Virgin Islands": "Virgin Iss*",
-        "Iran (Islamic Republic of)": "Iran*",
-        "Syrian Arab Republic": "Syria*",
-        "Republic of Korea": "South Korea*",
-        "British Virgin Islands": "British Virgin Iss*",
-    }
-
-    deals_investors = (
-        DealTopInvestors.objects.all()
-        .prefetch_related("deal")
-        .prefetch_related("investor")
-    )
-    link_set = {
-        (x.deal.country_id, x.investor.country_id)
-        for x in deals_investors
-        if x.deal.country_id and x.investor.country_id
-    }
-    sorted_link_set = sorted(link_set, key=lambda x: x[0])
-    res = defaultdict(list)
-    relevant_countries = set()
-    for link in sorted_link_set:
-        res[link[0]] += [link[1]]
-        relevant_countries.update(link)
-
-    country_dict = {c.id: c for c in Country.objects.filter(id__in=relevant_countries)}
-
-    regions = defaultdict(list)
-    for cid, country in country_dict.items():
-        imports = []
-        for impo in res[cid]:
-            imp_c = country_dict[impo]
-            short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
-            imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]
-        short_name = LONG_COUNTRIES.get(country.name, country.name)
-        regions[country.fk_region_id] += [
-            {"id": country.id, "name": short_name, "imports": imports}
-        ]
-
-    return {
-        "name": "lama",
-        "children": [{"name": x, "children": y} for (x, y) in regions.items()],
-    }

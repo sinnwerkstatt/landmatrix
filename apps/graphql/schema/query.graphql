@@ -3,7 +3,7 @@ type Query {
     user(id: Int!): User
     users(sort: String = "id"): [User]
 
-    deal(id: Int!, version: Int): Deal!
+    deal(id: Int!, version: Int): Deal
     deals(
         sort: String = "id",
         limit: Int = 20,
@@ -47,8 +47,6 @@ type Query {
     crops: [Crop]
     minerals: [Mineral]
 
-    aggregations: Aggregations
-
     formfields(language: String ="en"): FormFieldSet
 
     statistics(
@@ -56,6 +54,7 @@ type Query {
         region_id: Int
     ): Statistics
     transnational_deals: WebOfTransnationalDeals
+    country_investments(id: Int!): CountryInvestments
 
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]
