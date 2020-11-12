@@ -150,17 +150,21 @@ class DataDownload:
             self._multiple_deals(filters)
 
     def _single_deal(self, deal_id):
-        qs = Deal.objects.get(id=deal_id)
+        qs = Deal.objects.filter(id=deal_id)
+        deal = Deal.objects.get(id=deal_id)
         self.deals = [
             self.deal_download_format(dict)
             for dict in qs_values_to_dict(
                 qs, deal_flattened_fields, deal_sub_fiels.keys()
             )
         ]
-        (
-            self.investors,
-            self.involvements,
-        ) = InvolvementNetwork().flat_view_for_download(deal.operating_company)
+        self.investors = []
+        self.involvements = []
+        if deal.operating_company:
+            (
+                self.investors,
+                self.involvements,
+            ) = InvolvementNetwork().flat_view_for_download(deal.operating_company)
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filters):

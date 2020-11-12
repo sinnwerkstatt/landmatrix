@@ -109,9 +109,11 @@ class InvolvementNetwork:
                     tl_investor["name"],
                     involvement["investor"]["id"],
                     involvement["investor"]["name"],
-                    dict(InvestorVentureInvolvement._meta.get_field("role").choices)[
-                        involvement["role"]
-                    ],
+                    str(
+                        dict(
+                            InvestorVentureInvolvement._meta.get_field("role").choices
+                        )[involvement["role"]]
+                    ),
                     investment_type,
                     involvement["percentage"],
                     involvement["loans_amount"],
