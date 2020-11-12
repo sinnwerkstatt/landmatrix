@@ -2,8 +2,8 @@ import gql from "graphql-tag";
 
 export const data_deal_query = {
   query: gql`
-    query Deals($limit: Int!, $filters: [Filter]) {
-      deals(limit: $limit, filters: $filters) {
+    query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
+      deals(limit: $limit, subset: $subset, filters: $filters) {
         id
         deal_size
         country {
@@ -25,17 +25,19 @@ export const data_deal_query = {
     }
   `,
   variables() {
+    let user = this.$store.state.page.user;
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
+      subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
     };
   },
 };
 
 export const data_deal_produce_query = {
   query: gql`
-    query Deals($limit: Int!, $filters: [Filter]) {
-      dealsWithProduceInfo: deals(limit: $limit, filters: $filters) {
+    query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
+      dealsWithProduceInfo: deals(limit: $limit, subset: $subset, filters: $filters) {
         id
         crops
         animals
@@ -44,9 +46,11 @@ export const data_deal_produce_query = {
     }
   `,
   variables() {
+    let user = this.$store.state.page.user;
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
+      subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
     };
   },
 };

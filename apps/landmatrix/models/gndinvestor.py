@@ -15,17 +15,24 @@ from apps.landmatrix.models.mixins import (
 )
 
 
-class InvestorManager(models.Manager):
+class InvestorQuerySet(models.QuerySet):
     def active(self):
-        return self.get_queryset().filter(status__in=(2, 3))
+        return self.filter(status__in=(2, 3))
 
-    def public(self):
-        return self.active().filter(is_actually_unknown=False)
+    # at the moment the only thing we filter on is the "status".
+    # the following is an idea:
+    # def public(self):
+    #     return self.active().filter(is_actually_unknown=False)
 
-    def visible(self, user=None):
-        if user and (user.is_staff or user.is_superuser):
+    def visible(self, user=None, subset="PUBLIC"):
+        if subset in ["ACTIVE", "PUBLIC"]:
             return self.active()
-        return self.public()
+
+        if not user or not (user.is_staff or user.is_superuser):
+            return self.active()
+
+        # hand it out unfiltered.
+        return self
 
 
 @reversion.register(follow=["involvements"], ignore_duplicates=True)
@@ -105,7 +112,7 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
 
     old_id = models.IntegerField(null=True, blank=True)
 
-    objects = InvestorManager()
+    objects = InvestorQuerySet.as_manager()
 
     """ # computed properties """
     # The following flag is needed at the moment to filter through Deals (public-filter)
@@ -208,22 +215,26 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         }
 
 
-class InvestorVentureInvolvementManager(models.Manager):
+class InvestorVentureInvolvementQuerySet(models.QuerySet):
     def active(self):
-        return self.get_queryset().filter(
-            investor__status__in=(2, 3), venture__status__in=(2, 3)
-        )
+        return self.filter(investor__status__in=(2, 3), venture__status__in=(2, 3))
 
-    def public(self):
-        return self.active().filter(
-            investor__is_actually_unknown=False,
-            venture__is_actually_unknown=False,
-        )
+    # this is just an idea at this point
+    # def public(self):
+    #     return self.active().filter(
+    #         investor__is_actually_unknown=False,
+    #         venture__is_actually_unknown=False,
+    #     )
 
-    def visible(self, user=None):
-        if user and (user.is_staff or user.is_superuser):
+    def visible(self, user=None, subset="PUBLIC"):
+        if subset in ["ACTIVE", "PUBLIC"]:
             return self.active()
-        return self.public()
+
+        if not user or not (user.is_staff or user.is_superuser):
+            return self.active()
+
+        # hand it out unfiltered.
+        return self
 
 
 @reversion.register(ignore_duplicates=True)
@@ -316,7 +327,7 @@ class InvestorVentureInvolvement(
 
     old_id = models.IntegerField(null=True, blank=True)
 
-    objects = InvestorVentureInvolvementManager()
+    objects = InvestorVentureInvolvementQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Investor Venture Involvement")

@@ -54,24 +54,24 @@
         </template>
         <table class="table data-table">
           <thead>
-          <tr>
-            <th>Investor ID</th>
-            <th>Name</th>
-            <th>Country of registration</th>
-            <th>Classification</th>
-            <th>Relationship</th>
-            <th>Ownership share</th>
-          </tr>
+            <tr>
+              <th>Investor ID</th>
+              <th>Name</th>
+              <th>Country of registration</th>
+              <th>Classification</th>
+              <th>Relationship</th>
+              <th>Ownership share</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="involvement in involvements">
-            <td v-html="investorValue(involvement.investor, 'id')"></td>
-            <td v-html="investorValue(involvement.investor, 'name')"></td>
-            <td v-html="investorValue(involvement.investor, 'country')"></td>
-            <td v-html="investorValue(involvement.investor, 'classification')"></td>
-            <td>{{ detect_role(involvement) }}</td>
-            <td>{{ involvement.percentage }}</td>
-          </tr>
+            <tr v-for="involvement in involvements">
+              <td v-html="investorValue(involvement.investor, 'id')"></td>
+              <td v-html="investorValue(involvement.investor, 'name')"></td>
+              <td v-html="investorValue(involvement.investor, 'country')"></td>
+              <td v-html="investorValue(involvement.investor, 'classification')"></td>
+              <td>{{ detect_role(involvement) }}</td>
+              <td>{{ involvement.percentage }}</td>
+            </tr>
           </tbody>
         </table>
       </b-tab>
@@ -85,24 +85,24 @@
         </template>
         <table class="table data-table">
           <thead>
-          <tr>
-            <th>Deal ID</th>
-            <th>Target country</th>
-            <th>Intention of investment</th>
-            <th>Current negotiation status</th>
-            <th>Current implementation status</th>
-            <th>Deal size</th>
-          </tr>
+            <tr>
+              <th>Deal ID</th>
+              <th>Target country</th>
+              <th>Intention of investment</th>
+              <th>Current negotiation status</th>
+              <th>Current implementation status</th>
+              <th>Deal size</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="deal in deals">
-            <td v-html="dealValue(deal, 'id')"></td>
-            <td v-html="dealValue(deal, 'country')"></td>
-            <td v-html="dealValue(deal, 'intention_of_investment')"></td>
-            <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
-            <td v-html="dealValue(deal, 'current_implementation_status')"></td>
-            <td v-html="dealValue(deal, 'deal_size')"></td>
-          </tr>
+            <tr v-for="deal in deals">
+              <td v-html="dealValue(deal, 'id')"></td>
+              <td v-html="dealValue(deal, 'country')"></td>
+              <td v-html="dealValue(deal, 'intention_of_investment')"></td>
+              <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
+              <td v-html="dealValue(deal, 'current_implementation_status')"></td>
+              <td v-html="dealValue(deal, 'deal_size')"></td>
+            </tr>
           </tbody>
         </table>
       </b-tab>
@@ -170,10 +170,10 @@
           "classification",
           "homepage",
           "opencorporates",
-          "comment"
+          "comment",
         ],
         depth: 0,
-        includeDealsInQuery: false
+        includeDealsInQuery: false,
       };
     },
     apollo: {
@@ -183,15 +183,25 @@
           return {
             investorID: +this.investor_id,
             depth: this.depth,
-            includeDeals: this.includeDealsInQuery
+            includeDeals: this.includeDealsInQuery,
           };
-        }
-      }
+        },
+        update(data) {
+          if (!data.investor) {
+            this.$router.push({
+              name: "404",
+              params: [this.$router.currentRoute.path],
+              replace: true,
+            });
+          }
+          return data.investor;
+        },
+      },
     },
     computed: {
       ...mapState({
         investor_fields: (state) => state.investor.investor_fields,
-        formFields: (state) => state.formfields
+        formFields: (state) => state.formfields,
       }),
       involvements() {
         return this.investor.involvements || [];
@@ -204,11 +214,22 @@
         } else return [];
       },
       graphDataIsReady() {
-        return this.investor && "involvements" in this.investor && this.investor && "deals" in this.investor && !this.$apollo.queries.investor.loading;
+        return (
+          this.investor &&
+          "involvements" in this.investor &&
+          this.investor &&
+          "deals" in this.investor &&
+          !this.$apollo.queries.investor.loading
+        );
       },
       tableDataIsReady() {
-        return this.investor && "involvements" in this.investor && this.investor && "deals" in this.investor;
-      }
+        return (
+          this.investor &&
+          "involvements" in this.investor &&
+          this.investor &&
+          "deals" in this.investor
+        );
+      },
     },
     methods: {
       getInvestorValue(fieldName, subModel) {
@@ -239,7 +260,7 @@
         if (value > this.depth) {
           this.depth = +value;
         }
-      }
+      },
     },
     watch: {
       investor_id(investor_id, oldInvestorId) {
@@ -259,11 +280,11 @@
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
             { link: { name: "list_investors" }, name: "Data" },
-            { name: `Investor #${investor.id}` }
-          ]
+            { name: `Investor #${investor.id}` },
+          ],
         });
-      }
-    }
+      },
+    },
   };
 </script>
 

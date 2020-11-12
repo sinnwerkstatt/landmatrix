@@ -178,22 +178,22 @@ class DataDownload:
             .order_by("id")
         )
         self.deals = [
-            self.deal_download_format(dict)
-            for dict in qs_values_to_dict(
+            self.deal_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
                 qs, deal_flattened_fields, deal_sub_fiels.keys()
             )
         ]
 
         qs = Investor.objects.visible(self.user).order_by("id")
         self.investors = [
-            self.investor_download_format(dict)
-            for dict in qs_values_to_dict(qs, investor_fields, [])
+            self.investor_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(qs, investor_fields, [])
         ]
 
         qs = InvestorVentureInvolvement.objects.visible(self.user).order_by("id")
         self.involvements = [
-            self.involvement_download_format(dict)
-            for dict in qs_values_to_dict(qs, involvement_fields, [])
+            self.involvement_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(qs, involvement_fields, [])
         ]
         self.filename = "export"
 
@@ -279,7 +279,8 @@ class DataDownload:
         response["Content-Disposition"] = f'attachment; filename="{self.filename}.zip"'
         return response
 
-    def deal_download_format(self, data):
+    @staticmethod
+    def deal_download_format(data):
         data["is_public"] = "Yes" if data["is_public"] else "No"
         if "transnational" in data:
             data["transnational"] = (
@@ -330,7 +331,8 @@ class DataDownload:
             row.append(data[field])
         return row
 
-    def investor_download_format(self, data):
+    @staticmethod
+    def investor_download_format(data):
         if "country" in data:
             data["country__name"] = data["country"]["name"]
 
@@ -345,7 +347,8 @@ class DataDownload:
             row.append(data[field])
         return row
 
-    def involvement_download_format(self, data):
+    @staticmethod
+    def involvement_download_format(data):
         data["venture__name"] = data["venture"]["name"]
         data["investor__name"] = data["investor"]["name"]
 

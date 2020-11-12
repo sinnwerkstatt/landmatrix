@@ -12,9 +12,12 @@
       <div class="main-pane">
         <h3>{{ $t("Filter") }}</h3>
         <span style="font-size: 0.8em;">
-          <b-form-checkbox class="default-filter-switch" :class="{active: isDefaultFilter}"
-                           name="check-button" switch
-                           v-model="isDefaultFilter"
+          <b-form-checkbox
+            class="default-filter-switch"
+            :class="{ active: isDefaultFilter }"
+            name="check-button"
+            switch
+            v-model="isDefaultFilter"
           >
             Default filter
           </b-form-checkbox>
@@ -323,7 +326,11 @@
   import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse";
   import gql from "graphql-tag";
-  import { implementation_status_choices, intention_of_investment_choices, nature_of_deal_choices } from "/choices";
+  import {
+    implementation_status_choices,
+    intention_of_investment_choices,
+    nature_of_deal_choices,
+  } from "/choices";
 
   export default {
     name: "FilterBar",
@@ -331,14 +338,21 @@
     apollo: {
       investors: {
         query: gql`
-          query {
-            investors(limit: 0) {
+          query Investors($limit: Int!, $subset: Subset) {
+            investors(limit: $limit, subset: $subset) {
               id
               name
             }
           }
-        `
-      }
+        `,
+        variables() {
+          let user = this.$store.state.page.user;
+          return {
+            limit: 0,
+            subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
+          };
+        },
+      },
     },
     data() {
       return {
@@ -348,12 +362,12 @@
           negotiation_status: {
             CONCLUDED: "Concluded",
             INTENDED: "Intended",
-            FAILED: "Failed"
+            FAILED: "Failed",
           },
           implementation_status: implementation_status_choices,
           nature_of_deal: nature_of_deal_choices,
-          intention_of_investment: intention_of_investment_choices
-        }
+          intention_of_investment: intention_of_investment_choices,
+        },
       };
     },
     computed: {
@@ -363,7 +377,7 @@
         },
         set(value) {
           this.$store.dispatch("showFilterOverlay", value);
-        }
+        },
       },
       region_id: {
         get() {
@@ -373,7 +387,7 @@
           if (value !== this.filters.region_id) {
             this.$store.dispatch("setFilter", { filter: "region_id", value });
           }
-        }
+        },
       },
       country: {
         get() {
@@ -383,10 +397,10 @@
           if ((value ? value.id : value) !== this.filters.country_id) {
             this.$store.dispatch("setFilter", {
               filter: "country_id",
-              value: value ? value.id : value
+              value: value ? value.id : value,
             });
           }
-        }
+        },
       },
       deal_size_min: {
         get() {
@@ -396,7 +410,7 @@
           if (value !== this.filters.deal_size_min) {
             this.$store.dispatch("setFilter", { filter: "deal_size_min", value });
           }
-        }
+        },
       },
       deal_size_max: {
         get() {
@@ -406,7 +420,7 @@
           if (value !== this.filters.deal_size_max) {
             this.$store.dispatch("setFilter", { filter: "deal_size_max", value });
           }
-        }
+        },
       },
       negotiation_status: {
         get() {
@@ -416,7 +430,7 @@
           if (value !== this.filters.negotiation_status) {
             this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
           }
-        }
+        },
       },
       nature_of_deal: {
         get() {
@@ -426,7 +440,7 @@
           if (value !== this.filters.nature_of_deal) {
             this.$store.dispatch("setFilter", { filter: "nature_of_deal", value });
           }
-        }
+        },
       },
       investor: {
         get() {
@@ -436,7 +450,7 @@
           if (value !== this.filters.investor) {
             this.$store.dispatch("setFilter", { filter: "investor", value });
           }
-        }
+        },
       },
       initiation_year_min: {
         get() {
@@ -446,7 +460,7 @@
           if (value !== this.filters.initiation_year_min) {
             this.$store.dispatch("setFilter", { filter: "initiation_year_min", value });
           }
-        }
+        },
       },
       initiation_year_max: {
         get() {
@@ -456,7 +470,7 @@
           if (value !== this.filters.initiation_year_max) {
             this.$store.dispatch("setFilter", { filter: "initiation_year_max", value });
           }
-        }
+        },
       },
       initiation_year_unknown: {
         get() {
@@ -466,10 +480,10 @@
           if (value !== this.filters.initiation_year_unknown) {
             this.$store.dispatch("setFilter", {
               filter: "initiation_year_unknown",
-              value
+              value,
             });
           }
-        }
+        },
       },
       implementation_status: {
         get() {
@@ -477,9 +491,12 @@
         },
         set(value) {
           if (value !== this.filters.implementation_status) {
-            this.$store.dispatch("setFilter", { filter: "implementation_status", value });
+            this.$store.dispatch("setFilter", {
+              filter: "implementation_status",
+              value,
+            });
           }
-        }
+        },
       },
       intention_of_investment: {
         get() {
@@ -489,10 +506,10 @@
           if (value !== this.filters.intention_of_investment) {
             this.$store.dispatch("setFilter", {
               filter: "intention_of_investment",
-              value
+              value,
             });
           }
-        }
+        },
       },
       produce: {
         get() {
@@ -502,7 +519,7 @@
           if (value !== this.filters.produce) {
             this.$store.dispatch("setFilter", { filter: "produce", value });
           }
-        }
+        },
       },
       transnational: {
         get() {
@@ -512,7 +529,7 @@
           if (value !== this.filters.transnational) {
             this.$store.dispatch("setFilter", { filter: "transnational", value });
           }
-        }
+        },
       },
       forest_concession: {
         get() {
@@ -522,7 +539,7 @@
           if (value !== this.filters.forest_concession) {
             this.$store.dispatch("setFilter", { filter: "forest_concession", value });
           }
-        }
+        },
       },
       isDefaultFilter: {
         get() {
@@ -531,7 +548,7 @@
         set(value) {
           if (value) this.$store.dispatch("resetFilters");
           else this.$store.dispatch("clearFilters");
-        }
+        },
       },
 
       ...mapState({
@@ -540,11 +557,11 @@
         regions: (state) => {
           let global = {
             id: null,
-            name: "Global"
+            name: "Global",
           };
           return [global, ...state.page.regions];
         },
-        dealFormfields: (state) => state.formfields.deal
+        dealFormfields: (state) => state.formfields.deal,
       }),
       countries_with_deals() {
         return this.countries.filter((c) => {
@@ -558,22 +575,22 @@
             type: this.$t("Crop"),
             options: Object.entries(
               this.dealFormfields.crops.choices
-            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k }))
+            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k })),
           },
           {
             type: this.$t("Livestock"),
             options: Object.entries(
               this.dealFormfields.animals.choices
-            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k }))
+            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k })),
           },
           {
             type: this.$t("Minerals"),
             options: Object.entries(
               this.dealFormfields.resources.choices
-            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k }))
-          }
+            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
+          },
         ];
-      }
+      },
     },
   };
 </script>
@@ -660,7 +677,6 @@
 
           &:focus {
             outline: none;
-
           }
         }
 
@@ -674,7 +690,7 @@
 
     .custom-switch .custom-control-input:checked ~ .custom-control-label {
       &:before {
-        background-color: rgba($lm_orange, 0.1)
+        background-color: rgba($lm_orange, 0.1);
       }
 
       &:after {
@@ -689,9 +705,8 @@
       }
     }
 
-
     .form-check {
-      padding:0;
+      padding: 0;
       .custom-control.custom-checkbox {
         min-height: 0;
         padding-left: 1.3rem;
@@ -700,7 +715,8 @@
             cursor: pointer;
           }
           line-height: 1.2;
-          &:before, &:after {
+          &:before,
+          &:after {
             top: 1px;
             left: -1.3rem;
           }

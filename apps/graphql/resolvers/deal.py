@@ -1,5 +1,6 @@
+from typing import Any
+
 from ariadne import ObjectType
-from ariadne.exceptions import HttpBadRequestError
 from django.utils.html import linebreaks
 from django_comments.models import Comment
 from graphql import GraphQLResolveInfo
@@ -71,9 +72,10 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         else:
             filtered_fields += [field]
 
-    visible_deals = Deal.objects.visible(info.context.user).filter(id=id)
+    visible_deals = Deal.objects.visible(info.context.user, "UNFILTERED").filter(id=id)
     if not visible_deals:
         return
+
     deal = qs_values_to_dict(
         visible_deals,
         filtered_fields,
@@ -99,22 +101,15 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 
 
 def resolve_deals(
-    obj,
+    obj: Any,
     info: GraphQLResolveInfo,
-    filters=None,
     sort="id",
     limit=20,
-    public=True,
-    after=None,
+    subset="PUBLIC",
+    filters=None,
 ):
-    qs = Deal.objects
+    qs = Deal.objects.visible(user=info.context.user, subset=subset).order_by(sort)
 
-    # only logged in users are allowed to see not public deals
-    # TODO: access should be more fine-grained?!
-    if public:
-        qs = qs.visible(info.context.user)
-
-    qs = qs.order_by(sort)
     if filters:
         qs = qs.filter(parse_filters(filters))
 
@@ -122,7 +117,6 @@ def resolve_deals(
         info, recursive=True, exclude=["__typename", "has_no_known_investor"]
     )
 
-    # limit = max(1, min(limit, 500))
     if limit != 0:
         qs = qs[:limit]
 

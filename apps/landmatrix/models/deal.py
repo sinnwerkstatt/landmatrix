@@ -5,7 +5,6 @@ import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from reversion.models import Version
@@ -19,49 +18,22 @@ from apps.landmatrix.models.mixins import (
 )
 
 
-class DealManager(models.Manager):
+class DealQuerySet(models.QuerySet):
     def active(self):
-        return self.get_queryset().filter(status__in=(2, 3))
+        return self.filter(status__in=(2, 3))
 
     def public(self):
         return self.active().filter(is_public=True)
 
-    # TODO throw me out. | ROD: Really? - need to clarify!!
-    def visible(self, user=None):
-        if user and (user.is_staff or user.is_superuser):
-            return self.active()
-        return self.public()
+    def visible(self, user=None, subset="PUBLIC"):
+        if not user or not (user.is_staff or user.is_superuser):
+            return self.public()
 
-    # def with_public_status(self, user=None):
-    #     if not (user or user.is_staff or user.is_superuser):
-    #         return self.public()
-    #     qs = self.get_queryset()
-    #     return qs.annotate(
-    #         public_status=Case(
-    #             When(Q(confidential=True), then=Value("CONFIDENTIAL_FLAG")),
-    #             When(
-    #                 Q(country=None) | Q(country__high_income=True),
-    #                 then=Value("COUNTRY_PROBLEMS"),
-    #             ),
-    #             When(
-    #                 Q(datasources=None),
-    #                 then=Value("NO_DATASOURCES"),
-    #             ),
-    #             # When(
-    #             #     Q(operating_company=None),
-    #             #     then=Value("NO_OPERATING_COMPANY"),
-    #             # ),
-    #             # When(
-    #             #     Q(operating_company__is_actually_unknown=True)
-    #             #     & ~Q(
-    #             #         operating_company__investors__investor__is_actually_unknown=False
-    #             #     ),
-    #             #     then=Value("UNKNOWN_INVESTORS"),
-    #             # ),
-    #             default=Value("PUBLIC"),
-    #             output_field=CharField(),
-    #         )
-    #     )
+        if subset == "PUBLIC":
+            return self.public()
+        elif subset == "ACTIVE":
+            return self.active()
+        return self
 
 
 @reversion.register(
@@ -1026,7 +998,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     modified_at = models.DateTimeField()
     fully_updated_at = models.DateTimeField(null=True)
 
-    objects = DealManager()
+    objects = DealQuerySet.as_manager()
 
     def __str__(self):
         return f"#{self.id} in {self.country}"

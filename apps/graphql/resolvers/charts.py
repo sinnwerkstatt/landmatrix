@@ -1,12 +1,11 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db.models import Sum, Q
+from django.db.models import Q
 from graphql import GraphQLResolveInfo
 
-from apps.landmatrix.models import Deal, Country
+from apps.landmatrix.models import Country
 from apps.landmatrix.models.deal import DealTopInvestors
-
 
 # def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
 #     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))
@@ -40,7 +39,6 @@ LONG_COUNTRIES = {
 
 
 def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
-
     deals_investors = (
         DealTopInvestors.objects.all()
         .prefetch_related("deal")
