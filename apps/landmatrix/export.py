@@ -150,8 +150,13 @@ class DataDownload:
             self._multiple_deals(filters)
 
     def _single_deal(self, deal_id):
-        deal = Deal.objects.get(id=deal_id)
-        self.deals = [deal.legacy_download_list_format()]
+        qs = Deal.objects.get(id=deal_id)
+        self.deals = [
+            self.deal_download_format(dict)
+            for dict in qs_values_to_dict(
+                qs, deal_flattened_fields, deal_sub_fiels.keys()
+            )
+        ]
         (
             self.investors,
             self.involvements,

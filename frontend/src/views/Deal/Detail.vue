@@ -283,7 +283,9 @@
         return getFieldValue(this.deal, this.formFields, fieldName);
       },
       triggerInvestorGraphRefresh() {
-        this.$refs.investorGraph.refresh_graph();
+        if ("investorGraph" in this.$refs) {
+          this.$refs.investorGraph.refresh_graph();
+        }
       },
       updatePageContext(to) {
         let title = `Deal #${to.params.deal_id}`;

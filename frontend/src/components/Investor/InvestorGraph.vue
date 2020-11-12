@@ -147,7 +147,6 @@
       // https://github.com/atomiks/tippyjs/issues/661
       let dummyDomEle = document.createElement("div");
 
-      content.innerHTML = `#${ele.data().id}`;
       ele.tippy = tippy(dummyDomEle, {
         trigger: "manual", // call show() and hide() yourself
         lazy: false, // needed for onCreate()
@@ -158,9 +157,11 @@
           let tipEl = document.createElement("div");
           tipEl.classList.add("g-tooltip");
           if (ele.data().dealNode) {
+            // tooltip content of deal node
             tipEl.classList.add("deal");
             tipEl.innerHTML = `Deal ${ele.data().name}`;
           } else {
+            // tooltip content of investor node
             let content = `<span class="name">${ele.data().name} (#${ele.data().id})</span>`;
             if ('country' in ele.data()) content += `${ele.data().country.name}, `;
             if ('classification' in ele.data() && classification_choices[ele.data().classification]) content += classification_choices[ele.data().classification];

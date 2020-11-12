@@ -1,4 +1,5 @@
 from apps.landmatrix.models import InvestorVentureInvolvement, Investor
+from apps.utils import arrayfield_choices_display
 
 
 class InvolvementNetwork:
@@ -68,6 +69,7 @@ class InvolvementNetwork:
     def _investor_dict_to_list(investor_dict):
         inv_country = investor_dict.get("country")
         inv_country_name = inv_country.get("name") if inv_country else ""
+        # TODO: this duplicates row generation in export.py
         return [
             investor_dict["id"],
             investor_dict["name"],
@@ -91,14 +93,26 @@ class InvolvementNetwork:
             x, y = self._yield_datasets(investor_dict, investor_dict["involvements"])
 
             ret_investors += [self._investor_dict_to_list(investor_dict)] + x
+            investment_type = "|".join(
+                arrayfield_choices_display(
+                    involvement["investment_type"],
+                    InvestorVentureInvolvement._meta.get_field(
+                        "investment_type"
+                    ).choices,
+                )
+            )
+            # TODO: this duplicates row generation in export.py
             ret_involvements += [
                 [
+                    involvement["id"],
                     tl_investor["id"],
                     tl_investor["name"],
                     involvement["investor"]["id"],
                     involvement["investor"]["name"],
-                    involvement["role"],
-                    involvement["investment_type"],
+                    dict(InvestorVentureInvolvement._meta.get_field("role").choices)[
+                        involvement["role"]
+                    ],
+                    investment_type,
                     involvement["percentage"],
                     involvement["loans_amount"],
                     involvement["loans_currency"],
