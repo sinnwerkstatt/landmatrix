@@ -1025,21 +1025,23 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.deal_size = self._calculate_deal_size()
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
-        self.recalculate_calculated_fields(save_after=False, *args, **kwargs)
-        super().save(*args, **kwargs)
+        self.recalculate_calculated_fields(*args, **kwargs)
+        # super().save is executed in `recalculate_calculated_fields` already!
 
-    def recalculate_calculated_fields(self, save_after=True, *args, **kwargs):
+    def recalculate_calculated_fields(self, *args, **kwargs):
         # With the help of signals these fields are recalculated on changes to:
         # Location, Contract, DataSource
         # as well as Investor and InvestorVentureInvolvement
         self.not_public_reason = self._calculate_public_state()
         self.is_public = self.not_public_reason == ""
-        self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
-        if save_after:
-            super().save(*args, **kwargs)
+
+        super().save(*args, **kwargs)
+
+        # save m2m after, we need the Deal to have an ID first. 🙄
+        self.top_investors.set(self._calculate_top_investors())
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)
