@@ -81,5 +81,11 @@ type Statistics {
     deals_public_polygons: Int
 }
 
+enum Subset {
+    UNFILTERED
+    ACTIVE
+    PUBLIC
+}
 
 scalar WebOfTransnationalDeals
+scalar CountryInvestments

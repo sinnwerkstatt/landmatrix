@@ -181,9 +181,8 @@
 
       <b-tab :title="$t('Actions')">
         <h4><i class="fa fa-download"></i> Download</h4>
-        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=xlsx`">XLSX</a><br>
+        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=xlsx`">XLSX</a><br />
         <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=csv`">CSV</a>
-
       </b-tab>
     </b-tabs>
   </div>
@@ -210,7 +209,7 @@
       DealHistory,
       DealSection,
       DealLocationsSection,
-      DealSubmodelSection
+      DealSubmodelSection,
     },
     data() {
       return {
@@ -218,7 +217,7 @@
         loading: false,
         deal_sections,
         deal_submodel_sections,
-        investor: { involvements: [] }
+        investor: { involvements: [] },
       };
     },
     apollo: {
@@ -227,9 +226,19 @@
         variables() {
           return {
             id: +this.deal_id,
-            version: +this.deal_version
+            version: +this.deal_version,
           };
-        }
+        },
+        update(data) {
+          if (!data.deal) {
+            this.$router.push({
+              name: "404",
+              params: [this.$router.currentRoute.path],
+              replace: true,
+            });
+          }
+          return data.deal;
+        },
       },
       investor: {
         query: gql`
@@ -243,15 +252,15 @@
         `,
         variables() {
           return {
-            id: +this.deal.operating_company.id
+            id: +this.deal.operating_company.id,
           };
         },
         skip() {
           if (!this.deal) return true;
           if (!this.deal.operating_company) return true;
           return !this.deal.operating_company.id;
-        }
-      }
+        },
+      },
     },
     computed: {
       not_public() {
@@ -266,15 +275,17 @@
         return null;
       },
       ...mapState({
-        formFields: (state) => state.formfields
-      })
+        formFields: (state) => state.formfields,
+      }),
     },
     methods: {
       getDealValue(fieldName, subModel) {
         return getFieldValue(this.deal, this.formFields, fieldName);
       },
       triggerInvestorGraphRefresh() {
-        this.$refs.investorGraph.refresh_graph();
+        if ("investorGraph" in this.$refs) {
+          this.$refs.investorGraph.refresh_graph();
+        }
       },
       updatePageContext(to) {
         let title = `Deal #${to.params.deal_id}`;
@@ -283,10 +294,10 @@
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
             { link: { name: "list_deals" }, name: "Deals" },
-            { name: title }
-          ]
+            { name: title },
+          ],
         });
-      }
+      },
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -296,7 +307,7 @@
     beforeRouteUpdate(to, from, next) {
       this.updatePageContext(to);
       next();
-    }
+    },
   };
 </script>
 <style lang="scss">

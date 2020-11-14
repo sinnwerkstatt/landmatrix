@@ -17,7 +17,4 @@ class Command(BaseCommand):
         for histvestor in histvestor_versions:
             print(f"\r> {i}/{total}", end="")
             i += 1
-            try:
-                Investor.objects.get(old_id=histvestor.id)
-            except Investor.DoesNotExist:
-                histvestor_to_investor(histvestor)
+            histvestor_to_investor(histvestor)

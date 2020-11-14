@@ -7,7 +7,6 @@ from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop, Deal
 
 
 def resolve_countries(obj: Any, info: GraphQLResolveInfo):
-
     countries = [
         {
             "id": c.id,
@@ -26,12 +25,6 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
 
 def resolve_regions(obj: Any, info: GraphQLResolveInfo):
     return Region.objects.all()
-    # regions = (
-    #     RegionPage.objects.filter(live=True, region__isnull=False)
-    #         .order_by("title")
-    #         .values("id", "region_id", "slug", "title")
-    # )
-    # return [{"id": r["id"], "name": r["title"], "slug": r["slug"]} for r in regions]
 
 
 def resolve_minerals(obj: Any, info: GraphQLResolveInfo):
@@ -47,7 +40,7 @@ def resolve_crops(obj: Any, info: GraphQLResolveInfo):
 
 
 def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
-    public_deals = Deal.objects.public().filter(status__in=(2, 3))
+    public_deals = Deal.objects.public()
     if country_id:
         public_deals = public_deals.filter(country_id=country_id)
     if region_id:

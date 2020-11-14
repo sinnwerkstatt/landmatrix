@@ -5,7 +5,6 @@ import reversion
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from reversion.models import Version
@@ -19,49 +18,22 @@ from apps.landmatrix.models.mixins import (
 )
 
 
-class DealManager(models.Manager):
+class DealQuerySet(models.QuerySet):
     def active(self):
-        return self.get_queryset().filter(status__in=(2, 3))
+        return self.filter(status__in=(2, 3))
 
     def public(self):
         return self.active().filter(is_public=True)
 
-    # TODO throw me out. | ROD: Really? - need to clarify!!
-    def visible(self, user=None):
-        if user and (user.is_staff or user.is_superuser):
-            return self.active()
-        return self.public()
+    def visible(self, user=None, subset="PUBLIC"):
+        if not user or not (user.is_staff or user.is_superuser):
+            return self.public()
 
-    # def with_public_status(self, user=None):
-    #     if not (user or user.is_staff or user.is_superuser):
-    #         return self.public()
-    #     qs = self.get_queryset()
-    #     return qs.annotate(
-    #         public_status=Case(
-    #             When(Q(confidential=True), then=Value("CONFIDENTIAL_FLAG")),
-    #             When(
-    #                 Q(country=None) | Q(country__high_income=True),
-    #                 then=Value("COUNTRY_PROBLEMS"),
-    #             ),
-    #             When(
-    #                 Q(datasources=None),
-    #                 then=Value("NO_DATASOURCES"),
-    #             ),
-    #             # When(
-    #             #     Q(operating_company=None),
-    #             #     then=Value("NO_OPERATING_COMPANY"),
-    #             # ),
-    #             # When(
-    #             #     Q(operating_company__is_actually_unknown=True)
-    #             #     & ~Q(
-    #             #         operating_company__investors__investor__is_actually_unknown=False
-    #             #     ),
-    #             #     then=Value("UNKNOWN_INVESTORS"),
-    #             # ),
-    #             default=Value("PUBLIC"),
-    #             output_field=CharField(),
-    #         )
-    #     )
+        if subset == "PUBLIC":
+            return self.public()
+        elif subset == "ACTIVE":
+            return self.active()
+        return self
 
 
 @reversion.register(
@@ -1026,7 +998,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     modified_at = models.DateTimeField()
     fully_updated_at = models.DateTimeField(null=True)
 
-    objects = DealManager()
+    objects = DealQuerySet.as_manager()
 
     def __str__(self):
         return f"#{self.id} in {self.country}"
@@ -1053,21 +1025,23 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.deal_size = self._calculate_deal_size()
         self.initiation_year = self._calculate_initiation_year()
         self.forest_concession = self._calculate_forest_concession()
-        self.recalculate_calculated_fields(save_after=False, *args, **kwargs)
-        super().save(*args, **kwargs)
+        self.recalculate_calculated_fields(*args, **kwargs)
+        # super().save is executed in `recalculate_calculated_fields` already!
 
-    def recalculate_calculated_fields(self, save_after=True, *args, **kwargs):
+    def recalculate_calculated_fields(self, *args, **kwargs):
         # With the help of signals these fields are recalculated on changes to:
         # Location, Contract, DataSource
         # as well as Investor and InvestorVentureInvolvement
         self.not_public_reason = self._calculate_public_state()
         self.is_public = self.not_public_reason == ""
-        self.top_investors.set(self._calculate_top_investors())
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
         self.cached_has_no_known_investor = self._has_no_known_investor()
-        if save_after:
-            super().save(*args, **kwargs)
+
+        super().save(*args, **kwargs)
+
+        # save m2m after, we need the Deal to have an ID first. 🙄
+        self.top_investors.set(self._calculate_top_investors())
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)

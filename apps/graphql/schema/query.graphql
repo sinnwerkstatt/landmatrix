@@ -3,14 +3,12 @@ type Query {
     user(id: Int!): User
     users(sort: String = "id"): [User]
 
-    deal(id: Int!, version: Int): Deal!
+    deal(id: Int!, version: Int): Deal
     deals(
         sort: String = "id",
         limit: Int = 20,
-
-        after: Int,
+        subset: Subset = PUBLIC,
         filters: [Filter],
-        public: Boolean
     ): [Deal]
     dealversions(
         filters: [Filter],
@@ -19,35 +17,26 @@ type Query {
         at_date: Date
     ): [DealVersion]
 
-
-# we probably dont need this
-#    locations(
-#        limit: Int = 300,
-#        filters: [Filter]
-#    ): [Location]
-
-    investor(id: Int!): Investor!
+    investor(id: Int!): Investor
     investors(
         sort: String = "id",
         limit: Int = 20,
-        filters: [Filter]
+        subset: Subset = PUBLIC,
+        filters: [Filter],
     ): [Investor]
-    involvements(
-        sort: String = "id",
-        limit: Int = 20,
-        filters: [Filter]
-    ): [Involvement]
-    investorversions(
-        filters: [Filter]
-    ): [InvestorVersion]
+#    involvements(
+#        limit: Int = 20,
+#        filters: [Filter]
+#    ): [Involvement]
+#    investorversions(
+#        filters: [Filter]
+#    ): [InvestorVersion]
 
     countries: [Country]
     regions: [Region]
     animals: [Animal]
     crops: [Crop]
     minerals: [Mineral]
-
-    aggregations: Aggregations
 
     formfields(language: String ="en"): FormFieldSet
 
@@ -56,6 +45,7 @@ type Query {
         region_id: Int
     ): Statistics
     transnational_deals: WebOfTransnationalDeals
+    country_investments(id: Int!): CountryInvestments
 
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]
