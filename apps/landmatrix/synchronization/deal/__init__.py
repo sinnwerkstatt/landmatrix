@@ -12,6 +12,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         raise AttributeError("just specify one")
     elif activity_pk:
         activity_versions = HistoricalActivity.objects.filter(pk=activity_pk)
+        activity_identifier = activity_versions[0]
     elif activity_identifier:
         activity_versions = HistoricalActivity.objects.filter(
             activity_identifier=activity_identifier
@@ -22,22 +23,19 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
     if not activity_versions:
         return
 
-    try:
-        deal = Deal.objects.get(id=activity_versions[0].activity_identifier)
-        is_new_deal = False
-    except Deal.DoesNotExist:
-        deal = Deal(id=activity_versions[0].activity_identifier)
-        is_new_deal = True
-
     for histivity in activity_versions:
+        try:
+            deal = Deal.objects.get(id=activity_identifier)
+            is_new_deal = False
+        except Deal.DoesNotExist:
+            deal = Deal(id=activity_identifier)
+            is_new_deal = True
+
         meta_activity = MetaActivity(histivity)
         with reversion.create_revision():
             if is_new_deal:
                 deal.created_at = histivity.history_date
-                is_new_deal = False
 
-            if deal.fully_updated:
-                deal.fully_updated_at = histivity.history_date
             deal.modified_at = histivity.history_date
 
             submodels.create_locations(deal, meta_activity.loc_groups)
@@ -57,8 +55,10 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             base.parse_remaining(deal, meta_activity.group_remaining)
 
             deal.save_revision(
-                histivity.fk_status_id,
-                histivity.history_date,
-                get_user_model().objects.filter(id=histivity.history_user_id).first(),
-                histivity.comment or "",
+                status=histivity.fk_status_id,
+                date=histivity.history_date,
+                user=get_user_model()
+                .objects.filter(id=histivity.history_user_id)
+                .first(),
+                comment=histivity.comment or "",
             )

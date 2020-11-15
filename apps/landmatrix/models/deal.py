@@ -1009,8 +1009,8 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     def save(self, custom_modification_date=None, *args, **kwargs):
         if custom_modification_date != "-SKIP-":
             self.modified_at = custom_modification_date or timezone.now()
-        if self.fully_updated:
-            self.fully_updated_at = timezone.now()
+            if self.fully_updated:
+                self.fully_updated_at = self.modified_at
 
         # Get current values from a lot of the JSONField attributes
         self.current_contract_size = self._get_current("contract_size")
@@ -1228,13 +1228,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         return ""
 
     def _has_no_known_investor(self) -> bool:
-        if not self.operating_company:
+        if not self.operating_company_id:
             return True
-        oc_unknown = self.operating_company.is_actually_unknown
+        oc = Investor.objects.get(id=self.operating_company_id)
+        oc_unknown = oc.is_actually_unknown
         oc_has_no_known_parents = not (
-            self.operating_company.investors.filter(
-                investor__is_actually_unknown=False
-            ).exists()
+            oc.investors.filter(investor__is_actually_unknown=False).exists()
         )
         return oc_unknown and oc_has_no_known_parents
 
