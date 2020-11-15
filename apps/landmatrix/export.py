@@ -65,7 +65,7 @@ deal_choices_fields = {
     ),
     "investor_classification": dict(Investor._meta.get_field("classification").choices),
 }
-deal_sub_fiels = {
+deal_sub_fields = {
     "top_investors": [
         "top_investors__id",
         "top_investors__name",
@@ -74,8 +74,8 @@ deal_sub_fiels = {
 }
 deal_flattened_fields = []
 for f in deal_fields:
-    if f in deal_sub_fiels:
-        for sf in deal_sub_fiels[f]:
+    if f in deal_sub_fields:
+        for sf in deal_sub_fields[f]:
             deal_flattened_fields.append(sf)
     else:
         deal_flattened_fields.append(f)
@@ -151,11 +151,11 @@ class DataDownload:
 
     def _single_deal(self, deal_id):
         qs = Deal.objects.filter(id=deal_id)
-        deal = Deal.objects.get(id=deal_id)
+        deal = qs[0]
         self.deals = [
-            self.deal_download_format(dict)
-            for dict in qs_values_to_dict(
-                qs, deal_flattened_fields, deal_sub_fiels.keys()
+            self.deal_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                qs, deal_flattened_fields, deal_sub_fields.keys()
             )
         ]
         self.investors = []
@@ -180,7 +180,7 @@ class DataDownload:
         self.deals = [
             self.deal_download_format(qs_dict)
             for qs_dict in qs_values_to_dict(
-                qs, deal_flattened_fields, deal_sub_fiels.keys()
+                qs, deal_flattened_fields, deal_sub_fields.keys()
             )
         ]
 

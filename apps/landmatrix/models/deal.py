@@ -1001,7 +1001,9 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     objects = DealQuerySet.as_manager()
 
     def __str__(self):
-        return f"#{self.id} in {self.country}"
+        if self.country:
+            return f"#{self.id} in {self.country}"
+        return f"#{self.id}"
 
     @transaction.atomic
     def save(self, custom_modification_date=None, *args, **kwargs):
@@ -1206,10 +1208,12 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if self.confidential:
             # 1. Flag "confidential"
             return "CONFIDENTIAL"
-        if not self.country:
+        if not self.country_id:
             # No Country
             return "NO_COUNTRY"
-        if self.country.high_income:
+        # the following Country query is intentional. it has to do with country not
+        # neccessarily being set, when country_id is set.
+        if Country.objects.get(id=self.country_id).high_income:
             # High Income Country
             return "HIGH_INCOME_COUNTRY"
         if not self.datasources.exists():
