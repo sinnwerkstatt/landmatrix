@@ -1231,11 +1231,11 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if not self.operating_company_id:
             return True
         oc = Investor.objects.get(id=self.operating_company_id)
-        oc_unknown = oc.is_actually_unknown
-        oc_has_no_known_parents = not (
-            oc.investors.filter(investor__is_actually_unknown=False).exists()
-        )
-        return oc_unknown and oc_has_no_known_parents
+        # if the Operating Company is known, we have a known investor and exit.
+        if not oc.is_actually_unknown:
+            return False
+        # only if no known Investor exists, we return True
+        return not oc.investors.filter(investor__is_actually_unknown=False).exists()
 
     def legacy_download_list_format(self) -> list:
         top_investors = "|".join(
