@@ -10,6 +10,7 @@ from apps.landmatrix.synchronization.helpers import _to_nullbool
 
 
 def create_locations(deal, groups):
+    # track former locations, throw out the ones that still exist now, delete the rest
     all_locations = set(c.id for c in deal.locations.all())
 
     ACCURACY_MAP = {
@@ -90,6 +91,7 @@ def create_locations(deal, groups):
 
 
 def create_contracts(deal, groups):
+    # track former contracts, throw out the ones that still exist now, delete the rest
     all_contracts = set(c.id for c in deal.contracts.all())
 
     for group_id, attrs in sorted(groups.items()):
@@ -124,7 +126,8 @@ def create_contracts(deal, groups):
 
 
 def create_data_sources(deal, groups):
-    all_ds = set(c.id for c in deal.datasources.all())
+    # track former datasources, throw out the ones that still exist now, delete the rest
+    all_old_ds = set(c.id for c in deal.datasources.all())
 
     TYPE_MAP = {
         None: None,
@@ -142,7 +145,7 @@ def create_data_sources(deal, groups):
     for group_id, attrs in sorted(groups.items()):
         try:
             data_source = DataSource.objects.get(deal=deal, old_group_id=group_id)
-            all_ds.remove(data_source.id)
+            all_old_ds.remove(data_source.id)
         except DataSource.DoesNotExist:
             data_source = DataSource(deal=deal, old_group_id=group_id)
 
@@ -195,5 +198,5 @@ def create_data_sources(deal, groups):
         )
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
         data_source.save()
-    if all_ds:
-        DataSource.objects.filter(id__in=all_ds).delete()
+    if all_old_ds:
+        DataSource.objects.filter(id__in=all_old_ds).delete()

@@ -1219,7 +1219,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         if not self.datasources.exists():
             # No DataSource
             return "NO_DATASOURCES"
-        if not self.operating_company:
+        if not self.operating_company_id:
             # 3. No operating company
             return "NO_OPERATING_COMPANY"
         if self._has_no_known_investor():
