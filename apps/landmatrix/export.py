@@ -173,7 +173,7 @@ class DataDownload:
             self.filters = json.loads(filters)
 
         qs = (
-            Deal.objects.visible(self.user)
+            Deal.objects.visible(self.user, subset="ACTIVE")
             .filter(parse_filters(self.filters))
             .order_by("id")
         )

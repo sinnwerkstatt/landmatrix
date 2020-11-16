@@ -349,7 +349,7 @@
           let user = this.$store.state.page.user;
           return {
             limit: 0,
-            subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
           };
         },
       },

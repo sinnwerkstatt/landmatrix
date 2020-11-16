@@ -26,7 +26,7 @@ class DealQuerySet(models.QuerySet):
         return self.active().filter(is_public=True)
 
     def visible(self, user=None, subset="PUBLIC"):
-        if not user or not (user.is_staff or user.is_superuser):
+        if not user or not user.is_authenticated:
             return self.public()
 
         if subset == "PUBLIC":

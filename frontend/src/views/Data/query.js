@@ -29,7 +29,7 @@ export const data_deal_query = {
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
-      subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
+      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };
@@ -50,7 +50,7 @@ export const data_deal_produce_query = {
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
-      subset: user && user.is_authenticated ? "UNFILTERED" : "ACTIVE",
+      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };

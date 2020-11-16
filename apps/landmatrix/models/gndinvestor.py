@@ -28,7 +28,7 @@ class InvestorQuerySet(models.QuerySet):
         if subset in ["ACTIVE", "PUBLIC"]:
             return self.active()
 
-        if not user or not (user.is_staff or user.is_superuser):
+        if not user or not user.is_authenticated:
             return self.active()
 
         # hand it out unfiltered.

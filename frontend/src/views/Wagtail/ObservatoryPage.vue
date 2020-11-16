@@ -117,8 +117,8 @@
           return this.locationFilter.length == 0;
         },
         query: gql`
-          query Deals($limit: Int!, $filters: [Filter]) {
-            deals(limit: $limit, filters: $filters) {
+          query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
+            deals(limit: $limit, subset: $subset, filters: $filters) {
               id
               deal_size
               country {
@@ -140,9 +140,11 @@
           }
         `,
         variables() {
+          let user = this.$store.state.page.user;
           return {
             limit: 0,
             filters: this.locationFilter,
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
           };
         },
       },

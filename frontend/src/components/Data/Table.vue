@@ -142,17 +142,19 @@
         },
         query() {
           return gql`
-            query Deals($limit: Int!, $filters: [Filter]) {
-              extraDealData:deals(limit: $limit, filters: $filters) {
+            query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
+              extraDealData:deals(limit: $limit, subset: $subset, filters: $filters) {
                 id ${this.extraDealFields.join(" ")}
               }
             }
           `;
         },
         variables() {
+          let user = this.$store.state.page.user;
           return {
             limit: 0,
-            filters: this.$store.getters.filtersForGQL
+            filters: this.$store.getters.filtersForGQL,
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
           };
         }
       },

@@ -44,9 +44,10 @@
     apollo: {
       modifications: {
         query: gql`
-          query Deals($limit: Int!, $filters: [Filter]) {
+          query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
             modifications: deals(
               sort: "-modified_at"
+              subset: $subset
               limit: $limit
               filters: $filters
             ) {
@@ -61,9 +62,11 @@
         `,
         update: (data) => data.deals,
         variables() {
+          let user = this.$store.state.page.user;
           return {
             limit: +this.value.limit,
             filters: this.current_region_or_country,
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
           };
         },
       },
