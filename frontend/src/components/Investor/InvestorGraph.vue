@@ -163,7 +163,7 @@
           } else {
             // tooltip content of investor node
             let content = `<span class="name">${ele.data().name} (#${ele.data().id})</span>`;
-            if ('country' in ele.data()) content += `${ele.data().country.name}, `;
+            if ('country' in ele.data() && ele.data().country) content += `${ele.data().country.name}, `;
             if ('classification' in ele.data() && classification_choices[ele.data().classification]) content += classification_choices[ele.data().classification];
             tipEl.innerHTML = content;
           }
