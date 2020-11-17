@@ -95,13 +95,13 @@ class Investor(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin):
         (2, _("Live")),
         (3, _("Updated")),
         (4, _("Deleted")),
-        (5, _("Rejected")),
-        (6, _("To Delete?")),
     )
     DRAFT_STATUS_CHOICES = (
-        (1, "Draft"),
-        (2, "Review"),
-        (3, "Activation"),
+        (1, _("Draft")),
+        (2, _("Review")),
+        (3, _("Activation")),
+        (4, _("Rejected")),
+        (5, _("To Delete")),
     )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(

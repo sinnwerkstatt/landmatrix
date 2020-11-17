@@ -12,7 +12,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         raise AttributeError("just specify one")
     elif activity_pk:
         activity_versions = HistoricalActivity.objects.filter(pk=activity_pk)
-        activity_identifier = activity_versions[0]
+        activity_identifier = activity_versions[0].activity_identifier
     elif activity_identifier:
         activity_versions = HistoricalActivity.objects.filter(
             activity_identifier=activity_identifier
