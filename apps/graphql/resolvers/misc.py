@@ -18,7 +18,7 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
             "short_description": c.short_description,
             "deals": c.deal_set.all(),
         }
-        for c in Country.objects.all()
+        for c in Country.objects.all().prefetch_related("deals")
     ]
     return countries
 
