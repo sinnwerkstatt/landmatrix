@@ -59,6 +59,8 @@ export const mapModule = {
         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
         params: {
           layers: "globcover_2009",
+          format: "image/png",
+          transparent: true,
           attribution:
             'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
         },
@@ -82,6 +84,8 @@ export const mapModule = {
         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
         params: {
           layers: "gl_cropland",
+          format: "image/png",
+          transparent: true,
           attribution:
             'Source: <a href="http://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
         },
