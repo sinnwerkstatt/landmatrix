@@ -67,21 +67,18 @@ def test_all_status_options():
     assert versions[0].field_dict["id"] == ID
     assert versions[0].field_dict["status"] == deal_live_only.STATUS_LIVE
 
-    # Stati: Deleted, Rejected, To Delete
-    for status in [4, 5, 6]:
-        hact = HistoricalActivity(activity_identifier=status, fk_status_id=status)
-        hact.save(update_elasticsearch=False)
-        hact.trigger_gnd()
-        assert (
-            HistoricalActivity.objects.filter(activity_identifier=status).count() == 1
-        )
+    ID = 4  # Deleted
+    live_historical_activity = HistoricalActivity.objects.get(activity_identifier=2)
+    live_historical_activity.fk_status_id = ID
+    live_historical_activity.save(update_elasticsearch=False)
+    live_historical_activity.trigger_gnd()
 
-        deal_live_only = Deal.objects.get(id=status)
-        assert deal_live_only.status == status
-        versions = Version.objects.get_for_object(deal_live_only)
-        assert len(versions) == 1
-        assert versions[0].field_dict["id"] == status
-        assert versions[0].field_dict["status"] == status
+    deal = Deal.objects.get(id=2)
+    assert deal.status == deal.STATUS_DELETED
+    versions = Version.objects.get_for_object(deal)
+    assert len(versions) == 2
+    assert versions[0].field_dict["id"] == 2
+    assert versions[0].field_dict["status"] == ID
 
 
 @pytest.mark.django_db
@@ -138,6 +135,50 @@ def test_updated_activity():
     assert versions[1].field_dict["id"] == ID
     assert versions[1].field_dict["status"] == deal.STATUS_LIVE
     assert versions[1].field_dict["draft_status"] == deal.DRAFT_STATUS_DRAFT
+
+    # and create draft and reject it
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
+    deal.refresh_from_db()
+    versions = Version.objects.get_for_object(deal)
+    assert len(versions) == 5
+    assert versions[0].field_dict["id"] == ID
+    assert versions[0].field_dict["status"] == deal.STATUS_UPDATED
+    assert versions[0].field_dict["draft_status"] == deal.DRAFT_STATUS_DRAFT
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=5)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
+    deal.refresh_from_db()
+    versions = Version.objects.get_for_object(deal)
+    assert len(versions) == 6
+    assert versions[0].field_dict["id"] == ID
+    assert versions[0].field_dict["status"] == deal.STATUS_UPDATED
+    assert versions[0].field_dict["draft_status"] == deal.DRAFT_STATUS_REJECTED
+
+    # mark hact as "to delete"
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=6)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
+    deal.refresh_from_db()
+    versions = Version.objects.get_for_object(deal)
+    assert len(versions) == 7
+    assert deal.status == deal.STATUS_UPDATED
+    assert versions[0].field_dict["id"] == ID
+    assert versions[0].field_dict["status"] == deal.STATUS_UPDATED
+    assert versions[0].field_dict["draft_status"] == deal.DRAFT_STATUS_TO_DELETE
+
+    # and delete it
+    hact = HistoricalActivity(activity_identifier=ID, fk_status_id=4)
+    hact.save(update_elasticsearch=False)
+    hact.trigger_gnd()
+    deal.refresh_from_db()
+    versions = Version.objects.get_for_object(deal)
+    assert len(versions) == 8
+    assert deal.status == deal.STATUS_DELETED
+    assert versions[0].field_dict["id"] == ID
+    assert versions[0].field_dict["status"] == deal.STATUS_DELETED
+    assert versions[0].field_dict["draft_status"] is None
 
 
 @pytest.mark.django_db

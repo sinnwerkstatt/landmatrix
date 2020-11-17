@@ -28,12 +28,12 @@ class ReversionSaveMixin:
     STATUS_LIVE = 2
     STATUS_UPDATED = 3
     STATUS_DELETED = 4
-    STATUS_REJECTED = 5
-    STATUS_TO_DELETE = 6
 
     DRAFT_STATUS_DRAFT = 1
     DRAFT_STATUS_REVIEW = 2
     DRAFT_STATUS_ACTIVATION = 3
+    DRAFT_STATUS_REJECTED = 4
+    DRAFT_STATUS_TO_DELETE = 5
 
     def save_revision(self, status, date=None, user=None, comment=None):
         try:
@@ -41,24 +41,45 @@ class ReversionSaveMixin:
         except self.__class__.DoesNotExist:
             current_model = None
 
-        # if the incoming status is "DRAFT", definitely set the new_draft_status
-        new_draft_status = 1 if (status == self.STATUS_DRAFT) else None
-
-        # the new_status should be the committing status, but look out for special conditions below
-        new_status = status
-        # if this is a new Model and the status is already "overwritten", just set it to "live"
-        if not current_model and status == self.STATUS_UPDATED:
-            new_status = self.STATUS_LIVE
-        # but if we already have a model!,
-        if current_model:
-            # and the committing status is "Draft":
-            if status == self.STATUS_DRAFT:
-                # don't change the new_status, set it to the old status.
+        # "Pending"
+        if status == 1:
+            if current_model:
                 new_status = current_model.status
-            # or if the current status and the committing status is Live
-            elif current_model.status == status == self.STATUS_LIVE:
-                # set it to updated
+            else:
+                new_status = self.STATUS_DRAFT
+            new_draft_status = self.DRAFT_STATUS_DRAFT
+
+        # "Active" and "Overwritten"
+        elif status in [2, 3]:
+            if current_model and current_model.status != self.STATUS_DRAFT:
                 new_status = self.STATUS_UPDATED
+            else:
+                new_status = self.STATUS_LIVE
+            new_draft_status = None
+
+        # "Deleted"
+        elif status == 4:
+            new_status = self.STATUS_DELETED
+            new_draft_status = None
+
+        # "Rejected"
+        elif status == 5:
+            if current_model:
+                new_status = current_model.status
+            else:
+                new_status = self.STATUS_DRAFT
+            new_draft_status = self.DRAFT_STATUS_REJECTED
+
+        # "To Delete"
+        elif status == 6:
+            if current_model:
+                new_status = current_model.status
+            else:
+                new_status = self.STATUS_DRAFT
+            new_draft_status = self.DRAFT_STATUS_TO_DELETE
+
+        else:
+            raise Exception("status must be between 1 and 6")
 
         with reversion.create_revision():
             self.status = new_status
@@ -75,11 +96,11 @@ class ReversionSaveMixin:
             # save the actual model
             # if: there is not a current_model
             # or: there is a current model but it's a draft
-            # or: the new status is not DRAFT
+            # or: the new status is Live, Updated or Deleted
             if (
                 not current_model
                 or (current_model.status == self.STATUS_DRAFT)
-                or not status == self.STATUS_DRAFT
+                or status in [2, 3, 4]
             ):
                 self.save(custom_modification_date=date)
             # otherwise update the draft_status of the current_model
