@@ -7,78 +7,82 @@ import {
 import dayjs from "dayjs";
 
 export const getDealValue = function (component, deal, fieldName) {
-  switch (fieldName) {
-    case "modified_at":
-    case "created_at":
-    case "fully_updated_at": {
-      let date = deal[fieldName];
-      return date ? dayjs(date).format("YYYY-MM-DD") : "";
-    }
-    case "id": {
-      let location = { name: "deal_detail", params: { deal_id: deal.id } };
-      let url = component.$router.resolve(location).href;
-      return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
-    }
-    case "deal_size":
-      return deal.deal_size ? deal.deal_size.toLocaleString() + " ha" : "";
-    case "intended_size":
-      return deal.intended_size ? deal.intended_size.toLocaleString() + " ha" : "";
+  if (fieldName in deal) {
+    switch (fieldName) {
+      case "modified_at":
+      case "created_at":
+      case "fully_updated_at": {
+        let date = deal[fieldName];
+        return date ? dayjs(date).format("YYYY-MM-DD") : "";
+      }
+      case "id": {
+        let location = { name: "deal_detail", params: { deal_id: deal.id } };
+        let url = component.$router.resolve(location).href;
+        return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
+      }
+      case "deal_size":
+        return deal.deal_size ? deal.deal_size.toLocaleString() + " ha" : "";
+      case "intended_size":
+        return deal.intended_size ? deal.intended_size.toLocaleString() + " ha" : "";
 
-    case "operating_company": {
-      let investor_id = deal.operating_company.id;
-      if (investor_id) {
-        let investor = component.$store.getters.getInvestor(investor_id);
-        if (investor) {
-          let location = {
-            name: "investor_detail",
-            params: { investor_id: investor_id },
-          };
-          let url = component.$router.resolve(location).href;
-          return `<a target="_blank" href="${url}">${investor.name}</a>`;
+      case "operating_company": {
+        let investor_id = deal.operating_company.id;
+        if (investor_id) {
+          let investor = component.$store.getters.getInvestor(investor_id);
+          if (investor) {
+            let location = {
+              name: "investor_detail",
+              params: { investor_id: investor_id },
+            };
+            let url = component.$router.resolve(location).href;
+            return `<a target="_blank" href="${url}">${investor.name}</a>`;
+          }
         }
+        return "";
       }
-      return "";
-    }
 
-    case "country": {
-      let country = component.$store.getters.getCountryOrRegion({
-        type: "country",
-        id: deal.country.id,
-      });
-      return country ? country.name : "";
-    }
-    case "intention_of_investment": {
-      let intentions;
-      if (deal.current_intention_of_investment) {
-        intentions = deal.current_intention_of_investment
-          .map((ioi) => {
-            let [intention, icon] = intention_of_investment_map[ioi];
-            return `<span class="ioi-label"><i class="${icon}"></i> ${component.$t(
-              intention
-            )}</span>`;
-          })
-          .join(" ");
+      case "country": {
+        let country = component.$store.getters.getCountryOrRegion({
+          type: "country",
+          id: deal.country.id,
+        });
+        return country ? country.name : "";
       }
-      return intentions;
-    }
-    case "current_negotiation_status": {
-      //TODO: Why is there deals with current_negotiation_status === null?
-      let [neg_status, neg_status_group] = ["UNDEFINED", null];
-      if (deal.current_negotiation_status) {
-        [neg_status, neg_status_group] = negotiation_status_map[
-          deal.current_negotiation_status
-        ];
+      case "intention_of_investment": {
+        let intentions;
+        if (deal.current_intention_of_investment) {
+          intentions = deal.current_intention_of_investment
+            .map((ioi) => {
+              let [intention, icon] = intention_of_investment_map[ioi];
+              return `<span class="ioi-label"><i class="${icon}"></i> ${component.$t(
+                intention
+              )}</span>`;
+            })
+            .join(" ");
+        }
+        return intentions;
       }
-      return neg_status_group ? `${neg_status_group} (${neg_status})` : neg_status;
+      case "current_negotiation_status": {
+        //TODO: Why is there deals with current_negotiation_status === null?
+        let [neg_status, neg_status_group] = ["UNDEFINED", null];
+        if (deal.current_negotiation_status) {
+          [neg_status, neg_status_group] = negotiation_status_map[
+            deal.current_negotiation_status
+          ];
+        }
+        return neg_status_group ? `${neg_status_group} (${neg_status})` : neg_status;
+      }
+      case "current_implementation_status": {
+        return deal.current_implementation_status
+          ? implementation_status_choices[deal.current_implementation_status]
+          : "None";
+      }
+      default: {
+        return deal[fieldName];
+      }
     }
-    case "current_implementation_status": {
-      return deal.current_implementation_status
-        ? implementation_status_choices[deal.current_implementation_status]
-        : "None";
-    }
-    default: {
-      return deal[fieldName];
-    }
+  } else {
+    return "";
   }
 };
 
