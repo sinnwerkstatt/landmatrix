@@ -99,7 +99,7 @@
         } else if (this.$route.name === "list_investors") {
           return this.label.investors;
         } else {
-          return this.$t("Data");
+          return this.$t("Table");
         }
       },
     },

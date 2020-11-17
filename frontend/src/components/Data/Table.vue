@@ -83,12 +83,13 @@
     "current_intention_of_investment",
     "current_negotiation_status",
     "current_implementation_status",
-    "locations"
+    "locations",
+    "fully_updated_at"
   ];
 
   const DEFAULT_DISPLAY_FIELDS = {
     deal: [
-      "modified_at",
+      "fully_updated_at",
       "id",
       "country",
       "intention_of_investment",
@@ -130,7 +131,7 @@
         page: 1,
         pageSize: 50,
         rows: [],
-        sortField: "modified_at",
+        sortField: "fully_updated_at",
         sortAscending: false
       };
     },
@@ -376,7 +377,10 @@
         }
       },
       targetModel() {
-        this.sortField = "modified_at";
+        if (this.targetModel === "investor") {
+          this.sortField = "modified_at";
+        }
+        this.sortField = "fully_updated_at";
         this.sortAscending = false;
       }
     }

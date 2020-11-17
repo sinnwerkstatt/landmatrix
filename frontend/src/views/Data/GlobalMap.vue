@@ -14,19 +14,19 @@
       </template>
       <template v-slot:FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse title="Displayed Data" :initExpanded="true">
+        <FilterCollapse :title="$t('Displayed data')" :initExpanded="true">
           <b-form-group>
             <b-form-radio
-              v-model="displayHectares"
-              name="displayHectaresRadio"
-              :value="false"
+              v-model="displayDealsCount"
+              name="displayDealsCountRadio"
+              :value="true"
             >
-              {{ $t("Number of deals") }}
+              {{ $t("Number of deal locations") }}
             </b-form-radio>
             <b-form-radio
-              v-model="displayHectares"
-              name="displayHectaresRadio"
-              :value="true"
+              v-model="displayDealsCount"
+              name="displayDealsCountRadio"
+              :value="false"
             >
               {{ $t("Area (ha)") }}
             </b-form-radio>
@@ -61,6 +61,8 @@
   import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { data_deal_query } from "./query";
+  import { getDealValue } from "../../components/Data/table_mappings";
+  import { getFieldValue } from "../../components/Fields/fieldHelpers";
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -87,7 +89,6 @@
         bigmap: null,
         current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
         featureGroup: L.featureGroup(),
-        displayHectares: false,
         region_coords: {
           2: [6.06433, 17.082249],
           9: [-22.7359, 140.0188],
@@ -100,6 +101,14 @@
       };
     },
     computed: {
+      displayDealsCount: {
+        get () {
+          return this.$store.state.map.displayDealsCount;
+        },
+        set (value) {
+          this.$store.commit('setDisplayDealsCount', value)
+        }
+      },
       visibleLayer: {
         get() {
           return this.$store.state.map.visibleLayer;
@@ -109,6 +118,7 @@
         },
       },
       ...mapState({
+        formfields: (state) => state.formfields,
         tileLayers: (state) => state.map.layers,
         region_id: (state) => state.filters.filters.region_id,
         country_id: (state) => state.filters.filters.country_id,
@@ -132,10 +142,20 @@
                   marker.country_id = deal.country.id;
                 }
                 // marker.on("click", (e) => console.log(e.target.deal_id));
-                let popupHtml = `
-                  <h2>Deal #${deal.id}</h2>
-                  <a href="/newdeal/deal/${deal.id}">More details</a>
-                `;
+                let popupHtml = `<div class="deal-popup">
+                  <h3>Deal #${deal.id}</h3>
+                  <div class="deal-summary">
+                    <dl>
+                      <dt>Spatial accuracy</dt><dd>${getFieldValue(loc, this.formfields,'level_of_accuracy', "location")}</dd>
+                      <dt>Intention of investment</dt><dd>${getFieldValue(deal, this.formfields, "current_intention_of_investment")}</dd>
+                      <dt>Deal size</dt><dd>${getDealValue(this, deal, "deal_size")}</dd>
+                      <dt>Operating company</dt><dd>
+                         ${getDealValue(this, deal,"operating_company")}
+                      </dd>
+                    </dl>
+                  </div>
+                  <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${deal.id}">More details</a>
+                </div>`;
                 marker.bindPopup(popupHtml);
                 markers_list.push(marker);
               }
@@ -158,7 +178,7 @@
       current_zoom() {
         this.refreshMap();
       },
-      displayHectares() {
+      "$store.state.map.displayDealsCount": function() {
         this.refreshMap();
       },
       "$store.state.page.regions": function () {
@@ -219,12 +239,12 @@
         circle_elem.append(hoverlabel);
 
         let factor;
-        if (this.displayHectares) {
+        if (this.displayDealsCount) {
+          hoverlabel.innerHTML = `<b>${size}</b> locations`;
+          factor = Math.max(Math.log(size) * 16, 40);
+        } else {
           hoverlabel.innerHTML = `${size} hectares`;
           factor = Math.max(Math.log(size) * 6, 40);
-        } else {
-          hoverlabel.innerHTML = `<b>${size}</b> deal locations`;
-          factor = Math.max(Math.log(size) * 16, 40);
         }
 
         Object.assign(circle_elem.style, {
@@ -256,12 +276,12 @@
                 });
 
                 let xval;
-                if (this.displayHectares) {
+                if (this.displayDealsCount) {
+                  xval = val.length;
+                } else {
                   xval = val.reduce((x, y) => {
                     return { deal_size: x.deal_size + y.deal_size };
                   }).deal_size;
-                } else {
-                  xval = val.length;
                 }
 
                 this.featureGroup.addLayer(circle);
@@ -328,6 +348,8 @@
   };
 </script>
 <style lang="scss">
+  @import "../../scss/colors";
+
   .landmatrix-custom-circle {
     opacity: 0.9;
     font-size: 12px;
@@ -377,6 +399,19 @@
       div {
         background-color: rgba(252, 148, 31, 0.8);
       }
+    }
+  }
+
+  .deal-popup {
+    .deal-summary {
+      color: $lm_dark;
+      a {
+        color: $lm_investor;
+      }
+    }
+    a.btn-primary {
+      margin-top: 1em;
+      color: white;
     }
   }
 </style>

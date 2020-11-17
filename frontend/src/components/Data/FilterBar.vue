@@ -109,7 +109,7 @@
         </FilterCollapse>
 
         <FilterCollapse
-          :title="$t('Nature of Deal')"
+          :title="$t('Nature of deal')"
           :clearable="nature_of_deal.length > 0"
           @click="nature_of_deal = []"
         >
@@ -215,7 +215,7 @@
         </FilterCollapse>
 
         <FilterCollapse
-          :title="$t('Intention of Investment')"
+          :title="$t('Intention of investment')"
           :clearable="intention_of_investment.length > 0"
           @click="intention_of_investment = []"
         >
@@ -286,7 +286,7 @@
           </b-form-group>
         </FilterCollapse>
         <FilterCollapse
-          :title="$t('Forest Concession')"
+          :title="$t('Forest concession')"
           :clearable="forest_concession !== null"
           @click="forest_concession = null"
         >
@@ -345,6 +345,10 @@
             }
           }
         `,
+        update(data) {
+          this.$store.commit("setInvestors", data.investors);
+          return data.investors;
+        },
         variables() {
           let user = this.$store.state.page.user;
           return {

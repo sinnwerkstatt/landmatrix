@@ -4,6 +4,7 @@ export const mapModule = {
   state: () => ({
     showFilterOverlay: true,
     showScopeOverlay: true,
+    displayDealsCount: true,
     visibleLayer: "ThunderForest",
     layers: [
       {
@@ -62,6 +63,9 @@ export const mapModule = {
     },
     showScopeOverlay(state, payload) {
       state.showScopeOverlay = payload;
+    },
+    setDisplayDealsCount(state, payload) {
+      state.displayDealsCount = payload;
     },
   },
   actions: {

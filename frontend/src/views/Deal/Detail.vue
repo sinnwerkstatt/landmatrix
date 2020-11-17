@@ -82,6 +82,7 @@
         :title="deal_sections.investor_info.label"
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
+        :sections="deal_sections.investor_info.subsections"
         :readonly="true"
         @activated="triggerInvestorGraphRefresh"
       >

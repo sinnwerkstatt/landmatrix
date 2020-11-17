@@ -11,7 +11,8 @@ export const getDealValue = function (component, deal, fieldName) {
     case "modified_at":
     case "created_at":
     case "fully_updated_at": {
-      return dayjs(deal[fieldName]).format("YYYY-MM-DD");
+      let date = deal[fieldName];
+      return date ? dayjs(date).format("YYYY-MM-DD") : "";
     }
     case "id": {
       let location = { name: "deal_detail", params: { deal_id: deal.id } };
@@ -19,9 +20,25 @@ export const getDealValue = function (component, deal, fieldName) {
       return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
     }
     case "deal_size":
-      return deal.deal_size.toLocaleString();
+      return deal.deal_size ? deal.deal_size.toLocaleString() + " ha" : "";
     case "intended_size":
-      return deal.intended_size ? deal.intended_size.toLocaleString() : null;
+      return deal.intended_size ? deal.intended_size.toLocaleString() + " ha" : "";
+
+    case "operating_company": {
+      let investor_id = deal.operating_company.id;
+      if (investor_id) {
+        let investor = component.$store.getters.getInvestor(investor_id);
+        if (investor) {
+          let location = {
+            name: "investor_detail",
+            params: { investor_id: investor_id },
+          };
+          let url = component.$router.resolve(location).href;
+          return `<a target="_blank" href="${url}">${investor.name}</a>`;
+        }
+      }
+      return "";
+    }
 
     case "country": {
       let country = component.$store.getters.getCountryOrRegion({
@@ -69,7 +86,8 @@ export const getInvestorValue = function (component, investor, fieldName) {
   switch (fieldName) {
     case "modified_at":
     case "created_at": {
-      return dayjs(investor[fieldName]).format("YYYY-MM-DD");
+      let date = investor[fieldName];
+      return date ? dayjs(date).format("YYYY-MM-DD") : "";
     }
     case "id": {
       let location = { name: "investor_detail", params: { investor_id: investor.id } };
@@ -102,10 +120,11 @@ export const getInvestorValue = function (component, investor, fieldName) {
 };
 
 export const dealExtraFieldLabels = {
-  modified_at: "Updated",
+  modified_at: "Last modified",
+  fully_updated_at: "Last update",
 };
 
 export const investorExtraFieldLabels = {
-  modified_at: "Updated",
+  modified_at: "Last modified",
   deals: "Deals",
 };

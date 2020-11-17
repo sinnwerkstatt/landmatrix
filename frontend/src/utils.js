@@ -40,8 +40,8 @@ export function sortAnything(list, sortField, sortAscending) {
     let fieldx = sortAscending ? a[sortField] : b[sortField];
     let fieldy = sortAscending ? b[sortField] : a[sortField];
 
-    if (fieldy === null) return -1;
-    if (fieldx === null) return 1;
+    if (fieldx === null) return -1;
+    if (fieldy === null) return 1;
 
     switch (typeof fieldx) {
       case "number":

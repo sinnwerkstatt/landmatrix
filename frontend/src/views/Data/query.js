@@ -21,6 +21,10 @@ export const data_deal_query = {
           point
           level_of_accuracy
         }
+        fully_updated_at # for table listing
+        operating_company {
+          id
+        }
       }
     }
   `,

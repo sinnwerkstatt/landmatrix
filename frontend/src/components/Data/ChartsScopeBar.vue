@@ -11,14 +11,14 @@
       <div class="toggle-buttons">
         <a
           href=""
-          @click.prevent="showDealCount = true"
-          :class="{ active: showDealCount }"
+          @click.prevent="displayDealsCount = true"
+          :class="{ active: displayDealsCount }"
           >No. of deals</a
         >
         <a
           href=""
-          @click.prevent="showDealCount = false"
-          :class="{ active: !showDealCount }"
+          @click.prevent="displayDealsCount = false"
+          :class="{ active: !displayDealsCount }"
           >Deal size</a
         >
       </div>
@@ -66,7 +66,6 @@
     components: { ScopeBarContainer, StatusPieChart },
     data() {
       return {
-        showDealCount: true,
         deals: [],
         dealsWithProduceInfo: [],
       };
@@ -76,6 +75,14 @@
       dealsWithProduceInfo: data_deal_produce_query,
     },
     computed: {
+      displayDealsCount: {
+        get () {
+          return this.$store.state.map.displayDealsCount;
+        },
+        set (value) {
+          this.$store.commit('setDisplayDealsCount', value)
+        }
+      },
       currentItem() {
         let item = {
           name: "Global",
@@ -109,7 +116,7 @@
         return item;
       },
       totalCount() {
-        if (this.showDealCount) {
+        if (this.displayDealsCount) {
           return numeral(this.deals.length).format("0,0");
         } else {
           return `${numeral(sum(this.deals, "deal_size")).format("0,0")} ha`;
@@ -119,7 +126,7 @@
         return prepareNegotianStatusData(this.deals);
       },
       negotiationStatusData() {
-        if (this.showDealCount) {
+        if (this.displayDealsCount) {
           return this.dealsFilteredByNegStatus.map((d) => {
             return { value: d.count, unit: "deals", ...d };
           });
@@ -146,10 +153,10 @@
             data.push({
               label: label,
               color: colors[i],
-              value: this.showDealCount
+              value: this.displayDealsCount
                 ? filteredDeals.length
                 : sum(filteredDeals, "deal_size"),
-              unit: this.showDealCount ? "deals" : "ha",
+              unit: this.displayDealsCount ? "deals" : "ha",
             });
             i++;
           }
