@@ -53,6 +53,129 @@ export const mapModule = {
           'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
       },
     ],
+    contextLayers: [
+      {
+        name: "Land Cover",
+        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+        params: {
+          layers: "globcover_2009",
+          attribution:
+            'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
+        },
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "globcover_2009",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lo/wms?${sparams}`;
+        },
+      },
+      {
+        name: "Global Cropland",
+        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+        params: {
+          layers: "gl_cropland",
+          attribution:
+            'Source: <a href="http://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
+        },
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "gl_cropland",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lo/wms?${sparams}`;
+        },
+      },
+      {
+        name: "Oil palm concessions Indonesia",
+        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
+        params: {
+          layers: "ind_oil_palm_concessions",
+          format: "image/png",
+          transparent: true,
+          attribution:
+            'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>',
+        },
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "ind_oil_palm_concessions",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${sparams}`;
+        },
+      },
+      {
+        name: "Key biodiversity areas, Philippines",
+        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
+        params: {
+          layers: "ph_key_biodiversity_areas",
+          format: "image/png",
+          transparent: true,
+          attribution:
+            'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
+        },
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "ph_key_biodiversity_areas",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${sparams}`;
+        },
+      },
+      {
+        name: "Protected areas, Philippines",
+        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
+        params: {
+          layers: "ph_protected_areas",
+          format: "image/png",
+          transparent: true,
+          attribution:
+            'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
+        },
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "ph_protected_areas",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${sparams}`;
+        },
+      },
+    ],
   }),
   mutations: {
     setCurrentLayer(state, layer) {

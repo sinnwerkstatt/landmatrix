@@ -51,7 +51,6 @@
     shadowUrl: require("/static/images/marker-shadow.png"),
   });
 
-  const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
   export default {
     name: "BigMap",
     components: {

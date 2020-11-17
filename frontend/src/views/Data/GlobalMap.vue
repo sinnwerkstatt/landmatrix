@@ -44,6 +44,22 @@
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
+        <FilterCollapse :title="$t('Context layers')">
+          <b-form-group>
+            <b-form-checkbox
+              v-model="visibleContextLayers"
+              name="contextLayerSelect"
+              :value="layer"
+              v-for="layer in contextLayers"
+            >
+              {{ layer.name }}
+              <img
+                v-if="visibleContextLayers.includes(layer)"
+                :src="layer.legendUrlFunction()"
+              />
+            </b-form-checkbox>
+          </b-form-group>
+        </FilterCollapse>
       </template>
     </DataContainer>
   </div>
@@ -85,6 +101,8 @@
           zoomControl: false,
           gestureHandling: false,
         },
+        visibleContextLayers: [],
+        contextLayersLayerGroup: L.layerGroup(),
         deals: [],
         bigmap: null,
         current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
@@ -102,12 +120,12 @@
     },
     computed: {
       displayDealsCount: {
-        get () {
+        get() {
           return this.$store.state.map.displayDealsCount;
         },
-        set (value) {
-          this.$store.commit('setDisplayDealsCount', value)
-        }
+        set(value) {
+          this.$store.commit("setDisplayDealsCount", value);
+        },
       },
       visibleLayer: {
         get() {
@@ -120,6 +138,7 @@
       ...mapState({
         formfields: (state) => state.formfields,
         tileLayers: (state) => state.map.layers,
+        contextLayers: (state) => state.map.contextLayers,
         region_id: (state) => state.filters.filters.region_id,
         country_id: (state) => state.filters.filters.country_id,
         country_coords: (state) => {
@@ -146,15 +165,30 @@
                   <h3>Deal #${deal.id}</h3>
                   <div class="deal-summary">
                     <dl>
-                      <dt>Spatial accuracy</dt><dd>${getFieldValue(loc, this.formfields,'level_of_accuracy', "location")}</dd>
-                      <dt>Intention of investment</dt><dd>${getFieldValue(deal, this.formfields, "current_intention_of_investment")}</dd>
-                      <dt>Deal size</dt><dd>${getDealValue(this, deal, "deal_size")}</dd>
+                      <dt>Spatial accuracy</dt><dd>${getFieldValue(
+                        loc,
+                        this.formfields,
+                        "level_of_accuracy",
+                        "location"
+                      )}</dd>
+                      <dt>Intention of investment</dt><dd>${getFieldValue(
+                        deal,
+                        this.formfields,
+                        "current_intention_of_investment"
+                      )}</dd>
+                      <dt>Deal size</dt><dd>${getDealValue(
+                        this,
+                        deal,
+                        "deal_size"
+                      )}</dd>
                       <dt>Operating company</dt><dd>
-                         ${getDealValue(this, deal,"operating_company")}
+                         ${getDealValue(this, deal, "operating_company")}
                       </dd>
                     </dl>
                   </div>
-                  <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${deal.id}">More details</a>
+                  <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${
+                    deal.id
+                  }">More details</a>
                 </div>`;
                 marker.bindPopup(popupHtml);
                 markers_list.push(marker);
@@ -178,8 +212,19 @@
       current_zoom() {
         this.refreshMap();
       },
-      "$store.state.map.displayDealsCount": function() {
+      "$store.state.map.displayDealsCount": function () {
         this.refreshMap();
+      },
+      visibleContextLayers() {
+        this.contextLayersLayerGroup.clearLayers();
+        this.visibleContextLayers.forEach((layer) => {
+          let ctxlayer = L.tileLayer.wms(layer.url, layer.params);
+          ctxlayer.setOpacity(0.7);
+          this.contextLayersLayerGroup.addLayer(ctxlayer);
+          if (layer.legendUrlFunction) {
+            console.log(layer.legendUrlFunction());
+          }
+        });
       },
       "$store.state.page.regions": function () {
         // otherwise country name will not be displayed on initial load with small list of
@@ -337,6 +382,7 @@
       pinTheMap(bigmap) {
         this.bigmap = bigmap;
         this.bigmap.addLayer(this.featureGroup);
+        this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
       },
     },
