@@ -87,41 +87,6 @@
     DEAL_PINS: 8,
   };
 
-  function getPopupHtml(deal, loc) {
-    let template = document.createElement('template');
-    let popupHtml = `<div class="deal-popup">
-      <h3>Deal #${deal.id}</h3>
-      <div class="deal-summary">
-        <dl>
-          <dt>Spatial accuracy</dt><dd>${getFieldValue(
-            loc,
-            this.formfields,
-            "level_of_accuracy",
-            "location"
-          )}</dd>
-          <dt>Intention of investment</dt><dd>${getFieldValue(
-            deal,
-            this.formfields,
-            "current_intention_of_investment"
-          )}</dd>
-          <dt>Deal size</dt><dd>${getDealValue(
-            this,
-            deal,
-            "deal_size"
-          )}</dd>
-          <dt>Operating company</dt><dd>
-             ${getDealValue(this, deal, "operating_company")}
-          </dd>
-        </dl>
-      </div>
-      <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${
-        deal.id
-      }">More details</a>
-    </div>`;
-    template.innerHTML = popupHtml.trim();
-    return template.content.firstChild;
-  }
-
   export default {
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
@@ -203,7 +168,7 @@
                   marker.bindPopup(popupStatic);
                   marker.on('click', (e) => {
                     let popup = e.target.getPopup();
-                    popup.setContent(getPopupHtml(deal, loc));
+                    popup.setContent(this.getPopupHtml(deal, loc));
                   });
                   this.dealLocationMarkersCache[deal.id].push(marker);
                 }
@@ -416,6 +381,40 @@
         this.bigmap.addLayer(this.featureGroup);
         this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
+      },
+      getPopupHtml(deal, loc) {
+        let template = document.createElement('template');
+        let popupHtml = `<div class="deal-popup">
+          <h3>Deal #${deal.id}</h3>
+          <div class="deal-summary">
+            <dl>
+              <dt>Spatial accuracy</dt><dd>${getFieldValue(
+                loc,
+                this.formfields,
+                "level_of_accuracy",
+                "location"
+              )}</dd>
+              <dt>Intention of investment</dt><dd>${getFieldValue(
+                deal,
+                this.formfields,
+                "current_intention_of_investment"
+              )}</dd>
+              <dt>Deal size</dt><dd>${getDealValue(
+                this,
+                deal,
+                "deal_size"
+              )}</dd>
+              <dt>Operating company</dt><dd>
+                 ${getDealValue(this, deal, "operating_company")}
+              </dd>
+            </dl>
+          </div>
+          <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${
+            deal.id
+          }">More details</a>
+        </div>`;
+        template.innerHTML = popupHtml.trim();
+        return template.content.firstChild;
       },
     },
     beforeRouteEnter(to, from, next) {
