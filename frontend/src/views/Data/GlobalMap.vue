@@ -280,7 +280,7 @@
         let factor;
         if (this.displayDealsCount) {
           hoverlabel.innerHTML = `<b>${size}</b> locations`;
-          factor = Math.max(Math.log(size) * 16, 40);
+          factor = Math.max(Math.log(size) * 17, 40);
         } else {
           hoverlabel.innerHTML = `${size} hectares`;
           factor = Math.max(Math.log(size) * 6, 40);
@@ -345,8 +345,18 @@
                     value: +e.target.options.country_id,
                   });
                 });
+
+                let xval;
+                if (this.displayDealsCount) {
+                  xval = val.length;
+                } else {
+                  xval = val.reduce((x, y) => {
+                    return { deal_size: x.deal_size + y.deal_size };
+                  }).deal_size;
+                }
+
                 this.featureGroup.addLayer(circle);
-                this.styleCircle(circle, val.length, { type: "country", id: key });
+                this.styleCircle(circle, xval, { type: "country", id: key });
               }
             );
           } else {
@@ -450,7 +460,7 @@
       .landmatrix-custom-circle-text {
         display: none;
       }
-      z-index: 500 !important;
+      z-index: 900 !important;
 
       .landmatrix-custom-circle-hover-text {
         display: inline;
