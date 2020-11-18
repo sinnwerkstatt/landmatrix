@@ -18,6 +18,7 @@
             name="check-button"
             switch
             v-model="isDefaultFilter"
+            @change="updateDefaultFilter"
           >
             Default filter
           </b-form-checkbox>
@@ -550,8 +551,7 @@
           return this.$store.state.filters.isDefaultFilter;
         },
         set(value) {
-          if (value) this.$store.dispatch("resetFilters");
-          else this.$store.dispatch("clearFilters");
+          // do nothing - only on user action: see updateDefaultFilter()
         },
       },
 
@@ -596,6 +596,12 @@
         ];
       },
     },
+    methods: {
+      updateDefaultFilter(checked) {
+        if (checked) this.$store.dispatch("resetFilters");
+        else this.$store.dispatch("clearFilters");
+      }
+    }
   };
 </script>
 
