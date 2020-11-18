@@ -3,7 +3,7 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
-    <div class="row sticky-top">
+    <div class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal.id }}</h1>
       </div>
@@ -369,6 +369,7 @@
 
     .sticky-top {
       top: 5em;
+      z-index: 90;
     }
   }
 

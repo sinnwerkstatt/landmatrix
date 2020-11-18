@@ -3,7 +3,7 @@
     <div v-if="!investor" class="row" style="height: 100%;">
       <LoadingPulse />
     </div>
-    <div v-else class="row sticky-top">
+    <div v-else class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Investor #{{ investor.id }}</h1>
       </div>
