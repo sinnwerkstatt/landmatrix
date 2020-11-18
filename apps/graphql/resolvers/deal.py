@@ -108,9 +108,6 @@ def resolve_deals(
     subset="PUBLIC",
     filters=None,
 ):
-    print("****************************+")
-    print(subset)
-    print("****************************+")
     qs = Deal.objects.visible(user=info.context.user, subset=subset).order_by(sort)
 
     if filters:

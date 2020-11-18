@@ -276,23 +276,37 @@ export default {
           });
         }
       }
-      //
-      // // if (state.filters.produce && state.filters.produce.length > 0) {
-      // //   let crops = [];
-      // //   let animals = [];
-      // //   let minerals = [];
-      // //   state.filters.produce.map(prod => {
-      // //     if(prod.startsWith('crop_')) crops.push(prod.replace('crop_',''));
-      // //   });
-      // //   if(crops.length>0) {
-      // //     filters.push({
-      // //     field: "current_implementation_status",
-      // //     operation: "IN",
-      // //     value: state.filters.implementation_status,
-      // //   })
-      // //   }
-      // //   console.log(state.filters.produce);
-      // // }
+      if (state.filters.produce && state.filters.produce.length > 0) {
+        let crops = [];
+        let animals = [];
+        let minerals = [];
+        for (let prod of state.filters.produce) {
+          if (prod.id.startsWith("crop_")) crops.push(prod.value);
+          if (prod.id.startsWith("animal_")) animals.push(prod.value);
+          if (prod.id.startsWith("mineral_")) minerals.push(prod.value);
+        }
+        if (crops.length > 0) {
+          filters.push({
+            field: "current_crops",
+            operation: "CONTAINS",
+            value: crops,
+          });
+        }
+        if (animals.length > 0) {
+          filters.push({
+            field: "current_animals",
+            operation: "CONTAINS",
+            value: animals,
+          });
+        }
+        if (minerals.length > 0) {
+          filters.push({
+            field: "current_resources",
+            operation: "CONTAINS",
+            value: minerals,
+          });
+        }
+      }
       if (!(state.filters.transnational === null)) {
         filters.push({
           field: "transnational",

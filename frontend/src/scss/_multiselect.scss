@@ -22,3 +22,7 @@
   text-transform: uppercase;
   padding: 12px 6px;
 }
+
+.multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+   background: $primary;
+}

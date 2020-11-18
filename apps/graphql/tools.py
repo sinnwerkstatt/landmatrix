@@ -35,7 +35,7 @@ filter_ops = {
     "GE": "__gte",
     "GT": "__gt",
     "IN": "__in",
-    "CONTAINS": "__icontains",
+    "CONTAINS": "__contains",
     "CONTAINED_BY": "__contained_by",
     "OVERLAP": "__overlap",
 }
