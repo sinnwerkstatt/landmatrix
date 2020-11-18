@@ -122,6 +122,9 @@
     filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.5));
 
     .navbar {
+      height: 0;
+      overflow: visible;
+      align-items: baseline;
       justify-content: center;
       padding: 0;
       .nav-item {

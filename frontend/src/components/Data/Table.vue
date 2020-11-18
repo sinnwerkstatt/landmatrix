@@ -1,38 +1,39 @@
 <template>
   <div class="data-table">
     <LoadingPulse v-if="$apollo.loading" />
-    <div class="table-config">
-      <a href="" @click.prevent v-b-modal.modal-select-fields
-      ><i class="fa fa-cog"></i
-      ></a>
-      <b-modal
-        id="modal-select-fields"
-        title="Select columns to display"
-        @show="pauseUpdate"
-        @hide="updateTable"
-      >
-        <div class="inner-scroll-container">
-          <b-form-group>
-            <b-form-checkbox
-              v-for="option in apiFields"
-              v-model="displayFields[targetModel]"
-              :key="option"
-              :value="option"
-              name="select-deal-fields"
-            >
-              {{ getLabel(option) }}
-            </b-form-checkbox>
-          </b-form-group>
-        </div>
-        <template #modal-footer="{ ok, cancel, hide }">
-          <a href="" @click.prevent="resetFields">Reset to default columns</a>
-          <button type="button" class="btn btn-primary" @click="ok()">OK</button>
-        </template>
-      </b-modal>
-    </div>
+
     <div class="table-wrap" v-if="rowData.length > 0">
       <div class="stats">
         <div class="rows-count">{{ rowData.length }} {{ modelLabel }}</div>
+      </div>
+      <div class="table-config">
+        <a href="" @click.prevent v-b-modal.modal-select-fields
+        ><i class="fa fa-cog"></i
+        ></a>
+        <b-modal
+          id="modal-select-fields"
+          title="Select columns to display"
+          @show="pauseUpdate"
+          @hide="updateTable"
+        >
+          <div class="inner-scroll-container">
+            <b-form-group>
+              <b-form-checkbox
+                v-for="option in apiFields"
+                v-model="displayFields[targetModel]"
+                :key="option"
+                :value="option"
+                name="select-deal-fields"
+              >
+                {{ getLabel(option) }}
+              </b-form-checkbox>
+            </b-form-group>
+          </div>
+          <template #modal-footer="{ ok, cancel, hide }">
+            <a href="" @click.prevent="resetFields">Reset to default columns</a>
+            <button type="button" class="btn btn-primary" @click="ok()">OK</button>
+          </template>
+        </b-modal>
       </div>
       <table class="sticky-header" :class="[this.targetModel]">
         <thead>
@@ -155,7 +156,7 @@
           return {
             limit: 0,
             filters: this.$store.getters.filtersForGQL,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC"
           };
         }
       },
@@ -285,7 +286,7 @@
       extendedDeals() {
         if (this.dealsLoaded) {
           if (this.extraDealData.length) {
-            let idMap = {}
+            let idMap = {};
             // map by id first, searching each time is too expensive
             for (let extraData of this.extraDealData) {
               idMap[extraData.id] = extraData;
@@ -397,30 +398,36 @@
     line-height: 1.1;
 
     .table-wrap {
-      padding: 0 15px 2em 27px;
-      border-top: solid darken(white, 10) 3.4em;
+      padding: 20px 15px 2em 27px;
+      border-top: solid darken(white, 10) 2.4em;
       overflow-x: hidden;
       max-height: 100%;
       height: 100%;
-
       overflow: auto;
-    }
+      position: relative;
 
-    .table-config {
-      position: absolute;
-      right: 30px;
-      top: 20px;
-      z-index: 1001;
+      .stats {
+        position: absolute;
+        top: 0;
+      }
 
-      a {
-        color: black;
-        display: inline-block;
+      .table-config {
+        position: absolute;
+        right: 30px;
+        top: 0;
+        z-index: 1;
 
-        &:hover {
-          color: $lm_orange;
+        a {
+          color: black;
+          display: inline-block;
+
+          &:hover {
+            color: $lm_orange;
+          }
         }
       }
     }
+
 
     table.sticky-header {
       width: 100%;
@@ -428,9 +435,11 @@
 
       tr {
         border: 1px solid #c9c9c9;
+
         &:nth-child(even) {
           background-color: white;
         }
+
         &:nth-child(odd) {
           background-color: darken(white, 2);
         }
@@ -482,11 +491,6 @@
     .spacer {
       height: 25px;
     }
-
-    .stats {
-      position: absolute;
-      top: 20px;
-    }
   }
 </style>
 <style lang="scss">
@@ -528,13 +532,13 @@
     }
 
     .ioi-label {
-      background: rgba(0,0,0,0.05);
+      background: rgba(0, 0, 0, 0.05);
       border-radius: 5px;
       padding: 0.15em 0.35em;
       white-space: nowrap;
       margin: 0.2em 0.05em 0 0;
       display: inline-block;
-      border: 1px solid rgba(0,0,0,0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       color: rgba(black, 0.7)
     }
 
