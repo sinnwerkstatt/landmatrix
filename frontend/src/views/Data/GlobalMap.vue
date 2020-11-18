@@ -190,10 +190,12 @@
       //   console.log("Watch: markers")
       //   this.refreshMap();
       // },
-      // bigmap() {
-      //   console.log("Watch: bigmap")
-      //   this.refreshMap();
-      // },
+      bigmap() {
+        console.log("Watch: bigmap")
+        if (this.deals.length) {
+          this.refreshMap();
+        }
+      },
       current_zoom() {
         console.log("Watch: currentzoom")
         this.refreshMap();

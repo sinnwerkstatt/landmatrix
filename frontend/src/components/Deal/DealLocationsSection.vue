@@ -39,8 +39,8 @@
     },
     computed: {
       entries() {
-        return this.deal.locations.map((l) => {
-          return { ...l, country: this.deal.country.name };
+        return this.deal.locations.map((l, index) => {
+          return { ...l, loc_no: index+1, country: this.deal.country.name };
         });
       },
       bounds() {
@@ -71,7 +71,7 @@
       onEachFeatureFunction() {
         return (feature, layer) => {
           let tooltip = `<div>
-                  <div>ID: ${feature.properties.id}</div>
+                  <div>Location #${this.entries.find(l => l.id === feature.properties.id).loc_no}</div>
                   <div>Name: ${feature.properties.name}</div>
                   <div>Type: ${feature.properties.type}</div>
               </div>`;
