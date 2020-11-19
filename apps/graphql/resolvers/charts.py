@@ -40,7 +40,9 @@ LONG_COUNTRIES = {
 
 def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
     deals_investors = (
-        DealTopInvestors.objects.all()
+        DealTopInvestors.objects.filter(
+            deal__status__in=(2, 3), investor__status__in=(2, 3)
+        )
         .prefetch_related("deal")
         .prefetch_related("investor")
         .order_by("deal__country_id")
@@ -105,6 +107,7 @@ def country_investments(obj: Any, info: GraphQLResolveInfo, id):
         )
         .filter(
             deal__status__in=(2, 3),
+            investor__status__in=(2, 3),
             # deal__is_public=True,
         )
         .prefetch_related("deal")
@@ -113,15 +116,18 @@ def country_investments(obj: Any, info: GraphQLResolveInfo, id):
     invested_regions = defaultdict(dict)
     investing_regions = defaultdict(dict)
     for invest in deals_investors:
+        # TODO: do we count these?
+        # if invest.deal.country_id == invest.investor.country_id:
+        #     continue
         if invest.investor.country_id == id:
-            reg_id = invest.investor.country.fk_region_id
+            reg_id = invest.deal.country.fk_region_id
             if invested_regions.get(reg_id):
                 invested_regions[reg_id]["count"] += 1
                 invested_regions[reg_id]["size"] += invest.deal.deal_size
             else:
                 invested_regions[reg_id] = {"count": 1, "size": invest.deal.deal_size}
         else:
-            reg_id = invest.deal.country.fk_region_id
+            reg_id = invest.investor.country.fk_region_id
 
             if investing_regions.get(reg_id):
                 investing_regions[reg_id]["count"] += 1

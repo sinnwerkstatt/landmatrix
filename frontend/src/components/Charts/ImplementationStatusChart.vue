@@ -91,9 +91,8 @@
     },
     methods: {
       dothechart() {
-        let chart_container = document.getElementById("myChart");
         // this.canvasCtx = this.$refs.myChart.getContext("2d");
-        this.chart = new Chart(chart_container, {
+        this.chart = new Chart(document.getElementById("myChart"), {
           type: "pie",
           data: chartdata,
           options: chartoptions,

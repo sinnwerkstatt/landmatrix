@@ -10,15 +10,18 @@
     </div>
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
-      <h5>Regions investing in {{country.name}}</h5>
-      DUMMY DATA Asia 6,000 ha (4 deals)<br>
-      DUMMY DATA Eastern Europe  6,000 ha (2 deals)<br>
-      DUMMY DATA Total 12,000 ha (6 deals)<br>
+      <h5>Regions investing in {{ country.name }}</h5>
+      <div v-html="investors"></div>
+      <br />
       Show all inbound deals
-      <h5>Regions {{country.name}} invests in</h5>
-      DUMMY DATA Eastern Europe 495,000 ha (4 deals)<br>
-      DUMMY DATA Total 495,000 ha (4 deals)<br>
-      DUMMY DATA Show all outbound deals
+
+      <h5>Regions {{ country.name }} invests in</h5>
+      <div v-html="ventures"></div>
+      <br />
+      Show all outbound deals
+
+      <h5>Global Deal Size Rank thingy</h5>
+      This deal is on place #4<br />
     </div>
     <div v-else class="hint-box">
       <h4>World information</h4>
@@ -29,11 +32,31 @@
 <script>
   import ScopeBarContainer from "./ScopeBarContainer";
   import { mapState } from "vuex";
+  import gql from "graphql-tag";
   export default {
     name: "ChartInformationBar",
     components: { ScopeBarContainer },
+    apollo: {
+      country_investments: {
+        query: gql`
+          query Investments($id: Int!) {
+            country_investments(id: $id)
+          }
+        `,
+        variables() {
+          return {
+            id: +this.chartSelectedCountry,
+          };
+        },
+        skip() {
+          return !this.chartSelectedCountry;
+        },
+      },
+    },
     data() {
-      return {};
+      return {
+        country_investments: null,
+      };
     },
     computed: {
       ...mapState({
@@ -45,7 +68,34 @@
           type: "country",
           id: this.chartSelectedCountry,
         });
-
+      },
+      investors() {
+        if (!this.country_investments) return;
+        if (!this.country_investments.investing) return;
+        let retdings = "<table><tbody>";
+        Object.entries(this.country_investments.investing).forEach(([k, v]) => {
+          let reg_name = this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: +k,
+          }).name;
+          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
+        });
+        retdings += "</tbody></table>";
+        return retdings;
+      },
+      ventures() {
+        if (!this.country_investments) return;
+        if (!this.country_investments.invested) return;
+        let retdings = "<table><tbody>";
+        Object.entries(this.country_investments.invested).forEach(([k, v]) => {
+          let reg_name = this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: +k,
+          }).name;
+          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
+        });
+        retdings += "</tbody></table>";
+        return retdings;
       },
     },
   };

@@ -3,7 +3,6 @@ type Investor {
     name: String!
     country: Country
     classification: String
-    # classification_display: String
     homepage: String
     opencorporates: String
     comment: String
@@ -14,9 +13,7 @@ type Investor {
     deals: [Deal]
 
     status: Int
-    status_display: String
     draft_status: Int
-    draft_status_display: String
     created_at: DateTime
     modified_at: DateTime
 

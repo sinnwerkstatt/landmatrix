@@ -180,6 +180,8 @@ type Deal {
     datasources(version: Int): [DataSource]
 
     #### Calculated fields
+    is_public: Boolean
+    not_public_reason: String
     current_contract_size: Float
     current_production_size: Float
     current_intention_of_investment: [String]
@@ -198,9 +200,9 @@ type Deal {
     top_investors: [Investor]
 
     status: Int
-    status_display: String
+    #    status_display: String
     draft_status: Int
-    draft_status_display: String
+    #    draft_status_display: String
     created_at: DateTime
     modified_at: DateTime
     fully_updated_at: DateTime
@@ -212,12 +214,11 @@ type Deal {
     # for statistics only
     country_id: Int
     datasources_count: Int
-    has_no_known_investor: Boolean
 }
 
 
 type Location {
-    id: Int!
+    id: Int
     name: String
     description: String
     point: GeoPoint
@@ -230,7 +231,7 @@ type Location {
 }
 
 type Contract {
-    id: Int!
+    id: Int
     number: String
     date: Date
     expiration_date: Date
@@ -239,7 +240,7 @@ type Contract {
 }
 
 type DataSource {
-    id: Int!
+    id: Int
     type: String
     # type_display: String
     url: String

@@ -5,11 +5,9 @@ import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
-// import Charts from "./views/Charts/Base";
-// import WebOfTransnationalDeals from "./views/Charts/WebOfTransnationalDeals";
 import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
 import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
-// import DynamicsOverview from "/views/Charts/DynamicsOverview";
+import DynamicsOverview from "/views/Data/Charts/DynamicsOverview";
 import Wagtail from "./views/Wagtail/WagtailSwitch";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Manager/Dashboard";
@@ -47,6 +45,14 @@ const router = new Router({
       path: "/charts/produce-info/",
       name: "produce-info",
       component: ProduceInfoTreeMap,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/charts/dynamics-overview/",
+      name: "dynamics-overview",
+      component: DynamicsOverview,
       meta: {
         hideBreadcrumbs: true,
       },

@@ -1,9 +1,7 @@
 <template>
   <ChartsContainer>
     <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
-    <div id="svg-container">
-      <svg id="svgweb" width="800"></svg>
-    </div>
+    <svg id="svgweb" width="800"></svg>
   </ChartsContainer>
 </template>
 
@@ -29,18 +27,6 @@
         transnational_deals: [],
       };
     },
-    // beforeRouteEnter(to, from, next) {
-    //   let title = "Web of transnational deals";
-    //   // store.dispatch("setPageContext", {
-    //   //   title: title,
-    //   //   breadcrumbs: [
-    //   //     { link: { name: "wagtail" }, name: "Home" },
-    //   //     { link: { name: "charts" }, name: "Charts" },
-    //   //     { name: title },
-    //   //   ],
-    //   // });
-    //   next();
-    // },
     watch: {
       transnational_deals() {
         LandMatrixRadialSpider(this.transnational_deals, "#svgweb", (country) => {
@@ -48,32 +34,20 @@
         });
       },
     },
-    // mounted() {
-    //   // if (this.transnational_deals.length) {
-    //   //   LandMatrixRadialSpider(this.transnational_deals, "svg");
-    //   // }
-    // }
   };
 </script>
 <style lang="scss">
-  #svg-container {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    justify-content: center;
+  //.link {
+  //  fill: none;
+  //  stroke: #555;
+  //  stroke-opacity: 0.4;
+  //  stroke-width: 4.5px;
+  //}
 
-    .link {
-      fill: none;
-      stroke: #555;
-      stroke-opacity: 0.4;
-      stroke-width: 4.5px;
-    }
-
-    #svgweb {
-      text {
-        font-size: 14px;
-        cursor: pointer;
-      }
+  #svgweb {
+    text {
+      font-size: 14px;
+      cursor: pointer;
     }
   }
 </style>

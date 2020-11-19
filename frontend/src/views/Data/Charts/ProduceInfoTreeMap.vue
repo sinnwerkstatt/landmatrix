@@ -206,10 +206,6 @@
 
 <style lang="scss" scoped>
   #produce-info {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    justify-content: center;
     padding: 4em 1em 1em;
 
     #produceinfosvg {

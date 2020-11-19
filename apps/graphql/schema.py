@@ -19,7 +19,6 @@ from apps.graphql.resolvers.charts import (
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
-    deal_type,
     resolve_dealversions,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
@@ -86,6 +85,5 @@ schema = make_executable_schema(
     mutation,
     user_type,
     user_regional_info_type,
-    deal_type,
     investor_type,
 )

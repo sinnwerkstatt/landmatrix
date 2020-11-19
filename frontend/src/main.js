@@ -69,13 +69,6 @@ Vue.component("wagtail-latest_database_modifications", LatestDatabaseModificatio
 Vue.component("wagtail-statistics", Statistics);
 // Vue.component("wagtail-", );
 
-store.dispatch("fetchMe");
-store.dispatch("fetchCountriesAndRegions");
-// This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
-store.dispatch("fetchWagtailRootPage");
-store.dispatch("fetchFields", LANGUAGE || "en");
-store.dispatch("fetchMessages");
-
 Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
@@ -88,7 +81,7 @@ const i18n = new VueI18n({
   silentTranslationWarn: true,
 });
 
-export default new Vue({
+let vue_app = new Vue({
   router,
   store,
   i18n,
@@ -96,4 +89,14 @@ export default new Vue({
     defaultClient: apolloClient,
   }),
   render: (h) => h(App),
-}).$mount("#app");
+})
+
+// This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
+store.dispatch("fetchWagtailRootPage");
+store.dispatch("fetchFields", LANGUAGE || "en");
+store.dispatch("fetchMessages");
+store.dispatch("fetchBasicData").then(() => {
+  vue_app.$mount("#app");
+});
+
+export default vue_app;

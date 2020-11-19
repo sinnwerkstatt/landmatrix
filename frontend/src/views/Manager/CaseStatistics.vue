@@ -141,7 +141,7 @@
     if (deal.confidential) return false;
     if (!deal.country || deal.country.high_income) return false;
     if (!deal.datasources.length) return false;
-    if (deal.has_no_known_investor) return false;
+    if (deal.not_public_reason === "NO_KNOWN_INVESTOR") return false;
     return true;
   }
 
@@ -484,7 +484,7 @@
           datasources {
             id
           }
-          has_no_known_investor
+          not_public_reason
         }
         investors_pending: investors(limit:0, filters:[
           {field:"draft_status",operation:IN,value:["1","2","3"]},

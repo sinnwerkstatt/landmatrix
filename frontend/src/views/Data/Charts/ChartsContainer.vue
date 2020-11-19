@@ -20,7 +20,9 @@
       <div class="h-100">
         <div class="sideBuffer float-left"></div>
         <div class="sideBuffer float-right"></div>
+        <div class="chart-container">
         <slot></slot>
+          </div>
       </div>
     </div>
     <!--    {{ this.$store.state.filters.filters }}-->
@@ -63,5 +65,11 @@
       background-color: inherit;
       color: black;
     }
+  }
+  .chart-container {
+        text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
   }
 </style>

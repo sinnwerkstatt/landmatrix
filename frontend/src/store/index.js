@@ -30,77 +30,73 @@ const store = new Vuex.Store({
     },
   },
   actions: {
-    fetchMe(context) {
-      apolloClient
-        .query({
-          query: gql`
-            {
-              me {
-                full_name
-                username
-                is_authenticated
-                is_impersonate
-                userregionalinfo {
-                  country {
-                    id
-                    name
+    fetchBasicData(context) {
+      return new Promise(function (resolve, reject) {
+        apolloClient
+          .query({
+            query: gql`
+              {
+                me {
+                  full_name
+                  username
+                  is_authenticated
+                  is_impersonate
+                  userregionalinfo {
+                    country {
+                      id
+                      name
+                    }
+                    region {
+                      id
+                      name
+                    }
                   }
-                  region {
+                  groups {
                     id
                     name
                   }
                 }
-                groups {
+
+                countries {
                   id
                   name
+                  slug
+                  point_lat
+                  point_lon
+                  point_lat_min
+                  point_lon_min
+                  point_lat_max
+                  point_lon_max
+                  country_page_id
+                  short_description
+                  deals {
+                    id
+                  }
                 }
-              }
-            }
-          `,
-        })
-        .then((data) => {
-          context.commit("setUser", data.data.me);
-        });
-    },
-    fetchCountriesAndRegions(context) {
-      apolloClient
-        .query({
-          query: gql`
-            {
-              countries {
-                id
-                name
-                slug
-                point_lat
-                point_lon
-                point_lat_min
-                point_lon_min
-                point_lat_max
-                point_lon_max
-                country_page_id
-                short_description
-                deals {
+                regions {
                   id
+                  name
+                  slug
+                  point_lat_min
+                  point_lon_min
+                  point_lat_max
+                  point_lon_max
+                  region_page_id
+                  short_description
                 }
               }
-              regions {
-                id
-                name
-                slug
-                point_lat_min
-                point_lon_min
-                point_lat_max
-                point_lon_max
-                region_page_id
-                short_description
-              }
-            }
-          `,
-        })
-        .then((data) => {
-          context.commit("setCountries", data.data.countries);
-          context.commit("setRegions", data.data.regions);
-        });
+            `,
+          })
+          .then((data) => {
+            context.commit("setUser", data.data.me);
+            context.commit("setCountries", data.data.countries);
+            context.commit("setRegions", data.data.regions);
+            resolve();
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
     fetchFields(context, language = "en") {
       apolloClient

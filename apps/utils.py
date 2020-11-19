@@ -2,6 +2,9 @@ import itertools
 
 
 def qs_values_to_dict(qs, fields, many_to_many_relations=None):
+    if not many_to_many_relations:
+        many_to_many_relations = []
+
     def _subkey_expode(target: dict, k, v):
         if "__" not in k:
             target[k] = v

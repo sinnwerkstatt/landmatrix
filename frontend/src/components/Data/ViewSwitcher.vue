@@ -50,31 +50,21 @@
             >Charts</a
           >
           <span class="dropdown-menu charts">
-            <router-link v-for="entry in chartEntries"
+            <router-link
+              v-for="entry in chartEntries"
               :to="{ name: entry.route_name }"
               class="dropdown-item"
             >
-              {{$t(entry.title)}}
+              {{ $t(entry.title) }}
             </router-link>
           </span>
         </li>
-
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-  const CHART_ENTRIES = [
-    {
-      title: "Web of Transnational Deals",
-      route_name: "web-of-transnational-deals"
-    }, {
-      title: "Produce Info Map",
-      route_name: "produce-info"
-    }
-  ]
-
   export default {
     name: "ViewSwitcher",
     data() {
@@ -83,15 +73,28 @@
           deals: this.$t("Deals"),
           investors: this.$t("Investors"),
         },
-        chartEntries: CHART_ENTRIES,
-     };
+        chartEntries: [
+          {
+            title: "Web of Transnational Deals",
+            route_name: "web-of-transnational-deals",
+          },
+          {
+            title: "Dynamics Overview",
+            route_name: "dynamics-overview",
+          },
+          {
+            title: "Produce Info Map",
+            route_name: "produce-info",
+          },
+        ],
+      };
     },
     computed: {
       isListRoute() {
         return ["list_deals", "list_investors"].includes(this.$route.name);
       },
       isChartRoute() {
-        return this.chartEntries.map(e => e.route_name).includes(this.$route.name);
+        return this.chartEntries.map((e) => e.route_name).includes(this.$route.name);
       },
       dataItemName() {
         if (this.$route.name === "list_deals") {

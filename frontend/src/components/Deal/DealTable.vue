@@ -89,7 +89,7 @@
           created_at: "Created at",
           modified_at: "Last modified at",
           fully_updated_at: "Fully updated at",
-          cached_has_no_known_investor: "Has no known investor",
+          // cached_has_no_known_investor: "Has no known investor",
         },
       };
     },
