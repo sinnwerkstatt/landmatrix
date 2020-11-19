@@ -1,40 +1,43 @@
 <template>
   <div class="data-table">
     <LoadingPulse v-if="$apollo.loading" />
-
+    <div class="table-top-area-wrapper">
+      <div class="table-top-area">
+        <div class="stats">
+          <div class="rows-count">{{ rowData.length }} {{ modelLabel }}</div>
+        </div>
+        <div class="table-config">
+          <a href="" @click.prevent v-b-modal.modal-select-fields
+          ><i class="fa fa-cog"></i
+          ></a>
+          <b-modal
+            id="modal-select-fields"
+            title="Select columns to display"
+            @show="pauseUpdate"
+            @hide="updateTable"
+          >
+            <div class="inner-scroll-container">
+              <b-form-group>
+                <b-form-checkbox
+                  v-for="option in apiFields"
+                  v-model="displayFields[targetModel]"
+                  :key="option"
+                  :value="option"
+                  name="select-deal-fields"
+                >
+                  {{ getLabel(option) }}
+                </b-form-checkbox>
+              </b-form-group>
+            </div>
+            <template #modal-footer="{ ok, cancel, hide }">
+              <a href="" @click.prevent="resetFields">Reset to default columns</a>
+              <button type="button" class="btn btn-primary" @click="ok()">OK</button>
+            </template>
+          </b-modal>
+        </div>
+      </div>
+    </div>
     <div class="table-wrap" v-if="rowData.length > 0">
-      <div class="stats">
-        <div class="rows-count">{{ rowData.length }} {{ modelLabel }}</div>
-      </div>
-      <div class="table-config">
-        <a href="" @click.prevent v-b-modal.modal-select-fields
-        ><i class="fa fa-cog"></i
-        ></a>
-        <b-modal
-          id="modal-select-fields"
-          title="Select columns to display"
-          @show="pauseUpdate"
-          @hide="updateTable"
-        >
-          <div class="inner-scroll-container">
-            <b-form-group>
-              <b-form-checkbox
-                v-for="option in apiFields"
-                v-model="displayFields[targetModel]"
-                :key="option"
-                :value="option"
-                name="select-deal-fields"
-              >
-                {{ getLabel(option) }}
-              </b-form-checkbox>
-            </b-form-group>
-          </div>
-          <template #modal-footer="{ ok, cancel, hide }">
-            <a href="" @click.prevent="resetFields">Reset to default columns</a>
-            <button type="button" class="btn btn-primary" @click="ok()">OK</button>
-          </template>
-        </b-modal>
-      </div>
       <table class="sticky-header" :class="[this.targetModel]">
         <thead>
         <tr>
@@ -85,7 +88,9 @@
     "current_negotiation_status",
     "current_implementation_status",
     "locations",
-    "fully_updated_at"
+    "fully_updated_at",
+    "operating_company",
+    "top_investors"
   ];
 
   const DEFAULT_DISPLAY_FIELDS = {
@@ -96,7 +101,9 @@
       "intention_of_investment",
       "current_negotiation_status",
       "current_implementation_status",
-      "deal_size"
+      "deal_size",
+      "operating_company",
+      "top_investors"
     ],
     investor: [
       "modified_at",
@@ -397,35 +404,46 @@
     font-size: 0.9rem;
     line-height: 1.1;
 
-    .table-wrap {
-      padding: 20px 15px 2em 27px;
-      border-top: solid darken(white, 10) 2.4em;
+    .table-top-area-wrapper {
+      padding: 30px 2em 0 27px;
       overflow-x: hidden;
-      max-height: 100%;
-      height: 100%;
-      overflow: auto;
       position: relative;
 
-      .stats {
-        position: absolute;
-        top: 0;
-      }
+      .table-top-area {
+        width: 100%;
+        height: 20px;
 
-      .table-config {
-        position: absolute;
-        right: 30px;
-        top: 0;
-        z-index: 1;
-
-        a {
-          color: black;
+        .stats {
+          //position: absolute;
+          //top: 0;
           display: inline-block;
+        }
 
-          &:hover {
-            color: $lm_orange;
+        .table-config {
+          //position: absolute;
+          float: right;
+          display: inline-block;
+          z-index: 1;
+
+          a {
+            color: black;
+            display: inline-block;
+
+            &:hover {
+              color: $lm_orange;
+            }
           }
         }
       }
+    }
+
+    .table-wrap {
+      padding: 0 15px 2em 27px;
+      overflow-x: hidden;
+      overflow: auto; // just setting overflow-y gives different result (table not scrollable)
+      max-height: calc( 100% - 50px );
+      height: calc( 100% - 50px );
+      position: relative;
     }
 
 
@@ -433,53 +451,58 @@
       width: 100%;
       overflow-y: auto;
 
+      thead {
+        tr {
+          th {
+            padding: 0.5em;
+            position: sticky;
+            top: 0px;
+            background: #525252;
+            color: white;
+            vertical-align: bottom;
+            min-width: 60px;
+            font-weight: normal;
+
+            &:hover {
+              cursor: pointer;
+            }
+
+            &.selected {
+              font-weight: normal;
+              color: $lm_orange;
+
+              &.asc:before {
+                font-weight: 600;
+                content: "\f077";
+                font-family: "Font Awesome 5 Free";
+              }
+
+              &:not(.asc):before {
+                font-weight: 600;
+                content: "\f078";
+                font-family: "Font Awesome 5 Free";
+              }
+            }
+          }
+        }
+      }
       tr {
-        border: 1px solid #c9c9c9;
+        td {
+          padding: 0.3em 0.3em;
+          border-bottom: 1px solid #c9c9c9;
+        }
 
         &:nth-child(even) {
           background-color: white;
         }
 
         &:nth-child(odd) {
-          background-color: darken(white, 2);
+          background-color: darken(white, 3);
         }
       }
 
-      td {
-        padding: 0.3em 0.3em;
-      }
 
-      th {
-        padding: 0.5em;
-        position: sticky;
-        top: 0;
-        background: #525252;
-        color: white;
-        vertical-align: bottom;
-        min-width: 60px;
-        font-weight: normal;
 
-        &:hover {
-          cursor: pointer;
-        }
-
-        &.selected {
-          font-weight: normal;
-          color: $lm_orange;
-
-          &.asc:before {
-            font-weight: 600;
-            content: "\f077";
-            font-family: "Font Awesome 5 Free";
-          }
-
-          &:not(.asc):before {
-            font-weight: 600;
-            content: "\f078";
-            font-family: "Font Awesome 5 Free";
-          }
-        }
-      }
     }
 
     table.investor {

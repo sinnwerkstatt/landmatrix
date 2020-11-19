@@ -6,6 +6,18 @@ import {
 } from "/choices";
 import dayjs from "dayjs";
 
+function investorLink(component, investor_id) {
+  let investor = component.$store.getters.getInvestor(investor_id);
+  if (investor) {
+    let location = {
+      name: "investor_detail",
+      params: { investor_id: investor_id },
+    };
+    let url = component.$router.resolve(location).href;
+    return `<a class="investor" target="_blank" href="${url}">${investor.name}</a>`;
+  }
+}
+
 export const getDealValue = function (component, deal, fieldName) {
   if (fieldName in deal) {
     switch (fieldName) {
@@ -26,17 +38,22 @@ export const getDealValue = function (component, deal, fieldName) {
         return deal.intended_size ? deal.intended_size.toLocaleString() + " ha" : "";
 
       case "operating_company": {
-        let investor_id = deal.operating_company.id;
-        if (investor_id) {
-          let investor = component.$store.getters.getInvestor(investor_id);
-          if (investor) {
-            let location = {
-              name: "investor_detail",
-              params: { investor_id: investor_id },
-            };
-            let url = component.$router.resolve(location).href;
-            return `<a target="_blank" href="${url}">${investor.name}</a>`;
+        if (deal.operating_company) {
+          let investor_id = deal.operating_company.id;
+          if (investor_id) {
+            return investorLink(component, investor_id);
           }
+        }
+        return "";
+      }
+
+      case "top_investors": {
+        if (deal.top_investors) {
+          return deal.top_investors
+            .map((i) => {
+              return investorLink(component, i.id);
+            })
+            .join("<br/>");
         }
         return "";
       }
@@ -126,6 +143,7 @@ export const getInvestorValue = function (component, investor, fieldName) {
 export const dealExtraFieldLabels = {
   modified_at: "Last modified",
   fully_updated_at: "Last update",
+  top_investors: "Top investors", // TODO: should come from formFields!
 };
 
 export const investorExtraFieldLabels = {

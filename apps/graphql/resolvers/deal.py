@@ -79,7 +79,7 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
     deal = qs_values_to_dict(
         visible_deals,
         filtered_fields,
-        ["locations", "datasources", "contracts"],
+        ["locations", "datasources", "contracts", "top_investors"],
     )[0]
 
     if add_versions:
@@ -120,7 +120,9 @@ def resolve_deals(
     if limit != 0:
         qs = qs[:limit]
 
-    return qs_values_to_dict(qs, fields, ["locations", "datasources", "contracts"])
+    return qs_values_to_dict(
+        qs, fields, ["locations", "datasources", "contracts", "top_investors"]
+    )
 
 
 deal_type = ObjectType("Deal")

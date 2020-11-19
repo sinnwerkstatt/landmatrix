@@ -33,6 +33,10 @@ a {
     color: $lm_dark;
     border-bottom: 3px solid var(--primary);
   }
+
+  &.investor {
+    color: $lm_investor;
+  }
 }
 
 .container {

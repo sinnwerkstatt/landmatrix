@@ -59,6 +59,7 @@
   .sideBuffer {
     min-width: 230px;
     width: 20%;
+    height: 100%;
     min-height: 3px;
     //transition: width 0.5s, min-width 0.5s;
 

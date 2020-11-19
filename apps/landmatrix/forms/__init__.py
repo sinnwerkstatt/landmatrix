@@ -28,7 +28,7 @@ class VueForm:
             "label": vname[0].capitalize() + vname[1:],
             "class": mfield.__class__.__name__,
         }
-        if richfield["class"] == "ForeignKey":
+        if richfield["class"] in ["ForeignKey", "ManyToManyField"]:
             richfield["related_model"] = mfield.related_model.__name__
         if mfield.choices:
             choices = {}

@@ -12,7 +12,6 @@ export const data_deal_query = {
             id
           }
         }
-        # top_investors { id name }
         current_intention_of_investment
         current_negotiation_status
         current_implementation_status
@@ -21,8 +20,13 @@ export const data_deal_query = {
           point
           level_of_accuracy
         }
-        fully_updated_at # for table listing
+        fully_updated_at # for listing
         operating_company {
+          # for map pin popover & listing
+          id
+        }
+        top_investors {
+          # for listing
           id
         }
       }
