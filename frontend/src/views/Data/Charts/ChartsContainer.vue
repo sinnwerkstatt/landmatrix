@@ -2,27 +2,27 @@
   <div class="datacontainer">
     <ViewSwitcher />
     <FilterBar>
-<!--      <h4>{{ $t("Chart") }}</h4>-->
-<!--      <ul class="charts-container-filterbar">-->
-<!--        <li>-->
-<!--          <router-link :to="{ name: 'web-of-transnational-deals' }"-->
-<!--            >Web of Transnational Deals</router-link-->
-<!--          >-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <router-link :to="{ name: 'produce-info' }">Produce Info Map</router-link>-->
-<!--        </li>-->
-<!--      </ul>-->
+      <!--      <h4>{{ $t("Chart") }}</h4>-->
+      <!--      <ul class="charts-container-filterbar">-->
+      <!--        <li>-->
+      <!--          <router-link :to="{ name: 'web-of-transnational-deals' }"-->
+      <!--            >Web of Transnational Deals</router-link-->
+      <!--          >-->
+      <!--        </li>-->
+      <!--        <li>-->
+      <!--          <router-link :to="{ name: 'produce-info' }">Produce Info Map</router-link>-->
+      <!--        </li>-->
+      <!--      </ul>-->
     </FilterBar>
     <ChartInformationBar />
     <div class="main-content">
-<!--      <LoadingPulse v-if="$apollo.loading" />-->
+      <!--      <LoadingPulse v-if="$apollo.loading" />-->
       <div class="h-100">
         <div class="sideBuffer float-left"></div>
         <div class="sideBuffer float-right"></div>
         <div class="chart-container">
-        <slot></slot>
-          </div>
+          <slot></slot>
+        </div>
       </div>
     </div>
     <!--    {{ this.$store.state.filters.filters }}-->
@@ -67,7 +67,7 @@
     }
   }
   .chart-container {
-        text-align: center;
+    text-align: center;
     height: 100%;
     display: flex;
     justify-content: center;
