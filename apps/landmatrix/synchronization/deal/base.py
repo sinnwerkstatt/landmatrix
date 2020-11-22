@@ -581,6 +581,8 @@ def parse_remaining(deal, attrs):
 
     # META!
     deal.fully_updated = attrs.get("fully_updated") == "True"
+    if deal.fully_updated:
+        deal.fully_updated_at = deal.modified_at
     deal.confidential = attrs.get("not_public") == "True"
     CONFIDENTIAL_REASON_MAP = {
         None: None,

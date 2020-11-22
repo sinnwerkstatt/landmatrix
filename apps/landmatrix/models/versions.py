@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db.models import PointField
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
-from django.db.models import DateTimeField, DateField
+from django.db.models import DateTimeField, DateField, ForeignKey
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core import serializers
@@ -100,4 +100,8 @@ class Version(models.Model):
                 x, y = point.replace("POINT (", "").replace(")", "").split(" ")
                 srid = srid.replace("SRID=", "")
                 fields[field.name] = Point(float(x), float(y), srid=srid)
+            elif isinstance(field, ForeignKey):
+                fields[field.name] = field.related_model.objects.get(
+                    pk=fields[field.name]
+                )
         return fields

@@ -272,6 +272,7 @@ type DealVersion {
     id: Int!
     deal: Deal
     revision: Revision
+    object_id: Int
 }
 
 type DealComment {

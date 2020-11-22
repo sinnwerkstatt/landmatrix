@@ -26,32 +26,8 @@ def map_raw_sql():
     """
 
 
-def resolve_deal_version(deal_id, version, fields):
-    rev = Revision.objects.get(id=version)
-
-    deal = rev.dealversion_set.get().fields
-
-    deal["locations"] = [v.fields for v in rev.locationversion_set.all()]
-    deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
-    deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
-
-    if any(["versions" in field for field in fields]):
-        deal["versions"] = [
-            dv.to_dict() for dv in DealVersion.objects.filter(object_id=deal_id)
-        ]
-
-    if "operating_company" in deal:
-        deal["operating_company"] = Investor.objects.get(id=deal["operating_company"])
-    if "country" in deal:
-        deal["country"] = Country.objects.get(id=deal["country"])
-    return deal
-
-
 def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
-
-    if version:
-        return resolve_deal_version(id, version, fields)
 
     add_versions = False
     add_comments = False
@@ -64,15 +40,24 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         else:
             filtered_fields += [field]
 
-    visible_deals = Deal.objects.visible(info.context.user, "UNFILTERED").filter(id=id)
-    if not visible_deals:
-        return
+    if version:
+        rev = Revision.objects.get(id=version)
+        deal = rev.dealversion_set.get().fields
+        deal["locations"] = [v.fields for v in rev.locationversion_set.all()]
+        deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
+        deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
+    else:
+        visible_deals = Deal.objects.visible(info.context.user, "UNFILTERED").filter(
+            id=id
+        )
+        if not visible_deals:
+            return
 
-    deal = qs_values_to_dict(
-        visible_deals,
-        filtered_fields,
-        ["locations", "datasources", "contracts", "top_investors"],
-    )[0]
+        deal = qs_values_to_dict(
+            visible_deals,
+            filtered_fields,
+            ["locations", "datasources", "contracts", "top_investors"],
+        )[0]
 
     if add_versions:
         deal["versions"] = [

@@ -1166,9 +1166,10 @@ class Deal(models.Model, OldDealMixin):
         # `True` if we have investors in other countries else `False`
         return bool(investors_countries - {self.country_id})
 
-    def _combine_geojson(self):
+    def _combine_geojson(self, locations=None):
+        locs = locations if locations else self.locations.all()
         features = []
-        for loc in self.locations.all():
+        for loc in locs:
             if loc.point:
                 point = {
                     "type": "Feature",
@@ -1289,6 +1290,7 @@ class DealVersion(Version):
             "id": self.id,
             "deal": self.retrieve_object(),
             "revision": self.revision,
+            "object_id": self.object_id,
         }
 
 

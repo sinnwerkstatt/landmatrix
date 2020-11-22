@@ -4,7 +4,7 @@ from typing import Optional
 from apps.landmatrix.models import Contract, DataSource, Deal, Location, Investor
 
 
-def _to_nullbool(val: Optional[str]):
+def _to_nullbool(val: Optional[str]) -> Optional[bool]:
     return None if val is None else val in {"True", "Yes"}
 
 

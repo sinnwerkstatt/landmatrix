@@ -44,19 +44,27 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         base.parse_water(deal, meta_activity.group_water)
         base.parse_remaining(deal, meta_activity.group_remaining)
 
-        status = histivity.fk_status_id
+        new_status = histivity.fk_status_id
         rev1 = Revision.objects.create(
             date_created=histivity.history_date,
             user=get_user_model().objects.filter(id=histivity.history_user_id).first(),
             comment=histivity.comment or "",
         )
 
-        submodels.create_locations(deal, meta_activity.loc_groups, status, rev1)
-        submodels.create_contracts(deal, meta_activity.con_groups, status, rev1)
-        submodels.create_data_sources(deal, meta_activity.ds_groups, status, rev1)
+        do_save = deal.status == 1 or new_status in [2, 3, 4]
 
-        do_save = deal.status == 1 or status in [2, 3, 4]
-        deal.status, deal.draft_status = calculate_new_stati(deal, status)
+        if new_status == 4:
+            deal.locations.all().delete()
+            deal.contracts.all().delete()
+            deal.datasources.all().delete()
+        else:
+            locations = submodels.create_locations(
+                deal, meta_activity.loc_groups, do_save, rev1
+            )
+            submodels.create_contracts(deal, meta_activity.con_groups, do_save, rev1)
+            submodels.create_data_sources(deal, meta_activity.ds_groups, do_save, rev1)
+
+        deal.status, deal.draft_status = calculate_new_stati(deal, new_status)
 
         if do_save:
             # save the actual model
@@ -64,9 +72,10 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             # or: there is a current model but it's a draft
             # or: the new status is Live, Updated or Deleted
             deal.save()
-
+        elif new_status == 1:
+            deal.geojson = deal._combine_geojson(locations)
         Version.create_from_obj(deal, rev1)
 
         if not do_save:
             # otherwise update the draft_status of the current_model
-            Deal.objects.filter(pk=deal.pk).update(draft_status=deal.new_draft_status)
+            Deal.objects.filter(pk=deal.pk).update(draft_status=deal.draft_status)

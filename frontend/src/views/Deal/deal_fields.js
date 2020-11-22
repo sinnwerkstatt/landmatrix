@@ -237,6 +237,7 @@ export const deal_gql_query = gql`
           }
           comment
         }
+        object_id
       }
       comments {
         id

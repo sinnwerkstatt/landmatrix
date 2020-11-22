@@ -6,10 +6,11 @@ from django.contrib.gis.geos import Point
 from geojson_rewind import rewind
 
 from apps.landmatrix.models import Contract, DataSource, Location
+from apps.landmatrix.models.versions import Version
 from apps.landmatrix.synchronization.helpers import _to_nullbool
 
 
-def create_locations(deal, groups):
+def create_locations(deal, groups, do_save, revision):
     # track former locations, throw out the ones that still exist now, delete the rest
     all_locations = set(c.id for c in deal.locations.all())
 
@@ -22,6 +23,7 @@ def create_locations(deal, groups):
         "Coordinates": "COORDINATES",
         "Coordenadas": "COORDINATES",
     }
+    locations = []
     for group_id, attrs in sorted(groups.items()):
         try:
             location = Location.objects.get(deal=deal, old_group_id=group_id)
@@ -85,12 +87,16 @@ def create_locations(deal, groups):
         location.areas = (
             {"type": "FeatureCollection", "features": features} if features else None
         )
-        location.save()
-    if all_locations:
+        locations += [location]
+        if do_save:
+            location.save()
+        Version.create_from_obj(location, revision)
+    if do_save and all_locations:
         Location.objects.filter(id__in=all_locations).delete()
+    return locations
 
 
-def create_contracts(deal, groups):
+def create_contracts(deal, groups, do_save, revision):
     # track former contracts, throw out the ones that still exist now, delete the rest
     all_contracts = set(c.id for c in deal.contracts.all())
 
@@ -120,12 +126,15 @@ def create_contracts(deal, groups):
             agreement_duration = 99
         contract.agreement_duration = agreement_duration
         contract.comment = attrs.get("tg_contract_comment") or ""
-        contract.save()
-    if all_contracts:
+
+        if do_save:
+            contract.save()
+        Version.create_from_obj(contract, revision)
+    if do_save and all_contracts:
         Contract.objects.filter(id__in=all_contracts).delete()
 
 
-def create_data_sources(deal, groups):
+def create_data_sources(deal, groups, do_save, revision):
     # track former datasources, throw out the ones that still exist now, delete the rest
     all_old_ds = set(c.id for c in deal.datasources.all())
 
@@ -197,6 +206,9 @@ def create_data_sources(deal, groups):
             attrs.get("includes_in_country_verified_information")
         )
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
-        data_source.save()
-    if all_old_ds:
+        if do_save:
+            data_source.save()
+        Version.create_from_obj(data_source, revision)
+
+    if do_save and all_old_ds:
         DataSource.objects.filter(id__in=all_old_ds).delete()

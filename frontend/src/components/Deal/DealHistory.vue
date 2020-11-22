@@ -55,6 +55,7 @@
   import { mapState } from "vuex";
 
   export default {
+    name: "DealHistory",
     props: ["deal", "deal_id", "deal_version"],
     methods: {
       derive_status,
