@@ -1,9 +1,9 @@
 import pytest
 from django.utils import timezone
-from reversion.models import Version
 
 from apps.landmatrix.models import HistoricalInvestor
 from apps.landmatrix.models import Investor
+from apps.landmatrix.models.gndinvestor import InvestorVersion
 
 NAME = "The Grand Investor"
 COMMENT = "regular blabla comment"
@@ -52,7 +52,7 @@ def test_new_investor_draft(histvestor_draft):
     assert inv1.classification == "PRIVATE_COMPANY"
     assert inv1.status == Investor.STATUS_DRAFT
     assert inv1.draft_status == 1
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
     assert v1.revision.comment == ACTION_COMM
 
@@ -67,7 +67,7 @@ def test_draft_update_draft(histvestor_draft):
     assert inv1.classification == "INVESTMENT_FUND"
     assert inv1.status == Investor.STATUS_DRAFT
     assert inv1.draft_status == 1
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
     assert versions[0].revision.comment == "Fix classification"
     assert versions[1].revision.comment == ACTION_COMM
@@ -83,11 +83,11 @@ def test_investor_draft_to_live(histvestor_draft_live):
     ]
     assert inv1.status == Investor.STATUS_LIVE
     assert inv1.draft_status is None
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
-    assert versions[0].field_dict["status"] == Investor.STATUS_LIVE
+    assert versions[0].fields["status"] == Investor.STATUS_LIVE
     assert versions[0].revision.comment == "Approved"
-    assert versions[1].field_dict["status"] == Investor.STATUS_DRAFT
+    assert versions[1].fields["status"] == Investor.STATUS_DRAFT
 
 
 def test_investor_live_and_draft(histvestor_draft_live):
@@ -101,11 +101,11 @@ def test_investor_live_and_draft(histvestor_draft_live):
     assert inv1.status == Investor.STATUS_LIVE
     assert inv1.draft_status == 1
     assert inv1.name == NAME
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     assert versions[0].revision.comment == "Some more changes draft"
-    assert versions[0].field_dict["status"] == Investor.STATUS_LIVE
-    assert versions[0].field_dict["name"] == new_name
+    assert versions[0].fields["status"] == Investor.STATUS_LIVE
+    assert versions[0].fields["name"] == new_name
 
     histvestor_draft_live.fk_status_id = 2
     histvestor_draft_live.action_comment = "Approve changes"
@@ -115,11 +115,11 @@ def test_investor_live_and_draft(histvestor_draft_live):
     assert inv1.status == Investor.STATUS_UPDATED
     assert inv1.draft_status is None
     assert inv1.name == new_name
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 4
     assert versions[0].revision.comment == "Approve changes"
-    assert versions[0].field_dict["status"] == Investor.STATUS_UPDATED
-    assert versions[0].field_dict["name"] == new_name
+    assert versions[0].fields["status"] == Investor.STATUS_UPDATED
+    assert versions[0].fields["name"] == new_name
 
 
 @pytest.mark.django_db
@@ -141,9 +141,30 @@ def test_new_investor_live_directly():
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_LIVE
     assert inv1.draft_status is None
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
     assert v1.revision.comment == ACTION_COMM
+
+    histvestor = HistoricalInvestor(
+        investor_identifier=1,
+        fk_status_id=Investor.STATUS_DRAFT,
+        name=NAME,
+        classification=10,
+        history_date=now,
+        fk_country_id=604,
+        comment="XXCF",
+        action_comment=ACTION_COMM,
+    )
+    histvestor.save(update_elasticsearch=False)
+    assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 2
+
+    inv1 = Investor.objects.get()
+    assert inv1.status == Investor.STATUS_LIVE
+    assert inv1.draft_status is Investor.STATUS_DRAFT
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
+    assert versions.count() == 2
+    assert versions[0].fields["comment"] == "XXCF"
+    assert versions[1].fields["comment"] == "regular blabla comment"
 
 
 @pytest.mark.django_db
@@ -167,7 +188,7 @@ def test_new_investor_deleted_directly():
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_DELETED
     assert inv1.draft_status is None
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
     assert v1.revision.comment == ACTION_COMM
 
@@ -179,8 +200,8 @@ def test_investor_live_then_delete(histvestor_draft_live):
 
     inv1 = Investor.objects.get()
     assert inv1.status == Investor.STATUS_DELETED
-    assert inv1.draft_status == None
-    versions = Version.objects.get_for_object_reference(Investor, 1)
+    assert inv1.draft_status is None
+    versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     assert versions[0].revision.comment == "Delete this!"
-    assert versions[0].field_dict["status"] == Investor.STATUS_DELETED
+    assert versions[0].fields["status"] == Investor.STATUS_DELETED

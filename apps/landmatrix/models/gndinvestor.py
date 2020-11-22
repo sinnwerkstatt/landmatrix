@@ -112,7 +112,7 @@ class Investor(models.Model):
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
     created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField()
+    modified_at = models.DateTimeField(blank=True, null=True)
 
     old_id = models.IntegerField(null=True, blank=True)
 
@@ -123,9 +123,7 @@ class Investor(models.Model):
     # FIXME This should be replaced by an option to _NOT_ specify the investor name.
     is_actually_unknown = models.BooleanField(default=False)
 
-    def save(self, custom_modification_date=None, *args, **kwargs):
-        self.modified_at = custom_modification_date or timezone.now()
-
+    def save(self, *args, **kwargs):
         if re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE):
             self.is_actually_unknown = True
         super().save(*args, **kwargs)
@@ -310,9 +308,6 @@ class InvestorVentureInvolvement(models.Model):
     )
     comment = models.TextField(_("Comment"), blank=True)
 
-    created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField()
-
     old_id = models.IntegerField(null=True, blank=True)
 
     objects = InvestorVentureInvolvementQuerySet.as_manager()
@@ -323,15 +318,11 @@ class InvestorVentureInvolvement(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        if self.role == 10:
+        if self.role == "PARENT":
             role = _("<is PARENT of>")
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
-
-    def save(self, custom_modification_date=None, *args, **kwargs):
-        self.modified_at = custom_modification_date or timezone.now()
-        super().save(*args, **kwargs)
 
     def to_dict(self):
         return {

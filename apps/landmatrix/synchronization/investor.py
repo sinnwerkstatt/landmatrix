@@ -69,28 +69,29 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
         comment=histvestor.action_comment or "",
     )
 
-    do_save = not investor or investor.status == 1 or status in [2, 3, 4]
+    do_save = investor.status == 1 or status in [2, 3, 4]
 
-    investor.new_status, investor.new_draft_status = calculate_new_stati(
-        investor, status
-    )
+    investor.status, investor.draft_status = calculate_new_stati(investor, status)
 
     if do_save:
         # save the actual model
         # if: there is not a current_model
         # or: there is a current model but it's a draft
         # or: the new status is Live, Updated or Deleted
-        investor.save(custom_modification_date=histvestor.history_date)
+        investor.save()
 
     Version.create_from_obj(investor, rev1)
 
     if not do_save:
         # otherwise update the draft_status of the current_model
         Investor.objects.filter(pk=investor.pk).update(
-            draft_status=investor.new_draft_status
+            draft_status=investor.draft_status
         )
 
-    _create_involvements_for_investor(investor, histvestor, status, rev1)
+    if status == 4:
+        InvestorVentureInvolvement.objects.filter(venture=investor).delete()
+    else:
+        _create_involvements_for_investor(investor, histvestor, do_save, rev1)
 
 
 def _create_involvements_for_investor(investor, histvestor, do_save, revision):
@@ -100,7 +101,6 @@ def _create_involvements_for_investor(investor, histvestor, do_save, revision):
     involves = HistoricalInvestorVentureInvolvement.objects.filter(
         fk_venture=histvestor
     )
-
     for histvolvement in involves:
         types = (
             [INVESTMENT_MAP[x] for x in list(histvolvement.investment_type)]

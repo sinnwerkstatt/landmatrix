@@ -49,7 +49,7 @@ post_save.connect(invalidate_cache)
 @receiver(post_save, sender=DataSource)
 @receiver(post_delete, sender=DataSource)
 def deal_submodels_trigger_refresh_calculated_deal_fields(sender, instance, **kwargs):
-    instance.deal.recalculate_calculated_fields()
+    instance.deal.save(recalculate_independent=False)
 
 
 @receiver(post_save, sender=Investor)
@@ -58,7 +58,7 @@ def investor_change_trigger_refresh_calculated_deal_fields(
     sender, instance: Investor, **kwargs
 ):
     for deal in instance.get_affected_deals():
-        deal.recalculate_calculated_fields()
+        deal.save(recalculate_independent=False)
 
 
 @receiver(post_save, sender=InvestorVentureInvolvement)
@@ -67,4 +67,4 @@ def involvements_updated(sender, instance: InvestorVentureInvolvement, **kwargs)
     # Only consider the ventures deals. Because:
     # On an Involvement update the deals of the investor are not affected.
     for deal in instance.venture.get_affected_deals():
-        deal.recalculate_calculated_fields()
+        deal.save(recalculate_independent=False)

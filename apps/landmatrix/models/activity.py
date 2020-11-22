@@ -1020,10 +1020,13 @@ class HistoricalActivity(ActivityBase):
     def trigger_gnd(self):
         from apps.landmatrix.synchronization.deal import histivity_to_deal
 
-        try:
+        if settings.DEBUG:
             histivity_to_deal(activity_pk=self.pk)
-        except:
-            capture_message("Could not sync HistIvity to Deal", level="error")
+        else:
+            try:
+                histivity_to_deal(activity_pk=self.pk)
+            except:
+                capture_message("Could not sync HistIvity to Deal", level="error")
 
     class Meta:
         verbose_name = _("Historical activity")

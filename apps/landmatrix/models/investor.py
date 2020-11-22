@@ -620,10 +620,13 @@ class HistoricalInvestor(InvestorBase):
 
         from apps.landmatrix.synchronization.investor import histvestor_to_investor
 
-        try:
+        if settings.DEBUG:
             histvestor_to_investor(self.pk)
-        except:
-            capture_message("Could not sync HistVestor to Investor", level="error")
+        else:
+            try:
+                histvestor_to_investor(self.pk)
+            except:
+                capture_message("Could not sync HistVestor to Investor", level="error")
 
     class Meta:
         verbose_name = _("Historical investor")

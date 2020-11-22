@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Set
 
 from django.contrib.postgres.fields import ArrayField as _ArrayField, JSONField
@@ -996,8 +997,8 @@ class Deal(models.Model, OldDealMixin):
 
     """ # Timestamps """
     created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField()
-    fully_updated_at = models.DateTimeField(null=True)
+    modified_at = models.DateTimeField(blank=True, null=True)
+    fully_updated_at = models.DateTimeField(blank=True, null=True)
 
     objects = DealQuerySet.as_manager()
 
@@ -1007,43 +1008,41 @@ class Deal(models.Model, OldDealMixin):
         return f"#{self.id}"
 
     @transaction.atomic
-    def save(self, custom_modification_date=None, *args, **kwargs):
-        if custom_modification_date != "-SKIP-":
-            self.modified_at = custom_modification_date or timezone.now()
-            if self.fully_updated:
-                self.fully_updated_at = self.modified_at
+    def save(
+        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
+    ):
+        if recalculate_independent:
+            self.current_contract_size = self._get_current("contract_size")
+            self.current_production_size = self._get_current("production_size")
+            self.current_intention_of_investment = self._get_current(
+                "intention_of_investment"
+            )
+            self.current_negotiation_status = self._get_current("negotiation_status")
+            self.current_implementation_status = self._get_current(
+                "implementation_status"
+            )
+            self.current_crops = self._get_current("crops")
+            self.current_animals = self._get_current("animals")
+            self.current_resources = self._get_current("resources")
 
-        # Get current values from a lot of the JSONField attributes
-        self.current_contract_size = self._get_current("contract_size")
-        self.current_production_size = self._get_current("production_size")
-        self.current_intention_of_investment = self._get_current(
-            "intention_of_investment"
-        )
-        self.current_negotiation_status = self._get_current("negotiation_status")
-        self.current_implementation_status = self._get_current("implementation_status")
-        self.current_crops = self._get_current("crops")
-        self.current_animals = self._get_current("animals")
-        self.current_resources = self._get_current("resources")
-
-        self.deal_size = self._calculate_deal_size()
-        self.initiation_year = self._calculate_initiation_year()
-        self.forest_concession = self._calculate_forest_concession()
-        self.recalculate_calculated_fields(*args, **kwargs)
-        # super().save is executed in `recalculate_calculated_fields` already!
-
-    def recalculate_calculated_fields(self, *args, **kwargs):
-        # With the help of signals these fields are recalculated on changes to:
-        # Location, Contract, DataSource
-        # as well as Investor and InvestorVentureInvolvement
-        self.not_public_reason = self._calculate_public_state()
-        self.is_public = self.not_public_reason == ""
-        self.transnational = self._calculate_transnational()
-        self.geojson = self._combine_geojson()
+            # these only depend on the _get_current calls right above.
+            self.deal_size = self._calculate_deal_size()
+            self.initiation_year = self._calculate_initiation_year()
+            self.forest_concession = self._calculate_forest_concession()
+        if recalculate_dependent:
+            # With the help of signals these fields are recalculated on changes to:
+            # Location, Contract, DataSource
+            # as well as Investor and InvestorVentureInvolvement
+            self.not_public_reason = self._calculate_public_state()
+            self.is_public = self.not_public_reason == ""
+            self.transnational = self._calculate_transnational()
+            self.geojson = self._combine_geojson()
 
         super().save(*args, **kwargs)
 
-        # save m2m after, we need the Deal to have an ID first. 🙄
-        self.top_investors.set(self._calculate_top_investors())
+        if recalculate_dependent:
+            # save m2m in the end, we need the Deal to have an ID first. 🙄
+            self.top_investors.set(self._calculate_top_investors())
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)

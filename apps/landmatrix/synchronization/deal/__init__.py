@@ -1,9 +1,9 @@
-import reversion
 from django.contrib.auth import get_user_model
 
 from apps.landmatrix.models import Deal
+from apps.landmatrix.models.versions import Revision, Version
 from apps.landmatrix.synchronization.deal import base, submodels
-from apps.landmatrix.synchronization.helpers import MetaActivity
+from apps.landmatrix.synchronization.helpers import MetaActivity, calculate_new_stati
 from apps.landmatrix.models import HistoricalActivity
 
 
@@ -24,41 +24,49 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         return
 
     for histivity in activity_versions:
-        try:
-            deal = Deal.objects.get(id=activity_identifier)
-            is_new_deal = False
-        except Deal.DoesNotExist:
-            deal = Deal(id=activity_identifier)
-            is_new_deal = True
+        deal, created = Deal.objects.get_or_create(id=activity_identifier)
 
         meta_activity = MetaActivity(histivity)
-        with reversion.create_revision():
-            if is_new_deal:
-                deal.created_at = histivity.history_date
 
-            deal.modified_at = histivity.history_date
+        if created:
+            deal.created_at = histivity.history_date
+        deal.modified_at = histivity.history_date
 
-            submodels.create_locations(deal, meta_activity.loc_groups)
-            submodels.create_contracts(deal, meta_activity.con_groups)
-            submodels.create_data_sources(deal, meta_activity.ds_groups)
+        base.parse_general(deal, meta_activity.group_general)
+        base.parse_employment(deal, meta_activity.group_employment)
 
-            base.parse_general(deal, meta_activity.group_general)
-            base.parse_employment(deal, meta_activity.group_employment)
+        base.connect_investor_to_deal(deal, histivity)
 
-            base.connect_investor_to_deal(deal, histivity)
+        base.parse_investor_info(deal, meta_activity.group_investor_info)
+        base.parse_local_communities(deal, meta_activity.group_local_communities)
+        base.parse_former_use(deal, meta_activity.group_former_use)
+        base.parse_produce_info(deal, meta_activity.group_produce_info)
+        base.parse_water(deal, meta_activity.group_water)
+        base.parse_remaining(deal, meta_activity.group_remaining)
 
-            base.parse_investor_info(deal, meta_activity.group_investor_info)
-            base.parse_local_communities(deal, meta_activity.group_local_communities)
-            base.parse_former_use(deal, meta_activity.group_former_use)
-            base.parse_produce_info(deal, meta_activity.group_produce_info)
-            base.parse_water(deal, meta_activity.group_water)
-            base.parse_remaining(deal, meta_activity.group_remaining)
+        status = histivity.fk_status_id
+        rev1 = Revision.objects.create(
+            date_created=histivity.history_date,
+            user=get_user_model().objects.filter(id=histivity.history_user_id).first(),
+            comment=histivity.comment or "",
+        )
 
-            deal.save_revision(
-                status=histivity.fk_status_id,
-                date=histivity.history_date,
-                user=get_user_model()
-                .objects.filter(id=histivity.history_user_id)
-                .first(),
-                comment=histivity.comment or "",
-            )
+        submodels.create_locations(deal, meta_activity.loc_groups, status, rev1)
+        submodels.create_contracts(deal, meta_activity.con_groups, status, rev1)
+        submodels.create_data_sources(deal, meta_activity.ds_groups, status, rev1)
+
+        do_save = deal.status == 1 or status in [2, 3, 4]
+        deal.status, deal.draft_status = calculate_new_stati(deal, status)
+
+        if do_save:
+            # save the actual model
+            # if: there is not a current_model
+            # or: there is a current model but it's a draft
+            # or: the new status is Live, Updated or Deleted
+            deal.save()
+
+        Version.create_from_obj(deal, rev1)
+
+        if not do_save:
+            # otherwise update the draft_status of the current_model
+            Deal.objects.filter(pk=deal.pk).update(draft_status=deal.new_draft_status)

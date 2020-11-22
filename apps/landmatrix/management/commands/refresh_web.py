@@ -8,5 +8,5 @@ class Command(BaseCommand):
         deals = Deal.objects.all().order_by("id")
         for deal in deals:
             print(f"  Sync Deal {deal.id}... ", end="", flush=True)
-            deal.save(custom_modification_date="-SKIP-")
+            deal.save()
             print("\033[92m" + "OK" + "\033[0m")

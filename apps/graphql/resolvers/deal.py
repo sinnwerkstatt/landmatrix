@@ -29,11 +29,11 @@ def map_raw_sql():
 def resolve_deal_version(deal_id, version, fields):
     rev = Revision.objects.get(id=version)
 
-    deal = rev.dealversion_set.get().fields()
+    deal = rev.dealversion_set.get().fields
 
-    deal["locations"] = [v.fields() for v in rev.locationversion_set.all()]
-    deal["datasources"] = [v.fields() for v in rev.datasourceversion_set.all()]
-    deal["contracts"] = [v.fields() for v in rev.contractversion_set.all()]
+    deal["locations"] = [v.fields for v in rev.locationversion_set.all()]
+    deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
+    deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
 
     if any(["versions" in field for field in fields]):
         deal["versions"] = [
