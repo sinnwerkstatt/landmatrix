@@ -1,13 +1,13 @@
 from typing import Any
 
-from ariadne import ObjectType
 from django.utils.html import linebreaks
 from django_comments.models import Comment
 from graphql import GraphQLResolveInfo
-from reversion.models import Version, Revision
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country, Investor
+from apps.landmatrix.models.deal import DealVersion
+from apps.landmatrix.models.versions import Revision
 from apps.utils import qs_values_to_dict
 
 
@@ -26,32 +26,24 @@ def map_raw_sql():
     """
 
 
-def resolve_deal_version(version, fields):
-    rev = Revision.objects.get(id=version).version_set
-    deal = rev.get(content_type__model="deal").field_dict
+def resolve_deal_version(deal_id, version, fields):
+    rev = Revision.objects.get(id=version)
 
-    deal["locations"] = [
-        v.field_dict for v in rev.filter(content_type__model="location")
-    ]
-    deal["datasources"] = [
-        v.field_dict for v in rev.filter(content_type__model="datasource")
-    ]
-    deal["contracts"] = [
-        v.field_dict for v in rev.filter(content_type__model="contract")
-    ]
+    deal = rev.dealversion_set.get().fields()
+
+    deal["locations"] = [v.fields() for v in rev.locationversion_set.all()]
+    deal["datasources"] = [v.fields() for v in rev.datasourceversion_set.all()]
+    deal["contracts"] = [v.fields() for v in rev.contractversion_set.all()]
 
     if any(["versions" in field for field in fields]):
         deal["versions"] = [
-            {"id": x.id, "deal": x.field_dict, "revision": x.revision}
-            for x in Version.objects.get_for_object_reference(Deal, deal["id"])
+            dv.to_dict() for dv in DealVersion.objects.filter(object_id=deal_id)
         ]
 
-    if "operating_company_id" in deal:
-        deal["operating_company"] = Investor.objects.get(
-            id=deal["operating_company_id"]
-        )
-    if "country_id" in deal:
-        deal["country"] = Country.objects.get(id=deal["country_id"])
+    if "operating_company" in deal:
+        deal["operating_company"] = Investor.objects.get(id=deal["operating_company"])
+    if "country" in deal:
+        deal["country"] = Country.objects.get(id=deal["country"])
     return deal
 
 
@@ -59,7 +51,7 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     if version:
-        return resolve_deal_version(version, fields)
+        return resolve_deal_version(id, version, fields)
 
     add_versions = False
     add_comments = False
@@ -84,8 +76,7 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
 
     if add_versions:
         deal["versions"] = [
-            {"id": x.id, "deal": x.field_dict, "revision": x.revision}
-            for x in Version.objects.get_for_object_reference(Deal, id)
+            dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
         ]
     if add_comments:
         deal["comments"] = [
@@ -113,9 +104,7 @@ def resolve_deals(
     if filters:
         qs = qs.filter(parse_filters(filters))
 
-    fields = get_fields(
-        info, recursive=True, exclude=["__typename", "has_no_known_investor"]
-    )
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     if limit != 0:
         qs = qs[:limit]
@@ -123,14 +112,6 @@ def resolve_deals(
     return qs_values_to_dict(
         qs, fields, ["locations", "datasources", "contracts", "top_investors"]
     )
-
-
-deal_type = ObjectType("Deal")
-
-
-@deal_type.field("has_no_known_investor")
-def get_has_no_known_investor(deal, info: GraphQLResolveInfo):
-    return Deal.objects.get(id=deal["id"])._has_no_known_investor()
 
 
 def _resolve_field_dict_fetch(field_dict, revision):
@@ -144,26 +125,19 @@ def _resolve_field_dict_fetch(field_dict, revision):
 def resolve_dealversions(
     obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
 ):
-    qs = Version.objects.get_for_model(Deal)  # .filter(revision__date_created="")
-    # qs = _resolve_deals_prefetching(info).order_by(sort)
+    qs = DealVersion.objects.all()
 
-    if filters:
-        qs = qs.filter(parse_filters(filters))
+    # TODO Ralph bitte bitte
+    # if filters:
+    #     qs = qs.filter(parse_filters(filters))
 
     if country_id:
-        qs = filter((lambda v: v.field_dict["country_id"] == country_id), qs)
+        qs = qs.filter(serialized_data__0__fields__country=country_id)
 
     if region_id:
         country_ids = Country.objects.filter(fk_region_id=region_id).values_list(
             "id", flat=True
         )
-        qs = filter((lambda v: v.field_dict["country_id"] in country_ids), qs)
+        qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
 
-    return [
-        {
-            "id": x.id,
-            "deal": _resolve_field_dict_fetch(x.field_dict, x.revision),
-            "revision": x.revision,
-        }
-        for x in qs
-    ]
+    return [dv.to_dict() for dv in qs]

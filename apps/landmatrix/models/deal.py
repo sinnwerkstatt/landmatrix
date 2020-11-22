@@ -1,21 +1,20 @@
-import json
 from typing import Optional, Set
 
-import reversion
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField as _ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from reversion.models import Version
 
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.mixins import (
-    OldDealMixin,
-    ReversionSaveMixin,
-    UnderscoreDisplayParseMixin,
-)
+from apps.landmatrix.models.mixins import OldDealMixin
+from apps.landmatrix.models.versions import Version
+
+
+class ArrayField(_ArrayField):
+    def value_to_string(self, obj):
+        return self.value_from_object(obj)
 
 
 class DealQuerySet(models.QuerySet):
@@ -36,11 +35,7 @@ class DealQuerySet(models.QuerySet):
         return self
 
 
-@reversion.register(
-    follow=("locations", "contracts", "datasources"),
-    ignore_duplicates=True,
-)
-class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDealMixin):
+class Deal(models.Model, OldDealMixin):
     """ Deal """
 
     """ Locations """
@@ -971,22 +966,28 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
     transnational = models.NullBooleanField()
     geojson = JSONField(blank=True, null=True)
 
-    # the following is a cache for Deal versions, to deduce if they were public or not
-    cached_has_no_known_investor = models.BooleanField(default=True)
-
     """ # Status """
+    STATUS_DRAFT = 1
+    STATUS_LIVE = 2
+    STATUS_UPDATED = 3
+    STATUS_DELETED = 4
     STATUS_CHOICES = (
-        (1, _("Draft")),
-        (2, _("Live")),
-        (3, _("Updated")),
-        (4, _("Deleted")),
+        (STATUS_DRAFT, _("Draft")),
+        (STATUS_LIVE, _("Live")),
+        (STATUS_UPDATED, _("Updated")),
+        (STATUS_DELETED, _("Deleted")),
     )
+    DRAFT_STATUS_DRAFT = 1
+    DRAFT_STATUS_REVIEW = 2
+    DRAFT_STATUS_ACTIVATION = 3
+    DRAFT_STATUS_REJECTED = 4
+    DRAFT_STATUS_TO_DELETE = 5
     DRAFT_STATUS_CHOICES = (
-        (1, _("Draft")),
-        (2, _("Review")),
-        (3, _("Activation")),
-        (4, _("Rejected")),
-        (5, _("To Delete")),
+        (DRAFT_STATUS_DRAFT, _("Draft")),
+        (DRAFT_STATUS_REVIEW, _("Review")),
+        (DRAFT_STATUS_ACTIVATION, _("Activation")),
+        (DRAFT_STATUS_REJECTED, _("Rejected")),
+        (DRAFT_STATUS_TO_DELETE, _("To Delete")),
     )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(
@@ -1038,7 +1039,6 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
         self.is_public = self.not_public_reason == ""
         self.transnational = self._calculate_transnational()
         self.geojson = self._combine_geojson()
-        self.cached_has_no_known_investor = self._has_no_known_investor()
 
         super().save(*args, **kwargs)
 
@@ -1256,7 +1256,7 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             operating_company_country = self.operating_company.country.name
 
         operating_company_action_comment = ""
-        versions = Version.objects.get_for_object(self)
+        versions = DealVersion.objects.filter(object_id=self.id)
         if versions:
             operating_company_action_comment = versions[0].revision.comment
 
@@ -1280,6 +1280,17 @@ class Deal(models.Model, UnderscoreDisplayParseMixin, ReversionSaveMixin, OldDea
             self.operating_company.comment,
             operating_company_action_comment,
         ]
+
+
+class DealVersion(Version):
+    model = Deal
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "deal": self.retrieve_object(),
+            "revision": self.revision,
+        }
 
 
 class DealTopInvestors(models.Model):

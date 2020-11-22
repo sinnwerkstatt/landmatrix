@@ -14,8 +14,7 @@ class InvolvementNetwork:
         # find all involvements
         involvements = []
         qs = (
-            InvestorVentureInvolvement.objects.filter(status__in=(2, 3))
-            .filter(investor__status__in=(2, 3), venture__status__in=(2, 3))
+            InvestorVentureInvolvement.objects.active()
             .prefetch_related("investor")
             .prefetch_related("investor__deals")
             .prefetch_related("venture")

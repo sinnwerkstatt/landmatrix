@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.admin import TabularInline
-from reversion.admin import VersionAdmin
 
 from apps.landmatrix import models
 from apps.landmatrix.models import (
@@ -93,32 +92,32 @@ class InlineDataSources(TabularInline):
 
 
 @admin.register(Deal)
-class DealAdmin(VersionAdmin):
+class DealAdmin(admin.ModelAdmin):
     inlines = [InlineLocations, InlineContracts, InlineDataSources]
 
 
 @admin.register(Location)
-class LocationAdmin(VersionAdmin):
+class LocationAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__"]
 
 
 @admin.register(DataSource)
-class DataSourceAdmin(VersionAdmin):
+class DataSourceAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__"]
 
 
 @admin.register(Contract)
-class ContractAdmin(VersionAdmin):
+class ContractAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__"]
 
 
 @admin.register(Investor)
-class InvestorAdmin(VersionAdmin):
+class InvestorAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__", "created_at"]
 
 
 @admin.register(InvestorVentureInvolvement)
-class InvestorVentureInvolvementAdmin(VersionAdmin):
+class InvestorVentureInvolvementAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__"]
 
 

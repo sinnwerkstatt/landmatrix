@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Optional
 
-from apps.landmatrix.models import Contract, DataSource, Deal, Location
+from apps.landmatrix.models import Contract, DataSource, Deal, Location, Investor
 
 
 def _to_nullbool(val: Optional[str]):
@@ -195,3 +195,52 @@ class MetaActivity:
             else:
                 # pass
                 print(f"{activity.activity_identifier}/{activity.id} >> {attr}")
+
+
+def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
+    try:
+        current_model = obj.__class__.objects.get(pk=obj.pk)
+    except obj.__class__.DoesNotExist:
+        current_model = None
+
+    # "Pending"
+    if status == 1:
+        if current_model:
+            new_status = current_model.status
+        else:
+            new_status = obj.STATUS_DRAFT
+        new_draft_status = obj.DRAFT_STATUS_DRAFT
+
+    # "Active" and "Overwritten"
+    elif status in [2, 3]:
+        if current_model and current_model.status != obj.STATUS_DRAFT:
+            new_status = obj.STATUS_UPDATED
+        else:
+            new_status = obj.STATUS_LIVE
+        new_draft_status = None
+
+    # "Deleted"
+    elif status == 4:
+        new_status = obj.STATUS_DELETED
+        new_draft_status = None
+
+    # "Rejected"
+    elif status == 5:
+        if current_model:
+            new_status = current_model.status
+        else:
+            new_status = obj.STATUS_DRAFT
+        new_draft_status = obj.DRAFT_STATUS_REJECTED
+
+    # "To Delete"
+    elif status == 6:
+        if current_model:
+            new_status = current_model.status
+        else:
+            new_status = obj.STATUS_DRAFT
+        new_draft_status = obj.DRAFT_STATUS_TO_DELETE
+
+    else:
+        raise Exception("status must be between 1 and 6")
+
+    return new_status, new_draft_status

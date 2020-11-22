@@ -88,7 +88,6 @@ INSTALLED_APPS = [
     "celery",
     # green new deal
     "wagtail.api.v2",
-    "reversion",
     "ariadne.contrib.django",
 ]
 

@@ -1,4 +1,3 @@
-import reversion
 from django.contrib.gis.db import models as gismodels
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -9,8 +8,8 @@ from apps.landmatrix.models.mixins import (
     OldContractMixin,
     OldDataSourceMixin,
     OldLocationMixin,
-    UnderscoreDisplayParseMixin,
 )
+from apps.landmatrix.models.versions import Version
 
 
 class DealSubmodelManager(models.Manager):
@@ -21,8 +20,7 @@ class DealSubmodelManager(models.Manager):
         return qs.filter(deal__status__in=(2, 3), deal__confidential=False)
 
 
-@reversion.register(ignore_duplicates=True)
-class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
+class Location(models.Model, OldLocationMixin):
     name = models.CharField(max_length=2000, blank=True)
     description = models.CharField(max_length=2000, blank=True)
     point = gismodels.PointField(blank=True, null=True)
@@ -57,8 +55,11 @@ class Location(models.Model, UnderscoreDisplayParseMixin, OldLocationMixin):
         return f"(#{self.deal_id}) {self.name}"
 
 
-@reversion.register(ignore_duplicates=True)
-class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
+class LocationVersion(Version):
+    model = Location
+
+
+class Contract(models.Model, OldContractMixin):
     number = models.CharField(_("Contract number"), max_length=255, blank=True)
     date = models.DateField(blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
@@ -76,8 +77,11 @@ class Contract(models.Model, UnderscoreDisplayParseMixin, OldContractMixin):
         return f"(#{self.deal_id}) {self.number}"
 
 
-@reversion.register(ignore_duplicates=True)
-class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
+class ContractVersion(Version):
+    model = Contract
+
+
+class DataSource(models.Model, OldDataSourceMixin):
     TYPE_CHOICES = (
         ("MEDIA_REPORT", _("Media report")),
         ("RESEARCH_PAPER_OR_POLICY_REPORT", _("Research Paper / Policy Report")),
@@ -123,3 +127,7 @@ class DataSource(models.Model, UnderscoreDisplayParseMixin, OldDataSourceMixin):
 
     class Meta:
         ordering = ["date"]
+
+
+class DataSourceVersion(Version):
+    model = DataSource

@@ -1,113 +1,12 @@
 import warnings
 
-import reversion
-
 
 class UnderscoreDisplayParseMixin:
-    """ This mixin will help to convert `_display` to the corresponding values """
-
-    def __getattribute__(self, attr):
-        if attr.endswith("_display") and not attr.startswith("get_"):
-            if hasattr(self, f"get_{attr}"):
-                field = self.__getattribute__(f"get_{attr}")
-                return field() if field else None
-            else:
-                return self.get_arrayfield_display(attr[:-8])
-        return super().__getattribute__(attr)
-
-    def get_arrayfield_display(self, name):
-        choices = self._meta.get_field(name).base_field.choices
-        vals = self.__getattribute__(name)
-        if vals:
-            return [dict(choices)[v] for v in vals]
-        return
+    pass
 
 
 class ReversionSaveMixin:
-    STATUS_DRAFT = 1
-    STATUS_LIVE = 2
-    STATUS_UPDATED = 3
-    STATUS_DELETED = 4
-
-    DRAFT_STATUS_DRAFT = 1
-    DRAFT_STATUS_REVIEW = 2
-    DRAFT_STATUS_ACTIVATION = 3
-    DRAFT_STATUS_REJECTED = 4
-    DRAFT_STATUS_TO_DELETE = 5
-
-    def save_revision(self, status, date=None, user=None, comment=None):
-        try:
-            current_model = self.__class__.objects.get(pk=self.pk)
-        except self.__class__.DoesNotExist:
-            current_model = None
-
-        # "Pending"
-        if status == 1:
-            if current_model:
-                new_status = current_model.status
-            else:
-                new_status = self.STATUS_DRAFT
-            new_draft_status = self.DRAFT_STATUS_DRAFT
-
-        # "Active" and "Overwritten"
-        elif status in [2, 3]:
-            if current_model and current_model.status != self.STATUS_DRAFT:
-                new_status = self.STATUS_UPDATED
-            else:
-                new_status = self.STATUS_LIVE
-            new_draft_status = None
-
-        # "Deleted"
-        elif status == 4:
-            new_status = self.STATUS_DELETED
-            new_draft_status = None
-
-        # "Rejected"
-        elif status == 5:
-            if current_model:
-                new_status = current_model.status
-            else:
-                new_status = self.STATUS_DRAFT
-            new_draft_status = self.DRAFT_STATUS_REJECTED
-
-        # "To Delete"
-        elif status == 6:
-            if current_model:
-                new_status = current_model.status
-            else:
-                new_status = self.STATUS_DRAFT
-            new_draft_status = self.DRAFT_STATUS_TO_DELETE
-
-        else:
-            raise Exception("status must be between 1 and 6")
-
-        with reversion.create_revision():
-            self.status = new_status
-            self.draft_status = new_draft_status
-
-            reversion.add_to_revision(self)
-            if date:
-                reversion.set_date_created(date)
-            if user:
-                reversion.set_user(user)
-            if comment:
-                reversion.set_comment(comment)
-
-            # save the actual model
-            # if: there is not a current_model
-            # or: there is a current model but it's a draft
-            # or: the new status is Live, Updated or Deleted
-            if (
-                not current_model
-                or (current_model.status == self.STATUS_DRAFT)
-                or status in [2, 3, 4]
-            ):
-                self.save(custom_modification_date=date)
-            # otherwise update the draft_status of the current_model
-            else:
-                self.__class__.objects.filter(pk=self.pk).update(
-                    draft_status=new_draft_status
-                )
+    pass
 
 
 unclear_fields = [
