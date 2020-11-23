@@ -228,6 +228,7 @@
           return {
             id: +this.deal_id,
             version: +this.deal_version,
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           };
         },
         update(data) {

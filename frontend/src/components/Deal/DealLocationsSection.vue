@@ -46,10 +46,10 @@
       bounds() {
         if (!this.deal) return null;
         let mybounds = L.geoJSON(this.deal.geojson).getBounds();
-
         let ne = mybounds.getNorthEast();
         let sw = mybounds.getSouthWest();
-        if (ne.equals(sw)) {
+        if (!ne || !sw) return null;
+        if (ne && ne.equals(sw)) {
           ne.lat += 10;
           ne.lng += 10;
           sw.lat -= 10;

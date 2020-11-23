@@ -72,7 +72,7 @@ def test_histvolvement_draft(db):
     )
     hi1.save(update_elasticsearch=False)
     involves = InvestorVentureInvolvement.objects.filter(venture_id=i1.id)
-    assert [x.percentage for x in involves] == [60, 10]
+    assert {x.percentage for x in involves} == {10, 60}
 
     hi1 = HistoricalInvestor(
         investor_identifier=1, fk_status_id=Investor.STATUS_DELETED

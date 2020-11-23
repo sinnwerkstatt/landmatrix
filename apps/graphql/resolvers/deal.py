@@ -26,7 +26,7 @@ def map_raw_sql():
     """
 
 
-def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
+def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     add_versions = False
@@ -47,9 +47,7 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None):
         deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
         deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
     else:
-        visible_deals = Deal.objects.visible(info.context.user, "UNFILTERED").filter(
-            id=id
-        )
+        visible_deals = Deal.objects.visible(info.context.user, subset).filter(id=id)
         if not visible_deals:
             return
 

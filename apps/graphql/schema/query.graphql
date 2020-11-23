@@ -3,7 +3,7 @@ type Query {
     user(id: Int!): User
     users(sort: String = "id"): [User]
 
-    deal(id: Int!, version: Int): Deal
+    deal(id: Int!, version: Int, subset: Subset = PUBLIC): Deal
     deals(
         sort: String = "id",
         limit: Int = 20,
@@ -24,10 +24,10 @@ type Query {
         subset: Subset = PUBLIC,
         filters: [Filter],
     ): [Investor]
-#    involvements(
-#        limit: Int = 20,
-#        filters: [Filter]
-#    ): [Involvement]
+    #    involvements(
+    #        limit: Int = 20,
+    #        filters: [Filter]
+    #    ): [Involvement]
     investorversions(
         filters: [Filter]
     ): [InvestorVersion]

@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const deal_gql_query = gql`
-  query Deal($id: Int!, $version: Int) {
-    deal(id: $id, version: $version) {
+  query Deal($id: Int!, $version: Int, $subset: Subset) {
+    deal(id: $id, version: $version, subset: $subset) {
       id
       # General Info
       ## Land area
