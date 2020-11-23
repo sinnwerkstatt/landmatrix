@@ -1,5 +1,4 @@
 import json
-from functools import cached_property
 
 from dateutil import parser
 from django.conf import settings
@@ -85,7 +84,8 @@ class Version(models.Model):
         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]
         return obj.object
 
-    @cached_property
+    # TODO: Replace this ASAP with functools.cached_property (Python 3.8!)
+    @property
     def fields(self):
         fields = self.serialized_data[0]["fields"]
         fields["id"] = self.object_id
