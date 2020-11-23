@@ -27,7 +27,7 @@ from apps.graphql.resolvers.investor import (
     resolve_investors,
     investor_type,
     # resolve_involvements,
-    # resolve_investorversions,
+    resolve_investorversions,
 )
 from apps.graphql.resolvers.misc import (
     resolve_countries,
@@ -59,7 +59,7 @@ query.set_field("deals", resolve_deals)
 query.set_field("dealversions", resolve_dealversions)
 query.set_field("investor", resolve_investor)
 query.set_field("investors", resolve_investors)
-# query.set_field("investorversions", resolve_investorversions)
+query.set_field("investorversions", resolve_investorversions)
 # query.set_field("involvements", resolve_involvements)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)

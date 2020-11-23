@@ -28,9 +28,9 @@ type Query {
 #        limit: Int = 20,
 #        filters: [Filter]
 #    ): [Involvement]
-#    investorversions(
-#        filters: [Filter]
-#    ): [InvestorVersion]
+    investorversions(
+        filters: [Filter]
+    ): [InvestorVersion]
 
     countries: [Country]
     regions: [Region]

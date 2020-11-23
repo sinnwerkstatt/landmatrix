@@ -1285,10 +1285,11 @@ class Deal(models.Model, OldDealMixin):
 class DealVersion(Version):
     model = Deal
 
-    def to_dict(self):
+    def to_dict(self, use_object=False):
+        deal = self.retrieve_object() if use_object else self.fields
         return {
             "id": self.id,
-            "deal": self.retrieve_object(),
+            "deal": deal,
             "revision": self.revision,
             "object_id": self.object_id,
         }

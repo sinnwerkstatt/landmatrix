@@ -457,25 +457,25 @@
         deals_pending: deals(limit:0, filters:[
           {field:"draft_status",operation:IN,value:["1","2","3"]},
           ${filterLocation}
-        ], public:false) {
+        ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_rejected: deals(limit:0, filters:[
           {field:"status",operation:EQ,value:"5"},
           ${filterLocation}
-        ], public:false) {
+        ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_pending_deletion: deals(limit:0, filters:[
           {field:"status",operation:EQ,value:"6"},
           ${filterLocation}
-        ], public:false) {
+        ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_active: deals(limit:0, filters:[
           {field:"status",operation:IN,value:["2","3"]},
           ${filterLocation}
-        ], public:false) {
+        ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
           country {
             id

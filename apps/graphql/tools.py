@@ -43,6 +43,8 @@ filter_ops = {
 
 def parse_filters(filters):
     ret = Q()
+    if not filters:
+        return ret
     for filtr in filters:
         field = filtr["field"].replace(".", "__")
         op = filtr.get("operation") or "EQ"

@@ -112,16 +112,15 @@ def resolve_dealversions(
 ):
     qs = DealVersion.objects.all()
 
-    # TODO Ralph bitte bitte
-    # if filters:
-    #     qs = qs.filter(parse_filters(filters))
+    if filters:
+        qs = qs.filter(parse_filters(filters))
 
     if country_id:
         qs = qs.filter(serialized_data__0__fields__country=country_id)
 
     if region_id:
-        country_ids = Country.objects.filter(fk_region_id=region_id).values_list(
-            "id", flat=True
+        country_ids = list(
+            Country.objects.filter(fk_region_id=region_id).values_list("id", flat=True)
         )
         qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
 

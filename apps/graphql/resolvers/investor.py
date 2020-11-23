@@ -5,6 +5,7 @@ from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor
+from apps.landmatrix.models.gndinvestor import InvestorVersion
 from apps.landmatrix.utils import InvolvementNetwork
 
 
@@ -43,32 +44,11 @@ investor_type = ObjectType("Investor")
 investor_type.set_field("deals", lambda obj, info: obj.deals.all())
 
 
-# i dont think we need this
-# def _resolve_field_dict_fetch(field_dict):
-#     if "country_id" in field_dict and not field_dict["country_id"] is None:
-#         try:
-#             c = Country.objects.get(id=field_dict["country_id"])
-#             field_dict["country"] = c.to_dict(deep=True)
-#         except Country.DoesNotExist:
-#             pass
-#
-#     return field_dict
-#
-#
-# def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
-#     qs = Version.objects.get_for_model(Investor)  # .filter(revision__date_created="")
-#     # qs = _resolve_deals_prefetching(info).order_by(sort)
-#     if filters:
-#         qs = qs.filter(parse_filters(filters))
-#
-#     return [
-#         {
-#             "id": x.id,
-#             "investor": _resolve_field_dict_fetch(x.field_dict),
-#             "revision": x.revision,
-#         }
-#         for x in qs
-#     ]
+def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
+    qs = InvestorVersion.objects.all()
+    if filters:
+        qs = qs.filter(parse_filters(filters))
+    return [iv.to_dict() for iv in qs]
 
 
 @investor_type.field("involvements")

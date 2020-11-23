@@ -220,6 +220,15 @@ class Investor(models.Model):
 class InvestorVersion(Version):
     model = Investor
 
+    def to_dict(self, use_object=False):
+        investor = self.retrieve_object() if use_object else self.fields
+        return {
+            "id": self.id,
+            "investor": investor,
+            "revision": self.revision,
+            "object_id": self.object_id,
+        }
+
 
 class InvestorVentureInvolvementQuerySet(models.QuerySet):
     def active(self):
