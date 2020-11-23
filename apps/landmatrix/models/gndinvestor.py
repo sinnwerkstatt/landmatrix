@@ -124,8 +124,9 @@ class Investor(models.Model):
     is_actually_unknown = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE):
-            self.is_actually_unknown = True
+        self.is_actually_unknown = bool(
+            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
+        )
         super().save(*args, **kwargs)
 
     def __str__(self):
