@@ -20,13 +20,13 @@ export function derive_status(status, draft_status) {
     2: "Live",
     3: "Updated",
     4: "Deleted",
-    5: "Rejected",
-    6: "To Delete?",
   };
   let draft_status_map = {
     1: "Draft",
     2: "Review",
     3: "Activation",
+    4: "Rejected",
+    5: "To Delete",
   };
   let st = status_map[status];
   if (draft_status) {

@@ -461,13 +461,13 @@
           ${DEAL_QUERY_FIELDS}
         }
         deals_rejected: deals(limit:0, filters:[
-          {field:"status",operation:EQ,value:"5"},
+          {field:"draft_status",operation:EQ,value:"4"},
           ${filterLocation}
         ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
         }
         deals_pending_deletion: deals(limit:0, filters:[
-          {field:"status",operation:EQ,value:"6"},
+          {field:"draft_status",operation:EQ,value:"5"},
           ${filterLocation}
         ], subset:UNFILTERED) {
           ${DEAL_QUERY_FIELDS}
