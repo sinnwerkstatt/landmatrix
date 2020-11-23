@@ -1035,14 +1035,13 @@ class Deal(models.Model, OldDealMixin):
             # as well as Investor and InvestorVentureInvolvement
             self.not_public_reason = self._calculate_public_state()
             self.is_public = self.not_public_reason == ""
+            # this might error because it's m2m and we need the
+            # Deal to have an ID first before we can save the investors. 🙄
+            self.top_investors.set(self._calculate_top_investors())
             self.transnational = self._calculate_transnational()
             self.geojson = self._combine_geojson()
 
         super().save(*args, **kwargs)
-
-        if recalculate_dependent:
-            # save m2m in the end, we need the Deal to have an ID first. 🙄
-            self.top_investors.set(self._calculate_top_investors())
 
     def _get_current(self, attribute):
         attributes: list = self.__getattribute__(attribute)
