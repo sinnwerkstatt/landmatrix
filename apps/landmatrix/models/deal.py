@@ -1058,12 +1058,15 @@ class Deal(models.Model, OldDealMixin):
             return most_recent.get("value")
 
         # most recent year/date given
-        most_recent = sorted(
-            [a for a in attributes if a.get("date")],
-            key=lambda x: x.get("date"),
-            reverse=True,
-        )[0]
-        return most_recent.get("value")
+        max_year = "0"
+        for attr in reversed(attributes):
+            attr_year = attr.get("date")
+            if not attr_year or attr_year <= max_year:
+                continue
+            max_year = attr_year
+            val = attr.get("value")
+        # We're not initializing "val" because if this errors, it should not go silently
+        return val
 
     def _calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
