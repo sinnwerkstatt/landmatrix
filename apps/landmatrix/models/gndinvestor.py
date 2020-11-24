@@ -134,29 +134,34 @@ class Investor(models.Model):
             return f"{self.name} (#{self.id})"
         return f"s#{self.id}"
 
-    def get_top_investors(self, seen_investors=None) -> Set["Investor"]:
+    def get_parent_companies(
+        self, top_investors_only=False, seen_investors=None
+    ) -> Set["Investor"]:
         """
         Get list of highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
-        investors = set()
+        top_investors = set()
         if seen_investors is None:
             seen_investors = {self}
 
-        investor_involvements = self.investors.filter(
-            investor__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
-            venture__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
-            role="PARENT",
-        ).exclude(investor__in=seen_investors)
-
+        investor_involvements = (
+            self.investors.active()
+            .filter(role="PARENT")
+            .exclude(investor__in=seen_investors)
+        )
         if not investor_involvements:
-            investors.add(self)
+            top_investors.add(self)
         for involvement in investor_involvements:
             if involvement.investor in seen_investors:
                 continue
             seen_investors.add(involvement.investor)
-            investors.update(involvement.investor.get_top_investors(seen_investors))
-        return investors
+            top_investors.update(
+                involvement.investor.get_parent_companies(
+                    top_investors_only, seen_investors
+                )
+            )
+        return top_investors if top_investors_only else seen_investors
 
     def get_affected_deals(self, seen_investors=None):
         """
@@ -167,11 +172,11 @@ class Investor(models.Model):
         if seen_investors is None:
             seen_investors = {self}
 
-        investor_ventures = self.ventures.filter(
-            investor__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
-            venture__status__in=[self.STATUS_LIVE, self.STATUS_UPDATED],
-            role="PARENT",
-        ).exclude(venture__in=seen_investors)
+        investor_ventures = (
+            self.ventures.active()
+            .filter(role="PARENT")
+            .exclude(venture__in=seen_investors)
+        )
 
         for deal in self.deals.all():
             deals.add(deal)

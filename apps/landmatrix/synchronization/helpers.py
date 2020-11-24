@@ -143,7 +143,7 @@ class MetaActivity:
         self.group_water = OldGroup()
         self.group_remaining = OldGroup()
 
-        for attr in activity.attributes.all():
+        for attr in activity.attributes.all().order_by("pk"):
             # Locations
             if attr.name in Location.old_attribute_names():
                 self.loc_groups[attr.fk_group_id].update(attr)

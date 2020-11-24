@@ -1051,10 +1051,12 @@ class Deal(models.Model, OldDealMixin):
         current = [x for x in attributes if x.get("current")]
         if current:
             return current[0].get("value")
-        # last given entry, if no it has no date
+
+        # last given entry, if it has no date
         most_recent = attributes[-1]
         if not most_recent.get("date"):
             return most_recent.get("value")
+
         # most recent year/date given
         most_recent = sorted(
             [a for a in attributes if a.get("date")],
@@ -1153,12 +1155,15 @@ class Deal(models.Model, OldDealMixin):
             # unknown if we have no target country
             return None
 
-        top_investors = self.top_investors.all()
-        if not top_investors:
+        if not self.operating_company:
+            return True
+
+        parent_companies = self.operating_company.get_parent_companies()
+        if not parent_companies:
             # treat deals without investors as transnational
             return True
 
-        investors_countries = {i.country_id for i in top_investors if i.country_id}
+        investors_countries = {i.country_id for i in parent_companies if i.country_id}
         if not len(investors_countries):
             # treat deals without investor countries as transnational
             return True
@@ -1197,7 +1202,7 @@ class Deal(models.Model, OldDealMixin):
         (all right-hand side parent companies of the network visualisation)
         """
         if self.operating_company:
-            return self.operating_company.get_top_investors()
+            return self.operating_company.get_parent_companies(top_investors_only=True)
         return set()
 
     def _calculate_public_state(self) -> str:
@@ -1236,49 +1241,50 @@ class Deal(models.Model, OldDealMixin):
         # only if no known Investor exists, we return True
         return not oc.investors.filter(investor__is_actually_unknown=False).exists()
 
-    def legacy_download_list_format(self) -> list:
-        top_investors = "|".join(
-            [
-                "#".join(
-                    [
-                        ti.name.replace("#", "").replace("\n", "").strip(),
-                        str(ti.id),
-                        ti.country.name if ti.country else "",
-                    ]
-                )
-                for ti in self.top_investors.all()
-            ]
-        )
-
-        operating_company_country = ""
-        if self.operating_company.country:
-            operating_company_country = self.operating_company.country.name
-
-        operating_company_action_comment = ""
-        versions = DealVersion.objects.filter(object_id=self.id)
-        if versions:
-            operating_company_action_comment = versions[0].revision.comment
-
-        return [
-            self.id,
-            "Yes" if self.is_public else "No",
-            "transnational" if self.transnational else "domestic",
-            self.deal_size,
-            self.current_contract_size or "0",
-            self.current_production_size or "0",
-            self.get_current_negotiation_status_display(),
-            self.get_current_implementation_status_display(),
-            self.fully_updated_at,
-            top_investors,
-            self.operating_company.id,
-            self.operating_company.name,
-            operating_company_country,
-            self.operating_company.get_classification_display(),
-            self.operating_company.homepage,
-            self.operating_company.opencorporates,
-            self.operating_company.comment,
-            operating_company_action_comment,
-        ]
+    # TODO rod: hast du das ersetzt oder? kann weg?
+    # def legacy_download_list_format(self) -> list:
+    #     top_investors = "|".join(
+    #         [
+    #             "#".join(
+    #                 [
+    #                     ti.name.replace("#", "").replace("\n", "").strip(),
+    #                     str(ti.id),
+    #                     ti.country.name if ti.country else "",
+    #                 ]
+    #             )
+    #             for ti in self.top_investors.all()
+    #         ]
+    #     )
+    #
+    #     operating_company_country = ""
+    #     if self.operating_company.country:
+    #         operating_company_country = self.operating_company.country.name
+    #
+    #     operating_company_action_comment = ""
+    #     versions = DealVersion.objects.filter(object_id=self.id)
+    #     if versions:
+    #         operating_company_action_comment = versions[0].revision.comment
+    #
+    #     return [
+    #         self.id,
+    #         "Yes" if self.is_public else "No",
+    #         "transnational" if self.transnational else "domestic",
+    #         self.deal_size,
+    #         self.current_contract_size or "0",
+    #         self.current_production_size or "0",
+    #         self.get_current_negotiation_status_display(),
+    #         self.get_current_implementation_status_display(),
+    #         self.fully_updated_at,
+    #         top_investors,
+    #         self.operating_company.id,
+    #         self.operating_company.name,
+    #         operating_company_country,
+    #         self.operating_company.get_classification_display(),
+    #         self.operating_company.homepage,
+    #         self.operating_company.opencorporates,
+    #         self.operating_company.comment,
+    #         operating_company_action_comment,
+    #     ]
 
 
 class DealVersion(Version):
