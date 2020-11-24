@@ -93,7 +93,9 @@ class Version(models.Model):
             if fields[field.name] is None:
                 continue
             if isinstance(field, (DateTimeField, DateField)):
-                fields[field.name] = parser.parse(fields[field.name])
+                content = fields[field.name]
+                if isinstance(content, str):
+                    fields[field.name] = parser.parse(content)
             elif isinstance(field, PointField):
                 val = fields[field.name]
                 srid, point = val.split(";", 1)
