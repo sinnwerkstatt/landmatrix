@@ -58,7 +58,7 @@ current_negotiation_status_map = {
     "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
     "CONTRACT_SIGNED": "Concluded (Contract signed)",
     "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
-    "CONTRACT_CANCELED": "Failed (Contract canceled)",
+    "CONTRACT_CANCELED": "Failed (Contract cancelled)",
     "CONTRACT_EXPIRED": "Contract expired",
     "CHANGE_OF_OWNERSHIP": "Change of ownership",
 }
