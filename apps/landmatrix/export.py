@@ -51,18 +51,29 @@ deal_fields = [
     "operating_company__opencorporates",
     "operating_company__comment",
 ]
-neg_choices = []
-for (k, v) in Deal._meta.get_field("current_negotiation_status").choices:
-    if type(v) is tuple:
-        neg_choices.extend([t for t in v])
-    else:
-        neg_choices.append((k, v))
+current_negotiation_status_map = {
+    "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
+    "UNDER_NEGOTIATION": "Intended (Under negotiation)",
+    "MEMORANDUM_OF_UNDERSTANDING": "Intended (Memorandum of understanding)",
+    "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
+    "CONTRACT_SIGNED": "Concluded (Contract signed)",
+    "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
+    "CONTRACT_CANCELED": "Failed (Contract canceled)",
+    "CONTRACT_EXPIRED": "Contract expired",
+    "CHANGE_OF_OWNERSHIP": "Change of ownership",
+}
+
+current_implementation_status_map = {
+    "PROJECT_NOT_STARTED": "Project not started",
+    "STARTUP_PHASE": "Startup phase (no production)",
+    "IN_OPERATION": "In operation (production)",
+    "PROJECT_ABANDONED": "Project abandoned",
+    None: "None",
+}
 
 deal_choices_fields = {
-    "current_negotiation_status": dict(neg_choices),
-    "current_implementation_status": dict(
-        Deal._meta.get_field("current_implementation_status").choices
-    ),
+    "current_negotiation_status": current_negotiation_status_map,
+    # "current_implementation_status": current_implementation_status_map,
     "investor_classification": dict(Investor._meta.get_field("classification").choices),
 }
 deal_sub_fields = {
@@ -319,6 +330,14 @@ class DataDownload:
                 "opencorporates"
             ]
             data["operating_company__comment"] = data["operating_company"]["comment"]
+
+        data["current_contract_size"] = data.get("current_contract_size", 0)
+        data["current_production_size"] = data.get("current_production_size", 0)
+
+        imp_stat = data.get("current_implementation_status")
+        data["current_implementation_status"] = current_implementation_status_map.get(
+            imp_stat, imp_stat
+        )
 
         row = []
         for field in deal_fields:
