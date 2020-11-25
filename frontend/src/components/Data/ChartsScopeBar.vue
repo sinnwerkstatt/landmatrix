@@ -13,13 +13,13 @@
           href=""
           @click.prevent="displayDealsCount = true"
           :class="{ active: displayDealsCount }"
-          >No. of deals</a
+        >No. of deals</a
         >
         <a
           href=""
           @click.prevent="displayDealsCount = false"
           :class="{ active: !displayDealsCount }"
-          >Deal size</a
+        >Deal size</a
         >
       </div>
       <div class="total">
@@ -47,7 +47,7 @@
         ></StatusPieChart>
       </div>
       <div class="get-involved">
-        <router-link :to="`/get-involved/`">{{ $t("Contribute") }} </router-link>
+        <router-link :to="`/get-involved/`">{{ $t("Contribute") }}</router-link>
       </div>
     </div>
   </ScopeBarContainer>
@@ -67,26 +67,26 @@
     data() {
       return {
         deals: [],
-        dealsWithProduceInfo: [],
+        dealsWithProduceInfo: []
       };
     },
     apollo: {
       deals: data_deal_query,
-      dealsWithProduceInfo: data_deal_produce_query,
+      dealsWithProduceInfo: data_deal_produce_query
     },
     computed: {
       displayDealsCount: {
-        get () {
+        get() {
           return this.$store.state.map.displayDealsCount;
         },
-        set (value) {
-          this.$store.commit('setDisplayDealsCount', value)
+        set(value) {
+          this.$store.commit("setDisplayDealsCount", value);
         }
       },
       currentItem() {
         let item = {
           name: "Global",
-          url: "/newdeal/global",
+          url: "/newdeal/global"
         };
         if (this.$store.state.filters.filters.country_id) {
           let country = this.$store.state.page.countries.find(
@@ -94,7 +94,7 @@
           );
           if (country) {
             item = {
-              ...country,
+              ...country
             };
             if (country.country_page_id) {
               item.url = `/newdeal/country/${country.slug}`;
@@ -106,7 +106,7 @@
           );
           if (region) {
             item = {
-              ...region,
+              ...region
             };
             if (region.region_page_id) {
               item.url = `/newdeal/region/${region.slug}`;
@@ -144,7 +144,7 @@
             "rgba(252,148,31,0.4)",
             "rgba(252,148,31,0.7)",
             "rgba(252,148,31,1)",
-            "#7D4A0F",
+            "#7D4A0F"
           ];
           for (const [key, label] of Object.entries(implementation_status_choices)) {
             let filteredDeals = this.deals.filter((d) => {
@@ -156,7 +156,7 @@
               value: this.displayDealsCount
                 ? filteredDeals.length
                 : sum(filteredDeals, "deal_size"),
-              unit: this.displayDealsCount ? "deals" : "ha",
+              unit: this.displayDealsCount ? "deals" : "ha"
             });
             i++;
           }
@@ -168,16 +168,16 @@
           return [
             {
               label: "Crops",
-              color: "#FC941F",
+              color: "#FC941F"
             },
             {
               label: "Livestock",
-              color: "#7D4A0F",
+              color: "#7D4A0F"
             },
             {
               label: "Mineral Resources",
-              color: "black",
-            },
+              color: "black"
+            }
           ];
         }
       },
@@ -203,7 +203,7 @@
                 data.push({
                   label: label,
                   color: colors[fields.indexOf(field)],
-                  value: count,
+                  value: count
                 });
               }
             }
@@ -230,7 +230,7 @@
               color: "rgba(252,148,31,0.4)",
               value: (otherCount / totalCount) * 100,
               unit: "%",
-              precision: 1,
+              precision: 1
             });
           }
         }
@@ -241,11 +241,11 @@
           return {
             ...this.$store.state.formfields.deal.crops.choices,
             ...this.$store.state.formfields.deal.animals.choices,
-            ...this.$store.state.formfields.deal.resources.choices,
+            ...this.$store.state.formfields.deal.resources.choices
           };
         }
-      },
-    },
+      }
+    }
   };
 </script>
 
@@ -256,28 +256,6 @@
   p,
   a {
     text-align: left;
-  }
-
-  .toggle-buttons {
-    font-size: 0;
-    margin-top: 35px;
-    margin-bottom: 5px;
-    width: 100%;
-    text-align: center;
-
-    a {
-      padding: 0.3em 0.5em;
-      background-color: white;
-      border: 1px solid $lm_light;
-      color: black;
-      font-weight: bold;
-      font-size: 14px;
-
-      &.active {
-        background-color: $primary;
-        color: white;
-      }
-    }
   }
 
   .total {
@@ -300,5 +278,30 @@
   .get-involved {
     margin-top: 2em;
     text-align: left;
+  }
+</style>
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .toggle-buttons {
+    font-size: 0;
+    margin-top: 35px;
+    margin-bottom: 5px;
+    width: 100%;
+    text-align: center;
+
+    a {
+      padding: 0.3em 0.5em;
+      background-color: white;
+      border: 1px solid $lm_light;
+      color: black;
+      font-weight: bold;
+      font-size: 14px;
+
+      &.active {
+        background-color: $primary;
+        color: white;
+      }
+    }
   }
 </style>
