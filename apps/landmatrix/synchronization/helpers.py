@@ -18,7 +18,7 @@ def _extras_to_json(
 ):
     adict = attr.get_dict(field)
 
-    if not adict or not adict["value"]:
+    if not adict:
         return None
 
     # NOTE Fixes for broken data
@@ -26,9 +26,10 @@ def _extras_to_json(
         adict["value"] = adict["value"].replace(",", ".")
 
     if fieldmap:
-        ret = [{"value": fieldmap[adict["value"]]}]
+        ret = [{"value": fieldmap.get(adict["value"], None)}]
     else:
-        ret = [{"value": expected_type(adict["value"])}]
+        calc_val = expected_type(adict["value"]) if adict["value"] else None
+        ret = [{"value": calc_val}]
 
     if adict["date"]:
         ret[0]["date"] = adict["date"]
@@ -39,26 +40,23 @@ def _extras_to_json(
     if val2name and adict["value2"]:
         ret[0][val2name] = adict["value2"]
 
-    if adict.get("extras"):
-        for extra in adict["extras"]:
-            if not extra or not extra["value"]:
-                continue
-            # NOTE Fixes for broken data # deal 618 contract_size
-            if expected_type == float and extra["value"] == "":
-                continue
-            if fieldmap:
-                extra_ret = {
-                    "value": fieldmap[extra["value"]],
-                }
-            else:
-                extra_ret = {"value": expected_type(extra["value"])}
-            if extra["date"]:
-                extra_ret["date"] = extra["date"]
-            if extra["is_current"]:
-                extra_ret["current"] = extra["is_current"]
-            if val2name and extra["value2"]:
-                extra_ret[val2name] = extra["value2"]
-            ret += [extra_ret]
+    for extra in adict.get("extras", []):
+        if not extra:
+            continue
+        if fieldmap:
+            extra_ret = {
+                "value": fieldmap.get(extra["value"], None),
+            }
+        else:
+            calc_val = expected_type(extra["value"]) if extra["value"] else None
+            extra_ret = {"value": calc_val}
+        if extra["date"]:
+            extra_ret["date"] = extra["date"]
+        if extra["is_current"]:
+            extra_ret["current"] = extra["is_current"]
+        if val2name and extra["value2"]:
+            extra_ret[val2name] = extra["value2"]
+        ret += [extra_ret]
     if multi_value:
         mret = {}
         for x in ret:

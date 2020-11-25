@@ -84,6 +84,8 @@ def parse_general(deal, attrs):
         "Contract cancelled": "CONTRACT_CANCELED",
         "Contract expired": "CONTRACT_EXPIRED",
         "Change of ownership": "CHANGE_OF_OWNERSHIP",
+        "---------": None,
+        "": None,
     }
     deal.negotiation_status = _extras_to_json(
         attrs, "negotiation_status", fieldmap=NEG_STATUS_MAP

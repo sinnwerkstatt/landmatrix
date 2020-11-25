@@ -1037,7 +1037,7 @@ class Deal(models.Model, OldDealMixin):
             self.is_public = self.not_public_reason == ""
             # this might error because it's m2m and we need the
             # Deal to have an ID first before we can save the investors. 🙄
-            self.top_investors.set(self._calculate_top_investors())
+            self.top_investors.set(self.get_parent_companies(top_investors_only=True))
             self.transnational = self._calculate_transnational()
             self.geojson = self._combine_geojson()
 
@@ -1158,16 +1158,18 @@ class Deal(models.Model, OldDealMixin):
             # unknown if we have no target country
             return None
 
-        if not self.operating_company:
+        # by definition True, if no operating company exists (or it is deleted)
+        if not self.operating_company_id:
+            return True
+        oc = Investor.objects.get(id=self.operating_company_id)
+        if oc.status == Investor.STATUS_DELETED:
             return True
 
-        parent_companies = self.operating_company.get_parent_companies()
-        if not parent_companies:
-            # treat deals without investors as transnational
-            return True
-
-        investors_countries = {i.country_id for i in parent_companies if i.country_id}
+        investors_countries = {
+            i.country_id for i in self.get_parent_companies() if i.country_id
+        }
         if not len(investors_countries):
+            # treat deals without investors as transnational
             # treat deals without investor countries as transnational
             return True
         # `True` if we have investors in other countries else `False`
@@ -1199,13 +1201,12 @@ class Deal(models.Model, OldDealMixin):
             return None
         return {"type": "FeatureCollection", "features": features}
 
-    def _calculate_top_investors(self) -> Set["Investor"]:
-        """
-        Calculate highest parent companies
-        (all right-hand side parent companies of the network visualisation)
-        """
-        if self.operating_company:
-            return self.operating_company.get_parent_companies(top_investors_only=True)
+    def get_parent_companies(self, top_investors_only=False) -> Set["Investor"]:
+        if not self.operating_company_id:
+            return set()
+        oc = Investor.objects.filter(id=self.operating_company_id).first()
+        if oc and oc.status in [Investor.STATUS_LIVE, Investor.STATUS_UPDATED]:
+            return oc.get_parent_companies(top_investors_only=top_investors_only)
         return set()
 
     def _calculate_public_state(self) -> str:
