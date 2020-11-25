@@ -277,13 +277,6 @@
             >
               Domestic
             </b-form-radio>
-            <b-form-radio
-              v-model="transnational"
-              name="transnationalRadio"
-              :value="null"
-            >
-              Both
-            </b-form-radio>
           </b-form-group>
         </FilterCollapse>
         <FilterCollapse
@@ -305,13 +298,6 @@
               :value="false"
             >
               {{ $t("Excluded") }}
-            </b-form-radio>
-            <b-form-radio
-              v-model="forest_concession"
-              name="forest_concessionRadio"
-              :value="null"
-            >
-              {{ $t("Both") }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
