@@ -61,6 +61,7 @@ current_negotiation_status_map = {
     "CONTRACT_CANCELED": "Failed (Contract cancelled)",
     "CONTRACT_EXPIRED": "Contract expired",
     "CHANGE_OF_OWNERSHIP": "Change of ownership",
+    None: "None",
 }
 
 current_implementation_status_map = {
@@ -72,7 +73,7 @@ current_implementation_status_map = {
 }
 
 deal_choices_fields = {
-    "current_negotiation_status": current_negotiation_status_map,
+    # "current_negotiation_status": current_negotiation_status_map,
     # "current_implementation_status": current_implementation_status_map,
     "investor_classification": dict(Investor._meta.get_field("classification").choices),
 }
@@ -331,12 +332,18 @@ class DataDownload:
             ]
             data["operating_company__comment"] = data["operating_company"]["comment"]
 
-        data["current_contract_size"] = data.get("current_contract_size", 0)
-        data["current_production_size"] = data.get("current_production_size", 0)
+        data["deal_size"] = int(data.get("deal_size", 0))
+        data["current_contract_size"] = int(data.get("current_contract_size", 0))
+        data["current_production_size"] = int(data.get("current_production_size", 0))
 
         imp_stat = data.get("current_implementation_status")
         data["current_implementation_status"] = current_implementation_status_map.get(
             imp_stat, imp_stat
+        )
+
+        neg_stat = data.get("current_negotiation_status")
+        data["current_negotiation_status"] = current_negotiation_status_map.get(
+            neg_stat, neg_stat
         )
 
         row = []
