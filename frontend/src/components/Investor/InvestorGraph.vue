@@ -4,7 +4,7 @@
     <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
     <p class="mb-0 font-italic small">
-      Please right-click the nodes to get more details.
+      Please click the nodes to get more details.
     </p>
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
@@ -173,6 +173,7 @@
     }
   }
 
+
   export default {
     name: "InvestorGraph",
     components: { InvestorDetailDealModal, InvestorDetailInvestorModal },
@@ -230,10 +231,10 @@
         cy.add(this.elements);
         window.setTimeout(() => {
           cy.layout(cyconfig.layout).run();
-          this.add_rightclick_modal();
+          this.add_onclick_modal();
         }, 200);
       },
-      add_rightclick_modal() {
+      add_onclick_modal() {
         cy.ready(() => {
           cy.nodes().forEach(function(ele) {
             makePopper(ele);
@@ -243,16 +244,18 @@
           cy.nodes().unbind("mouseout");
           cy.nodes().bind("mouseout", (event) => event.target.tippy.hide());
         });
-        cy.nodes().on("cxttap", (e) => {
-          e.preventDefault();
-          this.modalData = e.target.data();
-          // delay to avoid context menu from opening
-          window.setTimeout(() => {
-            if (this.modalData.rootNode) this.showInvestorModal = true;
-            if (this.modalData.dealNode) this.showDealModal = true;
-            else this.showInvestorModal = true;
-          }, 10);
-        });
+        cy.nodes().on("tap", this.showNodeModal);
+        cy.nodes().on("cxttap", this.showNodeModal);
+      },
+      showNodeModal(e) {
+        e.preventDefault();
+        this.modalData = e.target.data();
+        // delay to avoid context menu from opening
+        window.setTimeout(() => {
+          if (this.modalData.rootNode) this.showInvestorModal = true;
+          if (this.modalData.dealNode) this.showDealModal = true;
+          else this.showInvestorModal = true;
+        }, 10);
       },
       build_graph(investor, elements, depth) {
         if (depth <= 0) return;
@@ -313,7 +316,7 @@
           elements: this.elements,
           ...cyconfig
         });
-        this.add_rightclick_modal();
+        this.add_onclick_modal();
       }
     },
     mounted() {
