@@ -1,10 +1,10 @@
 <template>
-  <div class="scope-bar-container" :class="{ collapsed: !showScopeOverlay }">
-    <span class="wimpel" @click.prevent="showScopeOverlay = !showScopeOverlay">
+  <div class="scope-bar-container" :class="{ collapsed: !showContextBar }">
+    <span class="wimpel" @click.prevent="showContextBar = !showContextBar">
       <svg viewBox="0 0 2 20" width="20px">
         <path d="M0,0 L2,2 L2,18 L0,20z"></path>
         <text x="0.3" y="11">
-          {{ showScopeOverlay ? "&lsaquo;" : "&rsaquo;" }}
+          {{ showContextBar ? "&lsaquo;" : "&rsaquo;" }}
         </text>
       </svg>
     </span>
@@ -16,7 +16,7 @@
 
 <script>
   export default {
-    name: "ScopeBarContainer",
+    name: "ContextBarContainer",
     data() {
       return {
         showDealCount: true,
@@ -25,12 +25,12 @@
       };
     },
     computed: {
-      showScopeOverlay: {
+      showContextBar: {
         get() {
-          return this.$store.state.map.showScopeOverlay;
+          return this.$store.state.map.showContextBar;
         },
         set(value) {
-          this.$store.dispatch("showScopeOverlay", value);
+          this.$store.dispatch("showContextBar", value);
         },
       },
     },

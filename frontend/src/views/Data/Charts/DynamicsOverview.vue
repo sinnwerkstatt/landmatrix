@@ -1,62 +1,67 @@
 <template>
   <ChartsContainer>
-    <div class="grid-wrapper">
-      <div class="toggle-buttons">
-        <a
-          href=""
-          @click.prevent="displayDealsCount = true"
-          :class="{ active: displayDealsCount }"
-        >No. of deals</a
-        >
-        <a
-          href=""
-          @click.prevent="displayDealsCount = false"
-          :class="{ active: !displayDealsCount }"
-        >Deal size</a
-        >
+    <template v-slot:default>
+      <div class="grid-wrapper">
+        <div class="toggle-buttons">
+          <a
+            href=""
+            @click.prevent="displayDealsCount = true"
+            :class="{ active: displayDealsCount }"
+          >No. of deals</a
+          >
+          <a
+            href=""
+            @click.prevent="displayDealsCount = false"
+            :class="{ active: !displayDealsCount }"
+          >Deal size</a
+          >
+        </div>
+        <div class="grid-container">
+          <div class="chart-item left top">
+            <h2>Intention of Investment</h2>
+  <!--          <StatusPieChart-->
+  <!--            :dealData="implementationStatusData"-->
+  <!--            :displayLegend="true"-->
+  <!--            :aspectRatio="aspectRatio"-->
+  <!--            :maxWidth="'auto'"-->
+  <!--          ></StatusPieChart>-->
+          </div>
+
+          <div class="chart-item right top">
+            <h2>Implementation Status</h2>
+            <StatusPieChart
+              :dealData="implementationStatusData"
+              :displayLegend="true"
+              :aspectRatio="aspectRatio"
+              :maxWidth="'auto'"
+            ></StatusPieChart>
+          </div>
+
+          <div class="chart-item left bottom">
+            <h2>Negotiation Status</h2>
+            <StatusPieChart
+              :dealData="negotiationStatusData"
+              :displayLegend="true"
+              :aspectRatio="aspectRatio"
+              :maxWidth="'auto'"
+            ></StatusPieChart>
+          </div>
+
+          <div class="chart-item right bottom">
+            <h2>Investment in Agriculture</h2>
+  <!--          <StatusPieChart-->
+  <!--            :dealData="negotiationStatusData"-->
+  <!--            :displayLegend="true"-->
+  <!--            :aspectRatio="aspectRatio"-->
+  <!--            :maxWidth="'auto'"-->
+  <!--          ></StatusPieChart>-->
+          </div>
+        </div>
       </div>
-      <div class="grid-container">
-        <div class="chart-item left top">
-          <h2>Intention of Investment</h2>
-<!--          <StatusPieChart-->
-<!--            :dealData="implementationStatusData"-->
-<!--            :displayLegend="true"-->
-<!--            :aspectRatio="aspectRatio"-->
-<!--            :maxWidth="'auto'"-->
-<!--          ></StatusPieChart>-->
-        </div>
-
-        <div class="chart-item right top">
-          <h2>Implementation Status</h2>
-          <StatusPieChart
-            :dealData="implementationStatusData"
-            :displayLegend="true"
-            :aspectRatio="aspectRatio"
-            :maxWidth="'auto'"
-          ></StatusPieChart>
-        </div>
-
-        <div class="chart-item left bottom">
-          <h2>Negotiation Status</h2>
-          <StatusPieChart
-            :dealData="negotiationStatusData"
-            :displayLegend="true"
-            :aspectRatio="aspectRatio"
-            :maxWidth="'auto'"
-          ></StatusPieChart>
-        </div>
-
-        <div class="chart-item right bottom">
-          <h2>Investment in Agriculture</h2>
-<!--          <StatusPieChart-->
-<!--            :dealData="negotiationStatusData"-->
-<!--            :displayLegend="true"-->
-<!--            :aspectRatio="aspectRatio"-->
-<!--            :maxWidth="'auto'"-->
-<!--          ></StatusPieChart>-->
-        </div>
-      </div>
-    </div>
+      </template>
+      <template v-slot:ContextBar>
+        <ContextBarDynamicsOverview />
+      </template>
   </ChartsContainer>
 </template>
 
@@ -64,13 +69,14 @@
   import ChartsContainer from "./ChartsContainer";
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { data_deal_query } from "../query";
-  import { prepareNegotianStatusData, sum } from "../../../utils/data_processing";
-  import { implementation_status_choices } from "../../../choices";
+  import { prepareNegotianStatusData, sum } from "/utils/data_processing";
+  import { implementation_status_choices } from "/choices";
   import StatusPieChart from "/components/Charts/StatusPieChart";
+  import ContextBarDynamicsOverview from "/components/Charts/ContextBarDynamicsOverview";
 
   export default {
     name: "DynamicsOverview",
-    components: { ChartsContainer, LoadingPulse, StatusPieChart },
+    components: { ChartsContainer, LoadingPulse, StatusPieChart, ContextBarDynamicsOverview },
     apollo: {
       deals: data_deal_query
     },
@@ -144,6 +150,7 @@
     padding-top: 3em;
     width: 100%;
     overflow-y: scroll;
+    width: 100%;
 
     $gutter: 2em;
 

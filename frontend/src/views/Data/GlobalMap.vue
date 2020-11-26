@@ -431,7 +431,7 @@
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
-        vm.$store.dispatch("showScopeOverlay", true);
+        vm.$store.dispatch("showContextBar", true);
       });
     },
   };

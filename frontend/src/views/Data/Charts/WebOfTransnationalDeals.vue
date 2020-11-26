@@ -1,7 +1,12 @@
 <template>
   <ChartsContainer>
-    <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
-    <svg id="svgweb" width="800"></svg>
+    <template v-slot:default>
+      <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
+      <svg id="svgweb" width="800"></svg>
+    </template>
+    <template v-slot:ContextBar>
+      <ContextBarWebOfTransnationalDeals />
+    </template>
   </ChartsContainer>
 </template>
 
@@ -10,21 +15,22 @@
   import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
   import gql from "graphql-tag";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import ContextBarWebOfTransnationalDeals from "/components/Charts/ContextBarWebOfTransnationalDeals";
 
   export default {
     name: "WebOfTransnationalDeals",
     props: ["changeDeal"],
-    components: { ChartsContainer, LoadingPulse },
+    components: { ChartsContainer, LoadingPulse, ContextBarWebOfTransnationalDeals },
     apollo: {
       transnational_deals: gql`
         query {
           transnational_deals
         }
-      `,
+      `
     },
     data() {
       return {
-        transnational_deals: [],
+        transnational_deals: []
       };
     },
     watch: {
@@ -32,8 +38,8 @@
         LandMatrixRadialSpider(this.transnational_deals, "#svgweb", (country) => {
           this.$store.dispatch("selectChartSelectedCountry", country);
         });
-      },
-    },
+      }
+    }
   };
 </script>
 <style lang="scss">

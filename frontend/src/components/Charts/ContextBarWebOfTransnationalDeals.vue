@@ -1,5 +1,5 @@
 <template>
-  <ScopeBarContainer>
+  <div>
     <div class="hint-box">
       <p>
         This interactive graph shows the global flow of transnational land acquisitions.
@@ -26,16 +26,15 @@
     <div v-else class="hint-box">
       <h4>World information</h4>
     </div>
-  </ScopeBarContainer>
+  </div>
 </template>
 
 <script>
-  import ScopeBarContainer from "./ScopeBarContainer";
   import { mapState } from "vuex";
   import gql from "graphql-tag";
+
   export default {
-    name: "ChartInformationBar",
-    components: { ScopeBarContainer },
+    name: "ContextBarCharts",
     apollo: {
       country_investments: {
         query: gql`
@@ -45,28 +44,28 @@
         `,
         variables() {
           return {
-            id: +this.chartSelectedCountry,
+            id: +this.chartSelectedCountry
           };
         },
         skip() {
           return !this.chartSelectedCountry;
-        },
-      },
+        }
+      }
     },
     data() {
       return {
-        country_investments: null,
+        country_investments: null
       };
     },
     computed: {
       ...mapState({
-        chartSelectedCountry: (state) => state.chartSelectedCountry,
+        chartSelectedCountry: (state) => state.chartSelectedCountry
       }),
       country() {
         if (!this.chartSelectedCountry) return null;
         return this.$store.getters.getCountryOrRegion({
           type: "country",
-          id: this.chartSelectedCountry,
+          id: this.chartSelectedCountry
         });
       },
       investors() {
@@ -76,7 +75,7 @@
         Object.entries(this.country_investments.investing).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +k
           }).name;
           retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
         });
@@ -90,14 +89,14 @@
         Object.entries(this.country_investments.invested).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +k
           }).name;
           retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
         });
         retdings += "</tbody></table>";
         return retdings;
-      },
-    },
+      }
+    }
   };
 </script>
 

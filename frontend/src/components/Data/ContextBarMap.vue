@@ -1,5 +1,5 @@
 <template>
-  <ScopeBarContainer>
+  <ContextBarContainer>
     <h2 v-if="currentItem">{{ currentItem.name }}</h2>
     <p class="mb-1" v-if="currentItem.short_description">
       {{ currentItem.short_description }}
@@ -50,7 +50,7 @@
         <router-link :to="`/get-involved/`">{{ $t("Contribute") }}</router-link>
       </div>
     </div>
-  </ScopeBarContainer>
+  </ContextBarContainer>
 </template>
 
 <script>
@@ -59,11 +59,11 @@
   import { implementation_status_choices } from "../../choices";
   import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
   import { data_deal_produce_query, data_deal_query } from "../../views/Data/query";
-  import ScopeBarContainer from "./ScopeBarContainer";
+  import ContextBarContainer from "./ContextBarContainer";
 
   export default {
     name: "GeneralScopeBar",
-    components: { ScopeBarContainer, StatusPieChart },
+    components: { ContextBarContainer, StatusPieChart },
     data() {
       return {
         deals: [],

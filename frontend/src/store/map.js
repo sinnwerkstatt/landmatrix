@@ -2,8 +2,8 @@ const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
 
 export const mapModule = {
   state: () => ({
-    showFilterOverlay: true,
-    showScopeOverlay: true,
+    showFilterBar: true,
+    showContextBar: true,
     displayDealsCount: true,
     visibleLayer: "ThunderForest",
     layers: [
@@ -185,11 +185,11 @@ export const mapModule = {
     setCurrentLayer(state, layer) {
       state.visibleLayer = layer;
     },
-    showFilterOverlay(state, payload) {
-      state.showFilterOverlay = payload;
+    showFilterBar(state, payload) {
+      state.showFilterBar = payload;
     },
-    showScopeOverlay(state, payload) {
-      state.showScopeOverlay = payload;
+    showContextBar(state, payload) {
+      state.showContextBar = payload;
     },
     setDisplayDealsCount(state, payload) {
       state.displayDealsCount = payload;
@@ -199,11 +199,11 @@ export const mapModule = {
     setCurrentLayer(context, layer) {
       context.commit("setCurrentLayer", layer);
     },
-    showFilterOverlay(context, payload) {
-      context.commit("showFilterOverlay", payload);
+    showFilterBar(context, payload) {
+      context.commit("showFilterBar", payload);
     },
-    showScopeOverlay(context, payload) {
-      context.commit("showScopeOverlay", payload);
+    showContextBar(context, payload) {
+      context.commit("showContextBar", payload);
     },
   },
 };

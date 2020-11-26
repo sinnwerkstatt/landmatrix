@@ -1,9 +1,11 @@
 <template>
   <ChartsContainer>
-    <LoadingPulse v-if="$apollo.loading" />
-    <div id="produce-info">
-      <svg id="produceinfosvg"></svg>
-    </div>
+    <template v-slot:default>
+      <LoadingPulse v-if="$apollo.loading" />
+      <div id="produce-info">
+        <svg id="produceinfosvg"></svg>
+      </div>
+    </template>
   </ChartsContainer>
 </template>
 
