@@ -47,24 +47,27 @@
       </div>
     </template>
     <template v-slot:ContextBar>
-      <ContextBarDynamicsOverview />
+      <h2 class="bar-title">Dynamics overview charts</h2>
+      <p>Show segmentation by number of deals or deal size: </p>
+      <DealDisplayToggle />
     </template>
   </ChartsContainer>
 </template>
 
 <script>
+  import { mapState } from "vuex";
+  import { data_deal_query } from "../query";
+  import { implementation_status_choices } from "/choices";
+  import { prepareNegotianStatusData, sum } from "/utils/data_processing";
+
   import ChartsContainer from "./ChartsContainer";
   import LoadingPulse from "/components/Data/LoadingPulse";
-  import { data_deal_query } from "../query";
-  import { prepareNegotianStatusData, sum } from "/utils/data_processing";
-  import { implementation_status_choices } from "/choices";
+  import DealDisplayToggle from "/components/Shared/DealDisplayToggle";
   import StatusPieChart from "/components/Charts/StatusPieChart";
-  import ContextBarDynamicsOverview from "/components/Charts/ContextBarDynamicsOverview";
-  import { mapState } from "vuex";
 
   export default {
     name: "DynamicsOverview",
-    components: { ChartsContainer, LoadingPulse, StatusPieChart, ContextBarDynamicsOverview },
+    components: { ChartsContainer, LoadingPulse, StatusPieChart, DealDisplayToggle },
     apollo: {
       deals: data_deal_query
     },

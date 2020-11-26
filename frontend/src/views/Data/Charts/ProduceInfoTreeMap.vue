@@ -43,9 +43,14 @@
     let format = d3.format(",d");
 
     let elemx = document.getElementById("produce-info");
+    if (!elemx) return;
+
     let width = elemx.offsetWidth;
     let height = width / 4 * 3;
-    console.log("widht", width);
+
+    // reset first!
+    d3.selectAll("#produceinfosvg > *").remove();
+
     let svg = d3
       .select("#produceinfosvg")
       .attr("viewBox", [0, 0, width, height])
@@ -128,13 +133,16 @@
     },
     computed: {
       legendItems() {
-        return this.treeData.children.map(l => {
-            return {
-              label: l.name,
-              color: l.color,
-            };
-          }
-        );
+        if (this.treeData) {
+          return this.treeData.children.map(l => {
+              return {
+                label: l.name,
+                color: l.color,
+              };
+            }
+          );
+        }
+        return [];
       },
       treeData() {
         if (this.produceData) {
@@ -168,13 +176,19 @@
         let fields = ["crops", "animals", "resources"];
         let colors = ["#FC941F", "#7D4A0F", "black"];
         let totalSize = 0;
-        if (this.deals.length && this.dealsWithProduceInfo.length) {
+        if (this.deals.length && this.deals.length == this.dealsWithProduceInfo.length && !this.$apollo.loading) {
           data = {};
+          // map deals for faster access
+          let dealMap = {}
+          for (let deal of this.deals) {
+            dealMap[deal.id] = deal;
+          }
+          // sum area for each produce
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {
               areaTotals[field] = areaTotals[field] || {};
               if (deal["current_" + field]) {
-                let dealSize = this.deals.find((d) => d.id === deal.id).deal_size;
+                let dealSize = dealMap[deal.id].deal_size;
                 for (let key of deal["current_" + field]) {
                   // TODO: not correct to add full dealsize for each produce
                   totalSize += dealSize;
@@ -184,7 +198,8 @@
               }
             }
           }
-          let threshHoldSize = totalSize * 0.001; // summarize smaller than 0.1% as other
+          // group by field and summarize smaller than 0.1% as other for each field
+          let threshHoldSize = totalSize * 0.001;
           for (let field of fields) {
             data[field] = [];
             let otherSize = 0;
@@ -199,7 +214,9 @@
                 });
               }
             }
+            // sort first
             data[field] = data[field].sort((a, b) => a.value < b.value);
+            // then add other
             if (otherSize) {
               data[field].push({
                 name: "Other",
