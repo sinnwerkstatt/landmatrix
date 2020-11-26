@@ -6,12 +6,13 @@
         <div class="grid-container">
           <div class="chart-item left top">
             <h2>Intention of Investment</h2>
-            <!--          <StatusPieChart-->
-            <!--            :dealData="implementationStatusData"-->
-            <!--            :displayLegend="true"-->
-            <!--            :aspectRatio="aspectRatio"-->
-            <!--            :maxWidth="'auto'"-->
-            <!--          ></StatusPieChart>-->
+            <StatusPieChart
+              :dealData="intentionData"
+              :displayLegend="true"
+              :aspectRatio="aspectRatio"
+              :maxWidth="'auto'"
+              :legends="intentionLegend"
+            ></StatusPieChart>
           </div>
 
           <div class="chart-item right top">
@@ -57,13 +58,15 @@
 <script>
   import { mapState } from "vuex";
   import { data_deal_query } from "../query";
-  import { implementation_status_choices } from "/choices";
+  import { implementation_status_choices, intention_of_investment_choices } from "/choices";
   import { prepareNegotianStatusData, sum } from "/utils/data_processing";
 
   import ChartsContainer from "./ChartsContainer";
   import LoadingPulse from "/components/Data/LoadingPulse";
   import DealDisplayToggle from "/components/Shared/DealDisplayToggle";
   import StatusPieChart from "/components/Charts/StatusPieChart";
+
+  const NO_INTENTION = "No intention";
 
   export default {
     name: "DynamicsOverview",
@@ -74,7 +77,7 @@
     data() {
       return {
         deals: [],
-        aspectRatio: 1.3
+        aspectRatio: 1.3,
       };
     },
     computed: {
@@ -94,6 +97,69 @@
             return { value: d.size, unit: "ha", ...d };
           });
         }
+      },
+      intentionLegend() {
+        return [{
+          label: "Agriculture",
+          color: "rgba(252,148,31,1)",
+        }, {
+          label: "Forestry",
+          color: "#7D4A0F",
+        }, {
+          label: 'Other',
+          color: 'black',
+        }, {
+          label: NO_INTENTION,
+          color: "rgba(252,148,31,0.4)",
+        }];
+      },
+      intentionData() {
+        let data = [];
+        let colors = []
+        this.intentionLegend.map(l => { colors[l.label] = l.color });
+        if (this.deals.length) {
+          let groupedDeals = {};
+          for (let deal of this.deals) {
+            if (deal.current_intention_of_investment) {
+              for (let int_key of deal.current_intention_of_investment) {
+                groupedDeals[int_key] = groupedDeals[int_key] || []
+                groupedDeals[int_key].push(deal);
+              }
+            } else {
+              groupedDeals[NO_INTENTION] = groupedDeals[NO_INTENTION] || []
+              groupedDeals[NO_INTENTION].push(deal);
+            }
+          }
+          for (const [key, keyDeals] of Object.entries(groupedDeals)) {
+            let keyGroup = 'UNKNOWN';
+            let keyLabel = 'UNKNOWN';
+            if (key == NO_INTENTION) {
+              keyGroup = NO_INTENTION;
+              keyLabel = NO_INTENTION;
+            } else {
+              let group, choices;
+              for (const [group, choices] of Object.entries(intention_of_investment_choices)) {
+                if (key in choices) {
+                  keyGroup = group;
+                  keyLabel = choices[key];
+                  break;
+                }
+              }
+            }
+            data.push({
+              label: keyLabel,
+              color: colors[keyGroup],
+              value: this.displayDealsCount
+                ? keyDeals.length
+                : sum(keyDeals, "deal_size"),
+              unit: this.displayDealsCount ? "deals" : "ha"
+            })
+          }
+        }
+        data.sort((a, b) => {
+          return b.value - a.value;
+        });
+        return data;
       },
       implementationStatusData() {
         let data = [];
