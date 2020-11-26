@@ -1,13 +1,12 @@
 <template>
   <div>
-    <div class="hint-box">
-      <p>
-        This interactive graph shows the global flow of transnational land acquisitions.
-
-        <br /><br />
-        Country names marked with * have been shortened to improve readability.
-      </p>
-    </div>
+    <h2 class="bar-title">Web of transnational deals</h2>
+    <p>
+      This interactive graph shows the global flow of transnational land acquisitions.
+    </p>
+    <p>
+      Country names marked with * have been shortened to improve readability.
+    </p>
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
       <h5>Regions investing in {{ country.name }}</h5>

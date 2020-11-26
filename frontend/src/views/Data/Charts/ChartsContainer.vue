@@ -42,29 +42,11 @@
   };
 </script>
 <style lang="scss">
-  .sideBuffer {
-    min-width: 230px;
-    width: 20%;
-    min-height: 3px;
-    //transition: width 0.5s, min-width 0.5s;
-
-    &.collapsed {
-      width: 0;
-      min-width: 0;
-    }
-  }
-
-  .charts-container-filterbar {
-    .router-link-exact-active {
-      background-color: inherit;
-      color: black;
-    }
-  }
-
   .chart-container {
     text-align: center;
     height: 100%;
     display: flex;
     justify-content: center;
+    overflow-y: scroll;
   }
 </style>

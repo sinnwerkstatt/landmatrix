@@ -1,6 +1,6 @@
 <template>
   <ContextBarContainer>
-    <h2 v-if="currentItem">{{ currentItem.name }}</h2>
+    <h2 class="bar-title" v-if="currentItem">{{ currentItem.name }}</h2>
     <p class="mb-1" v-if="currentItem.short_description">
       {{ currentItem.short_description }}
     </p>
@@ -8,20 +8,7 @@
       <a :href="currentItem.url">Read more</a>
     </p>
     <div v-if="deals.length">
-      <div class="toggle-buttons">
-        <a
-          href=""
-          @click.prevent="displayDealsCount = true"
-          :class="{ active: displayDealsCount }"
-        >No. of deals</a
-        >
-        <a
-          href=""
-          @click.prevent="displayDealsCount = false"
-          :class="{ active: !displayDealsCount }"
-        >Deal size</a
-        >
-      </div>
+      <DealDisplayToggle />
       <div class="total">
         {{ totalCount }}
       </div>
@@ -60,10 +47,12 @@
   import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
   import { data_deal_produce_query, data_deal_query } from "../../views/Data/query";
   import ContextBarContainer from "./ContextBarContainer";
+  import { mapState } from "vuex";
+  import DealDisplayToggle from "../Shared/DealDisplayToggle";
 
   export default {
     name: "GeneralScopeBar",
-    components: { ContextBarContainer, StatusPieChart },
+    components: { ContextBarContainer, StatusPieChart, DealDisplayToggle },
     data() {
       return {
         deals: [],
@@ -75,14 +64,9 @@
       dealsWithProduceInfo: data_deal_produce_query
     },
     computed: {
-      displayDealsCount: {
-        get() {
-          return this.$store.state.map.displayDealsCount;
-        },
-        set(value) {
-          this.$store.commit("setDisplayDealsCount", value);
-        }
-      },
+      ...mapState({
+        displayDealsCount: state => state.map.displayDealsCount,
+      }),
       currentItem() {
         let item = {
           name: "Global",
@@ -190,18 +174,18 @@
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {
               counts[field] = counts[field] || [];
-              for (let entry of deal[field]) {
-                for (let label of entry.value) {
-                  counts[field][label] = counts[field][label] + 1 || 1;
+              if (deal["current_" + field]) {
+                for (let key of deal["current_" + field]) {
+                  counts[field][key] = counts[field][key] + 1 || 1;
                 }
               }
             }
           }
           for (let field of fields) {
-            for (const [label, count] of Object.entries(counts[field])) {
+            for (const [key, count] of Object.entries(counts[field])) {
               if (count > 1) {
                 data.push({
-                  label: label,
+                  label: key,
                   color: colors[fields.indexOf(field)],
                   value: count
                 });
@@ -252,12 +236,6 @@
 <style lang="scss" scoped>
   @import "../../scss/colors";
 
-  h2,
-  p,
-  a {
-    text-align: left;
-  }
-
   .total {
     width: 100%;
     text-align: center;
@@ -272,6 +250,9 @@
 
     h5 {
       text-align: left;
+      font-size: 18px;
+      font-weight: normal;
+      margin-top: 1em;
     }
   }
 
@@ -280,28 +261,4 @@
     text-align: left;
   }
 </style>
-<style lang="scss">
-  @import "../../scss/colors";
 
-  .toggle-buttons {
-    font-size: 0;
-    margin-top: 35px;
-    margin-bottom: 5px;
-    width: 100%;
-    text-align: center;
-
-    a {
-      padding: 0.3em 0.5em;
-      background-color: white;
-      border: 1px solid $lm_light;
-      color: black;
-      font-weight: bold;
-      font-size: 14px;
-
-      &.active {
-        background-color: $primary;
-        color: white;
-      }
-    }
-  }
-</style>

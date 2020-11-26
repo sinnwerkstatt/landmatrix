@@ -620,7 +620,7 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 0.5em;
+      padding: 0.5rem;
       display: flex;
       flex-direction: column;
 

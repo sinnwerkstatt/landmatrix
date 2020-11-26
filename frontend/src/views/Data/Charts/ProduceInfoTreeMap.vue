@@ -2,9 +2,17 @@
   <ChartsContainer>
     <template v-slot:default>
       <LoadingPulse v-if="$apollo.loading" />
-      <div id="produce-info">
-        <svg id="produceinfosvg"></svg>
+      <div id="produce-info" ref="container">
+        <svg id="produceinfosvg" :style="svgStyle"></svg>
       </div>
+    </template>
+    <template v-slot:ContextBar>
+      <h2 class="bar-title">Produce info map</h2>
+      <p>
+        Show segmentation of livestock, mineral resources, or crops produce for
+        filtered deals
+      </p>
+      <Legend :items="legendItems"></Legend>
     </template>
   </ChartsContainer>
 </template>
@@ -14,6 +22,7 @@
   import { data_deal_produce_query, data_deal_query } from "../query";
   import * as d3 from "d3";
   import ChartsContainer from "./ChartsContainer";
+  import Legend from "/components/Charts/Legend";
 
   let count = 0;
 
@@ -26,7 +35,7 @@
     this.href = new URL(`#${id}`, location) + "";
   }
 
-  Id.prototype.toString = function () {
+  Id.prototype.toString = function() {
     return "url(" + this.href + ")";
   };
 
@@ -35,7 +44,7 @@
 
     let elemx = document.getElementById("produce-info");
     let width = elemx.offsetWidth;
-    let height = elemx.offsetHeight;
+    let height = width / 4 * 3;
     console.log("widht", width);
     let svg = d3
       .select("#produceinfosvg")
@@ -44,7 +53,7 @@
       .attr("transform", "translate(.5,.5)");
 
     // format data
-    var root = d3.hierarchy(treeData).sum(function (d) {
+    var root = d3.hierarchy(treeData).sum(function(d) {
       return d.value;
     });
 
@@ -105,18 +114,28 @@
 
   export default {
     name: "ProduceInfoTreeMap",
-    components: { ChartsContainer, LoadingPulse },
+    components: { ChartsContainer, LoadingPulse, Legend },
     data() {
       return {
         deals: [],
         dealsWithProduceInfo: [],
+        svgStyle: {},
       };
     },
     apollo: {
       deals: data_deal_query,
-      dealsWithProduceInfo: data_deal_produce_query,
+      dealsWithProduceInfo: data_deal_produce_query
     },
     computed: {
+      legendItems() {
+        return this.treeData.children.map(l => {
+            return {
+              label: l.name,
+              color: l.color,
+            };
+          }
+        );
+      },
       treeData() {
         if (this.produceData) {
           return {
@@ -125,19 +144,19 @@
               {
                 name: "Livestock",
                 color: "#7D4A0F",
-                children: this.produceData.animals.sort((a, b) => a.value < b.value),
+                children: this.produceData.animals
               },
               {
                 name: "Mineral Resources",
-                color: "#black",
-                children: this.produceData.resources.sort((a, b) => a.value < b.value),
+                color: "black",
+                children: this.produceData.resources
               },
               {
                 name: "Crops",
                 color: "#FC941F",
-                children: this.produceData.crops.sort((a, b) => a.value < b.value),
-              },
-            ],
+                children: this.produceData.crops
+              }
+            ]
           };
         } else {
           return null;
@@ -148,32 +167,49 @@
         let areaTotals = {};
         let fields = ["crops", "animals", "resources"];
         let colors = ["#FC941F", "#7D4A0F", "black"];
+        let totalSize = 0;
         if (this.deals.length && this.dealsWithProduceInfo.length) {
           data = {};
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {
               areaTotals[field] = areaTotals[field] || {};
-              for (let entry of deal[field]) {
-                for (let key of entry.value) {
-                  let dealSize = this.deals.find((d) => d.id === deal.id).deal_size;
+              if (deal["current_" + field]) {
+                let dealSize = this.deals.find((d) => d.id === deal.id).deal_size;
+                for (let key of deal["current_" + field]) {
+                  // TODO: not correct to add full dealsize for each produce
+                  totalSize += dealSize;
                   areaTotals[field][key] =
                     areaTotals[field][key] + dealSize || dealSize;
                 }
               }
             }
           }
+          let threshHoldSize = totalSize * 0.001; // summarize smaller than 0.1% as other
           for (let field of fields) {
             data[field] = [];
+            let otherSize = 0;
             for (let key of Object.keys(areaTotals[field])) {
+              let value = areaTotals[field][key];
+              if (value < threshHoldSize) {
+                otherSize += value;
+              } else {
+                data[field].push({
+                  name: this.getLabel(field, key),
+                  value: areaTotals[field][key]
+                });
+              }
+            }
+            data[field] = data[field].sort((a, b) => a.value < b.value);
+            if (otherSize) {
               data[field].push({
-                name: this.getLabel(field, key),
-                value: areaTotals[field][key],
+                name: "Other",
+                value: otherSize
               });
             }
           }
         }
         return data;
-      },
+      }
     },
     methods: {
       getLabel(field, key) {
@@ -190,28 +226,38 @@
         if (this.treeData) {
           buildTreeChart(this.treeData);
         }
-      },
+      }
     },
     watch: {
       treeData() {
         this.drawChart();
-      },
-    },
-    created() {
-      // window.addEventListener("resize", this.drawChart);
-    },
-    destroyed() {
-      // window.removeEventListener("resize", this.drawChart);
-    },
+      }
+    }
   };
 </script>
 
 <style lang="scss" scoped>
   #produce-info {
-    padding: 4em 1em 1em;
+    width: 100%;
+    padding-top: 75%; // aspect ratio 4:3
+    position: relative;
+    margin: 4em 1em 1em 1.5em;
+    align-self: safe center;
 
     #produceinfosvg {
-      width: 800px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      left: 0;
+    }
+  }
+</style>
+
+<style lang="scss">
+  .context-bar-container-content {
+    .legend {
+      font-size: 0.9rem;
     }
   }
 </style>

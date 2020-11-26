@@ -49,9 +49,9 @@ export const data_deal_produce_query = {
     query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
       dealsWithProduceInfo: deals(limit: $limit, subset: $subset, filters: $filters) {
         id
-        crops
-        animals
-        resources
+        current_crops
+        current_animals
+        current_resources
       }
     }
   `,

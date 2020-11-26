@@ -2,29 +2,16 @@
   <ChartsContainer>
     <template v-slot:default>
       <div class="grid-wrapper">
-        <div class="toggle-buttons">
-          <a
-            href=""
-            @click.prevent="displayDealsCount = true"
-            :class="{ active: displayDealsCount }"
-          >No. of deals</a
-          >
-          <a
-            href=""
-            @click.prevent="displayDealsCount = false"
-            :class="{ active: !displayDealsCount }"
-          >Deal size</a
-          >
-        </div>
+
         <div class="grid-container">
           <div class="chart-item left top">
             <h2>Intention of Investment</h2>
-  <!--          <StatusPieChart-->
-  <!--            :dealData="implementationStatusData"-->
-  <!--            :displayLegend="true"-->
-  <!--            :aspectRatio="aspectRatio"-->
-  <!--            :maxWidth="'auto'"-->
-  <!--          ></StatusPieChart>-->
+            <!--          <StatusPieChart-->
+            <!--            :dealData="implementationStatusData"-->
+            <!--            :displayLegend="true"-->
+            <!--            :aspectRatio="aspectRatio"-->
+            <!--            :maxWidth="'auto'"-->
+            <!--          ></StatusPieChart>-->
           </div>
 
           <div class="chart-item right top">
@@ -49,19 +36,19 @@
 
           <div class="chart-item right bottom">
             <h2>Investment in Agriculture</h2>
-  <!--          <StatusPieChart-->
-  <!--            :dealData="negotiationStatusData"-->
-  <!--            :displayLegend="true"-->
-  <!--            :aspectRatio="aspectRatio"-->
-  <!--            :maxWidth="'auto'"-->
-  <!--          ></StatusPieChart>-->
+            <!--          <StatusPieChart-->
+            <!--            :dealData="negotiationStatusData"-->
+            <!--            :displayLegend="true"-->
+            <!--            :aspectRatio="aspectRatio"-->
+            <!--            :maxWidth="'auto'"-->
+            <!--          ></StatusPieChart>-->
           </div>
         </div>
       </div>
-      </template>
-      <template v-slot:ContextBar>
-        <ContextBarDynamicsOverview />
-      </template>
+    </template>
+    <template v-slot:ContextBar>
+      <ContextBarDynamicsOverview />
+    </template>
   </ChartsContainer>
 </template>
 
@@ -73,6 +60,7 @@
   import { implementation_status_choices } from "/choices";
   import StatusPieChart from "/components/Charts/StatusPieChart";
   import ContextBarDynamicsOverview from "/components/Charts/ContextBarDynamicsOverview";
+  import { mapState } from "vuex";
 
   export default {
     name: "DynamicsOverview",
@@ -83,21 +71,13 @@
     data() {
       return {
         deals: [],
-        aspectRatio: 1.3,
+        aspectRatio: 1.3
       };
     },
     computed: {
-      intention() {
-        return "current_intention_of_investment";
-      },
-      displayDealsCount: {
-        get() {
-          return this.$store.state.map.displayDealsCount;
-        },
-        set(value) {
-          this.$store.commit("setDisplayDealsCount", value);
-        }
-      },
+      ...mapState({
+        displayDealsCount: state => state.map.displayDealsCount
+      }),
       dealsFilteredByNegStatus() {
         return prepareNegotianStatusData(this.deals);
       },
@@ -147,17 +127,15 @@
   @import "../../../scss/colors";
 
   .grid-wrapper {
-    padding-top: 3em;
-    width: 100%;
-    overflow-y: scroll;
+    padding-top: 4em;
+    padding-bottom: 2em;
     width: 100%;
 
     $gutter: 2em;
 
     .grid-container {
       display: grid;
-      padding-bottom: 2em;
-      //height: 100%;
+
       grid-template-columns: $gutter 1fr $gutter 1fr $gutter;
       grid-template-rows: 1fr $gutter 1fr $gutter;
 

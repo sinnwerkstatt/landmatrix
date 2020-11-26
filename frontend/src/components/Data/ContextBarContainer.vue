@@ -1,5 +1,5 @@
 <template>
-  <div class="scope-bar-container" :class="{ collapsed: !showContextBar }">
+  <div class="context-bar-container" :class="{ collapsed: !showContextBar }">
     <span class="wimpel" @click.prevent="showContextBar = !showContextBar">
       <svg viewBox="0 0 2 20" width="20px">
         <path d="M0,0 L2,2 L2,18 L0,20z"></path>
@@ -8,7 +8,7 @@
         </text>
       </svg>
     </span>
-    <div class="scope-bar-container-content">
+    <div class="context-bar-container-content">
       <slot></slot>
     </div>
   </div>
@@ -40,7 +40,7 @@
 <style lang="scss">
   @import "../../scss/colors";
 
-  .scope-bar-container {
+  .context-bar-container {
     //border-left: 1px dotted $lm_dark;
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
@@ -60,19 +60,37 @@
       left: -20px;
       right: auto;
     }
-
-    .scope-bar-container-content {
+    .context-bar-container-content {
       overflow-y: auto;
-      padding: 0.7em;
+      padding: 0.5rem;
       width: 100%;
       text-align: center;
+
+
+
+      h2.bar-title {
+        font-size: 22px;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        line-height: 1.2;
+      }
+
+      h2,
+      p,
+      a {
+        text-align: left;
+      }
+      p {
+        font-size: 0.9rem;
+      }
     }
+
 
     &.collapsed {
       width: 0;
       min-width: 0;
 
-      .scope-bar-container-content {
+      .context-bar-container-content {
         display: none;
       }
     }
