@@ -3,7 +3,7 @@
     <template v-slot:default>
       <LoadingPulse v-if="$apollo.loading" />
       <div id="produce-info" ref="container">
-        <svg id="produceinfosvg" :style="svgStyle"></svg>
+        <svg :style="svgStyle"></svg>
       </div>
     </template>
     <template v-slot:ContextBar>
@@ -50,10 +50,10 @@
     let height = width / 4 * 3;
 
     // reset first!
-    d3.selectAll("#produceinfosvg > *").remove();
+    d3.selectAll("#produce-info > svg > *").remove();
 
     let svg = d3
-      .select("#produceinfosvg")
+      .select("#produce-info > svg")
       .attr("viewBox", [0, 0, width, height])
       .append("svg:g")
       .attr("transform", "translate(.5,.5)");
@@ -273,7 +273,7 @@
     margin: 4em 1em 1em 1.5em;
     align-self: safe center;
 
-    #produceinfosvg {
+    > svg {
       position: absolute;
       top: 0;
       left: 0;
