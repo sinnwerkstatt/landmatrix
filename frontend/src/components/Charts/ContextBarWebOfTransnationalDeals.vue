@@ -43,11 +43,11 @@
         `,
         variables() {
           return {
-            id: +this.chartSelectedCountry
+            id: +this.country_id
           };
         },
         skip() {
-          return !this.chartSelectedCountry;
+          return !this.country_id;
         }
       }
     },
@@ -57,14 +57,14 @@
       };
     },
     computed: {
-      ...mapState({
-        chartSelectedCountry: (state) => state.chartSelectedCountry
-      }),
+      country_id() {
+        return this.$store.state.filters.filters.country_id
+      },
       country() {
-        if (!this.chartSelectedCountry) return null;
+        if (!this.country_id || this.country_id === 0) return null;
         return this.$store.getters.getCountryOrRegion({
           type: "country",
-          id: this.chartSelectedCountry
+          id: this.country_id
         });
       },
       investors() {

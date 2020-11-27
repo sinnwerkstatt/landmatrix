@@ -5,6 +5,7 @@ import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
 import DealDetail from "./views/Deal/Detail";
+import DealCompare from "./views/Deal/Compare";
 import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
 import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
 import DynamicsOverview from "/views/Data/Charts/DynamicsOverview";
@@ -113,6 +114,12 @@ const router = new Router({
       path: "/deal/:deal_id/:deal_version?/",
       name: "deal_detail",
       component: DealDetail,
+      props: true,
+    },
+    {
+      path: "/deal/:deal_id/compare/:from_version?/:to_version?/",
+      name: "deal_compare",
+      component: DealCompare,
       props: true,
     },
     {

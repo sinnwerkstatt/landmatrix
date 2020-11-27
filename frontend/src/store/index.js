@@ -19,14 +19,10 @@ const store = new Vuex.Store({
   },
   state: {
     formfields: {},
-    chartSelectedCountry: null,
   },
   mutations: {
     setFields(state, fields) {
       state.formfields = fields;
-    },
-    selectChartSelectedCountry(state, country) {
-      state.chartSelectedCountry = country;
     },
   },
   actions: {
@@ -125,9 +121,7 @@ const store = new Vuex.Store({
         context.commit("setMessages", response.data.messages);
       });
     },
-    selectChartSelectedCountry(context, country) {
-      context.commit("selectChartSelectedCountry", country);
-    },
+
     login(context, { username, password }) {
       return new Promise(function (resolve, reject) {
         axios

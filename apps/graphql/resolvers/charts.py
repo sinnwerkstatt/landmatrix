@@ -4,8 +4,9 @@ from typing import Any
 from django.db.models import Q
 from graphql import GraphQLResolveInfo
 
+from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Country
-from apps.landmatrix.models.deal import DealTopInvestors
+from apps.landmatrix.models.deal import DealTopInvestors, Deal
 
 # def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
 #     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))
@@ -38,11 +39,24 @@ LONG_COUNTRIES = {
 }
 
 
-def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
+def resolve_web_of_transnational_deals(
+    obj: Any, info: GraphQLResolveInfo, filters=None
+):
+    deals = Deal.objects.active()
+    if filters:
+        print(filters)
+        filtered_filters = [
+            f
+            for f in filters
+            if f["field"] not in ["country_id", "country.fk_region_id"]
+        ]
+        print(filtered_filters)
+
+        deals = deals.filter(parse_filters(filtered_filters))
+
     deals_investors = (
-        DealTopInvestors.objects.filter(
-            deal__status__in=(2, 3), investor__status__in=(2, 3)
-        )
+        DealTopInvestors.objects.filter(investor__status__in=(2, 3))
+        .filter(deal_id__in=deals.values_list("id", flat=True))
         .prefetch_related("deal")
         .prefetch_related("investor")
         .order_by("deal__country_id")
