@@ -2,7 +2,9 @@
   <ChartsContainer>
     <template v-slot:default>
       <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
-      <svg id="svgweb" width="800"></svg>
+      <div id="svg-container">
+        <svg></svg>
+      </div>
     </template>
     <template v-slot:ContextBar>
       <ContextBarWebOfTransnationalDeals />
@@ -35,7 +37,7 @@
     },
     watch: {
       transnational_deals() {
-        LandMatrixRadialSpider(this.transnational_deals, "#svgweb", (country) => {
+        LandMatrixRadialSpider(this.transnational_deals, "#svg-container > svg", (country) => {
           this.$store.dispatch("selectChartSelectedCountry", country);
         });
       }
@@ -50,10 +52,14 @@
   //  stroke-width: 4.5px;
   //}
 
-  #svgweb {
-    text {
-      font-size: 14px;
-      cursor: pointer;
+  #svg-container {
+    width: 100%;
+    align-self: safe center;
+    > svg {
+      text {
+        font-size: 14px;
+        cursor: pointer;
+      }
     }
   }
 </style>
