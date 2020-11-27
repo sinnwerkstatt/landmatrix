@@ -16,6 +16,16 @@
           </div>
 
           <div class="chart-item right top">
+            <h2>Investment in Agriculture</h2>
+            <StatusPieChart
+              :dealData="intentionAgricultureData"
+              :displayLegend="true"
+              :aspectRatio="aspectRatio"
+              :maxWidth="'auto'"
+            ></StatusPieChart>
+          </div>
+
+          <div class="chart-item left bottom">
             <h2>Implementation Status</h2>
             <StatusPieChart
               :dealData="implementationStatusData"
@@ -25,7 +35,7 @@
             ></StatusPieChart>
           </div>
 
-          <div class="chart-item left bottom">
+          <div class="chart-item right bottom">
             <h2>Negotiation Status</h2>
             <StatusPieChart
               :dealData="negotiationStatusData"
@@ -33,16 +43,6 @@
               :aspectRatio="aspectRatio"
               :maxWidth="'auto'"
             ></StatusPieChart>
-          </div>
-
-          <div class="chart-item right bottom">
-            <h2>Investment in Agriculture</h2>
-            <!--          <StatusPieChart-->
-            <!--            :dealData="negotiationStatusData"-->
-            <!--            :displayLegend="true"-->
-            <!--            :aspectRatio="aspectRatio"-->
-            <!--            :maxWidth="'auto'"-->
-            <!--          ></StatusPieChart>-->
           </div>
         </div>
       </div>
@@ -149,6 +149,7 @@
             data.push({
               label: keyLabel,
               color: colors[keyGroup],
+              group: keyGroup,
               value: this.displayDealsCount
                 ? keyDeals.length
                 : sum(keyDeals, "deal_size"),
@@ -160,6 +161,15 @@
           return b.value - a.value;
         });
         return data;
+      },
+      intentionAgricultureData() {
+        return this.intentionData.filter(d => d.group == "Agriculture").map((d, index) => {
+          let alphaValue = 1 - index * 0.15;
+          return {
+            ...d,
+            color: "rgba(252,148,31,"+ alphaValue +")",
+          }
+        });
       },
       implementationStatusData() {
         let data = [];
