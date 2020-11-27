@@ -40,6 +40,7 @@
   };
 
   function buildTreeChart(treeData) {
+    console.log("buildTreeChart")
     let format = d3.format(",d");
 
     let elemx = document.getElementById("produce-info");
@@ -56,6 +57,8 @@
       .attr("viewBox", [0, 0, width, height])
       .append("svg:g")
       .attr("transform", "translate(.5,.5)");
+    console.log("attached svg group")
+
 
     // format data
     var root = d3.hierarchy(treeData).sum(function(d) {
@@ -72,6 +75,7 @@
 
     // load data
     treemap(root);
+    console.log("treemap done")
 
     // get all leaves
     const leaf = svg
@@ -94,6 +98,7 @@
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0);
+    console.log("leaves done")
 
     // mask for each rect
     leaf
@@ -115,6 +120,8 @@
       .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
       .attr("fill-opacity", (d, i, nodes) => (i === nodes.length - 1 ? 0.7 : null))
       .text((d) => d);
+
+    console.log("build done")
   }
 
   export default {
@@ -177,6 +184,7 @@
         let colors = ["#FC941F", "#7D4A0F", "black"];
         let totalSize = 0;
         if (this.deals.length && this.deals.length == this.dealsWithProduceInfo.length && !this.$apollo.loading) {
+         console.log("calc produce data")
           data = {};
           // map deals for faster access
           let dealMap = {}
@@ -224,6 +232,7 @@
               });
             }
           }
+         console.log("calc produce data done")
         }
         return data;
       }
@@ -240,13 +249,16 @@
         return key;
       },
       drawChart() {
+       console.log("draw")
         if (this.treeData) {
+         console.log("draw: yes")
           buildTreeChart(this.treeData);
         }
       }
     },
     watch: {
       treeData() {
+        console.log("redraw")
         this.drawChart();
       }
     }
