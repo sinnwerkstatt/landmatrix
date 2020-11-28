@@ -130,9 +130,12 @@ def country_investments(obj: Any, info: GraphQLResolveInfo, id):
     invested_regions = defaultdict(dict)
     investing_regions = defaultdict(dict)
     for invest in deals_investors:
-        # TODO: do we count these?
-        # if invest.deal.country_id == invest.investor.country_id:
-        #     continue
+        if (
+            invest.deal.country_id == invest.investor.country_id
+            or not invest.deal.country_id
+            or not invest.investor.country_id
+        ):
+            continue
         if invest.investor.country_id == id:
             reg_id = invest.deal.country.fk_region_id
             if invested_regions.get(reg_id):
