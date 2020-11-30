@@ -1,20 +1,34 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>LAND MATRIX</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="{% static 'main.css' %}">
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Land Matrix</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="{% static 'main.css' %}" />
+  </head>
 
-<body>
-<div id="app"></div>
-<script>
-  const MEDIA_URL = "{{ MEDIA_URL }}";
-  const LANGUAGE = "{{ LANGUAGE_CODE }}";
-</script>
-<script src="{% static 'main.js' %}"></script>
-</body>
+  <body>
+    <div id="app">
+      <div
+        style="
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        Land Matrix is loading...
+      </div>
+    </div>
+    <script>
+      const MEDIA_URL = "{{ MEDIA_URL }}";
+      const LANGUAGE = "{{ LANGUAGE_CODE }}";
+    </script>
+    <script src="{% static 'main.js' %}"></script>
+  </body>
 </html>
