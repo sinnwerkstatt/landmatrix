@@ -1,12 +1,7 @@
 <template>
   <div>
     <h2 class="bar-title">Web of transnational deals</h2>
-    <p>
-      This interactive graph shows the global flow of transnational land acquisitions.
-    </p>
-    <p>
-      Country names marked with * have been shortened to improve readability.
-    </p>
+    <div v-html="chart_desc" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
       <h5>Regions investing in {{ country.name }}</h5>
@@ -43,28 +38,32 @@
         `,
         variables() {
           return {
-            id: +this.country_id
+            id: +this.country_id,
           };
         },
         skip() {
           return !this.country_id;
-        }
-      }
+        },
+      },
     },
     data() {
       return {
-        country_investments: null
+        country_investments: null,
       };
     },
     computed: {
       country_id() {
-        return this.$store.state.filters.filters.country_id
+        return this.$store.state.filters.filters.country_id;
+      },
+      chart_desc() {
+        if (!this.$store.state.page.chartDescriptions) return null;
+        return this.$store.state.page.chartDescriptions.web_of_transnational_deals;
       },
       country() {
         if (!this.country_id || this.country_id === 0) return null;
         return this.$store.getters.getCountryOrRegion({
           type: "country",
-          id: this.country_id
+          id: this.country_id,
         });
       },
       investors() {
@@ -74,9 +73,9 @@
         Object.entries(this.country_investments.investing).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k
+            id: +k,
           }).name;
-          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
+          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha<br>${v.count} deals</td></tr>`;
         });
         retdings += "</tbody></table>";
         return retdings;
@@ -88,14 +87,14 @@
         Object.entries(this.country_investments.invested).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k
+            id: +k,
           }).name;
-          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
+          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha<br>${v.count} deals</td></tr>`;
         });
         retdings += "</tbody></table>";
         return retdings;
-      }
-    }
+      },
+    },
   };
 </script>
 

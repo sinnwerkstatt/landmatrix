@@ -121,7 +121,7 @@
     apollo: {
       deals: {
         skip() {
-          return this.locationFilter.length == 0;
+          return this.locationFilter.length === 0;
         },
         query: data_deal_query_gql,
         variables() {

@@ -17,16 +17,14 @@
         switch (page.meta.type) {
           case "blog.BlogIndexPage":
             return BlogIndexPage;
-            break;
           case "blog.BlogPage":
             return BlogPage;
-            break;
           case "wagtailcms.RegionPage":
             return ObservatoryPage;
-            break;
           case "wagtailcms.CountryPage":
             return ObservatoryPage;
-            break;
+          case "wagtailcms.ObservatoryPage":
+            return ObservatoryPage;
           default:
             return WagtailPage;
         }
