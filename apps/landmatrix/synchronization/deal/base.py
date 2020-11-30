@@ -582,9 +582,6 @@ def parse_remaining(deal, attrs):
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
 
     # META!
-    deal.fully_updated = attrs.get("fully_updated") == "True"
-    if deal.fully_updated:
-        deal.fully_updated_at = deal.modified_at
     deal.confidential = attrs.get("not_public") == "True"
     CONFIDENTIAL_REASON_MAP = {
         None: None,

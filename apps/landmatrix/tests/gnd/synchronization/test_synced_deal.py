@@ -265,10 +265,7 @@ def test_activity_draft_with_location():
     HistoricalActivityAttribute.objects.create(
         fk_activity=histact, name="point_lat", value=5.0123, fk_group=fk_group
     )
-    HistoricalActivityAttribute.objects.create(
-        fk_activity=histact, name="fully_updated", value="True", fk_group=fk_group
-    )
-    # histact.fully_updated = True
+    histact.fully_updated = True
     histact.fk_status_id = 1
     histact.save(update_elasticsearch=False)
     histact.trigger_gnd()
