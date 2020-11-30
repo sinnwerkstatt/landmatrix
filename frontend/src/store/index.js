@@ -119,7 +119,7 @@ const store = new Vuex.Store({
         });
     },
     fetchMessages(context) {
-      let url = `/newdeal_legacy/messages/`;
+      let url = `/api/newdeal_legacy/messages/`;
       axios.get(url).then((response) => {
         context.commit("setMessages", response.data.messages);
       });

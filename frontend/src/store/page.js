@@ -6,20 +6,11 @@ export const pageModule = {
     countries: [],
     regions: [],
     observatories: [],
-    wagtailRootPage: null,
     messages: [],
     wagtailPage: null,
     title: null,
     searchDescription: null,
     breadcrumbs: [],
-    breadNav: [
-      // { route: "map", icon: "fa fa-map-marker", name: "Map" },
-      // { route: "deal_list", icon: "fa fa-table", name: "Data" },
-      // { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
-      { route: "/newdeal/map/", icon: "fa fa-map-marker", name: "Map" },
-      { route: "/newdeal/data/", icon: "fa fa-table", name: "Data" },
-      { route: "/newdeal/charts/", icon: "far fa-chart-bar", name: "Charts" },
-    ],
     showBreadcrumbs: true,
   }),
   getters: {
@@ -78,9 +69,9 @@ export const pageModule = {
     setObservatories(state, observatories) {
       state.observatories = observatories;
     },
-    setWagtailRootPage(state, wagtailRootPage) {
-      state.wagtailRootPage = wagtailRootPage;
-    },
+    // setWagtailRootPage(state, wagtailRootPage) {
+    //   state.wagtailRootPage = wagtailRootPage;
+    // },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
@@ -102,12 +93,12 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchWagtailRootPage(context) {
-      let url = `/newdeal_legacy/rootpage/`;
-      axios.get(url).then((response) => {
-        context.commit("setWagtailRootPage", response.data);
-      });
-    },
+    // fetchWagtailRootPage(context) {
+    //   let url = `/newdeal_legacy/rootpage/`;
+    //   axios.get(url).then((response) => {
+    //     context.commit("setWagtailRootPage", response.data);
+    //   });
+    // },
     fetchObservatoryPages(context) {
       let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
       axios.get(url).then((response) => {
