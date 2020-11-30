@@ -36,6 +36,7 @@ from apps.graphql.resolvers.misc import (
     resolve_crops,
     resolve_animals,
     resolve_statistics,
+    resolve_chart_descriptions,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
@@ -73,6 +74,7 @@ query.set_field("blogpage", resolve_blogpage)
 query.set_field("blogcategories", resolve_blogcategories)
 query.set_field("transnational_deals", resolve_web_of_transnational_deals)
 query.set_field("country_investments", country_investments)
+query.set_field("chart_descriptions", resolve_chart_descriptions)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

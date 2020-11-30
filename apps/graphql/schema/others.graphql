@@ -91,3 +91,5 @@ enum Subset {
 
 scalar WebOfTransnationalDeals
 scalar CountryInvestments
+
+scalar ChartDescriptions

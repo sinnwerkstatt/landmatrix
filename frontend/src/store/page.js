@@ -12,6 +12,7 @@ export const pageModule = {
     searchDescription: null,
     breadcrumbs: [],
     showBreadcrumbs: true,
+    chartDescriptions: [],
   }),
   getters: {
     countriesWithPage: (state) => {
@@ -69,9 +70,9 @@ export const pageModule = {
     setObservatories(state, observatories) {
       state.observatories = observatories;
     },
-    // setWagtailRootPage(state, wagtailRootPage) {
-    //   state.wagtailRootPage = wagtailRootPage;
-    // },
+    setChartDescriptions(state, chartDescriptions) {
+      state.chartDescriptions = chartDescriptions;
+    },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },

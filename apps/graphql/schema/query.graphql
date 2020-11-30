@@ -50,6 +50,8 @@ type Query {
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]
     blogcategories: [BlogCategory]
+
+    chart_descriptions: ChartDescriptions
 }
 
 type FormFieldSet {

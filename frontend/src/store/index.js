@@ -83,6 +83,7 @@ const store = new Vuex.Store({
                   observatory_page_id
                   short_description
                 }
+                chart_descriptions
               }
             `,
           })
@@ -90,6 +91,7 @@ const store = new Vuex.Store({
             context.commit("setUser", data.data.me);
             context.commit("setCountries", data.data.countries);
             context.commit("setRegions", data.data.regions);
+            context.commit("setChartDescriptions", data.data.chart_descriptions);
             resolve();
           })
           .catch((error) => {
