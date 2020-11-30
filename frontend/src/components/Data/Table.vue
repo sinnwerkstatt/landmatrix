@@ -188,9 +188,7 @@
                 id
               }
               status
-              status_display
               draft_status
-              draft_status_display
               created_at
               modified_at
               is_actually_unknown
