@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "/store";
+// const DataMap = () => import("./views/Data/GlobalMap");
 import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";

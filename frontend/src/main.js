@@ -89,10 +89,11 @@ let vue_app = new Vue({
     defaultClient: apolloClient,
   }),
   render: (h) => h(App),
-})
+});
 
 store.dispatch("fetchFields", LANGUAGE || "en");
 store.dispatch("fetchMessages");
+store.dispatch("fetchRegionsAndCountries");
 store.dispatch("fetchBasicData").then(() => {
   vue_app.$mount("#app");
 });

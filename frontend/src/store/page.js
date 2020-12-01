@@ -94,16 +94,18 @@ export const pageModule = {
     },
   },
   actions: {
-    // fetchWagtailRootPage(context) {
-    //   let url = `/newdeal_legacy/rootpage/`;
-    //   axios.get(url).then((response) => {
-    //     context.commit("setWagtailRootPage", response.data);
-    //   });
-    // },
     fetchObservatoryPages(context) {
-      let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
-      axios.get(url).then((response) => {
-        context.commit("setObservatories", response.data.items);
+      return new Promise(function (resolve, reject) {
+        let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
+        axios
+          .get(url)
+          .then((response) => {
+            context.commit("setObservatories", response.data.items);
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
       });
     },
     fetchWagtailPage(context, path) {
