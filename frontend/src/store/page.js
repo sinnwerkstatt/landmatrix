@@ -57,8 +57,8 @@ export const pageModule = {
           }
           role = ret;
         }
+        user.role = role;
       }
-      user.role = role
       state.user = user;
     },
     setCountries(state, countries) {
