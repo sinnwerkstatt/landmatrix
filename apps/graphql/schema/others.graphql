@@ -90,6 +90,7 @@ enum Subset {
 }
 
 scalar WebOfTransnationalDeals
-scalar CountryInvestments
+scalar CountryInvestmentsAndRankings
+scalar Rankings
 
 scalar ChartDescriptions

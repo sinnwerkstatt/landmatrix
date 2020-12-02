@@ -43,6 +43,7 @@ urlpatterns = [
     path("editor/", include("apps.editor.urls")),
     # Deals, Investors, Map, Charts, stuff...
     path("legacy/data/", include("apps.grid.urls")),
+    path("legacy/list/deals/", include("apps.grid.urls")),
     path("legacy/map/", include("apps.map.urls")),
     path("legacy/charts/", include("apps.charts.urls")),
     path("legacy/deal/comments/", include("apps.public_comments.urls")),
@@ -72,11 +73,14 @@ urlpatterns = [
     ),
     # Legacy wagtail pages
     path("legacy/", include("wagtail.core.urls")),
-    # NEW DEAL
-    path("", include("apps.landmatrix.urls")),
 ]
 
 if settings.DEBUG:
     # Non i18n patterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += [
+    # NEW DEAL
+    path("", include("apps.landmatrix.urls")),
+]

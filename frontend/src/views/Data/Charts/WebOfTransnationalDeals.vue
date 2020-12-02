@@ -32,7 +32,7 @@
         `,
         variables() {
           return {
-            filters: this.$store.getters.filtersForGQL,
+            filters: this.filtered_filtersForGQL,
           };
         },
       },
@@ -43,12 +43,17 @@
       };
     },
     computed: {
+      filtered_filtersForGQL() {
+        return this.$store.getters.filtersForGQL.filter(
+          (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
+        );
+      },
       filtered_country_id() {
         return this.$store.state.filters.filters.country_id;
       },
     },
-    watch: {
-      transnational_deals() {
+    methods: {
+      redrawSpider() {
         LandMatrixRadialSpider(
           this.transnational_deals,
           "#svg-container > svg",
@@ -59,8 +64,16 @@
               value: +country,
             });
           }
-        );
+        )
+      }
+    },
+    watch: {
+      transnational_deals() {
+        this.redrawSpider()
       },
+      filtered_country_id() {
+        this.redrawSpider()
+      }
     },
   };
 </script>
@@ -77,7 +90,7 @@
       }
 
       #outgoing-marker {
-        fill: #4820d7;
+        fill: $lm_investor;
       }
 
       text {
@@ -91,7 +104,7 @@
 
         &.outgoing-highlighted {
           font-weight: bold;
-          fill: #4820d7;
+          fill: $lm_investor;
         }
       }
 
@@ -103,7 +116,7 @@
         }
 
         &.outgoing-highlighted {
-          stroke: #4820d7;
+          stroke: $lm_investor;
           stroke-width: 2;
           marker-start: url(#outgoing-marker);
         }
@@ -115,7 +128,7 @@
         }
 
         &.outgoing-permahighlight {
-          stroke: #4820d7;
+          stroke: $lm_investor;
           stroke-width: 2.5;
           marker-start: url(#outgoing-marker);
         }

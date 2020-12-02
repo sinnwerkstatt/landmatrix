@@ -1,7 +1,6 @@
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.fields import RichTextField
 from wagtail.core.rich_text import expand_db_html
-from wagtail.core.templatetags.wagtailcore_tags import richtext
 
 
 @register_setting(icon="radio-empty")

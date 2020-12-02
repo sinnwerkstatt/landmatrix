@@ -4,36 +4,98 @@
     <div v-html="chart_desc" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
-      <h5>Regions investing in {{ country.name }}</h5>
-      <div v-html="investors"></div>
-      <br />
-      Show all inbound deals
+      <div class="mx-3">
+        <b
+          class="deal-ranking"
+          v-if="this.country_investments_and_rankings.ranking_deal"
+        >
+          <i class="fas fa-compress-arrows-alt"></i> #{{
+            this.country_investments_and_rankings.ranking_deal
+          }}
+        </b>
+        &nbsp;
+        <b
+          class="investor-ranking"
+          v-if="this.country_investments_and_rankings.ranking_investor"
+        >
+          <i class="fas fa-expand-arrows-alt"></i> #{{
+            this.country_investments_and_rankings.ranking_investor
+          }}
+        </b>
+      </div>
+      <div v-if="investing_regions.length > 0">
+        <b>Regions investing in {{ country.name }}</b>
+        <table class="table-striped">
+          <tbody>
+            <tr v-for="region in investing_regions">
+              <th>{{ region.region_name }}</th>
+              <td>
+                {{ region.count }} deals<br />
+                {{ region.size }} ha
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h5>Regions {{ country.name }} invests in</h5>
-      <div v-html="ventures"></div>
-      <br />
-      Show all outbound deals
-
-      <h5>Global Deal Size Rank thingy</h5>
-      This deal is on place #4<br />
+      <div v-if="invested_regions.length > 0">
+        <b>Regions {{ country.name }} invests in</b>
+        <table class="table-striped">
+          <tbody>
+            <tr v-for="region in invested_regions">
+              <th>{{ region.region_name }}</th>
+              <td>
+                {{ region.count }} deals<br />
+                {{ region.size }} ha
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div v-else class="hint-box">
       <h4>World information</h4>
+      <div v-if="global_rankings">
+        <b><i class="fas fa-compress-arrows-alt"></i> Top invested-in Countries</b>
+        <table class="table-striped">
+          <tbody>
+            <tr v-for="rank in global_ranking_deals">
+              <th>{{ rank.country_name }}</th>
+              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <b><i class="fas fa-expand-arrows-alt"></i> Top investing Countries</b>
+        <table class="table-striped">
+          <tbody>
+            <tr v-for="rank in global_ranking_investors">
+              <th>{{ rank.country_name }}</th>
+              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapState } from "vuex";
   import gql from "graphql-tag";
+  import { mapGetters } from "vuex";
 
   export default {
     name: "ContextBarCharts",
     apollo: {
-      country_investments: {
+      global_rankings: gql`
+        query {
+          global_rankings
+        }
+      `,
+      country_investments_and_rankings: {
         query: gql`
           query Investments($id: Int!) {
-            country_investments(id: $id)
+            country_investments_and_rankings(id: $id)
           }
         `,
         variables() {
@@ -48,10 +110,17 @@
     },
     data() {
       return {
-        country_investments: null,
+        global_rankings: null,
+        country_investments_and_rankings: {
+          investing: [],
+          invested: [],
+          ranking_deal: null,
+          ranking_investor: null,
+        },
       };
     },
     computed: {
+      ...mapGetters(["getCountryOrRegion"]),
       country_id() {
         return this.$store.state.filters.filters.country_id;
       },
@@ -61,44 +130,63 @@
       },
       country() {
         if (!this.country_id || this.country_id === 0) return null;
-        return this.$store.getters.getCountryOrRegion({
+        return this.getCountryOrRegion({
           type: "country",
           id: this.country_id,
         });
       },
-      investors() {
-        if (!this.country_investments) return;
-        if (!this.country_investments.investing) return;
-        let retdings = "<table><tbody>";
-        Object.entries(this.country_investments.investing).forEach(([k, v]) => {
-          let reg_name = this.$store.getters.getCountryOrRegion({
+      investing_regions() {
+        return this.country_investments_and_rankings.investing.map((x) => {
+          let region_name = this.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +x.region_id,
           }).name;
-          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha<br>${v.count} deals</td></tr>`;
+          return { region_name, ...x };
         });
-        retdings += "</tbody></table>";
-        return retdings;
       },
-      ventures() {
-        if (!this.country_investments) return;
-        if (!this.country_investments.invested) return;
-        let retdings = "<table><tbody>";
-        Object.entries(this.country_investments.invested).forEach(([k, v]) => {
-          let reg_name = this.$store.getters.getCountryOrRegion({
+      invested_regions() {
+        return this.country_investments_and_rankings.invested.map((x) => {
+          let region_name = this.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +x.region_id,
           }).name;
-          retdings += `<tr><th>${reg_name}</th><td>${v.size} ha<br>${v.count} deals</td></tr>`;
+          return { region_name, ...x };
         });
-        retdings += "</tbody></table>";
-        return retdings;
       },
+      global_ranking_deals() {
+        if (!this.global_rankings) return;
+        if (this.$store.state.page.countries.length === 0) return;
+        return this.global_rankings.ranking_deal.map((x) => {
+          let country_name = this.getCountryOrRegion({
+            id: +x.country_id,
+          }).name;
+          return { country_name, ...x };
+        });
+      },
+            global_ranking_investors() {
+        if (!this.global_rankings) return;
+        if (this.$store.state.page.countries.length === 0) return;
+        return this.global_rankings.ranking_investor.map((x) => {
+          let country_name = this.getCountryOrRegion({
+            id: +x.country_id,
+          }).name;
+          return { country_name, ...x };
+        });
+      }
     },
   };
 </script>
 
 <style lang="scss">
+  @import "src/scss/colors";
+
+  .investor-ranking {
+    color: $primary;
+  }
+  .deal-ranking {
+    color: $lm_investor;
+  }
+
   .hint-box {
     padding: 1em;
     font-size: 0.9em;
@@ -108,5 +196,23 @@
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  }
+</style>
+<style lang="scss" scoped>
+  b {
+    padding: 3px;
+    display: inline-block;
+  }
+  table {
+    width: 100%;
+  }
+
+  th {
+    text-align: left;
+  }
+
+  td {
+    text-align: right;
+    white-space:nowrap;
   }
 </style>

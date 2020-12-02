@@ -80,6 +80,7 @@ export function LandMatrixRadialSpider(
 
   function selectCountry(target, highlight_class = "highlighted") {
     let selection = d3.select(target);
+    if (selection.size() === 0) return;
     link.style("mix-blend-mode", null);
     selection.attr("font-weight", "bold");
     let d = selection.datum();
@@ -100,6 +101,7 @@ export function LandMatrixRadialSpider(
 
   function mouseout_event(target) {
     let selection = d3.select(target);
+    if (selection.size() === 0) return;
     link.style("mix-blend-mode", "multiply");
     selection.attr("font-weight", null);
     let d = selection.datum();
