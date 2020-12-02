@@ -8,7 +8,7 @@
         </div>
         <div class="table-config">
           <a href="" @click.prevent v-b-modal.modal-select-fields
-          ><i class="fa fa-cog"></i
+            ><i class="fa fa-cog"></i
           ></a>
           <b-modal
             id="modal-select-fields"
@@ -40,26 +40,26 @@
     <div class="table-wrap" v-if="rowData.length > 0">
       <table class="sticky-header" :class="[this.targetModel]">
         <thead>
-        <tr>
-          <th
-            v-for="fieldName in currentFields"
-            :key="fieldName"
-            @click="setSort(fieldName)"
-            :class="{ selected: sortField === fieldName, asc: sortAscending }"
-          >
-            {{ getLabel(fieldName) }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              v-for="fieldName in currentFields"
+              :key="fieldName"
+              @click="setSort(fieldName)"
+              :class="{ selected: sortField === fieldName, asc: sortAscending }"
+            >
+              {{ getLabel(fieldName) }}
+            </th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="obj in rows">
-          <td
-            v-for="fieldName in currentFields"
-            :key="fieldName"
-            :style="getStyle(obj, fieldName)"
-            v-html="getValue(obj, fieldName)"
-          ></td>
-        </tr>
+          <tr v-for="obj in rows">
+            <td
+              v-for="fieldName in currentFields"
+              :key="fieldName"
+              :style="getStyle(obj, fieldName)"
+              v-html="getValue(obj, fieldName)"
+            ></td>
+          </tr>
         </tbody>
       </table>
       <scroll-loader
@@ -75,7 +75,12 @@
 <script>
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { mapState } from "vuex";
-  import { dealExtraFieldLabels, getDealValue, getInvestorValue, investorExtraFieldLabels } from "./table_mappings";
+  import {
+    dealExtraFieldLabels,
+    getDealValue,
+    getInvestorValue,
+    investorExtraFieldLabels,
+  } from "./table_mappings";
   import gql from "graphql-tag";
   import { data_deal_query } from "/views/Data/query";
   import { sortAnything } from "../../utils";
@@ -90,7 +95,7 @@
     "locations",
     "fully_updated_at",
     "operating_company",
-    "top_investors"
+    "top_investors",
   ];
 
   const DEFAULT_DISPLAY_FIELDS = {
@@ -103,16 +108,9 @@
       "current_implementation_status",
       "deal_size",
       "operating_company",
-      "top_investors"
+      "top_investors",
     ],
-    investor: [
-      "modified_at",
-      "id",
-      "name",
-      "country",
-      "classification",
-      "deals"
-    ]
+    investor: ["modified_at", "id", "name", "country", "classification", "deals"],
   };
 
   export default {
@@ -126,11 +124,11 @@
         displayFields: { ...DEFAULT_DISPLAY_FIELDS },
         valueMappings: {
           deal: getDealValue,
-          investor: getInvestorValue
+          investor: getInvestorValue,
         },
         extraFieldLabels: {
           deal: dealExtraFieldLabels,
-          investor: investorExtraFieldLabels
+          investor: investorExtraFieldLabels,
         },
         extraDealData: [],
         dealApiFields: [],
@@ -140,7 +138,7 @@
         pageSize: 50,
         rows: [],
         sortField: "fully_updated_at",
-        sortAscending: false
+        sortAscending: false,
       };
     },
     apollo: {
@@ -163,9 +161,9 @@
           return {
             limit: 0,
             filters: this.$store.getters.filtersForGQL,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC"
+            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
           };
-        }
+        },
       },
       investors: {
         skip() {
@@ -198,9 +196,9 @@
         variables() {
           return {
             limit: 0,
-            filters: this.investorFilters
+            filters: this.investorFilters,
           };
-        }
+        },
       },
       dealApiFields: {
         query: gql`
@@ -212,7 +210,7 @@
             }
           }
         `,
-        update: (data) => data.__type.fields.map((f) => f.name)
+        update: (data) => data.__type.fields.map((f) => f.name),
       },
       investorApiFields: {
         query: gql`
@@ -224,16 +222,17 @@
             }
           }
         `,
-        update: (data) => data.__type.fields.map((f) => f.name)
-      }
+        update: (data) => data.__type.fields.map((f) => f.name),
+      },
     },
     computed: {
       ...mapState({
-        formfields: (state) => state.formfields
+        formfields: (state) => state.formfields,
       }),
       extraDealFields() {
-        return this.displayFields.deal
-          .filter((f) => !DEAL_DEFAULT_QUERY_FIELDS.includes(f));
+        return this.displayFields.deal.filter(
+          (f) => !DEAL_DEFAULT_QUERY_FIELDS.includes(f)
+        );
       },
       currentFields() {
         return this.displayFields[this.targetModel];
@@ -258,8 +257,8 @@
             {
               field: "deals.id",
               operation: "IN",
-              value: this.deals.map((d) => d.id.toString())
-            }
+              value: this.deals.map((d) => d.id.toString()),
+            },
           ];
         }
       },
@@ -272,17 +271,21 @@
           if (self.indexOf(investor) !== index) return false;
           // filter on client
           if (this.fetchAllInvestors) {
-            return investor.deals.some(d => this.dealIds.includes(d.id));
+            return investor.deals.some((d) => this.dealIds.includes(d.id));
           }
           return true;
         });
       },
       dealIds() {
-        return this.deals.map(d => d.id);
+        return this.deals.map((d) => d.id);
       },
       dealsLoaded() {
         if (this.extraDealFields.length) {
-          if (!this.extraDealData.length || this.$apollo.queries.extraDealData.loading || this.deals.length !== this.extraDealData.length) {
+          if (
+            !this.extraDealData.length ||
+            this.$apollo.queries.extraDealData.loading ||
+            this.deals.length !== this.extraDealData.length
+          ) {
             return false;
           }
         }
@@ -326,7 +329,7 @@
         } else {
           return this.$t("Deals");
         }
-      }
+      },
     },
     methods: {
       getLabel(fieldName, targetModel = null) {
@@ -336,7 +339,10 @@
           fieldName in this.extraFieldLabels[targetModel]
         ) {
           return this.extraFieldLabels[targetModel][fieldName];
-        } else if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
+        } else if (
+          this.formfields[targetModel] &&
+          fieldName in this.formfields[targetModel]
+        ) {
           return this.formfields[targetModel][fieldName].label;
         } else {
           return fieldName;
@@ -374,7 +380,7 @@
         this.rows = [];
         this.page = 1;
         this.disableScrollLoader = false;
-      }
+      },
     },
     watch: {
       rowData() {
@@ -388,8 +394,8 @@
         }
         this.sortField = "fully_updated_at";
         this.sortAscending = false;
-      }
-    }
+      },
+    },
   };
 </script>
 <style lang="scss" scoped>
@@ -439,11 +445,10 @@
       padding: 0 15px 2em 27px;
       overflow-x: hidden;
       overflow: auto; // just setting overflow-y gives different result (table not scrollable)
-      max-height: calc( 100% - 50px );
-      height: calc( 100% - 50px );
+      max-height: calc(100% - 50px);
+      height: calc(100% - 50px);
       position: relative;
     }
-
 
     table.sticky-header {
       width: 100%;
@@ -498,9 +503,6 @@
           background-color: darken(white, 3);
         }
       }
-
-
-
     }
 
     table.investor {
@@ -560,7 +562,7 @@
       margin: 0.2em 0.05em 0 0;
       display: inline-block;
       border: 1px solid rgba(0, 0, 0, 0.05);
-      color: rgba(black, 0.7)
+      color: rgba(black, 0.7);
     }
 
     .loader {

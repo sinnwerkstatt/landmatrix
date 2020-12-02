@@ -1,22 +1,31 @@
 <template>
   <div class="filter-collapse">
-    <div class="toggle" :class="{active: clearable, collapsed:!initExpanded}" data-toggle="collapse" :data-target="'#'+slotId"
-      :aria-expanded="initExpanded ? 'true' : 'false'">
+    <div
+      class="toggle"
+      :class="{ active: clearable, collapsed: !initExpanded }"
+      data-toggle="collapse"
+      :data-target="'#' + slotId"
+      :aria-expanded="initExpanded ? 'true' : 'false'"
+    >
       <i class="expand-toggle fas fa-chevron-up"></i>
       <span class="title">{{ title }}</span>
-      <span class="delete-button fa-stack" title="Remove this filter"
-            v-if="clearable"
-            @click.stop="$emit('click')"
+      <span
+        class="delete-button fa-stack"
+        title="Remove this filter"
+        v-if="clearable"
+        @click.stop="$emit('click')"
       >
         <i class="fas fa-filter fa-stack-1x" />
         <i class="fas fa-circle fa-stack-1x fa-inverse"></i>
         <i class="far fa-circle fa-stack-1x"></i>
         <i class="fas fa-minus fa-stack-1x"></i>
       </span>
-
-
     </div>
-    <div :id="slotId" class="expand-slot collapse" :class="{show:initExpanded||false}">
+    <div
+      :id="slotId"
+      class="expand-slot collapse"
+      :class="{ show: initExpanded || false }"
+    >
       <slot></slot>
     </div>
   </div>
@@ -32,9 +41,9 @@
     },
     computed: {
       slotId() {
-        return 'slot'+this._uid;
-      }
-    }
+        return "slot" + this._uid;
+      },
+    },
   };
 </script>
 
@@ -45,7 +54,7 @@
     margin-left: -0.5em;
     margin-right: -0.5em;
     padding: 5px 0.5em 0 0.5em;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
     &:hover {
       cursor: pointer;
@@ -60,15 +69,15 @@
         padding-right: 0;
       }
       .expand-toggle {
-        color: rgba(0,0,0,0.3);
+        color: rgba(0, 0, 0, 0.3);
         font-weight: bold;
         font-size: 12px;
         margin-right: 3px;
-        transition: all .1s ease;
+        transition: all 0.1s ease;
       }
       &.collapsed {
         .expand-toggle {
-          transform:rotate(-180deg);
+          transform: rotate(-180deg);
         }
       }
     }
@@ -81,7 +90,8 @@
       right: -4px;
       opacity: 0.5;
       color: lighten($lm_orange, 5%);
-      .fa-circle, .fa-minus {
+      .fa-circle,
+      .fa-minus {
         left: 8px;
         top: 5px;
       }
@@ -100,14 +110,15 @@
       }
     }
     .expand-slot {
-      box-shadow: inset 0px 3px 7px -3px rgba(0, 0, 0, 0.1), inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
-      background-color: rgba(0,0,0,0.01);
+      box-shadow: inset 0px 3px 7px -3px rgba(0, 0, 0, 0.1),
+        inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
+      background-color: rgba(0, 0, 0, 0.01);
       margin-left: -0.5em;
       margin-right: -0.5em;
       padding: 0.5em 0.5em;
       margin-top: 0;
       margin-bottom: 0;
-      transition: all .1s ease;
+      transition: all 0.1s ease;
       > * {
         margin-bottom: 0;
       }
@@ -115,7 +126,8 @@
       .custom-radio {
         padding-left: 1.5em;
         .custom-control-label {
-          &:before, &:after {
+          &:before,
+          &:after {
             width: 1em;
             height: 1em;
             top: 0.25em;

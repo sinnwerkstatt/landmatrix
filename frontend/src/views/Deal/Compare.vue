@@ -607,28 +607,32 @@
     //   },
     // },
     created() {
-      apolloClient.query({
-        query: deal_gql_query,
-        variables: {
-          id: +this.deal_id,
-          version: +this.from_version,
-          subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
-        },
-      }).then((data)=> {
-        console.log(data.data.deal);
-        this.from_deal = data.data.deal
-      });
-            apolloClient.query({
-        query: deal_gql_query,
-        variables: {
-          id: +this.deal_id,
-          version: +this.to_version,
-          subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
-        },
-      }).then((data)=> {
-        console.log(data.data.deal);
-        this.to_deal = data.data.deal
-      })
+      apolloClient
+        .query({
+          query: deal_gql_query,
+          variables: {
+            id: +this.deal_id,
+            version: +this.from_version,
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+          },
+        })
+        .then((data) => {
+          console.log(data.data.deal);
+          this.from_deal = data.data.deal;
+        });
+      apolloClient
+        .query({
+          query: deal_gql_query,
+          variables: {
+            id: +this.deal_id,
+            version: +this.to_version,
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+          },
+        })
+        .then((data) => {
+          console.log(data.data.deal);
+          this.to_deal = data.data.deal;
+        });
     },
   };
 </script>

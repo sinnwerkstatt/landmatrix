@@ -150,7 +150,7 @@
           return coords;
         },
         markers() {
-          console.log("computing markers ...")
+          console.log("computing markers ...");
           let markers_list = [];
           for (let deal of this.deals) {
             if (!(deal.id in this.dealLocationMarkersCache)) {
@@ -166,7 +166,7 @@
                   }
                   var popupStatic = '<div style="height:100px; width:100px"></div>';
                   marker.bindPopup(popupStatic);
-                  marker.on('click', (e) => {
+                  marker.on("click", (e) => {
                     let popup = e.target.getPopup();
                     popup.setContent(this.getPopupHtml(deal, loc));
                   });
@@ -174,16 +174,16 @@
                 }
               }
             }
-            markers_list.push(...this.dealLocationMarkersCache[deal.id])
+            markers_list.push(...this.dealLocationMarkersCache[deal.id]);
           }
-          console.log("done")
+          console.log("done");
           return markers_list;
         },
       }),
     },
     watch: {
       deals() {
-        console.log("Watch: deals")
+        console.log("Watch: deals");
         this.flyToCountryOrRegion();
       },
       // markers() {
@@ -191,21 +191,21 @@
       //   this.refreshMap();
       // },
       bigmap() {
-        console.log("Watch: bigmap")
+        console.log("Watch: bigmap");
         if (this.deals.length) {
           this.refreshMap();
         }
       },
       current_zoom() {
-        console.log("Watch: currentzoom")
+        console.log("Watch: currentzoom");
         this.refreshMap();
       },
       "$store.state.map.displayDealsCount": function () {
-        console.log("Watch: displaydealscount")
+        console.log("Watch: displaydealscount");
         this.refreshMap();
       },
       visibleContextLayers() {
-        console.log("Watch: visibleContextLayers")
+        console.log("Watch: visibleContextLayers");
         this.contextLayersLayerGroup.clearLayers();
         this.visibleContextLayers.forEach((layer) => {
           let ctxlayer = L.tileLayer.wms(layer.url, layer.params);
@@ -217,7 +217,7 @@
         });
       },
       "$store.state.page.regions": function () {
-        console.log("Watch: regions")
+        console.log("Watch: regions");
         // otherwise country name will not be displayed on initial load with small list of
         // filtered deals (e.g. single country)
         // TODO: Make sure that countries/regions are loaded before deals?!
@@ -225,17 +225,17 @@
         this.flyToCountryOrRegion();
       },
       region_id() {
-        console.log("Watch: region_id")
+        console.log("Watch: region_id");
         this.flyToCountryOrRegion();
       },
       country_id() {
-        console.log("Watch: country_id")
+        console.log("Watch: country_id");
         this.flyToCountryOrRegion();
       },
     },
     methods: {
       flyToCountryOrRegion() {
-        console.log("Should fly now")
+        console.log("Should fly now");
         let coords = [0, 0];
         let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
         if (this.country_id) {
@@ -295,13 +295,13 @@
         });
       },
       refreshMap() {
-        console.log("Should refresh map now")
+        console.log("Should refresh map now");
         if (this.skipMapRefresh) return;
-        console.log("Clearing layers")
+        console.log("Clearing layers");
         this.featureGroup.clearLayers();
-        console.log("Clearing layers: done")
+        console.log("Clearing layers: done");
         if (this.bigmap && this.markers.length > 0) {
-          console.log("Refreshing map")
+          console.log("Refreshing map");
           this.current_zoom = this.bigmap.getZoom();
           if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !this.country_id) {
             // cluster by Region
@@ -331,7 +331,10 @@
                 this.styleCircle(circle, xval, { type: "region", id: key });
               }
             );
-          } else if (this.current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS && Object.keys(this.country_coords).length) {
+          } else if (
+            this.current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
+            Object.keys(this.country_coords).length
+          ) {
             // cluster by country
             Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
               ([key, val]) => {
@@ -388,14 +391,14 @@
         }
       },
       pinTheMap(bigmap) {
-        console.log("Pinning the map")
+        console.log("Pinning the map");
         this.bigmap = bigmap;
         this.bigmap.addLayer(this.featureGroup);
         this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
       },
       getPopupHtml(deal, loc) {
-        let template = document.createElement('template');
+        let template = document.createElement("template");
         let popupHtml = `<div class="deal-popup">
           <h3>Deal #${deal.id}</h3>
           <div class="deal-summary">
@@ -411,11 +414,7 @@
                 this.formfields,
                 "current_intention_of_investment"
               )}</dd>
-              <dt>Deal size</dt><dd>${getDealValue(
-                this,
-                deal,
-                "deal_size"
-              )}</dd>
+              <dt>Deal size</dt><dd>${getDealValue(this, deal, "deal_size")}</dd>
               <dt>Operating company</dt><dd>
                  ${getDealValue(this, deal, "operating_company")}
               </dd>

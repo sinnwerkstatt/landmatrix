@@ -36,9 +36,9 @@
       ContextBarContainer,
       FilterBar,
       ViewSwitcher,
-      LoadingPulse
+      LoadingPulse,
     },
-    computed: {}
+    computed: {},
   };
 </script>
 <style lang="scss">

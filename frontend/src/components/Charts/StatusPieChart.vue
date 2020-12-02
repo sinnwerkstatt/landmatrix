@@ -25,7 +25,7 @@
       containerStyle() {
         return {
           maxWidth: this.maxWidth || "200px",
-        }
+        };
       },
       chartoptions() {
         return {

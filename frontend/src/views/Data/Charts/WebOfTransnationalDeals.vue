@@ -64,16 +64,16 @@
               value: +country,
             });
           }
-        )
-      }
+        );
+      },
     },
     watch: {
       transnational_deals() {
-        this.redrawSpider()
+        this.redrawSpider();
       },
       filtered_country_id() {
-        this.redrawSpider()
-      }
+        this.redrawSpider();
+      },
     },
   };
 </script>

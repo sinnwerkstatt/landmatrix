@@ -49,15 +49,15 @@
       NullBooleanField,
       PointField,
       TextField,
-      URLField
+      URLField,
     },
     computed: {
       formfield() {
         return getFormField(this.formfields, this.fieldname, this.model);
       },
       ...mapState({
-        formfields: (state) => state.formfields
-      })
+        formfields: (state) => state.formfields,
+      }),
     },
     methods: {
       custom_is_null(field) {
@@ -67,8 +67,8 @@
           field === "" ||
           (Array.isArray(field) && field.length === 0)
         );
-      }
-    }
+      },
+    },
   };
 </script>
 

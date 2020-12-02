@@ -29,7 +29,7 @@
     data() {
       return {
         map: null,
-        roc: null
+        roc: null,
       };
     },
     computed: {
@@ -47,13 +47,13 @@
           }
         }
         return markers_list;
-      }
+      },
     },
     methods: {
       bigMapReady(map) {
         map.fitBounds([
           [this.roc.point_lat_min, this.roc.point_lon_min],
-          [this.roc.point_lat_max, this.roc.point_lon_max]
+          [this.roc.point_lat_max, this.roc.point_lon_max],
         ]);
         this.map = map;
       },
@@ -62,7 +62,7 @@
         Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
           ([key, val]) => {
             let mcluster = L.markerClusterGroup({
-              chunkedLoading: true
+              chunkedLoading: true,
             });
             val.forEach((mark) => mcluster.addLayer(mark));
             this.map.addLayer(mcluster);
@@ -73,21 +73,21 @@
         if (this.country_id) {
           this.$store.dispatch("setFilter", {
             filter: "country_id",
-            value: this.country_id
+            value: this.country_id,
           });
         } else {
           this.$store.dispatch("setFilter", {
             filter: "region_id",
-            value: this.region_id
+            value: this.region_id,
           });
         }
         this.$router.push({ name: "map" });
-      }
+      },
     },
     watch: {
       deals() {
         this.refreshMap();
-      }
+      },
     },
     created() {
       let type = "region";
@@ -97,7 +97,7 @@
         id = this.country_id;
       }
       this.roc = this.$store.getters.getCountryOrRegion({ type: type, id: id });
-    }
+    },
   };
 </script>
 <style lang="scss">
@@ -115,7 +115,7 @@
     &:hover {
       cursor: pointer;
       box-shadow: 5px 5px 5px rgba(black, 0.3);
-      border-color: rgba($lm_orange, 0.7)
+      border-color: rgba($lm_orange, 0.7);
     }
 
     .shield {
@@ -127,7 +127,7 @@
       display: flex;
 
       &:before {
-        content: '';
+        content: "";
         position: absolute;
         width: 100%;
         height: 100%;
