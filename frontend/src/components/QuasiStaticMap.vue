@@ -19,8 +19,9 @@
 </template>
 <script>
   import BigMap from "./BigMap";
-
   import { groupBy } from "lodash";
+
+  const ZOOM_LEVEL_COUNTRY = 4;
 
   export default {
     name: "QuasiStaticMap",
@@ -67,10 +68,15 @@
         this.featureGroup.clearLayers();
         // focus area
         if (this.roc) {
-          this.map.fitBounds([
-            [this.roc.point_lat_min, this.roc.point_lon_min],
-            [this.roc.point_lat_max, this.roc.point_lon_max],
-          ], { animate: false } );
+          console.log(this.roc);
+          if (this.roc.point_lat_min) {
+            this.map.fitBounds([
+              [this.roc.point_lat_min, this.roc.point_lon_min],
+              [this.roc.point_lat_max, this.roc.point_lon_max],
+            ], { animate: false });
+          } else {
+            this.map.setView([this.roc.point_lat, this.roc.point_lon], ZOOM_LEVEL_COUNTRY);
+          }
         } else {
           this.map.fitWorld( { animate: false } );
         }
