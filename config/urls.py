@@ -51,8 +51,8 @@ if settings.DEBUG:
 if settings.NEW_ROUTES:
     urlpatterns += [
         # Deals, Investors, Map, Charts, stuff...
-        path("legacy/data/", include("apps.grid.urls")),
         path("legacy/list/deals/", include("apps.grid.urls")),
+        path("legacy/data/", include("apps.grid.urls")),
         path("legacy/map/", include("apps.map.urls")),
         path("legacy/charts/", include("apps.charts.urls")),
         path("legacy/deal/comments/", include("apps.public_comments.urls")),
