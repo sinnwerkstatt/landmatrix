@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -25,27 +26,27 @@ class ObservatoryPage(Page):
         Country, null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    short_description = models.TextField(
-        blank=True, help_text="Displayed in sidebar of map"
+    short_description = models.CharField(
+        max_length=200, blank=True, help_text="Displayed in sidebar of map"
     )
-    introduction_text = models.TextField(
+    introduction_text = models.CharField(
+        max_length=700,
         blank=True,
-        null=True,
         help_text="Introduction before 'Read more'",
     )
     body = StreamField(SIMPLE_CONTENT_BLOCKS)
 
-    twitter_username = models.CharField(max_length=200, blank=True, null=True)
+    twitter_username = models.CharField(max_length=200, blank=True)
 
     content_panels = Page.content_panels + [
         FieldRowPanel(
             [FieldPanel("region"), FieldPanel("country")], classname="region-or-country"
         ),
-        FieldPanel("introduction_text"),
+        FieldPanel("introduction_text", widget=forms.Textarea),
         StreamFieldPanel("body"),
     ]
     promote_panels = [
-        FieldPanel("short_description"),
+        FieldPanel("short_description", widget=forms.Textarea),
         FieldPanel("twitter_username"),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
