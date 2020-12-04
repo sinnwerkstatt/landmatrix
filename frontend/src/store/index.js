@@ -19,19 +19,17 @@ const store = new Vuex.Store({
   },
   state: {
     formfields: {},
-    chartSelectedCountry: null,
   },
   mutations: {
     setFields(state, fields) {
       state.formfields = fields;
     },
-    selectChartSelectedCountry(state, country) {
-      state.chartSelectedCountry = country;
-    },
   },
   actions: {
     fetchBasicData(context) {
-      return new Promise(function (resolve, reject) {
+      let obs_promise = context.dispatch("fetchObservatoryPages");
+
+      let rest_promise = new Promise(function (resolve, reject) {
         apolloClient
           .query({
             query: gql`
@@ -56,7 +54,27 @@ const store = new Vuex.Store({
                     name
                   }
                 }
-
+                chart_descriptions
+              }
+            `,
+          })
+          .then((data) => {
+            context.commit("setUser", data.data.me);
+            context.commit("setChartDescriptions", data.data.chart_descriptions);
+            resolve();
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+      return Promise.all([obs_promise, rest_promise]);
+    },
+    fetchRegionsAndCountries(context) {
+      return new Promise(function (resolve, reject) {
+        apolloClient
+          .query({
+            query: gql`
+              {
                 countries {
                   id
                   name
@@ -68,6 +86,7 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   country_page_id
+                  observatory_page_id
                   short_description
                   deals {
                     id
@@ -82,13 +101,13 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   region_page_id
+                  observatory_page_id
                   short_description
                 }
               }
             `,
           })
           .then((data) => {
-            context.commit("setUser", data.data.me);
             context.commit("setCountries", data.data.countries);
             context.commit("setRegions", data.data.regions);
             resolve();
@@ -120,14 +139,12 @@ const store = new Vuex.Store({
         });
     },
     fetchMessages(context) {
-      let url = `/newdeal_legacy/messages/`;
+      let url = `/api/newdeal_legacy/messages/`;
       axios.get(url).then((response) => {
         context.commit("setMessages", response.data.messages);
       });
     },
-    selectChartSelectedCountry(context, country) {
-      context.commit("selectChartSelectedCountry", country);
-    },
+
     login(context, { username, password }) {
       return new Promise(function (resolve, reject) {
         axios

@@ -285,7 +285,7 @@ class CountriesChartViewTestCase(ChartViewTestCase):
                 "region": "Asia",
                 "region_slug": "asia",
                 "transnational": 1,
-                "url": "/data/by-investor-country/cambodia/",
+                "url": "/legacy/data/by-investor-country/cambodia/",
             }
         ]
         self.assertEqual(expected, response.data)
@@ -314,7 +314,7 @@ class CountriesChartViewTestCase(ChartViewTestCase):
                 "region": "Asia",
                 "region_slug": "asia",
                 "transnational": 1,
-                "url": "/data/by-investor-country/cambodia/",
+                "url": "/legacy/data/by-investor-country/cambodia/",
             }
         ]
         self.assertEqual(expected, response.data)
@@ -340,7 +340,7 @@ class CountriesChartViewTestCase(ChartViewTestCase):
                 "region": "Asia",
                 "region_slug": "asia",
                 "transnational": 1,
-                "url": "/data/by-target-country/myanmar/",
+                "url": "/legacy/data/by-target-country/myanmar/",
             }
         ]
         self.assertEqual(expected, response.data)
@@ -369,7 +369,7 @@ class CountriesChartViewTestCase(ChartViewTestCase):
                 "region": "Asia",
                 "region_slug": "asia",
                 "transnational": 1,
-                "url": "/data/by-target-country/myanmar/",
+                "url": "/legacy/data/by-target-country/myanmar/",
             }
         ]
         self.assertEqual(expected, response.data)
@@ -398,7 +398,7 @@ class CountriesChartViewTestCase(ChartViewTestCase):
                 "region": "Asia",
                 "region_slug": "asia",
                 "transnational": 1,
-                "url": "/data/by-target-country/myanmar/",
+                "url": "/legacy/data/by-target-country/myanmar/",
             }
         ]
         self.assertEqual(expected, response.data)

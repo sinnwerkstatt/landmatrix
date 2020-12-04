@@ -1,6 +1,6 @@
 from django.test import RequestFactory, TestCase
 
-from apps.wagtailcms.blocks import get_country_or_region_link
+from apps.wagtailcms.blocks import get_country_or_region_link, get_country_or_region
 from apps.wagtailcms.models import *
 from apps.wagtailcms.wagtail_hooks import (
     editor_css,

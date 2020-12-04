@@ -52,21 +52,18 @@
               {{ $t("Observatories") }}
             </a>
             <div class="dropdown-menu">
-              <router-link
-                v-for="region in regions"
-                class="dropdown-item"
-                :to="`/region/${region.slug}/`"
-              >
-                {{ region.name }}
-              </router-link>
-              <div class="dropdown-divider"></div>
-              <router-link
-                v-for="country in countries"
-                class="dropdown-item"
-                :to="`/country/${country.slug}/`"
-              >
-                {{ country.name }}
-              </router-link>
+              <template v-for="(obs, obsgroup) in observatories_group">
+                <!--                <div class="dropdown-divider"></div>-->
+                <div class="dropdown-menu-group">
+                  <router-link
+                    v-for="observatory in obs"
+                    class="dropdown-item"
+                    :to="`/observatory/${observatory.meta.slug}/`"
+                  >
+                    {{ observatory.title }}
+                  </router-link>
+                </div>
+              </template>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -151,7 +148,7 @@
             <p class="navbar-text dropdown-header">
               {{ user.full_name }}
               <br />
-              <small>{{ user_role }}</small>
+              <small>{{ user.role }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">
@@ -299,45 +296,17 @@
       user() {
         return this.$store.state.page.user;
       },
-      regions() {
-        return this.$store.getters.regionsWithPage;
-      },
-      countries() {
-        return this.$store.getters.countriesWithPage;
-      },
-      user_role() {
-        if (this.user && this.user.groups && this.user.groups.length) {
-          let groupi = this.user.groups
-            .map((g) => g.name)
-            .filter((name) => {
-              return ["Administrators", "Editors", "Reporters"].indexOf(name) > -1;
-            });
-
-          if (groupi.length) {
-            let ret = "";
-            if (groupi.indexOf("Reporters") > -1) ret = "Reporter";
-            if (groupi.indexOf("Editors") > -1) ret = "Editor";
-            if (groupi.indexOf("Administrators") > -1) ret = "Administrator";
-            let uri = this.user.userregionalinfo;
-            if (uri) {
-              let area = uri.region.map((c) => c.name);
-              area = area.concat(uri.country.map((c) => c.name));
-              if (area.length) {
-                return `${ret} of ${area.join(", ")}`;
-              }
-            }
-            return ret;
-          }
-        }
-        return "No Role";
+      observatories_group() {
+        let ret = { global: [], regions: [], countries: [] };
+        this.$store.state.page.observatories.forEach((ob) => {
+          if (ob.country) ret.countries.push(ob);
+          else if (ob.region) ret.regions.push(ob);
+          else ret.global.push(ob);
+        });
+        return ret;
       },
     },
     methods: {
-      // seems obsolete.
-      // openLink(target_url, option) {
-      //   window.location.href = `/${target_url}/${option.slug}/`;
-      //   // this.$router.push(`/${target_url}/${option.slug}/`);
-      // },
       dispatchLogout() {
         this.$store.dispatch("logout");
       },
@@ -388,6 +357,10 @@
       border: 1px solid $lm_orange;
       border-radius: 0;
       padding: 0;
+      .dropdown-menu-group + .dropdown-menu-group {
+        margin: 0.5rem 0;
+        border-top: 1px solid #e9ecef;
+      }
     }
   }
   .navbar-nav {

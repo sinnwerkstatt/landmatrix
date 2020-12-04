@@ -85,7 +85,7 @@
       name: "cose-bilkent",
       quality: "proof",
       nodeDimensionsIncludeLabels: true,
-      animate: "end"
+      animate: "end",
     },
     style: [
       {
@@ -100,9 +100,9 @@
           "text-valign": "center",
           "font-size": "9pt",
           "text-wrap": "wrap",
-          "text-max-width": "120px"
+          "text-max-width": "120px",
           // "shape": "ellipse",
-        }
+        },
       },
       {
         selector: "edge",
@@ -113,10 +113,10 @@
           "target-arrow-shape": (obj) => {
             return obj.data("target_arrow_shape") || "none  ";
           },
-          "curve-style": "bezier"
-        }
-      }
-    ]
+          "curve-style": "bezier",
+        },
+      },
+    ],
   };
 
   const investor_fields = [
@@ -125,7 +125,7 @@
     "comment",
     "country",
     "classification",
-    "homepage"
+    "homepage",
   ];
   const involvement_fields = [
     "role",
@@ -136,13 +136,12 @@
     "loans_currency",
     "loans_date",
     "parent_relation",
-    "comment"
+    "comment",
   ];
 
   function makePopper(ele) {
     let ref = ele.popperRef(); // used only for positioning
     if (ref) {
-
       // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
       // https://github.com/atomiks/tippyjs/issues/661
       let dummyDomEle = document.createElement("div");
@@ -150,7 +149,7 @@
       ele.tippy = tippy(dummyDomEle, {
         trigger: "manual", // call show() and hide() yourself
         lazy: false, // needed for onCreate()
-        onCreate: instance => {
+        onCreate: (instance) => {
           instance.popperInstance.reference = ref;
         }, // needed for `ref` positioning
         content: () => {
@@ -162,17 +161,23 @@
             tipEl.innerHTML = `Deal ${ele.data().name}`;
           } else {
             // tooltip content of investor node
-            let content = `<span class="name">${ele.data().name} (#${ele.data().id})</span>`;
-            if ('country' in ele.data() && ele.data().country) content += `${ele.data().country.name}, `;
-            if ('classification' in ele.data() && classification_choices[ele.data().classification]) content += classification_choices[ele.data().classification];
+            let content = `<span class="name">${ele.data().name} (#${
+              ele.data().id
+            })</span>`;
+            if ("country" in ele.data() && ele.data().country)
+              content += `${ele.data().country.name}, `;
+            if (
+              "classification" in ele.data() &&
+              classification_choices[ele.data().classification]
+            )
+              content += classification_choices[ele.data().classification];
             tipEl.innerHTML = content;
           }
           return tipEl;
-        }
+        },
       });
     }
   }
-
 
   export default {
     name: "InvestorGraph",
@@ -181,16 +186,16 @@
       investor: Object,
       showDeals: {
         type: Boolean,
-        default: true
+        default: true,
       },
       controls: {
         type: Boolean,
-        default: true
+        default: true,
       },
       initDepth: {
         type: Number,
-        default: 1
-      }
+        default: 1,
+      },
     },
     data() {
       return {
@@ -199,7 +204,7 @@
         modalData: {},
         network_fs: false,
         showInvestorModal: false,
-        showDealModal: false
+        showDealModal: false,
       };
     },
     computed: {
@@ -209,14 +214,14 @@
             data: {
               ...pick(this.investor, investor_fields),
               bgcolor: investor_color,
-              rootNode: true
-            }
-          }
+              rootNode: true,
+            },
+          },
         ];
         this.build_graph(this.investor, elements, this.depth);
 
         return elements;
-      }
+      },
     },
     methods: {
       fullscreen_switch() {
@@ -236,7 +241,7 @@
       },
       add_onclick_modal() {
         cy.ready(() => {
-          cy.nodes().forEach(function(ele) {
+          cy.nodes().forEach(function (ele) {
             makePopper(ele);
           });
           cy.nodes().unbind("mouseover");
@@ -269,16 +274,16 @@
                 id: "D" + deal.id,
                 name: "#" + deal.id,
                 bgcolor: primary_color,
-                dealNode: true
-              }
+                dealNode: true,
+              },
             };
             let deal_edge = {
               data: {
                 id: `${investor.id}_D${deal.id}`,
                 source: investor.id,
                 target: "D" + deal.id,
-                edge_color: primary_color
-              }
+                edge_color: primary_color,
+              },
             };
 
             elements.push(deal_node);
@@ -290,8 +295,8 @@
           let investor_node = {
             data: {
               ...pick(involvement.investor, investor_fields),
-              involvement: pick(involvement, involvement_fields)
-            }
+              involvement: pick(involvement, involvement_fields),
+            },
           };
           let investor_edge = {
             data: {
@@ -300,8 +305,8 @@
               ...(involvement.involvement_type === "VENTURE"
                 ? { source: investor.id, target: involvement.investor.id }
                 : { source: involvement.investor.id, target: investor.id }),
-              target_arrow_shape: "triangle"
-            }
+              target_arrow_shape: "triangle",
+            },
           };
 
           elements.push(investor_node);
@@ -314,14 +319,14 @@
         cy = cytoscape({
           container: document.getElementById("investor-network"),
           elements: this.elements,
-          ...cyconfig
+          ...cyconfig,
         });
         this.add_onclick_modal();
-      }
+      },
     },
     mounted() {
       this.do_the_graph();
-    }
+    },
   };
 </script>
 

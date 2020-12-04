@@ -35,12 +35,12 @@
     components: {
       DealSubmodelSection,
       BigMap,
-      LGeoJson
+      LGeoJson,
     },
     computed: {
       entries() {
         return this.deal.locations.map((l, index) => {
-          return { ...l, loc_no: index+1, country: this.deal.country.name };
+          return { ...l, loc_no: index + 1, country: this.deal.country.name };
         });
       },
       bounds() {
@@ -60,7 +60,7 @@
       },
       geojson_options() {
         return {
-          onEachFeature: this.onEachFeatureFunction
+          onEachFeature: this.onEachFeatureFunction,
           // pointToLayer: function (feature, latlng) {
           //   return L.circleMarker(latlng, {
           //     radius: 8,
@@ -71,7 +71,9 @@
       onEachFeatureFunction() {
         return (feature, layer) => {
           let tooltip = `<div>
-                  <div>Location #${this.entries.find(l => l.id === feature.properties.id).loc_no}</div>
+                  <div>Location #${
+                    this.entries.find((l) => l.id === feature.properties.id).loc_no
+                  }</div>
                   <div>Name: ${feature.properties.name}</div>
                   <div>Type: ${feature.properties.type}</div>
               </div>`;
@@ -83,16 +85,16 @@
           contract_area: {
             dashArray: "5, 5",
             dashOffset: "0",
-            fillColor: "#ffec03"
+            fillColor: "#ffec03",
           },
           intended_area: {
             dashArray: "5, 5",
             dashOffset: "0",
-            fillColor: "#ff8900"
+            fillColor: "#ff8900",
           },
           production_area: {
-            fillColor: "#ff0000"
-          }
+            fillColor: "#ff0000",
+          },
         };
         return (feature, layer) => {
           return {
@@ -100,10 +102,10 @@
             color: "#000000",
             opacity: 1,
             fillOpacity: 0.2,
-            ...styles[feature.properties.type]
+            ...styles[feature.properties.type],
           };
         };
-      }
+      },
     },
     methods: {
       custom_is_null(field) {
@@ -113,8 +115,8 @@
           field === "" ||
           (Array.isArray(field) && field.length === 0)
         );
-      }
-    }
+      },
+    },
   };
 </script>
 

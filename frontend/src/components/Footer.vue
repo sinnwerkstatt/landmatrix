@@ -27,14 +27,8 @@
     data() {
       return {
         currentyear: new Date().getFullYear(),
-        old_interface_view: this.$router.currentRoute.path,
+        old_interface_view: `/legacy${this.$route.path}`,
       };
-    },
-    computed: {
-      footerColumns() {
-        if (this.$store.state.page.wagtailRootPage)
-          return this.$store.state.page.wagtailRootPage.footer_columns;
-      },
     },
   };
 </script>

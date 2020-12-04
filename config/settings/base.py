@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     # wagtail and dependencies
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
+    # "wagtail.contrib.styleguide",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",

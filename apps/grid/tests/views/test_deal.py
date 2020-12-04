@@ -261,7 +261,7 @@ class DealUpdateViewTestCase(
         )
         self.client.logout()
         self.assertEqual(302, response.status_code)
-        self.assertEqual("/deal/2/3/", response.url)
+        self.assertEqual("/legacy/deal/2/3/", response.url)
 
     @override_settings(ELASTICSEARCH_INDEX_NAME="landmatrix_test")
     def test_does_not_exist(self):

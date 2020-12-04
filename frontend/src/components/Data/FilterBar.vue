@@ -586,8 +586,8 @@
       updateDefaultFilter(checked) {
         if (checked) this.$store.dispatch("resetFilters");
         else this.$store.dispatch("clearFilters");
-      }
-    }
+      },
+    },
   };
 </script>
 

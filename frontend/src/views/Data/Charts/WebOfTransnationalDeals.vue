@@ -24,41 +24,114 @@
     props: ["changeDeal"],
     components: { ChartsContainer, LoadingPulse, ContextBarWebOfTransnationalDeals },
     apollo: {
-      transnational_deals: gql`
-        query {
-          transnational_deals
-        }
-      `
+      transnational_deals: {
+        query: gql`
+          query WebOfTransnationalDeals($filters: [Filter]) {
+            transnational_deals(filters: $filters)
+          }
+        `,
+        variables() {
+          return {
+            filters: this.filtered_filtersForGQL,
+          };
+        },
+      },
     },
     data() {
       return {
-        transnational_deals: []
+        transnational_deals: [],
       };
+    },
+    computed: {
+      filtered_filtersForGQL() {
+        return this.$store.getters.filtersForGQL.filter(
+          (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
+        );
+      },
+      filtered_country_id() {
+        return this.$store.state.filters.filters.country_id;
+      },
+    },
+    methods: {
+      redrawSpider() {
+        LandMatrixRadialSpider(
+          this.transnational_deals,
+          "#svg-container > svg",
+          this.filtered_country_id,
+          (country) => {
+            this.$store.dispatch("setFilter", {
+              filter: "country_id",
+              value: +country,
+            });
+          }
+        );
+      },
     },
     watch: {
       transnational_deals() {
-        LandMatrixRadialSpider(this.transnational_deals, "#svg-container > svg", (country) => {
-          this.$store.dispatch("selectChartSelectedCountry", country);
-        });
-      }
-    }
+        this.redrawSpider();
+      },
+      filtered_country_id() {
+        this.redrawSpider();
+      },
+    },
   };
 </script>
 <style lang="scss">
-  //.link {
-  //  fill: none;
-  //  stroke: #555;
-  //  stroke-opacity: 0.4;
-  //  stroke-width: 4.5px;
-  //}
+  @import "src/scss/colors";
 
   #svg-container {
     width: 100%;
     align-self: safe center;
+
     > svg {
+      #incoming-marker {
+        fill: $primary;
+      }
+
+      #outgoing-marker {
+        fill: $lm_investor;
+      }
+
       text {
         font-size: 14px;
         cursor: pointer;
+
+        &.incoming-highlighted {
+          font-weight: bold;
+          fill: $primary;
+        }
+
+        &.outgoing-highlighted {
+          font-weight: bold;
+          fill: $lm_investor;
+        }
+      }
+
+      path {
+        &.incoming-highlighted {
+          stroke: $primary;
+          stroke-width: 2;
+          marker-start: url(#incoming-marker);
+        }
+
+        &.outgoing-highlighted {
+          stroke: $lm_investor;
+          stroke-width: 2;
+          marker-start: url(#outgoing-marker);
+        }
+
+        &.incoming-permahighlight {
+          stroke: $primary;
+          stroke-width: 2.5;
+          marker-start: url(#incoming-marker);
+        }
+
+        &.outgoing-permahighlight {
+          stroke: $lm_investor;
+          stroke-width: 2.5;
+          marker-start: url(#outgoing-marker);
+        }
       }
     }
   }

@@ -1,14 +1,12 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db.models import Q
+from django.db.models import Sum, Count, F
 from graphql import GraphQLResolveInfo
 
+from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Country
-from apps.landmatrix.models.deal import DealTopInvestors
-
-# def resolve_aggregations(obj: Any, info: GraphQLResolveInfo):
-#     neg = Deal.objects.values("current_negotiation_status").annotate(Sum("deal_size"))
+from apps.landmatrix.models.deal import DealTopInvestors, Deal
 
 
 LONG_COUNTRIES = {
@@ -38,11 +36,16 @@ LONG_COUNTRIES = {
 }
 
 
-def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
+def resolve_web_of_transnational_deals(
+    obj: Any, info: GraphQLResolveInfo, filters=None
+):
+    deals = Deal.objects.active()
+    if filters:
+        deals = deals.filter(parse_filters(filters))
+
     deals_investors = (
-        DealTopInvestors.objects.filter(
-            deal__status__in=(2, 3), investor__status__in=(2, 3)
-        )
+        DealTopInvestors.objects.filter(investor__status__in=(2, 3))
+        .filter(deal_id__in=deals.values_list("id", flat=True))
         .prefetch_related("deal")
         .prefetch_related("investor")
         .order_by("deal__country_id")
@@ -100,38 +103,40 @@ def resolve_web_of_transnational_deals(obj: Any, info: GraphQLResolveInfo):
     }
 
 
-def country_investments(obj: Any, info: GraphQLResolveInfo, id):
-    deals_investors = (
-        DealTopInvestors.objects.filter(
-            Q(deal__country_id=id) | Q(investor__country_id=id)
-        )
-        .filter(
-            deal__status__in=(2, 3),
-            investor__status__in=(2, 3),
-            # deal__is_public=True,
-        )
-        .prefetch_related("deal")
-        .prefetch_related("investor")
+def country_investments_and_rankings(obj: Any, info: GraphQLResolveInfo, id):
+    active_dtis = DealTopInvestors.objects.filter(
+        deal__status__in=(2, 3),
+        investor__status__in=(2, 3),
     )
-    invested_regions = defaultdict(dict)
-    investing_regions = defaultdict(dict)
-    for invest in deals_investors:
-        # TODO: do we count these?
-        # if invest.deal.country_id == invest.investor.country_id:
-        #     continue
-        if invest.investor.country_id == id:
-            reg_id = invest.deal.country.fk_region_id
-            if invested_regions.get(reg_id):
-                invested_regions[reg_id]["count"] += 1
-                invested_regions[reg_id]["size"] += invest.deal.deal_size
-            else:
-                invested_regions[reg_id] = {"count": 1, "size": invest.deal.deal_size}
-        else:
-            reg_id = invest.investor.country.fk_region_id
 
-            if investing_regions.get(reg_id):
-                investing_regions[reg_id]["count"] += 1
-                investing_regions[reg_id]["size"] += invest.deal.deal_size
-            else:
-                investing_regions[reg_id] = {"count": 1, "size": invest.deal.deal_size}
-    return {"invested": invested_regions, "investing": investing_regions}
+    investing = list(
+        active_dtis.filter(deal__country_id=id)
+        .exclude(investor__country=None)
+        .exclude(investor__country_id=id)
+        .values(region_id=F("investor__country__fk_region_id"))
+        .annotate(count=Count("deal"))
+        .annotate(size=Sum("deal__deal_size"))
+    )
+    invested = list(
+        active_dtis.filter(investor__country_id=id)
+        .exclude(deal__country=None)
+        .exclude(deal__country_id=id)
+        .values(region_id=F("deal__country__fk_region_id"))
+        .annotate(count=Count("deal"))
+        .annotate(size=Sum("deal__deal_size"))
+    )
+    return {
+        "investing": investing,
+        "invested": invested,
+        "ranking_deal": Deal.objects.active().get_deal_country_rankings(id),
+        "ranking_investor": Deal.objects.active().get_investor_country_rankings(id),
+    }
+
+
+def global_rankings(obj, info, count=10):
+    return {
+        "ranking_deal": list(Deal.objects.active().get_deal_country_rankings())[:count],
+        "ranking_investor": list(Deal.objects.active().get_investor_country_rankings())[
+            :count
+        ],
+    }

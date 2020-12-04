@@ -44,12 +44,15 @@ type Query {
         country_id: Int,
         region_id: Int
     ): Statistics
-    transnational_deals: WebOfTransnationalDeals
-    country_investments(id: Int!): CountryInvestments
+    transnational_deals(filters: [Filter]): WebOfTransnationalDeals
+    country_investments_and_rankings(id: Int!): CountryInvestmentsAndRankings
+    global_rankings(count:Int = 10): Rankings
 
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]
     blogcategories: [BlogCategory]
+
+    chart_descriptions: ChartDescriptions
 }
 
 type FormFieldSet {

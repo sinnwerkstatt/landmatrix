@@ -8,7 +8,8 @@
     "parcel": "parcel src/main.js --out-dir dist --out-file main --no-source-maps --public-url /static/",
     "parcelbuild": "parcel build src/main.js --out-dir dist --out-file main --no-source-maps --public-url /static/",
     "build": "webpack --mode=production",
-    "lint": "eslint --ext .js,.vue src"
+    "lint": "eslint --ext .js,.vue src",
+    "style": "prettier src/ --write"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
@@ -72,7 +73,8 @@
     "vue-apollo": "^3.0.4",
     "vue-i18n": "^8.20.0",
     "vue-json-csv": "^1.2.11",
-    "vue-scroll-loader": "^2.2.0"
+    "vue-scroll-loader": "^2.2.0",
+    "deep-object-diff": "^1.1.0"
   },
   "prettier": {
     "vueIndentScriptAndStyle": true,

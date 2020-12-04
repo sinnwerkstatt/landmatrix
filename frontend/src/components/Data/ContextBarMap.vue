@@ -56,21 +56,21 @@
     data() {
       return {
         deals: [],
-        dealsWithProduceInfo: []
+        dealsWithProduceInfo: [],
       };
     },
     apollo: {
       deals: data_deal_query,
-      dealsWithProduceInfo: data_deal_produce_query
+      dealsWithProduceInfo: data_deal_produce_query,
     },
     computed: {
       ...mapState({
-        displayDealsCount: state => state.map.displayDealsCount,
+        displayDealsCount: (state) => state.map.displayDealsCount,
       }),
       currentItem() {
         let item = {
           name: "Global",
-          url: "/newdeal/global"
+          url: "/newdeal/global",
         };
         if (this.$store.state.filters.filters.country_id) {
           let country = this.$store.state.page.countries.find(
@@ -78,7 +78,7 @@
           );
           if (country) {
             item = {
-              ...country
+              ...country,
             };
             if (country.country_page_id) {
               item.url = `/newdeal/country/${country.slug}`;
@@ -90,7 +90,7 @@
           );
           if (region) {
             item = {
-              ...region
+              ...region,
             };
             if (region.region_page_id) {
               item.url = `/newdeal/region/${region.slug}`;
@@ -128,7 +128,7 @@
             "rgba(252,148,31,0.4)",
             "rgba(252,148,31,0.7)",
             "rgba(252,148,31,1)",
-            "#7D4A0F"
+            "#7D4A0F",
           ];
           for (const [key, label] of Object.entries(implementation_status_choices)) {
             let filteredDeals = this.deals.filter((d) => {
@@ -140,7 +140,7 @@
               value: this.displayDealsCount
                 ? filteredDeals.length
                 : sum(filteredDeals, "deal_size"),
-              unit: this.displayDealsCount ? "deals" : "ha"
+              unit: this.displayDealsCount ? "deals" : "ha",
             });
             i++;
           }
@@ -152,16 +152,16 @@
           return [
             {
               label: "Crops",
-              color: "#FC941F"
+              color: "#FC941F",
             },
             {
               label: "Livestock",
-              color: "#7D4A0F"
+              color: "#7D4A0F",
             },
             {
               label: "Mineral Resources",
-              color: "black"
-            }
+              color: "black",
+            },
           ];
         }
       },
@@ -187,7 +187,7 @@
                 data.push({
                   label: key,
                   color: colors[fields.indexOf(field)],
-                  value: count
+                  value: count,
                 });
               }
             }
@@ -214,7 +214,7 @@
               color: "rgba(252,148,31,0.4)",
               value: (otherCount / totalCount) * 100,
               unit: "%",
-              precision: 1
+              precision: 1,
             });
           }
         }
@@ -225,11 +225,11 @@
           return {
             ...this.$store.state.formfields.deal.crops.choices,
             ...this.$store.state.formfields.deal.animals.choices,
-            ...this.$store.state.formfields.deal.resources.choices
+            ...this.$store.state.formfields.deal.resources.choices,
           };
         }
-      }
-    }
+      },
+    },
   };
 </script>
 
@@ -261,4 +261,3 @@
     text-align: left;
   }
 </style>
-

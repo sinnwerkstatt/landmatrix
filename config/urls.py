@@ -16,7 +16,7 @@ handler500 = "apps.landmatrix.views.handler500"
 CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
-    path("", include("apps.landmatrix.urls")),
+    # Django basics
     path(
         "accounts/register/",
         RegistrationView.as_view(form_class=CustomRegistrationForm),
@@ -31,55 +31,56 @@ urlpatterns = [
     path("cms/", include("wagtail.admin.urls")),
     path("news/", include("apps.blog.urls", namespace="news")),
     path("documents/", include("wagtail.documents.urls")),
-    path("data/", include("apps.grid.urls")),
-    path("map/", include("apps.map.urls")),
-    path("charts/", include("apps.charts.urls")),
-    path("deal/comments/", include("apps.public_comments.urls")),
-    path("deal/", include("apps.grid.urls.deal")),
+    # APIs
+    path("graphql/", include("apps.graphql.urls")),
+    path("wagtailapi/v2/", api_router.urls),
+    path("api/", include("apps.api.urls")),
+    path("api/", include("apps.landmatrix.urlsapi")),
     path(
-        "compare/<int:activity_1>/<int:activity_2>/",
+        "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
+    ),
+    # Editor-Backend / Workflow
+    path("editor/", include("apps.editor.urls")),
+    # Deals, Investors, Map, Charts, stuff...
+    path("legacy/data/", include("apps.grid.urls")),
+    path("legacy/list/deals/", include("apps.grid.urls")),
+    path("legacy/map/", include("apps.map.urls")),
+    path("legacy/charts/", include("apps.charts.urls")),
+    path("legacy/deal/comments/", include("apps.public_comments.urls")),
+    path("legacy/deal/", include("apps.grid.urls.deal")),
+    path(
+        "legacy/compare/<int:activity_1>/<int:activity_2>/",
         DealComparisonView.as_view(),
         name="compare_deals",
     ),
     path(
-        "compare/<int:activity_1>/", DealComparisonView.as_view(), name="compare_deals"
+        "legacy/compare/<int:activity_1>/",
+        DealComparisonView.as_view(),
+        name="compare_deals",
     ),
-    path("region/<slug:region_slug>/", RegionView.as_view(), name="region"),
-    path("country/<slug:country_slug>/", CountryView.as_view(), name="country"),
-    path("investor/", include("apps.grid.urls.investor")),
+    path("legacy/region/<slug:region_slug>/", RegionView.as_view(), name="region"),
+    path("legacy/country/<slug:country_slug>/", CountryView.as_view(), name="country"),
+    path("legacy/investor/", include("apps.grid.urls.investor")),
     path(
-        "investors/compare/<int:investor_1>/<int:investor_2>/",
+        "legacy/investors/compare/<int:investor_1>/<int:investor_2>/",
         InvestorComparisonView.as_view(),
         name="compare_investors",
     ),
     path(
-        "investors/compare/<int:investor_1>/",
+        "legacy/investors/compare/<int:investor_1>/",
         InvestorComparisonView.as_view(),
         name="compare_investors",
     ),
-    path("editor/", include("apps.editor.urls")),
-    path("graphql/", include("apps.graphql.urls")),
-    path("wagtailapi/v2/", api_router.urls),
-    path("api/", include("apps.landmatrix.urlsapi")),
+    # Legacy wagtail pages
+    path("legacy/", include("wagtail.core.urls")),
 ]
 
 if settings.DEBUG:
     # Non i18n patterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    try:
-        # noinspection PyUnresolvedReferences
-        import debug_toolbar
-
-        urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-    except ImportError:
-        pass
 
 urlpatterns += [
-    # path('api/docs/', include('rest_framework_docs.urls')),
-    path("api/", include("apps.api.urls")),
-    path(
-        "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
-    ),
-    path("", include("wagtail.core.urls")),
+    # NEW DEAL
+    path("", include("apps.landmatrix.urls")),
 ]

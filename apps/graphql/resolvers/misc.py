@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from graphql import GraphQLResolveInfo
 
 from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop, Deal
+from apps.wagtailcms.models import ChartDescriptionsSettings
 
 
 def resolve_countries(obj: Any, info: GraphQLResolveInfo):
@@ -15,6 +16,7 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
             "point_lat": c.point_lat,
             "point_lon": c.point_lon,
             "country_page_id": c.country_page_id,
+            "observatory_page_id": c.observatory_page_id,
             "short_description": c.short_description,
             "deals": c.deal_set.all(),
         }
@@ -63,3 +65,7 @@ def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id
             q_has_at_least_one_polygon
         ).count(),
     }
+
+
+def resolve_chart_descriptions(obj, info):
+    return ChartDescriptionsSettings.for_site(info.context.site).to_dict()
