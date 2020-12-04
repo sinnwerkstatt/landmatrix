@@ -20,7 +20,7 @@ Vue.use(Router);
 
 const router = new Router({
   mode: "history",
-  base: "/", //process.env.BASE_URL,
+  base: process.env.NEW_ROUTES === "False" ? "/newdeal/" : "/",
   routes: [
     {
       path: "/map/",
