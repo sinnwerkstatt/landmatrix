@@ -79,6 +79,7 @@ class Deal(models.Model, OldDealMixin):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        related_name="deals",
     )
     intended_size = models.DecimalField(
         _("Intended size (in ha)"),

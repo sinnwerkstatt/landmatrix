@@ -1,13 +1,12 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Country
 from apps.landmatrix.models.deal import DealTopInvestors, Deal
-
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",
@@ -103,9 +102,14 @@ def resolve_web_of_transnational_deals(
     }
 
 
-def country_investments_and_rankings(obj: Any, info: GraphQLResolveInfo, id):
+def country_investments_and_rankings(
+    obj: Any, info: GraphQLResolveInfo, id, filters=None
+):
+    deals = Deal.objects.active()
+    if filters:
+        deals = deals.filter(parse_filters(filters))
     active_dtis = DealTopInvestors.objects.filter(
-        deal__status__in=(2, 3),
+        deal__in=deals,
         investor__status__in=(2, 3),
     )
 
@@ -113,7 +117,7 @@ def country_investments_and_rankings(obj: Any, info: GraphQLResolveInfo, id):
         active_dtis.filter(deal__country_id=id)
         .exclude(investor__country=None)
         .exclude(investor__country_id=id)
-        .values(region_id=F("investor__country__fk_region_id"))
+        .values(country_id=F("investor__country_id"))
         .annotate(count=Count("deal"))
         .annotate(size=Sum("deal__deal_size"))
     )
@@ -121,15 +125,18 @@ def country_investments_and_rankings(obj: Any, info: GraphQLResolveInfo, id):
         active_dtis.filter(investor__country_id=id)
         .exclude(deal__country=None)
         .exclude(deal__country_id=id)
-        .values(region_id=F("deal__country__fk_region_id"))
+        .values(country_id=F("deal__country_id"))
         .annotate(count=Count("deal"))
         .annotate(size=Sum("deal__deal_size"))
     )
     return {
         "investing": investing,
         "invested": invested,
-        "ranking_deal": Deal.objects.active().get_deal_country_rankings(id),
-        "ranking_investor": Deal.objects.active().get_investor_country_rankings(id),
+        # deactivated for now
+        # "ranking_deal": Deal.objects.active().get_deal_country_rankings(id),
+        # "ranking_investor": Deal.objects.active().get_investor_country_rankings(id),
+        "ranking_deal": None,
+        "ranking_investor": None,
     }
 
 
@@ -139,4 +146,30 @@ def global_rankings(obj, info, count=10):
         "ranking_investor": list(Deal.objects.active().get_investor_country_rankings())[
             :count
         ],
+    }
+
+
+def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
+    public_deals = Deal.objects.public()
+    if country_id:
+        public_deals = public_deals.filter(country_id=country_id)
+    if region_id:
+        public_deals = public_deals.filter(country__fk_region_id=region_id)
+
+    q_has_at_least_one_polygon = Q(locations__areas__isnull=False)
+
+    return {
+        "deals_public_count": public_deals.count(),
+        "deals_public_multi_ds_count": public_deals.annotate(
+            ds_count=Count("datasources")
+        )
+        .filter(ds_count__gte=2)
+        .count(),
+        "deals_public_high_geo_accuracy": public_deals.filter(
+            Q(locations__level_of_accuracy__in=["EXACT_LOCATION", "COORDINATES"])
+            | q_has_at_least_one_polygon
+        ).count(),
+        "deals_public_polygons": public_deals.filter(
+            q_has_at_least_one_polygon
+        ).count(),
     }

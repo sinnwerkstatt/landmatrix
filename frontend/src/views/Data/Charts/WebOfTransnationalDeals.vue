@@ -7,7 +7,7 @@
       </div>
     </template>
     <template v-slot:ContextBar>
-      <ContextBarWebOfTransnationalDeals />
+      <ContextBarWebOfTransnationalDeals :filters="filtered_filtersForGQL"/>
     </template>
   </ChartsContainer>
 </template>

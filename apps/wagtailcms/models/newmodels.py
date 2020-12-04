@@ -20,10 +20,18 @@ class ObservatoryIndexPage(Page):
 
 class ObservatoryPage(Page):
     region = models.OneToOneField(
-        Region, null=True, blank=True, on_delete=models.SET_NULL
+        Region,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="observatory_page_id",
     )
     country = models.OneToOneField(
-        Country, null=True, blank=True, on_delete=models.SET_NULL
+        Country,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="observatory_page_id",
     )
 
     short_description = models.CharField(

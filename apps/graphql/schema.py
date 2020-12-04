@@ -16,6 +16,7 @@ from apps.graphql.resolvers.charts import (
     resolve_web_of_transnational_deals,
     country_investments_and_rankings,
     global_rankings,
+    resolve_statistics,
 )
 from apps.graphql.resolvers.deal import (
     resolve_deal,
@@ -36,7 +37,6 @@ from apps.graphql.resolvers.misc import (
     resolve_minerals,
     resolve_crops,
     resolve_animals,
-    resolve_statistics,
     resolve_chart_descriptions,
 )
 from apps.graphql.resolvers.user import (

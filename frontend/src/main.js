@@ -93,7 +93,6 @@ let vue_app = new Vue({
 
 store.dispatch("fetchFields", LANGUAGE || "en");
 store.dispatch("fetchMessages");
-store.dispatch("fetchRegionsAndCountries");
 store.dispatch("fetchBasicData").then(() => {
   vue_app.$mount("#app");
 });

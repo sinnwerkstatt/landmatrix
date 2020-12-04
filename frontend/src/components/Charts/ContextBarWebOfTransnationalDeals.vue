@@ -4,49 +4,49 @@
     <div v-html="chart_desc" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
-      <div class="mx-3">
-        <b
-          class="deal-ranking"
-          v-if="this.country_investments_and_rankings.ranking_deal"
-        >
-          <i class="fas fa-compress-arrows-alt"></i> #{{
-            this.country_investments_and_rankings.ranking_deal
-          }}
-        </b>
-        &nbsp;
-        <b
-          class="investor-ranking"
-          v-if="this.country_investments_and_rankings.ranking_investor"
-        >
-          <i class="fas fa-expand-arrows-alt"></i> #{{
-            this.country_investments_and_rankings.ranking_investor
-          }}
-        </b>
-      </div>
-      <div v-if="investing_regions.length > 0">
-        <b>Regions investing in {{ country.name }}</b>
+<!--      <div class="mx-3">-->
+<!--        <b-->
+<!--          class="deal-ranking"-->
+<!--          v-if="this.country_investments_and_rankings.ranking_deal"-->
+<!--        >-->
+<!--          <i class="fas fa-compress-arrows-alt"></i> #{{-->
+<!--            this.country_investments_and_rankings.ranking_deal-->
+<!--          }}-->
+<!--        </b>-->
+<!--        &nbsp;-->
+<!--        <b-->
+<!--          class="investor-ranking"-->
+<!--          v-if="this.country_investments_and_rankings.ranking_investor"-->
+<!--        >-->
+<!--          <i class="fas fa-expand-arrows-alt"></i> #{{-->
+<!--            this.country_investments_and_rankings.ranking_investor-->
+<!--          }}-->
+<!--        </b>-->
+<!--      </div>-->
+      <div v-if="investing_countries.length > 0">
+        <b>Countries investing in {{ country.name }}</b>
         <table class="table-striped">
           <tbody>
-            <tr v-for="region in investing_regions">
-              <th>{{ region.region_name }}</th>
+            <tr v-for="icountry in investing_countries">
+              <th>{{ icountry.country_name }}</th>
               <td>
-                {{ region.count }} deals<br />
-                {{ region.size }} ha
+                {{ icountry.count }} deals<br />
+                {{ icountry.size }} ha
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div v-if="invested_regions.length > 0">
-        <b>Regions {{ country.name }} invests in</b>
+      <div v-if="invested_countries.length > 0">
+        <b>Countries {{ country.name }} invests in</b>
         <table class="table-striped">
           <tbody>
-            <tr v-for="region in invested_regions">
-              <th>{{ region.region_name }}</th>
+            <tr v-for="icountry in invested_countries">
+              <th>{{ icountry.country_name }}</th>
               <td>
-                {{ region.count }} deals<br />
-                {{ region.size }} ha
+                {{ icountry.count }} deals<br />
+                {{ icountry.size }} ha
               </td>
             </tr>
           </tbody>
@@ -85,7 +85,8 @@
   import { mapGetters } from "vuex";
 
   export default {
-    name: "ContextBarCharts",
+    name: "ContextBarWebOfTransnationalDeals",
+    props: ["filters"],
     apollo: {
       global_rankings: gql`
         query {
@@ -94,13 +95,14 @@
       `,
       country_investments_and_rankings: {
         query: gql`
-          query Investments($id: Int!) {
-            country_investments_and_rankings(id: $id)
+          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
+            country_investments_and_rankings(id: $id, filters: $filters)
           }
         `,
         variables() {
           return {
             id: +this.country_id,
+            filters: this.filters,
           };
         },
         skip() {
@@ -130,27 +132,29 @@
       },
       country() {
         if (!this.country_id || this.country_id === 0) return null;
-        return this.getCountryOrRegion({
-          type: "country",
+        console.log(this.country_id);
+
+        let xxx = this.getCountryOrRegion({
           id: this.country_id,
         });
+        console.log(xxx);
+        return xxx;
       },
-      investing_regions() {
+      investing_countries() {
         return this.country_investments_and_rankings.investing.map((x) => {
-          let region_name = this.getCountryOrRegion({
-            type: "region",
-            id: +x.region_id,
+          let country_name = this.getCountryOrRegion({
+            id: +x.country_id,
           }).name;
-          return { region_name, ...x };
+          return { country_name, ...x };
         });
       },
-      invested_regions() {
+      invested_countries() {
         return this.country_investments_and_rankings.invested.map((x) => {
-          let region_name = this.getCountryOrRegion({
-            type: "region",
-            id: +x.region_id,
+          console.log("invested", x);
+          let country_name = this.getCountryOrRegion({
+            id: +x.country_id,
           }).name;
-          return { region_name, ...x };
+          return { country_name, ...x };
         });
       },
       global_ranking_deals() {

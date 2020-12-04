@@ -82,10 +82,6 @@ class Country(models.Model):
         ordering = ("name",)
 
     @property
-    def observatory_page_id(self):
-        return self.observatorypage.id if hasattr(self, "observatorypage") else None
-
-    @property
     def short_description(self):
         return (
             self.observatorypage.short_description
@@ -146,10 +142,6 @@ class Region(models.Model):
     @property
     def point_lat(self):
         return (self.point_lat_min + self.point_lat_max) / 2
-
-    @property
-    def observatory_page_id(self):
-        return self.observatorypage.id if hasattr(self, "observatorypage") else None
 
     @property
     def short_description(self):

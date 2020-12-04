@@ -54,27 +54,6 @@ const store = new Vuex.Store({
                     name
                   }
                 }
-                chart_descriptions
-              }
-            `,
-          })
-          .then((data) => {
-            context.commit("setUser", data.data.me);
-            context.commit("setChartDescriptions", data.data.chart_descriptions);
-            resolve();
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-      return Promise.all([obs_promise, rest_promise]);
-    },
-    fetchRegionsAndCountries(context) {
-      return new Promise(function (resolve, reject) {
-        apolloClient
-          .query({
-            query: gql`
-              {
                 countries {
                   id
                   name
@@ -86,7 +65,7 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   observatory_page_id
-                  short_description
+
                   deals {
                     id
                   }
@@ -100,20 +79,23 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   observatory_page_id
-                  short_description
                 }
+                chart_descriptions
               }
             `,
           })
           .then((data) => {
+            context.commit("setUser", data.data.me);
             context.commit("setCountries", data.data.countries);
             context.commit("setRegions", data.data.regions);
+            context.commit("setChartDescriptions", data.data.chart_descriptions);
             resolve();
           })
           .catch((error) => {
             reject(error);
           });
       });
+      return Promise.all([obs_promise, rest_promise]);
     },
     fetchFields(context, language = "en") {
       apolloClient

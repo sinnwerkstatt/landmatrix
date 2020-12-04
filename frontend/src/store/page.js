@@ -15,19 +15,10 @@ export const pageModule = {
     chartDescriptions: [],
   }),
   getters: {
-    countriesWithPage: (state) => {
-      return state.countries.filter((c) => c.observatory_page_id !== null);
-    },
-    regionsWithPage: (state) => {
-      return state.regions.filter((r) => r.observatory_page_id !== null);
-    },
     getCountryOrRegion: (state) => ({ type, id }) => {
       return type === "region"
         ? state.regions.find((region) => region.id === +id)
         : state.countries.find((countries) => countries.id === +id);
-    },
-    getRegionById: (state) => (id) => {
-      return state.regions.find((region) => region.id === +id);
     },
   },
   mutations: {
