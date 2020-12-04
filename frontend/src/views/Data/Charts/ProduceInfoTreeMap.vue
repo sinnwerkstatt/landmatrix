@@ -199,7 +199,7 @@
             }
           }
           // group by field and summarize smaller than 0.1% as other for each field
-          let threshHoldSize = totalSize * 0.001;
+          let threshHoldSize = totalSize * 0.005;
           for (let field of fields) {
             data[field] = [];
             let otherSize = 0;
