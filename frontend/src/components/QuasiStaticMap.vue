@@ -29,7 +29,7 @@
     data() {
       return {
         map: null,
-        roc: null,
+        featureGroup: L.featureGroup(),
       };
     },
     computed: {
@@ -48,16 +48,32 @@
         }
         return markers_list;
       },
+      roc() {
+        let type = "region";
+        let id = this.region_id;
+        if (this.country_id) {
+          type = "country";
+          id = this.country_id;
+        }
+        return this.$store.getters.getCountryOrRegion({ type: type, id: id });
+      }
     },
     methods: {
       bigMapReady(map) {
-        map.fitBounds([
-          [this.roc.point_lat_min, this.roc.point_lon_min],
-          [this.roc.point_lat_max, this.roc.point_lon_max],
-        ]);
+        map.addLayer(this.featureGroup);
         this.map = map;
       },
       refreshMap() {
+        this.featureGroup.clearLayers();
+        // focus area
+        if (this.roc) {
+          this.map.fitBounds([
+            [this.roc.point_lat_min, this.roc.point_lon_min],
+            [this.roc.point_lat_max, this.roc.point_lon_max],
+          ], { animate: false } );
+        } else {
+          this.map.fitWorld( { animate: false } );
+        }
         // group by countries (for region pages)
         Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
           ([key, val]) => {
@@ -65,7 +81,7 @@
               chunkedLoading: true,
             });
             val.forEach((mark) => mcluster.addLayer(mark));
-            this.map.addLayer(mcluster);
+            this.featureGroup.addLayer(mcluster);
           }
         );
       },
@@ -88,15 +104,6 @@
       deals() {
         this.refreshMap();
       },
-    },
-    created() {
-      let type = "region";
-      let id = this.region_id;
-      if (this.country_id) {
-        type = "country";
-        id = this.country_id;
-      }
-      this.roc = this.$store.getters.getCountryOrRegion({ type: type, id: id });
     },
   };
 </script>
@@ -122,7 +129,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      z-index: 100000;
+      z-index: 1000;
       background-color: transparent;
       display: flex;
 

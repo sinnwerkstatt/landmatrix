@@ -80,8 +80,8 @@
             item = {
               ...country,
             };
-            if (country.country_page_id) {
-              item.url = `/newdeal/country/${country.slug}`;
+            if (country.observatory_page_id) {
+              item.url = `/observatory/${country.slug}`;
             }
           }
         } else if (this.$store.state.filters.filters.region_id) {
@@ -92,8 +92,8 @@
             item = {
               ...region,
             };
-            if (region.region_page_id) {
-              item.url = `/newdeal/region/${region.slug}`;
+            if (region.observatory_page_id) {
+              item.url = `/observatory/${region.slug}`;
             }
           }
         }

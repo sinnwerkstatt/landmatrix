@@ -11,7 +11,9 @@
             </p>
           </div>
           <div v-if="readMore" class="row">
-            <Streamfield :content="content" />
+            <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+              <Streamfield :content="content" />
+            </div>
           </div>
         </div>
       </div>
@@ -131,9 +133,6 @@
     },
     apollo: {
       deals: {
-        skip() {
-          return this.locationFilter.length === 0;
-        },
         query: data_deal_query_gql,
         variables() {
           let user = this.$store.state.page.user;
@@ -204,6 +203,8 @@
           ];
         } else if (this.page.country) {
           return [{ field: "country_id", value: this.page.country.id.toString() }];
+        } else {
+          return [];
         }
       },
       totalCount() {

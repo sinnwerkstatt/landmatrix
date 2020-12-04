@@ -330,6 +330,24 @@ CONTENT_BLOCKS = [
     ("faqs_block", FAQsBlock()),
 ]
 
+SIMPLE_CONTENT_BLOCKS = [
+    (
+        "paragraph",
+        RichTextBlock(
+            features=["bold", "italic", "h2", "h3", "ol", "ul", "link", "document-link"]
+        ),
+    ),
+    ("link", LinkBlock(icon="link")),
+    ("anchor", AnchorBlock(icon="link")),
+    ("image", ImageBlock()),
+    ("linked_image", LinkedImageBlock()),
+    ("media", EmbedBlock(icon="media")),
+    ("gallery", GalleryBlock()),
+    ("slider", SliderBlock()),
+    ("section_divider", SectionDivider()),
+    ("faqs_block", FAQsBlock()),
+]
+
 
 def get_country_or_region(request, page=None):
     """

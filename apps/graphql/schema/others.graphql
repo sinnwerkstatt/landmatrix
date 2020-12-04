@@ -12,7 +12,6 @@ type Country {
     point_lon: Float
     point_lon_min: Float
     point_lon_max: Float
-    country_page_id: Int
     observatory_page_id: Int
     short_description: String
     deals: [Deal]
@@ -28,7 +27,6 @@ type Region {
     point_lon: Float
     point_lon_min: Float
     point_lon_max: Float
-    region_page_id: Int
     observatory_page_id: Int
     short_description: String
 }

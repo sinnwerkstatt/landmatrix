@@ -85,7 +85,6 @@ const store = new Vuex.Store({
                   point_lon_min
                   point_lat_max
                   point_lon_max
-                  country_page_id
                   observatory_page_id
                   short_description
                   deals {
@@ -100,7 +99,6 @@ const store = new Vuex.Store({
                   point_lon_min
                   point_lat_max
                   point_lon_max
-                  region_page_id
                   observatory_page_id
                   short_description
                 }

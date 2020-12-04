@@ -9,7 +9,7 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
 
 from apps.landmatrix.models import Region, Country
-from apps.wagtailcms.blocks import CONTENT_BLOCKS
+from apps.wagtailcms.blocks import CONTENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
@@ -33,7 +33,7 @@ class ObservatoryPage(Page):
         null=True,
         help_text="Introduction before 'Read more'",
     )
-    body = StreamField(CONTENT_BLOCKS)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS)
 
     twitter_username = models.CharField(max_length=200, blank=True, null=True)
 
