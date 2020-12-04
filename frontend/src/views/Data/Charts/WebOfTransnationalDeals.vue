@@ -81,10 +81,14 @@
   @import "src/scss/colors";
 
   #svg-container {
+    max-height: 100%;
     width: 100%;
-    align-self: safe center;
+    padding: 4em 2em 2em 2em;
 
     > svg {
+      width: 100%;
+      height: 100%;
+
       #incoming-marker {
         fill: $primary;
       }
