@@ -30,6 +30,7 @@ export const getDealValue = function (component, deal, fieldName) {
       case "id": {
         let location = { name: "deal_detail", params: { deal_id: deal.id } };
         let url = component.$router.resolve(location).href;
+        // TODO: Turn this into a router-link. Beware: you can't just replace it here.
         return `<a class="label label-deal" href="${url}">${deal.id}</a>`;
       }
       case "deal_size":

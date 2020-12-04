@@ -44,7 +44,7 @@ type Query {
         country_id: Int,
         region_id: Int
     ): Statistics
-    transnational_deals: WebOfTransnationalDeals
+    transnational_deals(filters: [Filter]): WebOfTransnationalDeals
     country_investments(id: Int!): CountryInvestments
 
     blogpage(id: Int!): BlogPage!

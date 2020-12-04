@@ -4,24 +4,21 @@
     <FilterBar>
       <slot name="FilterBar"></slot>
     </FilterBar>
-    <ChartsScopeBar />
+    <ContextBarMap />
     <div class="main-content">
       <slot></slot>
     </div>
-    <!--    {{ this.$store.state.filters.filters }}-->
-    <!--    <hr />-->
-    <!--    {{ this.$store.getters.filtersForGQL }}-->
   </div>
 </template>
 
 <script>
   import FilterBar from "/components/Data/FilterBar";
-  import ChartsScopeBar from "/components/Data/ChartsScopeBar";
+  import ContextBarMap from "/components/Data/ContextBarMap";
   import ViewSwitcher from "/components/Data/ViewSwitcher";
 
   export default {
     name: "DataContainer",
-    components: { ChartsScopeBar, FilterBar, ViewSwitcher },
+    components: { ContextBarMap, FilterBar, ViewSwitcher },
   };
 </script>
 <style lang="scss">

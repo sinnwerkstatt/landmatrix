@@ -52,3 +52,13 @@ class BlogIndexPageTR(TranslationOptions):
 @register(BlogPage)
 class BlogPageTR(TranslationOptions):
     pass
+
+
+@register(ObservatoryIndexPage)
+class ObservatoryIndexPageTR(TranslationOptions):
+    pass
+
+
+@register(ObservatoryPage)
+class ObservatoryPageTR(TranslationOptions):
+    fields = ("short_description", "introduction_text", "body")

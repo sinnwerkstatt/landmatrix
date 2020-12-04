@@ -6,11 +6,11 @@
         <div class="h-100">
           <div
             class="sideBuffer float-left"
-            :class="{ collapsed: !$store.state.map.showFilterOverlay }"
+            :class="{ collapsed: !$store.state.map.showFilterBar }"
           ></div>
           <div
             class="sideBuffer float-right"
-            :class="{ collapsed: !$store.state.map.showScopeOverlay }"
+            :class="{ collapsed: !$store.state.map.showContextBar }"
           ></div>
           <Table :targetModel="targetModel"></Table>
         </div>
@@ -50,14 +50,15 @@
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
-        vm.$store.dispatch("showScopeOverlay", false);
+        vm.$store.dispatch("showContextBar", false);
       });
     },
   };
 </script>
 <style lang="scss">
   .sideBuffer {
-    min-width: 230px;
+    min-width: 220px;
+    max-width: 300px;
     width: 20%;
     height: 100%;
     min-height: 3px;

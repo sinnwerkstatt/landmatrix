@@ -1,13 +1,12 @@
 <template>
-  <ScopeBarContainer>
-    <div class="hint-box">
-      <p>
-        This interactive graph shows the global flow of transnational land acquisitions.
-
-        <br /><br />
-        Country names marked with * have been shortened to improve readability.
-      </p>
-    </div>
+  <div>
+    <h2 class="bar-title">Web of transnational deals</h2>
+    <p>
+      This interactive graph shows the global flow of transnational land acquisitions.
+    </p>
+    <p>
+      Country names marked with * have been shortened to improve readability.
+    </p>
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
       <h5>Regions investing in {{ country.name }}</h5>
@@ -26,16 +25,15 @@
     <div v-else class="hint-box">
       <h4>World information</h4>
     </div>
-  </ScopeBarContainer>
+  </div>
 </template>
 
 <script>
-  import ScopeBarContainer from "./ScopeBarContainer";
   import { mapState } from "vuex";
   import gql from "graphql-tag";
+
   export default {
-    name: "ChartInformationBar",
-    components: { ScopeBarContainer },
+    name: "ContextBarCharts",
     apollo: {
       country_investments: {
         query: gql`
@@ -45,28 +43,28 @@
         `,
         variables() {
           return {
-            id: +this.chartSelectedCountry,
+            id: +this.country_id
           };
         },
         skip() {
-          return !this.chartSelectedCountry;
-        },
-      },
+          return !this.country_id;
+        }
+      }
     },
     data() {
       return {
-        country_investments: null,
+        country_investments: null
       };
     },
     computed: {
-      ...mapState({
-        chartSelectedCountry: (state) => state.chartSelectedCountry,
-      }),
+      country_id() {
+        return this.$store.state.filters.filters.country_id
+      },
       country() {
-        if (!this.chartSelectedCountry) return null;
+        if (!this.country_id || this.country_id === 0) return null;
         return this.$store.getters.getCountryOrRegion({
           type: "country",
-          id: this.chartSelectedCountry,
+          id: this.country_id
         });
       },
       investors() {
@@ -76,7 +74,7 @@
         Object.entries(this.country_investments.investing).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +k
           }).name;
           retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
         });
@@ -90,14 +88,14 @@
         Object.entries(this.country_investments.invested).forEach(([k, v]) => {
           let reg_name = this.$store.getters.getCountryOrRegion({
             type: "region",
-            id: +k,
+            id: +k
           }).name;
           retdings += `<tr><th>${reg_name}</th><td>${v.size} ha (${v.count} deals)</td></tr>`;
         });
         retdings += "</tbody></table>";
         return retdings;
-      },
-    },
+      }
+    }
   };
 </script>
 

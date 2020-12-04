@@ -5,8 +5,6 @@ import { primary_color } from "/colors";
 
 let width = 954;
 let radius = width / 2;
-let colorin = primary_color;
-let colorout = "#4820d7";
 let colornone = "#ccc";
 let tree = d3.cluster().size([2 * Math.PI, radius - 100]);
 let line = d3
@@ -14,8 +12,6 @@ let line = d3
   .curve(d3.curveBundle.beta(0.85))
   .radius((d) => d.y)
   .angle((d) => d.x);
-
-let selectedCountry = null;
 
 function id(node) {
   return `${node.parent ? id(node.parent) + "." : ""}${node.data.name}`;
@@ -31,7 +27,13 @@ function bilink(root) {
   return root;
 }
 
-export function LandMatrixRadialSpider(data_hierarchical, container, updateCountryFn) {
+export function LandMatrixRadialSpider(
+  data_hierarchical,
+  container,
+  selectedCountry,
+  updateCountryFn
+) {
+  d3.selectAll("g > *").remove();
   const svg = d3
     .select(container)
     .attr("viewBox", [-width / 2, -width / 2, width, width]);
@@ -47,7 +49,7 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
     )
   );
   let defs = svg.append("defs");
-  const marker_factory = (name, color) =>
+  const marker_factory = (name) =>
     defs
       .append("marker")
       .attr("id", name)
@@ -59,10 +61,9 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
       .attr("orient", "auto-start-reverse")
       .attr("markerUnits", "userSpaceOnUse")
       .append("path")
-      .attr("d", "M0,-5L10,0L0,5")
-      .style("fill", color);
-  marker_factory("incoming-marker", colorin);
-  marker_factory("outgoing-marker", colorout);
+      .attr("d", "M0,-5L10,0L0,5");
+  marker_factory("incoming-marker");
+  marker_factory("outgoing-marker");
 
   const link = svg
     .append("g")
@@ -77,45 +78,43 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
       d.path = this;
     });
 
-  function mouseover_event(event, d) {
+  function selectCountry(target, highlight_class = "highlighted") {
+    let selection = d3.select(target);
     link.style("mix-blend-mode", null);
-    d3.select(this).attr("font-weight", "bold");
-    d3.selectAll(d.incoming.map((d) => d.path))
-      .attr("stroke", colorin)
-      .attr("stroke-width", 2.5)
-      .attr("marker-start", "url(#incoming-marker)")
-      .raise();
-    d3.selectAll(d.incoming.map(([d]) => d.text))
-      .attr("fill", colorin)
-      .attr("font-weight", "bold");
-    d3.selectAll(d.outgoing.map((d) => d.path))
-      .attr("stroke", colorout)
-      .attr("stroke-width", 2.5)
-      .attr("marker-start", "url(#outgoing-marker)")
-      .raise();
-    d3.selectAll(d.outgoing.map(([, d]) => d.text))
-      .attr("fill", colorout)
-      .attr("font-weight", "bold");
+    selection.attr("font-weight", "bold");
+    let d = selection.datum();
+
+    let incoming_paths = d3.selectAll(d.incoming.map((d) => d.path));
+    incoming_paths.classed(`incoming-${highlight_class}`, true);
+    incoming_paths.raise();
+    let incoming_texts = d3.selectAll(d.incoming.map(([d]) => d.text));
+    incoming_texts.classed(`incoming-${highlight_class}`, true);
+
+    let outgoing_paths = d3.selectAll(d.outgoing.map((d) => d.path));
+    outgoing_paths.classed(`outgoing-${highlight_class}`, true);
+
+    outgoing_paths.raise();
+    let outgoing_texts = d3.selectAll(d.outgoing.map(([, d]) => d.text));
+    outgoing_texts.classed(`outgoing-${highlight_class}`, true);
   }
 
-  function mouseout_event(event, d) {
+  function mouseout_event(target) {
+    let selection = d3.select(target);
     link.style("mix-blend-mode", "multiply");
-    d3.select(this).attr("font-weight", null);
-    d3.selectAll(d.incoming.map((d) => d.path))
-      .attr("stroke", null)
-      .attr("stroke-width", 1)
-      .attr("marker-start", null);
+    selection.attr("font-weight", null);
+    let d = selection.datum();
+    d3.selectAll(d.incoming.map((d) => d.path)).classed("incoming-highlighted", false);
+    d3.selectAll(d.incoming.map(([d]) => d.text)).classed(
+      "incoming-highlighted",
+      false
+    );
+    d3.selectAll(d.outgoing.map((d) => d.path)).classed("outgoing-highlighted", false);
+    d3.selectAll(d.outgoing.map(([, d]) => d.text)).classed(
+      "outgoing-highlighted",
+      false
+    );
 
-    d3.selectAll(d.incoming.map(([d]) => d.text))
-      .attr("fill", null)
-      .attr("font-weight", null);
-    d3.selectAll(d.outgoing.map((d) => d.path))
-      .attr("stroke", null)
-      .attr("stroke-width", 1)
-      .attr("marker-start", null);
-    d3.selectAll(d.outgoing.map(([, d]) => d.text))
-      .attr("fill", null)
-      .attr("font-weight", null);
+    selectCountry("#text_" + selectedCountry, "permahighlight");
   }
 
   svg
@@ -130,6 +129,7 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
     .append("text")
     .attr("dy", "0.31em")
     .attr("data-id", (d) => d.data.id)
+    .attr("id", (d) => `text_${d.data.id}`)
     .attr("x", (d) => (d.x < Math.PI ? 6 : -6))
     .attr("text-anchor", (d) => (d.x < Math.PI ? "start" : "end"))
     .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null))
@@ -137,8 +137,8 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
     .each(function (d) {
       d.text = this;
     })
-    .on("mouseover", mouseover_event)
-    .on("mouseout", mouseout_event)
+    .on("mouseover", (event) => selectCountry(event.currentTarget))
+    .on("mouseout", (event) => mouseout_event(event.currentTarget))
     .on("mousedown", (d) => {
       selectedCountry =
         selectedCountry !== d.target.dataset.id ? d.target.dataset.id : null;
@@ -151,4 +151,6 @@ export function LandMatrixRadialSpider(data_hierarchical, container, updateCount
       investing in ${d.incoming.length} countries`
       )
     );
+
+  selectCountry("#text_" + selectedCountry, "permahighlight");
 }

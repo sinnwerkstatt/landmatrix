@@ -5,28 +5,20 @@ export const pageModule = {
     user: null,
     countries: [],
     regions: [],
-    wagtailRootPage: null,
+    observatories: [],
     messages: [],
     wagtailPage: null,
     title: null,
     searchDescription: null,
     breadcrumbs: [],
-    breadNav: [
-      // { route: "map", icon: "fa fa-map-marker", name: "Map" },
-      // { route: "deal_list", icon: "fa fa-table", name: "Data" },
-      // { route: "charts", icon: "far fa-chart-bar", name: "Charts" },
-      { route: "/newdeal/map/", icon: "fa fa-map-marker", name: "Map" },
-      { route: "/newdeal/data/", icon: "fa fa-table", name: "Data" },
-      { route: "/newdeal/charts/", icon: "far fa-chart-bar", name: "Charts" },
-    ],
     showBreadcrumbs: true,
   }),
   getters: {
     countriesWithPage: (state) => {
-      return state.countries.filter((c) => c.country_page_id !== null);
+      return state.countries.filter((c) => c.observatory_page_id !== null);
     },
     regionsWithPage: (state) => {
-      return state.regions.filter((r) => r.region_page_id !== null);
+      return state.regions.filter((r) => r.observatory_page_id !== null);
     },
     getCountryOrRegion: (state) => ({ type, id }) => {
       return type === "region"
@@ -39,6 +31,33 @@ export const pageModule = {
   },
   mutations: {
     setUser(state, user) {
+      let role = "No Role";
+      if (user && user.groups && user.groups.length) {
+        let groupi = user.groups
+          .map((g) => g.name)
+          .filter((name) => {
+            return (
+              ["Administrators", "Editors", "Reporters", "Admin"].indexOf(name) > -1
+            );
+          });
+
+        if (groupi.length) {
+          let ret = "";
+          if (groupi.indexOf("Reporters") > -1) ret = "Reporter";
+          if (groupi.indexOf("Editors") > -1) ret = "Editor";
+          if (groupi.indexOf("Administrators") > -1) ret = "Administrator";
+          let uri = user.userregionalinfo;
+          if (uri) {
+            let area = uri.region.map((c) => c.name);
+            area = area.concat(uri.country.map((c) => c.name));
+            if (area.length) {
+              return `${ret} of ${area.join(", ")}`;
+            }
+          }
+          role = ret;
+        }
+      }
+      user.role = role
       state.user = user;
     },
     setCountries(state, countries) {
@@ -47,9 +66,12 @@ export const pageModule = {
     setRegions(state, regions) {
       state.regions = regions;
     },
-    setWagtailRootPage(state, wagtailRootPage) {
-      state.wagtailRootPage = wagtailRootPage;
+    setObservatories(state, observatories) {
+      state.observatories = observatories;
     },
+    // setWagtailRootPage(state, wagtailRootPage) {
+    //   state.wagtailRootPage = wagtailRootPage;
+    // },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
@@ -71,10 +93,16 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchWagtailRootPage(context) {
-      let url = `/newdeal_legacy/rootpage/`;
+    // fetchWagtailRootPage(context) {
+    //   let url = `/newdeal_legacy/rootpage/`;
+    //   axios.get(url).then((response) => {
+    //     context.commit("setWagtailRootPage", response.data);
+    //   });
+    // },
+    fetchObservatoryPages(context) {
+      let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
       axios.get(url).then((response) => {
-        context.commit("setWagtailRootPage", response.data);
+        context.commit("setObservatories", response.data.items);
       });
     },
     fetchWagtailPage(context, path) {

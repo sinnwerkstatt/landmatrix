@@ -75,15 +75,15 @@
         },
         chartEntries: [
           {
-            title: "Web of Transnational Deals",
+            title: "Web of transnational deals",
             route_name: "web-of-transnational-deals",
           },
           {
-            title: "Dynamics Overview",
+            title: "Dynamics overview",
             route_name: "dynamics-overview",
           },
           {
-            title: "Produce Info Map",
+            title: "Produce info map",
             route_name: "produce-info",
           },
         ],

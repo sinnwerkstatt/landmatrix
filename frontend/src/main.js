@@ -91,8 +91,6 @@ let vue_app = new Vue({
   render: (h) => h(App),
 })
 
-// This is because e.g. "footer columns" are specified on the root page *rolls eyes*:
-store.dispatch("fetchWagtailRootPage");
 store.dispatch("fetchFields", LANGUAGE || "en");
 store.dispatch("fetchMessages");
 store.dispatch("fetchBasicData").then(() => {

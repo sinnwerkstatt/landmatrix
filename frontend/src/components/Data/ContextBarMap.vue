@@ -1,6 +1,6 @@
 <template>
-  <ScopeBarContainer>
-    <h2 v-if="currentItem">{{ currentItem.name }}</h2>
+  <ContextBarContainer>
+    <h2 class="bar-title" v-if="currentItem">{{ currentItem.name }}</h2>
     <p class="mb-1" v-if="currentItem.short_description">
       {{ currentItem.short_description }}
     </p>
@@ -8,20 +8,7 @@
       <a :href="currentItem.url">Read more</a>
     </p>
     <div v-if="deals.length">
-      <div class="toggle-buttons">
-        <a
-          href=""
-          @click.prevent="displayDealsCount = true"
-          :class="{ active: displayDealsCount }"
-          >No. of deals</a
-        >
-        <a
-          href=""
-          @click.prevent="displayDealsCount = false"
-          :class="{ active: !displayDealsCount }"
-          >Deal size</a
-        >
-      </div>
+      <DealDisplayToggle />
       <div class="total">
         {{ totalCount }}
       </div>
@@ -47,10 +34,10 @@
         ></StatusPieChart>
       </div>
       <div class="get-involved">
-        <router-link :to="`/get-involved/`">{{ $t("Contribute") }} </router-link>
+        <router-link :to="`/get-involved/`">{{ $t("Contribute") }}</router-link>
       </div>
     </div>
-  </ScopeBarContainer>
+  </ContextBarContainer>
 </template>
 
 <script>
@@ -59,34 +46,31 @@
   import { implementation_status_choices } from "../../choices";
   import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
   import { data_deal_produce_query, data_deal_query } from "../../views/Data/query";
-  import ScopeBarContainer from "./ScopeBarContainer";
+  import ContextBarContainer from "./ContextBarContainer";
+  import { mapState } from "vuex";
+  import DealDisplayToggle from "../Shared/DealDisplayToggle";
 
   export default {
     name: "GeneralScopeBar",
-    components: { ScopeBarContainer, StatusPieChart },
+    components: { ContextBarContainer, StatusPieChart, DealDisplayToggle },
     data() {
       return {
         deals: [],
-        dealsWithProduceInfo: [],
+        dealsWithProduceInfo: []
       };
     },
     apollo: {
       deals: data_deal_query,
-      dealsWithProduceInfo: data_deal_produce_query,
+      dealsWithProduceInfo: data_deal_produce_query
     },
     computed: {
-      displayDealsCount: {
-        get () {
-          return this.$store.state.map.displayDealsCount;
-        },
-        set (value) {
-          this.$store.commit('setDisplayDealsCount', value)
-        }
-      },
+      ...mapState({
+        displayDealsCount: state => state.map.displayDealsCount,
+      }),
       currentItem() {
         let item = {
           name: "Global",
-          url: "/newdeal/global",
+          url: "/newdeal/global"
         };
         if (this.$store.state.filters.filters.country_id) {
           let country = this.$store.state.page.countries.find(
@@ -94,7 +78,7 @@
           );
           if (country) {
             item = {
-              ...country,
+              ...country
             };
             if (country.country_page_id) {
               item.url = `/newdeal/country/${country.slug}`;
@@ -106,7 +90,7 @@
           );
           if (region) {
             item = {
-              ...region,
+              ...region
             };
             if (region.region_page_id) {
               item.url = `/newdeal/region/${region.slug}`;
@@ -144,7 +128,7 @@
             "rgba(252,148,31,0.4)",
             "rgba(252,148,31,0.7)",
             "rgba(252,148,31,1)",
-            "#7D4A0F",
+            "#7D4A0F"
           ];
           for (const [key, label] of Object.entries(implementation_status_choices)) {
             let filteredDeals = this.deals.filter((d) => {
@@ -156,7 +140,7 @@
               value: this.displayDealsCount
                 ? filteredDeals.length
                 : sum(filteredDeals, "deal_size"),
-              unit: this.displayDealsCount ? "deals" : "ha",
+              unit: this.displayDealsCount ? "deals" : "ha"
             });
             i++;
           }
@@ -168,16 +152,16 @@
           return [
             {
               label: "Crops",
-              color: "#FC941F",
+              color: "#FC941F"
             },
             {
               label: "Livestock",
-              color: "#7D4A0F",
+              color: "#7D4A0F"
             },
             {
               label: "Mineral Resources",
-              color: "black",
-            },
+              color: "black"
+            }
           ];
         }
       },
@@ -190,20 +174,20 @@
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {
               counts[field] = counts[field] || [];
-              for (let entry of deal[field]) {
-                for (let label of entry.value) {
-                  counts[field][label] = counts[field][label] + 1 || 1;
+              if (deal["current_" + field]) {
+                for (let key of deal["current_" + field]) {
+                  counts[field][key] = counts[field][key] + 1 || 1;
                 }
               }
             }
           }
           for (let field of fields) {
-            for (const [label, count] of Object.entries(counts[field])) {
+            for (const [key, count] of Object.entries(counts[field])) {
               if (count > 1) {
                 data.push({
-                  label: label,
+                  label: key,
                   color: colors[fields.indexOf(field)],
-                  value: count,
+                  value: count
                 });
               }
             }
@@ -230,7 +214,7 @@
               color: "rgba(252,148,31,0.4)",
               value: (otherCount / totalCount) * 100,
               unit: "%",
-              precision: 1,
+              precision: 1
             });
           }
         }
@@ -241,44 +225,16 @@
           return {
             ...this.$store.state.formfields.deal.crops.choices,
             ...this.$store.state.formfields.deal.animals.choices,
-            ...this.$store.state.formfields.deal.resources.choices,
+            ...this.$store.state.formfields.deal.resources.choices
           };
         }
-      },
-    },
+      }
+    }
   };
 </script>
 
 <style lang="scss" scoped>
   @import "../../scss/colors";
-
-  h2,
-  p,
-  a {
-    text-align: left;
-  }
-
-  .toggle-buttons {
-    font-size: 0;
-    margin-top: 35px;
-    margin-bottom: 5px;
-    width: 100%;
-    text-align: center;
-
-    a {
-      padding: 0.3em 0.5em;
-      background-color: white;
-      border: 1px solid $lm_light;
-      color: black;
-      font-weight: bold;
-      font-size: 14px;
-
-      &.active {
-        background-color: $primary;
-        color: white;
-      }
-    }
-  }
 
   .total {
     width: 100%;
@@ -294,6 +250,9 @@
 
     h5 {
       text-align: left;
+      font-size: 18px;
+      font-weight: normal;
+      margin-top: 1em;
     }
   }
 
@@ -302,3 +261,4 @@
     text-align: left;
   }
 </style>
+
