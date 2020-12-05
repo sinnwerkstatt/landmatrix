@@ -4,7 +4,7 @@
       <div id="footer-etc" class="row">
         <div class="col-12 text-center">
           <p class="mb-0">
-            <a :href="old_interface_view">&copy; {{ currentyear }}</a>
+            <a :href="legacy_link">&copy; {{ currentyear }}</a>
             The Land Matrix | All rights reserved
           </p>
         </div>
@@ -27,8 +27,13 @@
     data() {
       return {
         currentyear: new Date().getFullYear(),
-        old_interface_view: `/legacy${this.$route.path}`,
       };
+    },
+    computed: {
+      legacy_link() {
+        let base = process.env.NEW_ROUTES === "False" ? "" : "/legacy";
+        return base + this.$route.path;
+      }
     },
   };
 </script>

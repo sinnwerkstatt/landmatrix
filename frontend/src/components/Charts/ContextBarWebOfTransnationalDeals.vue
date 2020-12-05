@@ -4,25 +4,25 @@
     <div v-html="chart_desc" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
-<!--      <div class="mx-3">-->
-<!--        <b-->
-<!--          class="deal-ranking"-->
-<!--          v-if="this.country_investments_and_rankings.ranking_deal"-->
-<!--        >-->
-<!--          <i class="fas fa-compress-arrows-alt"></i> #{{-->
-<!--            this.country_investments_and_rankings.ranking_deal-->
-<!--          }}-->
-<!--        </b>-->
-<!--        &nbsp;-->
-<!--        <b-->
-<!--          class="investor-ranking"-->
-<!--          v-if="this.country_investments_and_rankings.ranking_investor"-->
-<!--        >-->
-<!--          <i class="fas fa-expand-arrows-alt"></i> #{{-->
-<!--            this.country_investments_and_rankings.ranking_investor-->
-<!--          }}-->
-<!--        </b>-->
-<!--      </div>-->
+      <!--      <div class="mx-3">-->
+      <!--        <b-->
+      <!--          class="deal-ranking"-->
+      <!--          v-if="this.country_investments_and_rankings.ranking_deal"-->
+      <!--        >-->
+      <!--          <i class="fas fa-compress-arrows-alt"></i> #{{-->
+      <!--            this.country_investments_and_rankings.ranking_deal-->
+      <!--          }}-->
+      <!--        </b>-->
+      <!--        &nbsp;-->
+      <!--        <b-->
+      <!--          class="investor-ranking"-->
+      <!--          v-if="this.country_investments_and_rankings.ranking_investor"-->
+      <!--        >-->
+      <!--          <i class="fas fa-expand-arrows-alt"></i> #{{-->
+      <!--            this.country_investments_and_rankings.ranking_investor-->
+      <!--          }}-->
+      <!--        </b>-->
+      <!--      </div>-->
       <div v-if="investing_countries.length > 0">
         <b>Countries investing in {{ country.name }}</b>
         <table class="table-striped">
@@ -54,7 +54,7 @@
       </div>
     </div>
     <div v-else class="hint-box">
-      <h4>World information</h4>
+      <h4>{{ $t("Global ranking") }}</h4>
       <div v-if="global_rankings">
         <b><i class="fas fa-compress-arrows-alt"></i> Top invested-in Countries</b>
         <table class="table-striped">

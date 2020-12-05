@@ -1,6 +1,6 @@
 from django import template
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf import settings
 from apps.landmatrix.models import Country
 from apps.wagtailcms.models import CountryPage, RegionPage, WagtailRootPage
 
@@ -54,3 +54,10 @@ def nav_countries():
         },
     ]
     return countries
+
+
+@register.filter
+def newdeallink(x):
+    if not settings.NEW_ROUTES:
+        return f"/newdeal{x}"
+    return x.replace("/legacy", "")
