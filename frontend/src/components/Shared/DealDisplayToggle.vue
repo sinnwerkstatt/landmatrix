@@ -4,12 +4,14 @@
       href=""
       @click.prevent="displayDealsCount = true"
       :class="{ active: displayDealsCount }"
-    >No. of deals</a>
+      >No. of deals</a
+    >
     <a
       href=""
       @click.prevent="displayDealsCount = false"
       :class="{ active: !displayDealsCount }"
-    >Deal size</a>
+      >Deal size</a
+    >
   </div>
 </template>
 
@@ -23,9 +25,9 @@
         },
         set(value) {
           this.$store.commit("setDisplayDealsCount", value);
-        }
-      }
-    }
+        },
+      },
+    },
   };
 </script>
 

@@ -14,7 +14,9 @@ from apps.graphql.resolvers.blog import (
 )
 from apps.graphql.resolvers.charts import (
     resolve_web_of_transnational_deals,
-    country_investments,
+    country_investments_and_rankings,
+    global_rankings,
+    resolve_statistics,
 )
 from apps.graphql.resolvers.deal import (
     resolve_deal,
@@ -35,7 +37,7 @@ from apps.graphql.resolvers.misc import (
     resolve_minerals,
     resolve_crops,
     resolve_animals,
-    resolve_statistics,
+    resolve_chart_descriptions,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
@@ -72,7 +74,9 @@ query.set_field("blogpages", resolve_blogpages)
 query.set_field("blogpage", resolve_blogpage)
 query.set_field("blogcategories", resolve_blogcategories)
 query.set_field("transnational_deals", resolve_web_of_transnational_deals)
-query.set_field("country_investments", country_investments)
+query.set_field("country_investments_and_rankings", country_investments_and_rankings)
+query.set_field("global_rankings", global_rankings)
+query.set_field("chart_descriptions", resolve_chart_descriptions)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

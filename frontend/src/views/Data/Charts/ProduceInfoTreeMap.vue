@@ -8,10 +8,8 @@
     </template>
     <template v-slot:ContextBar>
       <h2 class="bar-title">Produce info map</h2>
-      <p>
-        Show segmentation of livestock, mineral resources, or crops produce for
-        filtered deals
-      </p>
+      <div v-html="chart_desc" />
+
       <Legend :items="legendItems"></Legend>
     </template>
   </ChartsContainer>
@@ -35,7 +33,7 @@
     this.href = new URL(`#${id}`, location) + "";
   }
 
-  Id.prototype.toString = function() {
+  Id.prototype.toString = function () {
     return "url(" + this.href + ")";
   };
 
@@ -46,7 +44,7 @@
     if (!elemx) return;
 
     let width = elemx.offsetWidth;
-    let height = width / 4 * 3;
+    let height = (width / 4) * 3;
 
     // reset first!
     d3.selectAll("#produce-info > svg > *").remove();
@@ -58,7 +56,7 @@
       .attr("transform", "translate(.5,.5)");
 
     // format data
-    var root = d3.hierarchy(treeData).sum(function(d) {
+    var root = d3.hierarchy(treeData).sum(function (d) {
       return d.value;
     });
 
@@ -129,18 +127,21 @@
     },
     apollo: {
       deals: data_deal_query,
-      dealsWithProduceInfo: data_deal_produce_query
+      dealsWithProduceInfo: data_deal_produce_query,
     },
     computed: {
+      chart_desc() {
+        if (!this.$store.state.page.chartDescriptions) return null;
+        return this.$store.state.page.chartDescriptions.produce_info_map;
+      },
       legendItems() {
         if (this.treeData) {
-          return this.treeData.children.map(l => {
-              return {
-                label: l.name,
-                color: l.color,
-              };
-            }
-          );
+          return this.treeData.children.map((l) => {
+            return {
+              label: l.name,
+              color: l.color,
+            };
+          });
         }
         return [];
       },
@@ -152,19 +153,19 @@
               {
                 name: "Livestock",
                 color: "#7D4A0F",
-                children: this.produceData.animals
+                children: this.produceData.animals,
               },
               {
                 name: "Mineral Resources",
                 color: "black",
-                children: this.produceData.resources
+                children: this.produceData.resources,
               },
               {
                 name: "Crops",
                 color: "#FC941F",
-                children: this.produceData.crops
-              }
-            ]
+                children: this.produceData.crops,
+              },
+            ],
           };
         } else {
           return null;
@@ -176,10 +177,14 @@
         let fields = ["crops", "animals", "resources"];
         let colors = ["#FC941F", "#7D4A0F", "black"];
         let totalSize = 0;
-        if (this.deals.length && this.deals.length == this.dealsWithProduceInfo.length && !this.$apollo.loading) {
+        if (
+          this.deals.length &&
+          this.deals.length == this.dealsWithProduceInfo.length &&
+          !this.$apollo.loading
+        ) {
           data = {};
           // map deals for faster access
-          let dealMap = {}
+          let dealMap = {};
           for (let deal of this.deals) {
             dealMap[deal.id] = deal;
           }
@@ -199,7 +204,7 @@
             }
           }
           // group by field and summarize smaller than 0.1% as other for each field
-          let threshHoldSize = totalSize * 0.001;
+          let threshHoldSize = totalSize * 0.005;
           for (let field of fields) {
             data[field] = [];
             let otherSize = 0;
@@ -210,7 +215,7 @@
               } else {
                 data[field].push({
                   name: this.getLabel(field, key),
-                  value: areaTotals[field][key]
+                  value: areaTotals[field][key],
                 });
               }
             }
@@ -220,13 +225,13 @@
             if (otherSize) {
               data[field].push({
                 name: "Other",
-                value: otherSize
+                value: otherSize,
               });
             }
           }
         }
         return data;
-      }
+      },
     },
     methods: {
       getLabel(field, key) {
@@ -243,13 +248,13 @@
         if (this.treeData) {
           buildTreeChart(this.treeData);
         }
-      }
+      },
     },
     watch: {
       treeData() {
         this.drawChart();
-      }
-    }
+      },
+    },
   };
 </script>
 

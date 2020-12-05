@@ -27,8 +27,9 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchBasicData(context) {
-      context.dispatch("fetchObservatoryPages");
-      return new Promise(function (resolve, reject) {
+      let obs_promise = context.dispatch("fetchObservatoryPages");
+
+      let rest_promise = new Promise(function (resolve, reject) {
         apolloClient
           .query({
             query: gql`
@@ -53,7 +54,6 @@ const store = new Vuex.Store({
                     name
                   }
                 }
-
                 countries {
                   id
                   name
@@ -64,9 +64,8 @@ const store = new Vuex.Store({
                   point_lon_min
                   point_lat_max
                   point_lon_max
-                  country_page_id
                   observatory_page_id
-                  short_description
+
                   deals {
                     id
                   }
@@ -79,10 +78,9 @@ const store = new Vuex.Store({
                   point_lon_min
                   point_lat_max
                   point_lon_max
-                  region_page_id
                   observatory_page_id
-                  short_description
                 }
+                chart_descriptions
               }
             `,
           })
@@ -90,12 +88,14 @@ const store = new Vuex.Store({
             context.commit("setUser", data.data.me);
             context.commit("setCountries", data.data.countries);
             context.commit("setRegions", data.data.regions);
+            context.commit("setChartDescriptions", data.data.chart_descriptions);
             resolve();
           })
           .catch((error) => {
             reject(error);
           });
       });
+      return Promise.all([obs_promise, rest_promise]);
     },
     fetchFields(context, language = "en") {
       apolloClient

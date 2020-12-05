@@ -7,3 +7,5 @@ from .oldmodels import (
     CountryIndex,
 )
 from .newmodels import ObservatoryIndexPage, ObservatoryPage
+
+from .chart_descriptions import ChartDescriptionsSettings

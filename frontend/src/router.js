@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "/store";
+// const DataMap = () => import("./views/Data/GlobalMap");
 import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
 import DealEdit from "./views/Deal/Edit";
@@ -19,7 +20,7 @@ Vue.use(Router);
 
 const router = new Router({
   mode: "history",
-  base: "/", //process.env.BASE_URL,
+  base: process.env.NEW_ROUTES === "False" ? "/newdeal/" : "/",
   routes: [
     {
       path: "/map/",

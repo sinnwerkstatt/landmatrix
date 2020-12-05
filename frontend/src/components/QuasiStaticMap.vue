@@ -19,8 +19,9 @@
 </template>
 <script>
   import BigMap from "./BigMap";
-
   import { groupBy } from "lodash";
+
+  const ZOOM_LEVEL_COUNTRY = 4;
 
   export default {
     name: "QuasiStaticMap",
@@ -29,7 +30,7 @@
     data() {
       return {
         map: null,
-        roc: null
+        featureGroup: L.featureGroup(),
       };
     },
     computed: {
@@ -47,25 +48,46 @@
           }
         }
         return markers_list;
+      },
+      roc() {
+        let type = "region";
+        let id = this.region_id;
+        if (this.country_id) {
+          type = "country";
+          id = this.country_id;
+        }
+        return this.$store.getters.getCountryOrRegion({ type: type, id: id });
       }
     },
     methods: {
       bigMapReady(map) {
-        map.fitBounds([
-          [this.roc.point_lat_min, this.roc.point_lon_min],
-          [this.roc.point_lat_max, this.roc.point_lon_max]
-        ]);
+        map.addLayer(this.featureGroup);
         this.map = map;
       },
       refreshMap() {
+        this.featureGroup.clearLayers();
+        // focus area
+        if (this.roc) {
+          console.log(this.roc);
+          if (this.roc.point_lat_min) {
+            this.map.fitBounds([
+              [this.roc.point_lat_min, this.roc.point_lon_min],
+              [this.roc.point_lat_max, this.roc.point_lon_max],
+            ], { animate: false });
+          } else {
+            this.map.setView([this.roc.point_lat, this.roc.point_lon], ZOOM_LEVEL_COUNTRY);
+          }
+        } else {
+          this.map.fitWorld( { animate: false } );
+        }
         // group by countries (for region pages)
         Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
           ([key, val]) => {
             let mcluster = L.markerClusterGroup({
-              chunkedLoading: true
+              chunkedLoading: true,
             });
             val.forEach((mark) => mcluster.addLayer(mark));
-            this.map.addLayer(mcluster);
+            this.featureGroup.addLayer(mcluster);
           }
         );
       },
@@ -73,31 +95,22 @@
         if (this.country_id) {
           this.$store.dispatch("setFilter", {
             filter: "country_id",
-            value: this.country_id
+            value: this.country_id,
           });
         } else {
           this.$store.dispatch("setFilter", {
             filter: "region_id",
-            value: this.region_id
+            value: this.region_id,
           });
         }
         this.$router.push({ name: "map" });
-      }
+      },
     },
     watch: {
       deals() {
         this.refreshMap();
-      }
+      },
     },
-    created() {
-      let type = "region";
-      let id = this.region_id;
-      if (this.country_id) {
-        type = "country";
-        id = this.country_id;
-      }
-      this.roc = this.$store.getters.getCountryOrRegion({ type: type, id: id });
-    }
   };
 </script>
 <style lang="scss">
@@ -115,19 +128,19 @@
     &:hover {
       cursor: pointer;
       box-shadow: 5px 5px 5px rgba(black, 0.3);
-      border-color: rgba($lm_orange, 0.7)
+      border-color: rgba($lm_orange, 0.7);
     }
 
     .shield {
       position: absolute;
       width: 100%;
       height: 100%;
-      z-index: 100000;
+      z-index: 1000;
       background-color: transparent;
       display: flex;
 
       &:before {
-        content: '';
+        content: "";
         position: absolute;
         width: 100%;
         height: 100%;

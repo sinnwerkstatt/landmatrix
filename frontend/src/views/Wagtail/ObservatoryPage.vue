@@ -11,13 +11,19 @@
             </p>
           </div>
           <div v-if="readMore" class="row">
-            <Streamfield :content="content" />
+            <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+              <Streamfield :content="content" />
+            </div>
           </div>
         </div>
       </div>
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <QuasiStaticMap :deals="deals" :region_id="region_id" :country_id="country_id" />
+          <QuasiStaticMap
+            :deals="deals"
+            :region_id="region_id"
+            :country_id="country_id"
+          />
         </div>
       </div>
     </div>
@@ -110,7 +116,14 @@
   import { data_deal_query_gql } from "../Data/query";
 
   export default {
-    components: { QuasiStaticMap, StatusPieChart, Streamfield, MapDataCharts, ArticleList, Twitter },
+    components: {
+      QuasiStaticMap,
+      StatusPieChart,
+      Streamfield,
+      MapDataCharts,
+      ArticleList,
+      Twitter,
+    },
     data() {
       return {
         readMore: false,
@@ -120,9 +133,6 @@
     },
     apollo: {
       deals: {
-        skip() {
-          return this.locationFilter.length == 0;
-        },
         query: data_deal_query_gql,
         variables() {
           let user = this.$store.state.page.user;
@@ -193,6 +203,8 @@
           ];
         } else if (this.page.country) {
           return [{ field: "country_id", value: this.page.country.id.toString() }];
+        } else {
+          return [];
         }
       },
       totalCount() {

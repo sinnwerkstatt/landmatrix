@@ -148,7 +148,7 @@
             <p class="navbar-text dropdown-header">
               {{ user.full_name }}
               <br />
-              <small>{{user.role}}</small>
+              <small>{{ user.role }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">
@@ -253,10 +253,10 @@
   </nav>
 </template>
 <script>
-import NavbarSelect from "/components/NavbarSelect";
-import gql from "graphql-tag";
+  import NavbarSelect from "/components/NavbarSelect";
+  import gql from "graphql-tag";
 
-export default {
+  export default {
     components: { NavbarSelect },
     data() {
       return {

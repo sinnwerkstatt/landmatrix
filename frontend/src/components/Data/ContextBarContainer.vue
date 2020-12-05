@@ -21,7 +21,7 @@
       return {
         showDealCount: true,
         deals: [],
-        dealsWithProduceInfo: []
+        dealsWithProduceInfo: [],
       };
     },
     computed: {
@@ -31,9 +31,9 @@
         },
         set(value) {
           this.$store.dispatch("showContextBar", value);
-        }
-      }
-    }
+        },
+      },
+    },
   };
 </script>
 

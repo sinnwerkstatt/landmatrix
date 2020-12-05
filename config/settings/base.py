@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     # wagtail and dependencies
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
+    # "wagtail.contrib.styleguide",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -194,7 +196,8 @@ print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
 
 # GreenNewDeal
-OLD_ELASTIC = env("OLD_ELASTIC", default=True)
+OLD_ELASTIC = env.bool("OLD_ELASTIC", default=True)
+NEW_ROUTES = env.bool("NEW_ROUTES", default=True)
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

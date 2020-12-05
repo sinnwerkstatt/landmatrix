@@ -4,6 +4,7 @@ from typing import Optional, Set
 from django.contrib.postgres.fields import ArrayField as _ArrayField, JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
+from django.db.models import Sum, F
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
@@ -35,6 +36,34 @@ class DealQuerySet(models.QuerySet):
             return self.active()
         return self
 
+    def get_deal_country_rankings(self, country_id: int = None):
+        rankings = (
+            self.exclude(country=None)
+            .values("country_id")
+            .annotate(Sum("deal_size"))
+            .order_by("-deal_size__sum")
+        )
+        if country_id:
+            for i, rank in enumerate(rankings, start=1):
+                if rank["country_id"] == country_id:
+                    return i
+            return
+        return rankings
+
+    def get_investor_country_rankings(self, country_id: int = None):
+        rankings = (
+            DealTopInvestors.objects.filter(deal__in=self)
+            .values(country_id=F("investor__country__id"))
+            .annotate(deal_size__sum=Sum("deal__deal_size"))
+            .order_by("-deal_size__sum")
+        )
+        if country_id:
+            for i, rank in enumerate(rankings, start=1):
+                if rank["country_id"] == country_id:
+                    return i
+            return
+        return rankings
+
 
 class Deal(models.Model, OldDealMixin):
     """ Deal """
@@ -50,6 +79,7 @@ class Deal(models.Model, OldDealMixin):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        related_name="deals",
     )
     intended_size = models.DecimalField(
         _("Intended size (in ha)"),

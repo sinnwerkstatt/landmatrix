@@ -12,21 +12,13 @@ export const pageModule = {
     searchDescription: null,
     breadcrumbs: [],
     showBreadcrumbs: true,
+    chartDescriptions: [],
   }),
   getters: {
-    countriesWithPage: (state) => {
-      return state.countries.filter((c) => c.observatory_page_id !== null);
-    },
-    regionsWithPage: (state) => {
-      return state.regions.filter((r) => r.observatory_page_id !== null);
-    },
     getCountryOrRegion: (state) => ({ type, id }) => {
       return type === "region"
         ? state.regions.find((region) => region.id === +id)
         : state.countries.find((countries) => countries.id === +id);
-    },
-    getRegionById: (state) => (id) => {
-      return state.regions.find((region) => region.id === +id);
     },
   },
   mutations: {
@@ -56,8 +48,8 @@ export const pageModule = {
           }
           role = ret;
         }
+        user.role = role;
       }
-      user.role = role
       state.user = user;
     },
     setCountries(state, countries) {
@@ -69,9 +61,9 @@ export const pageModule = {
     setObservatories(state, observatories) {
       state.observatories = observatories;
     },
-    // setWagtailRootPage(state, wagtailRootPage) {
-    //   state.wagtailRootPage = wagtailRootPage;
-    // },
+    setChartDescriptions(state, chartDescriptions) {
+      state.chartDescriptions = chartDescriptions;
+    },
     setWagtailPage(state, wagtailPage) {
       state.wagtailPage = wagtailPage;
     },
@@ -93,16 +85,18 @@ export const pageModule = {
     },
   },
   actions: {
-    // fetchWagtailRootPage(context) {
-    //   let url = `/newdeal_legacy/rootpage/`;
-    //   axios.get(url).then((response) => {
-    //     context.commit("setWagtailRootPage", response.data);
-    //   });
-    // },
     fetchObservatoryPages(context) {
-      let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
-      axios.get(url).then((response) => {
-        context.commit("setObservatories", response.data.items);
+      return new Promise(function (resolve, reject) {
+        let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
+        axios
+          .get(url)
+          .then((response) => {
+            context.commit("setObservatories", response.data.items);
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
       });
     },
     fetchWagtailPage(context, path) {

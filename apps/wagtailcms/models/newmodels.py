@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -9,7 +10,7 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
 
 from apps.landmatrix.models import Region, Country
-from apps.wagtailcms.blocks import CONTENT_BLOCKS
+from apps.wagtailcms.blocks import CONTENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
@@ -19,33 +20,41 @@ class ObservatoryIndexPage(Page):
 
 class ObservatoryPage(Page):
     region = models.OneToOneField(
-        Region, null=True, blank=True, on_delete=models.SET_NULL
+        Region,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="observatory_page_id",
     )
     country = models.OneToOneField(
-        Country, null=True, blank=True, on_delete=models.SET_NULL
+        Country,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="observatory_page_id",
     )
 
-    short_description = models.TextField(
-        blank=True, help_text="Displayed in sidebar of map"
+    short_description = models.CharField(
+        max_length=200, blank=True, help_text="Displayed in sidebar of map"
     )
-    introduction_text = models.TextField(
+    introduction_text = models.CharField(
+        max_length=700,
         blank=True,
-        null=True,
         help_text="Introduction before 'Read more'",
     )
-    body = StreamField(CONTENT_BLOCKS)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS)
 
-    twitter_username = models.CharField(max_length=200, blank=True, null=True)
+    twitter_username = models.CharField(max_length=200, blank=True)
 
     content_panels = Page.content_panels + [
         FieldRowPanel(
             [FieldPanel("region"), FieldPanel("country")], classname="region-or-country"
         ),
-        FieldPanel("introduction_text"),
+        FieldPanel("introduction_text", widget=forms.Textarea),
         StreamFieldPanel("body"),
     ]
     promote_panels = [
-        FieldPanel("short_description"),
+        FieldPanel("short_description", widget=forms.Textarea),
         FieldPanel("twitter_username"),
     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
