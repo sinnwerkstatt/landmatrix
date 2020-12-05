@@ -19,6 +19,7 @@ def create_locations(deal, groups, do_save, revision):
         "Country": "COUNTRY",
         "Administrative region": "ADMINISTRATIVE_REGION",
         "Approximate location": "APPROXIMATE_LOCATION",
+        "Ubicación aproximada": "APPROXIMATE_LOCATION",
         "Exact location": "EXACT_LOCATION",
         "Coordinates": "COORDINATES",
         "Coordenadas": "COORDINATES",
@@ -141,14 +142,18 @@ def create_data_sources(deal, groups, do_save, revision):
     TYPE_MAP = {
         None: None,
         "Media report": "MEDIA_REPORT",
+        "Informe de prensa": "MEDIA_REPORT",
         "Research Paper / Policy Report": "RESEARCH_PAPER_OR_POLICY_REPORT",
         "Government sources": "GOVERNMENT_SOURCES",
+        "Fuentes gubernamentales": "GOVERNMENT_SOURCES",
         "Company sources": "COMPANY_SOURCES",
+        "Fuentes empresariales": "COMPANY_SOURCES",
         "Contract": "CONTRACT",
         "Contract (contract farming agreement)": "CONTRACT_FARMING_AGREEMENT",
         "Personal information": "PERSONAL_INFORMATION",
         "Crowdsourcing": "CROWDSOURCING",
         "Other (Please specify in comment field)": "OTHER",
+        "Otro (por favor, especifique en el campo para comentarios)": "OTHER",
         "Other": "OTHER",
     }
     for group_id, attrs in sorted(groups.items()):
