@@ -62,3 +62,8 @@ class ObservatoryIndexPageTR(TranslationOptions):
 @register(ObservatoryPage)
 class ObservatoryPageTR(TranslationOptions):
     fields = ("short_description", "introduction_text", "body")
+
+
+@register(ChartDescriptionsSettings)
+class ChartDescriptionsSettingsTR(TranslationOptions):
+    fields = ("web_of_transnational_deals", "dynamics_overview", "produce_info_map")
