@@ -31,6 +31,9 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         if created:
             deal.created_at = histivity.history_date
         deal.modified_at = histivity.history_date
+        deal.fully_updated = histivity.fully_updated
+        if deal.fully_updated:
+            deal.fully_updated_at = deal.modified_at
 
         base.parse_general(deal, meta_activity.group_general)
         base.parse_employment(deal, meta_activity.group_employment)

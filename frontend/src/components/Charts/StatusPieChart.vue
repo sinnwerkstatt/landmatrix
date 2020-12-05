@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="chart-container">
+    <div class="chart-container" :style="containerStyle">
       <canvas ref="chart-canvas"></canvas>
     </div>
     <Legend v-if="displayLegend || legends" :items="legendItems"></Legend>
@@ -14,7 +14,7 @@
 
   export default {
     components: { Legend },
-    props: ["dealData", "displayLegend", "legends", "aspectRatio"],
+    props: ["dealData", "displayLegend", "legends", "aspectRatio", "maxWidth"],
     data: function () {
       return {
         canvasCtx: null,
@@ -22,6 +22,11 @@
       };
     },
     computed: {
+      containerStyle() {
+        return {
+          maxWidth: this.maxWidth || "200px",
+        }
+      },
       chartoptions() {
         return {
           cutoutPercentage: 0,
@@ -118,7 +123,6 @@
 <style lang="scss" scoped>
   .chart-container {
     width: 90%;
-    max-width: 200px;
     margin: auto;
   }
 </style>

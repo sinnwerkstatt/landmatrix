@@ -726,6 +726,7 @@ class ActivityBase(models.Model):
             return None
 
     def get_fully_updated_date(self):
+        # FIXME: This is also considering Drafts ("Pending")
         try:
             activity = HistoricalActivity.objects.filter(
                 activity_identifier=self.activity_identifier, fully_updated=True
@@ -735,6 +736,7 @@ class ActivityBase(models.Model):
             return None
 
     def get_fully_updated_user(self):
+        # FIXME: This is also considering Drafts ("Pending")
         try:
             activity = HistoricalActivity.objects.filter(
                 activity_identifier=self.activity_identifier, fully_updated=True

@@ -1,33 +1,26 @@
 <template>
   <div class="datacontainer">
     <ViewSwitcher />
-    <FilterBar>
-      <!--      <h4>{{ $t("Chart") }}</h4>-->
-      <!--      <ul class="charts-container-filterbar">-->
-      <!--        <li>-->
-      <!--          <router-link :to="{ name: 'web-of-transnational-deals' }"-->
-      <!--            >Web of Transnational Deals</router-link-->
-      <!--          >-->
-      <!--        </li>-->
-      <!--        <li>-->
-      <!--          <router-link :to="{ name: 'produce-info' }">Produce Info Map</router-link>-->
-      <!--        </li>-->
-      <!--      </ul>-->
-    </FilterBar>
-    <ChartInformationBar />
+    <FilterBar />
+    <ContextBarContainer>
+      <slot name="ContextBar"></slot>
+    </ContextBarContainer>
     <div class="main-content">
       <!--      <LoadingPulse v-if="$apollo.loading" />-->
       <div class="h-100">
-        <div class="sideBuffer float-left"></div>
-        <div class="sideBuffer float-right"></div>
+        <div
+          class="sideBuffer float-left"
+          :class="{ collapsed: !$store.state.map.showFilterBar }"
+        ></div>
+        <div
+          class="sideBuffer float-right"
+          :class="{ collapsed: !$store.state.map.showContextBar }"
+        ></div>
         <div class="chart-container">
           <slot></slot>
         </div>
       </div>
     </div>
-    <!--    {{ this.$store.state.filters.filters }}-->
-    <!--    <hr />-->
-    <!--    {{ this.$store.getters.filtersForGQL }}-->
   </div>
 </template>
 
@@ -35,41 +28,25 @@
   import LoadingPulse from "/components/Data/LoadingPulse";
   import ViewSwitcher from "/components/Data/ViewSwitcher";
   import FilterBar from "/components/Data/FilterBar";
-  import ChartInformationBar from "/components/Data/ChartInformationBar";
+  import ContextBarContainer from "/components/Data/ContextBarContainer";
 
   export default {
     name: "ChartsContainer",
     components: {
-      ChartInformationBar,
+      ContextBarContainer,
       FilterBar,
       ViewSwitcher,
-      LoadingPulse,
+      LoadingPulse
     },
-    computed: {},
+    computed: {}
   };
 </script>
 <style lang="scss">
-  .sideBuffer {
-    min-width: 230px;
-    width: 20%;
-    min-height: 3px;
-    //transition: width 0.5s, min-width 0.5s;
-
-    &.collapsed {
-      width: 0;
-      min-width: 0;
-    }
-  }
-  .charts-container-filterbar {
-    .router-link-exact-active {
-      background-color: inherit;
-      color: black;
-    }
-  }
   .chart-container {
     text-align: center;
     height: 100%;
     display: flex;
     justify-content: center;
+    overflow-y: scroll;
   }
 </style>

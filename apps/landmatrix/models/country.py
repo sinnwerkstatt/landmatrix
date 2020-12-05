@@ -86,6 +86,10 @@ class Country(models.Model):
         return self.countrypage.id if hasattr(self, "countrypage") else None
 
     @property
+    def observatory_page_id(self):
+        return self.observatorypage.id if hasattr(self, "observatorypage") else None
+
+    @property
     def short_description(self):
         return (
             self.countrypage.short_description if hasattr(self, "countrypage") else None
@@ -95,11 +99,11 @@ class Country(models.Model):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
     def to_dict(self, deep=False):
-        dict = {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
+        retdict = {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
         if deep:
-            dict["high_income"] = self.high_income
-            dict["region"] = self.fk_region.to_dict()
-        return dict
+            retdict["high_income"] = self.high_income
+            retdict["region"] = self.fk_region.to_dict()
+        return retdict
 
 
 class Region(models.Model):
@@ -148,6 +152,10 @@ class Region(models.Model):
     @property
     def region_page_id(self):
         return self.regionpage.id if hasattr(self, "regionpage") else None
+
+    @property
+    def observatory_page_id(self):
+        return self.observatorypage.id if hasattr(self, "observatorypage") else None
 
     @property
     def short_description(self):

@@ -1,14 +1,14 @@
 <template>
-  <div class="scope-bar-container" :class="{ collapsed: !showScopeOverlay }">
-    <span class="wimpel" @click.prevent="showScopeOverlay = !showScopeOverlay">
+  <div class="context-bar-container" :class="{ collapsed: !showContextBar }">
+    <span class="wimpel" @click.prevent="showContextBar = !showContextBar">
       <svg viewBox="0 0 2 20" width="20px">
         <path d="M0,0 L2,2 L2,18 L0,20z"></path>
         <text x="0.3" y="11">
-          {{ showScopeOverlay ? "&lsaquo;" : "&rsaquo;" }}
+          {{ showContextBar ? "&lsaquo;" : "&rsaquo;" }}
         </text>
       </svg>
     </span>
-    <div class="scope-bar-container-content">
+    <div class="context-bar-container-content">
       <slot></slot>
     </div>
   </div>
@@ -16,31 +16,31 @@
 
 <script>
   export default {
-    name: "ScopeBarContainer",
+    name: "ContextBarContainer",
     data() {
       return {
         showDealCount: true,
         deals: [],
-        dealsWithProduceInfo: [],
+        dealsWithProduceInfo: []
       };
     },
     computed: {
-      showScopeOverlay: {
+      showContextBar: {
         get() {
-          return this.$store.state.map.showScopeOverlay;
+          return this.$store.state.map.showContextBar;
         },
         set(value) {
-          this.$store.dispatch("showScopeOverlay", value);
-        },
-      },
-    },
+          this.$store.dispatch("showContextBar", value);
+        }
+      }
+    }
   };
 </script>
 
 <style lang="scss">
   @import "../../scss/colors";
 
-  .scope-bar-container {
+  .context-bar-container {
     //border-left: 1px dotted $lm_dark;
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
@@ -61,18 +61,35 @@
       right: auto;
     }
 
-    .scope-bar-container-content {
+    .context-bar-container-content {
       overflow-y: auto;
-      padding: 0.7em;
+      padding: 0.5rem;
       width: 100%;
       text-align: center;
+
+      h2.bar-title {
+        font-size: 22px;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        line-height: 1.2;
+      }
+
+      h2,
+      p,
+      a {
+        text-align: left;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
     }
 
     &.collapsed {
       width: 0;
       min-width: 0;
 
-      .scope-bar-container-content {
+      .context-bar-container-content {
         display: none;
       }
     }

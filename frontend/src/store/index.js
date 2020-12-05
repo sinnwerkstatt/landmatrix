@@ -19,18 +19,15 @@ const store = new Vuex.Store({
   },
   state: {
     formfields: {},
-    chartSelectedCountry: null,
   },
   mutations: {
     setFields(state, fields) {
       state.formfields = fields;
     },
-    selectChartSelectedCountry(state, country) {
-      state.chartSelectedCountry = country;
-    },
   },
   actions: {
     fetchBasicData(context) {
+      context.dispatch("fetchObservatoryPages");
       return new Promise(function (resolve, reject) {
         apolloClient
           .query({
@@ -68,6 +65,7 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   country_page_id
+                  observatory_page_id
                   short_description
                   deals {
                     id
@@ -82,6 +80,7 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   region_page_id
+                  observatory_page_id
                   short_description
                 }
               }
@@ -120,14 +119,12 @@ const store = new Vuex.Store({
         });
     },
     fetchMessages(context) {
-      let url = `/newdeal_legacy/messages/`;
+      let url = `/api/newdeal_legacy/messages/`;
       axios.get(url).then((response) => {
         context.commit("setMessages", response.data.messages);
       });
     },
-    selectChartSelectedCountry(context, country) {
-      context.commit("selectChartSelectedCountry", country);
-    },
+
     login(context, { username, password }) {
       return new Promise(function (resolve, reject) {
         axios

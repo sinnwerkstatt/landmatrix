@@ -15,6 +15,7 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
             "point_lat": c.point_lat,
             "point_lon": c.point_lon,
             "country_page_id": c.country_page_id,
+            "observatory_page_id": c.observatory_page_id,
             "short_description": c.short_description,
             "deals": c.deal_set.all(),
         }

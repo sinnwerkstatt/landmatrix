@@ -15,6 +15,11 @@
           </div>
         </div>
       </div>
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+          <QuasiStaticMap :deals="deals" :region_id="region_id" :country_id="country_id" />
+        </div>
+      </div>
     </div>
     <div class="jumbotron jumbotron-fluid charts">
       <div class="container">
@@ -101,9 +106,11 @@
   import MapDataCharts from "../../components/Wagtail/MapDataCharts";
   import ArticleList from "../../components/Wagtail/ArticleList";
   import Twitter from "../../components/Wagtail/Twitter";
+  import QuasiStaticMap from "../../components/QuasiStaticMap";
+  import { data_deal_query_gql } from "../Data/query";
 
   export default {
-    components: { StatusPieChart, Streamfield, MapDataCharts, ArticleList, Twitter },
+    components: { QuasiStaticMap, StatusPieChart, Streamfield, MapDataCharts, ArticleList, Twitter },
     data() {
       return {
         readMore: false,
@@ -113,32 +120,10 @@
     },
     apollo: {
       deals: {
-        $skipAll() {
+        skip() {
           return this.locationFilter.length == 0;
         },
-        query: gql`
-          query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
-            deals(limit: $limit, subset: $subset, filters: $filters) {
-              id
-              deal_size
-              country {
-                id
-                fk_region {
-                  id
-                }
-              }
-              # top_investors { id name }
-              intention_of_investment
-              current_negotiation_status
-              current_implementation_status
-              locations {
-                id
-                point
-                level_of_accuracy
-              }
-            }
-          }
-        `,
+        query: data_deal_query_gql,
         variables() {
           let user = this.$store.state.page.user;
           return {
@@ -149,6 +134,9 @@
         },
       },
       articles: {
+        skip() {
+          return this.deals.length == 0;
+        },
         query: gql`
           query {
             articles: blogpages {
@@ -172,6 +160,12 @@
     computed: {
       page() {
         return this.$store.state.page.wagtailPage;
+      },
+      region_id() {
+        return this.page.region ? this.page.region.id : null;
+      },
+      country_id() {
+        return this.page.country ? this.page.country.id : null;
       },
       locationItem() {
         if (this.page.region) {

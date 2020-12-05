@@ -1,10 +1,10 @@
 <template>
-  <div class="filter-overlay" :class="{ collapsed: !showFilterOverlay }">
-    <span class="wimpel" @click.prevent="showFilterOverlay = !showFilterOverlay">
+  <div class="filter-overlay" :class="{ collapsed: !showFilterBar }">
+    <span class="wimpel" @click.prevent="showFilterBar = !showFilterBar">
       <svg viewBox="0 0 2 20" width="20px">
         <path d="M0,0 L2,2 L2,18 L0,20z"></path>
         <text x="0.3" y="11">
-          {{ showFilterOverlay ? "&lsaquo;" : "&rsaquo;" }}
+          {{ showFilterBar ? "&lsaquo;" : "&rsaquo;" }}
         </text>
       </svg>
     </span>
@@ -362,12 +362,12 @@
       };
     },
     computed: {
-      showFilterOverlay: {
+      showFilterBar: {
         get() {
-          return this.$store.state.map.showFilterOverlay;
+          return this.$store.state.map.showFilterBar;
         },
         set(value) {
-          this.$store.dispatch("showFilterOverlay", value);
+          this.$store.dispatch("showFilterBar", value);
         },
       },
       region_id: {
@@ -620,7 +620,7 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 0.5em;
+      padding: 0.5rem;
       display: flex;
       flex-direction: column;
 

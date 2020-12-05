@@ -34,7 +34,8 @@ class PDFViewMixinTestCase(TestCase):
     def test_get(self):
         response_dict = self.mixin.get(self.request, deal_id=1)
         self.assertEqual(
-            {"pdf_export_url": "/deal/1.pdf", "is_pdf_export": True}, response_dict
+            {"pdf_export_url": "/legacy/deal/1.pdf", "is_pdf_export": True},
+            response_dict,
         )
 
     def test_get_with_pdf(self):
@@ -57,7 +58,7 @@ class PDFViewMixinTestCase(TestCase):
 
     def test_build_full_pdf_rendering_url(self):
         url = self.mixin.build_full_pdf_rendering_url(self.request, deal_id=1)
-        self.assertEqual("http://localhost/deal/1/?is_pdf_export=1", url)
+        self.assertEqual("http://localhost/legacy/deal/1/?is_pdf_export=1", url)
 
     def test_render_url_to_pdf_response(self):
         with self.assertRaises(CalledProcessError):

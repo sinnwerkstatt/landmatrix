@@ -346,6 +346,10 @@ class DataDownload:
             neg_stat, neg_stat
         )
 
+        fully_updated_at = data.get("fully_updated_at")
+        if fully_updated_at:
+            data["fully_updated_at"] = fully_updated_at.isoformat()
+
         row = []
         for field in deal_fields:
             if field not in data:

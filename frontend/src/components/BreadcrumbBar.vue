@@ -9,16 +9,6 @@
           </li>
         </ul>
       </div>
-      <div class="col-auto">
-        <ul class="subnav nav nav-pills">
-          <li class="nav-item" v-for="nav in this.$store.state.page.breadNav">
-            <a :href="nav.route"><i :class="nav.icon"></i> {{ nav.name }}</a>
-          </li>
-          <li class="divider"></li>
-          <li role="presentation"></li>
-          <li role="presentation"></li>
-        </ul>
-      </div>
     </div>
   </div>
 </template>
