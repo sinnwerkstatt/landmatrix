@@ -6,6 +6,7 @@ from django_registration.backends.activation.views import RegistrationView
 
 from apps.grid.views.deal_comparison import DealComparisonView
 from apps.grid.views.filter import FilterWidgetAjaxView
+from apps.grid.views.investor import InvestorListView
 from apps.grid.views.investor_comparison import InvestorComparisonView
 from apps.landmatrix.forms import CustomRegistrationForm
 from apps.landmatrix.views import CountryView, RegionView, SwitchLanguageView
@@ -52,6 +53,7 @@ if settings.NEW_ROUTES:
     urlpatterns += [
         # Deals, Investors, Map, Charts, stuff...
         path("legacy/list/deals/", include("apps.grid.urls")),
+        path("legacy/list/investors/", InvestorListView.as_view()),
         path("legacy/data/", include("apps.grid.urls")),
         path("legacy/map/", include("apps.map.urls")),
         path("legacy/charts/", include("apps.charts.urls")),
