@@ -63,8 +63,10 @@ def parse_general(deal, attrs):
     NATURE_OF_DEAL_MAP = {
         None: None,
         "Outright Purchase": "OUTRIGHT_PURCHASE",
+        "Compra Directa": "OUTRIGHT_PURCHASE",
         "Lease": "LEASE",
         "Concession": "CONCESSION",
+        "Concesión": "CONCESSION",
         "Exploitation permit / license / concession (for mineral resources)": "EXPLOITATION_PERMIT",
         "Exploitation permit / license / concession": "EXPLOITATION_PERMIT",
         "Resource exploitation license / concession": "EXPLOITATION_PERMIT",
@@ -105,7 +107,12 @@ def parse_general(deal, attrs):
         attrs.get("tg_implementation_status_comment") or ""
     )
 
-    HA_AREA_MAP = {None: None, "per ha": "PER_HA", "for specified area": "PER_AREA"}
+    HA_AREA_MAP = {
+        None: None,
+        "per ha": "PER_HA",
+        "for specified area": "PER_AREA",
+        "por área específica": "PER_AREA",
+    }
     deal.purchase_price = attrs.get("purchase_price")
     deal.purchase_price_currency_id = attrs.get("purchase_price_currency")
     deal.purchase_price_type = HA_AREA_MAP[attrs.get("purchase_price_type")]
@@ -243,6 +250,7 @@ def parse_local_communities(deal, attrs):
     COMMUNITY_CONSULTATION_MAP = {
         None: None,
         "Not consulted": "NOT_CONSULTED",
+        "Sin consultar": "NOT_CONSULTED",
         "Limited consultation": "LIMITED_CONSULTATION",
         "Free prior and informed consent": "FPIC",
         "Free, Prior and Informed Consent (FPIC)": "FPIC",
@@ -256,8 +264,12 @@ def parse_local_communities(deal, attrs):
         attrs.get("tg_community_consultation_comment") or ""
     )
 
-    COMMUNITY_REACTION_MAP = {v: k for k, v in Deal.COMMUNITY_REACTION_CHOICES}
-
+    COMMUNITY_REACTION_MAP = {
+        "Consent": "CONSENT",
+        "Mixed reaction": "MIXED_REACTION",
+        "Reacción mixta": "MIXED_REACTION",
+        "Rejection": "REJECTION",
+    }
     deal.community_reaction = (
         COMMUNITY_REACTION_MAP[attrs.get("community_reaction")]
         if attrs.get("community_reaction")
@@ -285,7 +297,17 @@ def parse_local_communities(deal, attrs):
         attrs.get("tg_number_of_displaced_people_comment") or ""
     )
 
-    NEGATIVE_IMPACTS_MAP = {v: k for k, v in Deal.NEGATIVE_IMPACTS_CHOICES}
+    NEGATIVE_IMPACTS_MAP = {
+        "Environmental degradation": "ENVIRONMENTAL_DEGRADATION",
+        "Socio-economic": "SOCIO_ECONOMIC",
+        "Cultural loss": "CULTURAL_LOSS",
+        "Eviction": "EVICTION",
+        "Displacement": "DISPLACEMENT",
+        "Violence": "VIOLENCE",
+        "Violencia": "VIOLENCE",
+        "Other": "OTHER",
+        "Otro": "OTHER",
+    }
     deal.negative_impacts = _extras_to_list(
         attrs, "negative_impacts", NEGATIVE_IMPACTS_MAP
     )
