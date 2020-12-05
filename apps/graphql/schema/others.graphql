@@ -21,10 +21,8 @@ type Region {
     id: Int
     name: String
     slug: String
-    point_lat: Float
     point_lat_min: Float
     point_lat_max: Float
-    point_lon: Float
     point_lon_min: Float
     point_lon_max: Float
     observatory_page_id: Int

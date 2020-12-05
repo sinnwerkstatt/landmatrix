@@ -14,7 +14,8 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
 
 
 def resolve_regions(obj: Any, info: GraphQLResolveInfo):
-    return Region.objects.all()
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
+    return qs_values_to_dict(Region.objects.all(), fields)
 
 
 def resolve_minerals(obj: Any, info: GraphQLResolveInfo):
