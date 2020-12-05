@@ -1,12 +1,18 @@
 <template>
   <ContextBarContainer>
-    <h2 class="bar-title" v-if="currentItem">{{ currentItem.name }}</h2>
-    <p class="mb-1" v-if="currentItem.short_description">
-      {{ currentItem.short_description }}
-    </p>
-    <p v-if="currentItem.url">
-      <a :href="currentItem.url">Read more</a>
-    </p>
+    <div v-if="currentItem">
+      <h2 class="bar-title">{{ currentItem.name }}</h2>
+      <template v-if="currentItem.observatory">
+        <p class="mb-1">
+          {{ currentItem.observatory.short_description }}
+        </p>
+        <p>
+          <router-link :to="`/observatory/${currentItem.observatory.meta.slug}/`">
+            {{ $t("Read more") }}
+          </router-link>
+        </p>
+      </template>
+    </div>
     <div v-if="deals.length">
       <DealDisplayToggle />
       <div class="total">
@@ -47,11 +53,11 @@
   import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
   import { data_deal_produce_query, data_deal_query } from "../../views/Data/query";
   import ContextBarContainer from "./ContextBarContainer";
-  import { mapState } from "vuex";
+  import { mapGetters, mapState } from "vuex";
   import DealDisplayToggle from "../Shared/DealDisplayToggle";
 
   export default {
-    name: "GeneralScopeBar",
+    name: "ContextBarMap",
     components: { ContextBarContainer, StatusPieChart, DealDisplayToggle },
     data() {
       return {
@@ -66,36 +72,35 @@
     computed: {
       ...mapState({
         displayDealsCount: (state) => state.map.displayDealsCount,
+        observatories: (state) => state.page.observatories,
+        filters: (state) => state.filters.filters,
       }),
+      ...mapGetters(["getCountryOrRegion"]),
       currentItem() {
-        let item = {
-          name: "Global",
-          url: "/newdeal/global",
-        };
-        if (this.$store.state.filters.filters.country_id) {
-          let country = this.$store.state.page.countries.find(
-            (c) => c.id === this.$store.state.filters.filters.country_id
-          );
-          if (country) {
-            item = {
-              ...country,
-            };
-            if (country.observatory_page_id) {
-              item.url = `/observatory/${country.slug}`;
-            }
+        let item = null;
+        if (this.filters.country_id || this.filters.region_id) {
+          if (this.filters.country_id) {
+            item = this.getCountryOrRegion({
+              id: this.filters.country_id,
+            });
+          } else {
+            item = this.getCountryOrRegion({
+              type: "region",
+              id: this.filters.region_id,
+            });
           }
-        } else if (this.$store.state.filters.filters.region_id) {
-          let region = this.$store.state.page.regions.find(
-            (r) => r.id === this.$store.state.filters.filters.region_id
-          );
-          if (region) {
-            item = {
-              ...region,
-            };
-            if (region.observatory_page_id) {
-              item.url = `/observatory/${region.slug}`;
-            }
+          if (item.observatory_page_id) {
+            item.observatory = this.observatories.filter(
+              (o) => o.id === item.observatory_page_id
+            )[0];
           }
+        } else {
+          item = {
+            name: "Global",
+          };
+          item.observatory = this.observatories.filter(
+            (o) => !o.country && !o.region
+          )[0];
         }
         return item;
       },

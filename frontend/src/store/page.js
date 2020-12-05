@@ -87,7 +87,7 @@ export const pageModule = {
   actions: {
     fetchObservatoryPages(context) {
       return new Promise(function (resolve, reject) {
-        let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country`;
+        let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
         axios
           .get(url)
           .then((response) => {

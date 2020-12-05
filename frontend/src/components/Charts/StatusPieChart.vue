@@ -42,6 +42,7 @@
           animation: {
             animateScale: true,
             animateRotate: true,
+            duration: 0,
           },
           tooltips: {
             callbacks: {

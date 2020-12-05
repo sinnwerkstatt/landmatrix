@@ -71,6 +71,7 @@ class ObservatoryPage(Page):
                 }
 
     api_fields = [
+        APIField("short_description"),
         APIField("introduction_text"),
         APIField("body"),
         APIField("region"),

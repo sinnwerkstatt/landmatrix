@@ -53,6 +53,7 @@
             label="name"
             placeholder="Country"
             @change="region_id = null"
+            @select="region_id = null"
           />
         </FilterCollapse>
         <FilterCollapse

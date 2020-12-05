@@ -132,13 +132,9 @@
       },
       country() {
         if (!this.country_id || this.country_id === 0) return null;
-        console.log(this.country_id);
-
-        let xxx = this.getCountryOrRegion({
+        return this.getCountryOrRegion({
           id: this.country_id,
         });
-        console.log(xxx);
-        return xxx;
       },
       investing_countries() {
         return this.country_investments_and_rankings.investing.map((x) => {
