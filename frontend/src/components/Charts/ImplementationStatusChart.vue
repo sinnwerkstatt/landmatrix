@@ -48,7 +48,6 @@
     tooltips: {
       callbacks: {
         label: function (item, data) {
-          console.log(data.labels, item);
           return (
             data.datasets[item.datasetIndex].label +
             ": " +

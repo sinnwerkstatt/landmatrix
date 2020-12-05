@@ -14,27 +14,6 @@ export function flatten_choices(choices) {
   }
 }
 
-export function derive_status(status, draft_status) {
-  let status_map = {
-    1: "Draft",
-    2: "Live",
-    3: "Updated",
-    4: "Deleted",
-  };
-  let draft_status_map = {
-    1: "Draft",
-    2: "Review",
-    3: "Activation",
-    4: "Rejected",
-    5: "To Delete",
-  };
-  let st = status_map[status];
-  if (draft_status) {
-    return `${st} + ${draft_status_map[draft_status]}`;
-  }
-  return st;
-}
-
 export function sortAnything(list, sortField, sortAscending) {
   function sortFunction(a, b) {
     let fieldx = sortAscending ? a[sortField] : b[sortField];

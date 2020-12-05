@@ -146,7 +146,6 @@
       },
       invested_countries() {
         return this.country_investments_and_rankings.invested.map((x) => {
-          console.log("invested", x);
           let country_name = this.getCountryOrRegion({
             id: +x.country_id,
           }).name;

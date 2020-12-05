@@ -80,5 +80,6 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         Version.create_from_obj(deal, rev1)
 
         if not do_save:
+            # FIXME: it seems like this is not happening... might have to investigate
             # otherwise update the draft_status of the current_model
             Deal.objects.filter(pk=deal.pk).update(draft_status=deal.draft_status)
