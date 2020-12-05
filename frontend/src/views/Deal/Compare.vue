@@ -3,7 +3,7 @@
     <div class="loadingscreen" v-if="loading">
       <div class="loader"></div>
     </div>
-    <div class="row">
+    <div class="row" v-if="dings">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal_id }}</h1>
       </div>
@@ -12,18 +12,30 @@
         <h3 class="my-2">Comparing versions {{ from_version }} and {{ to_version }}</h3>
       </div>
     </div>
-    <div>
-      {{ from_deal && from_deal.land_area_comment }} <br />
-      {{ to_deal && to_deal.land_area_comment }}<br />
-      {{ dings }}<br />
-      <table>
-        <tr v-for="(_, key) in from_deal">
-          <td>{{ key }}</td>
-          <td>{{ from_deal[key] }}</td>
-          <td>{{ to_deal[key] }}</td>
-        </tr>
-      </table>
+    <h3>{{ deal_sections.general_info.label }}</h3>
+    <div v-for="subsec in deal_sections.general_info.subsections">
+      <h4>{{ subsec.name }}</h4>
+      <table class="table table-striped">
+        <tbody>
+      <tr v-for="field in subsec.fields" v-if="dings.indexOf(field) !== -1">
+        <th>{{field}}</th><td>{{ from_deal[field] }}</td><td>{{ to_deal[field] }}</td>
+      </tr>
+        </tbody>
+        </table>
     </div>
+
+        <h3>{{ deal_sections.employment.label }}</h3>
+    <div v-for="subsec in deal_sections.employment.subsections">
+      <h4>{{ subsec.name }}</h4>
+      <table>
+        <tbody>
+      <tr v-for="field in subsec.fields" v-if="dings.indexOf(field) !== -1">
+        <th>{{field}}</th><td>{{ from_deal[field] }}</td><td>{{ to_deal[field] }}</td>
+      </tr>
+        </tbody>
+        </table>
+    </div>
+
   </div>
 </template>
 
@@ -36,7 +48,7 @@
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import { deal_gql_query } from "./deal_fields";
   import DealComments from "../../components/Deal/DealComments";
-  import { diff, detailedDiff } from "deep-object-diff";
+  import { diff } from "deep-object-diff";
   import { apolloClient } from "../../apolloclient";
 
   export default {
@@ -61,7 +73,9 @@
     },
     computed: {
       dings() {
-        return diff(this.from_deal, this.to_deal);
+        let diffy = diff(this.from_deal, this.to_deal);
+        if (diffy) return Object.keys(diffy);
+        return [];
       },
     },
     // apollo: {
