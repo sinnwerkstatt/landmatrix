@@ -263,7 +263,7 @@
         }
       },
       fetchAllInvestors() {
-        return this.deals.length > 1000;
+        return this.deals.length > 2500;
       },
       filteredInvestors() {
         return this.investors.filter((investor, index, self) => {
