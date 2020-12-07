@@ -82,6 +82,11 @@
       }
     }
 
+    ul {
+      padding-left: 0.3em;
+      list-style: none;
+    }
+
     .delete-button {
       position: absolute;
       font-weight: bold;

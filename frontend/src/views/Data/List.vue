@@ -18,10 +18,20 @@
       <template v-slot:FilterBar>
         <h4>{{ $t("Data") }}</h4>
         <FilterCollapse title="Download" :initExpanded="true">
-          <a :href="`/api/legacy_export/?filters=${filters}&format=xlsx`">XLSX</a><br />
-          <a :href="`/api/legacy_export/?filters=${filters}&format=csv`">CSV</a>
+          <ul>
+            <li>
+              <a :href="`/api/legacy_export/?filters=${filters}&format=xlsx`">
+                <i class="fas fa-file-download" /> XLSX
+              </a>
+            </li>
+            <li>
+              <a :href="`/api/legacy_export/?filters=${filters}&format=csv`">
+                <i class="fas fa-file-download" /> CSV
+              </a>
+            </li>
+          </ul>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Columns')"> </FilterCollapse>
+        <!--<FilterCollapse :title="$t('Columns')"> </FilterCollapse>-->
       </template>
     </DataContainer>
   </div>

@@ -418,16 +418,14 @@
         height: 20px;
 
         .stats {
-          //position: absolute;
-          //top: 0;
           display: inline-block;
         }
 
         .table-config {
-          //position: absolute;
           float: right;
           display: inline-block;
           z-index: 1;
+          display: none; // TODO: decide how change column settings
 
           a {
             color: black;
