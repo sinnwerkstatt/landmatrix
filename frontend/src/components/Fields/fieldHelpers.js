@@ -1,23 +1,8 @@
-import { flatten_choices } from "../../utils";
+import { flatten_choices } from "/utils";
 import dayjs from "dayjs";
 
-const MODELS = ["contract", "datasource", "location", "investor", "involvement"];
-
-export const getFormField = function (formFields, fieldName, model) {
-  if (model && MODELS.includes(model)) {
-    return formFields[model][fieldName];
-  } else {
-    return formFields.deal[fieldName];
-  }
-};
-
-export const getFieldLabel = function (formFields, fieldName, model) {
-  let formField = getFormField(formFields, fieldName, model);
-  return formField.label;
-};
-
-export const getFieldValue = function (obj, formFields, fieldName, model) {
-  let formField = getFormField(formFields, fieldName, model);
+export const getFieldValue = function (obj, formFields, fieldName, model = "deal") {
+  let formField = formFields[model][fieldName];
   let val = obj[fieldName];
   return parseFormFieldValue(formField, val);
 };

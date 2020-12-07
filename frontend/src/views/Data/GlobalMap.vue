@@ -78,7 +78,7 @@
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { data_deal_query } from "./query";
   import { getDealValue } from "../../components/Data/table_mappings";
-  import { getFieldValue } from "../../components/Fields/fieldHelpers";
+  import { getFieldValue } from "/components/Fields/fieldHelpers";
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,

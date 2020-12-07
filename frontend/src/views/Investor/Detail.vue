@@ -23,7 +23,7 @@
 
     <div v-if="investor" class="row">
       <div class="col-xl-6 mb-3">
-        <Field
+        <DisplayField
           :fieldname="fieldname"
           :readonly="true"
           v-model="investor[fieldname]"
@@ -116,9 +116,9 @@
   import { mapState } from "vuex";
   import { getDealValue, getInvestorValue } from "/components/Data/table_mappings";
   import InvestorGraph from "/components/Investor/InvestorGraph";
-  import Field from "/components/Fields/Field";
+  import DisplayField from "/components/Fields/DisplayField";
   import LoadingPulse from "/components/Data/LoadingPulse";
-  import { getFieldValue } from "../../components/Fields/fieldHelpers";
+  import { getFieldValue } from "/components/Fields/fieldHelpers";
 
   let investor_query = gql`
     query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
@@ -159,7 +159,7 @@
 
   export default {
     name: "InvestorDetail",
-    components: { LoadingPulse, InvestorGraph, Field },
+    components: { LoadingPulse, InvestorGraph, DisplayField },
     props: ["investor_id"],
     data() {
       return {

@@ -1,6 +1,6 @@
 <template>
   <b-modal v-model="visible" :title="`${investor.name} (#${investor.id})`">
-    <Field
+    <DisplayField
       :fieldname="fieldname"
       :readonly="true"
       v-model="investor[fieldname]"
@@ -10,7 +10,7 @@
 
     <div v-if="investor.involvement">
       <h3>Involvement</h3>
-      <Field
+      <DisplayField
         :fieldname="fieldname"
         :readonly="true"
         v-model="investor.involvement[fieldname]"
@@ -36,11 +36,11 @@
 </template>
 
 <script>
-  import Field from "/components/Fields/Field";
+  import DisplayField from "/components/Fields/DisplayField";
 
   export default {
     props: ["investor", "value"],
-    components: { Field },
+    components: { DisplayField },
     data() {
       return {
         fields: ["classification", "country", "homepage", "comment"],

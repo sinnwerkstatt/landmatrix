@@ -2,6 +2,18 @@
   <div>
     <h3>History</h3>
     <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Created</th>
+          <th v-if="user && user.is_authenticated">User</th>
+          <th>Fully updated</th>
+          <th>Status</th>
+          <th>Comment</th>
+          <th style="text-align: right;">
+            Show / <a @click="compareVersions">Compare</a>
+          </th>
+        </tr>
+      </thead>
       <tbody>
         <tr v-for="(version, i) in deal.versions">
           <td>{{ version.revision.date_created | defaultdate }}</td>
@@ -23,27 +35,52 @@
             {{ derive_status(version.deal.status, version.deal.draft_status) }}
           </td>
           <td>{{ version.revision.comment }}</td>
-          <td>
+          <td style="white-space: nowrap; text-align: right;">
             <span v-if="i === deduced_position">Current</span>
-            <router-link
-              v-if="i !== deduced_position"
-              :to="{
-                name: 'deal_detail',
-                params: { deal_id, deal_version: version.revision.id },
-              }"
-              v-slot="{ href, navigate }"
-            >
-              <!-- this hack helps to understand that a new version is actually loading, atm -->
-              <a :href="href">Show</a>
-            </router-link>
-          </td>
-          <td>
-            <span :href="`/newdeal/deal/compare/${version.revision.id}/`">
-              Compare with previous<br />not working yet
+            <span v-else>
+              <router-link
+                :to="{
+                  name: 'deal_detail',
+                  params: { deal_id, deal_version: version.revision.id },
+                }"
+                v-slot="{ href, navigate }"
+              >
+                <!-- this hack helps to understand that a new version is actually loading, atm -->
+                <a :href="href">Show</a>
+              </router-link>
+            </span>
+            <span class="ml-4" style="white-space: nowrap; text-align: right;">
+              <input
+                type="radio"
+                v-model="compare_from"
+                :value="version.revision.id"
+                :disabled="version.revision.id >= compare_to"
+              />
+
+              <input
+                type="radio"
+                v-model="compare_to"
+                :value="version.revision.id"
+                :disabled="version.revision.id <= compare_from"
+              />
             </span>
           </td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <button style="white-space: nowrap;" @click="compareVersions">
+              Compare versions
+            </button>
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </template>
@@ -54,6 +91,12 @@
   export default {
     name: "DealHistory",
     props: ["deal", "deal_id", "deal_version"],
+    data() {
+      return {
+        compare_from: null,
+        compare_to: null,
+      };
+    },
     computed: {
       ...mapState({
         user: (state) => state.page.user,
@@ -70,6 +113,12 @@
         }
         return this.deal.versions.length - 1;
       },
+    },
+    mounted() {
+      if (this.deal.versions.length >= 2) {
+        this.compare_to = this.deal.versions[0].revision.id;
+        this.compare_from = this.deal.versions[1].revision.id;
+      }
     },
     methods: {
       derive_status(status, draft_status) {
@@ -96,6 +145,16 @@
           return `${st} + ${draft_status_map[draft_status]}`;
         }
         return st;
+      },
+      compareVersions() {
+        this.$router.push({
+          name: "deal_compare",
+          params: {
+            deal_id: this.deal_id,
+            from_version: this.compare_from,
+            to_version: this.compare_to,
+          },
+        });
       },
     },
   };
