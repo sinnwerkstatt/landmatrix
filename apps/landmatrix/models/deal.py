@@ -1026,9 +1026,11 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ # Timestamps """
-    created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField(blank=True, null=True)
-    fully_updated_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(_("Created"), default=timezone.now)
+    modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
+    fully_updated_at = models.DateTimeField(
+        _("Last full update"), blank=True, null=True
+    )
 
     objects = DealQuerySet.as_manager()
 

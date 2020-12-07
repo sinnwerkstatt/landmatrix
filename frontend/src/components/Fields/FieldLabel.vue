@@ -1,7 +1,5 @@
 <template>
-  <div class="label" :class="[this.narrow ? 'col-md-6' : 'col-md-5 col-lg-4']">
-    {{ label }}
-  </div>
+  <div :class="label_classes">{{ label }}</div>
 </template>
 
 <script>
@@ -15,10 +13,7 @@
         required: true,
       },
       model: { type: String, default: "deal" },
-      narrow: {
-        type: Boolean,
-        default: false,
-      },
+      label_classes: { type: Array, default: () => ["label", "col-md-5", "col-lg-4"] },
     },
     computed: {
       label() {

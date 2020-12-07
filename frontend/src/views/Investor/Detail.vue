@@ -9,14 +9,22 @@
       </div>
       <div class="col-sm-7 col-md-9 panel-container">
         <div class="meta-panel">
-          <div class="field">
-            <div class="label">Created:</div>
-            <div class="val">{{ getInvestorValue("created_at") }}</div>
-          </div>
-          <div class="field">
-            <div class="label">Last update:</div>
-            <div class="val">{{ getInvestorValue("modified_at") }}</div>
-          </div>
+          <DisplayField
+            :wrapper_classes="['inlinefield']"
+            :label_classes="['inlinelabel']"
+            :value_classes="['inlineval']"
+            fieldname="created_at"
+            model="investor"
+            :value="this.investor.created_at"
+          />
+          <DisplayField
+            :wrapper_classes="['inlinefield']"
+            :label_classes="['inlinelabel']"
+            :value_classes="['inlineval']"
+            fieldname="modified_at"
+            model="investor"
+            :value="this.investor.modified_at"
+          />
         </div>
       </div>
     </div>
@@ -118,7 +126,6 @@
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import DisplayField from "/components/Fields/DisplayField";
   import LoadingPulse from "/components/Data/LoadingPulse";
-  import { getFieldValue } from "/components/Fields/fieldHelpers";
 
   let investor_query = gql`
     query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
@@ -232,11 +239,6 @@
       },
     },
     methods: {
-      getInvestorValue(fieldName, subModel) {
-        if (this.formFields) {
-          return getFieldValue(this.investor, this.formFields, fieldName, "investor");
-        }
-      },
       detect_role(investor) {
         if (investor.role === "PARENT") {
           if (investor.involvement_type === "INVESTOR") return "Parent company";
