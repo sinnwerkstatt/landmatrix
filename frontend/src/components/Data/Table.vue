@@ -389,12 +389,14 @@
         }
       },
       targetModel() {
-        if (this.targetModel === "investor") {
-          this.sortField = "modified_at";
-        }
-        this.sortField = "fully_updated_at";
+        this.sortField =
+          this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
         this.sortAscending = false;
       },
+    },
+    created() {
+      this.sortField =
+        this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
     },
   };
 </script>
