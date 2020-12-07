@@ -79,7 +79,13 @@
 </template>
 
 <script>
-  export default {};
+  export default {
+    methods: {
+      handleClick(event) {
+        alert("test");
+      },
+    },
+  };
 </script>
 
 <style lang="scss" scoped>

@@ -28,6 +28,7 @@ package-lock.json
 /frontend/node_modules/
 /frontend/.cache/
 yarn-error.log
+/frontend/.env
 
 # IDEs
 .idea/

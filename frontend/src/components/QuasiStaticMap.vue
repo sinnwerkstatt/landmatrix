@@ -1,5 +1,6 @@
 <template>
   <div class="static-map" @click="goToGlobalMap">
+    <LoadingPulse v-if="!markersReady"></LoadingPulse>
     <div class="shield">
       <span class="hover-text">Go to map</span>
     </div>
@@ -20,17 +21,19 @@
 <script>
   import BigMap from "./BigMap";
   import { groupBy } from "lodash";
+  import LoadingPulse from "./Data/LoadingPulse";
 
   const ZOOM_LEVEL_COUNTRY = 4;
 
   export default {
     name: "QuasiStaticMap",
-    components: { BigMap },
+    components: { LoadingPulse, BigMap },
     props: ["country_id", "region_id", "deals"],
     data() {
       return {
         map: null,
         featureGroup: L.featureGroup(),
+        markersReady: false,
       };
     },
     computed: {
@@ -57,29 +60,42 @@
           id = this.country_id;
         }
         return this.$store.getters.getCountryOrRegion({ type: type, id: id });
-      }
+      },
     },
     methods: {
       bigMapReady(map) {
         map.addLayer(this.featureGroup);
         this.map = map;
       },
-      refreshMap() {
+      clearMap() {
         this.featureGroup.clearLayers();
-        // focus area
+      },
+      focusMap() {
         if (this.roc) {
-          console.log(this.roc);
           if (this.roc.point_lat_min) {
-            this.map.fitBounds([
-              [this.roc.point_lat_min, this.roc.point_lon_min],
-              [this.roc.point_lat_max, this.roc.point_lon_max],
-            ], { animate: false });
+            this.map.fitBounds(
+              [
+                [this.roc.point_lat_min, this.roc.point_lon_min],
+                [this.roc.point_lat_max, this.roc.point_lon_max],
+              ],
+              { animate: false }
+            );
           } else {
-            this.map.setView([this.roc.point_lat, this.roc.point_lon], ZOOM_LEVEL_COUNTRY);
+            this.map.setView(
+              [this.roc.point_lat, this.roc.point_lon],
+              ZOOM_LEVEL_COUNTRY
+            );
           }
         } else {
-          this.map.fitWorld( { animate: false } );
+          this.map.fitWorld({ animate: false });
         }
+      },
+      refreshMap() {
+        this.clearMap();
+        this.focusMap();
+        this.drawMarkers();
+      },
+      drawMarkers() {
         // group by countries (for region pages)
         Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
           ([key, val]) => {
@@ -90,14 +106,23 @@
             this.featureGroup.addLayer(mcluster);
           }
         );
+        this.markersReady = true;
       },
       goToGlobalMap() {
         if (this.country_id) {
+          this.$store.dispatch("setFilter", {
+            filter: "region_id",
+            value: null,
+          });
           this.$store.dispatch("setFilter", {
             filter: "country_id",
             value: this.country_id,
           });
         } else {
+          this.$store.dispatch("setFilter", {
+            filter: "country_id",
+            value: null,
+          });
           this.$store.dispatch("setFilter", {
             filter: "region_id",
             value: this.region_id,
@@ -108,7 +133,13 @@
     },
     watch: {
       deals() {
-        this.refreshMap();
+        this.markersReady = false;
+        setTimeout(this.refreshMap, 200);
+      },
+      roc() {
+        this.clearMap();
+        this.focusMap();
+        this.markersReady = false;
       },
     },
   };
@@ -144,7 +175,6 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        background-color: rgba($lm_orange, 0.3);
       }
 
       .hover-text {

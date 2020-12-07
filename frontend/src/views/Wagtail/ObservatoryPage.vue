@@ -63,7 +63,7 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-11 col-lg-9 col-xl-7">
-          <MapDataCharts></MapDataCharts>
+          <MapDataCharts @click.native="setGlobalLocationFilter"></MapDataCharts>
         </div>
       </div>
     </div>
@@ -255,6 +255,29 @@
             );
           })
           .sort((a, b) => a.date < b.date);
+      },
+    },
+    methods: {
+      setGlobalLocationFilter(event) {
+        if (this.page.region) {
+          this.$store.dispatch("setFilter", {
+            filter: "country_id",
+            value: null,
+          });
+          this.$store.dispatch("setFilter", {
+            filter: "region_id",
+            value: this.page.region.id,
+          });
+        } else if (this.page.country) {
+          this.$store.dispatch("setFilter", {
+            filter: "region_id",
+            value: null,
+          });
+          this.$store.dispatch("setFilter", {
+            filter: "country_id",
+            value: this.page.country.id,
+          });
+        }
       },
     },
     watch: {
