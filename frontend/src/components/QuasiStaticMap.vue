@@ -66,6 +66,7 @@
       bigMapReady(map) {
         map.addLayer(this.featureGroup);
         this.map = map;
+        this.focusMap();
       },
       clearMap() {
         this.featureGroup.clearLayers();
@@ -91,9 +92,11 @@
         }
       },
       refreshMap() {
-        this.clearMap();
-        this.focusMap();
-        this.drawMarkers();
+        if (this.map) {
+          this.clearMap();
+          this.focusMap();
+          this.drawMarkers();
+        }
       },
       drawMarkers() {
         // group by countries (for region pages)
