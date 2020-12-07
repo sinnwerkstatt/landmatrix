@@ -7,7 +7,6 @@
       v-model="value"
       :file_not_public="file_not_public"
       v-if="!readonly || custom_is_null(value)"
-      :narrow="!!narrow"
     />
   </div>
 </template>
@@ -32,7 +31,7 @@
 
   export default {
     name: "Field",
-    props: ["fieldname", "model", "value", "readonly", "file_not_public", "narrow"],
+    props: ["fieldname", "model", "value", "readonly", "file_not_public"],
     components: {
       ArrayField,
       BooleanField,

@@ -44,13 +44,17 @@
 <script>
   import { flatten_choices } from "/utils";
   import { fieldMixin } from "./fieldMixin";
-  import { parseFormFieldValue } from "./fieldHelpers";
 
   export default {
     mixins: [fieldMixin],
     methods: {
       parseVal(val) {
-        return parseFormFieldValue(this.formfield, val);
+        if (val) {
+          let choices = flatten_choices(this.formfield.choices);
+          if (choices) return choices[val];
+          return val;
+        }
+        return "n/a";
       },
     },
   };

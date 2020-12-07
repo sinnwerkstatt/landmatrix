@@ -10,13 +10,18 @@
 </template>
 
 <script>
-  import { parseFormFieldValue } from "../fieldHelpers";
+  import { flatten_choices } from "/utils";
 
   export default {
     props: ["formfield", "value"],
     methods: {
       parseVal(val) {
-        return parseFormFieldValue(this.formfield, val);
+        if (val) {
+          let choices = flatten_choices(this.formfield.choices);
+          if (choices) return choices[val];
+          return val;
+        }
+        return "n/a";
       },
     },
   };

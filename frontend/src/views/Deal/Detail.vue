@@ -9,18 +9,27 @@
       </div>
       <div class="col-sm-7 col-md-9 panel-container">
         <div class="meta-panel">
-          <div class="field">
-            <div class="label">Created:</div>
-            <div class="val">{{ getDealValue("created_at") }}</div>
-          </div>
-          <div class="field">
-            <div class="label">Last update:</div>
-            <div class="val">{{ getDealValue("modified_at") }}</div>
-          </div>
-          <div class="field">
-            <div class="label">Last full update:</div>
-            <div class="val">{{ getDealValue("fully_updated_at") }}</div>
-          </div>
+          <DisplayField
+            :wrapper_classes="['inlinefield']"
+            :label_classes="['inlinelabel']"
+            :value_classes="['inlineval']"
+            fieldname="created_at"
+            :value="this.deal.created_at"
+          />
+          <DisplayField
+            :wrapper_classes="['inlinefield']"
+            :label_classes="['inlinelabel']"
+            :value_classes="['inlineval']"
+            fieldname="modified_at"
+            :value="this.deal.modified_at"
+          />
+          <DisplayField
+            :wrapper_classes="['inlinefield']"
+            :label_classes="['inlinelabel']"
+            :value_classes="['inlineval']"
+            fieldname="fully_updated_at"
+            :value="this.deal.fully_updated_at"
+          />
         </div>
       </div>
     </div>
@@ -226,21 +235,24 @@
 </template>
 
 <script>
+  import gql from "graphql-tag";
+  import { mapState } from "vuex";
+
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import { deal_gql_query } from "./deal_fields";
+
   import DealSection from "/components/Deal/DealSection";
   import DealHistory from "/components/Deal/DealHistory";
   import DealLocationsSection from "/components/Deal/DealLocationsSection";
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
   import InvestorGraph from "/components/Investor/InvestorGraph";
-  import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "./deal_fields";
-  import gql from "graphql-tag";
-  import DealComments from "../../components/Deal/DealComments";
-  import { mapState } from "vuex";
-  import { getFieldValue } from "/components/Fields/fieldHelpers";
+  import DealComments from "/components/Deal/DealComments";
+  import DisplayField from "/components/Fields/DisplayField";
 
   export default {
     props: ["deal_id", "deal_version"],
     components: {
+      DisplayField,
       DealComments,
       InvestorGraph,
       DealHistory,
@@ -320,12 +332,8 @@
       }),
     },
     methods: {
-      getDealValue(fieldName, model = "deal") {
-        // return this.formFields[model][fieldName]
-        return getFieldValue(this.deal, this.formFields, fieldName);
-      },
       updateRoute(emiter) {
-        this.$router.push(this.$route.path + emiter);
+        if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
       triggerInvestorGraphRefresh() {
         this.updateRoute("#investor_info");
@@ -430,19 +438,19 @@
       font-size: 0.9rem;
       color: rgba(0, 0, 0, 0.25);
 
-      .field {
+      .inlinefield {
         display: inline-block;
 
         &:not(:last-child) {
           margin-right: 1em;
         }
 
-        .label {
+        .inlinelabel {
           display: inline-block;
           color: rgba(0, 0, 0, 0.3);
         }
 
-        .val {
+        .inlineval {
           display: inline-block;
           font-style: italic;
         }

@@ -111,8 +111,8 @@ class Investor(models.Model):
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
-    created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(_("Created"), default=timezone.now)
+    modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
 
     old_id = models.IntegerField(null=True, blank=True)
 

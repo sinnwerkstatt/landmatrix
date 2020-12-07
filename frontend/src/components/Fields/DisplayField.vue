@@ -1,12 +1,12 @@
 <template>
-  <div class="form-field row" v-if="visible">
+  <div :class="wrapper_classes" v-if="visible">
     <FieldLabel
       v-if="show_label"
       :fieldname="fieldname"
-      :narrow="narrow"
+      :label_classes="label_classes"
       :model="model"
     />
-    <div class="val" :class="[this.narrow ? 'col-md-6' : 'col-md-7 col-lg-8']">
+    <div :class="value_classes">
       <component
         :is="formfield.class"
         :formfield="formfield"
@@ -21,7 +21,8 @@
   import ArrayField from "./Display/ArrayField";
   import BooleanField from "./Display/BooleanField";
   import CharField from "./Display/TextField";
-  import DateField from "./Display/TextField";
+  import DateField from "./Display/DateField";
+  import DateTimeField from "./Display/DateField";
   import DecimalField from "./Display/DecimalField";
   import EmailField from "./Display/TextField";
   import FileField from "./Display/FileField";
@@ -39,24 +40,14 @@
   export default {
     name: "DisplayField",
     props: {
-      fieldname: {
-        type: String,
-        required: true,
-      },
-      model: { type: String, default: "deal" },
+      fieldname: { type: String, required: true },
       value: { required: true },
-      show_label: {
-        type: Boolean,
-        default: true,
-      },
-      file_not_public: {
-        type: Boolean,
-        default: false,
-      },
-      narrow: {
-        type: Boolean,
-        default: false,
-      },
+      model: { type: String, default: "deal" },
+      show_label: { type: Boolean, default: true },
+      label_classes: { type: Array },
+      value_classes: { type: Array, default: () => ["val", "col-md-7", "col-lg-8"] },
+      wrapper_classes: { type: Array, default: () => ["form-field", "row"] },
+      file_not_public: { type: Boolean, default: false },
     },
     components: {
       FieldLabel,
@@ -64,6 +55,7 @@
       BooleanField,
       CharField,
       DateField,
+      DateTimeField,
       DecimalField,
       EmailField,
       FileField,

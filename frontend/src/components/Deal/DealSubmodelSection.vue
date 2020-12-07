@@ -16,7 +16,8 @@
             :fieldname="fieldname"
             :value="entry[fieldname]"
             :model="model"
-            :narrow="!!narrow"
+            :label_classes="label_classes"
+            :value_classes="value_classes"
           />
         </div>
       </div>
@@ -29,7 +30,16 @@
   import DisplayField from "/components/Fields/DisplayField";
 
   export default {
-    props: ["title", "model", "model_name", "entries", "fields", "active", "narrow"],
+    props: [
+      "title",
+      "model",
+      "model_name",
+      "entries",
+      "fields",
+      "active",
+      "label_classes",
+      "value_classes",
+    ],
     components: { DisplayField },
     computed: {
       hasDefaultSlot() {
