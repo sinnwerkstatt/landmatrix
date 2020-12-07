@@ -15,12 +15,13 @@
       </div>
       <div id="investor-network" :class="{ network_fs }"></div>
 
-      <div class="row">
+      <div class="row bottom-content">
         <div v-if="controls" id="investor-level" class="col-sm-6 mt-1">
           <h6>Level of parent investors</h6>
           <div class="slider-container col-sm-8">
             <input
               type="range"
+              class="custom-range"
               min="1"
               :max="maxDepth"
               v-model="depth"
@@ -29,14 +30,15 @@
             <em>{{ depth }}</em>
           </div>
 
-          <div class="col-sm-8">
-            <label for="show_deals">
-              <input
-                type="checkbox"
-                id="show_deals"
-                v-model="showDeals"
-                @change="refresh_graph"
-              />
+          <div class="col-sm-8 custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              id="show_deals"
+              class="form-check-input custom-control-input"
+              v-model="showDeals"
+              @change="refresh_graph"
+            />
+            <label for="show_deals" class="form-check-label custom-control-label">
               Show deals
             </label>
           </div>
@@ -368,8 +370,6 @@
       }
 
       #investor-legend {
-        margin-left: 1rem;
-        margin-top: 1rem !important;
       }
     }
   }
@@ -387,7 +387,33 @@
       width: 100%;
       max-width: 100%;
       height: 60vh;
-      max-height: 80%;
+      max-height: 60vh;
+      min-height: 60vh;
+    }
+  }
+
+  .network_fs {
+    min-height: 60vh;
+    .bottom-content {
+      padding: 15px;
+      height: 40%;
+    }
+  }
+
+  #investor-level {
+    .custom-range {
+      margin-left: -15px;
+
+      &::-webkit-slider-thumb,
+      &::-moz-range-thumb,
+      &::-ms-thumb {
+        background: $lm-orange;
+      }
+    }
+
+    .custom-checkbox {
+      margin-top: 0.3em;
+      margin-bottom: 2em;
     }
   }
 
