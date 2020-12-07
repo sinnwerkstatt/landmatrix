@@ -29,7 +29,6 @@
   import JSONField from "/components/Fields/JSONField";
   import PointField from "/components/Fields/PointField";
   import { mapState } from "vuex";
-  import { getFormField } from "./fieldHelpers";
 
   export default {
     name: "Field",
@@ -53,7 +52,7 @@
     },
     computed: {
       formfield() {
-        return getFormField(this.formfields, this.fieldname, this.model);
+        return this.formfields[this.model][this.fieldname];
       },
       ...mapState({
         formfields: (state) => state.formfields,

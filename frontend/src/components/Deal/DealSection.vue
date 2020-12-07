@@ -7,11 +7,10 @@
         v-if="any_field_in_section(section)"
       >
         <h3>{{ section.name }}</h3>
-        <Field
-          :fieldname="fieldname"
-          :readonly="!!readonly"
-          v-model="deal[fieldname]"
+        <DisplayField
           v-for="fieldname in section.fields"
+          :fieldname="fieldname"
+          :value="deal[fieldname]"
         />
       </div>
     </div>
@@ -20,11 +19,11 @@
 </template>
 
 <script>
-  import Field from "/components/Fields/Field";
+  import DisplayField from "/components/Fields/DisplayField";
 
   export default {
-    props: ["title", "sections", "deal", "readonly"],
-    components: { Field },
+    props: ["title", "sections", "deal"],
+    components: { DisplayField },
     methods: {
       custom_is_null(field) {
         return !(

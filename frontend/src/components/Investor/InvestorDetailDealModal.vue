@@ -1,6 +1,6 @@
 <template>
   <b-modal v-model="visible" :title="`Deal ${deal.name}`">
-    <Field
+    <DisplayField
       :fieldname="fieldname"
       :readonly="true"
       v-model="deal[fieldname]"
@@ -25,11 +25,11 @@
 </template>
 
 <script>
-  import Field from "/components/Fields/Field";
+  import DisplayField from "/components/Fields/DisplayField";
 
   export default {
     props: ["deal", "value"],
-    components: { Field },
+    components: { DisplayField },
     data() {
       return {
         fields: [

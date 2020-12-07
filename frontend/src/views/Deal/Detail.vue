@@ -82,7 +82,6 @@
         :title="deal_sections.investor_info.label"
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
-        :sections="deal_sections.investor_info.subsections"
         :readonly="true"
         @activated="triggerInvestorGraphRefresh"
       >
@@ -200,7 +199,7 @@
   import gql from "graphql-tag";
   import DealComments from "../../components/Deal/DealComments";
   import { mapState } from "vuex";
-  import { getFieldValue } from "../../components/Fields/fieldHelpers";
+  import { getFieldValue } from "/components/Fields/fieldHelpers";
 
   export default {
     props: ["deal_id", "deal_version"],
@@ -281,7 +280,8 @@
       }),
     },
     methods: {
-      getDealValue(fieldName, subModel) {
+      getDealValue(fieldName, model = "deal") {
+        // return this.formFields[model][fieldName]
         return getFieldValue(this.deal, this.formFields, fieldName);
       },
       triggerInvestorGraphRefresh() {

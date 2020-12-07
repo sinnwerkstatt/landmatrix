@@ -4,7 +4,6 @@
     :model_name="$t('Location')"
     :entries="entries"
     :fields="fields"
-    :readonly="true"
     model="location"
     :active="true"
     :narrow="true"
@@ -31,7 +30,7 @@
   import DealSubmodelSection from "./DealSubmodelSection";
 
   export default {
-    props: ["title", "fields", "deal", "readonly"],
+    props: ["title", "fields", "deal"],
     components: {
       DealSubmodelSection,
       BigMap,
