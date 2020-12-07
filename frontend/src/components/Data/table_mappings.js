@@ -143,7 +143,7 @@ export const getInvestorValue = function (component, investor, fieldName) {
 
 export const dealExtraFieldLabels = {
   modified_at: "Last modified",
-  fully_updated_at: "Last update",
+  fully_updated_at: "Last full update",
   top_investors: "Top investors", // TODO: should come from formFields!
 };
 

@@ -129,20 +129,27 @@
       intentionData() {
         let data = [];
         let colors = [];
+        let otherValue = 0;
         this.intentionLegend.map((l) => {
           colors[l.label] = l.color;
         });
         if (this.deals.length) {
           let groupedDeals = {};
+          let totalDeals = 0;
+          let totalSize = 0;
           for (let deal of this.deals) {
             if (deal.current_intention_of_investment) {
               for (let int_key of deal.current_intention_of_investment) {
                 groupedDeals[int_key] = groupedDeals[int_key] || [];
                 groupedDeals[int_key].push(deal);
+                totalDeals++;
+                totalSize += deal.deal_size;
               }
             } else {
               groupedDeals[NO_INTENTION] = groupedDeals[NO_INTENTION] || [];
               groupedDeals[NO_INTENTION].push(deal);
+              totalDeals++;
+              totalSize += deal.deal_size;
             }
           }
           for (const [key, keyDeals] of Object.entries(groupedDeals)) {
@@ -163,20 +170,37 @@
                 }
               }
             }
-            data.push({
-              label: keyLabel,
-              color: colors[keyGroup],
-              group: keyGroup,
-              value: this.displayDealsCount
-                ? keyDeals.length
-                : sum(keyDeals, "deal_size"),
-              unit: this.displayDealsCount ? "deals" : "ha",
-            });
+            let value = this.displayDealsCount
+              ? keyDeals.length
+              : sum(keyDeals, "deal_size");
+
+            if (
+              (this.displayDealsCount && value < totalDeals * 0.01) ||
+              (!this.displayDealsCount && value < totalSize * 0.01)
+            ) {
+              otherValue += value;
+            } else {
+              data.push({
+                label: keyLabel,
+                color: colors[keyGroup],
+                group: keyGroup,
+                value: value,
+                unit: this.displayDealsCount ? "deals" : "ha",
+              });
+            }
           }
         }
         data.sort((a, b) => {
           return b.value - a.value;
         });
+        if (otherValue) {
+          data.push({
+            label: "Rest",
+            color: "rgba(0,0,0,0.1)",
+            value: otherValue,
+            unit: this.displayDealsCount ? "deals" : "ha",
+          });
+        }
         return data;
       },
       intentionAgricultureData() {
@@ -264,6 +288,7 @@
       .legend {
         width: 90%;
         margin: 1em auto 0 auto;
+        font-size: 0.9rem;
       }
     }
   }
