@@ -73,10 +73,11 @@
   import DealComments from "../../components/Deal/DealComments";
   import { diff } from "deep-object-diff";
   import { apolloClient } from "../../apolloclient";
-  import Field from "/components/Fields/DisplayField";
+  import DisplayField from "/components/Fields/DisplayField";
   import FieldLabel from "../../components/Fields/FieldLabel";
 
   export default {
+    name: "Compare",
     props: ["deal_id", "deal_version", "from_version", "to_version"],
     components: {
       FieldLabel,

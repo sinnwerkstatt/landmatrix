@@ -1,5 +1,10 @@
 <template>
-  <b-tab :title="title" v-if="any_field_at_all(sections)" @click="$emit('activated')">
+  <b-tab
+    :title="title"
+    v-if="any_field_at_all(sections)"
+    :active="active"
+    @click="$emit('activated')"
+  >
     <div>
       <div
         v-for="section in sections"
@@ -22,7 +27,7 @@
   import DisplayField from "/components/Fields/DisplayField";
 
   export default {
-    props: ["title", "sections", "deal"],
+    props: ["title", "sections", "deal", "active"],
     components: { DisplayField },
     methods: {
       custom_is_null(field) {

@@ -54,12 +54,16 @@
         :deal="deal"
         :fields="deal_submodel_sections.location"
         :readonly="true"
+        :active="active_tab === '#locations'"
+        @activated="updateRoute('#locations')"
       />
       <DealSection
         :title="deal_sections.general_info.label"
         :deal="deal"
         :sections="deal_sections.general_info.subsections"
         :readonly="true"
+        :active="active_tab === '#general'"
+        @activated="updateRoute('#general')"
       />
 
       <DealSubmodelSection
@@ -69,6 +73,8 @@
         :fields="deal_submodel_sections.contract"
         :readonly="true"
         model="contract"
+        :active="active_tab === '#contracts'"
+        @activated="updateRoute('#contracts')"
       />
 
       <DealSection
@@ -76,6 +82,8 @@
         :deal="deal"
         :sections="deal_sections.employment.subsections"
         :readonly="true"
+        :active="active_tab === '#employment'"
+        @activated="updateRoute('#employment')"
       />
 
       <DealSection
@@ -83,6 +91,7 @@
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
         :readonly="true"
+        :active="active_tab === '#investor_info'"
         @activated="triggerInvestorGraphRefresh"
       >
         <div class="row">
@@ -114,6 +123,8 @@
         :fields="deal_submodel_sections.datasource"
         :readonly="true"
         model="datasource"
+        :active="active_tab === '#data_sources'"
+        @activated="updateRoute('#data_sources')"
       />
 
       <DealSection
@@ -121,6 +132,8 @@
         :deal="deal"
         :sections="deal_sections.local_communities.subsections"
         :readonly="true"
+        :active="active_tab === '#local_communities'"
+        @activated="updateRoute('#local_communities')"
       />
 
       <DealSection
@@ -128,6 +141,8 @@
         :deal="deal"
         :sections="deal_sections.former_use.subsections"
         :readonly="true"
+        :active="active_tab === '#former_use'"
+        @activated="updateRoute('#former_use')"
       />
 
       <DealSection
@@ -135,6 +150,8 @@
         :deal="deal"
         :sections="deal_sections.produce_info.subsections"
         :readonly="true"
+        :active="active_tab === '#produce_info'"
+        @activated="updateRoute('#produce_info')"
       />
 
       <DealSection
@@ -142,6 +159,8 @@
         :deal="deal"
         :sections="deal_sections.water.subsections"
         :readonly="true"
+        :active="active_tab === '#water'"
+        @activated="updateRoute('#water')"
       />
 
       <DealSection
@@ -149,6 +168,8 @@
         :deal="deal"
         :sections="deal_sections.gender_related_info.subsections"
         :readonly="true"
+        :active="active_tab === '#gender_related_info'"
+        @activated="updateRoute('#gender_related_info')"
       />
 
       <DealSection
@@ -156,6 +177,8 @@
         :deal="deal"
         :sections="deal_sections.guidelines_and_principles.subsections"
         :readonly="true"
+        :active="active_tab === '#guidelines_and_principles'"
+        @activated="updateRoute('#guidelines_and_principles')"
       />
 
       <DealSection
@@ -163,6 +186,8 @@
         :deal="deal"
         :sections="deal_sections.overall_comment.subsections"
         :readonly="true"
+        :active="active_tab === '#overall_comment'"
+        @activated="updateRoute('#overall_comment')"
       />
 
       <b-tab disabled>
@@ -171,15 +196,27 @@
         </template>
       </b-tab>
 
-      <b-tab :title="$t('Deal History')">
+      <b-tab
+        :title="$t('Deal History')"
+        :active="active_tab === '#history'"
+        @click="updateRoute('#history')"
+      >
         <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
       </b-tab>
 
-      <b-tab :title="$t('Comments')">
+      <b-tab
+        :title="$t('Comments')"
+        :active="active_tab === '#comments'"
+        @click="updateRoute('#comments')"
+      >
         <DealComments :comments="deal.comments"></DealComments>
       </b-tab>
 
-      <b-tab :title="$t('Actions')">
+      <b-tab
+        :title="$t('Actions')"
+        :active="active_tab === '#actions'"
+        @click="updateRoute('#actions')"
+      >
         <h4><i class="fa fa-download"></i> Download</h4>
         <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=xlsx`">XLSX</a><br />
         <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=csv`">CSV</a>
@@ -264,6 +301,9 @@
       },
     },
     computed: {
+      active_tab() {
+        return location.hash ? location.hash : "#locations";
+      },
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
@@ -284,7 +324,11 @@
         // return this.formFields[model][fieldName]
         return getFieldValue(this.deal, this.formFields, fieldName);
       },
+      updateRoute(emiter) {
+        this.$router.push(this.$route.path + emiter);
+      },
       triggerInvestorGraphRefresh() {
+        this.updateRoute("#investor_info");
         if ("investorGraph" in this.$refs) {
           this.$refs.investorGraph.refresh_graph();
         }

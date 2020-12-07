@@ -118,7 +118,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/:deal_id/compare/:from_version?/:to_version?/",
+      path: "/deal/:deal_id/compare/:from_version/:to_version/",
       name: "deal_compare",
       component: DealCompare,
       props: true,

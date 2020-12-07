@@ -18,21 +18,21 @@
 </template>
 
 <script>
-  import ArrayField from "Display/ArrayField";
-  import BooleanField from "Display/BooleanField";
-  import CharField from "Display/TextField";
-  import DateField from "Display/TextField";
-  import DecimalField from "Display/DecimalField";
-  import EmailField from "Display/TextField";
-  import FileField from "Display/FileField";
-  import FloatField from "Display/DecimalField";
-  import ForeignKey from "Display/ForeignKeyField";
-  import IntegerField from "Display/DecimalField";
-  import JSONField from "Display/JSONField";
-  import NullBooleanField from "Display/BooleanField";
-  import PointField from "Display/PointField";
-  import TextField from "Display/TextField";
-  import URLField from "Display/TextField";
+  import ArrayField from "./Display/ArrayField";
+  import BooleanField from "./Display/BooleanField";
+  import CharField from "./Display/TextField";
+  import DateField from "./Display/TextField";
+  import DecimalField from "./Display/DecimalField";
+  import EmailField from "./Display/TextField";
+  import FileField from "./Display/FileField";
+  import FloatField from "./Display/DecimalField";
+  import ForeignKey from "./Display/ForeignKeyField";
+  import IntegerField from "./Display/DecimalField";
+  import JSONField from "./Display/JSONField";
+  import NullBooleanField from "./Display/BooleanField";
+  import PointField from "./Display/PointField";
+  import TextField from "./Display/TextField";
+  import URLField from "./Display/TextField";
   import { mapState } from "vuex";
   import FieldLabel from "./FieldLabel";
 

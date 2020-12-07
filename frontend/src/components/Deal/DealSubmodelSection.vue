@@ -1,5 +1,10 @@
 <template>
-  <b-tab :title="title" v-if="entries.length" :active="active">
+  <b-tab
+    :title="title"
+    v-if="entries.length"
+    :active="active"
+    @click="$emit('activated')"
+  >
     <div class="row">
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" class="panel-body">

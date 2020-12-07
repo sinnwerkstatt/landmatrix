@@ -5,8 +5,9 @@
     :entries="entries"
     :fields="fields"
     model="location"
-    :active="true"
+    :active="active"
     :narrow="true"
+    @activated="$emit('activated')"
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">
       <big-map
@@ -30,7 +31,7 @@
   import DealSubmodelSection from "./DealSubmodelSection";
 
   export default {
-    props: ["title", "fields", "deal"],
+    props: ["title", "fields", "deal", "active"],
     components: {
       DealSubmodelSection,
       BigMap,
