@@ -1,7 +1,9 @@
 <template>
   <div class="streamfield">
-    <div v-for="block in content">
-      <component :is="`wagtail-${block.type}`" :value="block.value" />
+    <div class="container">
+      <div v-for="block in content">
+        <component :is="`wagtail-${block.type}`" :value="block.value" />
+      </div>
     </div>
   </div>
 </template>

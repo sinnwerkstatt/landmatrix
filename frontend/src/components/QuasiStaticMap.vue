@@ -50,6 +50,7 @@
             }
           }
         }
+        this.markersReady = true;
         return markers_list;
       },
       roc() {
@@ -73,7 +74,7 @@
       },
       focusMap() {
         if (this.roc) {
-          if (this.roc.point_lat_min) {
+          if (this.region_id) {
             this.map.fitBounds(
               [
                 [this.roc.point_lat_min, this.roc.point_lon_min],
@@ -84,7 +85,8 @@
           } else {
             this.map.setView(
               [this.roc.point_lat, this.roc.point_lon],
-              ZOOM_LEVEL_COUNTRY
+              ZOOM_LEVEL_COUNTRY,
+              { animate: false }
             );
           }
         } else {
@@ -94,8 +96,8 @@
       refreshMap() {
         if (this.map) {
           this.clearMap();
-          this.focusMap();
           this.drawMarkers();
+          setTimeout(this.focusMap, 1);
         }
       },
       drawMarkers() {
@@ -109,7 +111,6 @@
             this.featureGroup.addLayer(mcluster);
           }
         );
-        this.markersReady = true;
       },
       goToGlobalMap() {
         if (this.country_id) {
@@ -137,7 +138,7 @@
     watch: {
       deals() {
         this.markersReady = false;
-        setTimeout(this.refreshMap, 200);
+        setTimeout(this.refreshMap, 10);
       },
       roc() {
         this.clearMap();

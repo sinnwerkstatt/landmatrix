@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "apps.ol3_widgets",
     "django.contrib.gis",
     # wagtail and dependencies
+    "wagtail.contrib.modeladmin",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
@@ -56,7 +57,8 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
-    "apps.blog",
+    "wagtailorderable",
+    "apps.blog", # why here and not below?
     "modelcluster",
     "taggit",
     "bootstrap3_datetime",

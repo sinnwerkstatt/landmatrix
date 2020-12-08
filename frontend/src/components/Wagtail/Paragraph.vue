@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="row">
+  <div class="row">
+    <div class="col-sm-12">
       <div class="paragraph" v-html="value"></div>
     </div>
   </div>
@@ -15,6 +15,7 @@
 
 <style lang="scss">
   @import "../../scss/colors";
+
   .paragraph {
     a {
       color: $primary;

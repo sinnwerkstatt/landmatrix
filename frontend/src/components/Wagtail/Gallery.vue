@@ -1,9 +1,7 @@
 <template>
-  <div class="container">
-    <div class="row widget-gallery" :class="galleryColumns">
-      <div v-for="(image, index) in value.images" class="col" :class="[colSize]">
-        <wagtail-image :value="image" />
-      </div>
+  <div class="row widget-gallery" :class="galleryColumns">
+    <div v-for="(image, index) in value.images" class="col" :class="[colSize]">
+      <wagtail-image :value="image" />
     </div>
   </div>
 </template>

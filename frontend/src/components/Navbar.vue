@@ -15,7 +15,7 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="main-navbar-collapse">
+      <div class="collapse navbar-collapse" id="main-navbar-collapse" ref="mainbar">
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a
@@ -34,6 +34,7 @@
                 v-for="data_link in data_links"
                 :to="data_link.link"
                 class="dropdown-item"
+                @click.native="closeMenu"
               >
                 {{ $t(data_link.name) }}
               </router-link>
@@ -59,6 +60,7 @@
                     v-for="observatory in obs"
                     class="dropdown-item"
                     :to="`/observatory/${observatory.meta.slug}/`"
+                    @click.native="closeMenu"
                   >
                     {{ observatory.title }}
                   </router-link>
@@ -83,6 +85,7 @@
                 v-for="cat in blogcategories"
                 class="dropdown-item"
                 :to="`/stay-informed/?category=${cat.slug}`"
+                @click.native="closeMenu"
               >
                 {{ cat.name }}
               </router-link>
@@ -105,18 +108,24 @@
                 v-for="about_link in about_links"
                 :to="about_link.link"
                 class="dropdown-item"
+                @click.native="closeMenu"
               >
                 {{ $t(about_link.name) }}
               </router-link>
             </div>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="`/faq/`">{{ $t("FAQ") }}</router-link>
+            <router-link class="nav-link" :to="`/faq/`" @click.native="closeMenu">{{
+              $t("FAQ")
+            }}</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="`/get-involved/`">{{
-              $t("Contribute")
-            }}</router-link>
+            <router-link
+              class="nav-link"
+              :to="`/get-involved/`"
+              @click.native="closeMenu"
+              >{{ $t("Contribute") }}</router-link
+            >
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -323,6 +332,11 @@
             this.login_failed_message = response.error;
           });
       },
+      closeMenu(e) {
+        if (this.$refs.mainbar.classList.contains("show")) {
+          this.$refs.mainbar.classList.remove("show");
+        }
+      },
     },
   };
 </script>
@@ -358,8 +372,11 @@
       border-radius: 0;
       padding: 0;
       .dropdown-menu-group + .dropdown-menu-group {
-        margin: 0.5rem 0;
+        margin: 0;
         border-top: 1px solid #e9ecef;
+      }
+      .dropdown-item {
+        padding: 0.5rem 1rem;
       }
     }
   }

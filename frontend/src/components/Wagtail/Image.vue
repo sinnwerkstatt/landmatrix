@@ -1,21 +1,23 @@
 <template>
-  <div class="widget-image">
-    <a v-if="link" :href="link" :target="{ _blank: external }">
+  <div class="widget-image row">
+    <div class="col-12">
+      <a v-if="link" :href="link" :target="{ _blank: external }">
+        <img
+          :src="path"
+          class="image"
+          :alt="alt"
+          style="max-width: 100%; max-height: 100%;"
+        />
+      </a>
       <img
+        v-else
         :src="path"
         class="image"
         :alt="alt"
         style="max-width: 100%; max-height: 100%;"
       />
-    </a>
-    <img
-      v-else
-      :src="path"
-      class="image"
-      :alt="alt"
-      style="max-width: 100%; max-height: 100%;"
-    />
-    <div v-if="caption" class="carousel-caption" v-html="caption" />
+      <div v-if="caption" class="carousel-caption" v-html="caption" />
+    </div>
   </div>
 </template>
 
@@ -49,13 +51,16 @@
     width: 100%;
     max-width: 100%;
   }
+
   .widget-image {
     margin-bottom: 20px;
   }
+
   .carousel-caption {
     bottom: 0;
     padding: 0 !important;
     text-shadow: none !important;
+
     p {
       background-color: rgba(0, 0, 0, 0.75);
       color: white;
