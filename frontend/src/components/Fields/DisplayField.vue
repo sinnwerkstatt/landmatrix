@@ -44,9 +44,18 @@
       value: { required: true },
       model: { type: String, default: "deal" },
       show_label: { type: Boolean, default: true },
-      label_classes: { type: Array },
-      value_classes: { type: Array, default: () => ["val", "col-md-7", "col-lg-8"] },
-      wrapper_classes: { type: Array, default: () => ["form-field", "row"] },
+      wrapper_classes: {
+        type: Array,
+        default: () => ["display-field-wrapper", "form-field", "row"],
+      },
+      label_classes: {
+        type: Array,
+        default: () => ["display-field-label", "col-md-5", "col-lg-4"],
+      },
+      value_classes: {
+        type: Array,
+        default: () => ["display-field-value", "col-md-7", "col-lg-8"],
+      },
       file_not_public: { type: Boolean, default: false },
     },
     components: {
@@ -99,17 +108,15 @@
 <style lang="scss">
   @import "src/scss/colors";
 
-  .form-field {
+  .display-field-wrapper {
     margin-bottom: 0.7em;
     line-height: 1.2;
-
-    .label {
-      font-weight: 500;
-    }
-
-    .val {
-      line-height: 1.2;
-      color: $lm_dark;
-    }
+  }
+  .display-field-label {
+    font-weight: 500;
+  }
+  .display-field-value {
+    line-height: 1.2;
+    color: $lm_dark;
   }
 </style>

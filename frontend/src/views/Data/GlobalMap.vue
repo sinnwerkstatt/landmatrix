@@ -66,19 +66,19 @@
 </template>
 
 <script>
-  import "leaflet";
-  import "leaflet.markercluster";
-  import { groupBy } from "lodash";
-  import { mapState } from "vuex";
   import { primary_color } from "/colors";
 
   import BigMap from "/components/BigMap";
-  import DataContainer from "./DataContainer";
   import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import MapMarkerPopup from "/components/Map/MapMarkerPopup";
+  import "leaflet";
+  import "leaflet.markercluster";
+  import { groupBy } from "lodash";
+  import Vue from "vue";
+  import { mapState } from "vuex";
+  import DataContainer from "./DataContainer";
   import { data_deal_query } from "./query";
-  import { getDealValue } from "../../components/Data/table_mappings";
-  import { getFieldValue } from "/components/Fields/fieldHelpers";
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -164,12 +164,15 @@
                     marker.region_id = deal.country.fk_region.id;
                     marker.country_id = deal.country.id;
                   }
-                  var popupStatic = '<div style="height:100px; width:100px"></div>';
-                  marker.bindPopup(popupStatic);
-                  marker.on("click", (e) => {
-                    let popup = e.target.getPopup();
-                    popup.setContent(this.getPopupHtml(deal, loc));
-                  });
+
+                  marker.bindPopup(
+                    new Vue({
+                      ...MapMarkerPopup,
+                      parent: this,
+                      propsData: { deal: deal, location: loc },
+                    }).$mount().$el.outerHTML
+                  );
+
                   this.dealLocationMarkersCache[deal.id].push(marker);
                 }
               }
@@ -396,36 +399,6 @@
         this.bigmap.addLayer(this.featureGroup);
         this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
-      },
-      getPopupHtml(deal, loc) {
-        let template = document.createElement("template");
-        let popupHtml = `<div class="deal-popup">
-          <h3>Deal #${deal.id}</h3>
-          <div class="deal-summary">
-            <dl>
-              <dt>Spatial accuracy</dt><dd>${getFieldValue(
-                loc,
-                this.formfields,
-                "level_of_accuracy",
-                "location"
-              )}</dd>
-              <dt>Intention of investment</dt><dd>${getFieldValue(
-                deal,
-                this.formfields,
-                "current_intention_of_investment"
-              )}</dd>
-              <dt>Deal size</dt><dd>${getDealValue(this, deal, "deal_size")}</dd>
-              <dt>Operating company</dt><dd>
-                 ${getDealValue(this, deal, "operating_company")}
-              </dd>
-            </dl>
-          </div>
-          <a class="btn btn-primary" target="_blank" href="/newdeal/deal/${
-            deal.id
-          }">More details</a>
-        </div>`;
-        template.innerHTML = popupHtml.trim();
-        return template.content.firstChild;
       },
     },
     beforeRouteEnter(to, from, next) {

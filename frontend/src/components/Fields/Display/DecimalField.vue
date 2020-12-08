@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ value }}
+    {{ value.toLocaleString() }}
   </div>
 </template>
 

@@ -23,6 +23,7 @@ export const data_deal_query_gql = gql`
       operating_company {
         # for map pin popover & listing
         id
+        name
       }
       top_investors {
         # for listing
