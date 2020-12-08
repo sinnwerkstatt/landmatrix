@@ -14,15 +14,11 @@
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <div class="intro-text" v-if="page.introduction_text">
-            <p>{{ page.introduction_text }}</p>
-            <p v-if="!readMore">
-              <a href="" @click.prevent="readMore = true">Read more</a>
-            </p>
-          </div>
-          <div v-if="readMore" class="row">
-            <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-              <Streamfield :content="content" />
+            <div class="intro">{{ page.introduction_text }}</div>
+            <div class="readmore" v-if="!readMore">
+              <p><a href="" @click.prevent="readMore = true">Read more</a></p>
             </div>
+            <Streamfield v-if="readMore" :content="content" />
           </div>
         </div>
       </div>
@@ -309,15 +305,18 @@
     }
 
     .intro-text {
-      margin-top: 1.5em;
-      margin-bottom: 1.5em;
+      padding-top: 1.5em;
+      padding-bottom: 0.8em;
+      .readmore {
+        margin-top: 1.5em;
+      }
     }
 
     .charts {
       background-color: #f9f9f9;
       padding: 0;
       padding-bottom: 1.5em;
-      margin-top: 1em;
+      margin-top: 0;
 
       label {
         color: $lm_orange;
@@ -342,6 +341,17 @@
   .observatory {
     h3 {
       font-size: 24px;
+    }
+
+    .static-map {
+      margin-top: 1.5em;
+    }
+
+    .streamfield {
+      .container {
+        padding-top: 1.5em;
+        padding-bottom: 0;
+      }
     }
 
     .charts {
