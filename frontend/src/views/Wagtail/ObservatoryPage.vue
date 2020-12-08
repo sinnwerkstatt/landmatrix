@@ -4,6 +4,15 @@
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <h1>{{ page.title }}</h1>
+          <QuasiStaticMap
+            :deals="deals"
+            :region_id="region_id"
+            :country_id="country_id"
+          />
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <div class="intro-text" v-if="page.introduction_text">
             <p>{{ page.introduction_text }}</p>
             <p v-if="!readMore">
@@ -15,15 +24,6 @@
               <Streamfield :content="content" />
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <QuasiStaticMap
-            :deals="deals"
-            :region_id="region_id"
-            :country_id="country_id"
-          />
         </div>
       </div>
     </div>
@@ -309,7 +309,8 @@
     }
 
     .intro-text {
-      margin-bottom: 2em;
+      margin-top: 1.5em;
+      margin-bottom: 1.5em;
     }
 
     .charts {
