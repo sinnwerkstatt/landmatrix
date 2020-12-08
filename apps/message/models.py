@@ -27,14 +27,15 @@ class Message(Orderable, models.Model):
     allow_users_to_hide = models.BooleanField(
         _("Allow users to hide message"),
         help_text=_(
-            "Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again."),
+            "Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again."
+        ),
         default=False,
     )
     expires_at = models.DateField(
         _("Expiration date"),
         help_text=_("After this date the message will not be displayed anymore"),
         null=True,
-        blank=True
+        blank=True,
     )
 
     is_active = models.BooleanField(_("Is active"))
@@ -42,7 +43,7 @@ class Message(Orderable, models.Model):
     class Meta:
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
-        ordering = ['sort_order']
+        ordering = ["sort_order"]
 
     def to_dict(self):
         return {
@@ -51,5 +52,5 @@ class Message(Orderable, models.Model):
             "text": expand_db_html(self.text),
             "level": self.level,
             "is_active": self.is_active,
-            "allow_users_to_hide": self.allow_users_to_hide
+            "allow_users_to_hide": self.allow_users_to_hide,
         }

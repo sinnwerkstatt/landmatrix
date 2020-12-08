@@ -59,14 +59,21 @@ def whitelister_element_rules():
 
 class MessageAdmin(OrderableMixin, ModelAdmin):
     model = Message
-    menu_label = 'Messages'
-    menu_icon = 'pilcrow'
+    menu_label = "Messages"
+    menu_icon = "pilcrow"
     menu_order = 1000  # will put in 3rd place (000 being 1st, 100 2nd)
     add_to_settings_menu = True
     list_display = (
-        "title", "text", "level", "allow_users_to_hide", "is_active", "expires_at")
+        "title",
+        "text",
+        "level",
+        "allow_users_to_hide",
+        "is_active",
+        "expires_at",
+    )
     list_filter = ("level", "is_active")
-    search_fields = ('title',)
-    ordering = ['sort_order']
+    search_fields = ("title",)
+    ordering = ["sort_order"]
+
 
 modeladmin_register(MessageAdmin)

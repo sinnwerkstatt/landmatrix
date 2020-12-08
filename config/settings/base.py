@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "wagtail.admin",
     "wagtail.core",
     "wagtailorderable",
-    "apps.blog", # why here and not below?
+    "apps.blog",  # why here and not below?
     "modelcluster",
     "taggit",
     "bootstrap3_datetime",
