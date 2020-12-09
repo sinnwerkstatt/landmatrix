@@ -119,6 +119,7 @@
         markersFeatureGroup: L.featureGroup(),
         dealLocationMarkersCache: [],
         deals: [],
+        markers: [],
 
         current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
         skipMapRefresh: false,
@@ -142,6 +143,7 @@
         },
       },
       ...mapState({
+        // deals: (state) => state.data.deals,
         map: (state) => state.map,
         formfields: (state) => state.formfields,
         tileLayers: (state) => state.map.layers,
@@ -155,54 +157,17 @@
           });
           return coords;
         },
-        markers() {
-          console.log("computing markers ...");
-          let markers_list = [];
-          for (let deal of this.deals) {
-            // console.log("marker", deal.id);
-            if (!(deal.id in this.dealLocationMarkersCache)) {
-              this.dealLocationMarkersCache[deal.id] = [];
-              for (let loc of deal.locations) {
-                if (loc.point) {
-                  let marker = new L.marker([loc.point.lat, loc.point.lng], {
-                    clickable: true,
-                  });
-                  marker.deal = deal;
-                  marker.loc = loc;
-                  marker.deal_id = deal.id;
-                  marker.deal_size = deal.deal_size;
-                  if (deal.country) {
-                    marker.region_id = deal.country.fk_region.id;
-                    marker.country_id = deal.country.id;
-                  }
-                  marker.on("click", this.createMarkerPopup);
-
-                  this.dealLocationMarkersCache[deal.id].push(marker);
-                }
-              }
-            }
-            markers_list.push(...this.dealLocationMarkersCache[deal.id]);
-          }
-          // console.log(markers_list);
-          console.log("done");
-          return markers_list;
-        },
       }),
     },
     watch: {
       deals() {
         console.log("Watch: deals");
+        this.refreshMarkers();
         this.flyToCountryOrRegion();
       },
-      // markers() {
-      //   console.log("Watch: markers")
-      //   this.refreshMap();
-      // },
       bigmap() {
         console.log("Watch: bigmap");
-        if (this.deals.length) {
-          this.refreshMap();
-        }
+        this.refreshMap();
       },
       current_zoom() {
         console.log("Watch: currentzoom");
@@ -235,6 +200,37 @@
       },
     },
     methods: {
+      async refreshMarkers() {
+        console.log("computing markers ...");
+        let markers_list = [];
+        for (let deal of this.deals) {
+          // console.log("marker", deal.id);
+          if (!(deal.id in this.dealLocationMarkersCache)) {
+            this.dealLocationMarkersCache[deal.id] = [];
+            for (let loc of deal.locations) {
+              if (loc.point) {
+                let marker = L.marker([loc.point.lat, loc.point.lng], {
+                  clickable: true,
+                });
+                marker.deal = deal;
+                marker.loc = loc;
+                marker.deal_id = deal.id;
+                marker.deal_size = deal.deal_size;
+                if (deal.country) {
+                  marker.region_id = deal.country.fk_region.id;
+                  marker.country_id = deal.country.id;
+                }
+                marker.on("click", this.createMarkerPopup);
+
+                this.dealLocationMarkersCache[deal.id].push(marker);
+              }
+            }
+          }
+          markers_list.push(...this.dealLocationMarkersCache[deal.id]);
+        }
+        console.log("done");
+        this.markers = markers_list;
+      },
       createMarkerPopup(event) {
         let marker = event.target;
         let point = this.bigmap.latLngToLayerPoint(marker.getLatLng());
@@ -247,34 +243,6 @@
         }).$mount().$el.outerHTML;
 
         L.popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
-      },
-      flyToCountryOrRegion() {
-        console.log("Should fly now");
-        let coords = [0, 0];
-        let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
-        if (this.country_id) {
-          coords = this.country_coords[this.country_id];
-          zoom = ZOOM_LEVEL.DEAL_CLUSTERS;
-        } else if (this.region_id) {
-          coords = REGION_COORDINATES[this.region_id];
-          zoom = ZOOM_LEVEL.COUNTRY_CLUSTERS;
-        }
-        if (zoom < this.current_zoom) {
-          // zooming out, apply filter after flying to avoid loading of pins for entire
-          // region
-          this.skipMapRefresh = true;
-          this.bigmap.flyTo(coords, zoom);
-          window.setTimeout(() => {
-            this.skipMapRefresh = false;
-            this.refreshMap();
-          }, 1000);
-        } else {
-          // zooming in, apply filter before flying
-          this.refreshMap();
-          window.setTimeout(() => {
-            this.bigmap.flyTo(coords, zoom);
-          }, 700);
-        }
       },
       styleCircle(circle, size, country_or_region_with_id) {
         let circle_elem = circle.getElement();
@@ -308,101 +276,128 @@
           background: primary_color,
         });
       },
+      flyToCountryOrRegion() {
+        console.log("Should fly now");
+        let coords = [0, 0];
+        let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
+        if (this.country_id) {
+          coords = this.country_coords[this.country_id];
+          zoom = ZOOM_LEVEL.DEAL_CLUSTERS;
+        } else if (this.region_id) {
+          coords = REGION_COORDINATES[this.region_id];
+          zoom = ZOOM_LEVEL.COUNTRY_CLUSTERS;
+        }
+        if (zoom < this.current_zoom) {
+          // zooming out, apply filter after flying to avoid loading of pins for entire
+          // region
+          this.skipMapRefresh = true;
+          this.bigmap.flyTo(coords, zoom);
+          window.setTimeout(() => {
+            this.skipMapRefresh = false;
+            this.refreshMap();
+          }, 1000);
+        } else {
+          // zooming in, apply filter before flying
+          this.refreshMap();
+          window.setTimeout(() => {
+            this.bigmap.flyTo(coords, zoom);
+          }, 700);
+        }
+      },
       refreshMap() {
-        console.log("Should refresh map now");
-        if (this.skipMapRefresh) return;
+        if (
+          !this.bigmap ||
+          this.deals.length === 0 ||
+          this.markers.length === 0 ||
+          this.skipMapRefresh
+        )
+          return;
+
         console.log("Clearing layers");
         this.markersFeatureGroup.clearLayers();
         console.log("Clearing layers: done");
-        if (this.bigmap && this.markers.length > 0) {
-          console.log("Refreshing map");
-          this.current_zoom = this.bigmap.getZoom();
-          if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !this.country_id) {
-            // cluster by Region
-            Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
-              ([key, val]) => {
-                let circle = L.marker(REGION_COORDINATES[key], {
-                  icon: L.divIcon({ className: "landmatrix-custom-circle" }),
-                  region_id: key,
-                });
-                circle.on("click", (e) => {
-                  this.$store.dispatch("setFilter", {
-                    filter: "region_id",
-                    value: +e.target.options.region_id,
-                  });
-                });
 
-                let xval;
-                if (this.displayDealsCount) {
-                  xval = val.length;
-                } else {
-                  xval = val.reduce((x, y) => {
-                    return { deal_size: x.deal_size + y.deal_size };
-                  }).deal_size;
-                }
+        console.log("Refreshing map");
+        this.current_zoom = this.bigmap.getZoom();
+        if (this.current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !this.country_id) {
+          // cluster by Region
+          Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
+            ([key, val]) => {
+              if (key === "undefined") return;
+              let circle = L.marker(REGION_COORDINATES[key], {
+                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+                region_id: key,
+              });
+              circle.on("click", (e) => {
+                this.$store.dispatch("setFilter", {
+                  filter: "region_id",
+                  value: +e.target.options.region_id,
+                });
+              });
 
-                this.markersFeatureGroup.addLayer(circle);
-                this.styleCircle(circle, xval, { type: "region", id: key });
+              let xval;
+              if (this.displayDealsCount) {
+                xval = val.length;
+              } else {
+                xval = val.reduce((x, y) => {
+                  return { deal_size: x.deal_size + y.deal_size };
+                }).deal_size;
               }
-            );
-          } else if (
-            this.current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
-            Object.keys(this.country_coords).length
-          ) {
-            // cluster by country
-            Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
-              ([key, val]) => {
-                let circle = L.marker(this.country_coords[key], {
-                  icon: L.divIcon({ className: "landmatrix-custom-circle" }),
-                  country_id: key,
-                });
-                circle.on("click", (e) => {
-                  this.$store.dispatch("setFilter", {
-                    filter: "country_id",
-                    value: +e.target.options.country_id,
-                  });
-                });
 
-                let xval;
-                if (this.displayDealsCount) {
-                  xval = val.length;
-                } else {
-                  xval = val.reduce((x, y) => {
-                    return { deal_size: x.deal_size + y.deal_size };
-                  }).deal_size;
-                }
+              this.markersFeatureGroup.addLayer(circle);
+              this.styleCircle(circle, xval, { type: "region", id: key });
+            }
+          );
+        } else if (
+          this.current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
+          Object.keys(this.country_coords).length
+        ) {
+          // cluster by country
+          Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
+            ([key, val]) => {
+              if (key === "undefined") return;
+              let circle = L.marker(this.country_coords[key], {
+                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+                country_id: key,
+              });
+              circle.on("click", (e) => {
+                this.$store.dispatch("setFilter", {
+                  filter: "country_id",
+                  value: +e.target.options.country_id,
+                });
+              });
 
-                this.markersFeatureGroup.addLayer(circle);
-                this.styleCircle(circle, xval, { type: "country", id: key });
+              let xval;
+              if (this.displayDealsCount) {
+                xval = val.length;
+              } else {
+                xval = val.reduce((x, y) => {
+                  return { deal_size: x.deal_size + y.deal_size };
+                }).deal_size;
               }
-            );
-          } else {
-            // cluster deals with markercluster
-            Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
-              ([key, val]) => {
-                let mcluster = L.markerClusterGroup({
-                  //disableClusteringAtZoom: ZOOM_LEVEL.DEAL_PINS, // spiderfy will not work anymore :(
-                  chunkedLoading: true,
-                  // iconCreateFunction: function (cluster) {
-                  //   return L.divIcon({
-                  //     html: `<span class='landmatrix-custom-circle'>${cluster.getChildCount()} deals</span>`,
-                  //
-                  //   });
-                  // },
-                });
-                mcluster.on("clusterclick", (a) => {
-                  let bounds = a.layer.getBounds().pad(0.5);
-                  this.bigmap.fitBounds(bounds);
-                });
-                val.forEach((mark) => mcluster.addLayer(mark));
-                this.markersFeatureGroup.addLayer(mcluster);
-              }
-            );
-            // this.markers.forEach((mark) => {
-            //   this.markersFeatureGroup.addLayer(mark);
-            // });
-          }
+
+              this.markersFeatureGroup.addLayer(circle);
+              this.styleCircle(circle, xval, { type: "country", id: key });
+            }
+          );
+        } else {
+          // cluster deals with markercluster
+          Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
+            ([key, val]) => {
+              if (key === "undefined") return;
+              let mcluster = L.markerClusterGroup({ chunkedLoading: true });
+              mcluster.on("clusterclick", (a) => {
+                let bounds = a.layer.getBounds().pad(0.5);
+                this.bigmap.fitBounds(bounds);
+              });
+              val.forEach((mark) => {
+                mcluster.addLayer(mark);
+              });
+              this.markersFeatureGroup.addLayer(mcluster);
+            }
+          );
         }
+        console.log("Refreshing map done.");
       },
       bigMapIsReady(bigmap) {
         console.log("The big map is ready.");
@@ -414,6 +409,7 @@
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
+        // vm.$store.dispatch("fetchDeals");
         vm.$store.dispatch("showContextBar", true);
       });
     },
