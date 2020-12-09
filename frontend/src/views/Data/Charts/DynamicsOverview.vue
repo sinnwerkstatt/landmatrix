@@ -11,6 +11,7 @@
               :aspectRatio="aspectRatio"
               maxWidth="auto"
               :legends="intentionLegend"
+              :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
 
@@ -21,6 +22,7 @@
               :displayLegend="true"
               :aspectRatio="aspectRatio"
               maxWidth="auto"
+              :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
 
@@ -31,6 +33,7 @@
               :displayLegend="true"
               :aspectRatio="aspectRatio"
               maxWidth="auto"
+              :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
 
@@ -41,6 +44,7 @@
               :displayLegend="true"
               :aspectRatio="aspectRatio"
               maxWidth="auto"
+              :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
         </div>

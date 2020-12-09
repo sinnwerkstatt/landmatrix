@@ -21,8 +21,10 @@
       <div class="chart-wrapper">
         <h5>Negotiation Status</h5>
         <StatusPieChart
-          :dealData="negotiationStatusData"
+          :dealData="this.dealsFilteredByNegStatus"
           :displayLegend="true"
+          :valueField="displayDealsCount ? 'count' : 'size'"
+          :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
@@ -30,6 +32,8 @@
         <StatusPieChart
           :dealData="implementationStatusData"
           :displayLegend="true"
+          valueField="value"
+          :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
@@ -37,6 +41,7 @@
         <StatusPieChart
           :dealData="produceData"
           :legends="produceDataLegendItems"
+          unit="%"
         ></StatusPieChart>
       </div>
       <div class="get-involved">

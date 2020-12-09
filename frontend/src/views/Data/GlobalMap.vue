@@ -32,7 +32,7 @@
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Base layer')">
+        <FilterCollapse :title="$t('Base layer')" :initExpanded="true">
           <b-form-group>
             <b-form-radio
               v-model="visibleLayer"

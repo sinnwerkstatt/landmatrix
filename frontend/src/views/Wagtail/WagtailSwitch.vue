@@ -10,6 +10,7 @@
   import ObservatoryPage from "./ObservatoryPage";
 
   export default {
+    name: "WagtailSwitch",
     components: { BlogIndexPage, BlogPage, WagtailPage, ObservatoryPage },
     computed: {
       pageType() {

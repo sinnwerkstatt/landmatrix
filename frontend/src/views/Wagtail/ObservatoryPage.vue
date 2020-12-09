@@ -33,20 +33,23 @@
                 <div class="row">
                   <div class="col-6 text-center">
                     <label>Size</label>
-                    <div class="total">{{ totalSize }}</div>
+                    <div class="total">{{ totalSize }} ha</div>
                     <StatusPieChart
-                      :deal-data="negotiationStatusDataSizes"
+                      :deal-data="negotiationStatusBuckets"
                       :displayLegend="true"
                       :aspect-ratio="1"
+                      valueField="size"
+                      unit="ha"
                     ></StatusPieChart>
                   </div>
                   <div class="col-6 text-center">
                     <label>Number of deals</label>
                     <div class="total">{{ totalCount }}</div>
                     <StatusPieChart
-                      :deal-data="negotiationStatusDataCounts"
+                      :deal-data="negotiationStatusBuckets"
                       :displayLegend="true"
                       :aspect-ratio="1"
+                      valueField="count"
                     ></StatusPieChart>
                   </div>
                 </div>
@@ -100,9 +103,8 @@
 </template>
 
 <script>
-  import numeral from "numeral";
   import gql from "graphql-tag";
-  import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
+  import { deal_aggregations_query } from "../../store/queries";
   import Streamfield from "/components/Streamfield";
   import StatusPieChart from "../../components/Charts/StatusPieChart";
   import MapDataCharts from "../../components/Wagtail/MapDataCharts";
@@ -112,6 +114,7 @@
   import { data_deal_query_gql } from "../Data/query";
 
   export default {
+    name: "ObservatoryPage",
     components: {
       QuasiStaticMap,
       StatusPieChart,
@@ -124,10 +127,12 @@
       return {
         readMore: false,
         deals: [],
+        deal_aggregations: null,
         articles: [],
       };
     },
     apollo: {
+      deal_aggregations: deal_aggregations_query,
       deals: {
         query: data_deal_query_gql,
         variables() {
@@ -204,24 +209,50 @@
         }
       },
       totalCount() {
-        return numeral(this.deals.length).format("0,0");
+        if (!this.deal_aggregations) return;
+        return this.deal_aggregations.current_negotiation_status
+          .map((ns) => ns.count)
+          .reduce((a, b) => a + b, 0)
+          .toLocaleString();
       },
       totalSize() {
-        return `${numeral(sum(this.deals, "deal_size")).format("0,0")} ha`;
+        if (!this.deal_aggregations) return;
+        return this.deal_aggregations.current_negotiation_status
+          .map((ns) => ns.size)
+          .reduce((a, b) => a + b, 0)
+          .toLocaleString();
       },
-      dealsFilteredByNegStatus() {
-        return prepareNegotianStatusData(this.deals);
+      negotiationStatusBuckets() {
+        if (!this.deal_aggregations) return;
+        let retval = [
+          { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
+          { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
+          { color: "rgba(125,74,15,1)", label: "Failed", count: 0, size: 0 },
+        ];
+        for (let agg of this.deal_aggregations.current_negotiation_status) {
+          switch (agg.value) {
+            case "EXPRESSION_OF_INTEREST":
+            case "UNDER_NEGOTIATION":
+            case "MEMORANDUM_OF_UNDERSTANDING":
+              retval[0].count += agg.count;
+              retval[0].size += agg.size;
+              break;
+            case "ORAL_AGREEMENT":
+            case "CONTRACT_SIGNED":
+              retval[1].count += agg.count;
+              retval[1].size += agg.size;
+              break;
+
+            case "NEGOTIATIONS_FAILED":
+            case "CONTRACT_CANCELED":
+              retval[2].count += agg.count;
+              retval[2].size += agg.size;
+              break;
+          }
+        }
+        return retval;
       },
-      negotiationStatusDataCounts() {
-        return this.dealsFilteredByNegStatus.map((d) => {
-          return { value: d.count, unit: "deals", ...d };
-        });
-      },
-      negotiationStatusDataSizes() {
-        return this.dealsFilteredByNegStatus.map((d) => {
-          return { value: d.size, unit: "ha", ...d };
-        });
-      },
+
       filteredCountryProfiles() {
         if (!this.slug) return [];
         return this.articles
@@ -288,7 +319,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
+  @import "src/scss/colors";
 
   .observatory {
     margin-bottom: 5em;

@@ -173,3 +173,21 @@ def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id
             q_has_at_least_one_polygon
         ).count(),
     }
+
+
+def resolve_deal_aggregations(
+    obj: Any, info: GraphQLResolveInfo, fields, subset="PUBLIC", filters=None
+):
+    deals = Deal.objects.visible(user=info.context.user, subset=subset)
+    if filters:
+        deals = deals.filter(parse_filters(filters))
+
+    aggs = {}
+    for field in fields:
+        aggs[field] = list(
+            deals.values(value=F(field))
+            .annotate(count=Count("pk"))
+            .annotate(size=Sum("deal_size"))
+        )
+
+    return aggs

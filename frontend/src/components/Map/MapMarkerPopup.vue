@@ -33,7 +33,6 @@
       />
     </div>
     <router-link
-      target="_blank"
       class="btn btn-primary"
       :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
     >

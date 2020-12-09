@@ -9,12 +9,21 @@
 
 <script>
   import Chart from "chart.js";
-  import Legend from "./Legend";
   import numeral from "numeral";
+  import Legend from "./Legend";
 
   export default {
+    name: "StatusPieChart",
     components: { Legend },
-    props: ["dealData", "displayLegend", "legends", "aspectRatio", "maxWidth"],
+    props: [
+      "dealData",
+      "displayLegend",
+      "legends",
+      "aspectRatio",
+      "maxWidth",
+      "valueField",
+      "unit",
+    ],
     data: function () {
       return {
         canvasCtx: null,
@@ -57,8 +66,7 @@
                 } else {
                   value = numeral(value).format("0,0");
                 }
-                let unit = origItem.unit ? " " + origItem.unit : "";
-                label = `${label}: ${value}${unit}`;
+                label = `${label}: ${value}${this.unit ? " " + this.unit : ""}`;
                 return label;
               },
             },
@@ -73,7 +81,7 @@
           datasets: [
             {
               data: this.dealData.map((n) => {
-                return n.value;
+                return n[this.valueField || "value"];
               }),
               backgroundColor: this.dealData.map((n) => {
                 return n.color;
@@ -113,6 +121,11 @@
     watch: {
       dealData: {
         deep: true,
+        handler: function () {
+          this.updateChart();
+        },
+      },
+      valueField: {
         handler: function () {
           this.updateChart();
         },

@@ -10,6 +10,11 @@ type Query {
         subset: Subset = PUBLIC,
         filters: [Filter],
     ): [Deal]
+    deal_aggregations(
+        fields:[String]!,
+        filters: [Filter],
+        subset: Subset = PUBLIC
+    ): DealAggregations
     dealversions(
         filters: [Filter],
         country_id: Int,

@@ -147,3 +147,19 @@ export const investor_query = {
     return data.investor;
   },
 };
+
+export const deal_aggregations_query = {
+  query: gql`
+    query DealAggregations($fields: [String]!, $subset: Subset, $filters: [Filter]) {
+      deal_aggregations(fields: $fields, subset: $subset, filters: $filters)
+    }
+  `,
+  variables() {
+    let user = this.$store.state.page.user;
+    return {
+      fields: ["current_negotiation_status"],
+      filters: this.locationFilter,
+      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+    };
+  },
+};

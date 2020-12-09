@@ -17,6 +17,7 @@ from apps.graphql.resolvers.charts import (
     country_investments_and_rankings,
     global_rankings,
     resolve_statistics,
+    resolve_deal_aggregations,
 )
 from apps.graphql.resolvers.deal import (
     resolve_deal,
@@ -59,6 +60,7 @@ query.set_field("users", resolve_users)
 query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
 query.set_field("dealversions", resolve_dealversions)
+query.set_field("deal_aggregations", resolve_deal_aggregations)
 query.set_field("investor", resolve_investor)
 query.set_field("investors", resolve_investors)
 query.set_field("investorversions", resolve_investorversions)

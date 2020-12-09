@@ -90,3 +90,5 @@ scalar CountryInvestmentsAndRankings
 scalar Rankings
 
 scalar ChartDescriptions
+
+scalar DealAggregations
