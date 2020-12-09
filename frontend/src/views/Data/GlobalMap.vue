@@ -7,7 +7,7 @@
           :options="bigmap_options"
           :center="[12, 30]"
           :containerStyle="{ height: '100%' }"
-          @ready="pinTheMap"
+          @ready="bigMapIsReady"
           :hideLayerSwitcher="true"
         >
         </BigMap>
@@ -66,18 +66,20 @@
 </template>
 
 <script>
-  import { primary_color } from "/colors";
+  import "leaflet";
+  import "leaflet.markercluster";
 
+  import { primary_color } from "/colors";
+  import { groupBy } from "lodash";
+  import { mapState } from "vuex";
+  import Vue from "vue";
+
+  import MapMarkerPopup from "/components/Map/MapMarkerPopup";
+  import DataContainer from "./DataContainer";
   import BigMap from "/components/BigMap";
   import FilterCollapse from "/components/Data/FilterCollapse";
   import LoadingPulse from "/components/Data/LoadingPulse";
-  import MapMarkerPopup from "/components/Map/MapMarkerPopup";
-  import "leaflet";
-  import "leaflet.markercluster";
-  import { groupBy } from "lodash";
-  import Vue from "vue";
-  import { mapState } from "vuex";
-  import DataContainer from "./DataContainer";
+
   import { data_deal_query } from "./query";
 
   const ZOOM_LEVEL = {
@@ -85,6 +87,15 @@
     COUNTRY_CLUSTERS: 3,
     DEAL_CLUSTERS: 5,
     DEAL_PINS: 8,
+  };
+
+  const REGION_COORDINATES = {
+    2: [6.06433, 17.082249],
+    9: [-22.7359, 140.0188],
+    21: [54.526, -105.2551],
+    142: [34.0479, 100.6197],
+    150: [52.0055, 37.9587],
+    419: [-4.442, -61.3269],
   };
 
   export default {
@@ -95,6 +106,7 @@
     },
     data() {
       return {
+        bigmap: null,
         bigmap_options: {
           minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
           zoom: ZOOM_LEVEL.REGION_CLUSTERS,
@@ -103,26 +115,19 @@
         },
         visibleContextLayers: [],
         contextLayersLayerGroup: L.layerGroup(),
-        deals: [],
-        bigmap: null,
-        current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
-        featureGroup: L.featureGroup(),
-        region_coords: {
-          2: [6.06433, 17.082249],
-          9: [-22.7359, 140.0188],
-          21: [54.526, -105.2551],
-          142: [34.0479, 100.6197],
-          150: [52.0055, 37.9587],
-          419: [-4.442, -61.3269],
-        },
-        skipMapRefresh: false,
+
+        markersFeatureGroup: L.featureGroup(),
         dealLocationMarkersCache: [],
+        deals: [],
+
+        current_zoom: ZOOM_LEVEL.REGION_CLUSTERS,
+        skipMapRefresh: false,
       };
     },
     computed: {
       displayDealsCount: {
         get() {
-          return this.$store.state.map.displayDealsCount;
+          return this.map.displayDealsCount;
         },
         set(value) {
           this.$store.commit("setDisplayDealsCount", value);
@@ -130,13 +135,14 @@
       },
       visibleLayer: {
         get() {
-          return this.$store.state.map.visibleLayer;
+          return this.map.visibleLayer;
         },
         set(value) {
           this.$store.dispatch("setCurrentLayer", value);
         },
       },
       ...mapState({
+        map: (state) => state.map,
         formfields: (state) => state.formfields,
         tileLayers: (state) => state.map.layers,
         contextLayers: (state) => state.map.contextLayers,
@@ -153,25 +159,23 @@
           console.log("computing markers ...");
           let markers_list = [];
           for (let deal of this.deals) {
+            // console.log("marker", deal.id);
             if (!(deal.id in this.dealLocationMarkersCache)) {
               this.dealLocationMarkersCache[deal.id] = [];
               for (let loc of deal.locations) {
                 if (loc.point) {
-                  let marker = new L.marker([loc.point.lat, loc.point.lng]);
+                  let marker = new L.marker([loc.point.lat, loc.point.lng], {
+                    clickable: true,
+                  });
+                  marker.deal = deal;
+                  marker.loc = loc;
                   marker.deal_id = deal.id;
                   marker.deal_size = deal.deal_size;
                   if (deal.country) {
                     marker.region_id = deal.country.fk_region.id;
                     marker.country_id = deal.country.id;
                   }
-
-                  marker.bindPopup(
-                    new Vue({
-                      ...MapMarkerPopup,
-                      parent: this,
-                      propsData: { deal: deal, location: loc },
-                    }).$mount().$el.outerHTML
-                  );
+                  marker.on("click", this.createMarkerPopup);
 
                   this.dealLocationMarkersCache[deal.id].push(marker);
                 }
@@ -179,6 +183,7 @@
             }
             markers_list.push(...this.dealLocationMarkersCache[deal.id]);
           }
+          // console.log(markers_list);
           console.log("done");
           return markers_list;
         },
@@ -203,29 +208,22 @@
         console.log("Watch: currentzoom");
         this.refreshMap();
       },
-      "$store.state.map.displayDealsCount": function () {
+      displayDealsCount() {
         console.log("Watch: displaydealscount");
         this.refreshMap();
       },
-      visibleContextLayers() {
+      visibleContextLayers(nowlayers, beforelayers) {
         console.log("Watch: visibleContextLayers");
-        this.contextLayersLayerGroup.clearLayers();
-        this.visibleContextLayers.forEach((layer) => {
-          let ctxlayer = L.tileLayer.wms(layer.url, layer.params);
-          ctxlayer.setOpacity(0.7);
-          this.contextLayersLayerGroup.addLayer(ctxlayer);
-          if (layer.legendUrlFunction) {
-            console.log(layer.legendUrlFunction());
-          }
-        });
-      },
-      "$store.state.page.regions": function () {
-        console.log("Watch: regions");
-        // otherwise country name will not be displayed on initial load with small list of
-        // filtered deals (e.g. single country)
-        // TODO: Make sure that countries/regions are loaded before deals?!
-        this.refreshMap();
-        this.flyToCountryOrRegion();
+        if (nowlayers.length > beforelayers.length) {
+          nowlayers
+            .filter((l) => !beforelayers.includes(l))
+            .forEach((layer) => this.contextLayersLayerGroup.addLayer(layer.layer));
+        }
+        if (beforelayers.length > nowlayers.length) {
+          beforelayers
+            .filter((l) => !nowlayers.includes(l))
+            .forEach((layer) => this.contextLayersLayerGroup.removeLayer(layer.layer));
+        }
       },
       region_id() {
         console.log("Watch: region_id");
@@ -237,6 +235,19 @@
       },
     },
     methods: {
+      createMarkerPopup(event) {
+        let marker = event.target;
+        let point = this.bigmap.latLngToLayerPoint(marker.getLatLng());
+        point = this.bigmap.layerPointToLatLng(point);
+
+        let popup_content = new Vue({
+          ...MapMarkerPopup,
+          parent: this,
+          propsData: { deal: marker.deal, location: marker.loc },
+        }).$mount().$el.outerHTML;
+
+        L.popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
+      },
       flyToCountryOrRegion() {
         console.log("Should fly now");
         let coords = [0, 0];
@@ -245,7 +256,7 @@
           coords = this.country_coords[this.country_id];
           zoom = ZOOM_LEVEL.DEAL_CLUSTERS;
         } else if (this.region_id) {
-          coords = this.region_coords[this.region_id];
+          coords = REGION_COORDINATES[this.region_id];
           zoom = ZOOM_LEVEL.COUNTRY_CLUSTERS;
         }
         if (zoom < this.current_zoom) {
@@ -301,7 +312,7 @@
         console.log("Should refresh map now");
         if (this.skipMapRefresh) return;
         console.log("Clearing layers");
-        this.featureGroup.clearLayers();
+        this.markersFeatureGroup.clearLayers();
         console.log("Clearing layers: done");
         if (this.bigmap && this.markers.length > 0) {
           console.log("Refreshing map");
@@ -310,7 +321,7 @@
             // cluster by Region
             Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
               ([key, val]) => {
-                let circle = L.marker(this.region_coords[key], {
+                let circle = L.marker(REGION_COORDINATES[key], {
                   icon: L.divIcon({ className: "landmatrix-custom-circle" }),
                   region_id: key,
                 });
@@ -330,7 +341,7 @@
                   }).deal_size;
                 }
 
-                this.featureGroup.addLayer(circle);
+                this.markersFeatureGroup.addLayer(circle);
                 this.styleCircle(circle, xval, { type: "region", id: key });
               }
             );
@@ -361,7 +372,7 @@
                   }).deal_size;
                 }
 
-                this.featureGroup.addLayer(circle);
+                this.markersFeatureGroup.addLayer(circle);
                 this.styleCircle(circle, xval, { type: "country", id: key });
               }
             );
@@ -384,21 +395,21 @@
                   this.bigmap.fitBounds(bounds);
                 });
                 val.forEach((mark) => mcluster.addLayer(mark));
-                this.featureGroup.addLayer(mcluster);
+                this.markersFeatureGroup.addLayer(mcluster);
               }
             );
             // this.markers.forEach((mark) => {
-            //   this.featureGroup.addLayer(mark);
+            //   this.markersFeatureGroup.addLayer(mark);
             // });
           }
         }
       },
-      pinTheMap(bigmap) {
-        console.log("Pinning the map");
+      bigMapIsReady(bigmap) {
+        console.log("The big map is ready.");
         this.bigmap = bigmap;
-        this.bigmap.addLayer(this.featureGroup);
+        this.bigmap.addLayer(this.markersFeatureGroup);
         this.bigmap.addLayer(this.contextLayersLayerGroup);
-        bigmap.on("zoomend", (e) => (this.current_zoom = bigmap.getZoom()));
+        bigmap.on("zoomend", () => (this.current_zoom = bigmap.getZoom()));
       },
     },
     beforeRouteEnter(to, from, next) {
@@ -408,8 +419,9 @@
     },
   };
 </script>
+
 <style lang="scss">
-  @import "../../scss/colors";
+  @import "src/scss/colors";
 
   .landmatrix-custom-circle {
     opacity: 0.9;

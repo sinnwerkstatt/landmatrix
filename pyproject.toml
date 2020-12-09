@@ -107,6 +107,16 @@ exclude = '''
   | node_modules
 )/
 '''
+force-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | migrations
+  | static-collected
+  | node_modules
+)/
+'''
+
 #
 [tool.isort]
 multi_line_output = 3

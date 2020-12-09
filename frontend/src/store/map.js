@@ -1,3 +1,5 @@
+import * as L from "leaflet";
+
 const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
 
 export const mapModule = {
@@ -56,14 +58,14 @@ export const mapModule = {
     contextLayers: [
       {
         name: "Land Cover",
-        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
-        params: {
+        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
           layers: "globcover_2009",
           format: "image/png",
           transparent: true,
+          opacity: 0.7,
           attribution:
             'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
-        },
+        }),
         legendUrlFunction() {
           let imgParams = {
             request: "GetLegendGraphic",
@@ -81,14 +83,14 @@ export const mapModule = {
       },
       {
         name: "Global Cropland",
-        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
-        params: {
+        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
           layers: "gl_cropland",
           format: "image/png",
           transparent: true,
+          opacity: 0.7,
           attribution:
             'Source: <a href="http://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
-        },
+        }),
         legendUrlFunction() {
           let imgParams = {
             request: "GetLegendGraphic",
@@ -106,14 +108,14 @@ export const mapModule = {
       },
       {
         name: "Oil palm concessions Indonesia",
-        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
-        params: {
+        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ind_oil_palm_concessions",
           format: "image/png",
           transparent: true,
+          opacity: 0.7,
           attribution:
             'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>',
-        },
+        }),
         legendUrlFunction() {
           let imgParams = {
             request: "GetLegendGraphic",
@@ -131,14 +133,14 @@ export const mapModule = {
       },
       {
         name: "Key biodiversity areas, Philippines",
-        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
-        params: {
+        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ph_key_biodiversity_areas",
           format: "image/png",
           transparent: true,
+          opacity: 0.7,
           attribution:
             'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
-        },
+        }),
         legendUrlFunction() {
           let imgParams = {
             request: "GetLegendGraphic",
@@ -156,14 +158,14 @@ export const mapModule = {
       },
       {
         name: "Protected areas, Philippines",
-        url: "http://sdi.cde.unibe.ch/geoserver/lm/wms",
-        params: {
+        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ph_protected_areas",
           format: "image/png",
           transparent: true,
+          opacity: 0.7,
           attribution:
             'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
-        },
+        }),
         legendUrlFunction() {
           let imgParams = {
             request: "GetLegendGraphic",
