@@ -1,60 +1,39 @@
 <template>
   <div>
-    <PageTitle v-if="article" :title="article.title"></PageTitle>
+    <PageTitle v-if="blogpage" :title="blogpage.title"></PageTitle>
 
-    <div class="container" v-if="article">
+    <div class="container" v-if="blogpage">
       <div class="meta mb-3">
         <div class="date d-inline-block mr-4">
-          <i class="far fa-calendar-alt"></i> {{ article.date }}
+          <i class="far fa-calendar-alt"></i> {{ blogpage.date }}
         </div>
-        <div v-if="article.tags.length > 0" class="tags d-inline-block">
+        <div v-if="blogpage.tags.length > 0" class="tags d-inline-block">
           <router-link
-            v-for="tag in article.tags"
+            v-for="tag in blogpage.tags"
             :to="`/stay-informed/?tag=${tag.slug}`"
           >
             <i class="fas fa-tags"></i> {{ tag.name }}
           </router-link>
         </div>
       </div>
-      <div class="blog-body" v-html="article.body" />
+      <div class="blog-body" v-html="blogpage.body" />
     </div>
   </div>
 </template>
 
 <script>
-  import gql from "graphql-tag";
-  import PageTitle from "../../components/PageTitle";
+  import PageTitle from "/components/PageTitle";
+  import { blogpage_query } from "/store/queries";
 
   export default {
     components: { PageTitle },
     data() {
       return {
-        article: null,
+        blogpage: null,
       };
     },
     apollo: {
-      article: {
-        query: gql`
-          query Article($id: Int!) {
-            blogpage(id: $id) {
-              id
-              title
-              body
-              date
-              tags {
-                slug
-                name
-              }
-            }
-          }
-        `,
-        update: (data) => data.blogpage,
-        variables() {
-          return {
-            id: this.$store.state.page.wagtailPage.id,
-          };
-        },
-      },
+      blogpage: blogpage_query,
     },
   };
 </script>

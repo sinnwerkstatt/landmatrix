@@ -6,7 +6,7 @@
       :bounds="bounds"
       id="bigMap"
       ref="bigMap"
-      @ready="emitUp"
+      @ready="leafletMapReady"
     >
       <l-tile-layer
         v-for="tileProvider in tileLayers"
@@ -88,7 +88,7 @@
       },
     },
     methods: {
-      emitUp(map) {
+      leafletMapReady(map) {
         this.$emit("ready", map);
       },
     },

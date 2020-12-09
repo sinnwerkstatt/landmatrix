@@ -263,7 +263,7 @@
 </template>
 <script>
   import NavbarSelect from "/components/NavbarSelect";
-  import gql from "graphql-tag";
+  import { blogcategories_query } from "/store/queries";
 
   export default {
     components: { NavbarSelect },
@@ -290,17 +290,7 @@
         ],
       };
     },
-    apollo: {
-      blogcategories: gql`
-        query {
-          blogcategories {
-            id
-            name
-            slug
-          }
-        }
-      `,
-    },
+    apollo: { blogcategories: blogcategories_query },
     computed: {
       user() {
         return this.$store.state.page.user;

@@ -36,12 +36,14 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-gesture-handling": "^1.1.8",
     "leaflet.markercluster": "^1.4.1",
+    "lodash": "^4.17.20",
     "node-sass": "^4.14.1",
     "parcel": "^1.12.4",
     "parcel-bundler": "^1.12.4",
     "popper.js": "^1.16.1",
     "prettier": "2.0.5",
     "prunecluster-exportable": "^1.0.0",
+    "sass": "^1.29.0",
     "sass-loader": "^8.0.2",
     "slugify": "^1.4.0",
     "v-calendar": "^1.0.6",
@@ -70,6 +72,8 @@
     "graphql": "^15.3.0",
     "js-cookie": "^2.2.1",
     "numeral": "^2.0.6",
+    "stylelint": "^13.8.0",
+    "stylelint-config-recommended": "^3.0.0",
     "tippy.js": "^5.2.1",
     "vue-apollo": "^3.0.4",
     "vue-i18n": "^8.20.0",
@@ -79,6 +83,9 @@
   "prettier": {
     "vueIndentScriptAndStyle": true,
     "printWidth": 88
+  },
+  "stylelint": {
+    "extends": "stylelint-config-recommended"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

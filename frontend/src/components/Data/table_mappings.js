@@ -6,18 +6,6 @@ import {
 } from "/choices";
 import dayjs from "dayjs";
 
-function investorLink(component, investor_id) {
-  let investor = component.$store.getters.getInvestor(investor_id);
-  if (investor) {
-    let location = {
-      name: "investor_detail",
-      params: { investor_id: investor_id },
-    };
-    let url = component.$router.resolve(location).href;
-    return `<a class="investor" target="_blank" href="${url}">${investor.name}</a>`;
-  }
-}
-
 export const getDealValue = function (component, deal, fieldName) {
   if (fieldName in deal) {
     switch (fieldName) {
@@ -42,7 +30,9 @@ export const getDealValue = function (component, deal, fieldName) {
         if (deal.operating_company) {
           let investor_id = deal.operating_company.id;
           if (investor_id) {
-            return investorLink(component, investor_id);
+            let location = { name: "investor_detail", params: { investor_id } };
+            let url = component.$router.resolve(location).href;
+            return `<a class="investor" target="_blank" href="${url}">${deal.operating_company.name}</a>`;
           }
         }
         return "";
@@ -52,7 +42,9 @@ export const getDealValue = function (component, deal, fieldName) {
         if (deal.top_investors) {
           return deal.top_investors
             .map((i) => {
-              return investorLink(component, i.id);
+              let location = { name: "investor_detail", params: { investor_id: i.id } };
+              let url = component.$router.resolve(location).href;
+              return `<a class="investor" target="_blank" href="${url}">${i.name}</a>`;
             })
             .join("<br/>");
         }

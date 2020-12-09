@@ -2,8 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { pageModule } from "./page";
 import filtersModule from "./filters";
-import { investorModule } from "./investor";
 import { mapModule } from "./map";
+import { dataModule } from "./data";
 import axios from "axios";
 import { apolloClient } from "/apolloclient";
 import gql from "graphql-tag";
@@ -14,7 +14,7 @@ const store = new Vuex.Store({
   modules: {
     page: pageModule,
     filters: filtersModule,
-    investor: investorModule,
+    data: dataModule,
     map: mapModule,
   },
   state: {

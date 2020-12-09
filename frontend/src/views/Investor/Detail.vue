@@ -120,49 +120,12 @@
 
 <script>
   import store from "/store";
-  import gql from "graphql-tag";
   import { mapState } from "vuex";
   import { getDealValue, getInvestorValue } from "/components/Data/table_mappings";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import DisplayField from "/components/Fields/DisplayField";
   import LoadingPulse from "/components/Data/LoadingPulse";
-
-  let investor_query = gql`
-    query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
-      investor(id: $investorID) {
-        id
-        name
-        country {
-          id
-          name
-        }
-        classification
-        homepage
-        opencorporates
-        comment
-        # involvements
-        status
-        created_at
-        modified_at
-        deals @include(if: $includeDeals) {
-          id
-          country {
-            id
-          }
-          recognition_status
-          nature_of_deal
-          intention_of_investment
-          negotiation_status
-          implementation_status
-          current_intention_of_investment
-          current_negotiation_status
-          current_implementation_status
-          deal_size
-        }
-        involvements(depth: $depth)
-      }
-    }
-  `;
+  import { investor_query } from "../../store/queries";
 
   export default {
     name: "InvestorDetail",
@@ -183,31 +146,9 @@
         includeDealsInQuery: false,
       };
     },
-    apollo: {
-      investor: {
-        query: investor_query,
-        variables() {
-          return {
-            investorID: +this.investor_id,
-            depth: this.depth,
-            includeDeals: this.includeDealsInQuery,
-          };
-        },
-        update(data) {
-          if (!data.investor) {
-            this.$router.push({
-              name: "404",
-              params: [this.$router.currentRoute.path],
-              replace: true,
-            });
-          }
-          return data.investor;
-        },
-      },
-    },
+    apollo: { investor: investor_query },
     computed: {
       ...mapState({
-        investor_fields: (state) => state.investor.investor_fields,
         formFields: (state) => state.formfields,
       }),
       involvements() {

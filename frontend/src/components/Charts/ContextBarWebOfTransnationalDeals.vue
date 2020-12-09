@@ -81,34 +81,18 @@
 </template>
 
 <script>
-  import gql from "graphql-tag";
   import { mapGetters } from "vuex";
+  import {
+    country_investments_and_rankings_query,
+    global_rankings_query,
+  } from "/store/queries";
 
   export default {
     name: "ContextBarWebOfTransnationalDeals",
     props: ["filters"],
     apollo: {
-      global_rankings: gql`
-        query {
-          global_rankings
-        }
-      `,
-      country_investments_and_rankings: {
-        query: gql`
-          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
-            country_investments_and_rankings(id: $id, filters: $filters)
-          }
-        `,
-        variables() {
-          return {
-            id: +this.country_id,
-            filters: this.filters,
-          };
-        },
-        skip() {
-          return !this.country_id;
-        },
-      },
+      global_rankings: global_rankings_query,
+      country_investments_and_rankings: country_investments_and_rankings_query,
     },
     data() {
       return {

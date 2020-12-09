@@ -28,6 +28,7 @@ export const data_deal_query_gql = gql`
       top_investors {
         # for listing
         id
+        name
       }
     }
   }

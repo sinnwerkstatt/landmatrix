@@ -125,6 +125,7 @@ export default {
     setFilter(context, filter) {
       context.commit("setFilter", filter);
       context.dispatch("setCookie");
+      // context.dispatch("fetchDeals");
     },
     resetFilters(context) {
       context.commit("resetFilters");

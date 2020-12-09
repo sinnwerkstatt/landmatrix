@@ -48,9 +48,9 @@
 </template>
 
 <script>
-  import gql from "graphql-tag";
-  import LoadingPulse from "../../components/Data/LoadingPulse";
-  import PageTitle from "../../components/PageTitle";
+  import LoadingPulse from "/components/Data/LoadingPulse";
+  import PageTitle from "/components/PageTitle";
+  import { blogcategories_query, blogpages_query } from "/store/queries";
 
   export default {
     components: { LoadingPulse, PageTitle },
@@ -62,35 +62,7 @@
         blogcategories: [],
       };
     },
-    apollo: {
-      blogpages: gql`
-        query {
-          blogpages {
-            id
-            title
-            slug
-            date
-            header_image
-            excerpt
-            categories {
-              slug
-            }
-            tags {
-              slug
-            }
-          }
-        }
-      `,
-      blogcategories: gql`
-        query {
-          blogcategories {
-            id
-            name
-            slug
-          }
-        }
-      `,
-    },
+    apollo: { blogpages: blogpages_query, blogcategories: blogcategories_query },
     computed: {
       blogcategories_with_all() {
         return [{ slug: null, name: "All categories" }, ...this.blogcategories];
