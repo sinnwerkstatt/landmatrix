@@ -190,7 +190,7 @@
               </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
               <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
-              <a class="dropdown-item" href="/manage/">{{ $t("Manage") }}</a>
+              <a class="dropdown-item" href="/editor/manage/">{{ $t("Manage") }}</a>
               <a class="dropdown-item" href="/deal/add/">{{ $t("Add a deal") }}</a>
               <a class="dropdown-item" href="/newdeal/case_statistics/">{{
                 $t("Case statistics")
