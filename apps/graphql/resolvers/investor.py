@@ -42,6 +42,12 @@ def resolve_investors(
 
 investor_type = ObjectType("Investor")
 investor_type.set_field("deals", lambda obj, info: obj.deals.all())
+investor_type.set_field(
+    "versions",
+    lambda obj, info: [
+        dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=obj.id)
+    ],
+)
 
 
 def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):

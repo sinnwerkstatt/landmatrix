@@ -124,7 +124,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/investor/:investor_id/",
+      path: "/investor/:investor_id/:investor_version?/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,

@@ -239,7 +239,7 @@
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "./deal_fields";
+  import { deal_gql_query } from "/store/queries";
 
   import DealSection from "/components/Deal/DealSection";
   import DealHistory from "/components/Deal/DealHistory";

@@ -114,6 +114,16 @@
           </tbody>
         </table>
       </b-tab>
+      <b-tab>
+        <template v-slot:title>
+          <h5>{{ $t("Investor History") }}</h5>
+        </template>
+        <InvestorHistory
+          :investor="investor"
+          :investor_id="investor_id"
+          :investor_version="investor_version"
+        />
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -125,12 +135,13 @@
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import DisplayField from "/components/Fields/DisplayField";
   import LoadingPulse from "/components/Data/LoadingPulse";
+  import InvestorHistory from "../../components/Investor/InvestorHistory";
   import { investor_query } from "../../store/queries";
 
   export default {
     name: "InvestorDetail",
-    components: { LoadingPulse, InvestorGraph, DisplayField },
-    props: ["investor_id"],
+    components: { InvestorHistory, LoadingPulse, InvestorGraph, DisplayField },
+    props: ["investor_id", "investor_version"],
     data() {
       return {
         investor: null,

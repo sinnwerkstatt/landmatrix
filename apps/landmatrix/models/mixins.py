@@ -17,11 +17,6 @@ unclear_fields = [
     "original_filename",
     "old_reliability_ranking",
     "timestamp",
-    "minerals_export",  # weg. https://landmatrix.org/deal/6188/145156/
-    "old_contract_area",  # weg. https://landmatrix.org/deal/4372/141302/
-    "old_production_area",  # weg. https://landmatrix.org/deal/4372/141302/
-    "previous_identifier",  # weg. Land Observatory Import History
-    "terms",  # schmeissmer wir weg.
 ]
 
 warnings.warn("GND Obsoletion Warning", FutureWarning)

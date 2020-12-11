@@ -18,12 +18,15 @@ type Investor {
     modified_at: DateTime
 
     is_actually_unknown: Boolean
+    versions: [InvestorVersion]
+
 }
 
 type InvestorVersion {
     id: Int!
     investor: Investor
     revision: Revision
+    object_id: Int
 }
 
 type Involvement {

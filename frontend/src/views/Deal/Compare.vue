@@ -69,7 +69,7 @@
   import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "./deal_fields";
+  import { deal_gql_query } from "/store/queries";
   import DealComments from "../../components/Deal/DealComments";
   import { diff } from "deep-object-diff";
   import { apolloClient } from "../../apolloclient";
