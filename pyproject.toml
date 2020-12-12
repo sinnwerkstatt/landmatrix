@@ -18,11 +18,8 @@ simplejson = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
 # greennewdeal
-django-reversion = "*"
-django-webpack-loader = "^0.7.0"
 geojson-rewind = "^0.2.0"
-graphql-core = "<3.1"
-ariadne = "^0.11"
+ariadne = ">=0.12"
 django-redis = "^4.12.1"
 #elasticsearch-dsl = ">=7.0.0,<8.0.0"
 #django-elasticsearch = "^7.0.2"

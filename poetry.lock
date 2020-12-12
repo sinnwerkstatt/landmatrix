@@ -27,14 +27,14 @@ python-versions = "*"
 
 [[package]]
 name = "ariadne"
-version = "0.11.0"
+version = "0.12.0"
 description = "Ariadne is a Python library for implementing GraphQL servers."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-graphql-core = "<3.1.0"
+graphql-core = ">=3.0.0,<3.1.0"
 starlette = "<0.14"
 typing-extensions = ">=3.6.0"
 
@@ -504,17 +504,6 @@ confusable-homoglyphs = ">=3.0,<4.0"
 Django = ">=2.2"
 
 [[package]]
-name = "django-reversion"
-version = "3.0.8"
-description = "An extension to the Django web framework that provides version control for model instances."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-django = ">=1.11"
-
-[[package]]
 name = "django-simple-history"
 version = "2.12.0"
 description = "Store model history and view/revert changes from admin site."
@@ -557,14 +546,6 @@ python-versions = "*"
 
 [package.dependencies]
 Django = ">=1.8"
-
-[[package]]
-name = "django-webpack-loader"
-version = "0.7.0"
-description = "Transparently use webpack with django"
-category = "main"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "django-wkhtmltopdf"
@@ -1085,7 +1066,7 @@ jdcal = "*"
 
 [[package]]
 name = "packaging"
-version = "20.7"
+version = "20.8"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
@@ -1452,7 +1433,7 @@ python-versions = "*"
 
 [[package]]
 name = "sentry-sdk"
-version = "0.19.4"
+version = "0.19.5"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = true
@@ -1735,7 +1716,7 @@ production = ["gunicorn", "sentry_sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "40f37103ed8de2a1e72814c574a61267eeb9b68e02bd202b6bff00f890952b9e"
+content-hash = "0d3e85b7606b00e89bea94889447d649517934b5e64dcd1f6e56ba5b5f8a915e"
 
 [metadata.files]
 amqp = [
@@ -1751,8 +1732,8 @@ appnope = [
     {file = "appnope-0.1.2.tar.gz", hash = "sha256:dd83cd4b5b460958838f6eb3000c660b1f9caf2a5b1de4264e941512f603258a"},
 ]
 ariadne = [
-    {file = "ariadne-0.11.0-py3-none-any.whl", hash = "sha256:40de53740d7e1ba81df94bc0acd7fa571f31d58029c3f5a6dfcc9fa1bc5ad224"},
-    {file = "ariadne-0.11.0.tar.gz", hash = "sha256:79f275b09535bc869db04e76b559be7fca0133fe41a8fb124adcca9ac4a6197e"},
+    {file = "ariadne-0.12.0-py3-none-any.whl", hash = "sha256:e88b574d13c155f934d5e57431e5f9ab3a266a7064a6e397e7c662241276e2e3"},
+    {file = "ariadne-0.12.0.tar.gz", hash = "sha256:00a21584eb5ca8751380f9870d560db0a486ff69747884674caaee811a2ae64b"},
 ]
 astroid = [
     {file = "astroid-2.3.3-py3-none-any.whl", hash = "sha256:840947ebfa8b58f318d42301cf8c0a20fd794a33b61cc4638e28e9e61ba32f42"},
@@ -1935,10 +1916,6 @@ django-registration = [
     {file = "django-registration-3.1.1.tar.gz", hash = "sha256:44ca3d63869c91174cef9ccf244ec87ad296e3d705983e9e98150cee03938dda"},
     {file = "django_registration-3.1.1-py3-none-any.whl", hash = "sha256:88e6c2aa698320b87c5d3cbb941ef7acde69ced109bc00ce35acfccfbf00ab71"},
 ]
-django-reversion = [
-    {file = "django-reversion-3.0.8.tar.gz", hash = "sha256:49e9930f90322dc6a2754dd26144285cfcc1c5bd0c1c39ca95d5602c5054ae32"},
-    {file = "django_reversion-3.0.8-py3-none-any.whl", hash = "sha256:9cfadeec2df37cb53d795ab79f6792f9eed8e70363dcf3a275dc19a58b971a8f"},
-]
 django-simple-history = [
     {file = "django-simple-history-2.12.0.tar.gz", hash = "sha256:3b7bf6bfbcf973afca123c5786c72b917ed4d92d7bf3b6cb70fe2e3850e763a3"},
     {file = "django_simple_history-2.12.0-py2.py3-none-any.whl", hash = "sha256:e7e830cb7a768dc90d6ba0507f8023f889bcb62fe31a08f18fac102c55eec539"},
@@ -1953,10 +1930,6 @@ django-threadedcomments = [
 ]
 django-treebeard = [
     {file = "django-treebeard-4.3.1.tar.gz", hash = "sha256:83aebc34a9f06de7daaec330d858d1c47887e81be3da77e3541fe7368196dd8a"},
-]
-django-webpack-loader = [
-    {file = "django-webpack-loader-0.7.0.tar.gz", hash = "sha256:7a3c88201aa54481f9399465615cbe7b9aece8081496a6d0287b7cb8e232f447"},
-    {file = "django_webpack_loader-0.7.0-py2.py3-none-any.whl", hash = "sha256:d28a276ed3d89e97a313b74967e373693f8b86afe629f4c91eea91c5b4f2ec20"},
 ]
 django-wkhtmltopdf = [
     {file = "django-wkhtmltopdf-3.3.0.tar.gz", hash = "sha256:e4c42d771c7a1ef85faa0591e3c1fa7da3ef0d39a636baea4a1ec89bf7119a71"},
@@ -2194,8 +2167,8 @@ openpyxl = [
     {file = "openpyxl-3.0.5.tar.gz", hash = "sha256:18e11f9a650128a12580a58e3daba14e00a11d9e907c554a17ea016bf1a2c71b"},
 ]
 packaging = [
-    {file = "packaging-20.7-py2.py3-none-any.whl", hash = "sha256:eb41423378682dadb7166144a4926e443093863024de508ca5c9737d6bc08376"},
-    {file = "packaging-20.7.tar.gz", hash = "sha256:05af3bb85d320377db281cf254ab050e1a7ebcbf5410685a9a407e18a1f81236"},
+    {file = "packaging-20.8-py2.py3-none-any.whl", hash = "sha256:24e0da08660a87484d1602c30bb4902d74816b6985b93de36926f5bc95741858"},
+    {file = "packaging-20.8.tar.gz", hash = "sha256:78598185a7008a470d64526a8059de9aaa449238f280fc9eb6b13ba6c4109093"},
 ]
 parso = [
     {file = "parso-0.7.1-py2.py3-none-any.whl", hash = "sha256:97218d9159b2520ff45eb78028ba8b50d2bc61dcc062a9682666f2dc4bd331ea"},
@@ -2458,8 +2431,8 @@ requests-oauthlib = [
     {file = "ruamel.yaml.clib-0.2.2.tar.gz", hash = "sha256:2d24bd98af676f4990c4d715bcdc2a60b19c56a3fb3a763164d2d8ca0e806ba7"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-0.19.4.tar.gz", hash = "sha256:1052f0ed084e532f66cb3e4ba617960d820152aee8b93fc6c05bd53861768c1c"},
-    {file = "sentry_sdk-0.19.4-py2.py3-none-any.whl", hash = "sha256:4c42910a55a6b1fe694d5e4790d5188d105d77b5a6346c1c64cbea8c06c0e8b7"},
+    {file = "sentry-sdk-0.19.5.tar.gz", hash = "sha256:737a094e49a529dd0fdcaafa9e97cf7c3d5eb964bd229821d640bc77f3502b3f"},
+    {file = "sentry_sdk-0.19.5-py2.py3-none-any.whl", hash = "sha256:0a711ec952441c2ec89b8f5d226c33bc697914f46e876b44a4edd3e7864cf4d0"},
 ]
 simplejson = [
     {file = "simplejson-3.17.2-cp27-cp27m-macosx_10_13_x86_64.whl", hash = "sha256:2d3eab2c3fe52007d703a26f71cf649a8c771fcdd949a3ae73041ba6797cfcf8"},
