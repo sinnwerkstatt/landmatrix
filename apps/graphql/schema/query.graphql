@@ -58,6 +58,12 @@ type Query {
     blogcategories: [BlogCategory]
 
     chart_descriptions: ChartDescriptions
+
+    markers(
+        subset: Subset = PUBLIC,
+        region_id: Int = None,
+        country_id: Int = None,
+    ): [Marker]
 }
 
 type FormFieldSet {

@@ -167,6 +167,22 @@ export const investor_query = {
   },
 };
 
+export const markers_query = {
+  query: gql`
+    query Markers($subset: Subset, $region_id: Int, $country_id: Int) {
+      markers(subset: $subset, region_id: $region_id, country_id: $country_id)
+    }
+  `,
+  variables() {
+    let user = this.$store.state.page.user;
+    return {
+      region_id: +this.region_id,
+      country_id: +this.country_id,
+      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+    };
+  },
+};
+
 export const deal_aggregations_query = {
   query: gql`
     query DealAggregations($fields: [String]!, $subset: Subset, $filters: [Filter]) {

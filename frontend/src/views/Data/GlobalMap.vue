@@ -75,6 +75,7 @@
   import Vue from "vue";
 
   import MapMarkerPopup from "/components/Map/MapMarkerPopup";
+  import { styleCircle } from "../../utils/map_helper";
   import DataContainer from "./DataContainer";
   import BigMap from "/components/BigMap";
   import FilterCollapse from "/components/Data/FilterCollapse";
@@ -244,38 +245,6 @@
 
         L.popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
       },
-      styleCircle(circle, size, country_or_region_with_id) {
-        let circle_elem = circle.getElement();
-
-        let innertextnode = document.createElement("span");
-        innertextnode.className = "landmatrix-custom-circle-text";
-        let coun_reg = this.$store.getters.getCountryOrRegion(
-          country_or_region_with_id
-        );
-        if (coun_reg) innertextnode.innerHTML = coun_reg.name;
-        circle_elem.append(innertextnode);
-
-        let hoverlabel = document.createElement("span");
-        hoverlabel.className = "landmatrix-custom-circle-hover-text";
-        circle_elem.append(hoverlabel);
-
-        let factor;
-        if (this.displayDealsCount) {
-          hoverlabel.innerHTML = `<b>${size}</b> locations`;
-          factor = Math.max(Math.log(size) * 17, 40);
-        } else {
-          hoverlabel.innerHTML = `${size} hectares`;
-          factor = Math.max(Math.log(size) * 6, 40);
-        }
-
-        Object.assign(circle_elem.style, {
-          height: `${factor}px`,
-          width: `${factor}px`,
-          left: `-${factor / 2}px`,
-          top: `-${factor / 2}px`,
-          background: primary_color,
-        });
-      },
       flyToCountryOrRegion() {
         console.log("Should fly now");
         let coords = [0, 0];
@@ -345,7 +314,11 @@
               }
 
               this.markersFeatureGroup.addLayer(circle);
-              this.styleCircle(circle, xval, { type: "region", id: key });
+              let regname = this.$store.getters.getCountryOrRegion({
+                type: "region",
+                id: key,
+              }).name;
+              styleCircle(circle, xval, regname);
             }
           );
         } else if (
@@ -377,7 +350,11 @@
               }
 
               this.markersFeatureGroup.addLayer(circle);
-              this.styleCircle(circle, xval, { type: "country", id: key });
+              let regname = this.$store.getters.getCountryOrRegion({
+                type: "country",
+                id: key,
+              }).name;
+              styleCircle(circle, xval, regname);
             }
           );
         } else {

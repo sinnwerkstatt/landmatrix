@@ -31,6 +31,7 @@ from apps.graphql.resolvers.investor import (
     # resolve_involvements,
     resolve_investorversions,
 )
+from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
     resolve_countries,
     resolve_regions,
@@ -78,6 +79,7 @@ query.set_field("transnational_deals", resolve_web_of_transnational_deals)
 query.set_field("country_investments_and_rankings", country_investments_and_rankings)
 query.set_field("global_rankings", global_rankings)
 query.set_field("chart_descriptions", resolve_chart_descriptions)
+query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)

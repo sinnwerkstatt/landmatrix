@@ -4,11 +4,7 @@
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <h1>{{ page.title }}</h1>
-          <QuasiStaticMap
-            :deals="deals"
-            :region_id="region_id"
-            :country_id="country_id"
-          />
+          <QuasiStaticMap :region_id="region_id" :country_id="country_id" />
         </div>
       </div>
       <div class="row justify-content-center">
@@ -133,17 +129,6 @@
     },
     apollo: {
       deal_aggregations: deal_aggregations_query,
-      deals: {
-        query: data_deal_query_gql,
-        variables() {
-          let user = this.$store.state.page.user;
-          return {
-            limit: 0,
-            filters: this.locationFilter,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
-          };
-        },
-      },
       articles: {
         skip() {
           return this.deals.length == 0;

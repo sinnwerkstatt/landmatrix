@@ -19,8 +19,9 @@
   </div>
 </template>
 <script>
+  import { markers_query } from "../store/queries";
+  import { styleCircle } from "../utils/map_helper";
   import BigMap from "./BigMap";
-  import { groupBy } from "lodash";
   import LoadingPulse from "./Data/LoadingPulse";
 
   const ZOOM_LEVEL_COUNTRY = 4;
@@ -28,31 +29,19 @@
   export default {
     name: "QuasiStaticMap",
     components: { LoadingPulse, BigMap },
-    props: ["country_id", "region_id", "deals"],
+    props: ["country_id", "region_id"],
     data() {
       return {
         map: null,
         featureGroup: L.featureGroup(),
-        markersReady: false,
+        markersReady: true,
+        markers: [],
       };
     },
+    apollo: {
+      markers: markers_query,
+    },
     computed: {
-      markers() {
-        let markers_list = [];
-        for (let deal of this.deals) {
-          for (let loc of deal.locations) {
-            if (loc.point) {
-              let marker = new L.marker([loc.point.lat, loc.point.lng]);
-              if (deal.country) {
-                marker.country_id = deal.country.id;
-              }
-              markers_list.push(marker);
-            }
-          }
-        }
-        this.markersReady = true;
-        return markers_list;
-      },
       roc() {
         let type = "region";
         let id = this.region_id;
@@ -60,7 +49,7 @@
           type = "country";
           id = this.country_id;
         }
-        return this.$store.getters.getCountryOrRegion({ type: type, id: id });
+        return this.$store.getters.getCountryOrRegion({ type, id });
       },
     },
     methods: {
@@ -93,24 +82,44 @@
           this.map.fitWorld({ animate: false });
         }
       },
-      refreshMap() {
-        if (this.map) {
-          this.clearMap();
-          this.drawMarkers();
-          setTimeout(this.focusMap, 1);
+      _drawGlobalMarkers() {
+        for (let mark of this.markers) {
+          let circle = L.marker(mark.coordinates, {
+            icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+            region_id: mark.region_id,
+          });
+          this.featureGroup.addLayer(circle);
+
+          let coun_reg = this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: mark.region_id,
+          }).name;
+
+          styleCircle(circle, mark.count, coun_reg);
         }
       },
+      _drawRegionMarkers() {
+        for (let mark of this.markers) {
+          let circle = L.marker(mark.coordinates, {
+            icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+            country_id: mark.country_id,
+          });
+          this.featureGroup.addLayer(circle);
+          styleCircle(circle, mark.count / 20, "", true, 5);
+        }
+      },
+      _drawCountryMarkers() {
+        let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
+        for (let mark of this.markers) {
+          let circle = L.marker(mark.coordinates);
+          mcluster.addLayer(circle);
+        }
+        this.featureGroup.addLayer(mcluster);
+      },
       drawMarkers() {
-        // group by countries (for region pages)
-        Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
-          ([key, val]) => {
-            let mcluster = L.markerClusterGroup({
-              chunkedLoading: true,
-            });
-            val.forEach((mark) => mcluster.addLayer(mark));
-            this.featureGroup.addLayer(mcluster);
-          }
-        );
+        if (!this.region_id && !this.country_id) this._drawGlobalMarkers();
+        if (this.region_id) this._drawRegionMarkers();
+        if (this.country_id) this._drawCountryMarkers();
       },
       goToGlobalMap() {
         if (this.country_id) {
@@ -136,20 +145,19 @@
       },
     },
     watch: {
-      deals() {
-        this.markersReady = false;
-        setTimeout(this.refreshMap, 10);
+      markers() {
+        this.drawMarkers();
       },
       roc() {
         this.clearMap();
         this.focusMap();
-        this.markersReady = false;
       },
     },
   };
 </script>
+
 <style lang="scss">
-  @import "../scss/colors";
+  @import "src/scss/colors";
 
   .static-map {
     width: 100%;

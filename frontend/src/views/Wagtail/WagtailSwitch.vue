@@ -26,6 +26,9 @@
             return ObservatoryPage;
           case "wagtailcms.ObservatoryPage":
             return ObservatoryPage;
+          case "wagtailcms.ObservatoryIndexPage":
+            this.$router.push("/observatory/global/");
+            return;
           default:
             return WagtailPage;
         }
