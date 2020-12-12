@@ -7,6 +7,8 @@ def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=None):
         exclude = []
     fields = []
     for fnode in info.field_nodes:
+        if not fnode.selection_set:
+            continue
         for selection in fnode.selection_set.selections:
             if recursive:
                 fields += _recursive_fieldnode(selection, exclude)
