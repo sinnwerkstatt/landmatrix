@@ -178,7 +178,7 @@ def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id
 def resolve_deal_aggregations(
     obj: Any, info: GraphQLResolveInfo, fields, subset="PUBLIC", filters=None
 ):
-    deals = Deal.objects.visible(user=info.context.user, subset=subset)
+    deals = Deal.objects.visible(user=info.context["request"].user, subset=subset)
     if filters:
         deals = deals.filter(parse_filters(filters))
 

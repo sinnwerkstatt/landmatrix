@@ -9,7 +9,7 @@ User = auth.get_user_model()
 
 
 def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
-    user = info.context.user
+    user = info.context["request"].user
     if not user.is_authenticated:
         return
     if user.is_staff and not info.field_name == "me":
@@ -23,7 +23,7 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
 
 
 def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
-    current_user = info.context.user
+    current_user = info.context["request"].user
     if not current_user.is_staff:
         raise HttpError(message="Not allowed")
 
@@ -61,7 +61,7 @@ user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
 
 
 def resolve_login(_, info, username, password):
-    request = info.context
+    request = info.context["request"]
     user = auth.authenticate(request, username=username, password=password)
     if user:
         auth.login(request, user)
@@ -70,8 +70,8 @@ def resolve_login(_, info, username, password):
 
 
 def resolve_logout(_, info: GraphQLResolveInfo):
-    req = info.context
+    request = info.context["request"]
     if info.context.user.is_authenticated:
-        auth.logout(req)
+        auth.logout(request)
         return True
     return False

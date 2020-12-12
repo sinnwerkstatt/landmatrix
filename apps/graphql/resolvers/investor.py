@@ -37,9 +37,9 @@ def resolve_investor(
         #     v.fields for v in rev.investorventureinvolvementversion_set.all()
         # ]
     else:
-        visible_investors = Investor.objects.visible(info.context.user, subset).filter(
-            id=id
-        )
+        visible_investors = Investor.objects.visible(
+            info.context["request"].user, subset
+        ).filter(id=id)
         if not visible_investors:
             return
         investor = qs_values_to_dict(
@@ -55,7 +55,7 @@ def resolve_investor(
     if add_deals:
         investor["deals"] = [
             d
-            for d in Deal.objects.visible(info.context.user, subset).filter(
+            for d in Deal.objects.visible(info.context["request"].user, subset).filter(
                 operating_company_id=id
             )
         ]
@@ -72,7 +72,9 @@ def resolve_investors(
     subset="PUBLIC",
     filters=None,
 ):
-    qs = Investor.objects.visible(user=info.context.user, subset=subset).order_by(sort)
+    qs = Investor.objects.visible(
+        user=info.context["request"].user, subset=subset
+    ).order_by(sort)
 
     fields = get_fields(info)
     if "country" in fields:

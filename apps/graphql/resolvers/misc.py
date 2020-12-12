@@ -31,4 +31,4 @@ def resolve_crops(obj: Any, info: GraphQLResolveInfo):
 
 
 def resolve_chart_descriptions(obj, info):
-    return ChartDescriptionsSettings.for_site(info.context.site).to_dict()
+    return ChartDescriptionsSettings.for_site(info.context["request"].site).to_dict()

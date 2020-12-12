@@ -47,7 +47,9 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC
         deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
         deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
     else:
-        visible_deals = Deal.objects.visible(info.context.user, subset).filter(id=id)
+        visible_deals = Deal.objects.visible(
+            info.context["request"].user, subset
+        ).filter(id=id)
         if not visible_deals:
             return
 
@@ -82,7 +84,9 @@ def resolve_deals(
     subset="PUBLIC",
     filters=None,
 ):
-    qs = Deal.objects.visible(user=info.context.user, subset=subset).order_by(sort)
+    qs = Deal.objects.visible(
+        user=info.context["request"].user, subset=subset
+    ).order_by(sort)
 
     if filters:
         qs = qs.filter(parse_filters(filters))
