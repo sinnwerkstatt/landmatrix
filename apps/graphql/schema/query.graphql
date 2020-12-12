@@ -22,7 +22,7 @@ type Query {
         at_date: Date
     ): [DealVersion]
 
-    investor(id: Int!): Investor
+    investor(id: Int!, version: Int, subset: Subset = PUBLIC): Investor
     investors(
         sort: String = "id",
         limit: Int = 20,

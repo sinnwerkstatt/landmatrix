@@ -7,6 +7,6 @@
 
 <script>
   export default {
-    props: ["formfield", "value"],
+    props: ["formfield", "value", "model"],
   };
 </script>

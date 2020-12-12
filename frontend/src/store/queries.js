@@ -94,8 +94,8 @@ export const investors_query = {
 
 export const investor_query = {
   query: gql`
-    query Investor($investorID: Int!, $depth: Int, $includeDeals: Boolean!) {
-      investor(id: $investorID) {
+    query Investor($id: Int!, $version: Int, $depth: Int, $includeDeals: Boolean!) {
+      investor(id: $id, version: $version) {
         id
         name
         country {
@@ -114,6 +114,7 @@ export const investor_query = {
           id
           country {
             id
+            name
           }
           recognition_status
           nature_of_deal
@@ -148,7 +149,8 @@ export const investor_query = {
   `,
   variables() {
     return {
-      investorID: +this.investor_id,
+      id: +this.investor_id,
+      version: +this.investor_version,
       depth: this.depth,
       includeDeals: this.includeDealsInQuery,
     };

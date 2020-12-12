@@ -1,19 +1,67 @@
 from typing import Any
 
-from ariadne import ObjectType
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Investor
+from apps.landmatrix.models import Investor, Deal
 from apps.landmatrix.models.gndinvestor import InvestorVersion
+from apps.landmatrix.models.versions import Revision
 from apps.landmatrix.utils import InvolvementNetwork
+from apps.utils import qs_values_to_dict
 
 
-def resolve_investor(obj: Any, info: GraphQLResolveInfo, id):
-    try:
-        return Investor.objects.visible(info.context.user, "UNFILTERED").get(id=id)
-    except Investor.DoesNotExist:
-        return
+def resolve_investor(
+    obj: Any, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"
+):
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
+
+    add_versions = False
+    add_deals = False
+    add_involvements = False
+    filtered_fields = []
+    for field in fields:
+        if "versions" in field:
+            add_versions = True
+        elif "deals" in field:
+            add_deals = True
+        elif "involvements" in field:
+            add_involvements = True
+        else:
+            filtered_fields += [field]
+
+    if version:
+        print("VERSIO!", version)
+        rev = Revision.objects.get(id=version)
+        investor = rev.investorversion_set.get().fields
+        # investor["involvements"] = [
+        #     v.fields for v in rev.investorventureinvolvementversion_set.all()
+        # ]
+    else:
+        visible_investors = Investor.objects.visible(info.context.user, subset).filter(
+            id=id
+        )
+        if not visible_investors:
+            return
+        investor = qs_values_to_dict(
+            visible_investors,
+            filtered_fields,
+            ["involvements"],
+        )[0]
+
+    if add_versions:
+        investor["versions"] = [
+            dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
+        ]
+    if add_deals:
+        investor["deals"] = [
+            d
+            for d in Deal.objects.visible(info.context.user, subset).filter(
+                operating_company_id=id
+            )
+        ]
+    if add_involvements:
+        investor["involvements"] = InvolvementNetwork(True).get_network(id, depth=4)
+    return investor
 
 
 def resolve_investors(
@@ -40,42 +88,8 @@ def resolve_investors(
     return qs
 
 
-investor_type = ObjectType("Investor")
-investor_type.set_field("deals", lambda obj, info: obj.deals.all())
-investor_type.set_field(
-    "versions",
-    lambda obj, info: [
-        dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=obj.id)
-    ],
-)
-
-
 def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = InvestorVersion.objects.all()
     if filters:
         qs = qs.filter(parse_filters(filters))
     return [iv.to_dict() for iv in qs]
-
-
-@investor_type.field("involvements")
-def resolve_involvements_network(
-    obj: Any, info: GraphQLResolveInfo, depth, include_ventures=True
-):
-    investors = InvolvementNetwork(include_ventures=include_ventures).get_network(
-        obj.id, depth=depth
-    )
-    # print(dict(investors))
-    return investors
-
-
-# i think we dont need this either.
-# def resolve_involvements(
-#     obj, info: GraphQLResolveInfo, filters=None, limit=20
-# ):
-#     qs = InvestorVentureInvolvement.objects.visible(info.context.user)
-#
-#     if filters:
-#         qs = qs.filter(parse_filters(filters))
-#     if limit != 0:
-#         qs = qs[:limit]
-#     return qs

@@ -10,6 +10,7 @@
       <component
         :is="formfield.class"
         :formfield="formfield"
+        :model="model"
         v-model="value"
         v-if="custom_is_null(value)"
       />
@@ -23,6 +24,7 @@
   import CharField from "./Display/TextField";
   import DateField from "./Display/DateField";
   import DateTimeField from "./Display/DateField";
+  import AutoField from "./Display/AutoField";
   import DecimalField from "./Display/DecimalField";
   import EmailField from "./Display/TextField";
   import FileField from "./Display/FileField";
@@ -59,6 +61,7 @@
       file_not_public: { type: Boolean, default: false },
     },
     components: {
+      AutoField,
       FieldLabel,
       ArrayField,
       BooleanField,
@@ -85,7 +88,7 @@
         return true;
       },
       formfield() {
-        return this.formfields[this.model][this.fieldname];
+        return { name: this.fieldname, ...this.formfields[this.model][this.fieldname] };
       },
       ...mapState({
         formfields: (state) => state.formfields,

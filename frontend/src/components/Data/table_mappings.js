@@ -1,7 +1,7 @@
 import {
   implementation_status_choices,
   intention_of_investment_map,
-  negotiation_status_map,
+  flat_negotiation_status_map,
   classification_choices,
 } from "/choices";
 import dayjs from "dayjs";
@@ -74,13 +74,9 @@ export const getDealValue = function (component, deal, fieldName) {
       }
       case "current_negotiation_status": {
         //TODO: Why is there deals with current_negotiation_status === null?
-        let [neg_status, neg_status_group] = ["UNDEFINED", null];
-        if (deal.current_negotiation_status) {
-          [neg_status, neg_status_group] = negotiation_status_map[
-            deal.current_negotiation_status
-          ];
-        }
-        return neg_status_group ? `${neg_status_group} (${neg_status})` : neg_status;
+        return deal.current_negotiation_status
+          ? flat_negotiation_status_map[deal.current_negotiation_status]
+          : "UNDEFINED";
       }
       case "current_implementation_status": {
         return deal.current_implementation_status

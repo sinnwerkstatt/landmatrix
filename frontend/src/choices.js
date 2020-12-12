@@ -45,6 +45,20 @@ export const negotiation_status_map = {
   CONTRACT_EXPIRED: ["Contract expired", ""],
   CHANGE_OF_OWNERSHIP: ["Change of ownership", ""],
 };
+export const flat_negotiation_status_map = {
+  EXPRESSION_OF_INTEREST: "Intended (Expression of interest)",
+  UNDER_NEGOTIATION: "Intended (Under negotiation)",
+  MEMORANDUM_OF_UNDERSTANDING: "Intended (Memorandum of understanding)",
+
+  ORAL_AGREEMENT: "Concluded (Oral agreement)",
+  CONTRACT_SIGNED: "Concluded (Contract signed)",
+
+  NEGOTIATIONS_FAILED: "Failed (Negotiations failed)",
+  CONTRACT_CANCELED: "Failed (Contract canceled)",
+
+  CONTRACT_EXPIRED: "Contract expired",
+  CHANGE_OF_OWNERSHIP: "Change of ownership",
+};
 
 export const intention_of_investment_choices = {
   Agriculture: {

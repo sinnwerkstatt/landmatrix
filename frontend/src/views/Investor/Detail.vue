@@ -73,12 +73,52 @@
           </thead>
           <tbody>
             <tr v-for="involvement in involvements">
-              <td v-html="investorValue(involvement.investor, 'id')"></td>
-              <td v-html="investorValue(involvement.investor, 'name')"></td>
-              <td v-html="investorValue(involvement.investor, 'country')"></td>
-              <td v-html="investorValue(involvement.investor, 'classification')"></td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="['text-center']"
+                  :value_classes="['id-display', 'investor-id-display']"
+                  fieldname="id"
+                  :value="involvement.investor.id"
+                  model="investor"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="name"
+                  :value="involvement.investor.name"
+                  model="investor"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="country"
+                  :value="involvement.investor.country"
+                  model="investor"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="classification"
+                  :value="involvement.investor.classification"
+                  model="investor"
+                  :show_label="false"
+                />
+              </td>
               <td>{{ detect_role(involvement) }}</td>
-              <td>{{ involvement.percentage }}</td>
+              <td>
+                <span v-if="involvement.percentage">
+                  {{ involvement.percentage }} %
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -104,12 +144,60 @@
           </thead>
           <tbody>
             <tr v-for="deal in deals">
-              <td v-html="dealValue(deal, 'id')"></td>
-              <td v-html="dealValue(deal, 'country')"></td>
-              <td v-html="dealValue(deal, 'intention_of_investment')"></td>
-              <td v-html="dealValue(deal, 'current_negotiation_status')"></td>
-              <td v-html="dealValue(deal, 'current_implementation_status')"></td>
-              <td v-html="dealValue(deal, 'deal_size')"></td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="['text-center']"
+                  :value_classes="['id-display', 'deal-id-display']"
+                  fieldname="id"
+                  :value="deal.id"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="country"
+                  :value="deal.country"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="current_intention_of_investment"
+                  :value="deal.current_intention_of_investment"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="current_negotiation_status"
+                  :value="deal.current_negotiation_status"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="[]"
+                  fieldname="current_implementation_status"
+                  :value="deal.current_implementation_status"
+                  :show_label="false"
+                />
+              </td>
+              <td>
+                <DisplayField
+                  :wrapper_classes="[]"
+                  :value_classes="['deal-size-display']"
+                  fieldname="deal_size"
+                  :value="deal.deal_size"
+                  :show_label="false"
+                />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -131,7 +219,6 @@
 <script>
   import store from "/store";
   import { mapState } from "vuex";
-  import { getDealValue, getInvestorValue } from "/components/Data/table_mappings";
   import InvestorGraph from "/components/Investor/InvestorGraph";
   import DisplayField from "/components/Fields/DisplayField";
   import LoadingPulse from "/components/Data/LoadingPulse";
@@ -204,12 +291,6 @@
             return "Involved in as Tertiary investor/lender";
         }
       },
-      investorValue(investor, fieldName) {
-        return getInvestorValue(this, investor, fieldName);
-      },
-      dealValue(deal, fieldName) {
-        return getDealValue(this, deal, fieldName);
-      },
       onNewDepth(value) {
         if (value > this.depth) {
           this.depth = +value;
@@ -243,7 +324,7 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
+  @import "src/scss/colors";
 
   .investor-detail {
     h1 {
@@ -254,6 +335,47 @@
       &:before {
         display: none;
       }
+    }
+  }
+  .id-display {
+    > div > a {
+      display: inline;
+      padding: 0.2em 0.6em 0.3em;
+      font-size: 75%;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff !important;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25em;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  .investor-id-display {
+    > div > a {
+      background-color: $lm_investor;
+      &:hover {
+        background-color: darken($lm_investor, 10%);
+      }
+    }
+  }
+  .deal-id-display {
+    > div > a {
+      background-color: $lm_orange;
+      &:hover {
+        background-color: darken($lm_orange, 10%);
+      }
+    }
+  }
+  .deal-size-display {
+    &:after {
+      content: "ha";
+    }
+    div {
+      display: inline;
     }
   }
 </style>

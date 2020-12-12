@@ -13,13 +13,12 @@
   import { flatten_choices } from "/utils";
 
   export default {
-    props: ["formfield", "value"],
+    props: ["formfield", "value", "model"],
     methods: {
       parseVal(val) {
         if (val) {
-          let choices = flatten_choices(this.formfield.choices);
-          if (choices) return choices[val];
-          return val;
+          let choices = flatten_choices(this.formfield.choices, true);
+          return choices ? choices[val] : val;
         }
         return "n/a";
       },

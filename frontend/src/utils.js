@@ -1,12 +1,12 @@
-export function flatten_choices(choices) {
+export function flatten_choices(choices, append_group = false) {
   if (choices) {
     let newchoices = {};
     for (let [key, value] of Object.entries(choices)) {
       if (typeof value == "string") {
         newchoices[key] = value;
       } else {
-        for (let [key, v] of Object.entries(value)) {
-          newchoices[key] = v;
+        for (let [k, v] of Object.entries(value)) {
+          newchoices[k] = append_group ? `${key} (${v})` : v;
         }
       }
     }

@@ -9,7 +9,7 @@
 
 <script>
   export default {
-    props: ["formfield", "value"],
+    props: ["formfield", "value", "model"],
     data() {
       return {
         MEDIA_URL: MEDIA_URL,

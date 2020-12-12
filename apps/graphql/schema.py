@@ -28,7 +28,6 @@ from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
     resolve_investor,
     resolve_investors,
-    investor_type,
     # resolve_involvements,
     resolve_investorversions,
 )
@@ -91,5 +90,4 @@ schema = make_executable_schema(
     mutation,
     user_type,
     user_regional_info_type,
-    investor_type,
 )

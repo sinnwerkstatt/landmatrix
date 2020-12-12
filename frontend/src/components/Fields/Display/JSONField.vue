@@ -21,7 +21,7 @@
   import { flatten_choices } from "/utils";
 
   export default {
-    props: ["formfield", "value"],
+    props: ["formfield", "value", "model"],
     data() {
       return {
         vals: this.value ? this.value : [{ date: null, value: null }],
