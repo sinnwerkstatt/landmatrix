@@ -52,9 +52,19 @@
     },
     computed: {
       messages() {
-        return this.$store.state.page.messages.filter(
-          (x) => !this.acknowledgedMessages.includes(x.id)
-        );
+        if (
+          document.referrer &&
+          document.referrer.startsWith(
+            window.location.protocol + "//" + window.location.hostname
+          )
+        ) {
+          // dont display messages when coming from internal referer
+          return [];
+        } else {
+          return this.$store.state.page.messages.filter(
+            (x) => !this.acknowledgedMessages.includes(x.id)
+          );
+        }
       },
       msg() {
         if (this.messages.length) {

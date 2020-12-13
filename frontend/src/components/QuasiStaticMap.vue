@@ -110,13 +110,13 @@
         }
       },
       _drawCountryMarkers() {
-        // let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
+        let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
         for (let mark of this.markers) {
           let circle = L.marker(mark.coordinates);
-          this.featureGroup.addLayer(circle);
-          // mcluster.addLayer(circle);
+          // this.featureGroup.addLayer(circle);
+          mcluster.addLayer(circle);
         }
-        // this.featureGroup.addLayer(mcluster);
+        this.featureGroup.addLayer(mcluster);
       },
       drawMarkers() {
         if (!this.map || this.markers.length === 0) return;

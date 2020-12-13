@@ -36,7 +36,11 @@ def resolve_markers(
         ]
         return markers
     if country_id:
-        markers = list(deals.filter(country_id=country_id).values("locations__point"))
+        markers = list(
+            deals.filter(country_id=country_id)
+            .exclude(locations__point=None)
+            .values("locations__point")
+        )
         return [
             {"coordinates": [x["locations__point"].y, x["locations__point"].x]}
             for x in markers
