@@ -95,7 +95,7 @@
             id: mark.region_id,
           }).name;
 
-          styleCircle(circle, mark.count / 50, coun_reg, true, 3);
+          styleCircle(circle, mark.count / 50, coun_reg, true, 30);
         }
       },
       _drawRegionMarkers() {
@@ -105,7 +105,7 @@
             country_id: mark.country_id,
           });
           this.featureGroup.addLayer(circle);
-          styleCircle(circle, mark.count / 20, "", true, 5);
+          styleCircle(circle, mark.count / 20, mark.count, true, 15);
         }
       },
       _drawCountryMarkers() {
