@@ -9,9 +9,10 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def custom_messages(context):
     request = context.request
-    base_url = request.scheme + "://" + request.META['HTTP_HOST']
-    is_internal_referer = 'HTTP_REFERER' in request.META and request.META[
-        'HTTP_REFERER'].startswith(base_url)
+    base_url = request.scheme + "://" + request.META["HTTP_HOST"]
+    is_internal_referer = "HTTP_REFERER" in request.META and request.META[
+        "HTTP_REFERER"
+    ].startswith(base_url)
     if is_internal_referer:
         return []
     else:
