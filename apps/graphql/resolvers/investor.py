@@ -30,7 +30,6 @@ def resolve_investor(
             filtered_fields += [field]
 
     if version:
-        print("VERSIO!", version)
         rev = Revision.objects.get(id=version)
         investor = rev.investorversion_set.get().fields
         # investor["involvements"] = [
