@@ -56,6 +56,7 @@
       bigMapReady(map) {
         map.addLayer(this.featureGroup);
         this.map = map;
+        this.drawMarkers();
         this.focusMap();
       },
       clearMap() {
@@ -118,6 +119,7 @@
         // this.featureGroup.addLayer(mcluster);
       },
       drawMarkers() {
+        if (!this.map || this.markers.length === 0) return;
         if (!this.region_id && !this.country_id) this._drawGlobalMarkers();
         if (this.region_id) this._drawRegionMarkers();
         if (this.country_id) this._drawCountryMarkers();
