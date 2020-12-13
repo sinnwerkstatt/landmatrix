@@ -95,7 +95,7 @@
             id: mark.region_id,
           }).name;
 
-          styleCircle(circle, mark.count, coun_reg);
+          styleCircle(circle, mark.count / 50, coun_reg, true, 3);
         }
       },
       _drawRegionMarkers() {
@@ -109,12 +109,13 @@
         }
       },
       _drawCountryMarkers() {
-        let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
+        // let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
         for (let mark of this.markers) {
           let circle = L.marker(mark.coordinates);
-          mcluster.addLayer(circle);
+          this.featureGroup.addLayer(circle);
+          // mcluster.addLayer(circle);
         }
-        this.featureGroup.addLayer(mcluster);
+        // this.featureGroup.addLayer(mcluster);
       },
       drawMarkers() {
         if (!this.region_id && !this.country_id) this._drawGlobalMarkers();
