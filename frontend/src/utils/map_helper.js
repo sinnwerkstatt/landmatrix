@@ -21,10 +21,10 @@ export function styleCircle(
 
   let factor;
   if (dealsCount) {
-    hoverlabel.innerHTML = `<b>${size}</b> locations`;
+    hoverlabel.innerHTML = `<b>${size.toLocaleString()}</b> locations`;
     factor = Math.max(Math.log(size) * 17, maxFactor);
   } else {
-    hoverlabel.innerHTML = `${size} hectares`;
+    hoverlabel.innerHTML = `${size.toLocaleString()} hectares`;
     factor = Math.max(Math.log(size) * 6, maxFactor);
   }
 
