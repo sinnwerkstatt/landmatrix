@@ -42,6 +42,7 @@
       <div
         class="col-lg-8 col-xl-6 mb-3"
         :class="{ loading_wrapper: !graphDataIsReady }"
+        v-if="!investor_version"
       >
         <div v-if="!graphDataIsReady" style="height: 400px;">
           <LoadingPulse />
@@ -52,6 +53,17 @@
           @newDepth="onNewDepth"
           :initDepth="depth"
         ></InvestorGraph>
+      </div>
+      <div
+        v-else
+        class="col-lg-8 col-xl-6 mb-3 d-flex justify-center align-items-center"
+        style="color: #585858; background: #d4d4d4; border-radius: 5px;"
+      >
+        {{
+          $t(
+            "You're viewing an old version of this Investor, for which we don't have this diagram. To avoid confusion, it is deactivated here."
+          )
+        }}
       </div>
     </div>
 
