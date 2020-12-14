@@ -152,7 +152,7 @@
         {% custom_messages as custommessages %}
         {% for message in custommessages %}
           <div class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
-            {% if message.title %}<div><strong>{{ message.title }}</strong></div> {% endif %}{{ message.text|safe|urlize }}
+            {% if message.title %}<div><strong>{{ message.title }}</strong></div> {% endif %}{{ message.text|richtext }}
           </div>
         {% endfor %}
         {% for message in messages %}
