@@ -15,7 +15,8 @@ def custom_messages(context):
         if "HTTP_REFERER" in request.META:
             ref = request.META["HTTP_REFERER"]
             if ref.startswith("https://" + request.META["HTTP_HOST"]) or ref.startswith(
-                "http://" + request.META["HTTP_HOST"]):
+                "http://" + request.META["HTTP_HOST"]
+            ):
                 return []
 
     return Message.objects.filter(is_active=True).exclude(
