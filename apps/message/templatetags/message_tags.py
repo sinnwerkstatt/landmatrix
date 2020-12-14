@@ -10,6 +10,7 @@ register = template.Library()
 def custom_messages(context):
     request = context.request
 
+    # only show warning messages when coming from internal referrer
     if "HTTP_HOST" in request.META:
         base_url = "https://" + request.META["HTTP_HOST"]
         if "HTTP_REFERER" in request.META:
@@ -17,7 +18,9 @@ def custom_messages(context):
             if ref.startswith("https://" + request.META["HTTP_HOST"]) or ref.startswith(
                 "http://" + request.META["HTTP_HOST"]
             ):
-                return []
+                Message.objects.filter(is_active=True).exclude(
+                    expires_at__lte=timezone.localdate()
+                ).filter(level=Message.LEVEL_WARNING)
 
     return Message.objects.filter(is_active=True).exclude(
         expires_at__lte=timezone.localdate()
