@@ -11,12 +11,12 @@ def custom_messages(context):
     request = context.request
 
     if "HTTP_HOST" in request.META:
-        base_url = request.scheme + "://" + request.META["HTTP_HOST"]
-        is_internal_referer = "HTTP_REFERER" in request.META and request.META[
-            "HTTP_REFERER"
-        ].startswith(base_url)
-        if is_internal_referer:
-            return []
+        base_url = "https://" + request.META["HTTP_HOST"]
+        if "HTTP_REFERER" in request.META:
+            ref = request.META["HTTP_REFERER"]
+            if ref.startswith("https://" + request.META["HTTP_HOST"]) or ref.startswith(
+                "http://" + request.META["HTTP_HOST"]):
+                return []
 
     return Message.objects.filter(is_active=True).exclude(
         expires_at__lte=timezone.localdate()
