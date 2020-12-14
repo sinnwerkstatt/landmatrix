@@ -6,6 +6,6 @@ from .oldmodels import (
     RegionIndex,
     CountryIndex,
 )
-from .newmodels import ObservatoryIndexPage, ObservatoryPage
+from .newmodels import AboutIndexPage, ObservatoryIndexPage, ObservatoryPage
 
 from .chart_descriptions import ChartDescriptionsSettings

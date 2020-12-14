@@ -29,6 +29,11 @@
           case "wagtailcms.ObservatoryIndexPage":
             this.$router.push("/observatory/global/");
             return;
+          case "wagtailcms.AboutIndexPage":
+            this.$router.push(
+              `/about/${this.$store.state.page.aboutPages[0].meta.slug}/`
+            );
+            return;
           default:
             return WagtailPage;
         }

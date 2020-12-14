@@ -1,7 +1,7 @@
-from apps.blog.models import BlogPage, BlogIndexPage
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
+from apps.blog.models import BlogPage, BlogIndexPage
 from .models import *
 
 
@@ -51,6 +51,11 @@ class BlogIndexPageTR(TranslationOptions):
 
 @register(BlogPage)
 class BlogPageTR(TranslationOptions):
+    pass
+
+
+@register(AboutIndexPage)
+class AboutIndexPageTR(TranslationOptions):
     pass
 
 

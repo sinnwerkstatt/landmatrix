@@ -1,5 +1,5 @@
-from django.db import models
 from django import forms
+from django.db import models
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -14,7 +14,13 @@ from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
+class AboutIndexPage(Page):
+    max_count = 1
+    subpage_types = ["wagtailcms.WagtailPage"]
+
+
 class ObservatoryIndexPage(Page):
+    max_count = 1
     subpage_types = ["wagtailcms.ObservatoryPage"]
 
 
@@ -54,9 +60,9 @@ class ObservatoryPage(Page):
         StreamFieldPanel("body"),
     ]
     promote_panels = [
-        FieldPanel("short_description", widget=forms.Textarea),
-        FieldPanel("twitter_username"),
-    ] + Page.promote_panels
+                         FieldPanel("short_description", widget=forms.Textarea),
+                         FieldPanel("twitter_username"),
+                     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 

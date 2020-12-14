@@ -59,6 +59,7 @@ class WagtailPage(Page):
 
 
 class RegionIndex(Page):
+    max_count = 1
     template = "wagtailcms/region_page.html"
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -119,6 +120,7 @@ class RegionPage(Page):
 
 
 class CountryIndex(Page):
+    max_count = 1
     template = "wagtailcms/country_page.html"
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)

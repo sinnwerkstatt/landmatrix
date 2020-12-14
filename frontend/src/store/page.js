@@ -5,6 +5,7 @@ export const pageModule = {
     user: null,
     countries: [],
     regions: [],
+    aboutPages: [],
     observatories: [],
     messages: [],
     wagtailPage: null,
@@ -58,6 +59,9 @@ export const pageModule = {
     setRegions(state, regions) {
       state.regions = regions;
     },
+    setAboutPages(state, aboutPages) {
+      state.aboutPages = aboutPages;
+    },
     setObservatories(state, observatories) {
       state.observatories = observatories;
     },
@@ -70,7 +74,6 @@ export const pageModule = {
     setMessages(state, messages) {
       state.messages = messages;
     },
-
     setTitle(state, title) {
       state.title = title;
     },
@@ -93,6 +96,29 @@ export const pageModule = {
           .then((response) => {
             context.commit("setObservatories", response.data.items);
             resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      });
+    },
+    fetchAboutPages(context) {
+      return new Promise(function (resolve, reject) {
+        let indexUrl = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
+        axios
+          .get(indexUrl)
+          .then((response) => {
+            let indexPageId = response.data.items[0].id;
+            let pagesUrl = `/wagtailapi/v2/pages/?child_of=${indexPageId}`;
+            axios
+              .get(pagesUrl)
+              .then((response) => {
+                context.commit("setAboutPages", response.data.items);
+                resolve();
+              })
+              .catch(() => {
+                reject();
+              });
           })
           .catch(() => {
             reject();

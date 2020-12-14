@@ -22,6 +22,7 @@ COMMENTS_APP = getattr(settings, "COMMENTS_APP", None)
 
 
 class BlogIndexPage(BlogIndexPageAbstract):
+    max_count = 1
     class Meta:
         verbose_name = _("Blog index")
 

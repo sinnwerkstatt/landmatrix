@@ -105,7 +105,7 @@
             </a>
             <div class="dropdown-menu">
               <router-link
-                v-for="about_link in about_links"
+                v-for="about_link in aboutLinks"
                 :to="about_link.link"
                 class="dropdown-item"
                 @click.native="closeMenu"
@@ -115,17 +115,17 @@
             </div>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="`/faq/`" @click.native="closeMenu">{{
-              $t("FAQ")
-            }}</router-link>
+            <router-link class="nav-link" :to="`/faq/`" @click.native="closeMenu"
+              >{{ $t("FAQ") }}
+            </router-link>
           </li>
           <li class="nav-item">
             <router-link
               class="nav-link"
               :to="`/get-involved/`"
               @click.native="closeMenu"
-              >{{ $t("Contribute") }}</router-link
-            >
+              >{{ $t("Contribute") }}
+            </router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -295,6 +295,17 @@
       user() {
         return this.$store.state.page.user;
       },
+      aboutPages() {
+        return this.$store.state.page.aboutPages;
+      },
+      aboutLinks() {
+        return this.$store.state.page.aboutPages.map((page) => {
+          return {
+            name: page.title,
+            link: `/about/${page.meta.slug}/`,
+          };
+        });
+      },
       observatories_group() {
         let ret = { global: [], regions: [], countries: [] };
         this.$store.state.page.observatories.forEach((ob) => {
@@ -357,19 +368,23 @@
   .navbar {
     border-bottom: 10px solid $lm_orange;
     padding: 0;
+
     .dropdown-menu {
       border: 1px solid $lm_orange;
       border-radius: 0;
       padding: 0;
+
       .dropdown-menu-group + .dropdown-menu-group {
         margin: 0;
         border-top: 1px solid #e9ecef;
       }
+
       .dropdown-item {
         padding: 0.5rem 1rem;
       }
     }
   }
+
   .navbar-nav {
     .navbar-text {
       padding-top: 0.2rem;
@@ -381,6 +396,7 @@
     margin-top: 2px;
     margin-right: 1.5rem;
     margin-left: 0.7rem;
+
     > img {
       height: 38px;
       width: 144px;
