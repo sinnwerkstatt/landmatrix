@@ -18,7 +18,7 @@ def custom_messages(context):
             if ref.startswith("https://" + request.META["HTTP_HOST"]) or ref.startswith(
                 "http://" + request.META["HTTP_HOST"]
             ):
-                Message.objects.filter(is_active=True).exclude(
+                return Message.objects.filter(is_active=True).exclude(
                     expires_at__lte=timezone.localdate()
                 ).filter(level=Message.LEVEL_WARNING)
 
