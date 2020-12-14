@@ -191,10 +191,12 @@
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
               <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
               <a class="dropdown-item" href="/editor/manage/">{{ $t("Manage") }}</a>
-              <a class="dropdown-item" href="/deal/add/">{{ $t("Add a deal") }}</a>
-              <a class="dropdown-item" href="/newdeal/case_statistics/">{{
-                $t("Case statistics")
-              }}</a>
+              <a class="dropdown-item" href="/legacy/deal/add/">
+                {{ $t("Add a deal") }}
+              </a>
+              <router-link class="dropdown-item" :to="{ name: 'case_statistics' }">
+                {{ $t("Case statistics") }}
+              </router-link>
               <a class="dropdown-item" @click.prevent="dispatchLogout">{{
                 $t("Logout")
               }}</a>
