@@ -75,18 +75,15 @@ def resolve_investors(
         user=info.context["request"].user, subset=subset
     ).order_by(sort)
 
-    fields = get_fields(info)
-    if "country" in fields:
-        qs = qs.prefetch_related("country")
-    if "deals" in fields:
-        qs = qs.prefetch_related("deals")
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     if filters:
         qs = qs.filter(parse_filters(filters))
 
     if limit != 0:
         qs = qs[:limit]
-    return qs
+
+    return qs_values_to_dict(qs, fields, ["involvements", "deals"])
 
 
 def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
