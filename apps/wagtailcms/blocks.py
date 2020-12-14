@@ -334,8 +334,18 @@ SIMPLE_CONTENT_BLOCKS = [
     (
         "paragraph",
         RichTextBlock(
-            features=["bold", "italic", "h2", "h3", "ol", "ul", "hr", "link", "image",
-                      "document-link"]
+            features=[
+                "bold",
+                "italic",
+                "h2",
+                "h3",
+                "ol",
+                "ul",
+                "hr",
+                "link",
+                "image",
+                "document-link",
+            ]
         ),
     ),
     ("link", LinkBlock(icon="link")),
