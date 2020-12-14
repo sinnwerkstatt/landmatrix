@@ -14,7 +14,9 @@
             <div class="readmore" v-if="!readMore">
               <p><a href="" @click.prevent="readMore = true">Read more</a></p>
             </div>
-            <Streamfield v-if="readMore" :content="content" />
+            <div class="row">
+              <Streamfield v-if="readMore" :content="content" />
+            </div>
           </div>
         </div>
       </div>

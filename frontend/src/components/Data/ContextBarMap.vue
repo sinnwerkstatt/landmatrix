@@ -45,7 +45,7 @@
         ></StatusPieChart>
       </div>
       <div class="get-involved">
-        <router-link :to="`/get-involved/`">{{ $t("Contribute") }}</router-link>
+        <router-link :to="`/contribute/`">{{ $t("Contribute") }}</router-link>
       </div>
     </div>
   </ContextBarContainer>

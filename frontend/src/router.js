@@ -134,6 +134,7 @@ const router = new Router({
     { path: "/get-involved", redirect: "/contribute" },
     { path: "/region/:region", redirect: "/observatory/:region" },
     { path: "/country/:country", redirect: "/observatory/:country" },
+    { path: "/global", redirect: "/observatory/global" },
     {
       path: "/case_statistics/",
       name: "case_statistics",

@@ -120,10 +120,7 @@
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              :to="`/get-involved/`"
-              @click.native="closeMenu"
+            <router-link class="nav-link" :to="`/contribute/`" @click.native="closeMenu"
               >{{ $t("Contribute") }}
             </router-link>
           </li>
