@@ -84,10 +84,9 @@ export const investors_query = {
     }
   `,
   variables() {
-    let user = this.$store.state.page.user;
     return {
       limit: 0,
-      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };
@@ -174,11 +173,10 @@ export const markers_query = {
     }
   `,
   variables() {
-    let user = this.$store.state.page.user;
     return {
       region_id: +this.region_id,
       country_id: +this.country_id,
-      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };
@@ -190,11 +188,10 @@ export const deal_aggregations_query = {
     }
   `,
   variables() {
-    let user = this.$store.state.page.user;
     return {
       fields: ["current_negotiation_status"],
       filters: this.locationFilter,
-      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };

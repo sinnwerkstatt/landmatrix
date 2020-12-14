@@ -21,6 +21,9 @@ export const pageModule = {
         ? state.regions.find((region) => region.id === +id)
         : state.countries.find((countries) => countries.id === +id);
     },
+    userAuthenticated: (state) => {
+      return !!(state.user && state.user.is_authenticated);
+    },
   },
   mutations: {
     setUser(state, user) {

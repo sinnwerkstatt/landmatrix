@@ -408,7 +408,7 @@
               value:"${this.selectedCountry.id}"
            },`;
         }
-        if (this.selectedRegion && this.selectedRegion.id != -1) {
+        if (this.selectedRegion && this.selectedRegion.id !== -1) {
           filterLocation = `{
               field:"country.fk_region.id",
               operation:EQ,
@@ -539,7 +539,11 @@
       },
     },
     beforeRouteEnter(to, from, next) {
-      next();
+      next((vm) => {
+        if (!vm.$store.getters.userAuthenticated) {
+          window.location = `/accounts/login/?next=${to.path}`;
+        }
+      });
     },
   };
 </script>

@@ -52,7 +52,11 @@
           { name: title },
         ],
       });
-      next();
+      next((vm) => {
+        if (!vm.$store.getters.userAuthenticated) {
+          window.location = `/accounts/login/?next=${to.path}`;
+        }
+      });
     },
   };
 </script>
