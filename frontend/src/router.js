@@ -67,18 +67,6 @@ const router = new Router({
       path: "/data/investors/",
       redirect: { name: "list_investors" },
     },
-    // {
-    //   path: "/charts/",
-    //   component: Charts,
-    //   children: [
-    //     {
-    //       path: "dynamics/",
-    //       name: "dynamics-overview",
-    //       component: DynamicsOverview,
-    //     },
-
-    //   ],
-    // },
     {
       path: "/list/",
       redirect: { name: "list_deals" },
@@ -134,6 +122,17 @@ const router = new Router({
       name: "dashboard",
       component: Dashboard,
     },
+    {
+      path: "/the-land-matrix-initiative",
+      redirect: "/about/the-land-matrix-initiative",
+    },
+    { path: "/stay-informed", redirect: "/resources" },
+    { path: "/partners-and-donors", redirect: "/about/partners-and-donors" },
+    { path: "/privacy-policy", redirect: "/about/privacy-policy" },
+    { path: "/disclaimer", redirect: "/about/disclaimer" },
+    { path: "/impressum-legal-notice", redirect: "/about/impressum-legal-notice" },
+    // TODO: redirect regions
+    // TODO: redirect countries
     {
       path: "/case_statistics/",
       name: "case_statistics",

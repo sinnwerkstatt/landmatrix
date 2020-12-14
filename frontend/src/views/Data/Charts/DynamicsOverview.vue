@@ -53,8 +53,6 @@
     <template v-slot:ContextBar>
       <h2 class="bar-title">Dynamics overview charts</h2>
       <div v-html="chart_desc" />
-
-      <p>Show segmentation by number of deals or deal size:</p>
       <DealDisplayToggle />
     </template>
   </ChartsContainer>

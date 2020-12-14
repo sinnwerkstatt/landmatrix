@@ -130,9 +130,6 @@
     apollo: {
       deal_aggregations: deal_aggregations_query,
       articles: {
-        skip() {
-          return this.deals.length == 0;
-        },
         query: gql`
           query {
             articles: blogpages {

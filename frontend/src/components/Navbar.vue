@@ -84,7 +84,7 @@
               <router-link
                 v-for="cat in blogcategories"
                 class="dropdown-item"
-                :to="`/stay-informed/?category=${cat.slug}`"
+                :to="`/resources/?category=${cat.slug}`"
                 @click.native="closeMenu"
               >
                 {{ cat.name }}
@@ -280,13 +280,6 @@
           { name: "Deals", link: { name: "list_deals" } },
           { name: "Investors", link: { name: "list_investors" } },
           { name: "Charts", link: { name: "charts" } },
-        ],
-        about_links: [
-          { name: "Land Matrix Initiative", link: "/the-land-matrix-initiative/" },
-          { name: "Partners and donors", link: "/partners-and-donors/" },
-          { name: "Privacy policy", link: "/privacy-policy/" },
-          { name: "Disclaimer", link: "/disclaimer/" },
-          { name: "Impressum", link: "/impressum-legal-notice/" },
         ],
       };
     },

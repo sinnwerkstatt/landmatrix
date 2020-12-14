@@ -85,7 +85,7 @@
       pageTitle() {
         this.category = this.$route.query.category || null;
         this.tag = this.$route.query.tag || null;
-        let title = "Stay Informed";
+        let title = this.$store.state.page.wagtailPage.title;
         if (this.tag) {
           title += ` - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`;
         }
