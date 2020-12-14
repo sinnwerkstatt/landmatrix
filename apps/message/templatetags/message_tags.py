@@ -20,7 +20,7 @@ def custom_messages(context):
             ):
                 return Message.objects.filter(is_active=True).exclude(
                     expires_at__lte=timezone.localdate()
-                ).filter(level=Message.LEVEL_WARNING)
+                ).exclude(level=Message.LEVEL_INFO)
 
     return Message.objects.filter(is_active=True).exclude(
         expires_at__lte=timezone.localdate()
