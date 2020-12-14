@@ -1,7 +1,6 @@
 import json
 import re
 
-from apps.blog.models import BlogPage
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
 from wagtail.core import blocks
@@ -11,6 +10,7 @@ from wagtail.core.rich_text import expand_db_html
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
+from apps.blog.models import BlogPage
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.twitter import TwitterTimeline
@@ -334,7 +334,8 @@ SIMPLE_CONTENT_BLOCKS = [
     (
         "paragraph",
         RichTextBlock(
-            features=["bold", "italic", "h2", "h3", "ol", "ul", "link", "document-link"]
+            features=["bold", "italic", "h2", "h3", "ol", "ul", "hr", "link", "image",
+                      "document-link"]
         ),
     ),
     ("link", LinkBlock(icon="link")),
