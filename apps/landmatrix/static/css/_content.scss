@@ -13,33 +13,6 @@ body {
   color: $lm_medium2;
 }
 
-.wrap h1 {
-  position: relative;
-  text-align: center;
-  color: $lm_orange;
-}
-
-.wrap h1 span {
-  background: #ffffff;
-  padding: 0 15px;
-  position: relative;
-  z-index: 1;
-}
-
-.wrap h1:before {
-  background: #c1c1c1;
-  content: "";
-  display: block;
-  height: 1px;
-  position: absolute;
-  top: 50%;
-  width: 100%;
-}
-
-.wrap h1:before {
-  left: 0;
-}
-
 .debug {
   background-color: hotpink;
 }

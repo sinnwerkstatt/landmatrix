@@ -131,8 +131,9 @@ const router = new Router({
     { path: "/privacy-policy", redirect: "/about/privacy-policy" },
     { path: "/disclaimer", redirect: "/about/disclaimer" },
     { path: "/impressum-legal-notice", redirect: "/about/impressum-legal-notice" },
-    // TODO: redirect regions
-    // TODO: redirect countries
+    { path: "/get-involved", redirect: "/contribute" },
+    { path: "/region/:region", redirect: "/observatory/:region" },
+    { path: "/country/:country", redirect: "/observatory/:country" },
     {
       path: "/case_statistics/",
       name: "case_statistics",

@@ -2,7 +2,7 @@
   <div v-if="title" class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1>{{ title }}</h1>
+        <h1 v-html="title"></h1>
       </div>
     </div>
   </div>
@@ -24,6 +24,9 @@
 
     &:before {
       content: none;
+    }
+    span.small {
+      font-size: 1rem;
     }
   }
 </style>
