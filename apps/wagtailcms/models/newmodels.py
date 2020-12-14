@@ -60,9 +60,9 @@ class ObservatoryPage(Page):
         StreamFieldPanel("body"),
     ]
     promote_panels = [
-                         FieldPanel("short_description", widget=forms.Textarea),
-                         FieldPanel("twitter_username"),
-                     ] + Page.promote_panels
+        FieldPanel("short_description", widget=forms.Textarea),
+        FieldPanel("twitter_username"),
+    ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 

@@ -10,7 +10,7 @@ register = template.Library()
 def custom_messages(context):
     request = context.request
 
-    if 'HTTP_HOST' in request.META:
+    if "HTTP_HOST" in request.META:
         base_url = request.scheme + "://" + request.META["HTTP_HOST"]
         is_internal_referer = "HTTP_REFERER" in request.META and request.META[
             "HTTP_REFERER"
