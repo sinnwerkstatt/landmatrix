@@ -354,7 +354,7 @@
                 type: "country",
                 id: key,
               }).name;
-              styleCircle(circle, xval, regname);
+              styleCircle(circle, xval, regname, this.displayDealsCount);
             }
           );
         } else {
