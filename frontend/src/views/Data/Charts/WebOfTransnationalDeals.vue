@@ -7,7 +7,7 @@
       </div>
     </template>
     <template v-slot:ContextBar>
-      <ContextBarWebOfTransnationalDeals :filters="filtered_filtersForGQL"/>
+      <ContextBarWebOfTransnationalDeals :filters="filtered_filtersForGQL" />
     </template>
   </ChartsContainer>
 </template>
@@ -74,6 +74,11 @@
       filtered_country_id() {
         this.redrawSpider();
       },
+    },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
     },
   };
 </script>

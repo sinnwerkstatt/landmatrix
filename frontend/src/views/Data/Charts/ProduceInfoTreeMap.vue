@@ -255,16 +255,23 @@
         this.drawChart();
       },
     },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
+    },
   };
 </script>
 
 <style lang="scss" scoped>
   #produce-info {
     width: 100%;
+    margin: 4em 2em 2em 2em;
     padding-top: 75%; // aspect ratio 4:3
     position: relative;
-    margin: 4em 1em 1em 1.5em;
     align-self: safe center;
+    max-height: 100%;
+    width: 100%;
 
     > svg {
       position: absolute;

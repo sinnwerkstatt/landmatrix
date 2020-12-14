@@ -244,6 +244,11 @@
         return data;
       },
     },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
+    },
   };
 </script>
 
