@@ -33,13 +33,15 @@
       legacy_link() {
         let base = process.env.NEW_ROUTES === "False" ? "" : "/legacy";
         return base + this.$route.path;
-      }
+      },
     },
   };
 </script>
 
 <style lang="scss" scoped>
   @import "../scss/colors";
+  @import "node_modules/bootstrap/scss/functions";
+  @import "node_modules/bootstrap/scss/variables";
 
   footer {
     background: $lm_dark;
@@ -66,6 +68,12 @@
       position: absolute;
       right: 15px;
       bottom: 1px;
+      a {
+        &:hover {
+          text-decoration: none;
+          color: theme-color-level("primary", -3);
+        }
+      }
     }
   }
 </style>
