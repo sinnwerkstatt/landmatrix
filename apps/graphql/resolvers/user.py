@@ -71,7 +71,7 @@ def resolve_login(_, info, username, password):
 
 def resolve_logout(_, info: GraphQLResolveInfo):
     request = info.context["request"]
-    if info.context.user.is_authenticated:
+    if request.user.is_authenticated:
         auth.logout(request)
         return True
     return False
