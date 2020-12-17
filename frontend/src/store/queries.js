@@ -59,7 +59,13 @@ export const global_rankings_query = {
   `,
   variables() {
     return {
-      filters: this.$store.getters.defaultFiltersForGQL,
+      //filters: this.$store.getters.defaultFiltersForGQL,
+      filters: [
+        {
+          field: "transnational",
+          value: "True",
+        },
+      ],
     };
   },
 };
