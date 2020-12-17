@@ -140,10 +140,16 @@ def country_investments_and_rankings(
     }
 
 
-def global_rankings(obj, info, count=10):
+def global_rankings(obj, info, count=10, filters=None):
+
+    qs = Deal.objects.active()
+
+    if filters:
+        qs = qs.filter(parse_filters(filters))
+
     return {
-        "ranking_deal": list(Deal.objects.active().get_deal_country_rankings())[:count],
-        "ranking_investor": list(Deal.objects.active().get_investor_country_rankings())[
+        "ranking_deal": list(qs.get_deal_country_rankings())[:count],
+        "ranking_investor": list(qs.get_investor_country_rankings())[
             :count
         ],
     }

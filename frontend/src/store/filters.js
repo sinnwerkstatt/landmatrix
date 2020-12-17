@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { arraysAreEqual } from "../utils";
 
-const defaultFilters = {
+const DEFAULT_FILTERS = {
   region_id: null,
   country_id: null,
   // Deal size greater or equal 200ha
@@ -65,14 +65,14 @@ const emptyFilters = {
 const DEFAULT_FILTER_IGNORED_KEYS = ["region_id", "country_id"];
 
 const isDefaultFilter = (filters) => {
-  let defaultKeys = Object.keys(defaultFilters);
+  let defaultKeys = Object.keys(DEFAULT_FILTERS);
   for (let key of Object.keys(filters)) {
     if (DEFAULT_FILTER_IGNORED_KEYS.includes(key)) continue;
     else if (defaultKeys.includes(key)) {
-      if (Array.isArray(defaultFilters[key])) {
-        if (!arraysAreEqual(defaultFilters[key], filters[key])) return false;
+      if (Array.isArray(DEFAULT_FILTERS[key])) {
+        if (!arraysAreEqual(DEFAULT_FILTERS[key], filters[key])) return false;
       } else {
-        if (defaultFilters[key] !== filters[key]) return false;
+        if (DEFAULT_FILTERS[key] !== filters[key]) return false;
       }
     } else return false;
   }
@@ -83,7 +83,7 @@ export default {
   state: () => ({
     filters: (() => {
       // see if we have filters in a cookie, otherwise default Filters.
-      return JSON.parse(Cookies.get("filters") || JSON.stringify(defaultFilters));
+      return JSON.parse(Cookies.get("filters") || JSON.stringify(DEFAULT_FILTERS));
     })(),
     default_filters: [
       {
@@ -107,7 +107,7 @@ export default {
     resetFilters(state) {
       let region_id = state.filters.region_id;
       let country_id = state.filters.country_id;
-      state.filters = JSON.parse(JSON.stringify(defaultFilters));
+      state.filters = JSON.parse(JSON.stringify(DEFAULT_FILTERS));
       state.isDefaultFilter = true;
       state.filters.region_id = region_id;
       state.filters.country_id = country_id;
@@ -140,69 +140,75 @@ export default {
     },
   },
   getters: {
-    filtersForGQL: (state) => {
-      let filters = [];
-      if (state.filters.region_id) {
-        filters.push({
+    filtersForGQL: (state, getters) => {
+      return getters.prepareFilters(state.filters);
+    },
+    defaultFiltersForGQL: (state, getters) => {
+      return getters.prepareFilters(DEFAULT_FILTERS);
+    },
+    prepareFilters: (state) => (filters) => {
+      let filterArray = [];
+      if (filters.region_id) {
+        filterArray.push({
           field: "country.fk_region_id",
-          value: state.filters.region_id.toString(),
+          value: filters.region_id.toString(),
         });
       }
-      if (state.filters.country_id) {
-        filters.push({
+      if (filters.country_id) {
+        filterArray.push({
           field: "country_id",
-          value: state.filters.country_id.toString(),
+          value: filters.country_id.toString(),
         });
       }
-      if (state.filters.deal_size_min) {
-        filters.push({
+      if (filters.deal_size_min) {
+        filterArray.push({
           field: "deal_size",
           operation: "GE",
-          value: state.filters.deal_size_min.toString(),
+          value: filters.deal_size_min.toString(),
         });
       }
-      if (state.filters.deal_size_max) {
-        filters.push({
+      if (filters.deal_size_max) {
+        filterArray.push({
           field: "deal_size",
           operation: "LE",
-          value: state.filters.deal_size_max.toString(),
+          value: filters.deal_size_max.toString(),
         });
       }
-      if (state.filters.negotiation_status.length > 0) {
+      if (filters.negotiation_status.length > 0) {
         let negstat = [];
-        if (state.filters.negotiation_status.includes("CONCLUDED"))
+        if (filters.negotiation_status.includes("CONCLUDED"))
           negstat.push("ORAL_AGREEMENT", "CONTRACT_SIGNED");
-        if (state.filters.negotiation_status.includes("INTENDED"))
+        if (filters.negotiation_status.includes("INTENDED"))
           negstat.push(
             "EXPRESSION_OF_INTEREST",
             "UNDER_NEGOTIATION",
             "MEMORANDUM_OF_UNDERSTANDING"
           );
-        if (state.filters.negotiation_status.includes("FAILED"))
+        if (filters.negotiation_status.includes("FAILED"))
           negstat.push("NEGOTIATIONS_FAILED", "CONTRACT_CANCELED");
-        filters.push({
+        filterArray.push({
           field: "current_negotiation_status",
           operation: "IN",
           value: negstat,
         });
       }
 
-      if (state.filters.implementation_status.length > 0) {
-        filters.push({
+      if (filters.implementation_status.length > 0) {
+        filterArray.push({
           field: "current_implementation_status",
           operation: "IN",
-          value: state.filters.implementation_status,
+          value: filters.implementation_status,
         });
       }
 
-      if (state.filters.investor) {
-        filters.push({
+      if (filters.investor) {
+        filterArray.push({
           field: "operating_company",
-          value: state.filters.investor.id.toString(),
+          value: filters.investor.id.toString(),
         });
       }
 
-      if (state.filters.nature_of_deal.length > 0) {
+      if (filters.nature_of_deal.length > 0) {
         let nature_of_deal_choices = [
           "OUTRIGHT_PURCHASE",
           "LEASE",
@@ -212,10 +218,10 @@ export default {
         ];
 
         let diflist = nature_of_deal_choices.filter(
-          (x) => !state.filters.nature_of_deal.includes(x)
+          (x) => !filters.nature_of_deal.includes(x)
         );
         if (diflist.length > 0) {
-          filters.push({
+          filterArray.push({
             field: "nature_of_deal",
             operation: "CONTAINED_BY",
             value: diflist,
@@ -224,27 +230,24 @@ export default {
         }
       }
 
-      if (
-        state.filters.initiation_year_min &&
-        state.filters.initiation_year_min > 1970
-      ) {
-        filters.push({
+      if (filters.initiation_year_min && filters.initiation_year_min > 1970) {
+        filterArray.push({
           field: "initiation_year",
           operation: "GE",
-          value: state.filters.initiation_year_min.toString(),
-          allow_null: state.filters.initiation_year_unknown,
+          value: filters.initiation_year_min.toString(),
+          allow_null: filters.initiation_year_unknown,
         });
       }
-      if (state.filters.initiation_year_max) {
-        filters.push({
+      if (filters.initiation_year_max) {
+        filterArray.push({
           field: "initiation_year",
           operation: "LE",
-          value: state.filters.initiation_year_max.toString(),
-          allow_null: state.filters.initiation_year_unknown,
+          value: filters.initiation_year_max.toString(),
+          allow_null: filters.initiation_year_unknown,
         });
       }
 
-      if (state.filters.intention_of_investment.length > 0) {
+      if (filters.intention_of_investment.length > 0) {
         let intention_of_investment_choices = [
           "BIOFUELS",
           "FOOD_CROPS",
@@ -266,10 +269,10 @@ export default {
           "OTHER",
         ];
         let diflist = intention_of_investment_choices.filter(
-          (x) => !state.filters.intention_of_investment.includes(x)
+          (x) => !filters.intention_of_investment.includes(x)
         );
         if (diflist.length > 0) {
-          filters.push({
+          filterArray.push({
             field: "current_intention_of_investment",
             operation: "OVERLAP",
             value: diflist,
@@ -277,51 +280,51 @@ export default {
           });
         }
       }
-      if (state.filters.produce && state.filters.produce.length > 0) {
+      if (filters.produce && filters.produce.length > 0) {
         let crops = [];
         let animals = [];
         let minerals = [];
-        for (let prod of state.filters.produce) {
+        for (let prod of filters.produce) {
           if (prod.id.startsWith("crop_")) crops.push(prod.value);
           if (prod.id.startsWith("animal_")) animals.push(prod.value);
           if (prod.id.startsWith("mineral_")) minerals.push(prod.value);
         }
         if (crops.length > 0) {
-          filters.push({
+          filterArray.push({
             field: "current_crops",
             operation: "CONTAINS",
             value: crops,
           });
         }
         if (animals.length > 0) {
-          filters.push({
+          filterArray.push({
             field: "current_animals",
             operation: "CONTAINS",
             value: animals,
           });
         }
         if (minerals.length > 0) {
-          filters.push({
+          filterArray.push({
             field: "current_resources",
             operation: "CONTAINS",
             value: minerals,
           });
         }
       }
-      if (!(state.filters.transnational === null)) {
-        filters.push({
+      if (!(filters.transnational === null)) {
+        filterArray.push({
           field: "transnational",
-          value: state.filters.transnational ? "True" : "False",
+          value: filters.transnational ? "True" : "False",
         });
       }
-      if (state.filters.forest_concession) {
-        filters.push({
+      if (filters.forest_concession) {
+        filterArray.push({
           field: "forest_concession",
-          value: state.filters.forest_concession ? "True" : "False",
+          value: filters.forest_concession ? "True" : "False",
         });
       }
 
-      return filters;
+      return filterArray;
     },
   },
 };

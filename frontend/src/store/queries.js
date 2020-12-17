@@ -51,11 +51,18 @@ export const blogcategories_query = gql`
   }
 `;
 
-export const global_rankings_query = gql`
-  query {
-    global_rankings
-  }
-`;
+export const global_rankings_query = {
+  query: gql`
+    query GlobalRankings($filters: [Filter]) {
+      global_rankings(filters: $filters)
+    }
+  `,
+  variables() {
+    return {
+      filters: this.$store.getters.defaultFiltersForGQL,
+    };
+  },
+};
 
 export const country_investments_and_rankings_query = {
   query: gql`

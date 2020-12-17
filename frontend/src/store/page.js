@@ -17,9 +17,18 @@ export const pageModule = {
   }),
   getters: {
     getCountryOrRegion: (state) => ({ type, id }) => {
-      return type === "region"
-        ? state.regions.find((region) => region.id === +id)
-        : state.countries.find((countries) => countries.id === +id);
+      let roc =
+        type === "region"
+          ? state.regions.find((region) => region.id === +id)
+          : state.countries.find((countries) => countries.id === +id);
+
+      if (!roc) {
+        roc = {
+          name: "UNKNOWN",
+        };
+      }
+
+      return roc;
     },
     userAuthenticated: (state) => {
       return !!(state.user && state.user.is_authenticated);

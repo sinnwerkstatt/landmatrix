@@ -51,7 +51,7 @@ type Query {
     ): Statistics
     transnational_deals(filters: [Filter]): WebOfTransnationalDeals
     country_investments_and_rankings(id: Int!, filters: [Filter]): CountryInvestmentsAndRankings
-    global_rankings(count:Int = 10): Rankings
+    global_rankings(count:Int = 10, filters: [Filter]): Rankings
 
     blogpage(id: Int!): BlogPage!
     blogpages(category: String): [BlogPage]
