@@ -149,9 +149,7 @@ def global_rankings(obj, info, count=10, filters=None):
 
     return {
         "ranking_deal": list(qs.get_deal_country_rankings())[:count],
-        "ranking_investor": list(qs.get_investor_country_rankings())[
-            :count
-        ],
+        "ranking_investor": list(qs.get_investor_country_rankings())[:count],
     }
 
 
