@@ -4,6 +4,7 @@ import { arraysAreEqual } from "../utils";
 const DEFAULT_FILTERS = {
   region_id: null,
   country_id: null,
+  investor_country_id: null,
   // Deal size greater or equal 200ha
   // OR?! { field: "intended_size", operation: "GE", value: "200" },
   // NOTE: this might not work like before because we leave out the "intended_size"
@@ -47,6 +48,7 @@ const DEFAULT_FILTERS = {
 const emptyFilters = {
   region_id: null,
   country_id: null,
+  investor_country_id: null,
   deal_size_min: null,
   deal_size_max: null,
   negotiation_status: [],
@@ -62,7 +64,7 @@ const emptyFilters = {
   forest_concession: null,
 };
 
-const DEFAULT_FILTER_IGNORED_KEYS = ["region_id", "country_id"];
+const DEFAULT_FILTER_IGNORED_KEYS = ["region_id", "country_id", "investor_country_id"];
 
 const isDefaultFilter = (filters) => {
   let defaultKeys = Object.keys(DEFAULT_FILTERS);
@@ -91,6 +93,12 @@ function prepareFilters(filters) {
     filterArray.push({
       field: "country_id",
       value: filters.country_id.toString(),
+    });
+  }
+  if (filters.investor_country_id) {
+    filterArray.push({
+      field: "operating_company.country_id",
+      value: filters.investor_country_id.toString(),
     });
   }
   if (filters.deal_size_min) {
@@ -286,20 +294,22 @@ export default {
       }
     },
     resetFilters(state) {
-      let region_id = state.filters.region_id;
-      let country_id = state.filters.country_id;
-      state.filters = JSON.parse(JSON.stringify(DEFAULT_FILTERS));
+      state.filters = {
+        ...JSON.parse(JSON.stringify(DEFAULT_FILTERS)),
+        region_id: state.filters.region_id,
+        country_id: state.filters.country_id,
+        investor_country_id: state.filters.investor_country_id,
+      };
       state.isDefaultFilter = true;
-      state.filters.region_id = region_id;
-      state.filters.country_id = country_id;
     },
     clearFilters(state) {
-      let region_id = state.filters.region_id;
-      let country_id = state.filters.country_id;
-      state.filters = emptyFilters;
+      state.filters = {
+        ...emptyFilters,
+        region_id: state.filters.region_id,
+        country_id: state.filters.country_id,
+        investor_country_id: state.filters.investor_country_id,
+      };
       state.isDefaultFilter = false;
-      state.filters.region_id = region_id;
-      state.filters.country_id = country_id;
     },
   },
   actions: {

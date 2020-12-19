@@ -133,10 +133,11 @@
 
         <FilterCollapse
           :title="$t('Investor')"
-          :clearable="investor"
-          @click="investor = null"
+          :clearable="investor || investor_country"
+          @click="investor = investor_country = null"
         >
           <div>
+            Investor name
             <multiselect
               v-model="investor"
               :options="investors"
@@ -145,6 +146,13 @@
               placeholder="Investor"
               track-by="id"
               label="name"
+            />
+            Country of registration
+            <multiselect
+              v-model="investor_country"
+              :options="countries"
+              label="name"
+              placeholder="Country of registration"
             />
           </div>
         </FilterCollapse>
@@ -368,6 +376,19 @@
           if ((value ? value.id : value) !== this.filters.country_id) {
             this.$store.dispatch("setFilter", {
               filter: "country_id",
+              value: value ? value.id : value,
+            });
+          }
+        },
+      },
+      investor_country: {
+        get() {
+          return this.countries.find((c) => c.id === this.filters.investor_country_id);
+        },
+        set(value) {
+          if ((value ? value.id : value) !== this.filters.investor_country_id) {
+            this.$store.dispatch("setFilter", {
+              filter: "investor_country_id",
               value: value ? value.id : value,
             });
           }

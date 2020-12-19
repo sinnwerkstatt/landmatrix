@@ -274,17 +274,13 @@
         }
       },
       refreshMap() {
-        if (
-          !this.bigmap ||
-          this.deals.length === 0 ||
-          this.markers.length === 0 ||
-          this.skipMapRefresh
-        )
-          return;
+        if (!this.bigmap || this.skipMapRefresh) return;
 
         console.log("Clearing layers");
         this.markersFeatureGroup.clearLayers();
         console.log("Clearing layers: done");
+
+        if (this.deals.length === 0 || this.markers.length === 0) return;
 
         console.log("Refreshing map");
         this.current_zoom = this.bigmap.getZoom();
