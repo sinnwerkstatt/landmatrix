@@ -11,7 +11,13 @@ from apps.utils import qs_values_to_dict
 
 
 def resolve_investor(
-    obj: Any, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"
+    obj: Any,
+    info: GraphQLResolveInfo,
+    id,
+    version=None,
+    subset="PUBLIC",
+    involvements_depth: int = 4,
+    involvements_include_ventures: bool = True,
 ):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
@@ -59,7 +65,9 @@ def resolve_investor(
             )
         ]
     if add_involvements:
-        investor["involvements"] = InvolvementNetwork(True).get_network(id, depth=4)
+        investor["involvements"] = InvolvementNetwork(
+            involvements_include_ventures
+        ).get_network(id, depth=involvements_depth)
     return investor
 
 

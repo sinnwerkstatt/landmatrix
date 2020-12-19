@@ -293,10 +293,14 @@
       investor: {
         query: gql`
           query DealInvestor($id: Int!) {
-            investor(id: $id) {
+            investor(
+              id: $id
+              involvements_depth: 5
+              involvements_include_ventures: false
+            ) {
               id
               name
-              involvements(depth: 5, include_ventures: false)
+              involvements
             }
           }
         `,

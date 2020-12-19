@@ -22,7 +22,8 @@ type Query {
         at_date: Date
     ): [DealVersion]
 
-    investor(id: Int!, version: Int, subset: Subset = PUBLIC): Investor
+    investor(id: Int!, version: Int, subset: Subset = PUBLIC
+        involvements_depth: Int=4, involvements_include_ventures: Boolean=true): Investor
     investors(
         sort: String = "id",
         limit: Int = 20,
