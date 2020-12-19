@@ -202,7 +202,7 @@
     data() {
       return {
         depth: this.initDepth,
-        maxDepth: 7,
+        maxDepth: 9,
         modalData: {},
         network_fs: false,
         showInvestorModal: false,
