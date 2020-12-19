@@ -181,17 +181,6 @@
       content() {
         return this.page ? this.page.body : [];
       },
-      locationFilter() {
-        if (this.page.region) {
-          return [
-            { field: "country.fk_region_id", value: this.page.region.id.toString() },
-          ];
-        } else if (this.page.country) {
-          return [{ field: "country_id", value: this.page.country.id.toString() }];
-        } else {
-          return [];
-        }
-      },
       totalCount() {
         if (!this.deal_aggregations) return;
         return this.deal_aggregations.current_negotiation_status
