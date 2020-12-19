@@ -1,79 +1,78 @@
 type Query {
-    me: User
-    user(id: Int!): User
-    users(sort: String = "id"): [User]
+  me: User
+  user(id: Int!): User
+  users(sort: String = "id"): [User]
 
-    deal(id: Int!, version: Int, subset: Subset = PUBLIC): Deal
-    deals(
-        sort: String = "id",
-        limit: Int = 20,
-        subset: Subset = PUBLIC,
-        filters: [Filter],
-    ): [Deal]
-    deal_aggregations(
-        fields:[String]!,
-        filters: [Filter],
-        subset: Subset = PUBLIC
-    ): DealAggregations
-    dealversions(
-        filters: [Filter],
-        country_id: Int,
-        region_id: Int,
-        at_date: Date
-    ): [DealVersion]
+  deal(id: Int!, version: Int, subset: Subset = PUBLIC): Deal
+  deals(
+    sort: String = "id"
+    limit: Int = 20
+    subset: Subset = PUBLIC
+    filters: [Filter]
+  ): [Deal]
+  deal_aggregations(
+    fields: [String]!
+    filters: [Filter]
+    subset: Subset = PUBLIC
+  ): DealAggregations
+  dealversions(
+    filters: [Filter]
+    country_id: Int
+    region_id: Int
+    at_date: Date
+  ): [DealVersion]
 
-    investor(id: Int!, version: Int, subset: Subset = PUBLIC
-        involvements_depth: Int=4, involvements_include_ventures: Boolean=true): Investor
-    investors(
-        sort: String = "id",
-        limit: Int = 20,
-        subset: Subset = PUBLIC,
-        filters: [Filter],
-    ): [Investor]
-    #    involvements(
-    #        limit: Int = 20,
-    #        filters: [Filter]
-    #    ): [Involvement]
-    investorversions(
-        filters: [Filter]
-    ): [InvestorVersion]
+  investor(
+    id: Int!
+    version: Int
+    subset: Subset = PUBLIC
+    involvements_depth: Int = 4
+    involvements_include_ventures: Boolean = true
+  ): Investor
+  investors(
+    sort: String = "id"
+    limit: Int = 20
+    subset: Subset = PUBLIC
+    filters: [Filter]
+  ): [Investor]
+  investorversions(filters: [Filter]): [InvestorVersion]
 
-    countries: [Country]
-    regions: [Region]
-    animals: [Animal]
-    crops: [Crop]
-    minerals: [Mineral]
+  countries: [Country]
+  regions: [Region]
+  animals: [Animal]
+  crops: [Crop]
+  minerals: [Mineral]
 
-    formfields(language: String ="en"): FormFieldSet
+  formfields(language: String = "en"): FormFieldSet
 
-    statistics(
-        country_id: Int,
-        region_id: Int
-    ): Statistics
-    transnational_deals(filters: [Filter]): WebOfTransnationalDeals
-    country_investments_and_rankings(id: Int!, filters: [Filter]): CountryInvestmentsAndRankings
-    global_rankings(count:Int = 10, filters: [Filter]): Rankings
+  statistics(country_id: Int, region_id: Int): Statistics
+  transnational_deals(filters: [Filter]): WebOfTransnationalDeals
+  country_investments_and_rankings(
+    id: Int!
+    filters: [Filter]
+  ): CountryInvestmentsAndRankings
+  global_rankings(count: Int = 10, filters: [Filter]): Rankings
 
-    blogpage(id: Int!): BlogPage!
-    blogpages(category: String): [BlogPage]
-    blogcategories: [BlogCategory]
+  blogpage(id: Int!): BlogPage!
+  blogpages(category: String): [BlogPage]
+  blogcategories: [BlogCategory]
 
-    chart_descriptions: ChartDescriptions
+  chart_descriptions: ChartDescriptions
 
-    markers(
-        subset: Subset = PUBLIC,
-        region_id: Int = None,
-        country_id: Int = None,
-    ): [Marker]
+  markers(
+    subset: Subset = PUBLIC
+    region_id: Int = None
+    country_id: Int = None
+  ): [Marker]
 }
 
 type FormFieldSet {
-    deal: FormFields
-    location: FormFields
-    contract: FormFields
-    datasource: FormFields
-    investor: FormFields
-    involvement: FormFields
+  deal: FormFields
+  location: FormFields
+  contract: FormFields
+  datasource: FormFields
+  investor: FormFields
+  involvement: FormFields
 }
 
 scalar FormFields

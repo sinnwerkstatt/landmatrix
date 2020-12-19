@@ -1,20 +1,20 @@
+import store from "/store";
+import DynamicsOverview from "/views/Data/Charts/DynamicsOverview";
+import CaseStatistics from "/views/Manager/CaseStatistics";
 import Vue from "vue";
 import Router from "vue-router";
-import store from "/store";
+import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
+import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
 // const DataMap = () => import("./views/Data/GlobalMap");
 import DataMap from "./views/Data/GlobalMap";
 import DataList from "./views/Data/List";
-import DealEdit from "./views/Deal/Edit";
-import DealDetail from "./views/Deal/Detail";
 import DealCompare from "./views/Deal/Compare";
-import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
-import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
-import DynamicsOverview from "/views/Data/Charts/DynamicsOverview";
-import Wagtail from "./views/Wagtail/WagtailSwitch";
-import NotFound from "./views/NotFound";
-import Dashboard from "./views/Manager/Dashboard";
+import DealDetail from "./views/Deal/Detail";
+import DealEdit from "./views/Deal/Edit";
 import InvestorDetail from "./views/Investor/Detail";
-import CaseStatistics from "/views/Manager/CaseStatistics";
+import Dashboard from "./views/Manager/Dashboard";
+import NotFound from "./views/NotFound";
+import Wagtail from "./views/Wagtail/WagtailSwitch";
 
 Vue.use(Router);
 
@@ -112,10 +112,18 @@ const router = new Router({
       props: true,
     },
     {
+      path: "/deal/",
+      redirect: { name: "list_deals" },
+    },
+    {
       path: "/investor/:investor_id/:investor_version?/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,
+    },
+    {
+      path: "/investor/",
+      redirect: { name: "list_investors" },
     },
     {
       path: "/dashboard/",

@@ -8,6 +8,9 @@
         <h1>Deal #{{ deal.id }}</h1>
       </div>
       <div class="col-sm-7 col-md-9 panel-container">
+        <a :href="`/legacy/deal/edit/${deal.id}/`" target="_blank">
+          <i class="fas fa-edit"></i> Edit
+        </a>
         <div class="meta-panel">
           <DisplayField
             :wrapper_classes="['inlinefield']"

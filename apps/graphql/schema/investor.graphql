@@ -1,45 +1,44 @@
 type Investor {
-    id: Int!
-    name: String!
-    country: Country
-    classification: String
-    homepage: String
-    opencorporates: String
-    comment: String
+  id: Int!
+  name: String!
+  country: Country
+  classification: String
+  homepage: String
+  opencorporates: String
+  comment: String
 
-    #    ventures: [Involvement]
-    #    investors: [Involvement]
-    involvements: InvolvementsNetwork
-    deals: [Deal]
+  #    ventures: [Involvement]
+  #    investors: [Involvement]
+  involvements: InvolvementsNetwork
+  deals: [Deal]
 
-    status: Int
-    draft_status: Int
-    created_at: DateTime
-    modified_at: DateTime
+  status: Int
+  draft_status: Int
+  created_at: DateTime
+  modified_at: DateTime
 
-    is_actually_unknown: Boolean
-    versions: [InvestorVersion]
-
+  is_actually_unknown: Boolean
+  versions: [InvestorVersion]
 }
 
 type InvestorVersion {
-    id: Int!
-    investor: Investor
-    revision: Revision
-    object_id: Int
+  id: Int!
+  investor: Investor
+  revision: Revision
+  object_id: Int
 }
 
 type Involvement {
-    investor: Investor
-    venture: Investor
-    role: String
-    investment_type: [String]
-    percentage: Float
-    loans_amount: Float
-    loans_currency: Currency
-    loans_date: String
-    parent_relation: String
-    comment: String
+  investor: Investor
+  venture: Investor
+  role: String
+  investment_type: [String]
+  percentage: Float
+  loans_amount: Float
+  loans_currency: Currency
+  loans_date: String
+  parent_relation: String
+  comment: String
 }
 
 scalar InvolvementsNetwork

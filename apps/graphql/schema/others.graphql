@@ -1,56 +1,55 @@
 type Country {
-    id: Int
-    name: String
-    slug: String
-    code_alpha2: String
-    code_alpha3: String
-    high_income: Boolean
-    fk_region: Region
-    point_lat: Float
-    point_lat_min: Float
-    point_lat_max: Float
-    point_lon: Float
-    point_lon_min: Float
-    point_lon_max: Float
-    observatory_page_id: Int
-    short_description: String
-    deals: [Deal]
+  id: Int
+  name: String
+  slug: String
+  code_alpha2: String
+  code_alpha3: String
+  high_income: Boolean
+  fk_region: Region
+  point_lat: Float
+  point_lat_min: Float
+  point_lat_max: Float
+  point_lon: Float
+  point_lon_min: Float
+  point_lon_max: Float
+  observatory_page_id: Int
+  short_description: String
+  deals: [Deal]
 }
 
 type Region {
-    id: Int
-    name: String
-    slug: String
-    point_lat_min: Float
-    point_lat_max: Float
-    point_lon_min: Float
-    point_lon_max: Float
-    observatory_page_id: Int
-    short_description: String
+  id: Int
+  name: String
+  slug: String
+  point_lat_min: Float
+  point_lat_max: Float
+  point_lon_min: Float
+  point_lon_max: Float
+  observatory_page_id: Int
+  short_description: String
 }
 
 type Currency {
-    id: Int
-    name: String
+  id: Int
+  name: String
 }
 
 type Animal {
-    id: Int
-    code: String
-    name: String
+  id: Int
+  code: String
+  name: String
 }
 
 type Crop {
-    id: Int
-    code: String
-    name: String
-    slug: String
+  id: Int
+  code: String
+  name: String
+  slug: String
 }
 type Mineral {
-    id: Int
-    code: String
-    name: String
-
+  id: Int
+  code: String
+  name: String
 }
 
 scalar DateValuePair
@@ -66,23 +65,23 @@ scalar GeoJSON
 scalar GeoPoint
 
 type Revision {
-    id: Int!
-    date_created: DateTime
-    user: User
-    comment: String
+  id: Int!
+  date_created: DateTime
+  user: User
+  comment: String
 }
 
 type Statistics {
-    deals_public_count: Int
-    deals_public_multi_ds_count: Int
-    deals_public_high_geo_accuracy: Int
-    deals_public_polygons: Int
+  deals_public_count: Int
+  deals_public_multi_ds_count: Int
+  deals_public_high_geo_accuracy: Int
+  deals_public_polygons: Int
 }
 
 enum Subset {
-    UNFILTERED
-    ACTIVE
-    PUBLIC
+  UNFILTERED
+  ACTIVE
+  PUBLIC
 }
 
 scalar WebOfTransnationalDeals
