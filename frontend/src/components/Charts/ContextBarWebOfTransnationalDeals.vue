@@ -53,30 +53,30 @@
         </table>
       </div>
     </div>
-    <div v-else class="hint-box">
-      <h4>{{ $t("Global ranking") }}</h4>
-      <div v-if="global_rankings">
-        <b><i class="fas fa-compress-arrows-alt"></i> Top invested-in Countries</b>
-        <table class="table-striped">
-          <tbody>
-            <tr v-for="rank in global_ranking_deals">
-              <th>{{ rank.country_name }}</th>
-              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>
-            </tr>
-          </tbody>
-        </table>
+    <!--    <div v-else class="hint-box">-->
+    <!--      <h4>{{ $t("Global ranking") }}</h4>-->
+    <!--      <div v-if="global_rankings">-->
+    <!--        <b><i class="fas fa-compress-arrows-alt"></i> Top invested-in Countries</b>-->
+    <!--        <table class="table-striped">-->
+    <!--          <tbody>-->
+    <!--            <tr v-for="rank in global_ranking_deals">-->
+    <!--              <th>{{ rank.country_name }}</th>-->
+    <!--              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>-->
+    <!--            </tr>-->
+    <!--          </tbody>-->
+    <!--        </table>-->
 
-        <b><i class="fas fa-expand-arrows-alt"></i> Top investing Countries</b>
-        <table class="table-striped">
-          <tbody>
-            <tr v-for="rank in global_ranking_investors">
-              <th>{{ rank.country_name }}</th>
-              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!--        <b><i class="fas fa-expand-arrows-alt"></i> Top investing Countries</b>-->
+    <!--        <table class="table-striped">-->
+    <!--          <tbody>-->
+    <!--            <tr v-for="rank in global_ranking_investors">-->
+    <!--              <th>{{ rank.country_name }}</th>-->
+    <!--              <td>{{ rank.deal_size__sum.toLocaleString() }} ha</td>-->
+    <!--            </tr>-->
+    <!--          </tbody>-->
+    <!--        </table>-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
