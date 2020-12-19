@@ -3,13 +3,15 @@ from apps.utils import arrayfield_choices_display
 
 
 class InvolvementNetwork:
-    def __init__(self, include_ventures=False):
+    def __init__(self, include_ventures=False, max_depth=10):
+        self.traveled_edges = []
         self.seen_investors = set()
         self.include_ventures = include_ventures
+        self.max_depth = max_depth
 
-    def get_network(self, investor_id, exclude=None, depth=10):
-        if depth <= 0:
-            return
+    def get_network(self, investor_id, exclude=None, depth=1) -> list:
+        if depth > self.max_depth:
+            return []
 
         # find all involvements
         involvements = []
@@ -22,44 +24,46 @@ class InvolvementNetwork:
         )
 
         # traverse over the investors
-        network_investors = qs.filter(venture_id=investor_id).exclude(
+        network_investor_involvements = qs.filter(venture_id=investor_id).exclude(
             investor_id=exclude
         )
-        for inv in network_investors:
-            if inv.id in self.seen_investors:
+        for inv in network_investor_involvements:
+            if {investor_id, inv.investor_id} in self.traveled_edges:
                 continue
             involvement = inv.to_dict()
             involvement["involvement_type"] = "INVESTOR"
             investor = inv.investor.to_dict()
-            investor["involvements"] = self.get_network(
-                inv.investor_id, investor_id, depth - 1
-            )
+            involvement["depth"] = depth
             involvement["investor"] = investor
             involvements += [involvement]
-            self.seen_investors.add(inv.id)
+            self.traveled_edges += [{investor_id, inv.investor_id}]
 
         # traverse over the ventures
         if self.include_ventures:
-            network_ventures = qs.filter(investor_id=investor_id).exclude(
+            network_venture_involvements = qs.filter(investor_id=investor_id).exclude(
                 venture_id=exclude
             )
-            for inv in network_ventures:
-                if inv.id in self.seen_investors:
+            for inv in network_venture_involvements:
+                if {investor_id, inv.venture_id} in self.traveled_edges:
                     continue
                 involvement = inv.to_dict()
                 involvement["involvement_type"] = "VENTURE"
                 venture = inv.venture.to_dict()
-                venture["involvements"] = self.get_network(
-                    inv.venture_id, investor_id, depth - 1
-                )
+                involvement["depth"] = depth
                 involvement["investor"] = venture
                 involvements += [involvement]
-                self.seen_investors.add(inv.id)
+                self.traveled_edges += [{investor_id, inv.venture_id}]
+
+        if depth < self.max_depth:
+            for node in involvements:
+                node["investor"]["involvements"] = self.get_network(
+                    node["investor"]["id"], investor_id, depth + 1
+                )
 
         return involvements
 
-    def flat_view_for_download(self, investor, exclude=None, depth=10):
-        network = self.get_network(investor.id, exclude=exclude, depth=depth)
+    def flat_view_for_download(self, investor):
+        network = self.get_network(investor.id, exclude=None)
         inv1 = investor.to_dict()
         investors, involvements = self._yield_datasets(inv1, network)
         return [self._investor_dict_to_list(inv1)] + investors, involvements

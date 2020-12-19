@@ -195,9 +195,14 @@ export const deal_aggregations_query = {
     }
   `,
   variables() {
+    let extra_filter = {
+      region_id: this.page.region ? this.page.region.id : null,
+      country_id: this.page.country ? this.page.country.id : null,
+      negotiation_status: [],
+    };
     return {
       fields: ["current_negotiation_status"],
-      filters: this.locationFilter,
+      filters: this.$store.getters.defaultFiltersForGQL(extra_filter),
       subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },

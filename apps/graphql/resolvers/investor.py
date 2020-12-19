@@ -66,8 +66,8 @@ def resolve_investor(
         ]
     if add_involvements:
         investor["involvements"] = InvolvementNetwork(
-            involvements_include_ventures
-        ).get_network(id, depth=involvements_depth)
+            involvements_include_ventures, max_depth=involvements_depth
+        ).get_network(id)
     return investor
 
 

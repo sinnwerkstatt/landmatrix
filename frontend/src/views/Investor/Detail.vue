@@ -28,6 +28,7 @@
         </div>
       </div>
     </div>
+    <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
 
     <div v-if="investor" class="row">
       <div class="col-xl-6 mb-3">
@@ -263,6 +264,21 @@
       }),
       involvements() {
         return this.investor.involvements || [];
+      },
+      not_public() {
+        if (this.investor) {
+          if (this.investor.status === 1 || this.investor.status === 6)
+            return this.$t("This investor version is pending.");
+          if (this.investor.status === 4)
+            return this.$t(
+              "This investor has been deleted. It is not visible for public users."
+            );
+          if (this.investor.status === 5)
+            return this.$t(
+              "This investor version has been rejected. It is not visible for public users."
+            );
+        }
+        return null;
       },
       deals() {
         if ("deals" in this.investor) {

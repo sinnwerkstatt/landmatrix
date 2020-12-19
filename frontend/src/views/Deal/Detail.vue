@@ -323,11 +323,15 @@
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
-            return "This deal version is pending.";
+            return this.$t("This deal version is pending.");
           if (this.deal.status === 4)
-            return "This deal has been deleted. It is not visible for public users.";
+            return this.$t(
+              "This deal has been deleted. It is not visible for public users."
+            );
           if (this.deal.status === 5)
-            return "This deal version has been rejected. It is not visible for public users.";
+            return this.$t(
+              "This deal version has been rejected. It is not visible for public users."
+            );
         }
         return null;
       },
