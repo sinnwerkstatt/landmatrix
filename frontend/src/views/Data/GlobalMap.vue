@@ -60,6 +60,20 @@
             </b-form-checkbox>
           </b-form-group>
         </FilterCollapse>
+        <FilterCollapse title="Download">
+          <ul>
+            <li>
+              <a :href="`/api/data.geojson?type=points&filters=${filters}`">
+                <i class="fas fa-file-download" /> Locations
+              </a>
+            </li>
+            <li>
+              <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
+                <i class="fas fa-file-download" /> Areas
+              </a>
+            </li>
+          </ul>
+        </FilterCollapse>
       </template>
     </DataContainer>
   </div>
@@ -159,6 +173,9 @@
           return coords;
         },
       }),
+      filters() {
+        return JSON.stringify(this.$store.getters.filtersForGQL);
+      },
     },
     watch: {
       deals() {

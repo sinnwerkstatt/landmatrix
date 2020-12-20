@@ -1,15 +1,15 @@
 import io
 import json
-import warnings
 import zipfile
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
+from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Deal
+from apps.utils import qs_values_to_dict
 
 
-# @cache_page(5)
 def vuebase(request, *args, **kwargs):
     return render(request, template_name="landmatrix/vuebase.html")
 
@@ -18,13 +18,23 @@ def gis_export(request):
     point_res = {"type": "FeatureCollection", "features": []}
     area_res = {"type": "FeatureCollection", "features": []}
 
-    for deal in Deal.objects.public().exclude(geojson=None).prefetch_related("country"):
-        for feat in deal.geojson.get("features"):
+    deals = Deal.objects.visible(user=request.user, subset="ACTIVE").exclude(
+        geojson=None
+    )
+
+    filters = request.GET.get("filters")
+    if filters:
+        deals = deals.filter(parse_filters(json.loads(filters)))
+
+    fields = ["id", "country__name", "country__fk_region__name", "geojson"]
+
+    for deal in qs_values_to_dict(deals, fields):
+        for feat in deal["geojson"].get("features"):
             props = feat.get("properties", {})
-            props["deal_id"] = deal.id
-            if deal.country:
-                props["country"] = deal.country.name
-                props["region"] = deal.country.fk_region.name
+            props["deal_id"] = deal["id"]
+            if deal.get("country"):
+                props["country"] = deal["country"].get("name")
+                props["region"] = deal["country"].get("fk_region", {}).get("name")
             if feat["geometry"]["type"] == "Point":
                 point_res["features"] += [feat]
             else:
@@ -44,50 +54,3 @@ def gis_export(request):
     response = HttpResponse(zip_buffer, content_type="application/zip")
     response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
     return response
-
-
-# def gis_export(request):
-#     jsons = [
-#         x.areas["features"] for x in Location.objects.filter(deal__status__in=(2, 3)) if x.areas
-#     ]
-#     import geopandas
-#     import fiona
-#
-#     fiona.supported_drivers["KML"] = "rw"
-#     # pts = [x for x in self.geojson["features"] if x["geometry"]["type"] != "Point"]
-#     x = geopandas.GeoDataFrame.from_features(jsons)
-#     gisdir = mkdtemp(prefix="gis_export")
-#     x.to_file(f"{gisdir}/export.shp")
-#     # x.to_file("/tmp/mbla.shp")
-#     x.to_file(f"{gisdir}/export.kml", driver="KML")
-#     return
-
-
-# def case_statistics(request):
-#     Version.objects.get_for_model(Deal).filter(revision__date_created)
-
-
-def old_api_latest_changes(request):
-    warnings.warn("GND Obsoletion Warning", FutureWarning)
-    """
-    This can be done like so:
-    {
-      deals(sort:"-timestamp"){
-        id
-        timestamp
-        country { name }
-      }
-    }
-    """
-    deals = [
-        {
-            "action": "Add" if deal["status"] == 2 else "Change",
-            "deal_id": deal["id"],
-            "change_date": deal["timestamp"],
-            "country": deal["country__name"],
-        }
-        for deal in Deal.objects.visible()
-        .values("id", "timestamp", "country__name", "status")
-        .order_by("-timestamp")[:20]
-    ]
-    return JsonResponse(deals, safe=False)

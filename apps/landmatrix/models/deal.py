@@ -156,6 +156,7 @@ class Deal(models.Model, OldDealMixin):
             _("Exploitation permit / license / concession (for mineral resources)"),
         ),
         ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
+        ("OTHER", _("Other")),
     )
     nature_of_deal = ArrayField(
         models.CharField(_("Nature of the deal"), max_length=100),
