@@ -30,6 +30,7 @@
   import FileField from "./Display/FileField";
   import FloatField from "./Display/DecimalField";
   import ForeignKey from "./Display/ForeignKeyField";
+  import ManyToManyField from "./Display/ManyToManyField";
   import IntegerField from "./Display/DecimalField";
   import JSONField from "./Display/JSONField";
   import NullBooleanField from "./Display/BooleanField";
@@ -73,6 +74,7 @@
       FileField,
       FloatField,
       ForeignKey,
+      ManyToManyField,
       IntegerField,
       JSONField,
       NullBooleanField,

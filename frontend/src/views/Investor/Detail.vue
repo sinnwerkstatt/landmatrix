@@ -96,7 +96,7 @@
               <td>
                 <DisplayField
                   :wrapper_classes="['text-center']"
-                  :value_classes="['id-display', 'investor-id-display']"
+                  :value_classes="[]"
                   fieldname="id"
                   :value="involvement.investor.id"
                   model="investor"
@@ -167,7 +167,7 @@
               <td>
                 <DisplayField
                   :wrapper_classes="['text-center']"
-                  :value_classes="['id-display', 'deal-id-display']"
+                  :value_classes="[]"
                   fieldname="id"
                   :value="deal.id"
                   :show_label="false"
@@ -212,7 +212,7 @@
               <td>
                 <DisplayField
                   :wrapper_classes="[]"
-                  :value_classes="['deal-size-display']"
+                  :value_classes="[]"
                   fieldname="deal_size"
                   :value="deal.deal_size"
                   :show_label="false"
@@ -370,47 +370,6 @@
       &:before {
         display: none;
       }
-    }
-  }
-  .id-display {
-    > div > a {
-      display: inline;
-      padding: 0.2em 0.6em 0.3em;
-      font-size: 75%;
-      font-weight: 700;
-      line-height: 1;
-      color: #fff !important;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: baseline;
-      border-radius: 0.25em;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-  }
-  .investor-id-display {
-    > div > a {
-      background-color: $lm_investor;
-      &:hover {
-        background-color: darken($lm_investor, 10%);
-      }
-    }
-  }
-  .deal-id-display {
-    > div > a {
-      background-color: $lm_orange;
-      &:hover {
-        background-color: darken($lm_orange, 10%);
-      }
-    }
-  }
-  .deal-size-display {
-    &:after {
-      content: "ha";
-    }
-    div {
-      display: inline;
     }
   }
 </style>

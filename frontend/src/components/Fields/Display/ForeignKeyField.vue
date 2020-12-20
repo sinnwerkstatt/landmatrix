@@ -1,6 +1,7 @@
 <template>
   <div>
     <router-link
+      class="investor"
       v-if="formfield.related_model === 'Investor'"
       target="_blank"
       :to="{ name: 'investor_detail', params: { investor_id: value.id } }"

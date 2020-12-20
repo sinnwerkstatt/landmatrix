@@ -7,6 +7,7 @@ export const data_deal_query_gql = gql`
       deal_size
       country {
         id
+        name
         fk_region {
           id
         }

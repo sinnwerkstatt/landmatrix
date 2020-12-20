@@ -20,6 +20,7 @@
       </div>
       <div class="chart-wrapper">
         <h5>Negotiation Status</h5>
+        <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <StatusPieChart
           :dealData="this.dealsFilteredByNegStatus"
           :displayLegend="true"
