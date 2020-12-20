@@ -47,7 +47,11 @@
               @click="setSort(fieldName)"
               :class="{ selected: sortField === fieldName, asc: sortAscending }"
             >
-              {{ getLabel(fieldName) }}
+              <FieldLabel
+                :fieldname="fieldName"
+                :label_classes="[]"
+                :model="targetModel"
+              />
             </th>
           </tr>
         </thead>
@@ -57,8 +61,16 @@
               v-for="fieldName in currentFields"
               :key="fieldName"
               :style="getStyle(obj, fieldName)"
-              v-html="getValue(obj, fieldName)"
-            ></td>
+            >
+              <DisplayField
+                :wrapper_classes="[]"
+                :value_classes="[]"
+                :fieldname="fieldName"
+                :value="obj[fieldName]"
+                :model="targetModel"
+                :show_label="false"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -75,12 +87,8 @@
 <script>
   import LoadingPulse from "/components/Data/LoadingPulse";
   import { mapState } from "vuex";
-  import {
-    dealExtraFieldLabels,
-    getDealValue,
-    getInvestorValue,
-    investorExtraFieldLabels,
-  } from "./table_mappings";
+  import DisplayField from "../Fields/DisplayField";
+  import FieldLabel from "../Fields/FieldLabel";
   import gql from "graphql-tag";
   import { data_deal_query } from "/views/Data/query";
   import { sortAnything } from "../../utils";
@@ -103,7 +111,7 @@
       "fully_updated_at",
       "id",
       "country",
-      "intention_of_investment",
+      "current_intention_of_investment",
       "current_negotiation_status",
       "current_implementation_status",
       "deal_size",
@@ -115,21 +123,13 @@
 
   export default {
     name: "Table",
-    components: { LoadingPulse },
+    components: { FieldLabel, DisplayField, LoadingPulse },
     props: ["targetModel"],
     data() {
       return {
         deals: [],
         investors: [],
         displayFields: { ...DEFAULT_DISPLAY_FIELDS },
-        valueMappings: {
-          deal: getDealValue,
-          investor: getInvestorValue,
-        },
-        extraFieldLabels: {
-          deal: dealExtraFieldLabels,
-          investor: investorExtraFieldLabels,
-        },
         extraDealData: [],
         dealApiFields: [],
         investorApiFields: [],
@@ -176,6 +176,7 @@
               name
               country {
                 id
+                name
               }
               classification
               homepage
@@ -334,15 +335,7 @@
     methods: {
       getLabel(fieldName, targetModel = null) {
         if (!targetModel) targetModel = this.targetModel;
-        if (
-          this.extraFieldLabels[targetModel] &&
-          fieldName in this.extraFieldLabels[targetModel]
-        ) {
-          return this.extraFieldLabels[targetModel][fieldName];
-        } else if (
-          this.formfields[targetModel] &&
-          fieldName in this.formfields[targetModel]
-        ) {
+        if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
           return this.formfields[targetModel][fieldName].label;
         } else {
           return fieldName;
@@ -351,9 +344,6 @@
       getStyle(obj, fieldName) {
         if (obj[fieldName] && !isNaN(obj[fieldName])) return { textAlign: "right" };
         else return {};
-      },
-      getValue(obj, fieldName) {
-        return this.valueMappings[this.targetModel](this, obj, fieldName);
       },
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
@@ -459,7 +449,7 @@
           th {
             padding: 0.5em;
             position: sticky;
-            top: 0px;
+            top: 0;
             background: #525252;
             color: white;
             vertical-align: bottom;
