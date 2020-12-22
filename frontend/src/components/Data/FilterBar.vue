@@ -137,7 +137,7 @@
           @click="investor = investor_country = null"
         >
           <div>
-            Investor name
+            {{ $t("Investor name") }}
             <multiselect
               v-model="investor"
               :options="investors"
@@ -147,7 +147,7 @@
               track-by="id"
               label="name"
             />
-            Country of registration
+            {{ $t("Country of registration") }}
             <multiselect
               v-model="investor_country"
               :options="countries"

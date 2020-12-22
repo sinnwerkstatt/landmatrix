@@ -5,7 +5,13 @@ from apps.landmatrix.synchronization.deal import histivity_to_deal
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument("--rewrite-deals", action="store_true")
+
     def handle(self, *args, **options):
+        print("rewrite_deals", options["rewrite_deals"])
+        # if options["rewrite_deals"]:
+        #     Revision.objects.filter(dealversion__object_id=4).delete()
         deal_ids = (
             HistoricalActivity.objects.values_list("activity_identifier", flat=True)
             # .filter(activity_identifier__gte=1890)
