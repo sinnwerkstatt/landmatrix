@@ -1,16 +1,16 @@
 // webpack.config.js
-// require("@babel/polyfill");
-import "core-js/stable";
-import "regenerator-runtime/runtime";
+require("core-js/stable");
+require("regenerator-runtime/runtime");
+// import "core-js/stable";
+// import "regenerator-runtime/runtime";
 
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-// const BundleTracker = require("webpack-bundle-tracker");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
   mode: "development",
-  entry: ["@babel/polyfill", "./src/main.js"],
+  entry: ["./src/main.js"],
   output: {
     filename: "[name].js",
     path: path.resolve("./dist/"),
@@ -18,7 +18,7 @@ module.exports = {
   },
   resolve: {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
-    extensions: [".js", ".vue", ".scss"],
+    extensions: [".js", ".vue"],
   },
   module: {
     rules: [
@@ -68,7 +68,6 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
-    // new BundleTracker({ filename: "./webpack-stats.json" }),
     new LiveReloadPlugin({
       appendScriptTag: true,
     }),

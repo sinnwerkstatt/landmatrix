@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "watch": "cd frontend; yarn run watch",
-    "build_frontend": "cd frontend; yarn install --frozen-lockfile; yarn run parcelbuild"
+    "build_frontend": "cd frontend; yarn install --frozen-lockfile; yarn run build"
   },
   "dependencies": {
     "bootstrap": "3.3.6",

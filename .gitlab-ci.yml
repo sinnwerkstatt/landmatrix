@@ -32,7 +32,7 @@ frontend formatting and linting:
   script:
     - cd frontend
     - yarn install --frozen-lockfile
-    - yarn parcelbuild
+    - yarn build
 
 tests and coverage:
   stage: test
