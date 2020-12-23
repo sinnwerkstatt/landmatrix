@@ -36,6 +36,7 @@
               :value="reg.id"
               v-for="reg in regions"
               @change="country = null"
+              :key="reg.id"
             >
               {{ $t(reg.name) }}
             </b-form-radio>
@@ -320,14 +321,14 @@
 
 <script>
   import { mapState } from "vuex";
-  import { investors_query } from "/store/queries";
+  import { investors_query } from "store/queries";
   import FilterCollapse from "./FilterCollapse";
 
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
-  } from "/choices";
+  } from "choices";
 
   export default {
     name: "FilterBar",

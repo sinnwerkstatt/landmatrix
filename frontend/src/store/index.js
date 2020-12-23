@@ -1,12 +1,12 @@
+import { apolloClient } from "apolloclient";
+import axios from "axios";
+import gql from "graphql-tag";
 import Vue from "vue";
 import Vuex from "vuex";
-import { pageModule } from "./page";
+import { dataModule } from "./data";
 import filtersModule from "./filters";
 import { mapModule } from "./map";
-import { dataModule } from "./data";
-import axios from "axios";
-import { apolloClient } from "/apolloclient";
-import gql from "graphql-tag";
+import { pageModule } from "./page";
 
 Vue.use(Vuex);
 

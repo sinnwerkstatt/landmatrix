@@ -64,13 +64,13 @@
   import {
     implementation_status_choices,
     intention_of_investment_choices,
-  } from "/choices";
-  import { prepareNegotianStatusData, sum } from "/utils/data_processing";
+  } from "choices";
+  import { prepareNegotianStatusData, sum } from "utils/data_processing";
 
   import ChartsContainer from "./ChartsContainer";
-  import LoadingPulse from "/components/Data/LoadingPulse";
-  import DealDisplayToggle from "/components/Shared/DealDisplayToggle";
-  import StatusPieChart from "/components/Charts/StatusPieChart";
+  import LoadingPulse from "components/Data/LoadingPulse";
+  import DealDisplayToggle from "components/Shared/DealDisplayToggle";
+  import StatusPieChart from "components/Charts/StatusPieChart";
 
   const NO_INTENTION = "No intention";
 

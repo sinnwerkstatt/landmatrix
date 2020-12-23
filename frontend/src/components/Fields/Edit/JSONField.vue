@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import { flatten_choices } from "/utils";
+  import { flatten_choices } from "utils";
   import { fieldMixin } from "./fieldMixin";
 
   export default {

@@ -11,6 +11,7 @@
           <router-link
             v-for="tag in blogpage.tags"
             :to="`/stay-informed/?tag=${tag.slug}`"
+            :key="tag.slug"
           >
             <i class="fas fa-tags"></i> {{ tag.name }}
           </router-link>
@@ -22,8 +23,8 @@
 </template>
 
 <script>
-  import PageTitle from "/components/PageTitle";
-  import { blogpage_query } from "/store/queries";
+  import PageTitle from "components/PageTitle";
+  import { blogpage_query } from "store/queries";
 
   export default {
     components: { PageTitle },

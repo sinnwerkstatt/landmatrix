@@ -63,18 +63,18 @@
 </template>
 
 <script>
-  import DealSection from "/components/Deal/DealSection";
-  import DealHistory from "/components/Deal/DealHistory";
-  import DealLocationsSection from "/components/Deal/DealLocationsSection";
-  import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
-  import InvestorGraph from "/components/Investor/InvestorGraph";
+  import DealSection from "components/Deal/DealSection";
+  import DealHistory from "components/Deal/DealHistory";
+  import DealLocationsSection from "components/Deal/DealLocationsSection";
+  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
+  import InvestorGraph from "components/Investor/InvestorGraph";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "/store/queries";
-  import DealComments from "../../components/Deal/DealComments";
+  import { deal_gql_query } from "store/queries";
+  import DealComments from "components/Deal/DealComments";
   import { diff } from "deep-object-diff";
-  import { apolloClient } from "../../apolloclient";
-  import DisplayField from "/components/Fields/DisplayField";
-  import FieldLabel from "../../components/Fields/FieldLabel";
+  import { apolloClient } from "apolloclient";
+  import DisplayField from "components/Fields/DisplayField";
+  import FieldLabel from "components/Fields/FieldLabel";
 
   export default {
     name: "Compare",

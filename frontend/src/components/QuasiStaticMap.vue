@@ -63,7 +63,7 @@
         this.featureGroup.clearLayers();
       },
       focusMap() {
-        if (this.roc) {
+        if (this.roc && !this.roc === "UNKNOWN") {
           if (this.region_id) {
             this.map.fitBounds(
               [

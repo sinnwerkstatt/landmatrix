@@ -7,7 +7,7 @@
   >
     <div class="row">
       <div :class="wrapperClasses">
-        <div v-for="(entry, index) in entries" class="panel-body">
+        <div v-for="(entry, index) in entries" class="panel-body" :key="index">
           <h3>
             {{ model_name }} <small>#{{ index + 1 }}</small>
           </h3>
@@ -18,6 +18,7 @@
             :model="model"
             :label_classes="label_classes"
             :value_classes="value_classes"
+            :key="fieldname"
           />
         </div>
       </div>
@@ -27,7 +28,7 @@
 </template>
 
 <script>
-  import DisplayField from "/components/Fields/DisplayField";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
     props: [

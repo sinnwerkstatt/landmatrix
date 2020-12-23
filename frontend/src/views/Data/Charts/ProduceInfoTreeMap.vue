@@ -16,11 +16,11 @@
 </template>
 
 <script>
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import LoadingPulse from "components/Data/LoadingPulse";
   import { data_deal_produce_query, data_deal_query } from "../query";
   import * as d3 from "d3";
   import ChartsContainer from "./ChartsContainer";
-  import Legend from "/components/Charts/Legend";
+  import Legend from "components/Charts/Legend";
 
   let count = 0;
 

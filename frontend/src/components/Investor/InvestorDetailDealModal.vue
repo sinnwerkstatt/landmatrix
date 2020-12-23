@@ -6,6 +6,7 @@
       v-model="deal[fieldname]"
       v-for="fieldname in fields"
       model="deal"
+      :key="fieldname"
     />
     <template v-slot:modal-footer>
       <div class="w-100">
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-  import DisplayField from "/components/Fields/DisplayField";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
     props: ["deal", "value"],

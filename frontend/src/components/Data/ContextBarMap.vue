@@ -22,7 +22,7 @@
         <h5>Negotiation Status</h5>
         <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <StatusPieChart
-          :dealData="this.dealsFilteredByNegStatus"
+          :dealData="dealsFilteredByNegStatus"
           :displayLegend="true"
           :valueField="displayDealsCount ? 'count' : 'size'"
           :unit="displayDealsCount ? 'deals' : 'ha'"
@@ -55,9 +55,9 @@
 <script>
   import StatusPieChart from "../Charts/StatusPieChart";
   import numeral from "numeral/numeral";
-  import { implementation_status_choices } from "../../choices";
-  import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
-  import { data_deal_produce_query, data_deal_query } from "../../views/Data/query";
+  import { implementation_status_choices } from "choices";
+  import { prepareNegotianStatusData, sum } from "utils/data_processing";
+  import { data_deal_produce_query, data_deal_query } from "views/Data/query";
   import ContextBarContainer from "./ContextBarContainer";
   import { mapGetters, mapState } from "vuex";
   import DealDisplayToggle from "../Shared/DealDisplayToggle";

@@ -45,6 +45,7 @@
           v-model="investor[fieldname]"
           v-for="fieldname in fields"
           model="investor"
+          :key="fieldname"
         />
       </div>
       <div
@@ -92,7 +93,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="involvement in involvements">
+            <tr v-for="involvement in involvements" :key="involvement.id">
               <td>
                 <DisplayField
                   :wrapper_classes="['text-center']"
@@ -163,7 +164,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="deal in deals">
+            <tr v-for="deal in deals" :key="deal.id">
               <td>
                 <DisplayField
                   :wrapper_classes="['text-center']"
@@ -237,13 +238,13 @@
 </template>
 
 <script>
-  import store from "/store";
+  import store from "store";
   import { mapState } from "vuex";
-  import InvestorGraph from "/components/Investor/InvestorGraph";
-  import DisplayField from "/components/Fields/DisplayField";
-  import LoadingPulse from "/components/Data/LoadingPulse";
-  import InvestorHistory from "../../components/Investor/InvestorHistory";
-  import { investor_query } from "../../store/queries";
+  import InvestorGraph from "components/Investor/InvestorGraph";
+  import DisplayField from "components/Fields/DisplayField";
+  import LoadingPulse from "components/Data/LoadingPulse";
+  import InvestorHistory from "components/Investor/InvestorHistory";
+  import { investor_query } from "store/queries";
 
   export default {
     name: "InvestorDetail",

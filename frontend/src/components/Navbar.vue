@@ -2,7 +2,7 @@
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="'/'">
-        <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
+        <img src="../static/images/lm-logo.png" alt="Landmatrix Logo" />
       </router-link>
       <button
         class="navbar-toggler"
@@ -35,6 +35,7 @@
                 :to="data_link.link"
                 class="dropdown-item"
                 @click.native="closeMenu"
+                :key="data_link.name"
               >
                 {{ $t(data_link.name) }}
               </router-link>
@@ -61,6 +62,7 @@
                     class="dropdown-item"
                     :to="`/observatory/${observatory.meta.slug}/`"
                     @click.native="closeMenu"
+                    :key="observatory.id"
                   >
                     {{ observatory.title }}
                   </router-link>
@@ -86,6 +88,7 @@
                 class="dropdown-item"
                 :to="`/resources/?category=${cat.slug}`"
                 @click.native="closeMenu"
+                :key="cat.slug"
               >
                 {{ cat.name }}
               </router-link>
@@ -109,6 +112,7 @@
                 :to="about_link.link"
                 class="dropdown-item"
                 @click.native="closeMenu"
+                :key="about_link.link"
               >
                 {{ $t(about_link.name) }}
               </router-link>
@@ -261,8 +265,8 @@
   </nav>
 </template>
 <script>
-  import NavbarSelect from "/components/NavbarSelect";
-  import { blogcategories_query } from "/store/queries";
+  import NavbarSelect from "components/NavbarSelect";
+  import { blogcategories_query } from "store/queries";
 
   export default {
     components: { NavbarSelect },

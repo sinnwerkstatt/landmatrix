@@ -6,6 +6,7 @@
       v-model="investor[fieldname]"
       v-for="fieldname in fields"
       model="investor"
+      :key="fieldname"
     />
 
     <div v-if="investor.involvement">
@@ -16,6 +17,7 @@
         v-model="investor.involvement[fieldname]"
         v-for="fieldname in involvement_fields"
         model="involvement"
+        :key="fieldname"
       />
     </div>
     <template v-slot:modal-footer>
@@ -36,7 +38,7 @@
 </template>
 
 <script>
-  import DisplayField from "/components/Fields/DisplayField";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
     props: ["investor", "value"],

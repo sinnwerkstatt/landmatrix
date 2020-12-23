@@ -10,12 +10,14 @@
         v-for="section in sections"
         class="panel-body"
         v-if="any_field_in_section(section)"
+        :key="section.name"
       >
         <h3>{{ section.name }}</h3>
         <DisplayField
           v-for="fieldname in section.fields"
           :fieldname="fieldname"
           :value="deal[fieldname]"
+          :key="fieldname"
         />
       </div>
     </div>
@@ -24,7 +26,7 @@
 </template>
 
 <script>
-  import DisplayField from "/components/Fields/DisplayField";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
     props: ["title", "sections", "deal", "active"],

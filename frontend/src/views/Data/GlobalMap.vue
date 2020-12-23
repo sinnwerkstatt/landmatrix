@@ -39,6 +39,7 @@
               name="layerSelectRadio"
               :value="layer.name"
               v-for="layer in tileLayers"
+              :key="layer.name"
             >
               {{ layer.name }}
             </b-form-radio>
@@ -51,6 +52,7 @@
               name="contextLayerSelect"
               :value="layer"
               v-for="layer in contextLayers"
+              :key="layer.name"
             >
               {{ layer.name }}
               <img
@@ -83,17 +85,16 @@
   import "leaflet";
   import "leaflet.markercluster";
 
-  import { primary_color } from "/colors";
   import { groupBy } from "lodash";
   import { mapState } from "vuex";
   import Vue from "vue";
 
-  import MapMarkerPopup from "/components/Map/MapMarkerPopup";
-  import { styleCircle } from "../../utils/map_helper";
+  import MapMarkerPopup from "components/Map/MapMarkerPopup";
+  import { styleCircle } from "utils/map_helper";
   import DataContainer from "./DataContainer";
-  import BigMap from "/components/BigMap";
-  import FilterCollapse from "/components/Data/FilterCollapse";
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import BigMap from "components/BigMap";
+  import FilterCollapse from "components/Data/FilterCollapse";
+  import LoadingPulse from "components/Data/LoadingPulse";
 
   import { data_deal_query } from "./query";
 

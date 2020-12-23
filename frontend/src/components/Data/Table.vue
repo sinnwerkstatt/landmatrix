@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="table-wrap" v-if="rowData.length > 0">
-      <table class="sticky-header" :class="[this.targetModel]">
+      <table class="sticky-header" :class="[targetModel]">
         <thead>
           <tr>
             <th
@@ -85,13 +85,13 @@
 </template>
 
 <script>
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import LoadingPulse from "components/Data/LoadingPulse";
   import { mapState } from "vuex";
-  import DisplayField from "../Fields/DisplayField";
-  import FieldLabel from "../Fields/FieldLabel";
+  import DisplayField from "components/Fields/DisplayField";
+  import FieldLabel from "components/Fields/FieldLabel";
   import gql from "graphql-tag";
-  import { data_deal_query } from "/views/Data/query";
-  import { sortAnything } from "../../utils";
+  import { data_deal_query } from "views/Data/query";
+  import { sortAnything } from "utils";
 
   const DEAL_DEFAULT_QUERY_FIELDS = [
     "id",
@@ -148,7 +148,7 @@
           return !this.extraDealFields.length;
         },
         query() {
-          return gql`
+          return `
             query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
               extraDealData:deals(limit: $limit, subset: $subset, filters: $filters) {
                 id ${this.extraDealFields.join(" ")}
@@ -284,13 +284,17 @@
         if (this.extraDealFields.length) {
           if (
             !this.extraDealData.length ||
-            this.$apollo.queries.extraDealData.loading ||
+            (this.$apollo.queries.extraDealData &&
+              this.$apollo.queries.extraDealData.loading) ||
             this.deals.length !== this.extraDealData.length
           ) {
             return false;
           }
         }
-        return !this.$apollo.queries.deals.loading && this.deals.length;
+        return (
+          !(this.$apollo.queries.deals && this.$apollo.queries.deals.loading) &&
+          this.deals.length
+        );
       },
       extendedDeals() {
         if (this.dealsLoaded) {

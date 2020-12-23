@@ -47,7 +47,6 @@
     background: $lm_dark;
     padding: 0 10px;
     font-size: 14px;
-    font-family: "Open Sans", sans-serif;
     color: white;
     font-weight: 400 !important;
     margin-top: 0;

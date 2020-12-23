@@ -85,7 +85,7 @@
   import {
     country_investments_and_rankings_query,
     global_rankings_query,
-  } from "/store/queries";
+  } from "store/queries";
 
   export default {
     name: "ContextBarWebOfTransnationalDeals",

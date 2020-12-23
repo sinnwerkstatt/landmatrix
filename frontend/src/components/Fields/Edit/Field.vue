@@ -12,21 +12,21 @@
 </template>
 
 <script>
-  import ArrayField from "/components/Fields/ArrayField";
-  import BooleanField from "/components/Fields/BooleanField";
-  import NullBooleanField from "/components/Fields/BooleanField";
-  import CharField from "/components/Fields/TextField";
-  import DateField from "/components/Fields/TextField";
-  import EmailField from "/components/Fields/TextField";
-  import TextField from "/components/Fields/TextField";
-  import URLField from "/components/Fields/TextField";
-  import DecimalField from "/components/Fields/DecimalField";
-  import FloatField from "/components/Fields/DecimalField";
-  import IntegerField from "/components/Fields/DecimalField";
-  import FileField from "/components/Fields/FileField";
-  import ForeignKey from "/components/Fields/ForeignKeyField";
-  import JSONField from "/components/Fields/JSONField";
-  import PointField from "/components/Fields/PointField";
+  import ArrayField from "components/Fields/ArrayField";
+  import BooleanField from "components/Fields/BooleanField";
+  import NullBooleanField from "components/Fields/BooleanField";
+  import CharField from "components/Fields/TextField";
+  import DateField from "components/Fields/TextField";
+  import EmailField from "components/Fields/TextField";
+  import TextField from "components/Fields/TextField";
+  import URLField from "components/Fields/TextField";
+  import DecimalField from "components/Fields/DecimalField";
+  import FloatField from "components/Fields/DecimalField";
+  import IntegerField from "components/Fields/DecimalField";
+  import FileField from "components/Fields/FileField";
+  import ForeignKey from "components/Fields/ForeignKeyField";
+  import JSONField from "components/Fields/JSONField";
+  import PointField from "components/Fields/PointField";
   import { mapState } from "vuex";
 
   export default {

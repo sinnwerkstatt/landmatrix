@@ -1,7 +1,6 @@
 // source https://observablehq.com/@d3/hierarchical-edge-bundling
 
 import * as d3 from "d3";
-import { primary_color } from "/colors";
 
 let width = 954;
 let radius = width / 2;

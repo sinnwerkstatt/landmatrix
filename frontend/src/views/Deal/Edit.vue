@@ -20,9 +20,9 @@
 </style>
 
 <script>
-  import store from "/store";
-  import MapEditor from "/components/MapEditor";
-  import DealSection from "/components/Deal/DealSection";
+  import store from "store";
+  import MapEditor from "components/MapEditor";
+  import DealSection from "components/Deal/DealSection";
 
   export default {
     components: { MapEditor, DealSection },

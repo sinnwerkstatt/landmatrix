@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import { sortAnything } from "../../utils";
+  import { sortAnything } from "utils";
 
   const slugify = require("slugify");
 

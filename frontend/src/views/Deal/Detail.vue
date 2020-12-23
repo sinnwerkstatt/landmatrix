@@ -246,15 +246,15 @@
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "/store/queries";
+  import { deal_gql_query } from "store/queries";
 
-  import DealSection from "/components/Deal/DealSection";
-  import DealHistory from "/components/Deal/DealHistory";
-  import DealLocationsSection from "/components/Deal/DealLocationsSection";
-  import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
-  import InvestorGraph from "/components/Investor/InvestorGraph";
-  import DealComments from "/components/Deal/DealComments";
-  import DisplayField from "/components/Fields/DisplayField";
+  import DealSection from "components/Deal/DealSection";
+  import DealHistory from "components/Deal/DealHistory";
+  import DealLocationsSection from "components/Deal/DealLocationsSection";
+  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
+  import InvestorGraph from "components/Investor/InvestorGraph";
+  import DealComments from "components/Deal/DealComments";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
     props: ["deal_id", "deal_version"],

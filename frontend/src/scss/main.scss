@@ -3,12 +3,14 @@ $theme-colors: (
   "secondary": #fcfcfc,
   "investor": #44b7b6,
 );
+$fa-font-path: "/static/assets";
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap");
 
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/bootstrap-vue/src/index.scss";
 
 @import "colors";
-@import "fonts";
 @import "headings";
 @import "landmatrix_icons";
 
@@ -17,11 +19,10 @@ $theme-colors: (
 @import "wagtail";
 
 body {
-  font-family: Open Sans, Arial, sans-serif;
+  font-family: "Open Sans", Arial, sans-serif;
 }
 
 a {
-  font-family: "Open Sans", sans-serif;
   color: $lm_orange;
 
   &:hover {

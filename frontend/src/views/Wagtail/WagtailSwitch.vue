@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import store from "/store";
+  import store from "store";
   import WagtailPage from "./WagtailPage";
   import BlogIndexPage from "./BlogIndexPage";
   import BlogPage from "./BlogPage";

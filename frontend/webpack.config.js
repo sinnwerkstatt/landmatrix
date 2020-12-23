@@ -1,9 +1,11 @@
 // webpack.config.js
-require("@babel/polyfill");
+// require("@babel/polyfill");
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const BundleTracker = require("webpack-bundle-tracker");
+// const BundleTracker = require("webpack-bundle-tracker");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
@@ -15,11 +17,8 @@ module.exports = {
     publicPath: "",
   },
   resolve: {
-    alias: {
-      // 'vue$': isDev ? 'vue/dist/vue.runtime.js' : 'vue/dist/vue.runtime.min.js',
-      "@": path.resolve(__dirname, "./src"),
-    },
-    extensions: [".js", ".vue"],
+    modules: [path.resolve(__dirname, "src"), "node_modules"],
+    extensions: [".js", ".vue", ".scss"],
   },
   module: {
     rules: [
@@ -51,32 +50,25 @@ module.exports = {
         use: ["vue-style-loader", "css-loader"],
       },
       {
-        test: /\.(png|jpg|jpeg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]",
-          emitFile: true,
-          context: "",
-          publicPath: "/static/img/",
-          outputPath: "img/",
-        },
-      },
-      {
-        test: /\.(ttf|woff|woff2|eot)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]",
-          emitFile: true,
-          context: "",
-          publicPath: "/static/fonts/",
-          outputPath: "fonts/",
+        test: /\.(png|jpg|jpeg|gif|svg|ttf|woff|woff2|eot)$/i,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 32 * 1024,
+            fallback: "file-loader",
+            emitFile: true,
+            esModule: false,
+            context: "",
+            publicPath: "/static/assets/",
+            outputPath: "assets/",
+          },
         },
       },
     ],
   },
   plugins: [
     new VueLoaderPlugin(),
-    new BundleTracker({ filename: "./webpack-stats.json" }),
+    // new BundleTracker({ filename: "./webpack-stats.json" }),
     new LiveReloadPlugin({
       appendScriptTag: true,
     }),

@@ -70,10 +70,10 @@
   import popper from "cytoscape-popper";
   import tippy from "tippy.js";
   import { pick } from "lodash";
-  import { investor_color, primary_color } from "../../colors";
+  import { investor_color, primary_color } from "colors";
   import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
   import InvestorDetailDealModal from "./InvestorDetailDealModal";
-  import { classification_choices } from "/choices";
+  import { classification_choices } from "choices";
 
   cytoscape.use(coseBilkent);
   cytoscape.use(popper);

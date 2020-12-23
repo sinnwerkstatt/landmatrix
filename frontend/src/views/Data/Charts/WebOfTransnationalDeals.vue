@@ -16,8 +16,8 @@
   import ChartsContainer from "./ChartsContainer";
   import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
   import gql from "graphql-tag";
-  import LoadingPulse from "/components/Data/LoadingPulse";
-  import ContextBarWebOfTransnationalDeals from "/components/Charts/ContextBarWebOfTransnationalDeals";
+  import LoadingPulse from "components/Data/LoadingPulse";
+  import ContextBarWebOfTransnationalDeals from "components/Charts/ContextBarWebOfTransnationalDeals";
 
   export default {
     name: "WebOfTransnationalDeals",

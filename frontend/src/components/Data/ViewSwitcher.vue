@@ -54,6 +54,7 @@
               v-for="entry in chartEntries"
               :to="{ name: entry.route_name }"
               class="dropdown-item"
+              :key="entry.route_name"
             >
               {{ $t(entry.title) }}
             </router-link>
