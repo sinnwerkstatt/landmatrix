@@ -1,11 +1,11 @@
 <template>
   <div class="map-container" :style="mapContainerStyle">
     <l-map
+      id="bigMap"
+      ref="bigMap"
       :options="mapOptions"
       :center="center"
       :bounds="bounds"
-      id="bigMap"
-      ref="bigMap"
       @ready="leafletMapReady"
     >
       <l-tile-layer
@@ -19,28 +19,21 @@
         layer-type="base"
       />
 
-      <slot></slot>
+      <slot />
     </l-map>
     <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />
   </div>
 </template>
 
 <script>
-  import {
-    LControlLayers,
-    LControlZoom,
-    LGeoJson,
-    LMap,
-    LTileLayer,
-  } from "vue2-leaflet";
+  import { LMap, LTileLayer } from "vue2-leaflet";
 
-  import * as L from "leaflet";
+  import { Map, Icon } from "leaflet";
   import { GestureHandling } from "leaflet-gesture-handling";
 
   import "leaflet/dist/leaflet.css";
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-  L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
-  import { Icon } from "leaflet";
+  Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
   import { mapState } from "vuex";
   import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher";
 
@@ -57,9 +50,6 @@
       BigMapStandaloneLayerSwitcher,
       LMap,
       LTileLayer,
-      LControlLayers,
-      LGeoJson,
-      LControlZoom,
     },
     props: ["center", "options", "bounds", "containerStyle", "hideLayerSwitcher"],
     computed: {

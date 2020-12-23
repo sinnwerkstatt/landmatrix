@@ -161,21 +161,20 @@
       country_id() {
         return this.page.country ? this.page.country.id : null;
       },
-      locationItem() {
+      slug() {
+        let ret;
         if (this.page.region) {
-          return this.$store.getters.getCountryOrRegion({
+          ret = this.$store.getters.getCountryOrRegion({
             type: "region",
             id: this.page.region.id,
           });
         } else if (this.page.country) {
-          return this.$store.getters.getCountryOrRegion({
+          ret = this.$store.getters.getCountryOrRegion({
             type: "country",
             id: this.page.country.id,
           });
         }
-      },
-      slug() {
-        return this.locationItem ? this.locationItem.slug : null;
+        return ret ? ret.slug : null;
       },
       content() {
         return this.page ? this.page.body : [];

@@ -35,6 +35,7 @@
     "dayjs": "^1.9.7",
     "deep-object-diff": "^1.1.0",
     "eslint": "^7.16.0",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-vue": "^7.3.0",
     "file-loader": "^6.2.0",
     "graphql": "^15.4.0",
@@ -82,7 +83,11 @@
     "extends": "stylelint-config-recommended"
   },
   "eslintConfig": {
-    "extends": "eslint:recommended",
+    "extends": [
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier"
+    ],
     "env": {
       "browser": true,
       "node": true,
@@ -92,7 +97,7 @@
       "no-unused-vars": "warn"
     },
     "parserOptions": {
-      "ecmaVersion": 6,
+      "ecmaVersion": 2018,
       "sourceType": "module",
       "ecmaFeatures": {}
     }

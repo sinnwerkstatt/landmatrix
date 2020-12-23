@@ -1,7 +1,7 @@
 <template>
   <div>
     <DataContainer>
-      <template v-slot:default>
+      <template #default>
         <LoadingPulse v-if="$apollo.queries.deals.loading" />
         <BigMap
           :options="bigmap_options"
@@ -12,7 +12,7 @@
         >
         </BigMap>
       </template>
-      <template v-slot:FilterBar>
+      <template #FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
         <FilterCollapse :title="$t('Displayed data')" :initExpanded="true">
           <b-form-group>
@@ -82,8 +82,8 @@
 </template>
 
 <script>
-  import "leaflet";
-  import "leaflet.markercluster";
+  import { Marker, LayerGroup, FeatureGroup, Popup, DivIcon } from "leaflet";
+  import { MarkerClusterGroup } from "leaflet.markercluster/src";
 
   import { groupBy } from "lodash";
   import { mapState } from "vuex";
@@ -130,9 +130,9 @@
           gestureHandling: false,
         },
         visibleContextLayers: [],
-        contextLayersLayerGroup: L.layerGroup(),
+        contextLayersLayerGroup: new LayerGroup(),
 
-        markersFeatureGroup: L.featureGroup(),
+        markersFeatureGroup: new FeatureGroup(),
         dealLocationMarkersCache: [],
         deals: [],
         markers: [],
@@ -228,7 +228,7 @@
             this.dealLocationMarkersCache[deal.id] = [];
             for (let loc of deal.locations) {
               if (loc.point) {
-                let marker = L.marker([loc.point.lat, loc.point.lng], {
+                let marker = new Marker([loc.point.lat, loc.point.lng], {
                   clickable: true,
                 });
                 marker.deal = deal;
@@ -261,7 +261,7 @@
           propsData: { deal: marker.deal, location: marker.loc },
         }).$mount().$el.outerHTML;
 
-        L.popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
+        new Popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
       },
       flyToCountryOrRegion() {
         console.log("Should fly now");
@@ -307,8 +307,8 @@
           Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let circle = L.marker(REGION_COORDINATES[key], {
-                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+              let circle = new Marker(REGION_COORDINATES[key], {
+                icon: new DivIcon({ className: "landmatrix-custom-circle" }),
                 region_id: key,
               });
               circle.on("click", (e) => {
@@ -343,8 +343,8 @@
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let circle = L.marker(this.country_coords[key], {
-                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+              let circle = new Marker(this.country_coords[key], {
+                icon: new DivIcon({ className: "landmatrix-custom-circle" }),
                 country_id: key,
               });
               circle.on("click", (e) => {
@@ -376,7 +376,7 @@
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let mcluster = L.markerClusterGroup({ chunkedLoading: true });
+              let mcluster = new MarkerClusterGroup({ chunkedLoading: true });
               mcluster.on("clusterclick", (a) => {
                 let bounds = a.layer.getBounds().pad(0.5);
                 this.bigmap.fitBounds(bounds);

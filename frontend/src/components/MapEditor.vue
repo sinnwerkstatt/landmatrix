@@ -14,6 +14,7 @@
 <script>
   import "leaflet-draw";
   import BigMap from "components/BigMap";
+  import { FeatureGroup, GeoJSON } from "leaflet";
 
   function addPropertiesPopup(layer, feature) {
     let select = document.createElement("select"),
@@ -51,7 +52,7 @@
     data() {
       return {
         bigmap: null,
-        editableFeatures: new L.FeatureGroup(),
+        editableFeatures: new FeatureGroup(),
       };
     },
     methods: {
@@ -82,7 +83,7 @@
           const reader = new FileReader();
           reader.addEventListener("load", (event) => {
             let res_json = JSON.parse(event.target.result);
-            L.geoJSON(res_json, {
+            new GeoJSON(res_json, {
               onEachFeature: (feature, layer) => {
                 addPropertiesPopup(layer, feature);
                 this.editableFeatures.addLayer(layer);
