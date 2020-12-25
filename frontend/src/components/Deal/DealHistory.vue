@@ -22,8 +22,8 @@
           </td>
           <td>
             <b-button
-              disabled
               v-b-tooltip.hover
+              disabled
               :title="version.deal.fully_updated ? 'Fully updated' : 'Updated'"
               :class="[
                 'fa',
@@ -39,11 +39,11 @@
             <span v-if="i === deduced_position">Current</span>
             <span v-else>
               <router-link
+                v-slot="{ href }"
                 :to="{
                   name: 'deal_detail',
-                  params: { deal_id, deal_version: version.revision.id },
+                  params: { dealId, dealVersion: version.revision.id },
                 }"
-                v-slot="{ href, navigate }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
                 <a :href="href">Show</a>
@@ -51,15 +51,15 @@
             </span>
             <span class="ml-4" style="white-space: nowrap; text-align: right;">
               <input
-                type="radio"
                 v-model="compare_from"
+                type="radio"
                 :value="version.revision.id"
                 :disabled="version.revision.id >= compare_to"
               />
 
               <input
-                type="radio"
                 v-model="compare_to"
+                type="radio"
                 :value="version.revision.id"
                 :disabled="version.revision.id <= compare_from"
               />
@@ -90,7 +90,7 @@
 
   export default {
     name: "DealHistory",
-    props: ["deal", "deal_id", "deal_version"],
+    props: ["deal", "dealId", "dealVersion"],
     data() {
       return {
         compare_from: null,
@@ -103,9 +103,9 @@
       }),
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
-        if (this.deal_version) {
+        if (this.dealVersion) {
           return this.deal.versions.findIndex(
-            (v) => +v.revision.id === +this.deal_version
+            (v) => +v.revision.id === +this.dealVersion
           );
         }
         for (const [i, v] of this.deal.versions.entries()) {
@@ -150,9 +150,9 @@
         this.$router.push({
           name: "deal_compare",
           params: {
-            deal_id: this.deal_id,
-            from_version: this.compare_from,
-            to_version: this.compare_to,
+            dealId: this.dealId,
+            fromVersion: this.compare_from,
+            toVersion: this.compare_to,
           },
         });
       },

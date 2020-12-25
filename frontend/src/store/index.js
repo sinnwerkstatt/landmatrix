@@ -27,7 +27,7 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchBasicData(context) {
-      let about_promise = context.dispatch("fetchAboutPages");
+      context.dispatch("fetchAboutPages");
       let obs_promise = context.dispatch("fetchObservatoryPages");
 
       let rest_promise = new Promise(function (resolve, reject) {

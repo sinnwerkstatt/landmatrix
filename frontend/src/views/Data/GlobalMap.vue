@@ -6,15 +6,15 @@
         <BigMap
           :options="bigmap_options"
           :center="[12, 30]"
-          :containerStyle="{ height: '100%' }"
+          :container-style="{ height: '100%' }"
+          :hide-layer-switcher="true"
           @ready="bigMapIsReady"
-          :hideLayerSwitcher="true"
         >
         </BigMap>
       </template>
       <template #FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse :title="$t('Displayed data')" :initExpanded="true">
+        <FilterCollapse :title="$t('Displayed data')" :init-expanded="true">
           <b-form-group>
             <b-form-radio
               v-model="displayDealsCount"
@@ -32,14 +32,14 @@
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Base layer')" :initExpanded="true">
+        <FilterCollapse :title="$t('Base layer')" :init-expanded="true">
           <b-form-group>
             <b-form-radio
+              v-for="layer in tileLayers"
+              :key="layer.name"
               v-model="visibleLayer"
               name="layerSelectRadio"
               :value="layer.name"
-              v-for="layer in tileLayers"
-              :key="layer.name"
             >
               {{ layer.name }}
             </b-form-radio>
@@ -48,16 +48,17 @@
         <FilterCollapse :title="$t('Context layers')">
           <b-form-group>
             <b-form-checkbox
+              v-for="layer in contextLayers"
+              :key="layer.name"
               v-model="visibleContextLayers"
               name="contextLayerSelect"
               :value="layer"
-              v-for="layer in contextLayers"
-              :key="layer.name"
             >
               {{ layer.name }}
               <img
                 v-if="visibleContextLayers.includes(layer)"
                 :src="layer.legendUrlFunction()"
+                :alt="`Legend for ${layer.name}`"
               />
             </b-form-checkbox>
           </b-form-group>
@@ -117,8 +118,11 @@
   export default {
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
-    apollo: {
-      deals: data_deal_query,
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        // vm.$store.dispatch("fetchDeals");
+        vm.$store.dispatch("showContextBar", true);
+      });
     },
     data() {
       return {
@@ -178,6 +182,9 @@
         return JSON.stringify(this.$store.getters.filtersForGQL);
       },
     },
+    apollo: {
+      deals: data_deal_query,
+    },
     watch: {
       deals() {
         console.log("Watch: deals");
@@ -228,9 +235,7 @@
             this.dealLocationMarkersCache[deal.id] = [];
             for (let loc of deal.locations) {
               if (loc.point) {
-                let marker = new Marker([loc.point.lat, loc.point.lng], {
-                  clickable: true,
-                });
+                let marker = new Marker([loc.point.lat, loc.point.lng]);
                 marker.deal = deal;
                 marker.loc = loc;
                 marker.deal_id = deal.id;
@@ -397,12 +402,6 @@
         this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", () => (this.current_zoom = bigmap.getZoom()));
       },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        // vm.$store.dispatch("fetchDeals");
-        vm.$store.dispatch("showContextBar", true);
-      });
     },
   };
 </script>

@@ -39,11 +39,11 @@
             <span v-if="i === deduced_position">Current</span>
             <span v-else>
               <router-link
+                v-slot="{ href }"
                 :to="{
                   name: 'investor_detail',
-                  params: { investor_id, investor_version: version.revision.id },
+                  params: { investorId, investorVersion: version.revision.id },
                 }"
-                v-slot="{ href, navigate }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
                 <a :href="href">Show</a>
@@ -90,7 +90,7 @@
 
   export default {
     name: "InvestorHistory",
-    props: ["investor", "investor_id", "investor_version"],
+    props: ["investor", "investorId", "investorVersion"],
     data() {
       return {
         compare_from: null,
@@ -103,9 +103,9 @@
       }),
       deduced_position() {
         if (this.investor.versions.length === 0) return 0;
-        if (this.investor_version) {
+        if (this.investorVersion) {
           return this.investor.versions.findIndex(
-            (v) => +v.revision.id === +this.investor_version
+            (v) => +v.revision.id === +this.investorVersion
           );
         }
         for (const [i, v] of this.investor.versions.entries()) {
@@ -150,7 +150,7 @@
         this.$router.push({
           name: "investor_compare",
           params: {
-            investor_id: this.investor_id,
+            investor_id: this.investorId,
             from_version: this.compare_from,
             to_version: this.compare_to,
           },

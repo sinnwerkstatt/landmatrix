@@ -1,15 +1,15 @@
 <template>
   <div>
     <router-link
-      class="id-display deal-id-display"
       v-if="model === 'deal'"
-      :to="{ name: 'deal_detail', params: { deal_id: value } }"
+      class="id-display deal-id-display"
+      :to="{ name: 'deal_detail', params: { dealId: value } }"
       >{{ value }}</router-link
     >
     <router-link
-      class="id-display investor-id-display"
       v-else-if="model === 'investor'"
-      :to="{ name: 'investor_detail', params: { investor_id: value } }"
+      class="id-display investor-id-display"
+      :to="{ name: 'investor_detail', params: { investorId: value } }"
       >{{ value }}</router-link
     >
     <span v-else>{{ value }}</span>

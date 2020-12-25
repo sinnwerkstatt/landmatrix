@@ -1,14 +1,16 @@
 // source https://observablehq.com/@d3/hierarchical-edge-bundling
 
-import * as d3 from "d3";
+import { hierarchy } from "d3-hierarchy";
+import { lineRadial, curveBundle } from "d3-shape";
+import { select, selectAll } from "d3-selection";
+import { cluster, ascending } from "d3";
 
 let width = 954;
 let radius = width / 2;
 let colornone = "#ccc";
-let tree = d3.cluster().size([2 * Math.PI, radius - 100]);
-let line = d3
-  .lineRadial()
-  .curve(d3.curveBundle.beta(0.85))
+let tree = cluster().size([2 * Math.PI, radius - 100]);
+let line = lineRadial()
+  .curve(curveBundle.beta(0.85))
   .radius((d) => d.y)
   .angle((d) => d.x);
 
@@ -32,19 +34,14 @@ export function LandMatrixRadialSpider(
   selectedCountry,
   updateCountryFn
 ) {
-  d3.selectAll("g > *").remove();
-  const svg = d3
-    .select(container)
-    .attr("viewBox", [-width / 2, -width / 2, width, width]);
+  selectAll("g > *").remove();
+  const svg = select(container).attr("viewBox", [-width / 2, -width / 2, width, width]);
 
   const root = tree(
     bilink(
-      d3
-        .hierarchy(data_hierarchical)
-        .sort(
-          (a, b) =>
-            d3.ascending(a.height, b.height) || d3.ascending(a.data.name, b.data.name)
-        )
+      hierarchy(data_hierarchical).sort(
+        (a, b) => ascending(a.height, b.height) || ascending(a.data.name, b.data.name)
+      )
     )
   );
   let defs = svg.append("defs");
@@ -78,42 +75,36 @@ export function LandMatrixRadialSpider(
     });
 
   function selectCountry(target, highlight_class = "highlighted") {
-    let selection = d3.select(target);
+    let selection = select(target);
     if (selection.size() === 0) return;
     link.style("mix-blend-mode", null);
     selection.attr("font-weight", "bold");
     let d = selection.datum();
 
-    let incoming_paths = d3.selectAll(d.incoming.map((d) => d.path));
+    let incoming_paths = selectAll(d.incoming.map((d) => d.path));
     incoming_paths.classed(`incoming-${highlight_class}`, true);
     incoming_paths.raise();
-    let incoming_texts = d3.selectAll(d.incoming.map(([d]) => d.text));
+    let incoming_texts = selectAll(d.incoming.map(([d]) => d.text));
     incoming_texts.classed(`incoming-${highlight_class}`, true);
 
-    let outgoing_paths = d3.selectAll(d.outgoing.map((d) => d.path));
+    let outgoing_paths = selectAll(d.outgoing.map((d) => d.path));
     outgoing_paths.classed(`outgoing-${highlight_class}`, true);
 
     outgoing_paths.raise();
-    let outgoing_texts = d3.selectAll(d.outgoing.map(([, d]) => d.text));
+    let outgoing_texts = selectAll(d.outgoing.map(([, d]) => d.text));
     outgoing_texts.classed(`outgoing-${highlight_class}`, true);
   }
 
   function mouseout_event(target) {
-    let selection = d3.select(target);
+    let selection = select(target);
     if (selection.size() === 0) return;
     link.style("mix-blend-mode", "multiply");
     selection.attr("font-weight", null);
     let d = selection.datum();
-    d3.selectAll(d.incoming.map((d) => d.path)).classed("incoming-highlighted", false);
-    d3.selectAll(d.incoming.map(([d]) => d.text)).classed(
-      "incoming-highlighted",
-      false
-    );
-    d3.selectAll(d.outgoing.map((d) => d.path)).classed("outgoing-highlighted", false);
-    d3.selectAll(d.outgoing.map(([, d]) => d.text)).classed(
-      "outgoing-highlighted",
-      false
-    );
+    selectAll(d.incoming.map((d) => d.path)).classed("incoming-highlighted", false);
+    selectAll(d.incoming.map(([d]) => d.text)).classed("incoming-highlighted", false);
+    selectAll(d.outgoing.map((d) => d.path)).classed("outgoing-highlighted", false);
+    selectAll(d.outgoing.map(([, d]) => d.text)).classed("outgoing-highlighted", false);
 
     selectCountry("#text_" + selectedCountry, "permahighlight");
   }

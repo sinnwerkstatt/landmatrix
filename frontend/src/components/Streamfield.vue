@@ -1,7 +1,7 @@
 <template>
   <div class="streamfield">
     <div class="container">
-      <div v-for="block in content">
+      <div v-for="block in content" :key="block.id">
         <component :is="`wagtail-${block.type}`" :value="block.value" />
       </div>
     </div>
@@ -11,7 +11,9 @@
 <script>
   export default {
     name: "Streamfield",
-    props: ["content"],
+    props: {
+      content: { type: Array, default: () => [] },
+    },
   };
 </script>
 

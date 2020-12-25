@@ -1,15 +1,15 @@
 <template>
   <ChartsContainer>
-    <template v-slot:default>
+    <template #default>
       <div class="grid-wrapper">
         <div class="grid-container">
           <div class="chart-item left top">
             <h2>Intention of Investment</h2>
             <StatusPieChart
-              :dealData="intentionData"
-              :displayLegend="true"
-              :aspectRatio="aspectRatio"
-              maxWidth="auto"
+              :deal-data="intentionData"
+              :display-legend="true"
+              :aspect-ratio="aspectRatio"
+              max-width="auto"
               :legends="intentionLegend"
               :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
@@ -18,10 +18,10 @@
           <div class="chart-item right top">
             <h2>Investment in Agriculture</h2>
             <StatusPieChart
-              :dealData="intentionAgricultureData"
-              :displayLegend="true"
-              :aspectRatio="aspectRatio"
-              maxWidth="auto"
+              :deal-data="intentionAgricultureData"
+              :display-legend="true"
+              :aspect-ratio="aspectRatio"
+              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
@@ -29,10 +29,10 @@
           <div class="chart-item left bottom">
             <h2>Implementation Status</h2>
             <StatusPieChart
-              :dealData="implementationStatusData"
-              :displayLegend="true"
-              :aspectRatio="aspectRatio"
-              maxWidth="auto"
+              :deal-data="implementationStatusData"
+              :display-legend="true"
+              :aspect-ratio="aspectRatio"
+              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
@@ -40,17 +40,17 @@
           <div class="chart-item right bottom">
             <h2>Negotiation Status</h2>
             <StatusPieChart
-              :dealData="negotiationStatusData"
-              :displayLegend="true"
-              :aspectRatio="aspectRatio"
-              maxWidth="auto"
+              :deal-data="negotiationStatusData"
+              :display-legend="true"
+              :aspect-ratio="aspectRatio"
+              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
             ></StatusPieChart>
           </div>
         </div>
       </div>
     </template>
-    <template v-slot:ContextBar>
+    <template #ContextBar>
       <h2 class="bar-title">Dynamics overview charts</h2>
       <div v-html="chart_desc" />
       <DealDisplayToggle />
@@ -68,7 +68,6 @@
   import { prepareNegotianStatusData, sum } from "utils/data_processing";
 
   import ChartsContainer from "./ChartsContainer";
-  import LoadingPulse from "components/Data/LoadingPulse";
   import DealDisplayToggle from "components/Shared/DealDisplayToggle";
   import StatusPieChart from "components/Charts/StatusPieChart";
 
@@ -76,7 +75,12 @@
 
   export default {
     name: "DynamicsOverview",
-    components: { ChartsContainer, LoadingPulse, StatusPieChart, DealDisplayToggle },
+    components: { ChartsContainer, StatusPieChart, DealDisplayToggle },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
+    },
     apollo: {
       deals: data_deal_query,
     },
@@ -157,11 +161,10 @@
           for (const [key, keyDeals] of Object.entries(groupedDeals)) {
             let keyGroup = "UNKNOWN";
             let keyLabel = "UNKNOWN";
-            if (key == NO_INTENTION) {
+            if (key === NO_INTENTION) {
               keyGroup = NO_INTENTION;
               keyLabel = NO_INTENTION;
             } else {
-              let group, choices;
               for (const [group, choices] of Object.entries(
                 intention_of_investment_choices
               )) {
@@ -207,7 +210,7 @@
       },
       intentionAgricultureData() {
         return this.intentionData
-          .filter((d) => d.group == "Agriculture")
+          .filter((d) => d.group === "Agriculture")
           .map((d, index) => {
             let alphaValue = 1 - index * 0.15;
             return {
@@ -228,7 +231,7 @@
           ];
           for (const [key, label] of Object.entries(implementation_status_choices)) {
             let filteredDeals = this.deals.filter((d) => {
-              return d.current_implementation_status == key;
+              return d.current_implementation_status === key;
             });
             data.push({
               label: label,
@@ -243,11 +246,6 @@
         }
         return data;
       },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
     },
   };
 </script>

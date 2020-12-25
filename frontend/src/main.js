@@ -48,8 +48,9 @@ Vue.use(VueI18n);
 Vue.use(VueApollo);
 Vue.use(ScrollLoader);
 
-Vue.component("multiselect", Multiselect);
+Vue.component("Multiselect", Multiselect);
 
+/* eslint-disable vue/component-definition-name-casing */
 Vue.component("wagtail-title", Title);
 Vue.component("wagtail-heading", Heading);
 Vue.component("wagtail-image", Image);
@@ -67,13 +68,11 @@ Vue.component("wagtail-twitter", Twitter);
 Vue.component("wagtail-latest_news", LatestNews);
 Vue.component("wagtail-latest_database_modifications", LatestDatabaseModifications);
 Vue.component("wagtail-statistics", Statistics);
-// Vue.component("wagtail-", );
 
 Vue.filter("defaultdate", function (value) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 });
 
-// Create VueI18n instance with options
 const i18n = new VueI18n({
   locale: LANGUAGE || "en",
   fallbackLocale: "en",

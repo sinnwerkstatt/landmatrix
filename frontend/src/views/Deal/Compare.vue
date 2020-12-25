@@ -1,15 +1,12 @@
 <template>
   <div class="container deal-detail">
-    <div class="loadingscreen" v-if="loading">
-      <div class="loader"></div>
-    </div>
-    <div class="row" v-if="dealdiff">
+    <div v-if="dealdiff" class="row">
       <div class="col-sm-5 col-md-3">
-        <h1>Deal #{{ deal_id }}</h1>
+        <h1>Deal #{{ dealId }}</h1>
       </div>
       <div class="col-sm-7 col-md-9 panel-container"></div>
       <div class="col">
-        <h3 class="my-2">Comparing versions {{ from_version }} and {{ to_version }}</h3>
+        <h3 class="my-2">Comparing versions {{ fromVersion }} and {{ toVersion }}</h3>
       </div>
     </div>
 
@@ -17,8 +14,8 @@
       <thead>
         <tr>
           <th></th>
-          <th>{{ from_version }}</th>
-          <th>{{ to_version }}</th>
+          <th>{{ fromVersion }}</th>
+          <th>{{ toVersion }}</th>
         </tr>
       </thead>
 
@@ -42,14 +39,14 @@
               <th class="col-2"><FieldLabel :fieldname="field" /></th>
               <td class="col-5">
                 <DisplayField
-                  :show_label="false"
+                  :show-label="false"
                   :fieldname="field"
                   :value="from_deal[field]"
                 />
               </td>
               <td class="col-5">
                 <DisplayField
-                  :show_label="false"
+                  :show-label="false"
                   :fieldname="field"
                   :value="to_deal[field]"
                 />
@@ -76,7 +73,11 @@
       FieldLabel,
       DisplayField,
     },
-    props: ["deal_id", "deal_version", "from_version", "to_version"],
+    props: {
+      dealId: { type: [Number, String], required: true },
+      fromVersion: { type: [Number, String], default: null },
+      toVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         from_deal: null,
@@ -99,8 +100,8 @@
         .query({
           query: deal_gql_query,
           variables: {
-            id: +this.deal_id,
-            version: +this.from_version,
+            id: +this.dealId,
+            version: +this.fromVersion,
             subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           },
         })
@@ -109,8 +110,8 @@
         .query({
           query: deal_gql_query,
           variables: {
-            id: +this.deal_id,
-            version: +this.to_version,
+            id: +this.dealId,
+            version: +this.toVersion,
             subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           },
         })

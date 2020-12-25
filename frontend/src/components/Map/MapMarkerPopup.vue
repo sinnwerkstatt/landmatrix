@@ -33,8 +33,9 @@
       />
     </div>
     <router-link
+      :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
       class="btn btn-primary"
-      :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
+      target="_blank"
     >
       {{ $t("More details") }}
     </router-link>

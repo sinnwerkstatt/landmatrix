@@ -1,12 +1,14 @@
 <template>
   <div>
-    <a href="#" @click="displayDeals = !displayDeals">{{ value.length }}</a>
-    <span v-if="displayDeals" v-for="val in value">
-      <br />
-      <router-link :to="{ name: 'deal_detail', params: { deal_id: val.id } }">
-        #{{ val.id }}
-      </router-link>
-    </span>
+    <a href="#" @click.prevent="displayDeals = !displayDeals">{{ value.length }}</a>
+    <div v-if="displayDeals">
+      <span v-for="val in value" :key="val.id">
+        <br />
+        <router-link :to="{ name: 'deal_detail', params: { deal_id: val.id } }">
+          #{{ val.id }}
+        </router-link>
+      </span>
+    </div>
   </div>
 </template>
 

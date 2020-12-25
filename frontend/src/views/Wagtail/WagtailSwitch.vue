@@ -39,9 +39,11 @@
           case "wagtailcms.ObservatoryPage":
             return ObservatoryPage;
           case "wagtailcms.ObservatoryIndexPage":
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
             this.$router.push("/observatory/global/");
             return;
           case "wagtailcms.AboutIndexPage":
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
             this.$router.push(
               `/about/${this.$store.state.page.aboutPages[0].meta.slug}/`
             );

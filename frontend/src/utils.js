@@ -47,7 +47,7 @@ export function arraysAreEqual(array1, array2) {
   if (!array1) return false;
 
   // compare lengths - can save a lot of time
-  if (array2.length != array1.length) return false;
+  if (array2.length !== array1.length) return false;
 
   for (var i = 0, l = array2.length; i < l; i++) {
     // Check if we have nested array1s

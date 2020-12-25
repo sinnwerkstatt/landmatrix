@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
         <h3>{{ articlesLabel }}</h3>
-        <slot></slot>
+        <slot />
         <div v-for="article in limitedArticles">
           <div class="article row">
             <div class="col-3">

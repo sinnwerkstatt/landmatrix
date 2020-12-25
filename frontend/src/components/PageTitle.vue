@@ -2,7 +2,7 @@
   <div v-if="title" class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1 v-html="title"></h1>
+        <h1 v-html="title" />
       </div>
     </div>
   </div>
@@ -10,7 +10,9 @@
 
 <script>
   export default {
-    props: ["title"],
+    props: {
+      title: { type: String, default: "" },
+    },
   };
 </script>
 

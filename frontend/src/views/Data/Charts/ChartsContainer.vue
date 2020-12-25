@@ -25,7 +25,6 @@
 </template>
 
 <script>
-  import LoadingPulse from "components/Data/LoadingPulse";
   import ViewSwitcher from "components/Data/ViewSwitcher";
   import FilterBar from "components/Data/FilterBar";
   import ContextBarContainer from "components/Data/ContextBarContainer";
@@ -36,11 +35,11 @@
       ContextBarContainer,
       FilterBar,
       ViewSwitcher,
-      LoadingPulse,
     },
     computed: {},
   };
 </script>
+
 <style lang="scss">
   .chart-container {
     text-align: center;

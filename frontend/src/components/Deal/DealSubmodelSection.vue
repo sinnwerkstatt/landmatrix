@@ -9,7 +9,7 @@
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
-            {{ model_name }} <small>#{{ index + 1 }}</small>
+            {{ modelName }} <small>#{{ index + 1 }}</small>
           </h3>
           <DisplayField
             v-for="fieldname in fields"
@@ -35,7 +35,7 @@
     props: [
       "title",
       "model",
-      "model_name",
+      "modelName",
       "entries",
       "fields",
       "active",

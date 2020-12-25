@@ -58,12 +58,11 @@ def resolve_investor(
             dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
         ]
     if add_deals:
-        investor["deals"] = [
-            d
-            for d in Deal.objects.visible(info.context["request"].user, subset).filter(
-                operating_company_id=id
-            )
-        ]
+        investor["deals"] = (
+            Deal.objects.visible(info.context["request"].user, subset)
+            .filter(operating_company_id=id)
+            .order_by("id")
+        )
     if add_involvements:
         investor["involvements"] = InvolvementNetwork(
             involvements_include_ventures, max_depth=involvements_depth

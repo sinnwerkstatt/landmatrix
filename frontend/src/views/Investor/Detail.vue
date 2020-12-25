@@ -13,7 +13,7 @@
           :href="`/legacy/investor/edit/${investor.id}/`"
           target="_blank"
         >
-          <i class="fas fa-edit"></i> Edit
+          <i class="fas fa-edit" /> Edit
         </a>
         <div class="meta-panel">
           <DisplayField
@@ -40,18 +40,18 @@
     <div v-if="investor" class="row">
       <div class="col-xl-6 mb-3">
         <DisplayField
+          v-for="fieldname in fields"
+          :key="fieldname"
+          v-model="investor[fieldname]"
           :fieldname="fieldname"
           :readonly="true"
-          v-model="investor[fieldname]"
-          v-for="fieldname in fields"
           model="investor"
-          :key="fieldname"
         />
       </div>
       <div
+        v-if="!investorVersion"
         class="col-lg-8 col-xl-6 mb-3"
         :class="{ loading_wrapper: !graphDataIsReady }"
-        v-if="!investor_version"
       >
         <div v-if="!graphDataIsReady" style="height: 400px;">
           <LoadingPulse />
@@ -59,8 +59,8 @@
         <InvestorGraph
           v-else
           :investor="investor"
+          :init-depth="depth"
           @newDepth="onNewDepth"
-          :initDepth="depth"
         ></InvestorGraph>
       </div>
       <div
@@ -78,8 +78,8 @@
 
     <b-tabs v-if="graphDataIsReady" content-class="mb-3">
       <b-tab>
-        <template v-slot:title>
-          <h5 v-html="`Involvements (${involvements.length})`"></h5>
+        <template #title>
+          <h5 v-html="`Involvements (${involvements.length})`" />
         </template>
         <table class="table data-table">
           <thead>
@@ -101,7 +101,7 @@
                   fieldname="id"
                   :value="involvement.investor.id"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -111,7 +111,7 @@
                   fieldname="name"
                   :value="involvement.investor.name"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -121,7 +121,7 @@
                   fieldname="country"
                   :value="involvement.investor.country"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -131,7 +131,7 @@
                   fieldname="classification"
                   :value="involvement.investor.classification"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>{{ detect_role(involvement) }}</td>
@@ -171,7 +171,7 @@
                   :value-classes="[]"
                   fieldname="id"
                   :value="deal.id"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -180,7 +180,7 @@
                   :value-classes="[]"
                   fieldname="country"
                   :value="deal.country"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -189,7 +189,7 @@
                   :value-classes="[]"
                   fieldname="current_intention_of_investment"
                   :value="deal.current_intention_of_investment"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -198,7 +198,7 @@
                   :value-classes="[]"
                   fieldname="current_negotiation_status"
                   :value="deal.current_negotiation_status"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -207,7 +207,7 @@
                   :value-classes="[]"
                   fieldname="current_implementation_status"
                   :value="deal.current_implementation_status"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
@@ -216,7 +216,7 @@
                   :value-classes="[]"
                   fieldname="deal_size"
                   :value="deal.deal_size"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
             </tr>
@@ -224,13 +224,13 @@
         </table>
       </b-tab>
       <b-tab>
-        <template v-slot:title>
+        <template #title>
           <h5>{{ $t("Investor History") }}</h5>
         </template>
         <InvestorHistory
           :investor="investor"
-          :investor_id="investor_id"
-          :investor_version="investor_version"
+          :investor-id="investorId"
+          :investor-version="investorVersion"
         />
       </b-tab>
     </b-tabs>
@@ -249,7 +249,10 @@
   export default {
     name: "InvestorDetail",
     components: { InvestorHistory, LoadingPulse, InvestorGraph, DisplayField },
-    props: ["investor_id", "investor_version"],
+    props: {
+      investorId: { type: [Number, String], required: true },
+      investorVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         investor: null,
@@ -290,10 +293,9 @@
       },
       deals() {
         if ("deals" in this.investor) {
-          return this.investor.deals.sort((a, b) => {
-            return a.id - b.id;
-          });
-        } else return [];
+          return this.investor.deals;
+        }
+        return [];
       },
       graphDataIsReady() {
         return (
@@ -304,13 +306,28 @@
           !this.$apollo.queries.investor.loading
         );
       },
-      tableDataIsReady() {
-        return (
-          this.investor &&
-          "involvements" in this.investor &&
-          this.investor &&
-          "deals" in this.investor
-        );
+    },
+    watch: {
+      investorId(investorId, oldInvestorId) {
+        if (investorId !== oldInvestorId) {
+          this.includeDealsInQuery = false;
+        }
+      },
+      investor(investor, oldInvestor) {
+        if (!oldInvestor) {
+          // initial load complete, also load deals
+          this.includeDealsInQuery = true;
+          this.depth = 1;
+        }
+        let title = `${investor.name} <small>(#${investor.id})</small>`;
+        store.dispatch("setPageContext", {
+          title,
+          breadcrumbs: [
+            { link: { name: "wagtail" }, name: "Home" },
+            { link: { name: "list_investors" }, name: "Data" },
+            { name: `Investor #${investor.id}` },
+          ],
+        });
       },
     },
     methods: {
@@ -331,29 +348,6 @@
         if (value > this.depth) {
           this.depth = +value;
         }
-      },
-    },
-    watch: {
-      investor_id(investor_id, oldInvestorId) {
-        if (investor_id !== oldInvestorId) {
-          this.includeDealsInQuery = false;
-        }
-      },
-      investor(investor, oldInvestor) {
-        if (!oldInvestor) {
-          // initial load complete, also load deals
-          this.includeDealsInQuery = true;
-          this.depth = 1;
-        }
-        let title = `${investor.name} <small>(#${investor.id})</small>`;
-        store.dispatch("setPageContext", {
-          title,
-          breadcrumbs: [
-            { link: { name: "wagtail" }, name: "Home" },
-            { link: { name: "list_investors" }, name: "Data" },
-            { name: `Investor #${investor.id}` },
-          ],
-        });
       },
     },
   };

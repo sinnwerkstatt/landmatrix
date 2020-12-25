@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle :title="page.title"></PageTitle>
+    <PageTitle :title="page.title" />
     <Streamfield :content="content" />
   </div>
 </template>
@@ -21,5 +21,3 @@
     },
   };
 </script>
-
-<style scoped></style>

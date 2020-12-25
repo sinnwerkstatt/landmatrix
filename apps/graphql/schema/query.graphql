@@ -61,8 +61,8 @@ type Query {
 
   markers(
     subset: Subset = PUBLIC
-    region_id: Int = None
-    country_id: Int = None
+    region_id: Int
+    country_id: Int
   ): [Marker]
 }
 

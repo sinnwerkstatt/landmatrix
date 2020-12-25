@@ -4,10 +4,10 @@
       <div class="row">
         <div class="col-md-12">
           <component
-            v-for="x in value.content"
             :is="`wagtail-${x.type}`"
-            :value="x.value"
+            v-for="x in value.content"
             :key="x.id"
+            :value="x.value"
           />
         </div>
       </div>

@@ -1,8 +1,5 @@
 <template>
-  <div class="container deal-detail" v-if="deal">
-    <div class="loadingscreen" v-if="loading">
-      <div class="loader"></div>
-    </div>
+  <div v-if="deal" class="container deal-detail">
     <div class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal.id }}</h1>
@@ -59,12 +56,12 @@
     <!--    </div>-->
     <b-tabs
       id="tabNav"
+      :key="dealId + dealVersion"
       content-class="mb-3"
       vertical
       pills
       nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
       nav-class="sticky-nav"
-      :key="deal_id + deal_version"
     >
       <DealLocationsSection
         :deal="deal"
@@ -84,7 +81,7 @@
 
       <DealSubmodelSection
         :title="$t('Contracts')"
-        :model_name="$t('Contract')"
+        :model-name="$t('Contract')"
         :entries="deal.contracts"
         :fields="deal_submodel_sections.contract"
         :readonly="true"
@@ -120,11 +117,11 @@
                 Network of parent companies and tertiary investors/lenders
               </h3>
               <InvestorGraph
-                :investor="investor"
-                :showDeals="false"
-                :controls="false"
-                :initDepth="4"
                 ref="investorGraph"
+                :investor="investor"
+                :show-deals="false"
+                :controls="false"
+                :init-depth="4"
               ></InvestorGraph>
             </template>
             <div v-else class="loader"></div>
@@ -134,7 +131,7 @@
 
       <DealSubmodelSection
         :title="$t('Data Sources')"
-        :model_name="$t('Data Source')"
+        :model-name="$t('Data Source')"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         :readonly="true"
@@ -207,7 +204,7 @@
       />
 
       <b-tab disabled>
-        <template v-slot:title>
+        <template #title>
           <hr />
         </template>
       </b-tab>
@@ -217,7 +214,7 @@
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >
-        <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
+        <DealHistory :deal="deal" :deal-id="dealId" :deal-version="dealVersion" />
       </b-tab>
 
       <b-tab
@@ -257,7 +254,6 @@
   import DisplayField from "components/Fields/DisplayField";
 
   export default {
-    props: ["deal_id", "deal_version"],
     components: {
       DisplayField,
       DealComments,
@@ -267,10 +263,23 @@
       DealLocationsSection,
       DealSubmodelSection,
     },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.updatePageContext(to);
+      });
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.updatePageContext(to);
+      next();
+    },
+    props: {
+      dealId: { type: [Number, String], required: true },
+      dealVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         deal: null,
-        loading: false,
+
         deal_sections,
         deal_submodel_sections,
         investor: { involvements: [] },
@@ -281,8 +290,8 @@
         query: deal_gql_query,
         variables() {
           return {
-            id: +this.deal_id,
-            version: +this.deal_version,
+            id: +this.dealId,
+            version: +this.dealVersion,
             subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           };
         },
@@ -357,7 +366,7 @@
         }
       },
       updatePageContext(to) {
-        let title = `Deal #${to.params.deal_id}`;
+        let title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           title,
           breadcrumbs: [
@@ -368,17 +377,9 @@
         });
       },
     },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.updatePageContext(to);
-      });
-    },
-    beforeRouteUpdate(to, from, next) {
-      this.updatePageContext(to);
-      next();
-    },
   };
 </script>
+
 <style lang="scss">
   @import "../../scss/colors";
 

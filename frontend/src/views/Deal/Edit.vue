@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="deal">
+  <div v-if="deal" class="container">
     <b-tabs content-class="mb-3">
       <b-tab title="Location" active>
         <map-editor />
@@ -12,32 +12,14 @@
   </div>
 </template>
 
-<style lang="scss">
-  .logo {
-    width: 300px;
-    text-align: center;
-  }
-</style>
-
 <script>
   import store from "store";
   import MapEditor from "components/MapEditor";
   import DealSection from "components/Deal/DealSection";
 
   export default {
-    components: { MapEditor, DealSection },
     name: "DealEdit",
-    props: ["deal_id"],
-    data() {
-      return {
-        general_info: "gi",
-      };
-    },
-    computed: {
-      deal() {
-        return {};
-      },
-    },
+    components: { MapEditor, DealSection },
     beforeRouteEnter(to, from, next) {
       let title = to.params.deal_id
         ? `Change Deal #${to.params.deal_id}`
@@ -57,6 +39,17 @@
           window.location = `/accounts/login/?next=${to.path}`;
         }
       });
+    },
+    props: ["dealId"],
+    data() {
+      return {
+        general_info: "gi",
+      };
+    },
+    computed: {
+      deal() {
+        return {};
+      },
     },
   };
 </script>

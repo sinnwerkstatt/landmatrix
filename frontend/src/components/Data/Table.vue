@@ -68,7 +68,7 @@
                 :fieldname="fieldName"
                 :value="obj[fieldName]"
                 :model="targetModel"
-                :show_label="false"
+                :show-label="false"
               />
             </td>
           </tr>

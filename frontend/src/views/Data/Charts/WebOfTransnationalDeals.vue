@@ -1,12 +1,12 @@
 <template>
   <ChartsContainer>
-    <template v-slot:default>
+    <template #default>
       <LoadingPulse v-if="$apollo.queries.transnational_deals.loading" />
       <div id="svg-container">
         <svg></svg>
       </div>
     </template>
-    <template v-slot:ContextBar>
+    <template #ContextBar>
       <ContextBarWebOfTransnationalDeals :filters="filtered_filtersForGQL" />
     </template>
   </ChartsContainer>
@@ -21,7 +21,6 @@
 
   export default {
     name: "WebOfTransnationalDeals",
-    props: ["changeDeal"],
     components: { ChartsContainer, LoadingPulse, ContextBarWebOfTransnationalDeals },
     apollo: {
       transnational_deals: {
@@ -36,6 +35,11 @@
           };
         },
       },
+    },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
     },
     data() {
       return {
@@ -52,6 +56,14 @@
         return this.$store.state.filters.filters.country_id;
       },
     },
+    watch: {
+      transnational_deals() {
+        this.redrawSpider();
+      },
+      filtered_country_id() {
+        this.redrawSpider();
+      },
+    },
     methods: {
       redrawSpider() {
         LandMatrixRadialSpider(
@@ -66,19 +78,6 @@
           }
         );
       },
-    },
-    watch: {
-      transnational_deals() {
-        this.redrawSpider();
-      },
-      filtered_country_id() {
-        this.redrawSpider();
-      },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
     },
   };
 </script>
