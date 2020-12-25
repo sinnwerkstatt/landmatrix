@@ -63,14 +63,8 @@
 </template>
 
 <script>
-  import DealSection from "components/Deal/DealSection";
-  import DealHistory from "components/Deal/DealHistory";
-  import DealLocationsSection from "components/Deal/DealLocationsSection";
-  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
-  import InvestorGraph from "components/Investor/InvestorGraph";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import { deal_gql_query } from "store/queries";
-  import DealComments from "components/Deal/DealComments";
   import { diff } from "deep-object-diff";
   import { apolloClient } from "apolloclient";
   import DisplayField from "components/Fields/DisplayField";
@@ -78,17 +72,11 @@
 
   export default {
     name: "Compare",
-    props: ["deal_id", "deal_version", "from_version", "to_version"],
     components: {
       FieldLabel,
       DisplayField,
-      DealComments,
-      InvestorGraph,
-      DealHistory,
-      DealSection,
-      DealLocationsSection,
-      DealSubmodelSection,
     },
+    props: ["deal_id", "deal_version", "from_version", "to_version"],
     data() {
       return {
         from_deal: null,
@@ -104,16 +92,6 @@
         let diffy = diff(this.from_deal, this.to_deal);
         if (diffy) return new Set(Object.keys(diffy));
         return new Set();
-      },
-    },
-    methods: {
-      anyFieldFromSection(section) {
-        return section.subsections.some((subsec) =>
-          this.anyFieldFromSubSection(subsec)
-        );
-      },
-      anyFieldFromSubSection(subsec) {
-        return subsec.fields.some((f) => this.dealdiff.has(f));
       },
     },
     created() {
@@ -137,6 +115,16 @@
           },
         })
         .then((data) => (this.to_deal = data.data.deal));
+    },
+    methods: {
+      anyFieldFromSection(section) {
+        return section.subsections.some((subsec) =>
+          this.anyFieldFromSubSection(subsec)
+        );
+      },
+      anyFieldFromSubSection(subsec) {
+        return subsec.fields.some((f) => this.dealdiff.has(f));
+      },
     },
   };
 </script>

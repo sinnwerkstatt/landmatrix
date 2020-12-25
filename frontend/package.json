@@ -99,7 +99,18 @@
       "es6": true
     },
     "rules": {
-      "no-unused-vars": "warn"
+      "no-unused-vars": "warn",
+      "vue/no-unused-vars": "error",
+      "vue/max-attributes-per-line": [
+        "warn",
+        {
+          "singleline": 3,
+          "multiline": {
+            "max": 1,
+            "allowFirstLine": false
+          }
+        }
+      ]
     },
     "parserOptions": {
       "ecmaVersion": 2018,

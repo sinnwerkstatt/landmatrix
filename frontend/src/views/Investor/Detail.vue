@@ -17,20 +17,20 @@
         </a>
         <div class="meta-panel">
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="created_at"
             model="investor"
-            :value="this.investor.created_at"
+            :value="investor.created_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="modified_at"
             model="investor"
-            :value="this.investor.modified_at"
+            :value="investor.modified_at"
           />
         </div>
       </div>
@@ -96,8 +96,8 @@
             <tr v-for="involvement in involvements" :key="involvement.id">
               <td>
                 <DisplayField
-                  :wrapper_classes="['text-center']"
-                  :value_classes="[]"
+                  :wrapper-classes="['text-center']"
+                  :value-classes="[]"
                   fieldname="id"
                   :value="involvement.investor.id"
                   model="investor"
@@ -106,8 +106,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="name"
                   :value="involvement.investor.name"
                   model="investor"
@@ -116,8 +116,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="country"
                   :value="involvement.investor.country"
                   model="investor"
@@ -126,8 +126,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="classification"
                   :value="involvement.investor.classification"
                   model="investor"
@@ -145,12 +145,12 @@
         </table>
       </b-tab>
       <b-tab v-if="'deals' in investor">
-        <template v-slot:title>
+        <template #title>
           <h5
             v-html="
               `Deals (Involvements as Operating company) (${investor.deals.length})`
             "
-          ></h5>
+          />
         </template>
         <table class="table data-table">
           <thead>
@@ -167,8 +167,8 @@
             <tr v-for="deal in deals" :key="deal.id">
               <td>
                 <DisplayField
-                  :wrapper_classes="['text-center']"
-                  :value_classes="[]"
+                  :wrapper-classes="['text-center']"
+                  :value-classes="[]"
                   fieldname="id"
                   :value="deal.id"
                   :show_label="false"
@@ -176,8 +176,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="country"
                   :value="deal.country"
                   :show_label="false"
@@ -185,8 +185,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_intention_of_investment"
                   :value="deal.current_intention_of_investment"
                   :show_label="false"
@@ -194,8 +194,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_negotiation_status"
                   :value="deal.current_negotiation_status"
                   :show_label="false"
@@ -203,8 +203,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_implementation_status"
                   :value="deal.current_implementation_status"
                   :show_label="false"
@@ -212,8 +212,8 @@
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="deal_size"
                   :value="deal.deal_size"
                   :show_label="false"

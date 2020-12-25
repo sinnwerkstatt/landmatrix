@@ -3,31 +3,31 @@
     <h3>Deal #{{ deal.id }}</h3>
     <div class="deal-summary">
       <DisplayField
-        :wrapper_classes="['map-marker-popup-wrapper']"
-        :label_classes="['map-marker-popup-label']"
-        :value_classes="['map-marker-popup-value']"
+        :wrapper-classes="['map-marker-popup-wrapper']"
+        :label-classes="['map-marker-popup-label']"
+        :value-classes="['map-marker-popup-value']"
         fieldname="level_of_accuracy"
         model="location"
         :value="location.level_of_accuracy"
       />
       <DisplayField
-        :wrapper_classes="['map-marker-popup-wrapper']"
-        :label_classes="['map-marker-popup-label']"
-        :value_classes="['map-marker-popup-value']"
+        :wrapper-classes="['map-marker-popup-wrapper']"
+        :label-classes="['map-marker-popup-label']"
+        :value-classes="['map-marker-popup-value']"
         fieldname="current_intention_of_investment"
         :value="deal.current_intention_of_investment"
       />
       <DisplayField
-        :wrapper_classes="['map-marker-popup-wrapper']"
-        :label_classes="['map-marker-popup-label']"
-        :value_classes="['map-marker-popup-value']"
+        :wrapper-classes="['map-marker-popup-wrapper']"
+        :label-classes="['map-marker-popup-label']"
+        :value-classes="['map-marker-popup-value']"
         fieldname="deal_size"
         :value="deal.deal_size"
       />
       <DisplayField
-        :wrapper_classes="['map-marker-popup-wrapper']"
-        :label_classes="['map-marker-popup-label']"
-        :value_classes="['map-marker-popup-value']"
+        :wrapper-classes="['map-marker-popup-wrapper']"
+        :label-classes="['map-marker-popup-label']"
+        :value-classes="['map-marker-popup-value']"
         fieldname="operating_company"
         :value="deal.operating_company"
       />

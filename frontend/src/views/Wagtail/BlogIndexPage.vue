@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle :title="pageTitle()"></PageTitle>
+    <PageTitle :title="pageTitle()" />
     <div class="container">
       <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
       <!--    <div class="row " v-if="tag">-->
@@ -8,22 +8,27 @@
       <!--        <i class="fas fa-tags"></i> {{tag}}-->
       <!--      </div>-->
       <!--    </div>-->
-      <div class="row mb-4" v-if="blogcategories_with_all">
+      <div v-if="blogcategories_with_all" class="row mb-4">
         <div class="col text-center">
           <ul class="nav nav-pills d-flex justify-content-center">
-            <li class="nav-item" v-for="cat in blogcategories_with_all">
+            <li v-for="cat in blogcategories_with_all" :key="cat.slug" class="nav-item">
               <router-link
                 class="nav-link"
                 :class="{ active: category === cat.slug }"
                 :to="cat.slug ? `?category=${cat.slug}` : './'"
-                >{{ $t(cat.name) }}</router-link
               >
+                {{ $t(cat.name) }}
+              </router-link>
             </li>
           </ul>
         </div>
       </div>
-      <div class="row" v-if="blogpages">
-        <div v-for="article in filtered_articles" class="col-md-6 col-lg-4 mb-3">
+      <div v-if="blogpages" class="row">
+        <div
+          v-for="article in filtered_articles"
+          :key="article.slug"
+          class="col-md-6 col-lg-4 mb-3"
+        >
           <div class="card">
             <img
               v-if="article.header_image"
@@ -33,9 +38,11 @@
             />
             <div class="card-body">
               <h5 class="card-title">
-                <router-link :to="`${article.slug}/`">{{ article.title }}</router-link>
+                <router-link :to="`${article.slug}/`">
+                  {{ article.title }}
+                </router-link>
               </h5>
-              <p class="card-text" v-html="article.excerpt"></p>
+              <p class="card-text" v-html="article.excerpt" />
               <p class="card-text">
                 <small class="text-muted">{{ article.date }}</small>
               </p>
@@ -81,6 +88,14 @@
         return this.blogpages;
       },
     },
+    watch: {
+      $route() {
+        this.updatePageTitle();
+      },
+    },
+    mounted() {
+      this.updatePageTitle();
+    },
     methods: {
       pageTitle() {
         this.category = this.$route.query.category || null;
@@ -93,14 +108,6 @@
       },
       updatePageTitle() {
         this.$store.commit("setTitle", this.pageTitle());
-      },
-    },
-    mounted() {
-      this.updatePageTitle();
-    },
-    watch: {
-      $route(to, from) {
-        this.updatePageTitle();
       },
     },
   };

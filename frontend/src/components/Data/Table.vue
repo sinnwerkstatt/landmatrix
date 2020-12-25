@@ -49,7 +49,7 @@
             >
               <FieldLabel
                 :fieldname="fieldName"
-                :label_classes="[]"
+                :label-classes="[]"
                 :model="targetModel"
               />
             </th>
@@ -63,8 +63,8 @@
               :style="getStyle(obj, fieldName)"
             >
               <DisplayField
-                :wrapper_classes="[]"
-                :value_classes="[]"
+                :wrapper-classes="[]"
+                :value-classes="[]"
                 :fieldname="fieldName"
                 :value="obj[fieldName]"
                 :model="targetModel"

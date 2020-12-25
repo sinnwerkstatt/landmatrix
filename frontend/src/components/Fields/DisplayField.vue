@@ -1,18 +1,19 @@
 <template>
-  <div :class="wrapper_classes" v-if="visible">
+  <div v-if="visible" :class="wrapperClasses">
     <FieldLabel
-      v-if="show_label"
+      v-if="showLabel"
       :fieldname="fieldname"
-      :label_classes="label_classes"
+      :label-classes="labelClasses"
       :model="model"
     />
-    <div :class="value_classes">
+    <div :class="valueClasses">
+      <!-- eslint-disable vue/no-mutating-props -->
       <component
         :is="formfield.class"
+        v-if="custom_is_null(value)"
+        v-model="value"
         :formfield="formfield"
         :model="model"
-        v-model="value"
-        v-if="custom_is_null(value)"
       />
     </div>
   </div>
@@ -38,30 +39,10 @@
   import PointField from "./Display/PointField";
   import TextField from "./Display/TextField";
   import URLField from "./Display/TextField";
-  import { mapState } from "vuex";
   import FieldLabel from "./FieldLabel";
 
   export default {
     name: "DisplayField",
-    props: {
-      fieldname: { type: String, required: true },
-      value: { required: true },
-      model: { type: String, default: "deal" },
-      show_label: { type: Boolean, default: true },
-      wrapper_classes: {
-        type: Array,
-        default: () => ["display-field-wrapper", "form-field", "row"],
-      },
-      label_classes: {
-        type: Array,
-        default: () => ["display-field-label", "col-md-5", "col-lg-4"],
-      },
-      value_classes: {
-        type: Array,
-        default: () => ["display-field-value", "col-md-7", "col-lg-8"],
-      },
-      file_not_public: { type: Boolean, default: false },
-    },
     components: {
       AutoField,
       FieldLabel,
@@ -84,20 +65,39 @@
       TextField,
       URLField,
     },
+    props: {
+      fieldname: { type: String, required: true },
+      // eslint-disable-next-line vue/require-prop-types
+      value: { required: true },
+      model: { type: String, default: "deal" },
+      showLabel: { type: Boolean, default: true },
+      wrapperClasses: {
+        type: Array,
+        default: () => ["display-field-wrapper", "form-field", "row"],
+      },
+      labelClasses: {
+        type: Array,
+        default: () => ["display-field-label", "col-md-5", "col-lg-4"],
+      },
+      valueClasses: {
+        type: Array,
+        default: () => ["display-field-value", "col-md-7", "col-lg-8"],
+      },
+      fileNotPublic: { type: Boolean, default: false },
+    },
     computed: {
       visible() {
         if (this.formfield.class === "FileField") {
-          return !this.file_not_public || this.user.is_authenticated;
+          return !this.fileNotPublic || this.$store.getters.userAuthenticated;
         }
         return true;
       },
       formfield() {
-        return { name: this.fieldname, ...this.formfields[this.model][this.fieldname] };
+        return {
+          name: this.fieldname,
+          ...this.$store.state.formfields[this.model][this.fieldname],
+        };
       },
-      ...mapState({
-        formfields: (state) => state.formfields,
-        user: (state) => state.page.user,
-      }),
     },
     methods: {
       custom_is_null(field) {

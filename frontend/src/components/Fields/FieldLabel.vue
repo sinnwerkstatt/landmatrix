@@ -1,5 +1,7 @@
 <template>
-  <div :class="label_classes">{{ label }}</div>
+  <div :class="labelClasses">
+    {{ label }}
+  </div>
 </template>
 
 <script>
@@ -13,7 +15,7 @@
         required: true,
       },
       model: { type: String, default: "deal" },
-      label_classes: { type: Array, default: () => ["label", "col-md-5", "col-lg-4"] },
+      labelClasses: { type: Array, default: () => ["label", "col-md-5", "col-lg-4"] },
     },
     computed: {
       label() {

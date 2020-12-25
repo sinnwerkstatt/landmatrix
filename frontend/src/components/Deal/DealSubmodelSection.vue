@@ -1,28 +1,28 @@
 <template>
   <b-tab
-    :title="title"
     v-if="entries.length"
+    :title="title"
     :active="active"
     @click="$emit('activated')"
   >
     <div class="row">
       <div :class="wrapperClasses">
-        <div v-for="(entry, index) in entries" class="panel-body" :key="index">
+        <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
             {{ model_name }} <small>#{{ index + 1 }}</small>
           </h3>
           <DisplayField
             v-for="fieldname in fields"
+            :key="fieldname"
             :fieldname="fieldname"
             :value="entry[fieldname]"
             :model="model"
-            :label_classes="label_classes"
-            :value_classes="value_classes"
-            :key="fieldname"
+            :label-classes="labelClasses"
+            :value-classes="valueClasses"
           />
         </div>
       </div>
-      <slot></slot>
+      <slot />
     </div>
   </b-tab>
 </template>
@@ -31,6 +31,7 @@
   import DisplayField from "components/Fields/DisplayField";
 
   export default {
+    components: { DisplayField },
     props: [
       "title",
       "model",
@@ -38,10 +39,9 @@
       "entries",
       "fields",
       "active",
-      "label_classes",
-      "value_classes",
+      "labelClasses",
+      "valueClasses",
     ],
-    components: { DisplayField },
     computed: {
       hasDefaultSlot() {
         return !!this.$slots.default;

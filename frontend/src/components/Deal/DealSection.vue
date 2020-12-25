@@ -1,27 +1,27 @@
 <template>
   <b-tab
-    :title="title"
     v-if="any_field_at_all(sections)"
+    :title="title"
     :active="active"
     @click="$emit('activated')"
   >
     <div>
       <div
         v-for="section in sections"
-        class="panel-body"
         v-if="any_field_in_section(section)"
         :key="section.name"
+        class="panel-body"
       >
         <h3>{{ section.name }}</h3>
         <DisplayField
           v-for="fieldname in section.fields"
+          :key="fieldname"
           :fieldname="fieldname"
           :value="deal[fieldname]"
-          :key="fieldname"
         />
       </div>
     </div>
-    <slot></slot>
+    <slot />
   </b-tab>
 </template>
 
@@ -29,8 +29,8 @@
   import DisplayField from "components/Fields/DisplayField";
 
   export default {
-    props: ["title", "sections", "deal", "active"],
     components: { DisplayField },
+    props: ["title", "sections", "deal", "active"],
     methods: {
       custom_is_null(field) {
         return !(

@@ -6,8 +6,8 @@
     :fields="fields"
     model="location"
     :active="active"
-    :label_classes="['display-field-label', 'col-md-6']"
-    :value_classes="['display-field-value', 'col-md-6']"
+    :label-classes="['display-field-label', 'col-md-6']"
+    :value-classes="['display-field-value', 'col-md-6']"
     @activated="$emit('activated')"
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">

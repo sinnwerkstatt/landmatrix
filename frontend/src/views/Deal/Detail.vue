@@ -17,25 +17,25 @@
         </a>
         <div class="meta-panel">
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="created_at"
-            :value="this.deal.created_at"
+            :value="deal.created_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="modified_at"
-            :value="this.deal.modified_at"
+            :value="deal.modified_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="fully_updated_at"
-            :value="this.deal.fully_updated_at"
+            :value="deal.fully_updated_at"
           />
         </div>
       </div>
