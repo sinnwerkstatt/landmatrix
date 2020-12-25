@@ -12,14 +12,14 @@
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">
       <big-map
-        :containerStyle="{ 'max-height': '90%', height: '90%' }"
+        :container-style="{ 'max-height': '90%', height: '90%' }"
         :bounds="bounds"
       >
         <l-geo-json
           v-if="deal.geojson"
           :geojson="deal.geojson"
           :options="geojson_options"
-          :optionsStyle="geojson_styleFunction"
+          :options-style="geojson_styleFunction"
         />
       </big-map>
     </div>
@@ -27,16 +27,21 @@
 </template>
 
 <script>
-  import BigMap from "../BigMap";
+  import BigMap from "components/BigMap";
   import { LGeoJson } from "vue2-leaflet";
+  import { GeoJSON, LatLngBounds } from "leaflet";
   import DealSubmodelSection from "./DealSubmodelSection";
 
   export default {
-    props: ["title", "fields", "deal", "active"],
     components: {
       DealSubmodelSection,
       BigMap,
       LGeoJson,
+    },
+    props: {
+      fields: { type: Array, required: true },
+      deal: { type: Object, required: true },
+      active: { type: Boolean, default: false },
     },
     computed: {
       entries() {
@@ -46,7 +51,7 @@
       },
       bounds() {
         if (!this.deal) return null;
-        let mybounds = L.geoJSON(this.deal.geojson).getBounds();
+        let mybounds = new GeoJSON(this.deal.geojson).getBounds();
         let ne = mybounds.getNorthEast();
         let sw = mybounds.getSouthWest();
         if (!ne || !sw) return null;
@@ -55,7 +60,7 @@
           ne.lng += 10;
           sw.lat -= 10;
           sw.lng -= 10;
-          return L.latLngBounds(ne, sw);
+          return new LatLngBounds(ne, sw);
         }
         return mybounds.pad(1.5);
       },
@@ -97,7 +102,7 @@
             fillColor: "#ff0000",
           },
         };
-        return (feature, layer) => {
+        return (feature) => {
           return {
             weight: 2,
             color: "#000000",

@@ -13,11 +13,11 @@
         <h3>{{ $t("Filter") }}</h3>
         <span style="font-size: 0.8em;">
           <b-form-checkbox
-            class="default-filter-switch"
+            v-model="isDefaultFilter"
             :class="{ active: isDefaultFilter }"
+            class="default-filter-switch"
             name="check-button"
             switch
-            v-model="isDefaultFilter"
             @change="updateDefaultFilter"
           >
             Default filter
@@ -31,12 +31,12 @@
         >
           <b-form-group>
             <b-form-radio
+              v-for="reg in regions"
+              :key="reg.id"
               v-model="region_id"
               name="regionRadio"
               :value="reg.id"
-              v-for="reg in regions"
               @change="country = null"
-              :key="reg.id"
             >
               {{ $t(reg.name) }}
             </b-form-radio>
@@ -77,8 +77,8 @@
           </div>
           <div class="input-group">
             <input
-              type="number"
               v-model="deal_size_max"
+              type="number"
               class="form-control"
               :placeholder="$t('to')"
               aria-label="to"
@@ -98,11 +98,11 @@
           <div v-for="(nsname, nsval) in choices.negotiation_status" class="form-check">
             <div class="custom-control custom-checkbox">
               <input
+                :id="nsval"
+                v-model="negotiation_status"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="nsval"
-                :id="nsval"
-                v-model="negotiation_status"
               />
               <label class="form-check-label custom-control-label" :for="nsval">
                 {{ $t(nsname) }}
@@ -119,11 +119,11 @@
           <div v-for="(isname, isval) in choices.nature_of_deal" class="form-check">
             <div class="custom-control custom-checkbox">
               <input
+                :id="isval"
+                v-model="nature_of_deal"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="isval"
-                :id="isval"
-                v-model="nature_of_deal"
               />
               <label class="form-check-label custom-control-label" :for="isval">
                 {{ $t(isname) }}
@@ -166,8 +166,8 @@
           <form class="form-inline">
             <div class="input-group">
               <input
-                type="number"
                 v-model="initiation_year_min"
+                type="number"
                 class="form-control"
                 placeholder="from"
                 aria-label="from"
@@ -177,8 +177,8 @@
             </div>
             <div class="input-group">
               <input
-                type="number"
                 v-model="initiation_year_max"
+                type="number"
                 class="form-control"
                 placeholder="to"
                 aria-label="to"
@@ -188,11 +188,11 @@
             </div>
             <div class="custom-control custom-checkbox">
               <input
+                id="initiation_year_unknown"
+                v-model="initiation_year_unknown"
                 type="checkbox"
                 class="custom-control-input"
                 :disabled="!initiation_year_min && !initiation_year_max"
-                v-model="initiation_year_unknown"
-                id="initiation_year_unknown"
               />
               <label class="custom-control-label" for="initiation_year_unknown">
                 Include unknown years
@@ -212,11 +212,11 @@
           >
             <div class="custom-control custom-checkbox">
               <input
+                :id="isval"
+                v-model="implementation_status"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="isval"
-                :id="isval"
-                v-model="implementation_status"
               />
               <label class="form-check-label custom-control-label" :for="isval">
                 {{ $t(isname) }}
@@ -235,11 +235,11 @@
             <div v-for="(isname, isval) in options" class="form-check">
               <div class="custom-control custom-checkbox">
                 <input
+                  :id="isval"
+                  v-model="intention_of_investment"
                   class="form-check-input custom-control-input"
                   type="checkbox"
                   :value="isval"
-                  :id="isval"
-                  v-model="intention_of_investment"
                 />
                 <label class="form-check-label custom-control-label" :for="isval">
                   {{ $t(isname) }}
@@ -538,7 +538,7 @@
         get() {
           return this.$store.state.filters.isDefaultFilter;
         },
-        set(value) {
+        set() {
           // do nothing - only on user action: see updateDefaultFilter()
         },
       },
@@ -681,7 +681,7 @@
         &:after {
           margin-top: -0.1em;
           background-color: white;
-          box-shadow: 0px 1px 2px rgba(black, 0.3);
+          box-shadow: 0 1px 2px rgba(black, 0.3);
         }
       }
     }
@@ -693,7 +693,7 @@
 
       &:after {
         background-color: $lm_orange;
-        box-shadow: 0px 0px 0px 1px rgba($lm_orange, 0.7);
+        box-shadow: 0 0 0 1px rgba($lm_orange, 0.7);
       }
     }
 

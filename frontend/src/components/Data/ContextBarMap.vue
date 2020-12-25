@@ -22,25 +22,25 @@
         <h5>Negotiation Status</h5>
         <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <StatusPieChart
-          :dealData="dealsFilteredByNegStatus"
-          :displayLegend="true"
-          :valueField="displayDealsCount ? 'count' : 'size'"
+          :deal-data="dealsFilteredByNegStatus"
+          :display-legend="true"
+          :value-field="displayDealsCount ? 'count' : 'size'"
           :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
         <h5>Implementation Status</h5>
         <StatusPieChart
-          :dealData="implementationStatusData"
-          :displayLegend="true"
-          valueField="value"
+          :deal-data="implementationStatusData"
+          :display-legend="true"
+          value-field="value"
           :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
         <h5>Produce</h5>
         <StatusPieChart
-          :dealData="produceData"
+          :deal-data="produceData"
           :legends="produceDataLegendItems"
           unit="%"
         ></StatusPieChart>

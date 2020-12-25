@@ -15,15 +15,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(version, i) in investor.versions">
+        <tr v-for="(version, i) in investor.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
           <td v-if="user && user.is_authenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
             <b-button
-              disabled
               v-b-tooltip.hover
+              disabled
               :title="version.investor.fully_updated ? 'Fully updated' : 'Updated'"
               :class="[
                 'fa',
@@ -150,9 +150,9 @@
         this.$router.push({
           name: "investor_compare",
           params: {
-            investor_id: this.investorId,
-            from_version: this.compare_from,
-            to_version: this.compare_to,
+            investorId: this.investorId,
+            fromVersion: this.compare_from,
+            toVersion: this.compare_to,
           },
         });
       },

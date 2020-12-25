@@ -95,6 +95,22 @@
         else return this.dealData;
       },
     },
+    watch: {
+      dealData: {
+        deep: true,
+        handler: function () {
+          this.updateChart();
+        },
+      },
+      valueField: {
+        handler: function () {
+          this.updateChart();
+        },
+      },
+    },
+    mounted() {
+      this.createChart();
+    },
     methods: {
       createChart() {
         if (this.dealData) {
@@ -113,22 +129,6 @@
         } else {
           this.createChart();
         }
-      },
-    },
-    mounted() {
-      this.createChart();
-    },
-    watch: {
-      dealData: {
-        deep: true,
-        handler: function () {
-          this.updateChart();
-        },
-      },
-      valueField: {
-        handler: function () {
-          this.updateChart();
-        },
       },
     },
   };

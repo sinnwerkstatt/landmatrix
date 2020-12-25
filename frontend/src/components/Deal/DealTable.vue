@@ -30,8 +30,8 @@
         <tr v-for="deal in dt_deals" :key="deal.id">
           <td>
             <router-link
-              :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
               v-slot="{ href }"
+              :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
             >
               <a :href="href">{{ deal.id }}</a>
             </router-link>

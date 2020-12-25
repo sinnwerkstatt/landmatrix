@@ -27,7 +27,7 @@
         <b>Countries investing in {{ country.name }}</b>
         <table class="table-striped">
           <tbody>
-            <tr v-for="icountry in investing_countries">
+            <tr v-for="icountry in investing_countries" :key="icountry.country_name">
               <th>{{ icountry.country_name }}</th>
               <td>
                 {{ icountry.count }} deals<br />
@@ -42,7 +42,7 @@
         <b>Countries {{ country.name }} invests in</b>
         <table class="table-striped">
           <tbody>
-            <tr v-for="icountry in invested_countries">
+            <tr v-for="icountry in invested_countries" :key="icountry.country_name">
               <th>{{ icountry.country_name }}</th>
               <td>
                 {{ icountry.count }} deals<br />

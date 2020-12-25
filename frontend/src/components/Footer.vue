@@ -40,8 +40,6 @@
 
 <style lang="scss" scoped>
   @import "../scss/colors";
-  @import "node_modules/bootstrap/scss/functions";
-  @import "node_modules/bootstrap/scss/variables";
 
   footer {
     background: $lm_dark;

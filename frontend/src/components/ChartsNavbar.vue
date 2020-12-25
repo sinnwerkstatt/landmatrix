@@ -12,7 +12,7 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="chartsNavbar">
+      <div id="chartsNavbar" class="collapse navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'web-of-transnational-deals' }">

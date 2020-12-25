@@ -9,7 +9,9 @@
 <script>
   export default {
     name: "WagtailParagraph",
-    props: ["value"],
+    props: {
+      value: { type: String, required: true },
+    },
   };
 </script>
 

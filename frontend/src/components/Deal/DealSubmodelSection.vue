@@ -32,16 +32,22 @@
 
   export default {
     components: { DisplayField },
-    props: [
-      "title",
-      "model",
-      "modelName",
-      "entries",
-      "fields",
-      "active",
-      "labelClasses",
-      "valueClasses",
-    ],
+    props: {
+      title: { type: String, required: true },
+      model: { type: String, required: true },
+      modelName: { type: String, required: true },
+      entries: { type: Array, required: true },
+      fields: { type: Array, required: true },
+      active: { type: Boolean, default: false },
+      labelClasses: {
+        type: Array,
+        default: () => ["display-field-label", "col-md-5", "col-lg-4"],
+      },
+      valueClasses: {
+        type: Array,
+        default: () => ["display-field-value", "col-md-7", "col-lg-8"],
+      },
+    },
     computed: {
       hasDefaultSlot() {
         return !!this.$slots.default;

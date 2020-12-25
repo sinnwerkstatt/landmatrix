@@ -7,9 +7,9 @@
           <div class="rows-count">{{ rowData.length }} {{ modelLabel }}</div>
         </div>
         <div class="table-config">
-          <a href="" @click.prevent v-b-modal.modal-select-fields
-            ><i class="fa fa-cog"></i
-          ></a>
+          <a v-b-modal.modal-select-fields href="" @click.prevent>
+            <i class="fa fa-cog"></i>
+          </a>
           <b-modal
             id="modal-select-fields"
             title="Select columns to display"
@@ -20,8 +20,8 @@
               <b-form-group>
                 <b-form-checkbox
                   v-for="option in apiFields"
-                  v-model="displayFields[targetModel]"
                   :key="option"
+                  v-model="displayFields[targetModel]"
                   :value="option"
                   name="select-deal-fields"
                 >
@@ -29,7 +29,7 @@
                 </b-form-checkbox>
               </b-form-group>
             </div>
-            <template #modal-footer="{ ok, cancel, hide }">
+            <template #modal-footer="{ ok }">
               <a href="" @click.prevent="resetFields">Reset to default columns</a>
               <button type="button" class="btn btn-primary" @click="ok()">OK</button>
             </template>
@@ -37,15 +37,15 @@
         </div>
       </div>
     </div>
-    <div class="table-wrap" v-if="rowData.length > 0">
+    <div v-if="rowData.length > 0" class="table-wrap">
       <table class="sticky-header" :class="[targetModel]">
         <thead>
           <tr>
             <th
               v-for="fieldName in currentFields"
               :key="fieldName"
-              @click="setSort(fieldName)"
               :class="{ selected: sortField === fieldName, asc: sortAscending }"
+              @click="setSort(fieldName)"
             >
               <FieldLabel
                 :fieldname="fieldName"
@@ -56,7 +56,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="obj in rows">
+          <tr v-for="obj in rows" :key="obj.id">
             <td
               v-for="fieldName in currentFields"
               :key="fieldName"
@@ -239,10 +239,10 @@
         return this.displayFields[this.targetModel];
       },
       apiFields() {
-        if (this.targetModel == "investor") {
+        if (this.targetModel === "investor") {
           return this.investorApiFields;
         } else {
-          return this.dealApiFields.sort((a, b) => {
+          return [...this.dealApiFields].sort((a, b) => {
             return (
               this.getLabel(a, "deal").toLowerCase() >
               this.getLabel(b, "deal").toLowerCase()

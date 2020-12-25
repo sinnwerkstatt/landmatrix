@@ -38,17 +38,17 @@
           <h4>No of deals</h4>
           <p class="number number-concluded">0</p>
           <div class="progress progress-concluded">
-            <div class="bar" style="width: 0%;"></div>
+            <div class="bar" style="width: 0;"></div>
           </div>
           <p class="percentage percentage-concluded">0%</p>
           <p class="number number-intended">0</p>
           <div class="progress progress-intended">
-            <div class="bar" style="width: 0%;"></div>
+            <div class="bar" style="width: 0;"></div>
           </div>
           <p class="percentage percentage-intended">0%</p>
           <p class="number number-failed">0</p>
           <div class="progress progress-failed">
-            <div class="bar" style="width: 0%;"></div>
+            <div class="bar" style="width: 0;"></div>
           </div>
           <p class="percentage percentage-failed">0%</p>
         </div>
@@ -74,9 +74,7 @@
 </template>
 
 <script>
-  export default {
-    props: ["value"],
-  };
+  export default {};
 </script>
 
 <style>

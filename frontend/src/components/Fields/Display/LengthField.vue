@@ -4,7 +4,7 @@
     <div v-if="displayDeals">
       <span v-for="val in value" :key="val.id">
         <br />
-        <router-link :to="{ name: 'deal_detail', params: { deal_id: val.id } }">
+        <router-link :to="{ name: 'deal_detail', params: { dealId: val.id } }">
           #{{ val.id }}
         </router-link>
       </span>

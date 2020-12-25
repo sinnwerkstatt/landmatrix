@@ -1,10 +1,10 @@
 <template>
   <div>
     <router-link
-      class="investor"
       v-if="formfield.related_model === 'Investor'"
+      class="investor"
       target="_blank"
-      :to="{ name: 'investor_detail', params: { investor_id: value.id } }"
+      :to="{ name: 'investor_detail', params: { investorId: value.id } }"
     >
       {{ value.name }} (#{{ value.id }})
     </router-link>

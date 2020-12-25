@@ -1,13 +1,11 @@
 <template>
-  <div class="row">
-    <div class="col-12">
-      <hr />
-    </div>
-  </div>
+  <hr />
 </template>
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
   };
 </script>

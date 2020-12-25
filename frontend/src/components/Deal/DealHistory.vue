@@ -15,7 +15,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(version, i) in deal.versions">
+        <tr v-for="(version, i) in deal.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
           <td v-if="user && user.is_authenticated">
             {{ version.revision.user && version.revision.user.full_name }}

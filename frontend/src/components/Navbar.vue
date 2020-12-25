@@ -56,6 +56,7 @@
             <div class="dropdown-menu">
               <div
                 v-for="(obs, obsgroup) in observatories_group"
+                :key="obsgroup"
                 class="dropdown-menu-group"
               >
                 <router-link
@@ -332,7 +333,7 @@
             this.login_failed_message = response.error;
           });
       },
-      closeMenu(e) {
+      closeMenu() {
         if (this.$refs.mainbar.classList.contains("show")) {
           this.$refs.mainbar.classList.remove("show");
         }

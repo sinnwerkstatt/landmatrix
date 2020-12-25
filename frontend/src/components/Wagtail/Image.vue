@@ -23,7 +23,9 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
     data() {
       return {
         alt: null,

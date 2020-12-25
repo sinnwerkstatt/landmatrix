@@ -4,8 +4,8 @@
       <template #default>
         <LoadingPulse v-if="$apollo.queries.deals.loading" />
         <BigMap
-          :options="bigmap_options"
           :center="[12, 30]"
+          :options="bigmap_options"
           :container-style="{ height: '100%' }"
           :hide-layer-switcher="true"
           @ready="bigMapIsReady"

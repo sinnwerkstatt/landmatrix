@@ -7,16 +7,7 @@ from .models import *
 
 @register(WagtailRootPage)
 class WagtailRootPageTR(TranslationOptions):
-    fields = (
-        "body",
-        "map_introduction",
-        "data_introduction",
-        # 'charts_introduction',
-        "footer_column_1",
-        "footer_column_2",
-        "footer_column_3",
-        "footer_column_4",
-    )
+    fields = ("body",)
 
 
 @register(WagtailPage)

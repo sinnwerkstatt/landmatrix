@@ -4,7 +4,7 @@
       <router-link
         class="investor"
         target="_blank"
-        :to="{ name: 'investor_detail', params: { investor_id: val.id } }"
+        :to="{ name: 'investor_detail', params: { investorId: val.id } }"
       >
         {{ val.name }} (#{{ val.id }})
       </router-link>

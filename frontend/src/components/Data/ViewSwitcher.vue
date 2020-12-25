@@ -9,12 +9,12 @@
         </li>
         <li class="nav-item dropdown">
           <a
+            id="viewswitch-data-dropdown"
             href=""
             class="nav-link dropdown-toggle"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            id="viewswitch-data-dropdown"
             :class="{
               'router-link-active': isListRoute,
               investors: dataItemName === label.investors,
@@ -38,12 +38,12 @@
         </li>
         <li class="nav-item dropdown">
           <a
+            id="viewswitch-charts-dropdown"
             href=""
             class="nav-link dropdown-toggle"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            id="viewswitch-charts-dropdown"
             :class="{
               'router-link-active': isChartRoute,
             }"
@@ -52,9 +52,9 @@
           <span class="dropdown-menu charts">
             <router-link
               v-for="entry in chartEntries"
+              :key="entry.route_name"
               :to="{ name: entry.route_name }"
               class="dropdown-item"
-              :key="entry.route_name"
             >
               {{ $t(entry.title) }}
             </router-link>

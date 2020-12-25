@@ -11,16 +11,16 @@
       <thead>
         <tr>
           <th
-            @click="setSort('id')"
             :class="{ selected: sortField === 'id', asc: sortAscending }"
+            @click="setSort('id')"
           >
             #
           </th>
           <th
             v-for="field in fields"
             :key="field"
-            @click="setSort(field)"
             :class="{ selected: sortField === field, asc: sortAscending }"
+            @click="setSort(field)"
           >
             {{ fieldNameMap[field] || field }}
           </th>
@@ -30,8 +30,8 @@
         <tr v-for="data in dt_data" :key="data.id">
           <td>
             <router-link
-              :to="{ name: 'investor_detail', params: { investor_id: data.id } }"
               v-slot="{ href }"
+              :to="{ name: 'investor_detail', params: { investorId: data.id } }"
             >
               <a :href="href">{{ data.id }}</a>
             </router-link>
@@ -108,7 +108,7 @@
           }
           return fieldy - fieldx;
         }
-        let investors = this.investors.sort(sortAnything);
+        let investors = [...this.investors].sort(sortAnything);
 
         if (this.pageSize) {
           return investors.slice(

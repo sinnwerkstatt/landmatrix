@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <big-map
-      :containerStyle="{ 'max-height': '300px', height: '300px' }"
+      :container-style="{ 'max-height': '300px', height: '300px' }"
       @ready="pinTheMap"
     />
     <form enctype="multipart/form-data" novalidate>
       Upload GeoJSON file
-      <input type="file" multiple @change="uploadFiles" class="input-file" />
+      <input type="file" multiple class="input-file" @change="uploadFiles" />
     </form>
   </div>
 </template>

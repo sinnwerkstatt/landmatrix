@@ -29,7 +29,12 @@
 
   export default {
     components: { DisplayField },
-    props: ["title", "sections", "deal", "active"],
+    props: {
+      title: { type: String, required: true },
+      sections: { type: Array, required: true },
+      deal: { type: Object, required: true },
+      active: { type: Boolean, default: false },
+    },
     computed: {
       sections_with_filled_fields() {
         return this.sections.filter((section) => {

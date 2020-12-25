@@ -2,7 +2,6 @@ from django import forms
 from django.db import models
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.api import APIField
-from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 
 from apps.landmatrix.models import Region as DataRegion
@@ -16,39 +15,18 @@ from apps.wagtailcms.blocks import (
     ThreeColumnsBlock,
     get_country_or_region,
 )
-from apps.wagtailcms.serializers import APIRichTextSerializer
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
 class WagtailRootPage(Page):
     is_creatable = False
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
-    map_introduction = RichTextField(blank=True)
-    data_introduction = RichTextField(blank=True)
-    # charts_introduction = RichTextField(blank=True)
-    footer_column_1 = RichTextField(blank=True)
-    footer_column_2 = RichTextField(blank=True)
-    footer_column_3 = RichTextField(blank=True)
-    footer_column_4 = RichTextField(blank=True)
 
     content_panels = Page.content_panels + [
         StreamFieldPanel("body"),
-        FieldPanel("map_introduction"),
-        FieldPanel("data_introduction"),
-        # FieldPanel('charts_introduction'),
-        FieldPanel("footer_column_1"),
-        FieldPanel("footer_column_2"),
-        FieldPanel("footer_column_3"),
-        FieldPanel("footer_column_4"),
     ]
     api_fields = [
         APIField("body"),
-        APIField("map_introduction"),
-        APIField("data_introduction"),
-        APIField("footer_column_1", serializer=APIRichTextSerializer()),
-        APIField("footer_column_2", serializer=APIRichTextSerializer()),
-        APIField("footer_column_3", serializer=APIRichTextSerializer()),
-        APIField("footer_column_4", serializer=APIRichTextSerializer()),
     ]
 
 

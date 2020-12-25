@@ -1,8 +1,8 @@
 <template>
   <div class="widget-twitter-timeline">
     <div
-      v-if="value.timeline"
-      v-for="status in value.timeline"
+      v-for="status in timeline"
+      :key="status.id"
       class="twitter-timeline-update my-3"
     >
       <div class="twitter-timeline-meta">
@@ -30,9 +30,9 @@
           {{ dayjs(status.created_at).format("MMM. DD, YYYY, H:mm") }}
         </a>
       </div>
-      <div class="twitter-timeline-text" v-html="status.text"></div>
+      <div class="twitter-timeline-text" v-html="status.text" />
     </div>
-    <div v-else class="twitter-timeline-empty">
+    <div v-if="timeline.length === 0" class="twitter-timeline-empty">
       Feed currently not available.
     </div>
 
@@ -49,7 +49,14 @@
   import dayjs from "dayjs";
 
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
+    computed: {
+      timeline() {
+        return (this.value && this.value.timeline) || [];
+      },
+    },
     methods: {
       dayjs: dayjs,
     },

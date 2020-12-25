@@ -1,8 +1,8 @@
 <template>
   <table
-    class="table table-striped"
-    id="latest-database-modifications"
     v-if="modifications"
+    id="latest-database-modifications"
+    class="table table-striped"
   >
     <thead>
       <tr>
@@ -16,7 +16,7 @@
       <tr v-for="deal in modifications" :key="deal.id">
         <td>
           <router-link
-            :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
+            :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
             class="label label-default"
           >
             {{ deal.id }}
@@ -62,11 +62,10 @@
         `,
         update: (data) => data.deals,
         variables() {
-          let user = this.$store.state.page.user;
           return {
             limit: +this.value.limit,
             filters: this.current_region_or_country,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+            subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
           };
         },
       },

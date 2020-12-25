@@ -25,7 +25,7 @@
         <router-link
           :to="{
             name: 'investor_detail',
-            params: { investor_id: investor.id },
+            params: { investorId: investor.id },
           }"
           class="btn btn-investor investor-link float-right"
           target="_blank"
