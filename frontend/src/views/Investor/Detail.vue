@@ -61,7 +61,7 @@
           :investor="investor"
           :init-depth="depth"
           @newDepth="onNewDepth"
-        ></InvestorGraph>
+        />
       </div>
       <div
         v-else

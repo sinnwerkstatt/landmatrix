@@ -26,14 +26,18 @@
       class="expand-slot collapse"
       :class="{ show: initExpanded || false }"
     >
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
 <script>
   export default {
     name: "FilterCollapse",
-    props: ["title", "clearable", "initExpanded"],
+    props: {
+      title: { type: String, required: true },
+      clearable: { type: Boolean, default: false },
+      initExpanded: { type: Boolean, default: false },
+    },
     data() {
       return {
         shown: this.initExpanded || false,

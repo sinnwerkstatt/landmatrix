@@ -5,7 +5,7 @@
         <map-editor />
       </b-tab>
       <b-tab title="General Info">
-        <DealSection :deal="deal" :sections="general_info" />
+        <DealSection :title="general_info" :deal="deal" :sections="general_info" />
       </b-tab>
     </b-tabs>
     <button class="btn btn-primary" type="submit">Submit</button>

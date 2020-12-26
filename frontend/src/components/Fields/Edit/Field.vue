@@ -2,11 +2,11 @@
   <div>
     <component
       :is="formfield.class"
+      v-if="!readonly || custom_is_null(value)"
+      v-model="value"
       :formfield="formfield"
       :readonly="!!readonly"
-      v-model="value"
       :file_not_public="file_not_public"
-      v-if="!readonly || custom_is_null(value)"
     />
   </div>
 </template>
@@ -31,7 +31,6 @@
 
   export default {
     name: "Field",
-    props: ["fieldname", "model", "value", "readonly", "file_not_public"],
     components: {
       ArrayField,
       BooleanField,
@@ -49,6 +48,7 @@
       TextField,
       URLField,
     },
+    props: ["fieldname", "model", "value", "readonly", "file_not_public"],
     computed: {
       formfield() {
         return this.formfields[this.model][this.fieldname];
@@ -71,7 +71,7 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
+  @import "../../../scss/colors";
 
   .form-field {
     margin-bottom: 0.7em;

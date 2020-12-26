@@ -240,7 +240,7 @@
               })
             );
           })
-          .sort((a, b) => a.date < b.date);
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
       },
       filteredNewsPubs() {
         if (!this.slug) return [];
@@ -255,7 +255,7 @@
               })
             );
           })
-          .sort((a, b) => a.date < b.date);
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
       },
     },
     watch: {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" :class="wrapperClasses">
+  <div v-if="_visible" :class="wrapperClasses">
     <FieldLabel
       v-if="showLabel"
       :fieldname="fieldname"
@@ -7,11 +7,10 @@
       :model="model"
     />
     <div :class="valueClasses">
-      <!-- eslint-disable vue/no-mutating-props -->
       <component
         :is="formfield.class"
-        v-if="custom_is_null(value)"
-        v-model="value"
+        v-if="!custom_is_null(value)"
+        :value="value"
         :formfield="formfield"
         :model="model"
       />
@@ -84,9 +83,11 @@
         default: () => ["display-field-value", "col-md-7", "col-lg-8"],
       },
       fileNotPublic: { type: Boolean, default: false },
+      visible: { type: Boolean, default: true },
     },
     computed: {
-      visible() {
+      _visible() {
+        if (!this.visible) return false;
         if (this.formfield.class === "FileField") {
           return !this.fileNotPublic || this.$store.getters.userAuthenticated;
         }
@@ -101,7 +102,7 @@
     },
     methods: {
       custom_is_null(field) {
-        return !(
+        return (
           field === undefined ||
           field === null ||
           field === "" ||

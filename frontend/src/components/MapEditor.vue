@@ -13,8 +13,9 @@
 
 <script>
   import "leaflet-draw";
+  import { Draw } from "leaflet-draw";
   import BigMap from "components/BigMap";
-  import { FeatureGroup, GeoJSON } from "leaflet";
+  import { Control, FeatureGroup, GeoJSON } from "leaflet";
 
   function addPropertiesPopup(layer, feature) {
     let select = document.createElement("select"),
@@ -61,7 +62,7 @@
         this.bigmap.addLayer(this.editableFeatures);
 
         this.bigmap.addControl(
-          new L.Control.Draw({
+          new Control.Draw({
             draw: {
               rectangle: false,
               circle: false,
@@ -74,7 +75,7 @@
           })
         );
 
-        this.bigmap.on(L.Draw.Event.CREATED, ({ layer }) =>
+        this.bigmap.on(Draw.Event.CREATED, ({ layer }) =>
           this.editableFeatures.addLayer(layer)
         );
       },

@@ -243,10 +243,9 @@
           return this.investorApiFields;
         } else {
           return [...this.dealApiFields].sort((a, b) => {
-            return (
-              this.getLabel(a, "deal").toLowerCase() >
-              this.getLabel(b, "deal").toLowerCase()
-            );
+            let label_a = this.getLabel(a).toLowerCase();
+            let label_b = this.getLabel(b).toLowerCase();
+            return label_a.localeCompare(label_b);
           });
         }
       },
@@ -337,7 +336,7 @@
       },
     },
     methods: {
-      getLabel(fieldName, targetModel = null) {
+      getLabel(fieldName, targetModel = "deal") {
         if (!targetModel) targetModel = this.targetModel;
         if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
           return this.formfields[targetModel][fieldName].label;

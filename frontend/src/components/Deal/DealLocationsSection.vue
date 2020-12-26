@@ -113,16 +113,6 @@
         };
       },
     },
-    methods: {
-      custom_is_null(field) {
-        return !(
-          field === undefined ||
-          field === null ||
-          field === "" ||
-          (Array.isArray(field) && field.length === 0)
-        );
-      },
-    },
   };
 </script>
 

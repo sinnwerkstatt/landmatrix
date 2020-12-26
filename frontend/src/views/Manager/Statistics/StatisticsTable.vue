@@ -12,7 +12,7 @@
     <div class="number-of-deals">
       <b-tabs>
         <b-tab>
-          <template v-slot:title>
+          <template #title>
             <h3>Deals</h3>
           </template>
 
@@ -24,7 +24,7 @@
             content-class="col-lg-9 col-md-12"
           >
             <b-tab v-for="(stats, i) in deal_statistics" :key="i">
-              <template v-slot:title>
+              <template #title>
                 <strong>{{ stats.value }}</strong> {{ stats.name }}<br />
               </template>
               <b-card-text>
@@ -41,7 +41,7 @@
                   <DealTable
                     :deals="prepareDeals(stats.deals)"
                     :fields="dealFields"
-                    :pageSize="10"
+                    :page-size="10"
                   />
                 </div>
               </b-card-text>
@@ -49,7 +49,7 @@
           </b-tabs>
         </b-tab>
         <b-tab>
-          <template v-slot:title>
+          <template #title>
             <h3>Investors</h3>
           </template>
 
@@ -61,7 +61,7 @@
             content-class="col-lg-9 col-md-12"
           >
             <b-tab v-for="(stats, i) in investor_statistics" :key="i">
-              <template v-slot:title>
+              <template #title>
                 <strong>{{ stats.value }}</strong> {{ stats.name }}<br />
               </template>
               <b-card-text>
@@ -78,7 +78,7 @@
                   <InvestorTable
                     :investors="prepareInvestors(stats.investors)"
                     :fields="investorFields"
-                    :pageSize="10"
+                    :page-size="10"
                   />
                 </div>
               </b-card-text>
@@ -134,10 +134,10 @@
       },
       allStatsCsv() {
         let allStats = {};
-        for (var stats of this.deal_statistics) {
+        for (let stats of this.deal_statistics) {
           allStats[stats.name] = stats.value;
         }
-        for (var stats of this.investor_statistics) {
+        for (let stats of this.investor_statistics) {
           allStats[stats.name] = stats.value;
         }
         return [allStats];

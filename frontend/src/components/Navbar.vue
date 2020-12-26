@@ -279,6 +279,7 @@
         username: null,
         password: null,
         login_failed_message: "",
+        // eslint-disable-next-line no-undef
         LANGUAGE: LANGUAGE,
         LANGUAGES: { en: "English", es: "Español", fr: "Français" },
         blogcategories: [],

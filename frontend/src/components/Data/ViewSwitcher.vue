@@ -19,8 +19,9 @@
               'router-link-active': isListRoute,
               investors: dataItemName === label.investors,
             }"
-            >{{ dataItemName }}</a
           >
+            {{ dataItemName }}
+          </a>
           <span class="dropdown-menu">
             <router-link
               v-if="dataItemName !== label.deals"

@@ -74,6 +74,7 @@ Vue.filter("defaultdate", function (value) {
 });
 
 const i18n = new VueI18n({
+  // eslint-disable-next-line no-undef
   locale: LANGUAGE || "en",
   fallbackLocale: "en",
   messages: { es: es_messages, fr: fr_messages },
@@ -90,6 +91,7 @@ let vue_app = new Vue({
   render: (h) => h(App),
 });
 
+// eslint-disable-next-line no-undef
 store.dispatch("fetchFields", LANGUAGE || "en");
 store.dispatch("fetchMessages");
 store.dispatch("fetchBasicData").then(() => {

@@ -119,10 +119,10 @@
               <InvestorGraph
                 ref="investorGraph"
                 :investor="investor"
-                :show-deals="false"
+                :show-deals-on-load="false"
                 :controls="false"
                 :init-depth="4"
-              ></InvestorGraph>
+              />
             </template>
             <div v-else class="loader"></div>
           </div>
@@ -316,6 +316,13 @@
             ) {
               id
               name
+              classification
+              country {
+                id
+                name
+              }
+              homepage
+              comment
               involvements
             }
           }
