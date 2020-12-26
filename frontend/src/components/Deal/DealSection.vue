@@ -11,7 +11,7 @@
         :key="section.name"
         class="panel-body"
       >
-        <h3>{{ section.name }}</h3>
+        <h3>{{ $t(section.name) }}</h3>
         <DisplayField
           v-for="fieldname in section_fields_with_values(section)"
           :key="fieldname"

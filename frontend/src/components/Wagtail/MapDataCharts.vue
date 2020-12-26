@@ -3,7 +3,7 @@
     <div class="map col-4">
       <router-link :to="{ name: 'map' }" class="square">
         <div>
-          <h3 class="title">Map</h3>
+          <h3 class="title">{{ $t("Map") }}</h3>
           <div class="icon">
             <svg
               width="72"
@@ -19,8 +19,11 @@
             </svg>
           </div>
           <div class="text">
-            Explore the map for information about land deals from global down to
-            regional and country level.
+            {{
+              $t(
+                "Explore the map for information about land deals from global down to regional and country level."
+              )
+            }}
           </div>
         </div>
       </router-link>
@@ -28,7 +31,7 @@
     <div class="data col-4">
       <router-link :to="{ name: 'list_deals' }" class="square">
         <div>
-          <h3 class="title">Data</h3>
+          <h3 class="title">{{ $t("Data") }}</h3>
           <div class="icon">
             <svg
               width="96"
@@ -44,8 +47,11 @@
             </svg>
           </div>
           <div class="text">
-            Search and filter the dataset through pre-configured entry points or drill
-            down to single deals.
+            {{
+              $t(
+                "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+              )
+            }}
           </div>
         </div>
       </router-link>
@@ -53,7 +59,7 @@
     <div class="charts col-4">
       <router-link :to="{ name: 'charts' }" class="square">
         <div>
-          <h3 class="title">Charts</h3>
+          <h3 class="title">{{ $t("Charts") }}</h3>
           <div class="icon">
             <svg
               width="96"
@@ -69,8 +75,11 @@
             </svg>
           </div>
           <div class="text">
-            Generate your own infographics using a wide selection of charts to
-            illustrate information about deals.
+            {{
+              $t(
+                "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+              )
+            }}
           </div>
         </div>
       </router-link>

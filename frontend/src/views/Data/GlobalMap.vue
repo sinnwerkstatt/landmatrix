@@ -14,7 +14,7 @@
       </template>
       <template #FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse :title="$t('Displayed data')" :init-expanded="true">
+        <FilterCollapse title="Displayed data" :init-expanded="true">
           <b-form-group>
             <b-form-radio
               v-model="displayDealsCount"
@@ -32,7 +32,7 @@
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Base layer')" :init-expanded="true">
+        <FilterCollapse title="Base layer" :init-expanded="true">
           <b-form-group>
             <b-form-radio
               v-for="layer in tileLayers"
@@ -41,11 +41,11 @@
               name="layerSelectRadio"
               :value="layer.name"
             >
-              {{ layer.name }}
+              {{ $t(layer.name) }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Context layers')">
+        <FilterCollapse title="Context layers">
           <b-form-group>
             <b-form-checkbox
               v-for="layer in contextLayers"
@@ -54,11 +54,14 @@
               name="contextLayerSelect"
               :value="layer"
             >
+              <!-- TODO For some reason some are not shown here... -->
+              <!-- {{ $t(layer.name) }}-->
               {{ layer.name }}
               <img
                 v-if="visibleContextLayers.includes(layer)"
                 :src="layer.legendUrlFunction()"
                 :alt="`Legend for ${layer.name}`"
+                class="context-layer-legend-image"
               />
             </b-form-checkbox>
           </b-form-group>
@@ -67,12 +70,12 @@
           <ul>
             <li>
               <a :href="`/api/data.geojson?type=points&filters=${filters}`">
-                <i class="fas fa-file-download" /> Locations
+                <i class="fas fa-file-download" /> {{ $t("Locations") }}
               </a>
             </li>
             <li>
               <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
-                <i class="fas fa-file-download" /> Areas
+                <i class="fas fa-file-download" /> {{ $t("Areas") }}
               </a>
             </li>
           </ul>
@@ -472,5 +475,13 @@
       margin-top: 1em;
       color: white;
     }
+  }
+
+  .context-layer-legend-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
   }
 </style>

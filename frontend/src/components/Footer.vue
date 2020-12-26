@@ -5,7 +5,7 @@
         <div class="col-12 text-center">
           <p class="mb-0">
             <a :href="legacy_link">&copy; {{ currentyear }}</a>
-            The Land Matrix | All rights reserved
+            The Land Matrix | {{ $t("All rights reserved") }}
           </p>
         </div>
         <div class="social-buttons">

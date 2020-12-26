@@ -8,7 +8,7 @@
       :aria-expanded="initExpanded ? 'true' : 'false'"
     >
       <i class="expand-toggle fas fa-chevron-up"></i>
-      <span class="title">{{ title }}</span>
+      <span class="title">{{ $t(title) }}</span>
       <span
         v-if="clearable"
         class="delete-button fa-stack"

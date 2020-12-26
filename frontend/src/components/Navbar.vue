@@ -16,7 +16,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div id="main-navbar-collapse" ref="mainbar" class="collapse navbar-collapse">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav align-items-center">
           <li class="nav-item dropdown">
             <a
               id="map-dropdown"
@@ -134,7 +134,7 @@
             </router-link>
           </li>
         </ul>
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto align-items-center">
           <li class="nav-item dropdown">
             <a
               id="languageDropdown"
@@ -161,10 +161,10 @@
             </div>
           </li>
           <li v-if="user" class="nav-item">
-            <p class="navbar-text dropdown-header">
+            <p class="navbar-text dropdown-header" style="line-height: 1.2em;">
               {{ user.full_name }}
               <br />
-              <small>{{ user.role }}</small>
+              <small>{{ $t(user.role) }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">

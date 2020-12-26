@@ -2,7 +2,7 @@
   <div v-if="articles.length" class="articles container">
     <div class="row justify-content-center">
       <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-        <h3>{{ articlesLabel }}</h3>
+        <h3>{{ $t(articlesLabel) }}</h3>
         <slot />
         <div v-for="article in limitedArticles" :key="article.slug">
           <div class="article row">

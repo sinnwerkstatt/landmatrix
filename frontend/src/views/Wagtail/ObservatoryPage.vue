@@ -88,14 +88,14 @@
           </router-link>
           .
         </p>
-        <h4>Download country profiles for:</h4>
+        <h4>{{ $t("Download country profiles for") }}:</h4>
       </div>
     </ArticleList>
     <ArticleList :articles-label="'News & publications'" :articles="filteredNewsPubs" />
     <div v-if="page.twitter_feed" class="container tweets">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <h3>Latest tweets</h3>
+          <h3>{{ $t("Latest tweets") }}</h3>
           <Twitter :value="page.twitter_feed" />
         </div>
       </div>

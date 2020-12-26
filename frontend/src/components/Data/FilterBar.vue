@@ -20,7 +20,7 @@
             switch
             @change="updateDefaultFilter"
           >
-            Default filter
+            {{ $t("Default filter") }}
           </b-form-checkbox>
         </span>
 
