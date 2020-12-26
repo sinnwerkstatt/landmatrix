@@ -70,7 +70,7 @@ type Deal {
   domestic_jobs_created_comment: String
   # Investor info
   operating_company: Investor
-  involved_actors: [Actor]
+  involved_actors: Dict
   project_name: String
   investment_chain_comment: String
   # Local communities / indigenous peoples

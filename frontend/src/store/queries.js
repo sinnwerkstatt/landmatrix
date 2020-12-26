@@ -291,10 +291,7 @@ export const deal_gql_query = gql`
         id
         name
       }
-      involved_actors {
-        role
-        value
-      }
+      involved_actors
       project_name
       investment_chain_comment
       # Local communities / indigenous peoples

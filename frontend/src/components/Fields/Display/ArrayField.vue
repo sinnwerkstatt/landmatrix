@@ -9,7 +9,11 @@
   import { intention_of_investment_map } from "choices";
 
   export default {
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Array, required: true },
+      model: { type: String, required: true },
+    },
     methods: {
       parseValues: function (value) {
         if (this.formfield.name === "current_intention_of_investment") {

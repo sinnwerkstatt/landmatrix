@@ -13,7 +13,11 @@
   import { flatten_choices } from "utils";
 
   export default {
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: String, required: true },
+      model: { type: String, required: true },
+    },
     methods: {
       parseVal(val) {
         if (val) {

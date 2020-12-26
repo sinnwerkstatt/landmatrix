@@ -1,7 +1,7 @@
 <template>
   <b-tab
     v-if="entries.length"
-    :title="title"
+    :title="$t(title)"
     :active="active"
     @click="$emit('activated')"
   >
@@ -9,7 +9,7 @@
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
-            {{ modelName }} <small>#{{ index + 1 }}</small>
+            {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
           </h3>
           <DisplayField
             v-for="fieldname in fields"

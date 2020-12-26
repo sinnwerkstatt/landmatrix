@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
+    <p v-if="not_public" class="alert alert-danger mb-4">{{ $t(not_public) }}</p>
     <!--    <div class="quicknav">-->
     <!--      <div v-for="(version, i) in deal.versions">-->
     <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
@@ -66,7 +66,6 @@
       <DealLocationsSection
         :deal="deal"
         :fields="deal_submodel_sections.location"
-        :readonly="true"
         :active="active_tab === '#locations'"
         @activated="updateRoute('#locations')"
       />
@@ -74,17 +73,15 @@
         :title="deal_sections.general_info.label"
         :deal="deal"
         :sections="deal_sections.general_info.subsections"
-        :readonly="true"
         :active="active_tab === '#general'"
         @activated="updateRoute('#general')"
       />
 
       <DealSubmodelSection
-        :title="$t('Contracts')"
-        :model-name="$t('Contract')"
+        title="Contracts"
+        model-name="Contract"
         :entries="deal.contracts"
         :fields="deal_submodel_sections.contract"
-        :readonly="true"
         model="contract"
         :active="active_tab === '#contracts'"
         @activated="updateRoute('#contracts')"
@@ -94,7 +91,6 @@
         :title="deal_sections.employment.label"
         :deal="deal"
         :sections="deal_sections.employment.subsections"
-        :readonly="true"
         :active="active_tab === '#employment'"
         @activated="updateRoute('#employment')"
       />
@@ -103,7 +99,6 @@
         :title="deal_sections.investor_info.label"
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
-        :readonly="true"
         :active="active_tab === '#investor_info'"
         @activated="triggerInvestorGraphRefresh"
       >
@@ -130,11 +125,10 @@
       </DealSection>
 
       <DealSubmodelSection
-        :title="$t('Data Sources')"
-        :model-name="$t('Data Source')"
+        title="Data Sources"
+        model-name="Data Source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
-        :readonly="true"
         model="datasource"
         :active="active_tab === '#data_sources'"
         @activated="updateRoute('#data_sources')"
@@ -144,7 +138,6 @@
         :title="deal_sections.local_communities.label"
         :deal="deal"
         :sections="deal_sections.local_communities.subsections"
-        :readonly="true"
         :active="active_tab === '#local_communities'"
         @activated="updateRoute('#local_communities')"
       />
@@ -153,7 +146,6 @@
         :title="deal_sections.former_use.label"
         :deal="deal"
         :sections="deal_sections.former_use.subsections"
-        :readonly="true"
         :active="active_tab === '#former_use'"
         @activated="updateRoute('#former_use')"
       />
@@ -162,7 +154,6 @@
         :title="deal_sections.produce_info.label"
         :deal="deal"
         :sections="deal_sections.produce_info.subsections"
-        :readonly="true"
         :active="active_tab === '#produce_info'"
         @activated="updateRoute('#produce_info')"
       />
@@ -171,7 +162,6 @@
         :title="deal_sections.water.label"
         :deal="deal"
         :sections="deal_sections.water.subsections"
-        :readonly="true"
         :active="active_tab === '#water'"
         @activated="updateRoute('#water')"
       />
@@ -180,7 +170,6 @@
         :title="deal_sections.gender_related_info.label"
         :deal="deal"
         :sections="deal_sections.gender_related_info.subsections"
-        :readonly="true"
         :active="active_tab === '#gender_related_info'"
         @activated="updateRoute('#gender_related_info')"
       />
@@ -189,7 +178,6 @@
         :title="deal_sections.guidelines_and_principles.label"
         :deal="deal"
         :sections="deal_sections.guidelines_and_principles.subsections"
-        :readonly="true"
         :active="active_tab === '#guidelines_and_principles'"
         @activated="updateRoute('#guidelines_and_principles')"
       />
@@ -198,7 +186,6 @@
         :title="deal_sections.overall_comment.label"
         :deal="deal"
         :sections="deal_sections.overall_comment.subsections"
-        :readonly="true"
         :active="active_tab === '#overall_comment'"
         @activated="updateRoute('#overall_comment')"
       />
@@ -210,7 +197,7 @@
       </b-tab>
 
       <b-tab
-        :title="$t('Deal History')"
+        title="Deal History"
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >
@@ -218,7 +205,7 @@
       </b-tab>
 
       <b-tab
-        :title="$t('Comments')"
+        title="Comments"
         :active="active_tab === '#comments'"
         @click="updateRoute('#comments')"
       >
@@ -226,7 +213,7 @@
       </b-tab>
 
       <b-tab
-        :title="$t('Actions')"
+        title="Actions"
         :active="active_tab === '#actions'"
         @click="updateRoute('#actions')"
       >
@@ -346,15 +333,11 @@
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
-            return this.$t("This deal version is pending.");
+            return "This deal version is pending.";
           if (this.deal.status === 4)
-            return this.$t(
-              "This deal has been deleted. It is not visible for public users."
-            );
+            return "This deal has been deleted. It is not visible for public users.";
           if (this.deal.status === 5)
-            return this.$t(
-              "This deal version has been rejected. It is not visible for public users."
-            );
+            return "This deal version has been rejected. It is not visible for public users.";
         }
         return null;
       },

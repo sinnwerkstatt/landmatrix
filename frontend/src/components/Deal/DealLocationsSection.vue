@@ -1,7 +1,7 @@
 <template>
   <DealSubmodelSection
-    :title="$t('Locations')"
-    :model-name="$t('Location')"
+    title="Locations"
+    model-name="Location"
     :entries="entries"
     :fields="fields"
     model="location"

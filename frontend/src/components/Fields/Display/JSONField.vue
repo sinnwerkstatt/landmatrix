@@ -1,17 +1,20 @@
 <template>
   <div class="jsonfield">
     <div v-for="val in vals" :class="{ 'is-current': val.current }">
-      <span v-if="val.date || val.current" v-html="date_and_current(val)" />
+      <span v-if="val.date || val.current">{{ date_and_current(val) }}</span>
 
-      <span v-html="parseValues(val)" />
-      <span class="mx-2" v-if="val.hectares">
+      <span>{{ parseValues(val) }}</span>
+      <span v-if="val.hectares" class="mx-2">
         <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
       </span>
-      <span class="mx-2" v-if="val.tons">
+      <span v-if="val.tons" class="mx-2">
         <i class="fas fa-weight-hanging"></i> {{ val.tons }} tons
       </span>
-      <span class="mx-2" v-if="val.percent">
+      <span v-if="val.percent" class="mx-2">
         <i class="fas fa-plane-departure"></i> {{ val.percent }} %
+      </span>
+      <span v-if="val.role" class="mx-2">
+        <i class="fas fa-bullhorn"></i> {{ val.role }}
       </span>
     </div>
   </div>
@@ -21,7 +24,11 @@
   import { flatten_choices } from "utils";
 
   export default {
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: [Array, Object], required: true },
+      model: { type: String, required: true },
+    },
     data() {
       return {
         vals: this.value ? this.value : [{ date: null, value: null }],
@@ -38,8 +45,6 @@
       },
       parseValues: function (value) {
         let ret = "";
-        // if (value.date) ret += `<span class="date">[${value.date}]</span> `;
-
         let choices = flatten_choices(this.formfield.choices);
 
         if (value.value instanceof Array) {

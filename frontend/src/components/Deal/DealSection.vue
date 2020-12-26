@@ -1,7 +1,7 @@
 <template>
   <b-tab
     v-if="any_field_in_sections(sections)"
-    :title="title"
+    :title="$t(title)"
     :active="active"
     @click="$emit('activated')"
   >

@@ -14,6 +14,10 @@
 
 <script>
   export default {
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Boolean, required: true },
+      model: { type: String, required: true },
+    },
   };
 </script>
