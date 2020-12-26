@@ -1,20 +1,15 @@
-import os
+import importlib
 import re
 
-from django.core.management import call_command
-from django.core.management.base import OutputWrapper
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse, resolve
-from django.conf import settings
-import importlib
 
-from apps.api.elasticsearch import ElasticSearch, es_save
 from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 from apps.wagtailcms.models import WagtailRootPage
 
 
 class UrlsTest(ElasticSearchFixtureMixin, TestCase):
-
     inv_fixtures = [{"id": 1, "investor_identifier": 1}]
 
     default_kwargs = {

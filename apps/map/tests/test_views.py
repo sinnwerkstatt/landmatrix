@@ -28,14 +28,11 @@ class MapViewTestCase(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        WagtailRootPage.objects.create(
-            title="Root", path="/", depth=0, map_introduction="Map introduction"
-        )
+        WagtailRootPage.objects.create(title="Root", path="/", depth=0)
 
     def test(self):
         response = self.client.get(reverse("map"))
         self.assertEqual(200, response.status_code)
-        self.assertEqual("Map introduction", response.context.get("introduction"))
 
     def test_with_country(self):
         data = QueryDict("country=104")

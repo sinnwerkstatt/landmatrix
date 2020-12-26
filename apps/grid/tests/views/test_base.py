@@ -1,18 +1,15 @@
 from collections import OrderedDict
 
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.http import QueryDict
 from django.test import RequestFactory, TestCase, override_settings
 
-from apps.api.elasticsearch import es_save
 from apps.grid.views.base import TableGroupView
 from apps.landmatrix.tests.mixins import ElasticSearchFixtureMixin
 from apps.wagtailcms.models import WagtailRootPage
 
 
 class TableGroupViewTestCase(ElasticSearchFixtureMixin, TestCase):
-
     act_fixtures = [
         {"id": 1, "activity_identifier": 1, "attributes": {}},
         {"id": 2, "activity_identifier": 2, "attributes": {}},
@@ -25,9 +22,7 @@ class TableGroupViewTestCase(ElasticSearchFixtureMixin, TestCase):
 
     @classmethod
     def create_fixture(cls):
-        WagtailRootPage.objects.create(
-            title="Root", path="/", depth=0, data_introduction="Data introduction"
-        )
+        WagtailRootPage.objects.create(title="Root", path="/", depth=0)
 
     def setUp(self):
         super().setUp()
