@@ -26,7 +26,7 @@
 
         <FilterCollapse
           :title="$t('Region')"
-          :clearable="region_id"
+          :clearable="!!region_id"
           @click="region_id = null"
         >
           <b-form-group>
@@ -45,7 +45,7 @@
 
         <FilterCollapse
           :title="$t('Country')"
-          :clearable="country"
+          :clearable="!!country"
           @click="country = null"
         >
           <multiselect
@@ -59,7 +59,7 @@
         </FilterCollapse>
         <FilterCollapse
           :title="$t('Deal size')"
-          :clearable="deal_size_min || deal_size_max"
+          :clearable="!!(deal_size_min || deal_size_max)"
           @click="deal_size_min = deal_size_max = null"
         >
           <div class="input-group">
@@ -95,7 +95,11 @@
           :clearable="negotiation_status.length > 0"
           @click="negotiation_status = []"
         >
-          <div v-for="(nsname, nsval) in choices.negotiation_status" class="form-check">
+          <div
+            v-for="(nsname, nsval) in choices.negotiation_status"
+            :key="nsname"
+            class="form-check"
+          >
             <div class="custom-control custom-checkbox">
               <input
                 :id="nsval"
@@ -116,7 +120,11 @@
           :clearable="nature_of_deal.length > 0"
           @click="nature_of_deal = []"
         >
-          <div v-for="(isname, isval) in choices.nature_of_deal" class="form-check">
+          <div
+            v-for="(isname, isval) in choices.nature_of_deal"
+            :key="isname"
+            class="form-check"
+          >
             <div class="custom-control custom-checkbox">
               <input
                 :id="isval"
@@ -134,7 +142,7 @@
 
         <FilterCollapse
           :title="$t('Investor')"
-          :clearable="investor || investor_country"
+          :clearable="!!(investor || investor_country)"
           @click="investor = investor_country = null"
         >
           <div>
@@ -160,7 +168,7 @@
 
         <FilterCollapse
           :title="$t('Year of initiation')"
-          :clearable="initiation_year_min || initiation_year_max"
+          :clearable="!!(initiation_year_min || initiation_year_max)"
           @click="initiation_year_min = initiation_year_max = null"
         >
           <form class="form-inline">
@@ -208,6 +216,7 @@
         >
           <div
             v-for="(isname, isval) in choices.implementation_status"
+            :key="isname"
             class="form-check"
           >
             <div class="custom-control custom-checkbox">
@@ -230,9 +239,9 @@
           :clearable="intention_of_investment.length > 0"
           @click="intention_of_investment = []"
         >
-          <div v-for="(options, name) in choices.intention_of_investment">
+          <div v-for="(options, name) in choices.intention_of_investment" :key="name">
             <strong>{{ $t(name) }}</strong>
-            <div v-for="(isname, isval) in options" class="form-check">
+            <div v-for="(isname, isval) in options" :key="isname" class="form-check">
               <div class="custom-control custom-checkbox">
                 <input
                   :id="isval"

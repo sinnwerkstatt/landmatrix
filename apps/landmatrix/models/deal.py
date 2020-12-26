@@ -967,7 +967,9 @@ class Deal(models.Model, OldDealMixin):
     not_public_reason = models.CharField(
         max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
     )
-    top_investors = models.ManyToManyField(Investor, related_name="+")
+    top_investors = models.ManyToManyField(
+        Investor, verbose_name=_("Top parent companies"), related_name="+"
+    )
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     current_intention_of_investment = ArrayField(

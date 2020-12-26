@@ -1,6 +1,6 @@
 <template>
   <div :class="labelClasses">
-    {{ label }}
+    {{ $t(label) }}
   </div>
 </template>
 
