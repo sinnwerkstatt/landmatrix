@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.versions import Version, register_version
 
 
 class ArrayField(_ArrayField):
@@ -65,6 +65,18 @@ class DealQuerySet(models.QuerySet):
         return rankings
 
 
+class DealVersion(Version):
+    def to_dict(self, use_object=False):
+        deal = self.retrieve_object() if use_object else self.fields
+        return {
+            "id": self.id,
+            "deal": deal,
+            "revision": self.revision,
+            "object_id": self.object_id,
+        }
+
+
+@register_version(DealVersion)
 class Deal(models.Model, OldDealMixin):
     """ Deal """
 
@@ -1324,19 +1336,6 @@ class Deal(models.Model, OldDealMixin):
     #         self.operating_company.comment,
     #         operating_company_action_comment,
     #     ]
-
-
-class DealVersion(Version):
-    model = Deal
-
-    def to_dict(self, use_object=False):
-        deal = self.retrieve_object() if use_object else self.fields
-        return {
-            "id": self.id,
-            "deal": deal,
-            "revision": self.revision,
-            "object_id": self.object_id,
-        }
 
 
 class DealTopInvestors(models.Model):

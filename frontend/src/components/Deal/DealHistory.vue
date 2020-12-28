@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h3>History</h3>
+    <h3>{{ $t("Deal History") }}</h3>
     <table class="table table-condensed">
       <thead>
         <tr>
-          <th>Created</th>
-          <th v-if="user && user.is_authenticated">User</th>
-          <th>Fully updated</th>
-          <th>Status</th>
-          <th>Comment</th>
+          <th>{{ $t("Created") }}</th>
+          <th v-if="user && user.is_authenticated">{{ $t("User") }}</th>
+          <th>{{ $t("Fully updated") }}</th>
+          <th>{{ $t("Status") }}</th>
+          <th>{{ $t("Comment") }}</th>
           <th style="text-align: right;">
-            Show / <a @click="compareVersions">Compare</a>
+            {{ $t("Show") }} / <a @click="compareVersions">{{ $t("Compare") }}</a>
           </th>
         </tr>
       </thead>
@@ -36,7 +36,7 @@
           </td>
           <td>{{ version.revision.comment }}</td>
           <td style="white-space: nowrap; text-align: right;">
-            <span v-if="i === deduced_position">Current</span>
+            <span v-if="i === deduced_position">{{ $t("Current") }}</span>
             <span v-else>
               <router-link
                 v-slot="{ href }"
@@ -46,7 +46,7 @@
                 }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
-                <a :href="href">Show</a>
+                <a :href="href">{{ $t("Show") }}</a>
               </router-link>
             </span>
             <span class="ml-4" style="white-space: nowrap; text-align: right;">
@@ -75,8 +75,12 @@
           <td></td>
           <td></td>
           <td>
-            <button style="white-space: nowrap;" @click="compareVersions">
-              Compare versions
+            <button
+              class="btn btn-primary"
+              style="white-space: nowrap;"
+              @click="compareVersions"
+            >
+              {{ $t("Compare versions") }}
             </button>
           </td>
         </tr>

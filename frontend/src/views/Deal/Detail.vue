@@ -10,7 +10,7 @@
           :href="`/legacy/deal/edit/${deal.id}/`"
           target="_blank"
         >
-          <i class="fas fa-edit"></i> Edit
+          <i class="fas fa-edit"></i> {{ $t("Edit") }}
         </a>
         <div class="meta-panel">
           <DisplayField
@@ -33,6 +33,7 @@
             :value-classes="['inlineval']"
             fieldname="fully_updated_at"
             :value="deal.fully_updated_at"
+            :visible="!!deal.fully_updated_at"
           />
         </div>
       </div>
@@ -197,7 +198,7 @@
       </b-tab>
 
       <b-tab
-        title="Deal History"
+        :title="$t('Deal History')"
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >
@@ -205,7 +206,7 @@
       </b-tab>
 
       <b-tab
-        title="Comments"
+        :title="$t('Comments')"
         :active="active_tab === '#comments'"
         @click="updateRoute('#comments')"
       >
@@ -213,7 +214,7 @@
       </b-tab>
 
       <b-tab
-        title="Actions"
+        :title="$t('Actions')"
         :active="active_tab === '#actions'"
         @click="updateRoute('#actions')"
       >
