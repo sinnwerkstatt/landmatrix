@@ -1,11 +1,11 @@
 <template>
   <div class="layerSwitcher" @mouseleave="shown = false">
-    <div class="layerSwitcherIcon" v-if="!shown">
+    <div v-if="!shown" class="layerSwitcherIcon">
       <i class="fas fa-layer-group" @mouseover="shown = true"></i>
     </div>
     <div class="layerSwitcherOptions">
       <ul v-if="shown">
-        <li v-for="layer in tileLayers">
+        <li v-for="layer in tileLayers" :key="layer.name">
           <div v-if="layer.name === visibleLayer">{{ layer.name }}</div>
           <a v-else @click.prevent="$store.dispatch('setCurrentLayer', layer.name)">
             {{ layer.name }}
@@ -42,10 +42,7 @@
     top: 5px;
     right: 5px;
     z-index: 200;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 15px;
-    padding-bottom: 12px;
+    padding: 15px 15px 12px;
     background: white;
     color: $primary;
     border-radius: 5px;

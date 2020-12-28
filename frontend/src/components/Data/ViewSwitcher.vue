@@ -9,49 +9,54 @@
         </li>
         <li class="nav-item dropdown">
           <a
+            id="viewswitch-data-dropdown"
             href=""
             class="nav-link dropdown-toggle"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            id="viewswitch-data-dropdown"
             :class="{
               'router-link-active': isListRoute,
               investors: dataItemName === label.investors,
             }"
-            >{{ dataItemName }}</a
           >
+            {{ dataItemName }}
+          </a>
           <span class="dropdown-menu">
             <router-link
               v-if="dataItemName !== label.deals"
               :to="{ name: 'list_deals' }"
               class="dropdown-item deals"
-              >{{ label.deals }}</router-link
             >
+              {{ label.deals }}
+            </router-link>
             <router-link
               v-if="dataItemName !== label.investors"
               :to="{ name: 'list_investors' }"
               class="dropdown-item investors"
-              >{{ label.investors }}</router-link
             >
+              {{ label.investors }}
+            </router-link>
           </span>
         </li>
         <li class="nav-item dropdown">
           <a
+            id="viewswitch-charts-dropdown"
             href=""
             class="nav-link dropdown-toggle"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-            id="viewswitch-charts-dropdown"
             :class="{
               'router-link-active': isChartRoute,
             }"
-            >Charts</a
           >
+            {{ $t("Charts") }}
+          </a>
           <span class="dropdown-menu charts">
             <router-link
               v-for="entry in chartEntries"
+              :key="entry.route_name"
               :to="{ name: entry.route_name }"
               class="dropdown-item"
             >

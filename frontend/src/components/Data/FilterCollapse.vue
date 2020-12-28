@@ -8,11 +8,11 @@
       :aria-expanded="initExpanded ? 'true' : 'false'"
     >
       <i class="expand-toggle fas fa-chevron-up"></i>
-      <span class="title">{{ title }}</span>
+      <span class="title">{{ $t(title) }}</span>
       <span
+        v-if="clearable"
         class="delete-button fa-stack"
         title="Remove this filter"
-        v-if="clearable"
         @click.stop="$emit('click')"
       >
         <i class="fas fa-filter fa-stack-1x" />
@@ -26,14 +26,18 @@
       class="expand-slot collapse"
       :class="{ show: initExpanded || false }"
     >
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
 <script>
   export default {
     name: "FilterCollapse",
-    props: ["title", "clearable", "initExpanded"],
+    props: {
+      title: { type: String, required: true },
+      clearable: { type: Boolean, default: false },
+      initExpanded: { type: Boolean, default: false },
+    },
     data() {
       return {
         shown: this.initExpanded || false,
@@ -115,14 +119,11 @@
       }
     }
     .expand-slot {
-      box-shadow: inset 0px 3px 7px -3px rgba(0, 0, 0, 0.1),
+      box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),
         inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
       background-color: rgba(0, 0, 0, 0.01);
-      margin-left: -0.5em;
-      margin-right: -0.5em;
       padding: 0.5em 0.5em;
-      margin-top: 0;
-      margin-bottom: 0;
+      margin: 0 -0.5em;
       transition: all 0.1s ease;
       > * {
         margin-bottom: 0;

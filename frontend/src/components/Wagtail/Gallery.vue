@@ -1,6 +1,11 @@
 <template>
   <div class="row widget-gallery" :class="galleryColumns">
-    <div v-for="(image, index) in value.images" class="col" :class="[colSize]">
+    <div
+      v-for="(image, index) in value.images"
+      :key="index"
+      class="col"
+      :class="[colSize]"
+    >
       <wagtail-image :value="image" />
     </div>
   </div>
@@ -8,7 +13,9 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
     computed: {
       galleryColumns() {
         let cols = parseInt(this.value.columns);

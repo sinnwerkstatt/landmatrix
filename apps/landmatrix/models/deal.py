@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.versions import Version, register_version
 
 
 class ArrayField(_ArrayField):
@@ -65,6 +65,18 @@ class DealQuerySet(models.QuerySet):
         return rankings
 
 
+class DealVersion(Version):
+    def to_dict(self, use_object=False):
+        deal = self.retrieve_object() if use_object else self.fields
+        return {
+            "id": self.id,
+            "deal": deal,
+            "revision": self.revision,
+            "object_id": self.object_id,
+        }
+
+
+@register_version(DealVersion)
 class Deal(models.Model, OldDealMixin):
     """ Deal """
 
@@ -156,6 +168,7 @@ class Deal(models.Model, OldDealMixin):
             _("Exploitation permit / license / concession (for mineral resources)"),
         ),
         ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
+        ("OTHER", _("Other")),
     )
     nature_of_deal = ArrayField(
         models.CharField(_("Nature of the deal"), max_length=100),
@@ -966,7 +979,9 @@ class Deal(models.Model, OldDealMixin):
     not_public_reason = models.CharField(
         max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
     )
-    top_investors = models.ManyToManyField(Investor, related_name="+")
+    top_investors = models.ManyToManyField(
+        Investor, verbose_name=_("Top parent companies"), related_name="+"
+    )
     current_contract_size = models.FloatField(blank=True, null=True)
     current_production_size = models.FloatField(blank=True, null=True)
     current_intention_of_investment = ArrayField(
@@ -1321,19 +1336,6 @@ class Deal(models.Model, OldDealMixin):
     #         self.operating_company.comment,
     #         operating_company_action_comment,
     #     ]
-
-
-class DealVersion(Version):
-    model = Deal
-
-    def to_dict(self, use_object=False):
-        deal = self.retrieve_object() if use_object else self.fields
-        return {
-            "id": self.id,
-            "deal": deal,
-            "revision": self.revision,
-            "object_id": self.object_id,
-        }
 
 
 class DealTopInvestors(models.Model):

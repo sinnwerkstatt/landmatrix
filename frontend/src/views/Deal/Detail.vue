@@ -1,8 +1,5 @@
 <template>
-  <div class="container deal-detail" v-if="deal">
-    <div class="loadingscreen" v-if="loading">
-      <div class="loader"></div>
-    </div>
+  <div v-if="deal" class="container deal-detail">
     <div class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal.id }}</h1>
@@ -13,35 +10,36 @@
           :href="`/legacy/deal/edit/${deal.id}/`"
           target="_blank"
         >
-          <i class="fas fa-edit"></i> Edit
+          <i class="fas fa-edit"></i> {{ $t("Edit") }}
         </a>
         <div class="meta-panel">
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="created_at"
-            :value="this.deal.created_at"
+            :value="deal.created_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="modified_at"
-            :value="this.deal.modified_at"
+            :value="deal.modified_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="fully_updated_at"
-            :value="this.deal.fully_updated_at"
+            :value="deal.fully_updated_at"
+            :visible="!!deal.fully_updated_at"
           />
         </div>
       </div>
     </div>
 
-    <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
+    <p v-if="not_public" class="alert alert-danger mb-4">{{ $t(not_public) }}</p>
     <!--    <div class="quicknav">-->
     <!--      <div v-for="(version, i) in deal.versions">-->
     <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
@@ -59,17 +57,16 @@
     <!--    </div>-->
     <b-tabs
       id="tabNav"
+      :key="dealId + dealVersion"
       content-class="mb-3"
       vertical
       pills
       nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
       nav-class="sticky-nav"
-      :key="deal_id + deal_version"
     >
       <DealLocationsSection
         :deal="deal"
         :fields="deal_submodel_sections.location"
-        :readonly="true"
         :active="active_tab === '#locations'"
         @activated="updateRoute('#locations')"
       />
@@ -77,17 +74,15 @@
         :title="deal_sections.general_info.label"
         :deal="deal"
         :sections="deal_sections.general_info.subsections"
-        :readonly="true"
         :active="active_tab === '#general'"
         @activated="updateRoute('#general')"
       />
 
       <DealSubmodelSection
-        :title="$t('Contracts')"
-        :model_name="$t('Contract')"
+        title="Contracts"
+        model-name="Contract"
         :entries="deal.contracts"
         :fields="deal_submodel_sections.contract"
-        :readonly="true"
         model="contract"
         :active="active_tab === '#contracts'"
         @activated="updateRoute('#contracts')"
@@ -97,7 +92,6 @@
         :title="deal_sections.employment.label"
         :deal="deal"
         :sections="deal_sections.employment.subsections"
-        :readonly="true"
         :active="active_tab === '#employment'"
         @activated="updateRoute('#employment')"
       />
@@ -106,7 +100,6 @@
         :title="deal_sections.investor_info.label"
         :deal="deal"
         :sections="deal_sections.investor_info.subsections"
-        :readonly="true"
         :active="active_tab === '#investor_info'"
         @activated="triggerInvestorGraphRefresh"
       >
@@ -120,12 +113,12 @@
                 Network of parent companies and tertiary investors/lenders
               </h3>
               <InvestorGraph
-                :investor="investor"
-                :showDeals="false"
-                :controls="false"
-                :initDepth="4"
                 ref="investorGraph"
-              ></InvestorGraph>
+                :investor="investor"
+                :show-deals-on-load="false"
+                :controls="false"
+                :init-depth="4"
+              />
             </template>
             <div v-else class="loader"></div>
           </div>
@@ -133,11 +126,10 @@
       </DealSection>
 
       <DealSubmodelSection
-        :title="$t('Data Sources')"
-        :model_name="$t('Data Source')"
+        title="Data Sources"
+        model-name="Data Source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
-        :readonly="true"
         model="datasource"
         :active="active_tab === '#data_sources'"
         @activated="updateRoute('#data_sources')"
@@ -147,7 +139,6 @@
         :title="deal_sections.local_communities.label"
         :deal="deal"
         :sections="deal_sections.local_communities.subsections"
-        :readonly="true"
         :active="active_tab === '#local_communities'"
         @activated="updateRoute('#local_communities')"
       />
@@ -156,7 +147,6 @@
         :title="deal_sections.former_use.label"
         :deal="deal"
         :sections="deal_sections.former_use.subsections"
-        :readonly="true"
         :active="active_tab === '#former_use'"
         @activated="updateRoute('#former_use')"
       />
@@ -165,7 +155,6 @@
         :title="deal_sections.produce_info.label"
         :deal="deal"
         :sections="deal_sections.produce_info.subsections"
-        :readonly="true"
         :active="active_tab === '#produce_info'"
         @activated="updateRoute('#produce_info')"
       />
@@ -174,7 +163,6 @@
         :title="deal_sections.water.label"
         :deal="deal"
         :sections="deal_sections.water.subsections"
-        :readonly="true"
         :active="active_tab === '#water'"
         @activated="updateRoute('#water')"
       />
@@ -183,7 +171,6 @@
         :title="deal_sections.gender_related_info.label"
         :deal="deal"
         :sections="deal_sections.gender_related_info.subsections"
-        :readonly="true"
         :active="active_tab === '#gender_related_info'"
         @activated="updateRoute('#gender_related_info')"
       />
@@ -192,7 +179,6 @@
         :title="deal_sections.guidelines_and_principles.label"
         :deal="deal"
         :sections="deal_sections.guidelines_and_principles.subsections"
-        :readonly="true"
         :active="active_tab === '#guidelines_and_principles'"
         @activated="updateRoute('#guidelines_and_principles')"
       />
@@ -201,13 +187,12 @@
         :title="deal_sections.overall_comment.label"
         :deal="deal"
         :sections="deal_sections.overall_comment.subsections"
-        :readonly="true"
         :active="active_tab === '#overall_comment'"
         @activated="updateRoute('#overall_comment')"
       />
 
       <b-tab disabled>
-        <template v-slot:title>
+        <template #title>
           <hr />
         </template>
       </b-tab>
@@ -217,7 +202,7 @@
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >
-        <DealHistory :deal="deal" :deal_id="deal_id" :deal_version="deal_version" />
+        <DealHistory :deal="deal" :deal-id="dealId" :deal-version="dealVersion" />
       </b-tab>
 
       <b-tab
@@ -246,18 +231,17 @@
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "/store/queries";
+  import { deal_gql_query } from "store/queries";
 
-  import DealSection from "/components/Deal/DealSection";
-  import DealHistory from "/components/Deal/DealHistory";
-  import DealLocationsSection from "/components/Deal/DealLocationsSection";
-  import DealSubmodelSection from "/components/Deal/DealSubmodelSection";
-  import InvestorGraph from "/components/Investor/InvestorGraph";
-  import DealComments from "/components/Deal/DealComments";
-  import DisplayField from "/components/Fields/DisplayField";
+  import DealSection from "components/Deal/DealSection";
+  import DealHistory from "components/Deal/DealHistory";
+  import DealLocationsSection from "components/Deal/DealLocationsSection";
+  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
+  import InvestorGraph from "components/Investor/InvestorGraph";
+  import DealComments from "components/Deal/DealComments";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
-    props: ["deal_id", "deal_version"],
     components: {
       DisplayField,
       DealComments,
@@ -267,10 +251,23 @@
       DealLocationsSection,
       DealSubmodelSection,
     },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.updatePageContext(to);
+      });
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.updatePageContext(to);
+      next();
+    },
+    props: {
+      dealId: { type: [Number, String], required: true },
+      dealVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         deal: null,
-        loading: false,
+
         deal_sections,
         deal_submodel_sections,
         investor: { involvements: [] },
@@ -281,8 +278,8 @@
         query: deal_gql_query,
         variables() {
           return {
-            id: +this.deal_id,
-            version: +this.deal_version,
+            id: +this.dealId,
+            version: +this.dealVersion,
             subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           };
         },
@@ -307,6 +304,13 @@
             ) {
               id
               name
+              classification
+              country {
+                id
+                name
+              }
+              homepage
+              comment
               involvements
             }
           }
@@ -330,15 +334,11 @@
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
-            return this.$t("This deal version is pending.");
+            return "This deal version is pending.";
           if (this.deal.status === 4)
-            return this.$t(
-              "This deal has been deleted. It is not visible for public users."
-            );
+            return "This deal has been deleted. It is not visible for public users.";
           if (this.deal.status === 5)
-            return this.$t(
-              "This deal version has been rejected. It is not visible for public users."
-            );
+            return "This deal version has been rejected. It is not visible for public users.";
         }
         return null;
       },
@@ -357,7 +357,7 @@
         }
       },
       updatePageContext(to) {
-        let title = `Deal #${to.params.deal_id}`;
+        let title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           title,
           breadcrumbs: [
@@ -368,17 +368,9 @@
         });
       },
     },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.updatePageContext(to);
-      });
-    },
-    beforeRouteUpdate(to, from, next) {
-      this.updatePageContext(to);
-      next();
-    },
   };
 </script>
+
 <style lang="scss">
   @import "../../scss/colors";
 

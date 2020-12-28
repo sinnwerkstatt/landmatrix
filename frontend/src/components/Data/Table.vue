@@ -7,9 +7,9 @@
           <div class="rows-count">{{ rowData.length }} {{ modelLabel }}</div>
         </div>
         <div class="table-config">
-          <a href="" @click.prevent v-b-modal.modal-select-fields
-            ><i class="fa fa-cog"></i
-          ></a>
+          <a v-b-modal.modal-select-fields href="" @click.prevent>
+            <i class="fa fa-cog"></i>
+          </a>
           <b-modal
             id="modal-select-fields"
             title="Select columns to display"
@@ -20,8 +20,8 @@
               <b-form-group>
                 <b-form-checkbox
                   v-for="option in apiFields"
-                  v-model="displayFields[targetModel]"
                   :key="option"
+                  v-model="displayFields[targetModel]"
                   :value="option"
                   name="select-deal-fields"
                 >
@@ -29,7 +29,7 @@
                 </b-form-checkbox>
               </b-form-group>
             </div>
-            <template #modal-footer="{ ok, cancel, hide }">
+            <template #modal-footer="{ ok }">
               <a href="" @click.prevent="resetFields">Reset to default columns</a>
               <button type="button" class="btn btn-primary" @click="ok()">OK</button>
             </template>
@@ -37,28 +37,40 @@
         </div>
       </div>
     </div>
-    <div class="table-wrap" v-if="rowData.length > 0">
-      <table class="sticky-header" :class="[this.targetModel]">
+    <div v-if="rowData.length > 0" class="table-wrap">
+      <table class="sticky-header" :class="[targetModel]">
         <thead>
           <tr>
             <th
               v-for="fieldName in currentFields"
               :key="fieldName"
-              @click="setSort(fieldName)"
               :class="{ selected: sortField === fieldName, asc: sortAscending }"
+              @click="setSort(fieldName)"
             >
-              {{ getLabel(fieldName) }}
+              <FieldLabel
+                :fieldname="fieldName"
+                :label-classes="[]"
+                :model="targetModel"
+              />
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="obj in rows">
+          <tr v-for="obj in rows" :key="obj.id">
             <td
               v-for="fieldName in currentFields"
               :key="fieldName"
               :style="getStyle(obj, fieldName)"
-              v-html="getValue(obj, fieldName)"
-            ></td>
+            >
+              <DisplayField
+                :wrapper-classes="[]"
+                :value-classes="[]"
+                :fieldname="fieldName"
+                :value="obj[fieldName]"
+                :model="targetModel"
+                :show-label="false"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -73,17 +85,13 @@
 </template>
 
 <script>
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import LoadingPulse from "components/Data/LoadingPulse";
   import { mapState } from "vuex";
-  import {
-    dealExtraFieldLabels,
-    getDealValue,
-    getInvestorValue,
-    investorExtraFieldLabels,
-  } from "./table_mappings";
+  import DisplayField from "components/Fields/DisplayField";
+  import FieldLabel from "components/Fields/FieldLabel";
   import gql from "graphql-tag";
-  import { data_deal_query } from "/views/Data/query";
-  import { sortAnything } from "../../utils";
+  import { data_deal_query } from "views/Data/query";
+  import { sortAnything } from "utils";
 
   const DEAL_DEFAULT_QUERY_FIELDS = [
     "id",
@@ -103,7 +111,7 @@
       "fully_updated_at",
       "id",
       "country",
-      "intention_of_investment",
+      "current_intention_of_investment",
       "current_negotiation_status",
       "current_implementation_status",
       "deal_size",
@@ -115,21 +123,13 @@
 
   export default {
     name: "Table",
-    components: { LoadingPulse },
+    components: { FieldLabel, DisplayField, LoadingPulse },
     props: ["targetModel"],
     data() {
       return {
         deals: [],
         investors: [],
         displayFields: { ...DEFAULT_DISPLAY_FIELDS },
-        valueMappings: {
-          deal: getDealValue,
-          investor: getInvestorValue,
-        },
-        extraFieldLabels: {
-          deal: dealExtraFieldLabels,
-          investor: investorExtraFieldLabels,
-        },
         extraDealData: [],
         dealApiFields: [],
         investorApiFields: [],
@@ -148,7 +148,7 @@
           return !this.extraDealFields.length;
         },
         query() {
-          return gql`
+          return `
             query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
               extraDealData:deals(limit: $limit, subset: $subset, filters: $filters) {
                 id ${this.extraDealFields.join(" ")}
@@ -176,6 +176,7 @@
               name
               country {
                 id
+                name
               }
               classification
               homepage
@@ -238,14 +239,13 @@
         return this.displayFields[this.targetModel];
       },
       apiFields() {
-        if (this.targetModel == "investor") {
+        if (this.targetModel === "investor") {
           return this.investorApiFields;
         } else {
-          return this.dealApiFields.sort((a, b) => {
-            return (
-              this.getLabel(a, "deal").toLowerCase() >
-              this.getLabel(b, "deal").toLowerCase()
-            );
+          return [...this.dealApiFields].sort((a, b) => {
+            let label_a = this.getLabel(a).toLowerCase();
+            let label_b = this.getLabel(b).toLowerCase();
+            return label_a.localeCompare(label_b);
           });
         }
       },
@@ -283,13 +283,17 @@
         if (this.extraDealFields.length) {
           if (
             !this.extraDealData.length ||
-            this.$apollo.queries.extraDealData.loading ||
+            (this.$apollo.queries.extraDealData &&
+              this.$apollo.queries.extraDealData.loading) ||
             this.deals.length !== this.extraDealData.length
           ) {
             return false;
           }
         }
-        return !this.$apollo.queries.deals.loading && this.deals.length;
+        return (
+          !(this.$apollo.queries.deals && this.$apollo.queries.deals.loading) &&
+          this.deals.length
+        );
       },
       extendedDeals() {
         if (this.dealsLoaded) {
@@ -332,17 +336,9 @@
       },
     },
     methods: {
-      getLabel(fieldName, targetModel = null) {
+      getLabel(fieldName, targetModel = "deal") {
         if (!targetModel) targetModel = this.targetModel;
-        if (
-          this.extraFieldLabels[targetModel] &&
-          fieldName in this.extraFieldLabels[targetModel]
-        ) {
-          return this.extraFieldLabels[targetModel][fieldName];
-        } else if (
-          this.formfields[targetModel] &&
-          fieldName in this.formfields[targetModel]
-        ) {
+        if (this.formfields[targetModel] && fieldName in this.formfields[targetModel]) {
           return this.formfields[targetModel][fieldName].label;
         } else {
           return fieldName;
@@ -351,9 +347,6 @@
       getStyle(obj, fieldName) {
         if (obj[fieldName] && !isNaN(obj[fieldName])) return { textAlign: "right" };
         else return {};
-      },
-      getValue(obj, fieldName) {
-        return this.valueMappings[this.targetModel](this, obj, fieldName);
       },
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
@@ -459,7 +452,7 @@
           th {
             padding: 0.5em;
             position: sticky;
-            top: 0px;
+            top: 0;
             background: #525252;
             color: white;
             vertical-align: bottom;

@@ -13,24 +13,24 @@
           :href="`/legacy/investor/edit/${investor.id}/`"
           target="_blank"
         >
-          <i class="fas fa-edit"></i> Edit
+          <i class="fas fa-edit" /> {{ $t("Edit") }}
         </a>
         <div class="meta-panel">
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="created_at"
             model="investor"
-            :value="this.investor.created_at"
+            :value="investor.created_at"
           />
           <DisplayField
-            :wrapper_classes="['inlinefield']"
-            :label_classes="['inlinelabel']"
-            :value_classes="['inlineval']"
+            :wrapper-classes="['inlinefield']"
+            :label-classes="['inlinelabel']"
+            :value-classes="['inlineval']"
             fieldname="modified_at"
             model="investor"
-            :value="this.investor.modified_at"
+            :value="investor.modified_at"
           />
         </div>
       </div>
@@ -40,17 +40,18 @@
     <div v-if="investor" class="row">
       <div class="col-xl-6 mb-3">
         <DisplayField
+          v-for="fieldname in fields"
+          :key="fieldname"
+          v-model="investor[fieldname]"
           :fieldname="fieldname"
           :readonly="true"
-          v-model="investor[fieldname]"
-          v-for="fieldname in fields"
           model="investor"
         />
       </div>
       <div
+        v-if="!investorVersion"
         class="col-lg-8 col-xl-6 mb-3"
         :class="{ loading_wrapper: !graphDataIsReady }"
-        v-if="!investor_version"
       >
         <div v-if="!graphDataIsReady" style="height: 400px;">
           <LoadingPulse />
@@ -58,9 +59,9 @@
         <InvestorGraph
           v-else
           :investor="investor"
+          :init-depth="depth"
           @newDepth="onNewDepth"
-          :initDepth="depth"
-        ></InvestorGraph>
+        />
       </div>
       <div
         v-else
@@ -77,8 +78,8 @@
 
     <b-tabs v-if="graphDataIsReady" content-class="mb-3">
       <b-tab>
-        <template v-slot:title>
-          <h5 v-html="`Involvements (${involvements.length})`"></h5>
+        <template #title>
+          <h5 v-html="`Involvements (${involvements.length})`" />
         </template>
         <table class="table data-table">
           <thead>
@@ -92,45 +93,45 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="involvement in involvements">
+            <tr v-for="involvement in involvements" :key="involvement.id">
               <td>
                 <DisplayField
-                  :wrapper_classes="['text-center']"
-                  :value_classes="['id-display', 'investor-id-display']"
+                  :wrapper-classes="['text-center']"
+                  :value-classes="[]"
                   fieldname="id"
                   :value="involvement.investor.id"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="name"
                   :value="involvement.investor.name"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="country"
                   :value="involvement.investor.country"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="classification"
                   :value="involvement.investor.classification"
                   model="investor"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>{{ detect_role(involvement) }}</td>
@@ -144,12 +145,12 @@
         </table>
       </b-tab>
       <b-tab v-if="'deals' in investor">
-        <template v-slot:title>
+        <template #title>
           <h5
             v-html="
               `Deals (Involvements as Operating company) (${investor.deals.length})`
             "
-          ></h5>
+          />
         </template>
         <table class="table data-table">
           <thead>
@@ -163,59 +164,59 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="deal in deals">
+            <tr v-for="deal in deals" :key="deal.id">
               <td>
                 <DisplayField
-                  :wrapper_classes="['text-center']"
-                  :value_classes="['id-display', 'deal-id-display']"
+                  :wrapper-classes="['text-center']"
+                  :value-classes="[]"
                   fieldname="id"
                   :value="deal.id"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="country"
                   :value="deal.country"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_intention_of_investment"
                   :value="deal.current_intention_of_investment"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_negotiation_status"
                   :value="deal.current_negotiation_status"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="[]"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="current_implementation_status"
                   :value="deal.current_implementation_status"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
               <td>
                 <DisplayField
-                  :wrapper_classes="[]"
-                  :value_classes="['deal-size-display']"
+                  :wrapper-classes="[]"
+                  :value-classes="[]"
                   fieldname="deal_size"
                   :value="deal.deal_size"
-                  :show_label="false"
+                  :show-label="false"
                 />
               </td>
             </tr>
@@ -223,13 +224,13 @@
         </table>
       </b-tab>
       <b-tab>
-        <template v-slot:title>
+        <template #title>
           <h5>{{ $t("Investor History") }}</h5>
         </template>
         <InvestorHistory
           :investor="investor"
-          :investor_id="investor_id"
-          :investor_version="investor_version"
+          :investor-id="investorId"
+          :investor-version="investorVersion"
         />
       </b-tab>
     </b-tabs>
@@ -237,18 +238,21 @@
 </template>
 
 <script>
-  import store from "/store";
+  import store from "store";
   import { mapState } from "vuex";
-  import InvestorGraph from "/components/Investor/InvestorGraph";
-  import DisplayField from "/components/Fields/DisplayField";
-  import LoadingPulse from "/components/Data/LoadingPulse";
-  import InvestorHistory from "../../components/Investor/InvestorHistory";
-  import { investor_query } from "../../store/queries";
+  import InvestorGraph from "components/Investor/InvestorGraph";
+  import DisplayField from "components/Fields/DisplayField";
+  import LoadingPulse from "components/Data/LoadingPulse";
+  import InvestorHistory from "components/Investor/InvestorHistory";
+  import { investor_query } from "store/queries";
 
   export default {
     name: "InvestorDetail",
     components: { InvestorHistory, LoadingPulse, InvestorGraph, DisplayField },
-    props: ["investor_id", "investor_version"],
+    props: {
+      investorId: { type: [Number, String], required: true },
+      investorVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         investor: null,
@@ -289,10 +293,9 @@
       },
       deals() {
         if ("deals" in this.investor) {
-          return this.investor.deals.sort((a, b) => {
-            return a.id - b.id;
-          });
-        } else return [];
+          return this.investor.deals;
+        }
+        return [];
       },
       graphDataIsReady() {
         return (
@@ -303,13 +306,28 @@
           !this.$apollo.queries.investor.loading
         );
       },
-      tableDataIsReady() {
-        return (
-          this.investor &&
-          "involvements" in this.investor &&
-          this.investor &&
-          "deals" in this.investor
-        );
+    },
+    watch: {
+      investorId(investorId, oldInvestorId) {
+        if (investorId !== oldInvestorId) {
+          this.includeDealsInQuery = false;
+        }
+      },
+      investor(investor, oldInvestor) {
+        if (!oldInvestor) {
+          // initial load complete, also load deals
+          this.includeDealsInQuery = true;
+          this.depth = 1;
+        }
+        let title = `${investor.name} <small>(#${investor.id})</small>`;
+        store.dispatch("setPageContext", {
+          title,
+          breadcrumbs: [
+            { link: { name: "wagtail" }, name: "Home" },
+            { link: { name: "list_investors" }, name: "Data" },
+            { name: `Investor #${investor.id}` },
+          ],
+        });
       },
     },
     methods: {
@@ -332,29 +350,6 @@
         }
       },
     },
-    watch: {
-      investor_id(investor_id, oldInvestorId) {
-        if (investor_id !== oldInvestorId) {
-          this.includeDealsInQuery = false;
-        }
-      },
-      investor(investor, oldInvestor) {
-        if (!oldInvestor) {
-          // initial load complete, also load deals
-          this.includeDealsInQuery = true;
-          this.depth = 1;
-        }
-        let title = `${investor.name} <small>(#${investor.id})</small>`;
-        store.dispatch("setPageContext", {
-          title,
-          breadcrumbs: [
-            { link: { name: "wagtail" }, name: "Home" },
-            { link: { name: "list_investors" }, name: "Data" },
-            { name: `Investor #${investor.id}` },
-          ],
-        });
-      },
-    },
   };
 </script>
 
@@ -370,47 +365,6 @@
       &:before {
         display: none;
       }
-    }
-  }
-  .id-display {
-    > div > a {
-      display: inline;
-      padding: 0.2em 0.6em 0.3em;
-      font-size: 75%;
-      font-weight: 700;
-      line-height: 1;
-      color: #fff !important;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: baseline;
-      border-radius: 0.25em;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-  }
-  .investor-id-display {
-    > div > a {
-      background-color: $lm_investor;
-      &:hover {
-        background-color: darken($lm_investor, 10%);
-      }
-    }
-  }
-  .deal-id-display {
-    > div > a {
-      background-color: $lm_orange;
-      &:hover {
-        background-color: darken($lm_orange, 10%);
-      }
-    }
-  }
-  .deal-size-display {
-    &:after {
-      content: "ha";
-    }
-    div {
-      display: inline;
     }
   }
 </style>

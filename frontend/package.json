@@ -5,80 +5,83 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "watch": "webpack --progress --watch --mode=development",
-    "parcel": "parcel src/main.js --out-dir dist --out-file main --no-source-maps --public-url /static/",
-    "parcelbuild": "parcel build src/main.js --out-dir dist --out-file main --no-source-maps --public-url /static/",
     "build": "webpack --mode=production",
     "lint": "eslint --ext .js,.vue src",
     "style": "prettier src/ --write"
   },
-  "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
-    "@fortawesome/fontawesome-free": "^5.13.1",
-    "@types/leaflet": "^1.5.12",
-    "axios": "^0.19.2",
+  "dependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@popperjs/core": "^2.4.0",
+    "@types/leaflet": "^1.5.19",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "apollo-link-http": "^1.5.17",
+    "autoprefixer": "^10.1.0",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
-    "bootstrap": "^4.5.0",
-    "bootstrap-vue": "^2.18.1",
-    "chart.js": "^2.9.3",
-    "css-loader": "^3.5.3",
-    "cytoscape": "^3.15.2",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-graphql-tag": "^3.1.0",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.21.1",
+    "chart.js": "^2.9.4",
+    "core-js": "^3.8.1",
+    "css-loader": "^3.6.0",
+    "cytoscape": "^3.17.1",
     "cytoscape-cose-bilkent": "^4.1.0",
-    "d3": "^6.2.0",
-    "dayjs": "^1.8.27",
-    "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^6.2.2",
-    "file-loader": "^6.0.0",
+    "cytoscape-popper": "^1.0.7",
+    "d3": "^6.3.1",
+    "d3-format": "^2.0.0",
+    "d3-hierarchy": "^2.0.0",
+    "d3-selection": "^2.0.0",
+    "d3-shape": "^2.0.0",
+    "dayjs": "^1.9.7",
+    "deep-object-diff": "^1.1.0",
+    "eslint": "^7.16.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-vue": "^7.3.0",
+    "file-loader": "^6.2.0",
+    "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
-    "jquery": "^3.5.1",
-    "leaflet": "^1.6.0",
+    "jquery": "~2.2.4",
+    "js-cookie": "^2.2.1",
+    "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
-    "leaflet-gesture-handling": "^1.1.8",
+    "leaflet-gesture-handling": "^1.2.1",
     "leaflet.markercluster": "^1.4.1",
     "lodash": "^4.17.20",
     "node-sass": "^4.14.1",
-    "parcel": "^1.12.4",
-    "parcel-bundler": "^1.12.4",
+    "numeral": "^2.0.6",
     "popper.js": "^1.16.1",
+    "postcss": "^8.2.1",
     "prettier": "2.0.5",
-    "prunecluster-exportable": "^1.0.0",
+    "regenerator-runtime": "^0.13.7",
     "sass": "^1.29.0",
     "sass-loader": "^8.0.2",
     "slugify": "^1.4.0",
+    "stylelint": "^13.8.0",
+    "stylelint-config-recommended": "^3.0.0",
+    "tippy.js": "^5.2.1",
+    "url-loader": "^4.1.1",
     "v-calendar": "^1.0.6",
-    "vue": "^2.6.11",
+    "vue": "~2.6.12",
+    "vue-apollo": "^3.0.4",
     "vue-eslint-parser": "^7.1.0",
+    "vue-i18n": "^8.20.0",
+    "vue-json-csv": "^1.2.11",
     "vue-loader": "^15.9.2",
     "vue-multiselect": "^2.1.6",
     "vue-router": "^3.1.6",
-    "vue-template-compiler": "^2.6.11",
-    "vue2-leaflet": "^2.5.2",
+    "vue-scroll-loader": "^2.2.0",
+    "vue-template-compiler": "^2.6.12",
+    "vue2-leaflet": "^2.6.0",
     "vuex": "^3.4.0",
     "webpack": "^4.43.0",
     "webpack-bundle-tracker": "^0.4.3",
     "webpack-cli": "^3.3.11",
     "webpack-livereload-plugin": "^2.3.0"
-  },
-  "dependencies": {
-    "@babel/polyfill": "^7.8.7",
-    "apollo-cache-inmemory": "^1.6.6",
-    "apollo-client": "^2.6.10",
-    "apollo-link-http": "^1.5.17",
-    "babel-plugin-graphql-tag": "^3.1.0",
-    "cytoscape-popper": "^1.0.7",
-    "d3-hierarchy": "^2.0.0",
-    "deep-object-diff": "^1.1.0",
-    "graphql": "^15.3.0",
-    "js-cookie": "^2.2.1",
-    "numeral": "^2.0.6",
-    "stylelint": "^13.8.0",
-    "stylelint-config-recommended": "^3.0.0",
-    "tippy.js": "^5.2.1",
-    "vue-apollo": "^3.0.4",
-    "vue-i18n": "^8.20.0",
-    "vue-json-csv": "^1.2.11",
-    "vue-scroll-loader": "^2.2.0"
   },
   "prettier": {
     "vueIndentScriptAndStyle": true,
@@ -88,22 +91,51 @@
     "extends": "stylelint-config-recommended"
   },
   "eslintConfig": {
-    "extends": "eslint:recommended",
+    "extends": [
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier",
+      "prettier/vue"
+    ],
     "env": {
       "browser": true,
       "node": true,
       "es6": true
     },
     "rules": {
-      "no-unused-vars": "warn"
+      "no-unused-vars": "warn",
+      "vue/no-unused-vars": "error",
+      "vue/max-attributes-per-line": [
+        "warn",
+        {
+          "singleline": 4,
+          "multiline": {
+            "max": 1,
+            "allowFirstLine": false
+          }
+        }
+      ]
     },
     "parserOptions": {
-      "ecmaVersion": 6,
+      "ecmaVersion": 2018,
       "sourceType": "module",
       "ecmaFeatures": {}
     }
   },
   "browserslist": [
     "since 2017-06"
-  ]
+  ],
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      [
+        "babel-plugin-graphql-tag",
+        {
+          "strip": true
+        }
+      ]
+    ]
+  }
 }

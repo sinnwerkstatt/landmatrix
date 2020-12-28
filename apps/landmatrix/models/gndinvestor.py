@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models import Country, Currency
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.versions import Version, register_version
 
 
 class InvestorQuerySet(models.QuerySet):
@@ -31,6 +31,18 @@ class InvestorQuerySet(models.QuerySet):
         return self
 
 
+class InvestorVersion(Version):
+    def to_dict(self, use_object=False):
+        investor = self.retrieve_object() if use_object else self.fields
+        return {
+            "id": self.id,
+            "investor": investor,
+            "revision": self.revision,
+            "object_id": self.object_id,
+        }
+
+
+@register_version(InvestorVersion)
 class Investor(models.Model):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
@@ -223,19 +235,6 @@ class Investor(models.Model):
         }
 
 
-class InvestorVersion(Version):
-    model = Investor
-
-    def to_dict(self, use_object=False):
-        investor = self.retrieve_object() if use_object else self.fields
-        return {
-            "id": self.id,
-            "investor": investor,
-            "revision": self.revision,
-            "object_id": self.object_id,
-        }
-
-
 class InvestorVentureInvolvementQuerySet(models.QuerySet):
     def active(self):
         return self.filter(investor__status__in=(2, 3), venture__status__in=(2, 3))
@@ -258,6 +257,11 @@ class InvestorVentureInvolvementQuerySet(models.QuerySet):
         return self
 
 
+class InvestorVentureInvolvementVersion(Version):
+    pass
+
+
+@register_version(InvestorVentureInvolvementVersion)
 class InvestorVentureInvolvement(models.Model):
     investor = models.ForeignKey(
         Investor,
@@ -351,7 +355,3 @@ class InvestorVentureInvolvement(models.Model):
             "parent_relation": self.parent_relation,
             "comment": self.comment,
         }
-
-
-class InvestorVentureInvolvementVersion(Version):
-    model = InvestorVentureInvolvement

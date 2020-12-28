@@ -4,6 +4,7 @@ export const implementation_status_choices = {
   IN_OPERATION: "In Operation (production)",
   PROJECT_ABANDONED: "Project abandoned",
 };
+
 export const nature_of_deal_choices = {
   OUTRIGHT_PURCHASE: "Outright Purchase",
   LEASE: "Lease",
@@ -27,34 +28,6 @@ export const negotiation_status_choices = {
     NEGOTIATIONS_FAILED: "Negotiations failed",
     CONTRACT_CANCELED: "Contract canceled",
   },
-
-  CONTRACT_EXPIRED: "Contract expired",
-  CHANGE_OF_OWNERSHIP: "Change of ownership",
-};
-export const negotiation_status_map = {
-  EXPRESSION_OF_INTEREST: ["Expression of interest", "Intended"],
-  UNDER_NEGOTIATION: ["Under negotiation", "Intended"],
-  MEMORANDUM_OF_UNDERSTANDING: ["Memorandum of understanding", "Intended"],
-
-  ORAL_AGREEMENT: ["Oral agreement", "Concluded"],
-  CONTRACT_SIGNED: ["Contract signed", "Concluded"],
-
-  NEGOTIATIONS_FAILED: ["Negotiations failed", "Failed"],
-  CONTRACT_CANCELED: ["Contract canceled", "Failed"],
-
-  CONTRACT_EXPIRED: ["Contract expired", ""],
-  CHANGE_OF_OWNERSHIP: ["Change of ownership", ""],
-};
-export const flat_negotiation_status_map = {
-  EXPRESSION_OF_INTEREST: "Intended (Expression of interest)",
-  UNDER_NEGOTIATION: "Intended (Under negotiation)",
-  MEMORANDUM_OF_UNDERSTANDING: "Intended (Memorandum of understanding)",
-
-  ORAL_AGREEMENT: "Concluded (Oral agreement)",
-  CONTRACT_SIGNED: "Concluded (Contract signed)",
-
-  NEGOTIATIONS_FAILED: "Failed (Negotiations failed)",
-  CONTRACT_CANCELED: "Failed (Contract canceled)",
 
   CONTRACT_EXPIRED: "Contract expired",
   CHANGE_OF_OWNERSHIP: "Change of ownership",
@@ -87,6 +60,7 @@ export const intention_of_investment_choices = {
     OTHER: "Other",
   },
 };
+
 export const intention_of_investment_map = {
   BIOFUELS: ["Biofuels", "fas fa-leaf"],
   FOOD_CROPS: ["Food crops", "fas fa-carrot"],

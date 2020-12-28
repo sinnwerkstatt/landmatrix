@@ -1,13 +1,13 @@
-import store from "/store";
-import DynamicsOverview from "/views/Data/Charts/DynamicsOverview";
-import CaseStatistics from "/views/Manager/CaseStatistics";
 import Vue from "vue";
 import Router from "vue-router";
-import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
-import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
+import store from "store";
 // const DataMap = () => import("./views/Data/GlobalMap");
 import DataMap from "./views/Data/GlobalMap";
+import DynamicsOverview from "views/Data/Charts/DynamicsOverview";
+import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
+import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
 import DataList from "./views/Data/List";
+import CaseStatistics from "views/Manager/CaseStatistics";
 import DealCompare from "./views/Deal/Compare";
 import DealDetail from "./views/Deal/Detail";
 import DealEdit from "./views/Deal/Edit";
@@ -94,19 +94,19 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/edit/:deal_id/",
+      path: "/deal/edit/:dealId/",
       name: "deal_edit",
       component: DealEdit,
       props: true,
     },
     {
-      path: "/deal/:deal_id/:deal_version?/",
+      path: "/deal/:dealId/:dealVersion?/",
       name: "deal_detail",
       component: DealDetail,
       props: true,
     },
     {
-      path: "/deal/:deal_id/compare/:from_version/:to_version/",
+      path: "/deal/:dealId/compare/:fromVersion/:toVersion/",
       name: "deal_compare",
       component: DealCompare,
       props: true,
@@ -116,7 +116,7 @@ const router = new Router({
       redirect: { name: "list_deals" },
     },
     {
-      path: "/investor/:investor_id/:investor_version?/",
+      path: "/investor/:investorId/:investorVersion?/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,
@@ -178,7 +178,7 @@ const router = new Router({
   // ]
 });
 const DEFAULT_TITLE = "Land Matrix";
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   // Use next tick to handle router history correctly
   // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
   Vue.nextTick(() => {

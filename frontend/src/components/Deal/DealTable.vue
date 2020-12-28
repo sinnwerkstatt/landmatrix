@@ -11,16 +11,16 @@
       <thead>
         <tr>
           <th
-            @click="setSort('id')"
             :class="{ selected: sortField === 'id', asc: sortAscending }"
+            @click="setSort('id')"
           >
             #
           </th>
           <th
             v-for="field in fields"
             :key="field"
-            @click="setSort(field)"
             :class="{ selected: sortField === field, asc: sortAscending }"
+            @click="setSort(field)"
           >
             {{ fieldNameMap[field] || field }}
           </th>
@@ -30,8 +30,8 @@
         <tr v-for="deal in dt_deals" :key="deal.id">
           <td>
             <router-link
-              :to="{ name: 'deal_detail', params: { deal_id: deal.id } }"
               v-slot="{ href }"
+              :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
             >
               <a :href="href">{{ deal.id }}</a>
             </router-link>
@@ -48,9 +48,7 @@
 </template>
 
 <script>
-  import { sortAnything } from "../../utils";
-
-  const slugify = require("slugify");
+  import { sortAnything } from "utils";
 
   const STATUS_MAP = {
     1: "Draft",
@@ -134,19 +132,6 @@
             return inv.name;
           })
           .join("<br>");
-      },
-      parseIntentionOfInvestment(deal) {
-        if (!deal.intention_of_investment) return "";
-        return deal.intention_of_investment
-          .map((int) => {
-            let intention = int.value;
-            console.log(int);
-            let slug = intention; //slugify(intention, { lower: true });
-            return `<a href="/data/by-intention/${intention}/"
-                      class="toggle-tooltip intention-icon ${slug}" title=""
-                      data-original-title="${intention}"><span>${intention}</span></a>`;
-          })
-          .sort();
       },
     },
   };

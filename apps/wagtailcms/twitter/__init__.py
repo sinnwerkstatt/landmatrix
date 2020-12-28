@@ -18,23 +18,23 @@ class TwitterTimeline:
         self.cache_long_term_timeout = cache_long_term_timeout
 
         self.re_url = re.compile(
-            "([A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+)"
+            r"([A-Za-z]+://[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~?/.=]+)"
         )
-        self.re_url_sub = '<a href="\g<1>">\g<1></a>'
-        self.re_hashtag = re.compile("#+(?P<hashtag>[A-Za-z0-9-_]+)")
+        self.re_url_sub = r'<a href="\g<1>">\g<1></a>'
+        self.re_hashtag = re.compile(r"#+(?P<hashtag>[A-Za-z0-9-_]+)")
         self.re_hashtag_sub = (
-            '<a href="https://twitter.com/search/%23\g<hashtag>">#\g<hashtag></a>'
+            r'<a href="https://twitter.com/search/%23\g<hashtag>">#\g<hashtag></a>'
         )
-        self.re_username = re.compile("@+(?P<username>[A-Za-z0-9-_]+)")
+        self.re_username = re.compile(r"@+(?P<username>[A-Za-z0-9-_]+)")
         self.re_username_sub = (
-            '<a href="https://twitter.com/\g<username>">@\g<username></a>'
+            r'<a href="https://twitter.com/\g<username>">@\g<username></a>'
         )
 
     def connect(self):
         tset = getattr(settings, "TWITTER_TIMELINE", None)
         if tset:
-            auth = tweepy.OAuthHandler(tset["consumer_key"], tset["consumer_secret"])
-            auth.set_access_token(tset["access_token"], tset["access_token_secret"])
+            auth = tweepy.AppAuthHandler(tset["consumer_key"], tset["consumer_secret"])
+            # auth.set_access_token(tset["access_token"], tset["access_token_secret"])
             return tweepy.API(auth)
         raise Exception("NO TWITTER_TIMELINE in django settings.py")
 
@@ -47,13 +47,14 @@ class TwitterTimeline:
 
     def extract_tweets(self, timeline):
         stati = []
-        for status in timeline:
+        for status in timeline:  # tweepy.Status
             update = {}
 
             if getattr(status, "retweeted_status", None):
                 status = status.retweeted_status
 
-            update["id_str"] = status.user.id_str
+            update["id"] = status.id
+            # update["id_str"] = status.user.id_str
             update["screen_name"] = status.user.screen_name
             update["name"] = status.user.name
             update["profile_image_url_https"] = status.user.profile_image_url_https
@@ -81,6 +82,17 @@ class TwitterTimeline:
                     }
                 except KeyError:
                     pass
+
+            rt = getattr(status, "retweeted_status", None)
+            if rt:
+                update[
+                    "deep_link"
+                ] = f"https://twitter.com/{rt.user.screen_name}/status/{rt.id}"
+            else:
+                update[
+                    "deep_link"
+                ] = f"https://twitter.com/{status.user.screen_name}/status/{status.id}"
+
             stati.append(update)
         return stati
 
@@ -105,4 +117,22 @@ class TwitterTimeline:
 
 
 if __name__ == "__main__":
-    TwitterTimeline().get_timeline("Twitter")
+    import environ
+
+    BASE_DIR = environ.Path(__file__) - 4
+    env = environ.Env()
+    env.read_env(BASE_DIR(".env"))
+    settings.configure(
+        TWITTER_TIMELINE=(
+            {
+                "consumer_key": env("DJANGO_TWITTER_CONSUMER_KEY"),
+                "consumer_secret": env("DJANGO_TWITTER_CONSUMER_SECRET"),
+                "access_token": env("DJANGO_TWITTER_ACCESS_TOKEN"),
+                "access_token_secret": env("DJANGO_TWITTER_ACCESS_TOKEN_SECRET"),
+            }
+            if env("DJANGO_TWITTER_CONSUMER_KEY", default="")
+            else None
+        )
+    )
+    cache.clear()
+    print(TwitterTimeline(count=10).get_timeline("LM_Africa"))

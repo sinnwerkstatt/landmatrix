@@ -3,7 +3,10 @@
     <div class="chart-container" :style="containerStyle">
       <canvas ref="chart-canvas"></canvas>
     </div>
-    <Legend v-if="displayLegend || legends" :items="legendItems"></Legend>
+    <Legend
+      v-if="legendItems && (displayLegend || legends)"
+      :items="legendItems"
+    ></Legend>
   </div>
 </template>
 
@@ -95,6 +98,22 @@
         else return this.dealData;
       },
     },
+    watch: {
+      dealData: {
+        deep: true,
+        handler: function () {
+          this.updateChart();
+        },
+      },
+      valueField: {
+        handler: function () {
+          this.updateChart();
+        },
+      },
+    },
+    mounted() {
+      this.createChart();
+    },
     methods: {
       createChart() {
         if (this.dealData) {
@@ -113,22 +132,6 @@
         } else {
           this.createChart();
         }
-      },
-    },
-    mounted() {
-      this.createChart();
-    },
-    watch: {
-      dealData: {
-        deep: true,
-        handler: function () {
-          this.updateChart();
-        },
-      },
-      valueField: {
-        handler: function () {
-          this.updateChart();
-        },
       },
     },
   };

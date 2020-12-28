@@ -1,23 +1,22 @@
 <template>
   <b-modal v-model="visible" :title="`Deal ${deal.name}`">
     <DisplayField
+      v-for="fieldname in fields"
+      :key="fieldname"
+      :value="deal[fieldname]"
+      :visible="!!deal[fieldname]"
       :fieldname="fieldname"
       :readonly="true"
-      v-model="deal[fieldname]"
-      v-for="fieldname in fields"
       model="deal"
     />
-    <template v-slot:modal-footer>
+    <template #modal-footer>
       <div class="w-100">
         <router-link
-          :to="{
-            name: 'deal_detail',
-            params: { deal_id: deal._id },
-          }"
+          :to="{ name: 'deal_detail', params: { dealId: deal._id } }"
           class="btn btn-primary deal-link float-right"
           target="_blank"
         >
-          More details about this deal
+          {{ $t("More details about this deal") }}
         </router-link>
       </div>
     </template>
@@ -25,11 +24,14 @@
 </template>
 
 <script>
-  import DisplayField from "/components/Fields/DisplayField";
+  import DisplayField from "components/Fields/DisplayField";
 
   export default {
-    props: ["deal", "value"],
     components: { DisplayField },
+    props: {
+      deal: { type: Object, required: true },
+      value: { type: Boolean, required: true },
+    },
     data() {
       return {
         fields: [

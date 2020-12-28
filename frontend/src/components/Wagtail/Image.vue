@@ -1,7 +1,7 @@
 <template>
   <div class="widget-image row">
     <div class="col-12">
-      <a v-if="link" :href="link" :target="{ _blank: external }">
+      <a v-if="link" :href="link" :target="{ _blank: externalLink }">
         <img
           :src="path"
           class="image"
@@ -23,7 +23,9 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
     data() {
       return {
         alt: null,
@@ -39,7 +41,7 @@
       caption() {
         return this.value.image ? this.value.caption : null;
       },
-      external() {
+      externalLink() {
         return this.value.image ? this.value.external : false;
       },
     },

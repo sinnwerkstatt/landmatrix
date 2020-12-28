@@ -1,29 +1,29 @@
 <template>
   <div>
-    <h3>History</h3>
+    <h3>{{ $t("Deal History") }}</h3>
     <table class="table table-condensed">
       <thead>
         <tr>
-          <th>Created</th>
-          <th v-if="user && user.is_authenticated">User</th>
-          <th>Fully updated</th>
-          <th>Status</th>
-          <th>Comment</th>
+          <th>{{ $t("Created") }}</th>
+          <th v-if="user && user.is_authenticated">{{ $t("User") }}</th>
+          <th>{{ $t("Fully updated") }}</th>
+          <th>{{ $t("Status") }}</th>
+          <th>{{ $t("Comment") }}</th>
           <th style="text-align: right;">
-            Show / <a @click="compareVersions">Compare</a>
+            {{ $t("Show") }} / <a @click="compareVersions">{{ $t("Compare") }}</a>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(version, i) in deal.versions">
+        <tr v-for="(version, i) in deal.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
           <td v-if="user && user.is_authenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
             <b-button
-              disabled
               v-b-tooltip.hover
+              disabled
               :title="version.deal.fully_updated ? 'Fully updated' : 'Updated'"
               :class="[
                 'fa',
@@ -36,30 +36,30 @@
           </td>
           <td>{{ version.revision.comment }}</td>
           <td style="white-space: nowrap; text-align: right;">
-            <span v-if="i === deduced_position">Current</span>
+            <span v-if="i === deduced_position">{{ $t("Current") }}</span>
             <span v-else>
               <router-link
+                v-slot="{ href }"
                 :to="{
                   name: 'deal_detail',
-                  params: { deal_id, deal_version: version.revision.id },
+                  params: { dealId, dealVersion: version.revision.id },
                 }"
-                v-slot="{ href, navigate }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
-                <a :href="href">Show</a>
+                <a :href="href">{{ $t("Show") }}</a>
               </router-link>
             </span>
             <span class="ml-4" style="white-space: nowrap; text-align: right;">
               <input
-                type="radio"
                 v-model="compare_from"
+                type="radio"
                 :value="version.revision.id"
                 :disabled="version.revision.id >= compare_to"
               />
 
               <input
-                type="radio"
                 v-model="compare_to"
+                type="radio"
                 :value="version.revision.id"
                 :disabled="version.revision.id <= compare_from"
               />
@@ -75,8 +75,12 @@
           <td></td>
           <td></td>
           <td>
-            <button style="white-space: nowrap;" @click="compareVersions">
-              Compare versions
+            <button
+              class="btn btn-primary"
+              style="white-space: nowrap;"
+              @click="compareVersions"
+            >
+              {{ $t("Compare versions") }}
             </button>
           </td>
         </tr>
@@ -90,7 +94,7 @@
 
   export default {
     name: "DealHistory",
-    props: ["deal", "deal_id", "deal_version"],
+    props: ["deal", "dealId", "dealVersion"],
     data() {
       return {
         compare_from: null,
@@ -103,9 +107,9 @@
       }),
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
-        if (this.deal_version) {
+        if (this.dealVersion) {
           return this.deal.versions.findIndex(
-            (v) => +v.revision.id === +this.deal_version
+            (v) => +v.revision.id === +this.dealVersion
           );
         }
         for (const [i, v] of this.deal.versions.entries()) {
@@ -150,9 +154,9 @@
         this.$router.push({
           name: "deal_compare",
           params: {
-            deal_id: this.deal_id,
-            from_version: this.compare_from,
-            to_version: this.compare_to,
+            dealId: this.dealId,
+            fromVersion: this.compare_from,
+            toVersion: this.compare_to,
           },
         });
       },

@@ -2,7 +2,7 @@
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="'/'">
-        <img src="/static/images/lm-logo.png" alt="Landmatrix Logo" />
+        <img src="../static/images/lm-logo.png" alt="Landmatrix Logo" />
       </router-link>
       <button
         class="navbar-toggler"
@@ -15,23 +15,24 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="main-navbar-collapse" ref="mainbar">
-        <ul class="navbar-nav">
+      <div id="main-navbar-collapse" ref="mainbar" class="collapse navbar-collapse">
+        <ul class="navbar-nav align-items-center">
           <li class="nav-item dropdown">
             <a
+              id="map-dropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="map-dropdown"
             >
               {{ $t("Data") }}
             </a>
             <div class="dropdown-menu">
               <router-link
                 v-for="data_link in data_links"
+                :key="data_link.name"
                 :to="data_link.link"
                 class="dropdown-item"
                 @click.native="closeMenu"
@@ -42,47 +43,50 @@
           </li>
           <li class="nav-item dropdown">
             <a
+              id="obs-dropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="obs-dropdown"
             >
               {{ $t("Observatories") }}
             </a>
             <div class="dropdown-menu">
-              <template v-for="(obs, obsgroup) in observatories_group">
-                <!--                <div class="dropdown-divider"></div>-->
-                <div class="dropdown-menu-group">
-                  <router-link
-                    v-for="observatory in obs"
-                    class="dropdown-item"
-                    :to="`/observatory/${observatory.meta.slug}/`"
-                    @click.native="closeMenu"
-                  >
-                    {{ observatory.title }}
-                  </router-link>
-                </div>
-              </template>
+              <div
+                v-for="(obs, obsgroup) in observatories_group"
+                :key="obsgroup"
+                class="dropdown-menu-group"
+              >
+                <router-link
+                  v-for="observatory in obs"
+                  :key="observatory.id"
+                  class="dropdown-item"
+                  :to="`/observatory/${observatory.meta.slug}/`"
+                  @click.native="closeMenu"
+                >
+                  {{ observatory.title }}
+                </router-link>
+              </div>
             </div>
           </li>
           <li class="nav-item dropdown">
             <a
+              id="res-dropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="res-dropdown"
             >
               {{ $t("Resources") }}
             </a>
             <div class="dropdown-menu">
               <router-link
                 v-for="cat in blogcategories"
+                :key="cat.slug"
                 class="dropdown-item"
                 :to="`/resources/?category=${cat.slug}`"
                 @click.native="closeMenu"
@@ -93,19 +97,20 @@
           </li>
           <li class="nav-item dropdown">
             <a
+              id="about-dropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="about-dropdown"
             >
               {{ $t("About") }}
             </a>
             <div class="dropdown-menu">
               <router-link
                 v-for="about_link in aboutLinks"
+                :key="about_link.link"
                 :to="about_link.link"
                 class="dropdown-item"
                 @click.native="closeMenu"
@@ -115,26 +120,30 @@
             </div>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="`/faq/`" @click.native="closeMenu"
-              >{{ $t("FAQ") }}
+            <router-link class="nav-link" :to="`/faq/`" @click.native="closeMenu">
+              {{ $t("FAQ") }}
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="`/contribute/`" @click.native="closeMenu"
-              >{{ $t("Contribute") }}
+            <router-link
+              class="nav-link"
+              :to="`/contribute/`"
+              @click.native="closeMenu"
+            >
+              {{ $t("Contribute") }}
             </router-link>
           </li>
         </ul>
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto align-items-center">
           <li class="nav-item dropdown">
             <a
+              id="languageDropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="languageDropdown"
             >
               <i class="fa fa-language" aria-hidden="true" style="display: inline;"></i>
               {{ LANGUAGES[LANGUAGE] }}
@@ -142,6 +151,7 @@
             <div class="dropdown-menu">
               <a
                 v-for="(lingo, lcode) in LANGUAGES"
+                :key="lcode"
                 :href="`/language/${lcode}/`"
                 class="dropdown-item"
                 :class="{ active: lcode === LANGUAGE }"
@@ -151,21 +161,21 @@
             </div>
           </li>
           <li v-if="user" class="nav-item">
-            <p class="navbar-text dropdown-header">
+            <p class="navbar-text dropdown-header" style="line-height: 1.2em;">
               {{ user.full_name }}
               <br />
-              <small>{{ user.role }}</small>
+              <small>{{ $t(user.role) }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">
             <a
+              id="navbarDropdown"
               href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="navbarDropdown"
             >
               <i
                 class="fa"
@@ -173,9 +183,9 @@
               ></i>
             </a>
             <div
+              ref="userMenu"
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="#navbarDropdown"
-              ref="userMenu"
             >
               <!--suppress HtmlUnknownTarget -->
               <a
@@ -201,6 +211,7 @@
           </li>
           <li v-if="!user" class="nav-item dropdown">
             <a
+              id="navbarDropdownAnonymous"
               href="#"
               role="button"
               title="Login/Register"
@@ -208,7 +219,6 @@
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
-              id="navbarDropdownAnonymous"
             >
               <i class="fa fa-user"></i>
             </a>
@@ -219,28 +229,28 @@
               <form class="px-4 pt-3">
                 <div class="form-group">
                   <input
+                    id="username"
                     v-model="username"
                     type="text"
                     class="form-control"
-                    id="username"
                     autocomplete="username"
                     placeholder="username"
                   />
                 </div>
                 <div class="form-group">
                   <input
+                    id="password"
                     v-model="password"
                     type="password"
                     class="form-control"
-                    id="password"
                     autocomplete="current-password"
                     placeholder="password"
                   />
                 </div>
                 <button
                   type="submit"
-                  @click.prevent="dispatchLogin"
                   class="btn btn-secondary"
+                  @click.prevent="dispatchLogin"
                 >
                   {{ $t("Login") }}
                 </button>
@@ -261,16 +271,15 @@
   </nav>
 </template>
 <script>
-  import NavbarSelect from "/components/NavbarSelect";
-  import { blogcategories_query } from "/store/queries";
+  import { blogcategories_query } from "store/queries";
 
   export default {
-    components: { NavbarSelect },
     data() {
       return {
         username: null,
         password: null,
         login_failed_message: "",
+        // eslint-disable-next-line no-undef
         LANGUAGE: LANGUAGE,
         LANGUAGES: { en: "English", es: "Español", fr: "Français" },
         blogcategories: [],
@@ -325,7 +334,7 @@
             this.login_failed_message = response.error;
           });
       },
-      closeMenu(e) {
+      closeMenu() {
         if (this.$refs.mainbar.classList.contains("show")) {
           this.$refs.mainbar.classList.remove("show");
         }

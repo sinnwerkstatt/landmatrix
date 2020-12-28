@@ -8,7 +8,6 @@ from django.views.generic import TemplateView
 
 from apps.grid.views.filter import FilterWidgetMixin
 from apps.landmatrix.models import Country, Region
-from apps.wagtailcms.models import WagtailRootPage
 
 
 class MapSettingsMixin:
@@ -156,9 +155,5 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
             target_region_id = filters["region"]["value"]
             with contextlib.suppress(Region.DoesNotExist, ValueError):
                 context["map_object"] = Region.objects.get(pk=target_region_id)
-
-        root = WagtailRootPage.objects.first()
-        if root.map_introduction:
-            context["introduction"] = root.map_introduction
 
         return context

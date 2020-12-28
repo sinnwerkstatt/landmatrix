@@ -1,11 +1,11 @@
 <template>
   <div class="map-container" :style="mapContainerStyle">
     <l-map
+      id="bigMap"
+      ref="bigMap"
       :options="mapOptions"
       :center="center"
       :bounds="bounds"
-      id="bigMap"
-      ref="bigMap"
       @ready="leafletMapReady"
     >
       <l-tile-layer
@@ -15,40 +15,34 @@
         :visible="tileProvider.name === visibleLayer"
         :url="tileProvider.url"
         :attribution="tileProvider.attribution"
-        :maxZoom="tileProvider.maxZoom || 19"
+        :max-zoom="tileProvider.maxZoom || 19"
         layer-type="base"
       />
 
-      <slot></slot>
+      <slot />
     </l-map>
     <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />
   </div>
 </template>
 
 <script>
-  import {
-    LControlLayers,
-    LControlZoom,
-    LGeoJson,
-    LMap,
-    LTileLayer,
-  } from "vue2-leaflet";
+  import { LMap, LTileLayer } from "vue2-leaflet";
 
-  import * as L from "leaflet";
+  import { Map, Icon } from "leaflet";
   import { GestureHandling } from "leaflet-gesture-handling";
 
   import "leaflet/dist/leaflet.css";
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-  L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
-  import { Icon } from "leaflet";
   import { mapState } from "vuex";
   import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher";
 
+  Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
   delete Icon.Default.prototype._getIconUrl;
   Icon.Default.mergeOptions({
-    iconRetinaUrl: require("/static/images/marker-icon-2x.png"),
-    iconUrl: require("/static/images/marker-icon.png"),
-    shadowUrl: require("/static/images/marker-shadow.png"),
+    iconRetinaUrl: require("static/images/marker-icon-2x.png"),
+    iconUrl: require("static/images/marker-icon.png"),
+    shadowUrl: require("static/images/marker-shadow.png"),
   });
 
   export default {
@@ -57,11 +51,14 @@
       BigMapStandaloneLayerSwitcher,
       LMap,
       LTileLayer,
-      LControlLayers,
-      LGeoJson,
-      LControlZoom,
     },
-    props: ["center", "options", "bounds", "containerStyle", "hideLayerSwitcher"],
+    props: {
+      center: { type: Array, default: null },
+      options: { type: Object, default: null },
+      bounds: { type: Object, default: null },
+      containerStyle: { type: Object, default: null },
+      hideLayerSwitcher: { type: Boolean, default: false },
+    },
     computed: {
       ...mapState({
         tileLayers: (state) => state.map.layers,

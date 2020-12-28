@@ -2,26 +2,26 @@
   <div class="widget-columns-3 row">
     <div class="col-md-4">
       <component
+        :is="`wagtail-${x.type}`"
         v-for="x in value.left_column"
-        :is="`wagtail-${x.type}`"
-        :value="x.value"
         :key="x.id"
+        :value="x.value"
       />
     </div>
     <div class="col-md-4">
       <component
+        :is="`wagtail-${x.type}`"
         v-for="x in value.middle_column"
-        :is="`wagtail-${x.type}`"
-        :value="x.value"
         :key="x.id"
+        :value="x.value"
       />
     </div>
     <div class="col-md-4">
       <component
-        v-for="x in value.right_column"
         :is="`wagtail-${x.type}`"
-        :value="x.value"
+        v-for="x in value.right_column"
         :key="x.id"
+        :value="x.value"
       />
     </div>
   </div>
@@ -29,6 +29,8 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
   };
 </script>

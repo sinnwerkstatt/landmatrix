@@ -1,9 +1,9 @@
 <template>
-  <div class="container mb-2" v-if="this.$store.state.page.showBreadcrumbs">
+  <div v-if="$store.state.page.showBreadcrumbs" class="container mb-2">
     <div class="row">
       <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
-          <li v-for="bcrumb in this.$store.state.page.breadcrumbs" :key="bcrumb.name">
+          <li v-for="bcrumb in $store.state.page.breadcrumbs" :key="bcrumb.name">
             <a v-if="bcrumb.link" :href="getUrl(bcrumb.link)">{{ bcrumb.name }}</a>
             <template v-else>{{ bcrumb.name }}</template>
           </li>
@@ -38,7 +38,6 @@
     > li {
       text-shadow: none !important;
       display: inline-block;
-      font-family: "Open Sans", sans-serif;
       color: $lm_dark;
       font-weight: 400;
 

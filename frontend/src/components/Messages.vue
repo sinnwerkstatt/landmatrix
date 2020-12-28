@@ -1,5 +1,5 @@
 <template>
-  <div class="messages-overlay" v-if="messages.length > 0" @click="removeMessage(msg)">
+  <div v-if="msg" class="messages-overlay" @click="removeMessage(msg)">
     <div class="message-container" @click.stop>
       <div role="alert" class="alert" :class="map_level(msg)">
         <button
@@ -17,10 +17,10 @@
         <div v-if="msg.allow_users_to_hide" class="actions">
           <div class="custom-control custom-checkbox">
             <input
-              type="checkbox"
               id="acc-checkbox"
-              class="form-check-input custom-control-input"
               ref="acc-checkbox"
+              type="checkbox"
+              class="form-check-input custom-control-input"
             />
             <label for="acc-checkbox" class="form-check-label custom-control-label">
               Don't show this message again
@@ -45,9 +45,7 @@
     name: "Messages",
     data() {
       return {
-        acknowledgedMessages: JSON.parse(
-          Cookies.get("acknowledgedMessages") || JSON.stringify([])
-        ),
+        acknowledgedMessages: JSON.parse(Cookies.get("acknowledgedMessages") || "[]"),
       };
     },
     computed: {
@@ -67,9 +65,7 @@
         }
       },
       msg() {
-        if (this.messages.length) {
-          return this.messages[0];
-        }
+        return this.messages.length > 0 ? this.messages[0] : null;
       },
     },
     methods: {
@@ -81,23 +77,20 @@
       removeMessage(msg) {
         this.$store.commit(
           "setMessages",
-          this.messages.filter((x) => x.id != msg.id)
+          this.messages.filter((m) => m.id !== msg.id)
         );
       },
       acknowledgeMessage(msg) {
         if (msg.allow_users_to_hide && this.$refs["acc-checkbox"].checked) {
           this.$refs["acc-checkbox"].checked = false;
           this.acknowledgedMessages.push(msg.id);
-          this.setCookie();
+          Cookies.set("acknowledgedMessages", this.acknowledgedMessages, {
+            sameSite: "lax",
+            expires: 365,
+          });
         } else {
           this.removeMessage(msg);
         }
-      },
-      setCookie() {
-        Cookies.set("acknowledgedMessages", this.acknowledgedMessages, {
-          sameSite: "lax",
-          expires: 365,
-        });
       },
     },
   };

@@ -1,13 +1,13 @@
 <template>
   <div class="container">
-    <div class="loadingscreen" v-if="loading">
+    <div v-if="loading" class="loadingscreen">
       <div class="loader"></div>
     </div>
     <div>
       <b-card no-body>
         <b-tabs card>
           <b-tab active>
-            <template v-slot:title>
+            <template #title>
               <h2>{{ $t("Current statistics") }}</h2>
             </template>
             <b-card-text>
@@ -43,7 +43,7 @@
             </b-card-text>
           </b-tab>
           <b-tab>
-            <template v-slot:title>
+            <template #title>
               <h2>{{ $t("Changes within timespan") }}</h2>
             </template>
             <b-card-text>
@@ -59,6 +59,7 @@
                         >
                           <option
                             v-for="option in date_pre_options"
+                            :key="option.name"
                             :value="option.value"
                           >
                             {{ option.name }}
@@ -66,11 +67,11 @@
                         </select>
                       </div>
                       <v-date-picker
-                        mode="range"
                         v-model="daterange"
+                        mode="range"
                         :max-date="new Date()"
-                        @input="selectedDateOption = null"
                         :input-props="{ style: 'width: 100%' }"
+                        @input="selectedDateOption = null"
                       />
                     </div>
                   </div>
@@ -142,6 +143,7 @@
     if (!deal.country || deal.country.high_income) return false;
     if (!deal.datasources.length) return false;
     if (deal.not_public_reason === "NO_KNOWN_INVESTOR") return false;
+    // lastly return true
     return true;
   }
 
@@ -169,6 +171,13 @@
   export default {
     name: "CaseStatistics",
     components: { LocationFilter, GoalsTable, StatisticsTable },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        if (!vm.$store.getters.userAuthenticated) {
+          window.location = `/accounts/login/?next=${to.path}`;
+        }
+      });
+    },
     data: function () {
       return {
         loading: false,
@@ -220,7 +229,7 @@
             name: "Deals added",
             deals: uniq(
               this.historic_deals.filter(
-                (d) => d.status === 1 && d.created_at == d.modified_at
+                (d) => d.status === 1 && d.created_at === d.modified_at
               )
             ),
           },
@@ -229,9 +238,10 @@
             deals: uniq(
               this.historic_deals.filter((d) => {
                 // not added deals
-                if (d.status === 1 && d.created_at == d.modified_at) return false;
+                if (d.status === 1 && d.created_at === d.modified_at) return false;
                 // not deleted deals
                 if (d.status === 4) return false;
+                // finally
                 return true;
               })
             ),
@@ -296,7 +306,7 @@
             name: "Investors added",
             investors: uniq(
               this.historic_investors.filter(
-                (d) => d.status === 1 && d.created_at == d.modified_at
+                (d) => d.status === 1 && d.created_at === d.modified_at
               )
             ),
           },
@@ -305,9 +315,10 @@
             investors: uniq(
               this.historic_investors.filter((d) => {
                 // not added deals
-                if (d.status === 1 && d.created_at == d.modified_at) return false;
+                if (d.status === 1 && d.created_at === d.modified_at) return false;
                 // not deleted deals
                 if (d.status === 4) return false;
+                // finally
                 return true;
               })
             ),
@@ -537,13 +548,6 @@
           })
           .finally(() => (this.loading = false));
       },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        if (!vm.$store.getters.userAuthenticated) {
-          window.location = `/accounts/login/?next=${to.path}`;
-        }
-      });
     },
   };
 </script>

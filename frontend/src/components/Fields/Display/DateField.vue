@@ -7,7 +7,11 @@
 
   export default {
     name: "DateField",
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: [Date, String], required: true },
+      model: { type: String, required: true },
+    },
     computed: {
       val() {
         if (this.value) {

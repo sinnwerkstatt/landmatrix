@@ -1,20 +1,20 @@
 <template>
   <div>
     <DataContainer>
-      <template v-slot:default>
+      <template #default>
         <LoadingPulse v-if="$apollo.queries.deals.loading" />
         <BigMap
-          :options="bigmap_options"
           :center="[12, 30]"
-          :containerStyle="{ height: '100%' }"
+          :options="bigmap_options"
+          :container-style="{ height: '100%' }"
+          :hide-layer-switcher="true"
           @ready="bigMapIsReady"
-          :hideLayerSwitcher="true"
         >
         </BigMap>
       </template>
-      <template v-slot:FilterBar>
+      <template #FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse :title="$t('Displayed data')" :initExpanded="true">
+        <FilterCollapse title="Displayed data" :init-expanded="true">
           <b-form-group>
             <b-form-radio
               v-model="displayDealsCount"
@@ -32,33 +32,53 @@
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Base layer')" :initExpanded="true">
+        <FilterCollapse title="Base layer" :init-expanded="true">
           <b-form-group>
             <b-form-radio
+              v-for="layer in tileLayers"
+              :key="layer.name"
               v-model="visibleLayer"
               name="layerSelectRadio"
               :value="layer.name"
-              v-for="layer in tileLayers"
             >
-              {{ layer.name }}
+              {{ $t(layer.name) }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse :title="$t('Context layers')">
+        <FilterCollapse title="Context layers">
           <b-form-group>
             <b-form-checkbox
+              v-for="layer in contextLayers"
+              :key="layer.name"
               v-model="visibleContextLayers"
               name="contextLayerSelect"
               :value="layer"
-              v-for="layer in contextLayers"
             >
+              <!-- TODO For some reason some are not shown here... -->
+              <!-- {{ $t(layer.name) }}-->
               {{ layer.name }}
               <img
                 v-if="visibleContextLayers.includes(layer)"
                 :src="layer.legendUrlFunction()"
+                :alt="`Legend for ${layer.name}`"
+                class="context-layer-legend-image"
               />
             </b-form-checkbox>
           </b-form-group>
+        </FilterCollapse>
+        <FilterCollapse title="Download">
+          <ul>
+            <li>
+              <a :href="`/api/data.geojson?type=points&filters=${filters}`">
+                <i class="fas fa-file-download" /> {{ $t("Locations") }}
+              </a>
+            </li>
+            <li>
+              <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
+                <i class="fas fa-file-download" /> {{ $t("Areas") }}
+              </a>
+            </li>
+          </ul>
         </FilterCollapse>
       </template>
     </DataContainer>
@@ -66,20 +86,19 @@
 </template>
 
 <script>
-  import "leaflet";
-  import "leaflet.markercluster";
+  import { Marker, LayerGroup, FeatureGroup, Popup, DivIcon } from "leaflet";
+  import { MarkerClusterGroup } from "leaflet.markercluster/src";
 
-  import { primary_color } from "/colors";
   import { groupBy } from "lodash";
   import { mapState } from "vuex";
   import Vue from "vue";
 
-  import MapMarkerPopup from "/components/Map/MapMarkerPopup";
-  import { styleCircle } from "../../utils/map_helper";
+  import MapMarkerPopup from "components/Map/MapMarkerPopup";
+  import { styleCircle } from "utils/map_helper";
   import DataContainer from "./DataContainer";
-  import BigMap from "/components/BigMap";
-  import FilterCollapse from "/components/Data/FilterCollapse";
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import BigMap from "components/BigMap";
+  import FilterCollapse from "components/Data/FilterCollapse";
+  import LoadingPulse from "components/Data/LoadingPulse";
 
   import { data_deal_query } from "./query";
 
@@ -102,8 +121,11 @@
   export default {
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
-    apollo: {
-      deals: data_deal_query,
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        // vm.$store.dispatch("fetchDeals");
+        vm.$store.dispatch("showContextBar", true);
+      });
     },
     data() {
       return {
@@ -115,9 +137,9 @@
           gestureHandling: false,
         },
         visibleContextLayers: [],
-        contextLayersLayerGroup: L.layerGroup(),
+        contextLayersLayerGroup: new LayerGroup(),
 
-        markersFeatureGroup: L.featureGroup(),
+        markersFeatureGroup: new FeatureGroup(),
         dealLocationMarkersCache: [],
         deals: [],
         markers: [],
@@ -159,6 +181,12 @@
           return coords;
         },
       }),
+      filters() {
+        return JSON.stringify(this.$store.getters.filtersForGQL);
+      },
+    },
+    apollo: {
+      deals: data_deal_query,
     },
     watch: {
       deals() {
@@ -210,9 +238,7 @@
             this.dealLocationMarkersCache[deal.id] = [];
             for (let loc of deal.locations) {
               if (loc.point) {
-                let marker = L.marker([loc.point.lat, loc.point.lng], {
-                  clickable: true,
-                });
+                let marker = new Marker([loc.point.lat, loc.point.lng]);
                 marker.deal = deal;
                 marker.loc = loc;
                 marker.deal_id = deal.id;
@@ -243,7 +269,7 @@
           propsData: { deal: marker.deal, location: marker.loc },
         }).$mount().$el.outerHTML;
 
-        L.popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
+        new Popup().setContent(popup_content).setLatLng(point).openOn(this.bigmap);
       },
       flyToCountryOrRegion() {
         console.log("Should fly now");
@@ -274,17 +300,13 @@
         }
       },
       refreshMap() {
-        if (
-          !this.bigmap ||
-          this.deals.length === 0 ||
-          this.markers.length === 0 ||
-          this.skipMapRefresh
-        )
-          return;
+        if (!this.bigmap || this.skipMapRefresh) return;
 
         console.log("Clearing layers");
         this.markersFeatureGroup.clearLayers();
         console.log("Clearing layers: done");
+
+        if (this.deals.length === 0 || this.markers.length === 0) return;
 
         console.log("Refreshing map");
         this.current_zoom = this.bigmap.getZoom();
@@ -293,8 +315,8 @@
           Object.entries(groupBy(this.markers, (mark) => mark.region_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let circle = L.marker(REGION_COORDINATES[key], {
-                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+              let circle = new Marker(REGION_COORDINATES[key], {
+                icon: new DivIcon({ className: "landmatrix-custom-circle" }),
                 region_id: key,
               });
               circle.on("click", (e) => {
@@ -329,8 +351,8 @@
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let circle = L.marker(this.country_coords[key], {
-                icon: L.divIcon({ className: "landmatrix-custom-circle" }),
+              let circle = new Marker(this.country_coords[key], {
+                icon: new DivIcon({ className: "landmatrix-custom-circle" }),
                 country_id: key,
               });
               circle.on("click", (e) => {
@@ -362,7 +384,7 @@
           Object.entries(groupBy(this.markers, (mark) => mark.country_id)).forEach(
             ([key, val]) => {
               if (key === "undefined") return;
-              let mcluster = L.markerClusterGroup({ chunkedLoading: true });
+              let mcluster = new MarkerClusterGroup({ chunkedLoading: true });
               mcluster.on("clusterclick", (a) => {
                 let bounds = a.layer.getBounds().pad(0.5);
                 this.bigmap.fitBounds(bounds);
@@ -383,12 +405,6 @@
         this.bigmap.addLayer(this.contextLayersLayerGroup);
         bigmap.on("zoomend", () => (this.current_zoom = bigmap.getZoom()));
       },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        // vm.$store.dispatch("fetchDeals");
-        vm.$store.dispatch("showContextBar", true);
-      });
     },
   };
 </script>
@@ -459,5 +475,13 @@
       margin-top: 1em;
       color: white;
     }
+  }
+
+  .context-layer-legend-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
   }
 </style>

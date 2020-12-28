@@ -180,15 +180,11 @@ class DataDownload:
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filters):
-        self.filters = []
-        if filters:
-            self.filters = json.loads(filters)
 
-        qs = (
-            Deal.objects.visible(self.user, subset="ACTIVE")
-            .filter(parse_filters(self.filters))
-            .order_by("id")
-        )
+        qs = Deal.objects.visible(self.user, subset="ACTIVE").order_by("id")
+        if filters:
+            qs = qs.filter(parse_filters(json.loads(filters)))
+
         self.deals = [
             self.deal_download_format(qs_dict)
             for qs_dict in qs_values_to_dict(

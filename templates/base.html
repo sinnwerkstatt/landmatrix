@@ -225,33 +225,6 @@
   <footer>
     <div class="container">
       {% block footer_pages %}
-        {# reads the four footer columns from the WagtailRootPage assigned #}
-        {# to the context by the context processor #}
-        {# wagtailcms.context_processors.add_root_page #}
-
-        <div id="footer-nav" class="row">
-          {% wagtail_root_page as wagtailrootpage %}
-          <div class="col-md-3">
-            {{ wagtailrootpage.footer_column_1|richtext }}
-          </div>
-          <div class="col-md-3">
-            {{ wagtailrootpage.footer_column_2|richtext }}
-          </div>
-
-          <div class="col-md-3">
-            {{ wagtailrootpage.footer_column_3|richtext }}
-          </div>
-
-          <div class="col-md-3">
-            {{ wagtailrootpage.footer_column_4|richtext }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-12">
-            <hr/>
-          </div>
-        </div>
       {% endblock %}
 
       <div id="footer-etc" class="row">

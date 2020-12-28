@@ -13,28 +13,29 @@
         <h3>{{ $t("Filter") }}</h3>
         <span style="font-size: 0.8em;">
           <b-form-checkbox
-            class="default-filter-switch"
+            v-model="isDefaultFilter"
             :class="{ active: isDefaultFilter }"
+            class="default-filter-switch"
             name="check-button"
             switch
-            v-model="isDefaultFilter"
             @change="updateDefaultFilter"
           >
-            Default filter
+            {{ $t("Default filter") }}
           </b-form-checkbox>
         </span>
 
         <FilterCollapse
           :title="$t('Region')"
-          :clearable="region_id"
+          :clearable="!!region_id"
           @click="region_id = null"
         >
           <b-form-group>
             <b-form-radio
+              v-for="reg in regions"
+              :key="reg.id"
               v-model="region_id"
               name="regionRadio"
               :value="reg.id"
-              v-for="reg in regions"
               @change="country = null"
             >
               {{ $t(reg.name) }}
@@ -44,7 +45,7 @@
 
         <FilterCollapse
           :title="$t('Country')"
-          :clearable="country"
+          :clearable="!!country"
           @click="country = null"
         >
           <multiselect
@@ -58,7 +59,7 @@
         </FilterCollapse>
         <FilterCollapse
           :title="$t('Deal size')"
-          :clearable="deal_size_min || deal_size_max"
+          :clearable="!!(deal_size_min || deal_size_max)"
           @click="deal_size_min = deal_size_max = null"
         >
           <div class="input-group">
@@ -76,8 +77,8 @@
           </div>
           <div class="input-group">
             <input
-              type="number"
               v-model="deal_size_max"
+              type="number"
               class="form-control"
               :placeholder="$t('to')"
               aria-label="to"
@@ -94,14 +95,18 @@
           :clearable="negotiation_status.length > 0"
           @click="negotiation_status = []"
         >
-          <div v-for="(nsname, nsval) in choices.negotiation_status" class="form-check">
+          <div
+            v-for="(nsname, nsval) in choices.negotiation_status"
+            :key="nsname"
+            class="form-check"
+          >
             <div class="custom-control custom-checkbox">
               <input
+                :id="nsval"
+                v-model="negotiation_status"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="nsval"
-                :id="nsval"
-                v-model="negotiation_status"
               />
               <label class="form-check-label custom-control-label" :for="nsval">
                 {{ $t(nsname) }}
@@ -115,14 +120,18 @@
           :clearable="nature_of_deal.length > 0"
           @click="nature_of_deal = []"
         >
-          <div v-for="(isname, isval) in choices.nature_of_deal" class="form-check">
+          <div
+            v-for="(isname, isval) in choices.nature_of_deal"
+            :key="isname"
+            class="form-check"
+          >
             <div class="custom-control custom-checkbox">
               <input
+                :id="isval"
+                v-model="nature_of_deal"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="isval"
-                :id="isval"
-                v-model="nature_of_deal"
               />
               <label class="form-check-label custom-control-label" :for="isval">
                 {{ $t(isname) }}
@@ -133,10 +142,11 @@
 
         <FilterCollapse
           :title="$t('Investor')"
-          :clearable="investor"
-          @click="investor = null"
+          :clearable="!!(investor || investor_country)"
+          @click="investor = investor_country = null"
         >
           <div>
+            {{ $t("Investor name") }}
             <multiselect
               v-model="investor"
               :options="investors"
@@ -146,19 +156,26 @@
               track-by="id"
               label="name"
             />
+            {{ $t("Country of registration") }}
+            <multiselect
+              v-model="investor_country"
+              :options="countries"
+              label="name"
+              placeholder="Country of registration"
+            />
           </div>
         </FilterCollapse>
 
         <FilterCollapse
           :title="$t('Year of initiation')"
-          :clearable="initiation_year_min || initiation_year_max"
+          :clearable="!!(initiation_year_min || initiation_year_max)"
           @click="initiation_year_min = initiation_year_max = null"
         >
           <form class="form-inline">
             <div class="input-group">
               <input
-                type="number"
                 v-model="initiation_year_min"
+                type="number"
                 class="form-control"
                 placeholder="from"
                 aria-label="from"
@@ -168,8 +185,8 @@
             </div>
             <div class="input-group">
               <input
-                type="number"
                 v-model="initiation_year_max"
+                type="number"
                 class="form-control"
                 placeholder="to"
                 aria-label="to"
@@ -179,11 +196,11 @@
             </div>
             <div class="custom-control custom-checkbox">
               <input
+                id="initiation_year_unknown"
+                v-model="initiation_year_unknown"
                 type="checkbox"
                 class="custom-control-input"
                 :disabled="!initiation_year_min && !initiation_year_max"
-                v-model="initiation_year_unknown"
-                id="initiation_year_unknown"
               />
               <label class="custom-control-label" for="initiation_year_unknown">
                 Include unknown years
@@ -199,15 +216,16 @@
         >
           <div
             v-for="(isname, isval) in choices.implementation_status"
+            :key="isname"
             class="form-check"
           >
             <div class="custom-control custom-checkbox">
               <input
+                :id="isval"
+                v-model="implementation_status"
                 class="form-check-input custom-control-input"
                 type="checkbox"
                 :value="isval"
-                :id="isval"
-                v-model="implementation_status"
               />
               <label class="form-check-label custom-control-label" :for="isval">
                 {{ $t(isname) }}
@@ -221,16 +239,16 @@
           :clearable="intention_of_investment.length > 0"
           @click="intention_of_investment = []"
         >
-          <div v-for="(options, name) in choices.intention_of_investment">
+          <div v-for="(options, name) in choices.intention_of_investment" :key="name">
             <strong>{{ $t(name) }}</strong>
-            <div v-for="(isname, isval) in options" class="form-check">
+            <div v-for="(isname, isval) in options" :key="isname" class="form-check">
               <div class="custom-control custom-checkbox">
                 <input
+                  :id="isval"
+                  v-model="intention_of_investment"
                   class="form-check-input custom-control-input"
                   type="checkbox"
                   :value="isval"
-                  :id="isval"
-                  v-model="intention_of_investment"
                 />
                 <label class="form-check-label custom-control-label" :for="isval">
                   {{ $t(isname) }}
@@ -312,14 +330,14 @@
 
 <script>
   import { mapState } from "vuex";
-  import { investors_query } from "/store/queries";
+  import { investors_query } from "store/queries";
   import FilterCollapse from "./FilterCollapse";
 
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
-  } from "/choices";
+  } from "choices";
 
   export default {
     name: "FilterBar",
@@ -368,6 +386,19 @@
           if ((value ? value.id : value) !== this.filters.country_id) {
             this.$store.dispatch("setFilter", {
               filter: "country_id",
+              value: value ? value.id : value,
+            });
+          }
+        },
+      },
+      investor_country: {
+        get() {
+          return this.countries.find((c) => c.id === this.filters.investor_country_id);
+        },
+        set(value) {
+          if ((value ? value.id : value) !== this.filters.investor_country_id) {
+            this.$store.dispatch("setFilter", {
+              filter: "investor_country_id",
               value: value ? value.id : value,
             });
           }
@@ -516,7 +547,7 @@
         get() {
           return this.$store.state.filters.isDefaultFilter;
         },
-        set(value) {
+        set() {
           // do nothing - only on user action: see updateDefaultFilter()
         },
       },
@@ -659,7 +690,7 @@
         &:after {
           margin-top: -0.1em;
           background-color: white;
-          box-shadow: 0px 1px 2px rgba(black, 0.3);
+          box-shadow: 0 1px 2px rgba(black, 0.3);
         }
       }
     }
@@ -671,7 +702,7 @@
 
       &:after {
         background-color: $lm_orange;
-        box-shadow: 0px 0px 0px 1px rgba($lm_orange, 0.7);
+        box-shadow: 0 0 0 1px rgba($lm_orange, 0.7);
       }
     }
 

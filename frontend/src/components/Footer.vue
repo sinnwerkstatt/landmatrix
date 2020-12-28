@@ -5,7 +5,7 @@
         <div class="col-12 text-center">
           <p class="mb-0">
             <a :href="legacy_link">&copy; {{ currentyear }}</a>
-            The Land Matrix | All rights reserved
+            The Land Matrix | {{ $t("All rights reserved") }}
           </p>
         </div>
         <div class="social-buttons">
@@ -40,14 +40,11 @@
 
 <style lang="scss" scoped>
   @import "../scss/colors";
-  @import "node_modules/bootstrap/scss/functions";
-  @import "node_modules/bootstrap/scss/variables";
 
   footer {
     background: $lm_dark;
     padding: 0 10px;
     font-size: 14px;
-    font-family: "Open Sans", sans-serif;
     color: white;
     font-weight: 400 !important;
     margin-top: 0;

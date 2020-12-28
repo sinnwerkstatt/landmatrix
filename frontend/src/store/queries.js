@@ -155,8 +155,8 @@ export const investor_query = {
   `,
   variables() {
     return {
-      id: +this.investor_id,
-      version: +this.investor_version,
+      id: +this.investorId,
+      version: +this.investorVersion,
       depth: this.depth,
       includeDeals: this.includeDealsInQuery,
     };
@@ -181,8 +181,8 @@ export const markers_query = {
   `,
   variables() {
     return {
-      region_id: +this.region_id,
-      country_id: +this.country_id,
+      region_id: +this.regionId,
+      country_id: +this.countryId,
       subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
@@ -291,10 +291,7 @@ export const deal_gql_query = gql`
         id
         name
       }
-      involved_actors {
-        role
-        value
-      }
+      involved_actors
       project_name
       investment_chain_comment
       # Local communities / indigenous peoples

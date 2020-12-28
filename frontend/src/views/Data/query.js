@@ -7,6 +7,7 @@ export const data_deal_query_gql = gql`
       deal_size
       country {
         id
+        name
         fk_region {
           id
         }
@@ -37,11 +38,10 @@ export const data_deal_query_gql = gql`
 export const data_deal_query = {
   query: data_deal_query_gql,
   variables() {
-    let user = this.$store.state.page.user;
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
-      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };
@@ -58,11 +58,10 @@ export const data_deal_produce_query = {
     }
   `,
   variables() {
-    let user = this.$store.state.page.user;
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
-      subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
     };
   },
 };

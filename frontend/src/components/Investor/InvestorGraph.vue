@@ -1,10 +1,10 @@
 <template>
-  <div class="investor-graph" v-if="investor.involvements">
+  <div v-if="investor.involvements" class="investor-graph">
     <InvestorDetailInvestorModal v-model="showInvestorModal" :investor="modalData" />
     <InvestorDetailDealModal v-model="showDealModal" :deal="modalData" />
 
     <p class="mb-0 font-italic small">
-      Please click the nodes to get more details.
+      {{ $t("Please click the nodes to get more details.") }}
     </p>
     <div id="investor-network-wrapper" :class="{ network_fs }">
       <div class="close_button">
@@ -17,25 +17,28 @@
 
       <div class="row bottom-content">
         <div v-if="controls" id="investor-level" class="col-sm-6 mt-1">
-          <h6>Level of parent investors</h6>
           <div class="slider-container col-sm-8">
-            <input
-              type="range"
-              class="custom-range"
-              min="1"
-              :max="maxDepth"
-              v-model="depth"
-              @change="refresh_graph"
-            />
-            <em>{{ depth }}</em>
+            <label>
+              <strong>{{ $t("Level of parent investors") }}</strong>
+              <input
+                v-model="depth"
+                type="range"
+                class="custom-range"
+                min="1"
+                :max="maxDepth"
+                @change="refresh_graph"
+              />
+
+              <em>{{ depth }}</em>
+            </label>
           </div>
 
           <div class="col-sm-8 custom-control custom-checkbox">
             <input
-              type="checkbox"
               id="show_deals"
-              class="form-check-input custom-control-input"
               v-model="showDeals"
+              type="checkbox"
+              class="form-check-input custom-control-input"
               @change="refresh_graph"
             />
             <label for="show_deals" class="form-check-label custom-control-label">
@@ -70,10 +73,10 @@
   import popper from "cytoscape-popper";
   import tippy from "tippy.js";
   import { pick } from "lodash";
-  import { investor_color, primary_color } from "../../colors";
+  import { investor_color, primary_color } from "colors";
   import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
   import InvestorDetailDealModal from "./InvestorDetailDealModal";
-  import { classification_choices } from "/choices";
+  import { classification_choices } from "choices";
 
   cytoscape.use(coseBilkent);
   cytoscape.use(popper);
@@ -185,19 +188,10 @@
     name: "InvestorGraph",
     components: { InvestorDetailDealModal, InvestorDetailInvestorModal },
     props: {
-      investor: Object,
-      showDeals: {
-        type: Boolean,
-        default: true,
-      },
-      controls: {
-        type: Boolean,
-        default: true,
-      },
-      initDepth: {
-        type: Number,
-        default: 1,
-      },
+      investor: { type: Object, required: true },
+      showDealsOnLoad: { type: Boolean, default: true },
+      controls: { type: Boolean, default: true },
+      initDepth: { type: Number, default: 1 },
     },
     data() {
       return {
@@ -207,6 +201,7 @@
         network_fs: false,
         showInvestorModal: false,
         showDealModal: false,
+        showDeals: true,
       };
     },
     computed: {
@@ -224,6 +219,10 @@
 
         return elements;
       },
+    },
+    mounted() {
+      this.showDeals = this.showDealsOnLoad;
+      this.do_the_graph();
     },
     methods: {
       fullscreen_switch() {
@@ -325,9 +324,6 @@
         });
         this.add_onclick_modal();
       },
-    },
-    mounted() {
-      this.do_the_graph();
     },
   };
 </script>

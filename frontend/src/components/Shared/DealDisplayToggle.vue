@@ -2,14 +2,14 @@
   <div class="toggle-buttons">
     <a
       href=""
-      @click.prevent="displayDealsCount = true"
       :class="{ active: displayDealsCount }"
+      @click.prevent="displayDealsCount = true"
       >No. of deals</a
     >
     <a
       href=""
-      @click.prevent="displayDealsCount = false"
       :class="{ active: !displayDealsCount }"
+      @click.prevent="displayDealsCount = false"
       >Deal size</a
     >
   </div>

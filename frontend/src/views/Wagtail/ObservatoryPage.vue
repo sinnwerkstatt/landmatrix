@@ -4,14 +4,16 @@
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <h1>{{ page.title }}</h1>
-          <QuasiStaticMap :region_id="region_id" :country_id="country_id" />
+          <QuasiStaticMap :region-id="region_id" :country-id="country_id" />
         </div>
       </div>
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <div class="intro-text" v-if="page.introduction_text">
-            <div class="intro">{{ page.introduction_text }}</div>
-            <div class="readmore" v-if="!readMore">
+          <div v-if="page.introduction_text" class="intro-text">
+            <div class="intro">
+              {{ page.introduction_text }}
+            </div>
+            <div v-if="!readMore" class="readmore">
               <p><a href="" @click.prevent="readMore = true">Read more</a></p>
             </div>
             <div class="row">
@@ -34,21 +36,23 @@
                     <div class="total">{{ totalSize }} ha</div>
                     <StatusPieChart
                       :deal-data="negotiationStatusBuckets"
-                      :displayLegend="true"
+                      :display-legend="true"
                       :aspect-ratio="1"
-                      valueField="size"
+                      value-field="size"
                       unit="ha"
-                    ></StatusPieChart>
+                    />
                   </div>
                   <div class="col-6 text-center">
                     <label>Number of deals</label>
-                    <div class="total">{{ totalCount }}</div>
+                    <div class="total">
+                      {{ totalCount }}
+                    </div>
                     <StatusPieChart
                       :deal-data="negotiationStatusBuckets"
-                      :displayLegend="true"
+                      :display-legend="true"
                       :aspect-ratio="1"
-                      valueField="count"
-                    ></StatusPieChart>
+                      value-field="count"
+                    />
                   </div>
                 </div>
               </div>
@@ -60,12 +64,12 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-11 col-lg-9 col-xl-7">
-          <MapDataCharts @click.native="setGlobalLocationFilter"></MapDataCharts>
+          <MapDataCharts @click.native="setGlobalLocationFilter" />
         </div>
       </div>
     </div>
     <ArticleList
-      :articlesLabel="'Country Profiles'"
+      :articles-label="'Country Profiles'"
       :articles="filteredCountryProfiles"
     >
       <div class="description">
@@ -79,21 +83,20 @@
           By making this information available, the Land Matrix hopes to enhance broad
           engagement and data exchange, facilitating the continuous improvement of the
           data. Find out how to get involved
-          <router-link :to="`/get-involved/`">{{ $t("here") }} </router-link>
+          <router-link :to="`/get-involved/`">
+            {{ $t("here") }}
+          </router-link>
           .
         </p>
-        <h4>Download country profiles for:</h4>
+        <h4>{{ $t("Download country profiles for") }}:</h4>
       </div>
     </ArticleList>
-    <ArticleList
-      :articlesLabel="'News & publications'"
-      :articles="filteredNewsPubs"
-    ></ArticleList>
+    <ArticleList :articles-label="'News & publications'" :articles="filteredNewsPubs" />
     <div v-if="page.twitter_feed" class="container tweets">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <h3>Latest tweets</h3>
-          <Twitter :value="page.twitter_feed"></Twitter>
+          <h3>{{ $t("Latest tweets") }}</h3>
+          <Twitter :value="page.twitter_feed" />
         </div>
       </div>
     </div>
@@ -102,14 +105,13 @@
 
 <script>
   import gql from "graphql-tag";
-  import { deal_aggregations_query } from "../../store/queries";
-  import Streamfield from "/components/Streamfield";
-  import StatusPieChart from "../../components/Charts/StatusPieChart";
-  import MapDataCharts from "../../components/Wagtail/MapDataCharts";
-  import ArticleList from "../../components/Wagtail/ArticleList";
-  import Twitter from "../../components/Wagtail/Twitter";
-  import QuasiStaticMap from "../../components/QuasiStaticMap";
-  import { data_deal_query_gql } from "../Data/query";
+  import { deal_aggregations_query } from "store/queries";
+  import Streamfield from "components/Streamfield";
+  import StatusPieChart from "components/Charts/StatusPieChart";
+  import MapDataCharts from "components/Wagtail/MapDataCharts";
+  import ArticleList from "components/Wagtail/ArticleList";
+  import Twitter from "components/Wagtail/Twitter";
+  import QuasiStaticMap from "components/QuasiStaticMap";
 
   export default {
     name: "ObservatoryPage",
@@ -162,21 +164,20 @@
       country_id() {
         return this.page.country ? this.page.country.id : null;
       },
-      locationItem() {
+      slug() {
+        let ret;
         if (this.page.region) {
-          return this.$store.getters.getCountryOrRegion({
+          ret = this.$store.getters.getCountryOrRegion({
             type: "region",
             id: this.page.region.id,
           });
         } else if (this.page.country) {
-          return this.$store.getters.getCountryOrRegion({
+          ret = this.$store.getters.getCountryOrRegion({
             type: "country",
             id: this.page.country.id,
           });
         }
-      },
-      slug() {
-        return this.locationItem ? this.locationItem.slug : null;
+        return ret ? ret.slug : null;
       },
       content() {
         return this.page ? this.page.body : [];
@@ -239,7 +240,7 @@
               })
             );
           })
-          .sort((a, b) => a.date < b.date);
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
       },
       filteredNewsPubs() {
         if (!this.slug) return [];
@@ -254,11 +255,19 @@
               })
             );
           })
-          .sort((a, b) => a.date < b.date);
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+      },
+    },
+    watch: {
+      page: {
+        immediate: true,
+        handler() {
+          this.readMore = !this.page.introduction_text;
+        },
       },
     },
     methods: {
-      setGlobalLocationFilter(event) {
+      setGlobalLocationFilter() {
         if (this.page.region) {
           this.$store.dispatch("setFilter", {
             filter: "country_id",
@@ -278,14 +287,6 @@
             value: this.page.country.id,
           });
         }
-      },
-    },
-    watch: {
-      page: {
-        immediate: true,
-        handler() {
-          this.readMore = !this.page.introduction_text;
-        },
       },
     },
   };
@@ -318,8 +319,7 @@
 
     .charts {
       background-color: #f9f9f9;
-      padding: 0;
-      padding-bottom: 1.5em;
+      padding: 0 0 1.5em;
       margin-top: 0;
 
       label {

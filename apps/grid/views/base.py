@@ -170,10 +170,6 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         self.group_value = group_value or ""
         context = super(TableGroupView, self).get_context_data()
 
-        root = WagtailRootPage.objects.first()
-        if root and root.data_introduction:
-            context["introduction"] = root.data_introduction
-
         items = self.get_records()
         items = self.get_items(items)
         context.update(

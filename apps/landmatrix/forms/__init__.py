@@ -17,7 +17,9 @@ class VueForm:
     extra_display_fields = {}
 
     def __init__(self):
-        self.modelfields = {f.name: f for f in self.model._meta.fields}
+        self.modelfields = {
+            f.name: f for f in (self.model._meta.fields + self.model._meta.many_to_many)
+        }
         self._attributes = self.attributes
         self._extra_display_fields = self.extra_display_fields
 

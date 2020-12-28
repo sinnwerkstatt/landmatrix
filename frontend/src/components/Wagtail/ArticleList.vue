@@ -2,12 +2,16 @@
   <div v-if="articles.length" class="articles container">
     <div class="row justify-content-center">
       <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-        <h3>{{ articlesLabel }}</h3>
-        <slot></slot>
-        <div v-for="article in limitedArticles">
+        <h3>{{ $t(articlesLabel) }}</h3>
+        <slot />
+        <div v-for="article in limitedArticles" :key="article.slug">
           <div class="article row">
             <div class="col-3">
-              <img v-if="article.header_image" :src="article.header_image" />
+              <img
+                v-if="article.header_image"
+                :src="article.header_image"
+                :alt="`Header image for ${article.title}`"
+              />
             </div>
             <div class="col-9">
               <h5 class="title">

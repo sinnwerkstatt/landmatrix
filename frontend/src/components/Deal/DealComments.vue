@@ -27,7 +27,9 @@
   dayjs.extend(require("dayjs/plugin/timezone"));
 
   export default {
-    props: ["comments"],
+    props: {
+      comments: { type: Array, required: true },
+    },
     methods: {
       dayjs,
     },

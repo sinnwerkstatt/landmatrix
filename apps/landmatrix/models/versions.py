@@ -56,7 +56,7 @@ class Version(models.Model):
         ordering = ["-pk"]
 
     def __str__(self):
-        return f"{self.object_id}"
+        return f"{self.object_id} @ {self.revision.date_created.date()}"
 
     @classmethod
     def _get_current_subclass(cls, obj):
@@ -107,3 +107,16 @@ class Version(models.Model):
                     pk=fields[field.name]
                 )
         return fields
+
+
+def register_version(version_class):
+    @property
+    def versions(self):
+        return version_class.objects.filter(object_id=self.id)
+
+    def fx(clazz=None):
+        version_class.model = clazz
+        clazz.versions = versions
+        return clazz
+
+    return fx

@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col-12">
       <div id="accordion" class="accordion">
-        <div v-for="faq in value.faqs" class="card">
-          <div class="card-header" id="headingOne">
+        <div v-for="faq in value.faqs" :key="faq.slug" class="card">
+          <div id="headingOne" class="card-header">
             <h5 class="mb-0">
               <button
                 class="btn btn-link"
@@ -32,9 +32,10 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
   };
-  // TODO: Richtext in answer not evaluated yet.
 </script>
 
 <style scoped></style>

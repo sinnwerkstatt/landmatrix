@@ -1,6 +1,6 @@
 <template>
   <ul class="legend">
-    <li v-for="item in items" class="legend-item">
+    <li v-for="item in items" :key="item.label" class="legend-item">
       <span class="colored-area" :style="getStyle(item)"></span>
       <span class="label">{{ item.label }}</span>
     </li>
@@ -9,7 +9,9 @@
 
 <script>
   export default {
-    props: ["items"],
+    props: {
+      items: { type: Array, required: true },
+    },
     methods: {
       getStyle(item) {
         return {

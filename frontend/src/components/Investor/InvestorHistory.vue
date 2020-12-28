@@ -15,15 +15,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(version, i) in investor.versions">
+        <tr v-for="(version, i) in investor.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
           <td v-if="user && user.is_authenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
             <b-button
-              disabled
               v-b-tooltip.hover
+              disabled
               :title="version.investor.fully_updated ? 'Fully updated' : 'Updated'"
               :class="[
                 'fa',
@@ -39,11 +39,11 @@
             <span v-if="i === deduced_position">Current</span>
             <span v-else>
               <router-link
+                v-slot="{ href }"
                 :to="{
                   name: 'investor_detail',
-                  params: { investor_id, investor_version: version.revision.id },
+                  params: { investorId, investorVersion: version.revision.id },
                 }"
-                v-slot="{ href, navigate }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
                 <a :href="href">Show</a>
@@ -90,7 +90,7 @@
 
   export default {
     name: "InvestorHistory",
-    props: ["investor", "investor_id", "investor_version"],
+    props: ["investor", "investorId", "investorVersion"],
     data() {
       return {
         compare_from: null,
@@ -103,9 +103,9 @@
       }),
       deduced_position() {
         if (this.investor.versions.length === 0) return 0;
-        if (this.investor_version) {
+        if (this.investorVersion) {
           return this.investor.versions.findIndex(
-            (v) => +v.revision.id === +this.investor_version
+            (v) => +v.revision.id === +this.investorVersion
           );
         }
         for (const [i, v] of this.investor.versions.entries()) {
@@ -150,9 +150,9 @@
         this.$router.push({
           name: "investor_compare",
           params: {
-            investor_id: this.investor_id,
-            from_version: this.compare_from,
-            to_version: this.compare_to,
+            investorId: this.investorId,
+            fromVersion: this.compare_from,
+            toVersion: this.compare_to,
           },
         });
       },

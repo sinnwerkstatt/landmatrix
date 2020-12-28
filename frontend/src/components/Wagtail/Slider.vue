@@ -8,7 +8,7 @@
       style="width: 100%; height: 100%;"
     >
       <b-carousel-slide v-for="image in value.images" :key="image.id">
-        <template v-slot:img>
+        <template #img>
           <wagtail-image :value="image" />
         </template>
       </b-carousel-slide>
@@ -18,7 +18,9 @@
 
 <script>
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
   };
 </script>
 

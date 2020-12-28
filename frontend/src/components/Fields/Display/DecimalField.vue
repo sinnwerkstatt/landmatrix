@@ -1,11 +1,16 @@
 <template>
-  <div>
+  <div style="white-space: nowrap;">
     {{ value.toLocaleString() }}
+    <span v-if="formfield.name === 'deal_size'">ha</span>
   </div>
 </template>
 
 <script>
   export default {
-    props: ["formfield", "value", "model"],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Number, required: true },
+      model: { type: String, required: true },
+    },
   };
 </script>

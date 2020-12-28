@@ -11,10 +11,10 @@
 </template>
 
 <script>
-  import Navbar from "/components/Navbar";
-  import Messages from "/components/Messages";
-  import BreadcrumbBar from "/components/BreadcrumbBar";
-  import Footer from "/components/Footer";
+  import Navbar from "components/Navbar";
+  import Messages from "components/Messages";
+  import BreadcrumbBar from "components/BreadcrumbBar";
+  import Footer from "components/Footer";
 
   export default {
     name: "Landmatrix",
@@ -23,9 +23,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "scss/colors";
-  @import "scss/fonts";
-
   .content {
     min-height: calc(100vh - 60px - 31px);
   }

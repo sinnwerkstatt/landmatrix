@@ -6,7 +6,7 @@
     <div class="val" :class="valClasses">
       <router-link
         v-if="formfield.related_model === 'Investor'"
-        :to="{ name: 'investor_detail', params: { investor_id: val.id } }"
+        :to="{ name: 'investor_detail', params: { investorId: val.id } }"
         v-slot="{ href }"
       >
         <a :href="href">{{ val.name }} (#{{ val.id }})</a>

@@ -1,18 +1,19 @@
 <template>
   <div>
-    <PageTitle v-if="blogpage" :title="blogpage.title"></PageTitle>
+    <PageTitle v-if="blogpage" :title="blogpage.title" />
 
-    <div class="container" v-if="blogpage">
+    <div v-if="blogpage" class="container">
       <div class="meta mb-3">
         <div class="date d-inline-block mr-4">
-          <i class="far fa-calendar-alt"></i> {{ blogpage.date }}
+          <i class="far fa-calendar-alt" /> {{ blogpage.date }}
         </div>
         <div v-if="blogpage.tags.length > 0" class="tags d-inline-block">
           <router-link
             v-for="tag in blogpage.tags"
+            :key="tag.slug"
             :to="`/stay-informed/?tag=${tag.slug}`"
           >
-            <i class="fas fa-tags"></i> {{ tag.name }}
+            <i class="fas fa-tags" /> {{ tag.name }}
           </router-link>
         </div>
       </div>
@@ -22,8 +23,8 @@
 </template>
 
 <script>
-  import PageTitle from "/components/PageTitle";
-  import { blogpage_query } from "/store/queries";
+  import PageTitle from "components/PageTitle";
+  import { blogpage_query } from "store/queries";
 
   export default {
     components: { PageTitle },

@@ -1,19 +1,21 @@
 <template>
   <div class="container">
     <big-map
-      :containerStyle="{ 'max-height': '300px', height: '300px' }"
+      :container-style="{ 'max-height': '300px', height: '300px' }"
       @ready="pinTheMap"
     />
     <form enctype="multipart/form-data" novalidate>
       Upload GeoJSON file
-      <input type="file" multiple @change="uploadFiles" class="input-file" />
+      <input type="file" multiple class="input-file" @change="uploadFiles" />
     </form>
   </div>
 </template>
 
 <script>
   import "leaflet-draw";
-  import BigMap from "/components/BigMap";
+  import { Draw } from "leaflet-draw";
+  import BigMap from "components/BigMap";
+  import { Control, FeatureGroup, GeoJSON } from "leaflet";
 
   function addPropertiesPopup(layer, feature) {
     let select = document.createElement("select"),
@@ -51,7 +53,7 @@
     data() {
       return {
         bigmap: null,
-        editableFeatures: new L.FeatureGroup(),
+        editableFeatures: new FeatureGroup(),
       };
     },
     methods: {
@@ -60,7 +62,7 @@
         this.bigmap.addLayer(this.editableFeatures);
 
         this.bigmap.addControl(
-          new L.Control.Draw({
+          new Control.Draw({
             draw: {
               rectangle: false,
               circle: false,
@@ -73,7 +75,7 @@
           })
         );
 
-        this.bigmap.on(L.Draw.Event.CREATED, ({ layer }) =>
+        this.bigmap.on(Draw.Event.CREATED, ({ layer }) =>
           this.editableFeatures.addLayer(layer)
         );
       },
@@ -82,7 +84,7 @@
           const reader = new FileReader();
           reader.addEventListener("load", (event) => {
             let res_json = JSON.parse(event.target.result);
-            L.geoJSON(res_json, {
+            new GeoJSON(res_json, {
               onEachFeature: (feature, layer) => {
                 addPropertiesPopup(layer, feature);
                 this.editableFeatures.addLayer(layer);

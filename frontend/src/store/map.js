@@ -1,4 +1,4 @@
-import * as L from "leaflet";
+import { TileLayer } from "leaflet";
 
 const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
 
@@ -25,7 +25,7 @@ export const mapModule = {
     contextLayers: [
       {
         name: "Land Cover",
-        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
           layers: "globcover_2009",
           format: "image/png",
           transparent: true,
@@ -50,7 +50,7 @@ export const mapModule = {
       },
       {
         name: "Global Cropland",
-        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
           layers: "gl_cropland",
           format: "image/png",
           transparent: true,
@@ -75,7 +75,7 @@ export const mapModule = {
       },
       {
         name: "Oil palm concessions Indonesia",
-        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ind_oil_palm_concessions",
           format: "image/png",
           transparent: true,
@@ -100,7 +100,7 @@ export const mapModule = {
       },
       {
         name: "Key biodiversity areas, Philippines",
-        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ph_key_biodiversity_areas",
           format: "image/png",
           transparent: true,
@@ -125,7 +125,7 @@ export const mapModule = {
       },
       {
         name: "Protected areas, Philippines",
-        layer: L.tileLayer.wms("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
           layers: "ph_protected_areas",
           format: "image/png",
           transparent: true,

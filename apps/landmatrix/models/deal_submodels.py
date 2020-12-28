@@ -9,7 +9,7 @@ from apps.landmatrix.models.mixins import (
     OldDataSourceMixin,
     OldLocationMixin,
 )
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.versions import Version, register_version
 
 
 class DealSubmodelManager(models.Manager):
@@ -20,6 +20,11 @@ class DealSubmodelManager(models.Manager):
         return qs.filter(deal__status__in=(2, 3), deal__confidential=False)
 
 
+class LocationVersion(Version):
+    pass
+
+
+@register_version(LocationVersion)
 class Location(models.Model, OldLocationMixin):
     name = models.CharField(max_length=2000, blank=True)
     description = models.CharField(max_length=2000, blank=True)
@@ -55,10 +60,11 @@ class Location(models.Model, OldLocationMixin):
         return f"(#{self.deal_id}) {self.name}"
 
 
-class LocationVersion(Version):
-    model = Location
+class ContractVersion(Version):
+    pass
 
 
+@register_version(ContractVersion)
 class Contract(models.Model, OldContractMixin):
     number = models.CharField(_("Contract number"), max_length=255, blank=True)
     date = models.DateField(blank=True, null=True)
@@ -77,10 +83,11 @@ class Contract(models.Model, OldContractMixin):
         return f"(#{self.deal_id}) {self.number}"
 
 
-class ContractVersion(Version):
-    model = Contract
+class DataSourceVersion(Version):
+    pass
 
 
+@register_version(DataSourceVersion)
 class DataSource(models.Model, OldDataSourceMixin):
     TYPE_CHOICES = (
         ("MEDIA_REPORT", _("Media report")),
@@ -127,7 +134,3 @@ class DataSource(models.Model, OldDataSourceMixin):
 
     class Meta:
         ordering = ["date"]
-
-
-class DataSourceVersion(Version):
-    model = DataSource

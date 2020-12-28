@@ -12,28 +12,32 @@
         boxZoom: false,
       }"
       :center="[12, 30]"
-      :containerStyle="{ 'min-height': '100%', height: '100%' }"
-      :hideLayerSwitcher="true"
+      :container-style="{ 'min-height': '100%', height: '100%' }"
+      :hide-layer-switcher="true"
       @ready="bigMapReady"
     ></BigMap>
   </div>
 </template>
 <script>
+  import { MarkerClusterGroup } from "leaflet.markercluster";
   import { markers_query } from "../store/queries";
   import { styleCircle } from "../utils/map_helper";
   import BigMap from "./BigMap";
   import LoadingPulse from "./Data/LoadingPulse";
-
+  import { DivIcon, FeatureGroup, Marker } from "leaflet";
   const ZOOM_LEVEL_COUNTRY = 4;
 
   export default {
     name: "QuasiStaticMap",
     components: { LoadingPulse, BigMap },
-    props: ["country_id", "region_id"],
+    props: {
+      countryId: { type: Number, required: false, default: null },
+      regionId: { type: Number, required: false, default: null },
+    },
     data() {
       return {
         map: null,
-        featureGroup: L.featureGroup(),
+        featureGroup: new FeatureGroup(),
         markersReady: true,
         markers: [],
       };
@@ -43,13 +47,28 @@
     },
     computed: {
       roc() {
-        let type = "region";
-        let id = this.region_id;
-        if (this.country_id) {
-          type = "country";
-          id = this.country_id;
+        if (this.regionId) {
+          return this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: this.regionId,
+          });
         }
-        return this.$store.getters.getCountryOrRegion({ type, id });
+        if (this.countryId) {
+          return this.$store.getters.getCountryOrRegion({
+            type: "country",
+            id: this.countryId,
+          });
+        }
+        return null;
+      },
+    },
+    watch: {
+      markers() {
+        this.drawMarkers();
+      },
+      roc() {
+        this.clearMap();
+        this.focusMap();
       },
     },
     methods: {
@@ -64,7 +83,7 @@
       },
       focusMap() {
         if (this.roc) {
-          if (this.region_id) {
+          if (this.regionId) {
             this.map.fitBounds(
               [
                 [this.roc.point_lat_min, this.roc.point_lon_min],
@@ -85,9 +104,9 @@
       },
       _drawGlobalMarkers() {
         for (let mark of this.markers) {
-          let circle = L.marker(mark.coordinates, {
-            icon: L.divIcon({ className: "landmatrix-custom-circle" }),
-            region_id: mark.region_id,
+          let circle = new Marker(mark.coordinates, {
+            icon: new DivIcon({ className: "landmatrix-custom-circle" }),
+            regionId: mark.region_id,
           });
           this.featureGroup.addLayer(circle);
 
@@ -101,18 +120,18 @@
       },
       _drawRegionMarkers() {
         for (let mark of this.markers) {
-          let circle = L.marker(mark.coordinates, {
-            icon: L.divIcon({ className: "landmatrix-custom-circle" }),
-            country_id: mark.country_id,
+          let circle = new Marker(mark.coordinates, {
+            icon: new DivIcon({ className: "landmatrix-custom-circle" }),
+            countryId: mark.country_id,
           });
           this.featureGroup.addLayer(circle);
           styleCircle(circle, mark.count / 20, mark.count, true, 15);
         }
       },
       _drawCountryMarkers() {
-        let mcluster = L.markerClusterGroup({ maxClusterRadius: 20 });
+        let mcluster = new MarkerClusterGroup({ maxClusterRadius: 20 });
         for (let mark of this.markers) {
-          let circle = L.marker(mark.coordinates);
+          let circle = new Marker(mark.coordinates);
           // this.featureGroup.addLayer(circle);
           mcluster.addLayer(circle);
         }
@@ -120,19 +139,19 @@
       },
       drawMarkers() {
         if (!this.map || this.markers.length === 0) return;
-        if (!this.region_id && !this.country_id) this._drawGlobalMarkers();
-        if (this.region_id) this._drawRegionMarkers();
-        if (this.country_id) this._drawCountryMarkers();
+        if (!this.regionId && !this.countryId) this._drawGlobalMarkers();
+        if (this.regionId) this._drawRegionMarkers();
+        if (this.countryId) this._drawCountryMarkers();
       },
       goToGlobalMap() {
-        if (this.country_id) {
+        if (this.countryId) {
           this.$store.dispatch("setFilter", {
             filter: "region_id",
             value: null,
           });
           this.$store.dispatch("setFilter", {
             filter: "country_id",
-            value: this.country_id,
+            value: this.countryId,
           });
         } else {
           this.$store.dispatch("setFilter", {
@@ -141,19 +160,10 @@
           });
           this.$store.dispatch("setFilter", {
             filter: "region_id",
-            value: this.region_id,
+            value: this.regionId,
           });
         }
         this.$router.push({ name: "map" });
-      },
-    },
-    watch: {
-      markers() {
-        this.drawMarkers();
-      },
-      roc() {
-        this.clearMap();
-        this.focusMap();
       },
     },
   };

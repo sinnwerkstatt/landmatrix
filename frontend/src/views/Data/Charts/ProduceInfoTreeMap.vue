@@ -1,12 +1,12 @@
 <template>
   <ChartsContainer>
-    <template v-slot:default>
+    <template #default>
       <LoadingPulse v-if="$apollo.loading" />
       <div id="produce-info" ref="container">
         <svg :style="svgStyle"></svg>
       </div>
     </template>
-    <template v-slot:ContextBar>
+    <template #ContextBar>
       <h2 class="bar-title">Produce info map</h2>
       <div v-html="chart_desc" />
 
@@ -16,11 +16,13 @@
 </template>
 
 <script>
-  import LoadingPulse from "/components/Data/LoadingPulse";
+  import LoadingPulse from "components/Data/LoadingPulse";
   import { data_deal_produce_query, data_deal_query } from "../query";
-  import * as d3 from "d3";
+  import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
+  import { format } from "d3-format";
+  import { select, selectAll } from "d3-selection";
   import ChartsContainer from "./ChartsContainer";
-  import Legend from "/components/Charts/Legend";
+  import Legend from "components/Charts/Legend";
 
   let count = 0;
 
@@ -30,15 +32,20 @@
 
   function Id(id) {
     this.id = id;
-    this.href = new URL(`#${id}`, location) + "";
   }
 
-  Id.prototype.toString = function () {
-    return "url(" + this.href + ")";
-  };
+  // FIXME: commented out because variable location doesnt exist
+  // function Id(id) {
+  //   this.id = id;
+  //   this.href = new URL(`#${id}`, location) + "";
+  // }
+  //
+  // Id.prototype.toString = function () {
+  //   return "url(" + this.href + ")";
+  // };
 
   function buildTreeChart(treeData) {
-    let format = d3.format(",d");
+    let myformat = format(",d");
 
     let elemx = document.getElementById("produce-info");
     if (!elemx) return;
@@ -47,29 +54,27 @@
     let height = (width / 4) * 3;
 
     // reset first!
-    d3.selectAll("#produce-info > svg > *").remove();
+    selectAll("#produce-info > svg > *").remove();
 
-    let svg = d3
-      .select("#produce-info > svg")
+    let svg = select("#produce-info > svg")
       .attr("viewBox", [0, 0, width, height])
       .append("svg:g")
       .attr("transform", "translate(.5,.5)");
 
     // format data
-    var root = d3.hierarchy(treeData).sum(function (d) {
+    let root = hierarchy(treeData).sum(function (d) {
       return d.value;
     });
 
     // initialize graph
-    var treemap = d3
-      .treemap()
-      .tile(d3.treemapSquarify)
+    let mytreemap = treemap()
+      .tile(treemapSquarify)
       .size([width, height])
       .round(true)
       .paddingInner(1);
 
     // load data
-    treemap(root);
+    mytreemap(root);
 
     // get all leaves
     const leaf = svg
@@ -79,7 +84,7 @@
       .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
 
     // tooltips
-    leaf.append("title").text((d) => `${d.data.name}\n${format(d.value)}`);
+    leaf.append("title").text((d) => `${d.data.name}\n${myformat(d.value)}`);
 
     // colored squares
     leaf
@@ -106,7 +111,7 @@
       .attr("clip-path", (d) => d.clipUid)
       .selectAll("tspan")
       .data((d) =>
-        d.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(format(d.data.value) + " ha")
+        d.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(myformat(d.data.value) + " ha")
       )
       .join("tspan")
       .attr("x", 3)
@@ -118,6 +123,11 @@
   export default {
     name: "ProduceInfoTreeMap",
     components: { ChartsContainer, LoadingPulse, Legend },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.$store.dispatch("showContextBar", true);
+      });
+    },
     data() {
       return {
         deals: [],
@@ -175,11 +185,10 @@
         let data = null;
         let areaTotals = {};
         let fields = ["crops", "animals", "resources"];
-        let colors = ["#FC941F", "#7D4A0F", "black"];
         let totalSize = 0;
         if (
           this.deals.length &&
-          this.deals.length == this.dealsWithProduceInfo.length &&
+          this.deals.length === this.dealsWithProduceInfo.length &&
           !this.$apollo.loading
         ) {
           data = {};
@@ -233,6 +242,11 @@
         return data;
       },
     },
+    watch: {
+      treeData() {
+        this.drawChart();
+      },
+    },
     methods: {
       getLabel(field, key) {
         let map = this.$store.state.formfields.deal;
@@ -250,16 +264,6 @@
         }
       },
     },
-    watch: {
-      treeData() {
-        this.drawChart();
-      },
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
-    },
   };
 </script>
 
@@ -271,14 +275,12 @@
     position: relative;
     align-self: safe center;
     max-height: 100%;
-    width: 100%;
 
     > svg {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      left: 0;
     }
   }
 </style>
