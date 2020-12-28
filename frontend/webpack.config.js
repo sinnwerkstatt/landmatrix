@@ -15,6 +15,7 @@ module.exports = {
     filename: "[name].js",
     path: path.resolve("./dist/"),
     publicPath: "",
+    chunkFilename: "[id]-[chunkhash].js", // DO have Webpack hash chunk filename, see below
   },
   resolve: {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
@@ -65,6 +66,9 @@ module.exports = {
         },
       },
     ],
+  },
+  devServer: {
+    writeToDisk: true, // Write files to disk in dev mode, so Django can serve the assets
   },
   plugins: [
     new VueLoaderPlugin(),
