@@ -22,11 +22,7 @@
           @{{ status.screen_name }}
         </a>
         ·
-        <a
-          target="_blank"
-          :href="`https://twitter.com/statuses/${status.id_str}`"
-          class="twitter-timeline-time"
-        >
+        <a target="_blank" :href="status.deep_link" class="twitter-timeline-time">
           {{ dayjs(status.created_at).format("MMM. DD, YYYY, H:mm") }}
         </a>
       </div>
