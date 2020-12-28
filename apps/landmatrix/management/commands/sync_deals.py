@@ -19,9 +19,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         deal_ids = (
             HistoricalActivity.objects.values_list("activity_identifier", flat=True)
-            .filter(activity_identifier=2)
-            .distinct()
-            .order_by("activity_identifier")
+            # .filter(activity_identifier=2)
+            .distinct().order_by("activity_identifier")
         )
         for deal_id in deal_ids:
             if options["rewrite_deals"]:
