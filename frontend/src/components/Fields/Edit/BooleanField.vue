@@ -1,28 +1,32 @@
 <template>
   <div class="form-field row">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
+    <div v-if="formfield.class === 'NullBooleanField'">
+      <select
+        :value="value"
+        :name="formfield.name"
+        class="form-control"
+        @input="emitVal"
+      >
+        <option v-if="!formfield.required" value=""></option>
+        <option :value="true">{{ $t("Yes") }}</option>
+        <option :value="false">{{ $t("No") }}</option>
+      </select>
     </div>
-    <div class="val" :class="valClasses">
-      <div v-if="readonly">
-        <span v-if="val">
-          Yes
-        </span>
-        <span v-else-if="val === false">
-          No
-        </span>
-        <span v-else>
-          NULL
-        </span>
-      </div>
-    </div>
+    <input v-else type="checkbox" :name="formfield.name" :value="value" />
   </div>
 </template>
 
 <script>
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Boolean, required: true },
+      model: { type: String, required: true },
+    },
+    methods: {
+      emitVal() {
+        this.$emit("input", this.val);
+      },
+    },
   };
 </script>

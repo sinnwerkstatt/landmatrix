@@ -1,37 +1,27 @@
 <template>
-  <div class="form-field row">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
-    </div>
-    <div class="val" :class="valClasses">
-      <div v-if="readonly">
-        {{ parseValues(val) }}
-      </div>
-    </div>
+  <div>
+    <select v-model="val" multiple :name="formfield.name">
+      <option v-for="(v, k) in formfield.choices" :key="k" :value="k">{{ v }}</option>
+    </select>
   </div>
 </template>
 
 <script>
-  import { flatten_choices } from "utils";
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
-    methods: {
-      parseValues: function (value) {
-        let ret = "";
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Array, required: true },
+      model: { type: String, required: true },
+    },
 
-        let choices = flatten_choices(this.formfield.choices);
-
-        if (value instanceof Array) {
-          if (choices) {
-            ret += value.map((v) => choices[v]).join(", ");
-          } else ret += value.join(", ");
-        } else {
-          if (choices) ret += choices[value];
-          else ret += value;
-        }
-        return ret;
+    computed: {
+      val: {
+        get() {
+          return this.value;
+        },
+        set(v) {
+          this.$emit("input", v);
+        },
       },
     },
   };
