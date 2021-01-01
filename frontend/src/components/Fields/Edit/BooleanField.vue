@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field row">
+  <div>
     <div v-if="formfield.class === 'NullBooleanField'">
       <select
         :value="value"
@@ -12,7 +12,13 @@
         <option :value="false">{{ $t("No") }}</option>
       </select>
     </div>
-    <input v-else type="checkbox" :name="formfield.name" :value="value" />
+    <input
+      v-else
+      class="form-check-input"
+      type="checkbox"
+      :name="formfield.name"
+      :value="value"
+    />
   </div>
 </template>
 

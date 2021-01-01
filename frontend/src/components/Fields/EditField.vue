@@ -18,39 +18,45 @@
 </template>
 
 <script>
+  // import AutoField from "./Display/AutoField";
   import ArrayField from "./Edit/ArrayField";
 
   import BooleanField from "./Edit/BooleanField";
   import NullBooleanField from "./Edit/BooleanField";
 
+  // import DateField from "./Display/DateField";
+  // import DateTimeField from "./Display/DateField";
+
+  import DecimalField from "./Edit/DecimalField";
+  import FloatField from "./Edit/DecimalField";
+  import IntegerField from "./Edit/DecimalField";
+
+  import FileField from "./Display/FileField";
+  import ForeignKey from "./Edit/ForeignKeyField";
+
+  import JSONField from "./Edit/JSONField";
+
   import CharField from "./Edit/TextField";
   import EmailField from "./Edit/TextField";
   import TextField from "./Edit/TextField";
   import URLField from "./Edit/TextField";
-  import DateField from "./Display/DateField";
-  import DateTimeField from "./Display/DateField";
-  import AutoField from "./Display/AutoField";
-  import DecimalField from "./Edit/DecimalField";
-  import FloatField from "./Edit/DecimalField";
-  import IntegerField from "./Edit/DecimalField";
-  import FileField from "./Display/FileField";
-  import ForeignKey from "./Display/ForeignKeyField";
+
   import ManyToManyField from "./Display/ManyToManyField";
   import LengthField from "./Display/LengthField";
-  import JSONField from "./Display/JSONField";
   import PointField from "./Display/PointField";
+
   import FieldLabel from "./FieldLabel";
 
   export default {
     name: "EditField",
     components: {
-      AutoField,
+      // AutoField,
       FieldLabel,
       ArrayField,
       BooleanField,
       CharField,
-      DateField,
-      DateTimeField,
+      // DateField,
+      // DateTimeField,
       DecimalField,
       EmailField,
       FileField,
@@ -81,7 +87,7 @@
       },
       valueClasses: {
         type: Array,
-        default: () => ["display-field-value", "col-md-7", "col-lg-8"],
+        default: () => ["display-field-value", "col-md-5", "col-lg-6"],
       },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },

@@ -1,27 +1,16 @@
 <template>
-  <div class="form-field row">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
-    </div>
-    <div class="val" :class="valClasses">
-      <div v-if="readonly">
-        <span v-if="val.lat">Lat: {{ parseFloat(val.lat.toFixed(8)) }}</span>
-        <span v-if="val.lng">Lng: {{ parseFloat(val.lng.toFixed(8)) }}</span>
-      </div>
-    </div>
+  <div>
+    <div>Lat: {{ value.lat }}</div>
+    <div>Lng: {{ value.lng }}</div>
   </div>
 </template>
 
 <script>
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Object, required: true },
+      model: { type: String, required: true },
+    },
   };
 </script>
-
-<style scoped>
-  span {
-    display: block;
-  }
-</style>

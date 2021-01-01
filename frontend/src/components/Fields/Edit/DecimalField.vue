@@ -1,7 +1,19 @@
 <template>
-  <div style="white-space: nowrap;">
-    {{ value }}
-    <span v-if="formfield.name === 'deal_size'">ha</span>
+  <div>
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        aria-describedby="validatedInputGroupPrepend"
+        :value="value"
+        :required="formfield.required"
+      />
+      <div v-if="formfield.help_text" class="input-group-append">
+        <span id="validatedInputGroupPrepend" class="input-group-text">
+          {{ formfield.help_text }}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
