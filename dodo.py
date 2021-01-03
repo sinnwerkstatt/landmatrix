@@ -65,10 +65,10 @@ def task_reset_db():
 
 
 #############################
-def task_yarn_install():
-    actions = ["yarn install"]
+def task_npm_install():
+    actions = ["npm install"]
     if get_var("production", False):
-        actions += ["yarn build_frontend"]
+        actions += ["npm run build_frontend"]
     return {
         "task_dep": ["compilemessages"],
         "targets": ["node_modules/"],
@@ -90,7 +90,7 @@ def task_convert_scss():
 
 def task_collectstatic():
     return {
-        "task_dep": ["yarn_install", "convert_scss"],
+        "task_dep": ["npm_install", "convert_scss"],
         "actions": ["./manage.py collectstatic --noinput"],
     }
 
@@ -105,7 +105,7 @@ def task_compilemessages():
             "targets": [mofile, json_target],
             "actions": [
                 f"msgfmt -o {mofile} {pofile}",
-                f"yarn run po2json -f mf {pofile} {json_target}",
+                f"npx po2json -f mf {pofile} {json_target}",
             ],
             "clean": True,
         }

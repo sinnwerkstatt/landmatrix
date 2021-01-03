@@ -22,7 +22,7 @@ django formatting and linting:
   script:
     - poetry config experimental.new-installer false
     - poetry install -E production
-    - yarn install --frozen-lockfile
+    - npm ci
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
 #    - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
@@ -31,8 +31,8 @@ frontend formatting and linting:
   stage: test
   script:
     - cd frontend
-    - yarn install --frozen-lockfile
-    - yarn build
+    - npm ci
+    - npm run build
 
 tests and coverage:
   stage: test
@@ -43,7 +43,7 @@ tests and coverage:
   script:
     - poetry config experimental.new-installer false
     - poetry install -E production
-    - yarn install --frozen-lockfile
+    - npm ci
     - poetry run doit -n 4 update
     - poetry run pytest
   coverage: /^TOTAL.*\s+(\d+\%)$/
