@@ -70,12 +70,12 @@
           <ul>
             <li>
               <a :href="`/api/data.geojson?type=points&filters=${filters}`">
-                <i class="fas fa-file-download" /> {{ $t("Locations") }}
+                <i class="fas fa-file-download" /> {{ $t("Locations (as geojson)") }}
               </a>
             </li>
             <li>
               <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
-                <i class="fas fa-file-download" /> {{ $t("Areas") }}
+                <i class="fas fa-file-download" /> {{ $t("Areas (as geojson)") }}
               </a>
             </li>
           </ul>
