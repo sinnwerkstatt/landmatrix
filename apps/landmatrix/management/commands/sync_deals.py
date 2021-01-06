@@ -7,7 +7,7 @@ from apps.landmatrix.models import (
     DataSource,
     Contract,
 )
-from apps.landmatrix.models.deal import DealTopInvestors
+from apps.landmatrix.models.deal import DealTopInvestors, DealParentCompanies
 from apps.landmatrix.models.versions import Revision
 from apps.landmatrix.synchronization.deal import histivity_to_deal
 
@@ -27,6 +27,7 @@ class Command(BaseCommand):
                 print(f"  Removing Deal {deal_id}... ", end="", flush=True)
                 Revision.objects.filter(dealversion__object_id=deal_id).delete()
                 DealTopInvestors.objects.filter(deal_id=deal_id).delete()
+                DealParentCompanies.objects.filter(deal_id=deal_id).delete()
                 Location.objects.filter(deal_id=deal_id).delete()
                 DataSource.objects.filter(deal_id=deal_id).delete()
                 Contract.objects.filter(deal_id=deal_id).delete()

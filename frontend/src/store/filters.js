@@ -95,12 +95,6 @@ function prepareFilters(filters) {
       value: filters.country_id.toString(),
     });
   }
-  if (filters.investor_country_id) {
-    filterArray.push({
-      field: "operating_company.country_id",
-      value: filters.investor_country_id.toString(),
-    });
-  }
   if (filters.deal_size_min) {
     filterArray.push({
       field: "deal_size",
@@ -144,11 +138,16 @@ function prepareFilters(filters) {
 
   if (filters.investor) {
     filterArray.push({
-      field: "operating_company",
+      field: "parent_companies",
       value: filters.investor.id.toString(),
     });
   }
-
+  if (filters.investor_country_id) {
+    filterArray.push({
+      field: "parent_companies.country_id",
+      value: filters.investor_country_id.toString(),
+    });
+  }
   if (filters.nature_of_deal.length > 0) {
     let nature_of_deal_choices = [
       "OUTRIGHT_PURCHASE",

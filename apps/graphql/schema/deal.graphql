@@ -196,6 +196,7 @@ type Deal {
   transnational: Boolean
   geojson: GeoJSON
   top_investors: [Investor]
+  parent_companies: [Investor]
 
   status: Int
   #    status_display: String

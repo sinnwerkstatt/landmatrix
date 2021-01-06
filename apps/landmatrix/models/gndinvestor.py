@@ -147,33 +147,31 @@ class Investor(models.Model):
         return f"s#{self.id}"
 
     def get_parent_companies(
-        self, top_investors_only=False, seen_investors=None
+        self, top_investors_only=False, _seen_investors=None
     ) -> Set["Investor"]:
         """
         Get list of highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
-        top_investors = set()
-        if seen_investors is None:
-            seen_investors = {self}
+        if _seen_investors is None:
+            _seen_investors = {self}
 
         investor_involvements = (
             self.investors.active()
             .filter(role="PARENT")
-            .exclude(investor__in=seen_investors)
+            .exclude(investor__in=_seen_investors)
         )
-        if not investor_involvements:
-            top_investors.add(self)
+
+        self.is_top_investor = not investor_involvements
+
         for involvement in investor_involvements:
-            if involvement.investor in seen_investors:
+            if involvement.investor in _seen_investors:
                 continue
-            seen_investors.add(involvement.investor)
-            top_investors.update(
-                involvement.investor.get_parent_companies(
-                    top_investors_only, seen_investors
-                )
+            _seen_investors.add(involvement.investor)
+            involvement.investor.get_parent_companies(
+                top_investors_only, _seen_investors
             )
-        return top_investors if top_investors_only else seen_investors
+        return _seen_investors
 
     def get_affected_deals(self, seen_investors=None):
         """
