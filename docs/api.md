@@ -135,6 +135,31 @@ query.
 }
 ```
 
+## Sorting
+
+Some queries, like `deals` and `investors`, have an option for sorting the output.
+It defaults to being sorted by `id` but it will also accept other fields, e.g. `modified_at`.
+
+You can also change the sort direction from ASCending to DESCending by prefixing the
+sort-term with a `-`.
+```graphql
+# Sort deals by creation date ascending
+{
+  deals(sort: "created_at") {
+    id
+    deal_size
+  }
+}
+```
+```graphql
+# or descending
+{
+  deals(sort: "-created_at") {
+    id
+    deal_size
+  }
+}
+```
 
 
 ## Filters
