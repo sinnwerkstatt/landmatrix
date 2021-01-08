@@ -793,6 +793,7 @@ class Deal(models.Model, OldDealMixin):
     has_domestic_use = models.NullBooleanField(_("Has domestic use"))
     domestic_use = models.FloatField(
         _("Domestic use"),
+        help_text="%",
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -801,6 +802,7 @@ class Deal(models.Model, OldDealMixin):
 
     export = models.FloatField(
         _("Export"),
+        help_text="%",
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -816,6 +818,7 @@ class Deal(models.Model, OldDealMixin):
     )
     export_country1_ratio = models.FloatField(
         _("Country 1 ratio"),
+        help_text="%",
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -830,6 +833,7 @@ class Deal(models.Model, OldDealMixin):
     )
     export_country2_ratio = models.FloatField(
         _("Country 2 ratio"),
+        help_text="%",
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -844,6 +848,7 @@ class Deal(models.Model, OldDealMixin):
     )
     export_country3_ratio = models.FloatField(
         _("Country 3 ratio"),
+        help_text="%",
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],

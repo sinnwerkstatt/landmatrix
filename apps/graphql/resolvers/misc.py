@@ -3,7 +3,7 @@ from typing import Any
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields
-from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop
+from apps.landmatrix.models import Country, Region, Mineral, Animal, Crop, Currency
 from apps.utils import qs_values_to_dict
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
@@ -16,6 +16,11 @@ def resolve_countries(obj: Any, info: GraphQLResolveInfo):
 def resolve_regions(obj: Any, info: GraphQLResolveInfo):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
     return qs_values_to_dict(Region.objects.all(), fields)
+
+
+def resolve_currencies(obj: Any, info: GraphQLResolveInfo):
+    fields = get_fields(info, recursive=True, exclude=["__typename"])
+    return qs_values_to_dict(Currency.objects.all(), fields)
 
 
 def resolve_minerals(obj: Any, info: GraphQLResolveInfo):

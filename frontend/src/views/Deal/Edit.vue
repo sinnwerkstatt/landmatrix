@@ -9,6 +9,9 @@
       nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
       nav-class="sticky-nav"
     >
+      <!--      <b-tab title="Location">-->
+      <!--        <map-editor />-->
+      <!--      </b-tab>-->
       <DealEditSection
         :title="deal_sections.general_info.label"
         :deal="deal"
@@ -16,9 +19,15 @@
         :active="active_tab === '#general'"
         @activated="updateRoute('#general')"
       />
-      <!--      <b-tab title="Location">-->
-      <!--        <map-editor />-->
-      <!--      </b-tab>-->
+      <!--            <DealSubmodelSection-->
+      <!--        title="Contracts"-->
+      <!--        model-name="Contract"-->
+      <!--        :entries="deal.contracts"-->
+      <!--        :fields="deal_submodel_sections.contract"-->
+      <!--        model="contract"-->
+      <!--        :active="active_tab === '#contracts'"-->
+      <!--        @activated="updateRoute('#contracts')"-->
+      <!--      />-->
       <DealEditSection
         :title="deal_sections.employment.label"
         :deal="deal"
@@ -26,6 +35,62 @@
         :active="active_tab === '#employment'"
         @activated="updateRoute('#employment')"
       />
+
+      <DealEditSection
+        :title="deal_sections.investor_info.label"
+        :deal="deal"
+        :sections="deal_sections.investor_info.subsections"
+        :active="active_tab === '#investor_info'"
+        @activated="updateRoute('#investor_info')"
+      >
+        <!--        <div class="row">-->
+        <!--          <div-->
+        <!--            class="col-md-12 col-lg-10 col-xl-9"-->
+        <!--            :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"-->
+        <!--          >-->
+        <!--            <template v-if="investor.involvements.length">-->
+        <!--              <h3 class="mb-2">-->
+        <!--                Network of parent companies and tertiary investors/lenders-->
+        <!--              </h3>-->
+        <!--              <InvestorGraph-->
+        <!--                ref="investorGraph"-->
+        <!--                :investor="investor"-->
+        <!--                :show-deals-on-load="false"-->
+        <!--                :controls="false"-->
+        <!--                :init-depth="4"-->
+        <!--              />-->
+        <!--            </template>-->
+        <!--            <div v-else class="loader"></div>-->
+        <!--          </div>-->
+        <!--        </div>-->
+      </DealEditSection>
+
+      <!--      <DealSubmodelSection-->
+      <!--        title="Data Sources"-->
+      <!--        model-name="Data Source"-->
+      <!--        :entries="deal.datasources"-->
+      <!--        :fields="deal_submodel_sections.datasource"-->
+      <!--        model="datasource"-->
+      <!--        :active="active_tab === '#data_sources'"-->
+      <!--        @activated="updateRoute('#data_sources')"-->
+      <!--      />-->
+
+      <DealEditSection
+        :title="deal_sections.local_communities.label"
+        :deal="deal"
+        :sections="deal_sections.local_communities.subsections"
+        :active="active_tab === '#local_communities'"
+        @activated="updateRoute('#local_communities')"
+      />
+
+      <DealEditSection
+        :title="deal_sections.former_use.label"
+        :deal="deal"
+        :sections="deal_sections.former_use.subsections"
+        :active="active_tab === '#former_use'"
+        @activated="updateRoute('#former_use')"
+      />
+
       <DealEditSection
         :title="deal_sections.produce_info.label"
         :deal="deal"
@@ -33,12 +98,37 @@
         :active="active_tab === '#produce_info'"
         @activated="updateRoute('#produce_info')"
       />
+
+      <DealEditSection
+        :title="deal_sections.water.label"
+        :deal="deal"
+        :sections="deal_sections.water.subsections"
+        :active="active_tab === '#water'"
+        @activated="updateRoute('#water')"
+      />
+
+      <DealEditSection
+        :title="deal_sections.gender_related_info.label"
+        :deal="deal"
+        :sections="deal_sections.gender_related_info.subsections"
+        :active="active_tab === '#gender_related_info'"
+        @activated="updateRoute('#gender_related_info')"
+      />
+
       <DealEditSection
         :title="deal_sections.guidelines_and_principles.label"
         :deal="deal"
         :sections="deal_sections.guidelines_and_principles.subsections"
         :active="active_tab === '#guidelines_and_principles'"
         @activated="updateRoute('#guidelines_and_principles')"
+      />
+
+      <DealEditSection
+        :title="deal_sections.overall_comment.label"
+        :deal="deal"
+        :sections="deal_sections.overall_comment.subsections"
+        :active="active_tab === '#overall_comment'"
+        @activated="updateRoute('#overall_comment')"
       />
     </b-tabs>
   </div>

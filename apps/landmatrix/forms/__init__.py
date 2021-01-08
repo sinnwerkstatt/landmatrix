@@ -1,4 +1,4 @@
-from django.db.models import Model
+from django.db.models import Model, Field
 from django.utils.functional import Promise
 from django.utils.translation import gettext
 
@@ -23,7 +23,7 @@ class VueForm:
         self._attributes = self.attributes
         self._extra_display_fields = self.extra_display_fields
 
-    def _process_field(self, mfield):
+    def _process_field(self, mfield: Field) -> dict:
         vname = gettext(mfield.verbose_name)
 
         richfield = {

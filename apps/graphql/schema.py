@@ -39,6 +39,7 @@ from apps.graphql.resolvers.misc import (
     resolve_crops,
     resolve_animals,
     resolve_chart_descriptions,
+    resolve_currencies,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
@@ -67,6 +68,7 @@ query.set_field("investorversions", resolve_investorversions)
 # query.set_field("involvements", resolve_involvements)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)
+query.set_field("currencies", resolve_currencies)
 query.set_field("animals", resolve_animals)
 query.set_field("crops", resolve_crops)
 query.set_field("minerals", resolve_minerals)

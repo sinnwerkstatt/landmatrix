@@ -1,38 +1,39 @@
 <template>
-  <div class="form-field row">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
-    </div>
-    <div class="val" :class="valClasses">
-      <div v-for="val in vals" :class="{ 'is-current': val.current }">
-        <span v-if="val.date || val.current">
-          [
-          <span v-if="val.date">{{ val.date }}</span>
-          <span v-if="val.date && val.current">,</span>
-          <span v-if="val.current">current</span>
-          ]
-        </span>
-        <span class="" v-html="parseValues(val)"></span>
-        <span class="mx-2" v-if="val.hectares">
-          <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha
-        </span>
-        <span class="mx-2" v-if="val.tons">
-          <i class="fas fa-weight-hanging"></i> {{ val.tons }} tons
-        </span>
-        <span class="mx-2" v-if="val.percent">
-          <i class="fas fa-plane-departure"></i> {{ val.percent }} %
-        </span>
-      </div>
-    </div>
+  <div class="">
+    xx
+    {{ value }}
+    <!--    <div class="val" :class="valClasses">-->
+    <!--      <div v-for="val in vals" :class="{ 'is-current': val.current }">-->
+    <!--        <span v-if="val.date || val.current">-->
+    <!--          [-->
+    <!--          <span v-if="val.date">{{ val.date }}</span>-->
+    <!--          <span v-if="val.date && val.current">,</span>-->
+    <!--          <span v-if="val.current">current</span>-->
+    <!--          ]-->
+    <!--        </span>-->
+    <!--        <span class="" v-html="parseValues(val)"></span>-->
+    <!--        <span class="mx-2" v-if="val.hectares">-->
+    <!--          <i class="fas fa-circle-notch"></i> {{ val.hectares }} ha-->
+    <!--        </span>-->
+    <!--        <span class="mx-2" v-if="val.tons">-->
+    <!--          <i class="fas fa-weight-hanging"></i> {{ val.tons }} tons-->
+    <!--        </span>-->
+    <!--        <span class="mx-2" v-if="val.percent">-->
+    <!--          <i class="fas fa-plane-departure"></i> {{ val.percent }} %-->
+    <!--        </span>-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
 <script>
   import { flatten_choices } from "utils";
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: [Array, Object], required: true },
+      model: { type: String, required: true },
+    },
     data() {
       return {
         current: 0,
