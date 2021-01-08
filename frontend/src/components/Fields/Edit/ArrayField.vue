@@ -17,22 +17,23 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: Array, required: true },
+      value: { type: Array, required: false, default: null },
       model: { type: String, required: true },
     },
     data() {
-      return {
-        freetext_values: [...this.value, ""],
-      };
+      return {};
     },
     computed: {
       val: {
         get() {
-          return this.value;
+          return this.value || [];
         },
         set(v) {
           this.$emit("input", v);
         },
+      },
+      freetext_values() {
+        return [...this.val, ""];
       },
     },
   };

@@ -2,6 +2,7 @@
   <div class="">
     xx
     {{ value }}
+    <!--    {{ formfield }}-->
     <!--    <div class="val" :class="valClasses">-->
     <!--      <div v-for="val in vals" :class="{ 'is-current': val.current }">-->
     <!--        <span v-if="val.date || val.current">-->
@@ -31,7 +32,7 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: [Array, Object], required: true },
+      value: { type: [Array, Object], required: false, default: null },
       model: { type: String, required: true },
     },
     data() {
@@ -104,4 +105,3 @@
     width: 60%;
   }
 </style>
-<style></style>

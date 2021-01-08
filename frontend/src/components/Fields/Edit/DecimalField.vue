@@ -21,7 +21,7 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: Number, required: true },
+      value: { type: Number, required: false, default: null },
       model: { type: String, required: true },
     },
   };

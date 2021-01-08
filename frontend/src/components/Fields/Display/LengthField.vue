@@ -16,7 +16,7 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: Object, required: true },
+      value: { type: [Array, Object], required: true },
       model: { type: String, required: true },
     },
     data() {

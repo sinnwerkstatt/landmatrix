@@ -14,7 +14,7 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: Object, required: true },
+      value: { type: Object, required: false, default: null },
       model: { type: String, required: true },
     },
     data() {
@@ -35,7 +35,7 @@
     computed: {
       val: {
         get() {
-          return this.value.id;
+          return this.value ? this.value.id : null;
         },
         set(v) {
           this.$emit("input", v);
