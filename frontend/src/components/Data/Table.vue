@@ -253,13 +253,28 @@
         if (this.fetchAllInvestors) {
           return [];
         } else {
-          return [
+          let filters = [
             {
-              field: "deals.id",
+              field: "child_deals.id",
               operation: "IN",
               value: this.deals.map((d) => d.id.toString()),
             },
           ];
+
+          let store_state_filters = this.$store.state.filters.filters;
+          if (store_state_filters.investor) {
+            filters.push({
+              field: "id",
+              value: store_state_filters.investor.id.toString(),
+            });
+          }
+          if (store_state_filters.investor_country_id) {
+            filters.push({
+              field: "country_id",
+              value: store_state_filters.investor_country_id.toString(),
+            });
+          }
+          return filters;
         }
       },
       fetchAllInvestors() {

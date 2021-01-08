@@ -985,7 +985,7 @@ class Deal(models.Model, OldDealMixin):
         max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
     )
     parent_companies = models.ManyToManyField(
-        Investor, verbose_name=_("Parent companies"), related_name="+"
+        Investor, verbose_name=_("Parent companies"), related_name="child_deals"
     )
     top_investors = models.ManyToManyField(
         Investor, verbose_name=_("Top parent companies"), related_name="+"
