@@ -2,7 +2,7 @@ from typing import Any
 
 from django.utils.html import linebreaks
 from django_comments.models import Comment
-from graphql import GraphQLResolveInfo
+from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country, Investor
@@ -56,7 +56,13 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC
         deal = qs_values_to_dict(
             visible_deals,
             filtered_fields,
-            ["locations", "datasources", "contracts", "top_investors"],
+            [
+                "locations",
+                "datasources",
+                "contracts",
+                "top_investors",
+                "parent_companies",
+            ],
         )[0]
 
     if add_versions:
@@ -93,11 +99,19 @@ def resolve_deals(
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
+    if any(["involvements" in field for field in fields]):
+        raise GraphQLError(
+            "Querying involvements via multiple operating companies is too"
+            " resource intensive. Please use single investor queries for this."
+        )
+
     if limit != 0:
         qs = qs[:limit]
 
     return qs_values_to_dict(
-        qs, fields, ["locations", "datasources", "contracts", "top_investors"]
+        qs,
+        fields,
+        ["locations", "datasources", "contracts", "top_investors", "parent_companies"],
     )
 
 

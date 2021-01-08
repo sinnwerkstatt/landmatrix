@@ -979,6 +979,9 @@ class Deal(models.Model, OldDealMixin):
     not_public_reason = models.CharField(
         max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES
     )
+    parent_companies = models.ManyToManyField(
+        Investor, verbose_name=_("Parent companies"), related_name="+"
+    )
     top_investors = models.ManyToManyField(
         Investor, verbose_name=_("Top parent companies"), related_name="+"
     )
@@ -1084,7 +1087,7 @@ class Deal(models.Model, OldDealMixin):
             self.is_public = self.not_public_reason == ""
             # this might error because it's m2m and we need the
             # Deal to have an ID first before we can save the investors. 🙄
-            self.top_investors.set(self.get_parent_companies(top_investors_only=True))
+            self._calculate_parent_companies()
             self.transnational = self._calculate_transnational()
             self.geojson = self._combine_geojson()
 
@@ -1212,15 +1215,16 @@ class Deal(models.Model, OldDealMixin):
         if oc.status == Investor.STATUS_DELETED:
             return True
 
-        investors_countries = {
-            i.country_id for i in self.get_parent_companies() if i.country_id
-        }
+        investors_countries = self.parent_companies.exclude(
+            country_id=None
+        ).values_list("country_id", flat=True)
+
         if not len(investors_countries):
             # treat deals without investors as transnational
             # treat deals without investor countries as transnational
             return True
         # `True` if we have investors in other countries else `False`
-        return bool(investors_countries - {self.country_id})
+        return bool(set(investors_countries) - {self.country_id})
 
     def _combine_geojson(self, locations=None):
         locs = locations if locations else self.locations.all()
@@ -1248,13 +1252,21 @@ class Deal(models.Model, OldDealMixin):
             return None
         return {"type": "FeatureCollection", "features": features}
 
-    def get_parent_companies(self, top_investors_only=False) -> Set["Investor"]:
-        if not self.operating_company_id:
-            return set()
-        oc = Investor.objects.filter(id=self.operating_company_id).first()
-        if oc and oc.status in [Investor.STATUS_LIVE, Investor.STATUS_UPDATED]:
-            return oc.get_parent_companies(top_investors_only=top_investors_only)
-        return set()
+    def _calculate_parent_companies(self) -> None:
+        if self.operating_company_id:
+            oc = Investor.objects.filter(
+                id=self.operating_company_id,
+                status__in=[Investor.STATUS_LIVE, Investor.STATUS_UPDATED],
+            ).first()
+            if oc:
+                parent_companies = oc.get_parent_companies()
+                self.parent_companies.set(parent_companies)
+                top_inv = [x for x in parent_companies if x.is_top_investor]
+                self.top_investors.set(top_inv)
+                return
+
+        self.parent_companies.set([])
+        self.top_investors.set([])
 
     def _calculate_public_state(self) -> str:
         """
@@ -1292,55 +1304,22 @@ class Deal(models.Model, OldDealMixin):
         # only if no known Investor exists, we return True
         return not oc.investors.filter(investor__is_actually_unknown=False).exists()
 
-    # TODO rod: hast du das ersetzt oder? kann weg?
-    # def legacy_download_list_format(self) -> list:
-    #     top_investors = "|".join(
-    #         [
-    #             "#".join(
-    #                 [
-    #                     ti.name.replace("#", "").replace("\n", "").strip(),
-    #                     str(ti.id),
-    #                     ti.country.name if ti.country else "",
-    #                 ]
-    #             )
-    #             for ti in self.top_investors.all()
-    #         ]
-    #     )
-    #
-    #     operating_company_country = ""
-    #     if self.operating_company.country:
-    #         operating_company_country = self.operating_company.country.name
-    #
-    #     operating_company_action_comment = ""
-    #     versions = DealVersion.objects.filter(object_id=self.id)
-    #     if versions:
-    #         operating_company_action_comment = versions[0].revision.comment
-    #
-    #     return [
-    #         self.id,
-    #         "Yes" if self.is_public else "No",
-    #         "transnational" if self.transnational else "domestic",
-    #         self.deal_size,
-    #         self.current_contract_size or "0",
-    #         self.current_production_size or "0",
-    #         self.get_current_negotiation_status_display(),
-    #         self.get_current_implementation_status_display(),
-    #         self.fully_updated_at,
-    #         top_investors,
-    #         self.operating_company.id,
-    #         self.operating_company.name,
-    #         operating_company_country,
-    #         self.operating_company.get_classification_display(),
-    #         self.operating_company.homepage,
-    #         self.operating_company.opencorporates,
-    #         self.operating_company.comment,
-    #         operating_company_action_comment,
-    #     ]
+
+class DealParentCompanies(models.Model):
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
+
+    class Meta:
+        managed = False
+        db_table = "landmatrix_deal_parent_companies"
+
+    def __str__(self):
+        return f"#{self.deal_id} - {self.investor.name}"
 
 
 class DealTopInvestors(models.Model):
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
-    investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
 
     class Meta:
         managed = False

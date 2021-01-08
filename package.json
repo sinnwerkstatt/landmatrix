@@ -4,8 +4,8 @@
   "repository": "https://github.com/sinnwerkstatt/landmatrix",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "watch": "cd frontend; yarn run watch",
-    "build_frontend": "cd frontend; yarn install --frozen-lockfile; yarn run build"
+    "watch": "cd frontend; npm run watch",
+    "build_frontend": "cd frontend; npm ci; npm run build"
   },
   "dependencies": {
     "bootstrap": "3.3.6",
@@ -24,7 +24,7 @@
     "ol-layerswitcher": "^3.3.0",
     "ol3-google-maps": "0.12.3",
     "openlayers": "3.19.1",
-    "openlayers4": "npm:openlayers@~4.0.1",
+    "openlayers-four": "npm:openlayers@~4.0.1",
     "po2json": "^0.4.5",
     "prettier": "^2.0.1",
     "raphael": "~2.1.4",

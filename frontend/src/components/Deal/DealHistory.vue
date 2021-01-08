@@ -32,7 +32,7 @@
             />
           </td>
           <td>
-            {{ derive_status(version.deal.status, version.deal.draft_status) }}
+            {{ $t(derive_status(version.deal.status, version.deal.draft_status)) }}
           </td>
           <td>{{ version.revision.comment }}</td>
           <td style="white-space: nowrap; text-align: right;">
@@ -140,15 +140,7 @@
           5: "To Delete",
         };
 
-        if (draft_status) {
-          return draft_status_map[draft_status];
-        }
-
-        let st = status_map[status];
-        if (draft_status) {
-          return `${st} + ${draft_status_map[draft_status]}`;
-        }
-        return st;
+        return draft_status ? draft_status_map[draft_status] : status_map[status];
       },
       compareVersions() {
         this.$router.push({

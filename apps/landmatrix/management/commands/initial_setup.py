@@ -69,7 +69,7 @@ class Command(BaseCommand):
         print("\033[92m" + "OK" + "\033[0m")
 
         print("  Creating users... ", end="", flush=True)
-        user = create_user(
+        create_user(
             "landmatrixuser", "testuser@domain.tld", "landmatrix", "Land", "Matrix"
         )
         print("\033[92m" + "OK" + "\033[0m")

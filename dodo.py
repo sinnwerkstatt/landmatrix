@@ -10,6 +10,10 @@ env.read_env(".env")
 DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 
+def pg_run(cmd: str) -> str:
+    return f"sudo -u postgres psql -c '{cmd}'"
+
+
 def task_update():
     return {"task_dep": ["collectstatic", "compilemessages", "migrate"], "actions": []}
 
@@ -19,10 +23,22 @@ def task_full_update():
 
 
 def task_initial_setup():
+    fixtures = " ".join(
+        [
+            "status",
+            "languages",
+            "crops",
+            "animals",
+            "minerals",
+            "countries_and_regions",
+            "users_and_groups",
+            "filters",
+        ]
+    )
     return {
         "task_dep": ["update"],
         "actions": [
-            "./manage.py loaddata status languages crops animals minerals countries_and_regions users_and_groups filters",
+            f"./manage.py loaddata {fixtures}",
             "./manage.py initial_setup",
         ],
     }
@@ -34,12 +50,12 @@ def task_reset_db():
 
     if "postgis" in db["ENGINE"] or "postgresql" in db["ENGINE"]:
         actions = [
-            f"sudo -u postgres psql -c 'drop database {db['NAME']}' || true",
-            f"sudo -u postgres psql -c 'create database {db['NAME']} with owner {db['USER']}'",
+            pg_run(f"DROP DATABASE IF EXISTS {db['NAME']}"),
+            pg_run(f"CREATE DATABASE {db['NAME']} WITH OWNER {db['USER']}"),
         ]
         if "postgis" in db["ENGINE"]:
             actions += [
-                f"sudo -u postgres psql {db['NAME']} -c 'create extension postgis'"
+                pg_run(f"CREATE EXTENSION IF NOT EXISTS postgis"),
             ]
 
     elif db["ENGINE"] == "django.db.backends.sqlite3":
@@ -49,10 +65,10 @@ def task_reset_db():
 
 
 #############################
-def task_yarn_install():
-    actions = ["yarn install"]
+def task_npm_install():
+    actions = ["npm install"]
     if get_var("production", False):
-        actions += ["yarn build_frontend"]
+        actions += ["npm run build_frontend"]
     return {
         "task_dep": ["compilemessages"],
         "targets": ["node_modules/"],
@@ -74,7 +90,7 @@ def task_convert_scss():
 
 def task_collectstatic():
     return {
-        "task_dep": ["yarn_install", "convert_scss"],
+        "task_dep": ["npm_install", "convert_scss"],
         "actions": ["./manage.py collectstatic --noinput"],
     }
 
@@ -89,7 +105,7 @@ def task_compilemessages():
             "targets": [mofile, json_target],
             "actions": [
                 f"msgfmt -o {mofile} {pofile}",
-                f"yarn run po2json -f mf {pofile} {json_target}",
+                f"npx po2json -f mf {pofile} {json_target}",
             ],
             "clean": True,
         }

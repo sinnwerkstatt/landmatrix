@@ -1,38 +1,50 @@
 # Landmatrix API Documentation
 
-The Landmatrix API is available at [https://dev.landmatrix.org/graphql/](https://dev.landmatrix.org/graphql/) and provides **deal** as well as **investor** data sets.
-The API requires you to write your queries in [GraphQL syntax](https://graphql.org/learn/) and returns the matching data sets as a [JSON](https://www.json.org/json-en.html) formatted response.
+The Landmatrix API is available at [https://landmatrix.org/graphql/](https://landmatrix.org/graphql/)
+and provides **deal** as well as **investor** data sets.
+The API requires you to write your queries in [GraphQL syntax](https://graphql.org/learn/)
+and returns the matching data sets as a [JSON](https://www.json.org/json-en.html) formatted response.
 
 
-### Data types and fields
-#### Deals
-_A deal is an transaction associated with a particular piece of land or area._
+## Data types and fields
+### Deals
+_A deal is a transaction associated with a particular piece of land or area._
 
-The deal data schema including all available fields can be found in the `Schema` section at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/).
+The deal data schema including all available fields can be found in the `Schema`
+section at [landmatrix.org/graphql/](https://landmatrix.org/graphql/).
 
-#### Investors
-_Investors are people or associations who or which are associated with a land deal._
+### Investors
+_Investors are entities or associations which are associated with a land deal._
 
-The Investor data schema including all available fields can be found in the `Schema` section at [dev.landmatrix.org/graphql/](dev.landmatrix.org/graphql/).
+The Investor data schema including all available fields can be found in the `Schema`
+section at [landmatrix.org/graphql/](https://landmatrix.org/graphql/).
 
+## Query examples
 
-### Query examples
+### Deal by ID
 
-#### Deal data by ID
-
-If you want to receive a specific deal by ID you can pass the ID as an argument to the query. In this case you are querying for the data type `deal`.
-```
+If you want to receive a specific deal by ID you can pass the ID as an argument to the
+query. In this case you are querying for the data type `deal`.
+```graphql
 {
-  deal(id: 3) {
+  deal(id: 4) {
+    id
+    current_intention_of_investment
+    current_negotiation_status
     geojson
   }
 }
 ```
 will return
-```
+```json
 {
   "data": {
     "deal": {
+      "id": 4,
+      "current_intention_of_investment": [
+        "LIVESTOCK"
+      ],
+      "current_negotiation_status": "ORAL_AGREEMENT",
       "geojson": {
         "type": "FeatureCollection",
         "features": [
@@ -41,13 +53,15 @@ will return
             "geometry": {
               "type": "Point",
               "coordinates": [
-                93.98784269999999,
-                19.810093
+                91.10173340000006,
+                22.8246384
               ]
             },
             "properties": {
-              "name": "Rakhine, Myanmar",
-              "type": "point"
+              "id": 9811,
+              "name": "Noakhali, Bangladesh",
+              "type": "point",
+              "spatial_accuracy": "ADMINISTRATIVE_REGION"
             }
           }
         ]
@@ -57,26 +71,30 @@ will return
 }
 ```
 
-_Deal IDs can for example be found [in the data section](https://landmatrix.org/data/) of the Landmatrix web application._
+_Deal IDs can be found [in the data section](https://landmatrix.org/list/deals/) of
+the Land Matrix._
 
-#### All deal data
+### Multiple Deals
 
 Data on all deals available can be recieved by querying for `deals`.
-```
+```graphql
 # This will return data of the first 5 deals (ordered by ID).
 {
   deals(limit: 5) {
     id
-    country
+    country {
+      id
+      name
+    }
     geojson
   }
 }
 ```
 
-#### Investor data by ID
+### Investor by ID
 
 To find a specific investor by ID simply pass the ID to the `investor` query:
-```
+```graphql
 {
   investor(id: 1010) {
     id
@@ -88,7 +106,7 @@ To find a specific investor by ID simply pass the ID to the `investor` query:
 }
 ```
 is going to return
-```
+```json
 {
   "data": {
     "investor": {
@@ -102,11 +120,13 @@ is going to return
 }
 ```
 
-#### All investor data
+### Multiple investors
 
-Analogous to the deals, data on multiple investors can be queried with the `investors` query.
-```
-# This will return `id` and `name` of the first 5 investors ordered ascending by ID.
+Analogous to the deals, data on multiple investors can be queried with the `investors`
+query.
+
+```graphql
+# This will return "id" and "name" of the first 5 investors ordered ascending by ID.
 {
   investors(limit: 5) {
     id
@@ -115,19 +135,46 @@ Analogous to the deals, data on multiple investors can be queried with the `inve
 }
 ```
 
+## Sorting
+
+Some queries, like `deals` and `investors`, have an option for sorting the output.
+It defaults to being sorted by `id` but it will also accept other fields, e.g. `modified_at`.
+
+You can also change the sort direction from ASCending to DESCending by prefixing the
+sort-term with a `-`.
+```graphql
+# Sort deals by creation date ascending
+{
+  deals(sort: "created_at") {
+    id
+    deal_size
+  }
+}
+```
+```graphql
+# or descending
+{
+  deals(sort: "-created_at") {
+    id
+    deal_size
+  }
+}
+```
 
 
-### Filters
+## Filters
 
-In most use cases you may want to specify some fields and conditions you want to have your query results filtered by.
+In most use cases you may want to specify some fields and conditions you want to have
+your query results filtered by.
 You can pass a `filter` array to your query as an argument.
 
-#### Filter examples
+### Filter examples
 
-If you want to apply a filter you can directly incorporate the filter array into your query like this:
-```
+If you want to apply a filter you can directly incorporate the filter array into your
+query like this:
+```graphql
 {
-  deals(filters: { field: "timestamp", operation: GE, value: "2020-03-02" }) {
+  deals(filters: { field: "created_at", operation: GE, value: "2020-03-02" }) {
     id
     deal_size
   }
@@ -137,40 +184,44 @@ If you want to apply a filter you can directly incorporate the filter array into
 You can also chain multiple filters by combining them into a filter array.
 The filters will be logically combined with an `AND` operator.
 
-```
+```graphql
 {
   deals(
     filters: [
-      { field: "timestamp", operation: GE, value: "2010-03-02" }
-      { field: "target_country.name", operation: EQ, value: "Myanmar" }
+      { field: "modified_at", operation: GE, value: "2010-03-02" }
+      { field: "country.name", operation: EQ, value: "Myanmar" }
     ]
   ) {
     id
-    target_country {
+    country {
       id
       name
     }
   }
 }
 ```
-Note that you can filter on subfields like e.g. `target_country.name` by chaining them with a `.`.
+Note that you can filter on subfields like e.g. `country.name` by chaining them with a `.`.
 
-If you want to create a logical `OR` filter on a specific field you can use the `IN` operator in combination with an array of values:
-```
+If you want to create a logical `OR` filter on a specific field you can use the `IN`
+operator in combination with an array of values:
+```graphql
 {
   deals(
     filters: [
-      { field: "target_country.name", operation: IN, value: ["Myanmar", "Bangladesh"] }
+      { field: "country.name", operation: IN, value: ["Myanmar", "Bangladesh"] }
     ]
   ) {
     id
     deal_size
+    country {
+      name
+    }
   }
 }
 ```
 
 
-#### Logical operators
+### Logical operators
 
 Available logical operators are:
 

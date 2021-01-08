@@ -15,6 +15,8 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
         newtarget = target[kx]
         _subkey_expode(newtarget, morekey, v)
 
+    if "id" not in fields:  # we need an ID to group by.
+        fields += ["id"]
     qs_values = qs.values(*fields)
     grouped_results = itertools.groupby(qs_values, key=lambda value: value["id"])
     results = []

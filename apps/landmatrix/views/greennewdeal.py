@@ -42,9 +42,13 @@ def gis_export(request):
 
     request_type = request.GET.get("type")
     if request_type == "points":
-        return JsonResponse(point_res)
+        response = JsonResponse(point_res)
+        response["Content-Disposition"] = 'attachment; filename="locations.geojson"'
+        return response
     elif request_type == "areas":
-        return JsonResponse(area_res)
+        response = JsonResponse(area_res)
+        response["Content-Disposition"] = 'attachment; filename="areas.geojson"'
+        return response
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:

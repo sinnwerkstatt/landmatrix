@@ -1,20 +1,16 @@
 <template>
-  <div class="form-field row">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
-    </div>
-    <div class="val" :class="valClasses">
-      <div v-if="readonly">
-        {{ val }}
-      </div>
-    </div>
+  <div style="white-space: nowrap;">
+    {{ value }}
+    <span v-if="formfield.name === 'deal_size'">ha</span>
   </div>
 </template>
 
 <script>
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: Number, required: true },
+      model: { type: String, required: true },
+    },
   };
 </script>

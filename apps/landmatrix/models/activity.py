@@ -963,14 +963,9 @@ class HistoricalActivity(ActivityBase):
             self.fk_status_id = self.STATUS_DELETED
         self.save(update_elasticsearch=False)
 
-        # Historical activity already is the newest version of activity?
-        # if self.public_version:
-        #    return False
-
         # Activity has been deleted?
-        if self.fk_status_id == self.STATUS_DELETED:
-            return
-        elif self.fk_status_id == self.STATUS_REJECTED:
+        if self.fk_status_id in [self.STATUS_DELETED, self.STATUS_REJECTED]:
+            self.trigger_gnd()
             return
 
         # Confirm pending investors and involvement

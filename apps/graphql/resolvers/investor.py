@@ -1,6 +1,6 @@
 from typing import Any
 
-from graphql import GraphQLResolveInfo
+from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
@@ -83,6 +83,12 @@ def resolve_investors(
     ).order_by(sort)
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
+
+    if any(["involvements" in field for field in fields]):
+        raise GraphQLError(
+            "Querying involvements via multiple operating companies is too"
+            " resource intensive. Please use single investor queries for this."
+        )
 
     if filters:
         qs = qs.filter(parse_filters(filters))
