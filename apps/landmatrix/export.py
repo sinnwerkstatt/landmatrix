@@ -9,7 +9,13 @@ from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import Deal, Investor, InvestorVentureInvolvement, Currency
+from apps.landmatrix.models import (
+    Deal,
+    Investor,
+    InvestorVentureInvolvement,
+    Currency,
+    Location,
+)
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -65,6 +71,36 @@ deal_fields = {
     "operating_company__comment": "Operating company: Comment",
 }
 
+location_fields = {
+    "level_of_accuracy": "Spatial accuracy level",
+    "name": "Location",
+    "point": "Point",
+    "facility_name": "Facility name",
+    "description": "Location description",
+    "comment": "Comment on location",
+}
+contract_fields = {
+    "number": "Contract number",
+    "date": "Contract date",
+    "expiration_date": "Contract expiration date",
+    "agreement_duration": "Duration of the agreement (in years)",
+    "comment": "Comment on contract",
+}
+
+datasource_fields = {
+    "type": "Data source type",
+    "url": "URL",
+    "file": "File",
+    "publication_title": "Publication title",
+    "date": "Date",
+    "name": "Name",
+    "company": "Organisation",
+    "email": "Email",
+    "phone": "Phone",
+    "open_land_contracts_id": "Open Contracting ID",
+    "comment": "Comment on data source",
+}
+
 current_negotiation_status_map = {
     "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
     "UNDER_NEGOTIATION": "Intended (Under negotiation)",
@@ -105,12 +141,12 @@ intention_of_investment_map = {
     "RENEWABLE_ENERGY": "Renewable Energy",
     "OTHER": "Other",
 }
+level_of_accuracy_map = dict(Location.ACCURACY_CHOICES)
 
 deal_choices_fields = {
     "intention_of_investment": intention_of_investment_map,
-    "nature_of_deal": dict(Deal._meta.get_field("nature_of_deal").choices),
-    # "current_implementation_status": current_implementation_status_map,
-    "investor_classification": dict(Investor._meta.get_field("classification").choices),
+    "nature_of_deal": dict(Deal.NATURE_OF_DEAL_CHOICES),
+    "investor_classification": dict(Investor.CLASSIFICATION_CHOICES),
     "currency": dict(Currency.objects.values_list("id", "name")),
 }
 deal_sub_fields = {
@@ -191,7 +227,7 @@ def flatten_date_current_value(data):
                 [
                     str(x.get("date", "")),
                     "current" if x.get("current") else "",
-                    f"{x.get('value', 0.0):.0f}",
+                    x["value"] if isinstance(x["value"], str) else f"{x['value']:.0f}",
                 ]
             )
             for x in data
@@ -222,6 +258,19 @@ class DataDownload:
                 qs, deal_flattened_fields, deal_sub_fields.keys()
             )
         ]
+        self.locations = [
+            self.location_download_format(loc)
+            for loc in qs_values_to_dict(
+                deal.locations.all(), list(location_fields.keys())
+            )
+        ]
+        self.contracts = qs_values_to_dict(
+            deal.contracts.all(), list(contract_fields.keys())
+        )
+        self.datasources = qs_values_to_dict(
+            deal.datasources.all(), list(datasource_fields.keys())
+        )
+
         self.investors = []
         self.involvements = []
         if deal.operating_company:
@@ -243,6 +292,8 @@ class DataDownload:
                 qs, deal_flattened_fields, deal_sub_fields.keys()
             )
         ]
+
+        # self.locations = []
 
         qs = Investor.objects.visible(self.user).order_by("id")
         self.investors = [
@@ -268,6 +319,12 @@ class DataDownload:
         ctx = {
             "deal_headers": deal_fields.values(),
             "deals": self.deals,
+            "location_headers": location_fields.values(),
+            "locations": self.locations,
+            "contract_headers": contract_fields.values(),
+            "contracts": self.contracts,
+            "datasource_headers": datasource_fields.values(),
+            "datasources": self.datasources,
             "investor_headers": investor_headers,
             "investors": self.investors,
             "involvement_headers": involvement_headers,
@@ -282,7 +339,7 @@ class DataDownload:
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
-        ws_deals.append(deal_fields.values())
+        ws_deals.append(list(deal_fields.values()))
         for item in self.deals:
             try:
                 ws_deals.append(item)
@@ -486,25 +543,50 @@ class DataDownload:
         if data.get("annual_leasing_fee_area"):
             data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
 
-        if data.get("contract_farming"):
+        if data.get("contract_farming") is not None:
             data["contract_farming"] = "Yes" if data["contract_farming"] else "No"
-        if data.get("on_the_lease"):
-            data["on_the_lease"] = "Yes" if data["on_the_lease"] else "No"
 
+        if data.get("on_the_lease") is not None:
+            data["on_the_lease"] = "Yes" if data["on_the_lease"] else "No"
         if data.get("on_the_lease_area"):
             data["on_the_lease_area"] = flatten_date_current_value(
                 data["on_the_lease_area"]
             )
+        if data.get("on_the_lease_farmers"):
+            data["on_the_lease_farmers"] = flatten_date_current_value(
+                data["on_the_lease_farmers"]
+            )
+        if data.get("on_the_lease_households"):
+            data["on_the_lease_households"] = flatten_date_current_value(
+                data["on_the_lease_households"]
+            )
 
-        if data.get("off_the_lease"):
+        if data.get("off_the_lease") is not None:
             data["off_the_lease"] = "Yes" if data["off_the_lease"] else "No"
-        row = []
-        for field in deal_fields.keys():
-            if field not in data:
-                # empty fields
-                data[field] = ""
-            row.append(data[field])
-        return row
+        if data.get("off_the_lease_area"):
+            data["off_the_lease_area"] = flatten_date_current_value(
+                data["off_the_lease_area"]
+            )
+        if data.get("off_the_lease_farmers"):
+            data["off_the_lease_farmers"] = flatten_date_current_value(
+                data["off_the_lease_farmers"]
+            )
+        if data.get("off_the_lease_households"):
+            data["off_the_lease_households"] = flatten_date_current_value(
+                data["off_the_lease_households"]
+            )
+
+        return [
+            "" if field not in data else data[field] for field in deal_fields.keys()
+        ]
+
+    @staticmethod
+    def location_download_format(data):
+        if data.get("level_of_accuracy"):
+            data["level_of_accuracy"] = level_of_accuracy_map[data["level_of_accuracy"]]
+        return [
+            "" if field not in data else data[field] for field in location_fields.keys()
+        ]
 
     @staticmethod
     def investor_download_format(data):
