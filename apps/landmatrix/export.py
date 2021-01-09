@@ -9,48 +9,62 @@ from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import Deal, Investor, InvestorVentureInvolvement
+from apps.landmatrix.models import Deal, Investor, InvestorVentureInvolvement, Currency
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
-deal_headers = [
-    "Deal ID",
-    "Is public",
-    "Deal scope",
-    "Deal size",
-    "Current size under contract",
-    "Current size in operation (production)",
-    "Current negotiation status",
-    "Current implementation status",
-    "Fully updated",
-    "Top parent companies",
-    "Operating company: Investor ID",
-    "Operating company: Name",
-    "Operating company: Country of registration/origin",
-    "Operating company: Classification",
-    "Operating company: Investor homepage",
-    "Operating company: Opencorporates link",
-    "Operating company: Comment",
-]
-deal_fields = [
-    "id",
-    "is_public",
-    "transnational",
-    "deal_size",
-    "current_contract_size",
-    "current_production_size",
-    "current_negotiation_status",
-    "current_implementation_status",
-    "fully_updated_at",
-    "top_investors",
-    "operating_company__id",
-    "operating_company__name",
-    "operating_company__country__name",
-    "operating_company__classification",
-    "operating_company__homepage",
-    "operating_company__opencorporates",
-    "operating_company__comment",
-]
+deal_fields = {
+    "id": "Deal ID",
+    "is_public": "Is public",
+    "transnational": "Deal scope",
+    "deal_size": "Deal size",
+    "current_contract_size": "Current size under contract",
+    "current_production_size": "Current size in operation (production)",
+    "current_negotiation_status": "Current negotiation status",
+    "current_implementation_status": "Current implementation status",
+    "fully_updated_at": "Fully updated",
+    "top_investors": "Top parent companies",
+    "intended_size": "Intended size (in ha)",
+    "contract_size": "Size under contract (leased or purchased area, in ha)",
+    "production_size": "Size in operation (production, in ha)",
+    "land_area_comment": "Comment on land area",
+    "intention_of_investment": "Intention of investment",
+    "intention_of_investment_comment": "Comment on intention of investment",
+    "nature_of_deal": "Nature of the deal",
+    "nature_of_deal_comment": "Comment on nature of the deal",
+    "negotiation_status": "Negotiation status",
+    "negotiation_status_comment": "Comment on negotiation status",
+    "implementation_status": "Implementation status",
+    "implementation_status_comment": "Comment on implementation status",
+    "purchase_price": "Purchase price",
+    "purchase_price_currency": "Purchase price currency",
+    "purchase_price_type": "Purchase price area type",
+    "purchase_price_area": "Purchase price area",
+    "purchase_price_comment": "Comment on purchase price",
+    "annual_leasing_fee": "Annual leasing fee",
+    "annual_leasing_fee_currency": "Annual leasing fee currency",
+    "annual_leasing_fee_type": "Annual leasing fee type",
+    "annual_leasing_fee_area": "Annual leasing fee area",
+    "annual_leasing_fee_comment": "Comment on leasing fees",
+    "contract_farming": "Contract farming",
+    "on_the_lease": "On leased / purchased area",
+    "on_the_lease_area": "On leased / purchased area (in ha)",
+    "on_the_lease_farmers": "On leased / purchased farmers",
+    "on_the_lease_households": "On leased / purchased households",
+    "off_the_lease": "Not on leased / purchased area (out-grower)",
+    "off_the_lease_area": "Not on leased / purchased area (out-grower, in ha)",
+    "off_the_lease_farmers": "Not on leased / purchased farmers (out-grower)",
+    "off_the_lease_households": "Not on leased / purchased households (out-grower)",
+    "contract_farming_comment": "Comment on contract farming",
+    "operating_company__id": "Operating company: Investor ID",
+    "operating_company__name": "Operating company: Name",
+    "operating_company__country__name": "Operating company: Country of registration/origin",
+    "operating_company__classification": "Operating company: Classification",
+    "operating_company__homepage": "Operating company: Investor homepage",
+    "operating_company__opencorporates": "Operating company: Opencorporates link",
+    "operating_company__comment": "Operating company: Comment",
+}
+
 current_negotiation_status_map = {
     "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
     "UNDER_NEGOTIATION": "Intended (Under negotiation)",
@@ -71,11 +85,33 @@ current_implementation_status_map = {
     "PROJECT_ABANDONED": "Project abandoned",
     None: "None",
 }
+intention_of_investment_map = {
+    "BIOFUELS": "Biofuels",
+    "FOOD_CROPS": "Food crops",
+    "FODDER": "Fodder",
+    "LIVESTOCK": "Livestock",
+    "NON_FOOD_AGRICULTURE": "Non-food agricultural commodities",
+    "AGRICULTURE_UNSPECIFIED": "Agriculture unspecified",
+    "TIMBER_PLANTATION": "Timber plantation",
+    "FOREST_LOGGING": "Forest logging / management",
+    "CARBON": "For carbon sequestration/REDD",
+    "FORESTRY_UNSPECIFIED": "Forestry unspecified",
+    "MINING": "Mining",
+    "OIL_GAS_EXTRACTION": "Oil / Gas extraction",
+    "TOURISM": "Tourism",
+    "INDUSTRY": "Industry",
+    "CONVERSATION": "Conservation",
+    "LAND_SPECULATION": "Land speculation",
+    "RENEWABLE_ENERGY": "Renewable Energy",
+    "OTHER": "Other",
+}
 
 deal_choices_fields = {
-    # "current_negotiation_status": current_negotiation_status_map,
+    "intention_of_investment": intention_of_investment_map,
+    "nature_of_deal": dict(Deal._meta.get_field("nature_of_deal").choices),
     # "current_implementation_status": current_implementation_status_map,
     "investor_classification": dict(Investor._meta.get_field("classification").choices),
+    "currency": dict(Currency.objects.values_list("id", "name")),
 }
 deal_sub_fields = {
     "top_investors": [
@@ -85,7 +121,7 @@ deal_sub_fields = {
     ]
 }
 deal_flattened_fields = []
-for f in deal_fields:
+for f in deal_fields.keys():
     if f in deal_sub_fields:
         for sf in deal_sub_fields[f]:
             deal_flattened_fields.append(sf)
@@ -146,6 +182,22 @@ involvement_fields = [
 involvement_choices_fields = {
     "role": dict(InvestorVentureInvolvement._meta.get_field("role").choices),
 }
+
+
+def flatten_date_current_value(data):
+    return "|".join(
+        [
+            "#".join(
+                [
+                    str(x.get("date", "")),
+                    "current" if x.get("current") else "",
+                    f"{x.get('value', 0.0):.0f}",
+                ]
+            )
+            for x in data
+            if x.get("value") is not None
+        ]
+    )
 
 
 class DataDownload:
@@ -214,7 +266,7 @@ class DataDownload:
 
     def html(self):
         ctx = {
-            "deal_headers": deal_headers,
+            "deal_headers": deal_fields.values(),
             "deals": self.deals,
             "investor_headers": investor_headers,
             "investors": self.investors,
@@ -230,7 +282,7 @@ class DataDownload:
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
-        ws_deals.append(deal_headers)
+        ws_deals.append(deal_fields.values())
         for item in self.deals:
             try:
                 ws_deals.append(item)
@@ -269,7 +321,7 @@ class DataDownload:
         zip_file = zipfile.ZipFile(result, "w")
 
         # Deals CSV
-        deals_data = [deal_headers] + self.deals
+        deals_data = [deal_fields.values()] + self.deals
         zip_file.writestr("deals.csv", self._csv_writer(deals_data))
 
         # Involvements CSV
@@ -346,14 +398,111 @@ class DataDownload:
         if fully_updated_at:
             data["fully_updated_at"] = fully_updated_at.isoformat()
 
+        if data.get("contract_size"):
+            data["contract_size"] = flatten_date_current_value(data["contract_size"])
+
+        if data.get("production_size"):
+            data["production_size"] = flatten_date_current_value(
+                data["production_size"]
+            )
+
+        if data.get("intention_of_investment"):
+            data["intention_of_investment"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            str(x.get("date", "")),
+                            "current" if x.get("current") else "",
+                            x.get("size", ""),
+                            ", ".join(
+                                deal_choices_fields["intention_of_investment"][y]
+                                for y in x.get("value", [])
+                            ),
+                        ]
+                    )
+                    for x in data["intention_of_investment"]
+                    if x.get("value") is not None
+                ]
+            )
+        if data.get("nature_of_deal"):
+            data["nature_of_deal"] = "|".join(
+                [
+                    deal_choices_fields["nature_of_deal"][x]
+                    for x in data["nature_of_deal"]
+                ]
+            )
+
+        if data.get("negotiation_status"):
+            data["negotiation_status"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            str(x.get("date", "")),
+                            "current" if x.get("current") else "",
+                            current_negotiation_status_map[x.get("value")],
+                        ]
+                    )
+                    for x in data["negotiation_status"]
+                ]
+            )
+
+        if data.get("implementation_status"):
+            data["implementation_status"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            str(x.get("date", "")),
+                            "current" if x.get("current") else "",
+                            current_implementation_status_map[x.get("value")],
+                        ]
+                    )
+                    for x in data["implementation_status"]
+                ]
+            )
+
+        if data.get("purchase_price"):
+            data["purchase_price"] = int(data["purchase_price"])
+        if data.get("purchase_price_currency"):
+            data["purchase_price_currency"] = deal_choices_fields["currency"][
+                data["purchase_price_currency"]
+            ]
+        if data.get("purchase_price_type"):
+            data["purchase_price_type"] = dict(Deal.HA_AREA_CHOICES)[
+                data["purchase_price_type"]
+            ]
+        if data.get("purchase_price_area"):
+            data["purchase_price_area"] = int(data["purchase_price_area"])
+
+        if data.get("annual_leasing_fee"):
+            data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
+        if data.get("annual_leasing_fee_currency"):
+            data["annual_leasing_fee_currency"] = deal_choices_fields["currency"][
+                data["annual_leasing_fee_currency"]
+            ]
+        if data.get("annual_leasing_fee_type"):
+            data["annual_leasing_fee_type"] = dict(Deal.HA_AREA_CHOICES)[
+                data["annual_leasing_fee_type"]
+            ]
+        if data.get("annual_leasing_fee_area"):
+            data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
+
+        if data.get("contract_farming"):
+            data["contract_farming"] = "Yes" if data["contract_farming"] else "No"
+        if data.get("on_the_lease"):
+            data["on_the_lease"] = "Yes" if data["on_the_lease"] else "No"
+
+        if data.get("on_the_lease_area"):
+            data["on_the_lease_area"] = flatten_date_current_value(
+                data["on_the_lease_area"]
+            )
+
+        if data.get("off_the_lease"):
+            data["off_the_lease"] = "Yes" if data["off_the_lease"] else "No"
         row = []
-        for field in deal_fields:
+        for field in deal_fields.keys():
             if field not in data:
                 # empty fields
                 data[field] = ""
-            elif field in deal_choices_fields:
-                # fields with choices
-                data[field] = str(deal_choices_fields[field][data[field]])
             row.append(data[field])
         return row
 
