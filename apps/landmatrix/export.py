@@ -15,6 +15,8 @@ from apps.landmatrix.models import (
     InvestorVentureInvolvement,
     Currency,
     Location,
+    DataSource,
+    Contract,
 )
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
@@ -72,6 +74,7 @@ deal_fields = {
 }
 
 location_fields = {
+    "deal_id": "Deal ID",
     "level_of_accuracy": "Spatial accuracy level",
     "name": "Location",
     "point": "Point",
@@ -80,6 +83,7 @@ location_fields = {
     "comment": "Comment on location",
 }
 contract_fields = {
+    "deal_id": "Deal ID",
     "number": "Contract number",
     "date": "Contract date",
     "expiration_date": "Contract expiration date",
@@ -88,6 +92,7 @@ contract_fields = {
 }
 
 datasource_fields = {
+    "deal_id": "Deal ID",
     "type": "Data source type",
     "url": "URL",
     "file": "File",
@@ -141,7 +146,6 @@ intention_of_investment_map = {
     "RENEWABLE_ENERGY": "Renewable Energy",
     "OTHER": "Other",
 }
-level_of_accuracy_map = dict(Location.ACCURACY_CHOICES)
 
 deal_choices_fields = {
     "intention_of_investment": intention_of_investment_map,
@@ -183,9 +187,7 @@ investor_fields = [
     "opencorporates",
     "comment",
 ]
-investor_choices_fields = {
-    "classification": dict(Investor._meta.get_field("classification").choices)
-}
+investor_choices_fields = {"classification": dict(Investor.CLASSIFICATION_CHOICES)}
 
 involvement_headers = [
     "Involvement ID",
@@ -215,9 +217,7 @@ involvement_fields = [
     "loans_date",
     "comment",
 ]
-involvement_choices_fields = {
-    "role": dict(InvestorVentureInvolvement._meta.get_field("role").choices),
-}
+involvement_choices_fields = {"role": dict(InvestorVentureInvolvement.ROLE_CHOICES)}
 
 
 def flatten_date_current_value(data):
@@ -259,17 +259,23 @@ class DataDownload:
             )
         ]
         self.locations = [
-            self.location_download_format(loc)
-            for loc in qs_values_to_dict(
+            self.location_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
                 deal.locations.all(), list(location_fields.keys())
             )
         ]
-        self.contracts = qs_values_to_dict(
-            deal.contracts.all(), list(contract_fields.keys())
-        )
-        self.datasources = qs_values_to_dict(
-            deal.datasources.all(), list(datasource_fields.keys())
-        )
+        self.contracts = [
+            self.contracts_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                deal.contracts.all(), list(contract_fields.keys())
+            )
+        ]
+        self.datasources = [
+            self.datasource_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                deal.datasources.all(), list(datasource_fields.keys())
+            )
+        ]
 
         self.investors = []
         self.involvements = []
@@ -286,6 +292,8 @@ class DataDownload:
         if filters:
             qs = qs.filter(parse_filters(json.loads(filters)))
 
+        deal_ids = qs.values_list("id", flat=True)
+
         self.deals = [
             self.deal_download_format(qs_dict)
             for qs_dict in qs_values_to_dict(
@@ -293,7 +301,30 @@ class DataDownload:
             )
         ]
 
-        # self.locations = []
+        self.locations = [
+            self.location_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                Location.objects.filter(deal_id__in=deal_ids).order_by("deal_id", "id"),
+                list(location_fields.keys()),
+            )
+        ]
+        self.contracts = [
+            self.contracts_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                Contract.objects.filter(deal_id__in=deal_ids).order_by("deal_id", "id"),
+                list(contract_fields.keys()),
+            )
+        ]
+
+        self.datasources = [
+            self.datasource_download_format(qs_dict)
+            for qs_dict in qs_values_to_dict(
+                DataSource.objects.filter(deal_id__in=deal_ids).order_by(
+                    "deal_id", "id"
+                ),
+                list(datasource_fields.keys()),
+            )
+        ]
 
         qs = Investor.objects.visible(self.user).order_by("id")
         self.investors = [
@@ -348,6 +379,21 @@ class DataDownload:
                     [str(i).encode("unicode_escape").decode("utf-8") for i in item]
                 )
 
+        ## Locations tab
+        ws = wb.create_sheet(title="Locations")
+        ws.append(list(location_fields.values()))
+        [ws.append(item) for item in self.locations]
+
+        ## Contracts tab
+        ws = wb.create_sheet(title="Contracts")
+        ws.append(list(contract_fields.values()))
+        [ws.append(item) for item in self.contracts]
+
+        ## DataSources tab
+        ws = wb.create_sheet(title="Data Sources")
+        ws.append(list(datasource_fields.values()))
+        [ws.append(item) for item in self.datasources]
+
         # Involvements tab
         ws_involvements = wb.create_sheet(title="Involvements")
         ws_involvements.append(involvement_headers)
@@ -380,6 +426,22 @@ class DataDownload:
         # Deals CSV
         deals_data = [deal_fields.values()] + self.deals
         zip_file.writestr("deals.csv", self._csv_writer(deals_data))
+
+        # Locations CSV
+        zip_file.writestr(
+            "locations.csv",
+            self._csv_writer([location_fields.values()] + self.locations),
+        )
+        # Contracts CSV
+        zip_file.writestr(
+            "contracts.csv",
+            self._csv_writer([contract_fields.values()] + self.contracts),
+        )
+        # Datasources CSV
+        zip_file.writestr(
+            "datasources.csv",
+            self._csv_writer([datasource_fields.values()] + self.datasources),
+        )
 
         # Involvements CSV
         involvements_data = [involvement_headers] + self.involvements
@@ -582,10 +644,29 @@ class DataDownload:
 
     @staticmethod
     def location_download_format(data):
+        if data.get("point"):
+            data["point"] = f"{data['point'].y},{data['point'].x}"
         if data.get("level_of_accuracy"):
-            data["level_of_accuracy"] = level_of_accuracy_map[data["level_of_accuracy"]]
+            data["level_of_accuracy"] = dict(Location.ACCURACY_CHOICES)[
+                data["level_of_accuracy"]
+            ]
         return [
             "" if field not in data else data[field] for field in location_fields.keys()
+        ]
+
+    @staticmethod
+    def contracts_download_format(data):
+        return [
+            "" if field not in data else data[field] for field in contract_fields.keys()
+        ]
+
+    @staticmethod
+    def datasource_download_format(data):
+        if data.get("type"):
+            data["type"] = dict(DataSource.TYPE_CHOICES)[data["type"]]
+        return [
+            "" if field not in data else data[field]
+            for field in datasource_fields.keys()
         ]
 
     @staticmethod
