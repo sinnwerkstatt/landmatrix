@@ -17,6 +17,7 @@ from apps.landmatrix.models import (
     Location,
     DataSource,
     Contract,
+    Country,
 )
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
@@ -114,7 +115,7 @@ deal_fields = {
     "displaced_households": "Number of households actually displaced",
     "displaced_people_from_community_land": "Number of people displaced out of their community land",
     "displaced_people_within_community_land": "Number of people displaced staying on community land",
-    "displaced_households_from_fields": "Number of households displaced 'only' from their agricultural fields",
+    "displaced_households_from_fields": 'Number of households displaced "only" from their agricultural fields',
     "displaced_people_on_completion": "Number of people facing displacement once project is fully implemented",
     "displacement_of_people_comment": "Comment on displacement of people",
     "negative_impacts": "Negative impacts for local communities",
@@ -254,7 +255,6 @@ intention_of_investment_map = {
 
 deal_choices_fields = {
     "intention_of_investment": intention_of_investment_map,
-    "nature_of_deal": dict(Deal.NATURE_OF_DEAL_CHOICES),
     "investor_classification": dict(Investor.CLASSIFICATION_CHOICES),
 }
 
@@ -266,6 +266,16 @@ def currency_choices():
     if not _currency_choices:
         _currency_choices = dict(Currency.objects.values_list("id", "name"))
     return _currency_choices
+
+
+_country_choices = []
+
+
+def country_choices():
+    global _country_choices
+    if not _country_choices:
+        _country_choices = dict(Country.objects.values_list("id", "name"))
+    return _country_choices
 
 
 deal_sub_fields = {
@@ -351,6 +361,19 @@ def flatten_date_current_value(data, field) -> None:
             if x.get("value") is not None
         ]
     )
+
+
+def flatten_array_choices(data, field, choices) -> None:
+    if not data.get(field):
+        return
+
+    data[field] = "|".join([choices[x] for x in data[field]])
+
+
+def single_choice(data, field, choices) -> None:
+    if not data.get(field):
+        return
+    data[field] = choices[data[field]]
 
 
 def bool_cast(data, field) -> None:
@@ -599,7 +622,7 @@ class DataDownload:
                         ti["country__name"] if "country__name" in ti else "",
                     ]
                 )
-                for ti in data["top_investors"]
+                for ti in sorted(data["top_investors"], key=lambda x: x["id"])
             ]
         )
         # map operating company fields
@@ -661,13 +684,8 @@ class DataDownload:
                     if x.get("value") is not None
                 ]
             )
-        if data.get("nature_of_deal"):
-            data["nature_of_deal"] = "|".join(
-                [
-                    deal_choices_fields["nature_of_deal"][x]
-                    for x in data["nature_of_deal"]
-                ]
-            )
+
+        flatten_array_choices(data, "nature_of_deal", dict(Deal.NATURE_OF_DEAL_CHOICES))
 
         if data.get("negotiation_status"):
             data["negotiation_status"] = "|".join(
@@ -724,6 +742,37 @@ class DataDownload:
             data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
 
         bool_cast(data, "contract_farming")
+        flatten_date_current_value(data, "total_jobs_current")
+        flatten_date_current_value(data, "total_jobs_current_employees")
+        flatten_date_current_value(data, "total_jobs_current_daily_workers")
+        flatten_date_current_value(data, "foreign_jobs_current")
+        flatten_date_current_value(data, "foreign_jobs_current_employees")
+        flatten_date_current_value(data, "foreign_jobs_current_daily_workers")
+        flatten_date_current_value(data, "domestic_jobs_current")
+        flatten_date_current_value(data, "domestic_jobs_current_employees")
+        flatten_date_current_value(data, "domestic_jobs_current_daily_workers")
+
+        flatten_array_choices(
+            data, "recognition_status", dict(Deal.RECOGNITION_STATUS_CHOICES)
+        )
+        single_choice(
+            data, "community_consultation", dict(Deal.COMMUNITY_CONSULTATION_CHOICES)
+        )
+        single_choice(data, "community_reaction", dict(Deal.COMMUNITY_REACTION_CHOICES))
+
+        if data.get("involved_actors"):
+            data["involved_actors"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            x.get("value", "") or "",
+                            dict(Deal.ACTOR_MAP)[x["role"]] if x.get("role") else "",
+                        ]
+                    )
+                    for x in data["involved_actors"]
+                ]
+            )
+
         bool_cast(data, "on_the_lease")
         flatten_date_current_value(data, "on_the_lease_area")
         flatten_date_current_value(data, "on_the_lease_farmers")
@@ -732,13 +781,38 @@ class DataDownload:
         flatten_date_current_value(data, "off_the_lease_area")
         flatten_date_current_value(data, "off_the_lease_farmers")
         flatten_date_current_value(data, "off_the_lease_households")
-
         bool_cast(data, "total_jobs_created")
         bool_cast(data, "foreign_jobs_created")
         bool_cast(data, "domestic_jobs_created")
 
+        if data.get("name_of_community"):
+            data["name_of_community"] = "".join(
+                [f"{x}#" for x in data["name_of_community"]]
+            )
+        if data.get("name_of_indigenous_people"):
+            data["name_of_indigenous_people"] = "".join(
+                [f"{x}#" for x in data["name_of_indigenous_people"]]
+            )
+
         bool_cast(data, "land_conflicts")
         bool_cast(data, "displacement_of_people")
+
+        flatten_array_choices(
+            data, "negative_impacts", dict(Deal.NEGATIVE_IMPACTS_CHOICES)
+        )
+        flatten_array_choices(data, "promised_benefits", dict(Deal.BENEFITS_CHOICES))
+        flatten_array_choices(
+            data, "materialized_benefits", dict(Deal.BENEFITS_CHOICES)
+        )
+        flatten_array_choices(
+            data, "former_land_owner", dict(Deal.FORMER_LAND_OWNER_CHOICES)
+        )
+        flatten_array_choices(
+            data, "former_land_use", dict(Deal.FORMER_LAND_USE_CHOICES)
+        )
+        flatten_array_choices(
+            data, "former_land_cover", dict(Deal.FORMER_LAND_COVER_CHOICES)
+        )
 
         bool_cast(data, "has_domestic_use")
         bool_cast(data, "has_export")
@@ -748,6 +822,27 @@ class DataDownload:
         bool_cast(data, "use_of_irrigation_infrastructure")
         bool_cast(data, "fully_updated")
         bool_cast(data, "confidential")
+
+        for country in ["export_country1", "export_country2", "export_country3"]:
+            if data.get(country):
+                data[country] = country_choices()[data[country]]
+
+        """missing
+            crops
+            animals
+            resources
+            contract_farming_crops
+            contract_farming_animals
+
+            source_of_water_extraction
+            water_extraction_amount
+            use_of_irrigation_infrastructure
+            water_footprint
+            gender_related_information
+            vggt_applied
+            prai_applied
+            confidential_reason
+        """
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()

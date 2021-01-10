@@ -219,9 +219,28 @@ def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
     deal.operating_company_id = involvements[0].fk_investor.investor_identifier
 
 
+actors_map = {
+    "Government / State institutions": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+    "Government / State institutions (government, ministries, departments, agencies etc.)": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+    "Traditional land-owners / communities": "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+    "Traditional local authority (e.g. Chiefdom council / Chiefs)": "TRADITIONAL_LOCAL_AUTHORITY",
+    "Traditional local authority": "TRADITIONAL_LOCAL_AUTHORITY",
+    "Broker": "BROKER",
+    "Intermediary": "INTERMEDIARY",
+    "Other (please specify)": "OTHER",
+    "Other": "OTHER",
+}
+
+
 def parse_investor_info(deal, attrs):
     # deal.operating_company see above "_connect_investor_to_deal"
-    deal.involved_actors = _extras_to_json(attrs, "actors", val2name="role")
+    involved_actors = _extras_to_json(attrs, "actors", val2name="role")
+    if involved_actors:
+        for involved_actor in involved_actors:
+            if involved_actor.get("role"):
+                involved_actor["role"] = actors_map[involved_actor["role"]]
+    deal.involved_actors = involved_actors
+
     deal.project_name = attrs.get("project_name") or ""
     deal.investment_chain_comment = (
         attrs.get("tg_operational_stakeholder_comment") or ""
