@@ -18,6 +18,9 @@ from apps.landmatrix.models import (
     DataSource,
     Contract,
     Country,
+    Crop,
+    Animal,
+    Mineral,
 )
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
@@ -160,22 +163,22 @@ deal_fields = {
     "in_country_end_products": "In-country end products of the project",
     "water_extraction_envisaged": "Water extraction envisaged",
     "water_extraction_envisaged_comment": "Comment on water extraction envisaged",
-    "source_of_water_extraction": "Source of water extraction",
+    # "source_of_water_extraction": "Source of water extraction",
     "source_of_water_extraction_comment": "Comment on source of water extraction",
     "how_much_do_investors_pay_comment": "Comment on how much do investors pay for water",
-    "water_extraction_amount": "Water extraction amount",
+    # "water_extraction_amount": "Water extraction amount",
     "water_extraction_amount_comment": "Comment on how much water is extracted",
-    "use_of_irrigation_infrastructure": "Use of irrigation infrastructure",
+    # "use_of_irrigation_infrastructure": "Use of irrigation infrastructure",
     "use_of_irrigation_infrastructure_comment": "Comment on use of irrigation infrastructure",
-    "water_footprint": "Water footprint of the investment project",
+    # "water_footprint": "Water footprint of the investment project",
     "gender_related_information": "Comment on gender-related info",
-    "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
+    # "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
     "vggt_applied_comment": "Comment on VGGT",
-    "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
+    # "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
     "prai_applied_comment": "Comment on PRAI",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
-    "confidential_reason": "Reason",
+    # "confidential_reason": "Reason",
     "confidential_comment": "Comment on not public",
 }
 
@@ -258,25 +261,26 @@ deal_choices_fields = {
     "investor_classification": dict(Investor.CLASSIFICATION_CHOICES),
 }
 
-_currency_choices = []
+
+class Choices:
+    choices = {}
+
+    def get(self, name):
+        if not self.choices.get(name):
+            if name == "currency":
+                self.choices[name] = dict(Currency.objects.values_list("id", "name"))
+            if name == "country":
+                self.choices[name] = dict(Country.objects.values_list("id", "name"))
+            if name == "crops":
+                self.choices[name] = dict(Crop.objects.values_list("code", "name"))
+            if name == "animals":
+                self.choices[name] = dict(Animal.objects.values_list("code", "name"))
+            if name == "resources":
+                self.choices[name] = dict(Mineral.objects.values_list("code", "name"))
+        return self.choices[name]
 
 
-def currency_choices():
-    global _currency_choices
-    if not _currency_choices:
-        _currency_choices = dict(Currency.objects.values_list("id", "name"))
-    return _currency_choices
-
-
-_country_choices = []
-
-
-def country_choices():
-    global _country_choices
-    if not _country_choices:
-        _country_choices = dict(Country.objects.values_list("id", "name"))
-    return _country_choices
-
+mchoices = Choices()
 
 deal_sub_fields = {
     "top_investors": [
@@ -718,7 +722,7 @@ class DataDownload:
         if data.get("purchase_price"):
             data["purchase_price"] = int(data["purchase_price"])
         if data.get("purchase_price_currency"):
-            data["purchase_price_currency"] = currency_choices()[
+            data["purchase_price_currency"] = mchoices.get("currency")[
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
@@ -731,7 +735,7 @@ class DataDownload:
         if data.get("annual_leasing_fee"):
             data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
         if data.get("annual_leasing_fee_currency"):
-            data["annual_leasing_fee_currency"] = currency_choices()[
+            data["annual_leasing_fee_currency"] = mchoices.get("currency")[
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
@@ -825,15 +829,54 @@ class DataDownload:
 
         for country in ["export_country1", "export_country2", "export_country3"]:
             if data.get(country):
-                data[country] = country_choices()[data[country]]
+                data[country] = mchoices.get("country")[data[country]]
+
+        for produce_type in ["crops", "animals", "resources"]:
+            if data.get(produce_type) is not None:
+                data[produce_type] = "|".join(
+                    [
+                        "#".join(
+                            [
+                                dat.get("date") or "",
+                                "current" if dat.get("current") else "",
+                                dat.get("hectares") or "",
+                                dat.get("tons") or "",
+                                dat.get("percent") or "",
+                                ", ".join(
+                                    [
+                                        mchoices.get(produce_type).get(x, x)
+                                        for x in dat.get("value")
+                                    ]
+                                ),
+                            ]
+                        )
+                        for dat in data[produce_type]
+                    ]
+                )
+
+        # broken because sync not correct yet
+        for produce_type in ["contract_farming_crops", "contract_farming_animals"]:
+            if data.get(produce_type) is not None:
+                data[produce_type] = "|".join(
+                    [
+                        "#".join(
+                            [
+                                dat.get("date") or "",
+                                "current" if dat.get("current") else "",
+                                dat.get("hectares") or "",
+                                ", ".join(
+                                    [
+                                        mchoices.get(produce_type[17:]).get(x, x)
+                                        for x in dat.get("value")
+                                    ]
+                                ),
+                            ]
+                        )
+                        for dat in data[produce_type]
+                    ]
+                )
 
         """missing
-            crops
-            animals
-            resources
-            contract_farming_crops
-            contract_farming_animals
-
             source_of_water_extraction
             water_extraction_amount
             use_of_irrigation_infrastructure

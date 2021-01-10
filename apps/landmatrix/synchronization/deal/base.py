@@ -68,6 +68,7 @@ def parse_general(deal, attrs):
         "Concession": "CONCESSION",
         "Concesión": "CONCESSION",
         "Exploitation permit / license / concession (for mineral resources)": "EXPLOITATION_PERMIT",
+        "Permiso de explotación/licencia/concesión (para recursos minerales)": "EXPLOITATION_PERMIT",
         "Exploitation permit / license / concession": "EXPLOITATION_PERMIT",
         "Resource exploitation license / concession": "EXPLOITATION_PERMIT",
         "Pure contract farming": "PURE_CONTRACT_FARMING",
@@ -461,13 +462,18 @@ def parse_produce_info(deal, attrs):
     deal.resources_comment = attrs.get("tg_minerals_comment") or ""
 
     deal.contract_farming_crops = _extras_to_json(
-        attrs, "contract_farming_crops", "hectares"
+        attrs, "contract_farming_crops", "hectares", fieldmap=CROP_MAP, multi_value=True
     )
+
     deal.contract_farming_crops_comment = (
         attrs.get("tg_contract_farming_crops_comment") or ""
     )
     deal.contract_farming_animals = _extras_to_json(
-        attrs, "contract_farming_animals", "hectares"
+        attrs,
+        "contract_farming_animals",
+        "hectares",
+        fieldmap=ANIMAL_MAP,
+        multi_value=True,
     )
     deal.contract_farming_animals_comment = (
         attrs.get("tg_contract_farming_animals_comment") or ""
