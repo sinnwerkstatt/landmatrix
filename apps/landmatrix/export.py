@@ -64,6 +64,33 @@ deal_fields = {
     "off_the_lease_farmers": "Not on leased / purchased farmers (out-grower)",
     "off_the_lease_households": "Not on leased / purchased households (out-grower)",
     "contract_farming_comment": "Comment on contract farming",
+    "total_jobs_created": "Jobs created (total)",
+    "total_jobs_planned": "Planned number of jobs (total)",
+    "total_jobs_planned_employees": "Planned employees (total)",
+    "total_jobs_planned_daily_workers": "Planned daily/seasonal workers (total)",
+    "total_jobs_current": "Current number of jobs (total)",
+    "total_jobs_current_employees": "Current number of employees (total)",
+    "total_jobs_current_daily_workers": "Current number of daily/seasonal workers (total)",
+    "total_jobs_created_comment": "Comment on jobs created (total)",
+    "foreign_jobs_created": "Jobs created (foreign)",
+    "foreign_jobs_planned": "Planned number of jobs (foreign)",
+    "foreign_jobs_planned_employees": "Planned employees (foreign)",
+    "foreign_jobs_planned_daily_workers": "Planned daily/seasonal workers (foreign)",
+    "foreign_jobs_current": "Current number of jobs (foreign)",
+    "foreign_jobs_current_employees": "Current number of employees (foreign)",
+    "foreign_jobs_current_daily_workers": "Current number of daily/seasonal workers (foreign)",
+    "foreign_jobs_created_comment": "Comment on jobs created (foreign)",
+    "domestic_jobs_created": "Jobs created (domestic)",
+    "domestic_jobs_planned": "Planned number of jobs (domestic)",
+    "domestic_jobs_planned_employees": "Planned employees (domestic)",
+    "domestic_jobs_planned_daily_workers": "Planned daily/seasonal workers (domestic)",
+    "domestic_jobs_current": "Current number of jobs (domestic)",
+    "domestic_jobs_current_employees": "Current number of employees (domestic)",
+    "domestic_jobs_current_daily_workers": "Current number of daily/seasonal workers (domestic)",
+    "domestic_jobs_created_comment": "Comment on jobs created (domestic)",
+    "involved_actors": "Actors involved in the negotiation / admission process",
+    "project_name": "Name of investment project",
+    "investment_chain_comment": "Comment on investment chain",
     "operating_company__id": "Operating company: Investor ID",
     "operating_company__name": "Operating company: Name",
     "operating_company__country__name": "Operating company: Country of registration/origin",
@@ -71,6 +98,84 @@ deal_fields = {
     "operating_company__homepage": "Operating company: Investor homepage",
     "operating_company__opencorporates": "Operating company: Opencorporates link",
     "operating_company__comment": "Operating company: Comment",
+    "name_of_community": "Name of community",
+    "name_of_indigenous_people": "Name of indigenous people",
+    "people_affected_comment": "Comment on communities / indigenous peoples affected",
+    "recognition_status": "Recognition status of community land tenure",
+    "recognition_status_comment": "Comment on recognitions status of community land tenure",
+    "community_consultation": "Community consultation",
+    "community_consultation_comment": "Comment on consultation of local community",
+    "community_reaction": "Community reaction",
+    "community_reaction_comment": "Comment on community reaction",
+    "land_conflicts": "Presence of land conflicts",
+    "land_conflicts_comment": "Comment on presence of land conflicts",
+    "displacement_of_people": "Displacement of people",
+    "displaced_people": "Number of people actually displaced",
+    "displaced_households": "Number of households actually displaced",
+    "displaced_people_from_community_land": "Number of people displaced out of their community land",
+    "displaced_people_within_community_land": "Number of people displaced staying on community land",
+    "displaced_households_from_fields": "Number of households displaced 'only' from their agricultural fields",
+    "displaced_people_on_completion": "Number of people facing displacement once project is fully implemented",
+    "displacement_of_people_comment": "Comment on displacement of people",
+    "negative_impacts": "Negative impacts for local communities",
+    "negative_impacts_comment": "Comment on negative impacts for local communities",
+    "promised_compensation": "Promised compensation (e.g. for damages or resettlements)",
+    "received_compensation": "Received compensation (e.g. for damages or resettlements)",
+    "promised_benefits": "Promised benefits for local communities",
+    "promised_benefits_comment": "Comment on promised benefits for local communities",
+    "materialized_benefits": "Materialized benefits for local communities",
+    "materialized_benefits_comment": "Comment on materialized benefits for local communities",
+    "presence_of_organizations": "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
+    "former_land_owner": "Former land owner",
+    "former_land_owner_comment": "Comment on former land owner",
+    "former_land_use": "Former land use",
+    "former_land_use_comment": "Comment on former land use",
+    "former_land_cover": "Former land cover",
+    "former_land_cover_comment": "Comment on former land cover",
+    "crops": "Crops area/yield/export",
+    "crops_comment": "Comment on crops",
+    "animals": "Livestock area/yield/export",
+    "animals_comment": "Comment on livestock",
+    "resources": "Resources area/yield/export",
+    "resources_comment": "Comment on resources",
+    "contract_farming_crops": "Contract farming crops",
+    "contract_farming_crops_comment": "Comment on contract farming crops",
+    "contract_farming_animals": "Contract farming livestock",
+    "contract_farming_animals_comment": "Comment on contract farming livestock",
+    "has_domestic_use": "Has domestic use",
+    "domestic_use": "Domestic use",
+    "has_export": "Has export",
+    "export": "Export",
+    "export_country1": "Country 1",
+    "export_country1_ratio": "Country 1 ratio",
+    "export_country2": "Country 2",
+    "export_country2_ratio": "Country 2 ratio",
+    "export_country3": "Country 3",
+    "export_country3_ratio": "Country 3 ratio",
+    "use_of_produce_comment": "Comment on use of produce",
+    "in_country_processing": "In country processing of produce",
+    "in_country_processing_comment": "Comment on in country processing of produce",
+    "in_country_processing_facilities": "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)",
+    "in_country_end_products": "In-country end products of the project",
+    "water_extraction_envisaged": "Water extraction envisaged",
+    "water_extraction_envisaged_comment": "Comment on water extraction envisaged",
+    "source_of_water_extraction": "Source of water extraction",
+    "source_of_water_extraction_comment": "Comment on source of water extraction",
+    "how_much_do_investors_pay_comment": "Comment on how much do investors pay for water",
+    "water_extraction_amount": "Water extraction amount",
+    "water_extraction_amount_comment": "Comment on how much water is extracted",
+    "use_of_irrigation_infrastructure": "Use of irrigation infrastructure",
+    "use_of_irrigation_infrastructure_comment": "Comment on use of irrigation infrastructure",
+    "water_footprint": "Water footprint of the investment project",
+    "gender_related_information": "Comment on gender-related info",
+    "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
+    "vggt_applied_comment": "Comment on VGGT",
+    "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
+    "prai_applied_comment": "Comment on PRAI",
+    "overall_comment": "Overall comment",
+    "confidential": "Not public",
+    "confidential_reason": "Reason",
+    "confidential_comment": "Comment on not public",
 }
 
 location_fields = {
@@ -151,8 +256,18 @@ deal_choices_fields = {
     "intention_of_investment": intention_of_investment_map,
     "nature_of_deal": dict(Deal.NATURE_OF_DEAL_CHOICES),
     "investor_classification": dict(Investor.CLASSIFICATION_CHOICES),
-    "currency": dict(Currency.objects.values_list("id", "name")),
 }
+
+_currency_choices = []
+
+
+def currency_choices():
+    global _currency_choices
+    if not _currency_choices:
+        _currency_choices = dict(Currency.objects.values_list("id", "name"))
+    return _currency_choices
+
+
 deal_sub_fields = {
     "top_investors": [
         "top_investors__id",
@@ -220,8 +335,10 @@ involvement_fields = [
 involvement_choices_fields = {"role": dict(InvestorVentureInvolvement.ROLE_CHOICES)}
 
 
-def flatten_date_current_value(data):
-    return "|".join(
+def flatten_date_current_value(data, field) -> None:
+    if not data.get(field):
+        return
+    data[field] = "|".join(
         [
             "#".join(
                 [
@@ -230,10 +347,16 @@ def flatten_date_current_value(data):
                     x["value"] if isinstance(x["value"], str) else f"{x['value']:.0f}",
                 ]
             )
-            for x in data
+            for x in data[field]
             if x.get("value") is not None
         ]
     )
+
+
+def bool_cast(data, field) -> None:
+    if data.get(field) is None:
+        return
+    data[field] = "Yes" if data[field] else "No"
 
 
 class DataDownload:
@@ -460,7 +583,7 @@ class DataDownload:
 
     @staticmethod
     def deal_download_format(data):
-        data["is_public"] = "Yes" if data["is_public"] else "No"
+        bool_cast(data, "is_public")
         if "transnational" in data:
             data["transnational"] = (
                 "transnational" if data["transnational"] else "domestic"
@@ -517,13 +640,8 @@ class DataDownload:
         if fully_updated_at:
             data["fully_updated_at"] = fully_updated_at.isoformat()
 
-        if data.get("contract_size"):
-            data["contract_size"] = flatten_date_current_value(data["contract_size"])
-
-        if data.get("production_size"):
-            data["production_size"] = flatten_date_current_value(
-                data["production_size"]
-            )
+        flatten_date_current_value(data, "contract_size")
+        flatten_date_current_value(data, "production_size")
 
         if data.get("intention_of_investment"):
             data["intention_of_investment"] = "|".join(
@@ -582,7 +700,7 @@ class DataDownload:
         if data.get("purchase_price"):
             data["purchase_price"] = int(data["purchase_price"])
         if data.get("purchase_price_currency"):
-            data["purchase_price_currency"] = deal_choices_fields["currency"][
+            data["purchase_price_currency"] = currency_choices()[
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
@@ -595,7 +713,7 @@ class DataDownload:
         if data.get("annual_leasing_fee"):
             data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
         if data.get("annual_leasing_fee_currency"):
-            data["annual_leasing_fee_currency"] = deal_choices_fields["currency"][
+            data["annual_leasing_fee_currency"] = currency_choices()[
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
@@ -605,38 +723,31 @@ class DataDownload:
         if data.get("annual_leasing_fee_area"):
             data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
 
-        if data.get("contract_farming") is not None:
-            data["contract_farming"] = "Yes" if data["contract_farming"] else "No"
+        bool_cast(data, "contract_farming")
+        bool_cast(data, "on_the_lease")
+        flatten_date_current_value(data, "on_the_lease_area")
+        flatten_date_current_value(data, "on_the_lease_farmers")
+        flatten_date_current_value(data, "on_the_lease_households")
+        bool_cast(data, "off_the_lease")
+        flatten_date_current_value(data, "off_the_lease_area")
+        flatten_date_current_value(data, "off_the_lease_farmers")
+        flatten_date_current_value(data, "off_the_lease_households")
 
-        if data.get("on_the_lease") is not None:
-            data["on_the_lease"] = "Yes" if data["on_the_lease"] else "No"
-        if data.get("on_the_lease_area"):
-            data["on_the_lease_area"] = flatten_date_current_value(
-                data["on_the_lease_area"]
-            )
-        if data.get("on_the_lease_farmers"):
-            data["on_the_lease_farmers"] = flatten_date_current_value(
-                data["on_the_lease_farmers"]
-            )
-        if data.get("on_the_lease_households"):
-            data["on_the_lease_households"] = flatten_date_current_value(
-                data["on_the_lease_households"]
-            )
+        bool_cast(data, "total_jobs_created")
+        bool_cast(data, "foreign_jobs_created")
+        bool_cast(data, "domestic_jobs_created")
 
-        if data.get("off_the_lease") is not None:
-            data["off_the_lease"] = "Yes" if data["off_the_lease"] else "No"
-        if data.get("off_the_lease_area"):
-            data["off_the_lease_area"] = flatten_date_current_value(
-                data["off_the_lease_area"]
-            )
-        if data.get("off_the_lease_farmers"):
-            data["off_the_lease_farmers"] = flatten_date_current_value(
-                data["off_the_lease_farmers"]
-            )
-        if data.get("off_the_lease_households"):
-            data["off_the_lease_households"] = flatten_date_current_value(
-                data["off_the_lease_households"]
-            )
+        bool_cast(data, "land_conflicts")
+        bool_cast(data, "displacement_of_people")
+
+        bool_cast(data, "has_domestic_use")
+        bool_cast(data, "has_export")
+
+        bool_cast(data, "in_country_processing")
+        bool_cast(data, "water_extraction_envisaged")
+        bool_cast(data, "use_of_irrigation_infrastructure")
+        bool_cast(data, "fully_updated")
+        bool_cast(data, "confidential")
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()
