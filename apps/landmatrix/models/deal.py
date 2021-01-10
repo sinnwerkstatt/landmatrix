@@ -953,13 +953,13 @@ class Deal(models.Model, OldDealMixin):
     """ Meta Info """
     fully_updated = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
-    PRIVATE_REASON_CHOICES = (
+    CONFIDENTIAL_REASON_CHOICES = (
         ("TEMPORARY_REMOVAL", _("Temporary removal from PI after criticism")),
         ("RESEARCH_IN_PROGRESS", _("Research in progress")),
         ("LAND_OBSERVATORY_IMPORT", _("Land Observatory Import")),
     )
     confidential_reason = models.CharField(
-        max_length=100, choices=PRIVATE_REASON_CHOICES, null=True, blank=True
+        max_length=100, choices=CONFIDENTIAL_REASON_CHOICES, null=True, blank=True
     )
     confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True

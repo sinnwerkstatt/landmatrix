@@ -70,7 +70,6 @@ deal_headers = [
     # "Current number of employees (domestic)",
     # "Current number of daily/seasonal workers (domestic)",
     # "Comment on jobs created (domestic)",
-    # ----------------------
     # "Actors involved in the negotiation / admission process",
     # "Name of investment project",
     # "Comment on investment chain",

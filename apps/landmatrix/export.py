@@ -163,22 +163,22 @@ deal_fields = {
     "in_country_end_products": "In-country end products of the project",
     "water_extraction_envisaged": "Water extraction envisaged",
     "water_extraction_envisaged_comment": "Comment on water extraction envisaged",
-    # "source_of_water_extraction": "Source of water extraction",
+    "source_of_water_extraction": "Source of water extraction",
     "source_of_water_extraction_comment": "Comment on source of water extraction",
     "how_much_do_investors_pay_comment": "Comment on how much do investors pay for water",
-    # "water_extraction_amount": "Water extraction amount",
+    "water_extraction_amount": "Water extraction amount",
     "water_extraction_amount_comment": "Comment on how much water is extracted",
-    # "use_of_irrigation_infrastructure": "Use of irrigation infrastructure",
+    "use_of_irrigation_infrastructure": "Use of irrigation infrastructure",
     "use_of_irrigation_infrastructure_comment": "Comment on use of irrigation infrastructure",
-    # "water_footprint": "Water footprint of the investment project",
+    "water_footprint": "Water footprint of the investment project",
     "gender_related_information": "Comment on gender-related info",
-    # "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
+    "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
     "vggt_applied_comment": "Comment on VGGT",
-    # "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
+    "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
     "prai_applied_comment": "Comment on PRAI",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
-    # "confidential_reason": "Reason",
+    "confidential_reason": "Reason",
     "confidential_comment": "Comment on not public",
 }
 
@@ -854,7 +854,6 @@ class DataDownload:
                     ]
                 )
 
-        # broken because sync not correct yet
         for produce_type in ["contract_farming_crops", "contract_farming_animals"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
@@ -876,16 +875,19 @@ class DataDownload:
                     ]
                 )
 
-        """missing
-            source_of_water_extraction
-            water_extraction_amount
-            use_of_irrigation_infrastructure
-            water_footprint
-            gender_related_information
-            vggt_applied
-            prai_applied
-            confidential_reason
-        """
+        flatten_array_choices(
+            data, "source_of_water_extraction", dict(Deal.WATER_SOURCE_CHOICES)
+        )
+        bool_cast(data, "use_of_irrigation_infrastructure")
+
+        if data.get("vggt_applied"):
+            data["vggt_applied"] = dict(Deal.YPN_CHOICES)[data["vggt_applied"]]
+        if data.get("prai_applied"):
+            data["prai_applied"] = dict(Deal.YPN_CHOICES)[data["prai_applied"]]
+        if data.get("confidential_reason"):
+            data["confidential_reason"] = dict(Deal.CONFIDENTIAL_REASON_CHOICES)[
+                data["confidential_reason"]
+            ]
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()
