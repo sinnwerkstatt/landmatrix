@@ -8,6 +8,7 @@ class DealForm(VueForm):
     @property
     def attributes(self):
         return {
+            "intended_size": {"unit": "ha"},
             "contract_size": {
                 "class": "JSONDateAreaField",
                 "dimensions": ["date", "area"],

@@ -38,7 +38,8 @@
           return this.value ? this.value.id : null;
         },
         set(v) {
-          this.$emit("input", v);
+          let choice = this.choices.find((c) => c.id === v);
+          this.$emit("input", { id: choice.id, name: choice.name });
         },
       },
 

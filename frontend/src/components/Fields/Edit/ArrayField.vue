@@ -1,6 +1,9 @@
 <template>
   <div>
     <div v-if="formfield.choices">
+      <!--      <label class="mr-sm-2 mb-0 sr-only" :for="formfield.name">-->
+      <!--        {{ formfield.label }}-->
+      <!--      </label>-->
       <select v-model="val" multiple :name="formfield.name" class="form-control">
         <option v-for="(v, k) in formfield.choices" :key="k" :value="k">{{ v }}</option>
       </select>
