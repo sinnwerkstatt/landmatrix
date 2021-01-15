@@ -6,7 +6,7 @@
         v-for="fieldname in section.fields"
         :key="fieldname"
         :fieldname="fieldname"
-        :value="deal[fieldname]"
+        v-model="deal[fieldname]"
       />
     </div>
 

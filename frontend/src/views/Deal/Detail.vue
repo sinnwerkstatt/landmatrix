@@ -280,7 +280,7 @@
           return {
             id: +this.dealId,
             version: +this.dealVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+            subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
           };
         },
         update(data) {

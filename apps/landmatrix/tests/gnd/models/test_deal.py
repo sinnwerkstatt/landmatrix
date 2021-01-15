@@ -8,16 +8,16 @@ def test_get_deal_size():
     Deal.objects.create(
         id=3,
         intended_size=100.234,
-        contract_size=[{"date": "2008", "value": "1000"}],
-        production_size=[{"value": "10"}],
-        negotiation_status=[{"date": "2008", "value": "EXPRESSION_OF_INTEREST"}],
+        contract_size=[{"date": "2008", "area": "1000"}],
+        production_size=[{"area": "10"}],
+        negotiation_status=[{"date": "2008", "choice": "EXPRESSION_OF_INTEREST"}],
         modified_at="2020-10-10",
     )
     d3 = Deal.objects.get(id=3)
     assert d3.deal_size == 100
     d3.negotiation_status = [
-        {"date": "2008", "value": "EXPRESSION_OF_INTEREST"},
-        {"date": "2010", "value": "ORAL_AGREEMENT"},
+        {"date": "2008", "choice": "EXPRESSION_OF_INTEREST"},
+        {"date": "2010", "choice": "ORAL_AGREEMENT"},
     ]
     d3.save()
     assert d3.deal_size == 1000

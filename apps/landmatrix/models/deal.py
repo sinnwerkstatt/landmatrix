@@ -505,6 +505,7 @@ class Deal(models.Model, OldDealMixin):
     )
     involved_actors = JSONField(
         _("Actors involved in the negotiation / admission process"),
+        choices=ACTOR_MAP,
         blank=True,
         null=True,
     )
@@ -1067,18 +1068,20 @@ class Deal(models.Model, OldDealMixin):
         self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
     ):
         if recalculate_independent:
-            self.current_contract_size = self._get_current("contract_size")
-            self.current_production_size = self._get_current("production_size")
+            self.current_contract_size = self._get_current("contract_size", "area")
+            self.current_production_size = self._get_current("production_size", "area")
             self.current_intention_of_investment = self._get_current(
-                "intention_of_investment"
+                "intention_of_investment", "choices"
             )
-            self.current_negotiation_status = self._get_current("negotiation_status")
+            self.current_negotiation_status = self._get_current(
+                "negotiation_status", "choice"
+            )
             self.current_implementation_status = self._get_current(
-                "implementation_status"
+                "implementation_status", "choice"
             )
-            self.current_crops = self._get_current("crops")
-            self.current_animals = self._get_current("animals")
-            self.current_resources = self._get_current("resources")
+            self.current_crops = self._get_current("crops", "choices")
+            self.current_animals = self._get_current("animals", "choices")
+            self.current_resources = self._get_current("resources", "choices")
 
             # these only depend on the _get_current calls right above.
             self.deal_size = self._calculate_deal_size()
@@ -1098,30 +1101,19 @@ class Deal(models.Model, OldDealMixin):
 
         super().save(*args, **kwargs)
 
-    def _get_current(self, attribute):
+    def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)
         if not attributes:
             return None
         # prioritize "current" checkbox if present
         current = [x for x in attributes if x.get("current")]
         if current:
-            return current[0].get("value")
-
-        # last given entry, if it has no date
-        most_recent = attributes[-1]
-        if not most_recent.get("date"):
-            return most_recent.get("value")
-
-        # most recent year/date given
-        max_year = "0"
-        for attr in reversed(attributes):
-            attr_year = attr.get("date")
-            if not attr_year or attr_year <= max_year:
-                continue
-            max_year = attr_year
-            val = attr.get("value")
-        # We're not initializing "val" because if this errors, it should not go silently
-        return val
+            return current[0].get(field)
+        else:
+            print(self)
+            print(attribute)
+            print(attributes)
+            raise Exception("We should always have a current, now.")
 
     def _calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
@@ -1170,7 +1162,7 @@ class Deal(models.Model, OldDealMixin):
                 int(x["date"][:4])
                 for x in self.negotiation_status
                 if x.get("date")
-                and x["value"]
+                and x["choice"]
                 in (
                     "UNDER_NEGOTIATION",
                     "ORAL_AGREEMENT",
@@ -1187,7 +1179,7 @@ class Deal(models.Model, OldDealMixin):
                 int(x["date"][:4])
                 for x in self.implementation_status
                 if x.get("date")
-                and x["value"]
+                and x["choice"]
                 in (
                     "STARTUP_PHASE",
                     "IN_OPERATION",

@@ -268,7 +268,10 @@ class Choices:
     def get(self, name):
         if not self.choices.get(name):
             if name == "currency":
-                self.choices[name] = dict(Currency.objects.values_list("id", "name"))
+                self.choices[name] = {
+                    x.id: f"{x.name} ({x.symbol})" if x.symbol else x.name
+                    for x in Currency.objects.all()
+                }
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
             if name == "crops":
@@ -349,7 +352,7 @@ involvement_fields = [
 involvement_choices_fields = {"role": dict(InvestorVentureInvolvement.ROLE_CHOICES)}
 
 
-def flatten_date_current_value(data, field) -> None:
+def flatten_date_current_value(data, field, fieldname) -> None:
     if not data.get(field):
         return
     data[field] = "|".join(
@@ -358,11 +361,13 @@ def flatten_date_current_value(data, field) -> None:
                 [
                     str(x.get("date", "")),
                     "current" if x.get("current") else "",
-                    x["value"] if isinstance(x["value"], str) else f"{x['value']:.0f}",
+                    x[fieldname]
+                    if isinstance(x[fieldname], str)
+                    else f"{x[fieldname]:.0f}",
                 ]
             )
             for x in data[field]
-            if x.get("value") is not None
+            if x.get(fieldname) is not None
         ]
     )
 
@@ -667,8 +672,8 @@ class DataDownload:
         if fully_updated_at:
             data["fully_updated_at"] = fully_updated_at.isoformat()
 
-        flatten_date_current_value(data, "contract_size")
-        flatten_date_current_value(data, "production_size")
+        flatten_date_current_value(data, "contract_size", "area")
+        flatten_date_current_value(data, "production_size", "area")
 
         if data.get("intention_of_investment"):
             data["intention_of_investment"] = "|".join(
@@ -680,12 +685,12 @@ class DataDownload:
                             x.get("size", ""),
                             ", ".join(
                                 deal_choices_fields["intention_of_investment"][y]
-                                for y in x.get("value", [])
+                                for y in x.get("choices", [])
                             ),
                         ]
                     )
                     for x in data["intention_of_investment"]
-                    if x.get("value") is not None
+                    if x.get("choices") is not None
                 ]
             )
 
@@ -698,7 +703,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            current_negotiation_status_map[x.get("value")],
+                            current_negotiation_status_map[x.get("choice")],
                         ]
                     )
                     for x in data["negotiation_status"]
@@ -712,7 +717,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            current_implementation_status_map[x.get("value")],
+                            current_implementation_status_map[x.get("choice")],
                         ]
                     )
                     for x in data["implementation_status"]
@@ -746,15 +751,19 @@ class DataDownload:
             data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
 
         bool_cast(data, "contract_farming")
-        flatten_date_current_value(data, "total_jobs_current")
-        flatten_date_current_value(data, "total_jobs_current_employees")
-        flatten_date_current_value(data, "total_jobs_current_daily_workers")
-        flatten_date_current_value(data, "foreign_jobs_current")
-        flatten_date_current_value(data, "foreign_jobs_current_employees")
-        flatten_date_current_value(data, "foreign_jobs_current_daily_workers")
-        flatten_date_current_value(data, "domestic_jobs_current")
-        flatten_date_current_value(data, "domestic_jobs_current_employees")
-        flatten_date_current_value(data, "domestic_jobs_current_daily_workers")
+        flatten_date_current_value(data, "total_jobs_current", "jobs")
+        flatten_date_current_value(data, "total_jobs_current_employees", "employees")
+        flatten_date_current_value(data, "total_jobs_current_daily_workers", "workers")
+        flatten_date_current_value(data, "foreign_jobs_current", "jobs")
+        flatten_date_current_value(data, "foreign_jobs_current_employees", "employees")
+        flatten_date_current_value(
+            data, "foreign_jobs_current_daily_workers", "workers"
+        )
+        flatten_date_current_value(data, "domestic_jobs_current", "jobs")
+        flatten_date_current_value(data, "domestic_jobs_current_employees", "employees")
+        flatten_date_current_value(
+            data, "domestic_jobs_current_daily_workers", "workers"
+        )
 
         flatten_array_choices(
             data, "recognition_status", dict(Deal.RECOGNITION_STATUS_CHOICES)
@@ -769,7 +778,7 @@ class DataDownload:
                 [
                     "#".join(
                         [
-                            x.get("value", "") or "",
+                            x.get("name", "") or "",
                             dict(Deal.ACTOR_MAP)[x["role"]] if x.get("role") else "",
                         ]
                     )
@@ -778,13 +787,13 @@ class DataDownload:
             )
 
         bool_cast(data, "on_the_lease")
-        flatten_date_current_value(data, "on_the_lease_area")
-        flatten_date_current_value(data, "on_the_lease_farmers")
-        flatten_date_current_value(data, "on_the_lease_households")
+        flatten_date_current_value(data, "on_the_lease_area", "area")
+        flatten_date_current_value(data, "on_the_lease_farmers", "farmers")
+        flatten_date_current_value(data, "on_the_lease_households", "households")
         bool_cast(data, "off_the_lease")
-        flatten_date_current_value(data, "off_the_lease_area")
-        flatten_date_current_value(data, "off_the_lease_farmers")
-        flatten_date_current_value(data, "off_the_lease_households")
+        flatten_date_current_value(data, "off_the_lease_area", "area")
+        flatten_date_current_value(data, "off_the_lease_farmers", "farmers")
+        flatten_date_current_value(data, "off_the_lease_households", "households")
         bool_cast(data, "total_jobs_created")
         bool_cast(data, "foreign_jobs_created")
         bool_cast(data, "domestic_jobs_created")
@@ -839,13 +848,13 @@ class DataDownload:
                             [
                                 dat.get("date") or "",
                                 "current" if dat.get("current") else "",
-                                dat.get("hectares") or "",
-                                dat.get("tons") or "",
-                                dat.get("percent") or "",
+                                dat.get("area") or "",
+                                dat.get("yield") or "",
+                                dat.get("export") or "",
                                 ", ".join(
                                     [
                                         mchoices.get(produce_type).get(x, x)
-                                        for x in dat.get("value")
+                                        for x in dat.get("choices")
                                     ]
                                 ),
                             ]
@@ -862,11 +871,11 @@ class DataDownload:
                             [
                                 dat.get("date") or "",
                                 "current" if dat.get("current") else "",
-                                dat.get("hectares") or "",
+                                dat.get("area") or "",
                                 ", ".join(
                                     [
                                         mchoices.get(produce_type[17:]).get(x, x)
-                                        for x in dat.get("value")
+                                        for x in dat.get("choices")
                                     ]
                                 ),
                             ]

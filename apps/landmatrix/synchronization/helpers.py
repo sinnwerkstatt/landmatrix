@@ -11,6 +11,7 @@ def _to_nullbool(val: Optional[str]) -> Optional[bool]:
 def _extras_to_json(
     attr,
     field,
+    val1name: str = "value",
     val2name: str = None,
     expected_type=str,
     fieldmap=None,
@@ -26,10 +27,10 @@ def _extras_to_json(
         adict["value"] = adict["value"].replace(",", ".")
 
     if fieldmap:
-        ret = [{"value": fieldmap.get(adict["value"], None)}]
+        ret = [{val1name: fieldmap.get(adict["value"], None)}]
     else:
         calc_val = expected_type(adict["value"]) if adict["value"] else None
-        ret = [{"value": calc_val}]
+        ret = [{val1name: calc_val}]
 
     if adict["date"]:
         ret[0]["date"] = adict["date"]
@@ -45,11 +46,11 @@ def _extras_to_json(
             continue
         if fieldmap:
             extra_ret = {
-                "value": fieldmap.get(extra["value"], None),
+                val1name: fieldmap.get(extra["value"], None),
             }
         else:
             calc_val = expected_type(extra["value"]) if extra["value"] else None
-            extra_ret = {"value": calc_val}
+            extra_ret = {val1name: calc_val}
         if extra["date"]:
             extra_ret["date"] = extra["date"]
         if extra["is_current"]:
@@ -61,13 +62,15 @@ def _extras_to_json(
         mret = {}
         for x in ret:
             try:
-                mret[(x.get("date"), x.get(val2name), x.get("current"))] += [x["value"]]
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] += [
+                    x[val1name]
+                ]
             except KeyError:
-                mret[(x.get("date"), x.get(val2name), x.get("current"))] = [x["value"]]
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] = [x[val1name]]
         fret = []
         for keys, values in mret.items():
             date, val2, current = keys
-            add_entry = {"value": values}
+            add_entry = {val1name: values}
             if date:
                 add_entry["date"] = date
             if val2:
@@ -76,7 +79,41 @@ def _extras_to_json(
                 add_entry["current"] = True
             fret += [add_entry]
         ret = fret
+    if field in [
+        "contract_size",
+        "production_size",
+        "intention",
+        "intention_of_investment",
+        "negotiation_status",
+        "implementation_status",
+    ]:
+        set_current(ret)
     return ret
+
+
+def set_current(attributes):
+    if not attributes:
+        return
+    # prioritize "current" checkbox if present
+    current = [x for x in attributes if x.get("current")]
+    if current:
+        return
+
+    # last given entry, if it has no date
+    most_recent = attributes[-1]
+    if not most_recent.get("date"):
+        attributes[-1]["current"] = True
+        return
+
+    # most recent year/date given
+    max_year = "0"
+    for i, attr in enumerate(reversed(attributes), 1):
+        attr_year = attr.get("date")
+        if not attr_year or attr_year <= max_year:
+            continue
+        max_year_int = i
+        max_year = attr_year
+    attributes[-max_year_int]["current"] = True
 
 
 def _extras_to_list(attr, field: str, mapping: dict):

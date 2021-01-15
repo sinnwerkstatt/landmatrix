@@ -2,8 +2,7 @@
   <div class="nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
-      <span v-if="val.choices">{{ mapChoices(val.choices) }}</span>
-      <span v-if="val.area">({{ val.area }} ha)</span>
+      <span v-if="val.choice">{{ mapChoices(val.choice) }}</span>
     </div>
   </div>
 </template>
