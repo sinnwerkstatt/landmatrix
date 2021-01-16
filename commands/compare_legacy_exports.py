@@ -16,15 +16,15 @@ deal_headers = [
     # "Top parent companies",
     "Intended size (in ha)",
     "Size under contract (leased or purchased area, in ha)",
-    # "Size in operation (production, in ha)",
+    "Size in operation (production, in ha)",
     "Comment on land area",
-    # "Intention of investment",
+    "Intention of investment",
     "Comment on intention of investment",
     "Nature of the deal",
     "Comment on nature of the deal",
-    # "Negotiation status",
+    "Negotiation status",
     "Comment on negotiation status",
-    # "Implementation status",
+    "Implementation status",
     "Comment on implementation status",
     "Purchase price",
     "Purchase price currency",
@@ -70,7 +70,7 @@ deal_headers = [
     "Current number of employees (domestic)",
     "Current number of daily/seasonal workers (domestic)",
     "Comment on jobs created (domestic)",
-    # "Actors involved in the negotiation / admission process",
+    "Actors involved in the negotiation / admission process",
     "Name of investment project",
     "Comment on investment chain",
     "Operating company: Investor ID",
@@ -137,7 +137,7 @@ deal_headers = [
     "Comment on use of produce",
     "In country processing of produce",
     "Comment on in country processing of produce",
-    # "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)",
+    "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)",
     "In-country end products of the project",
     "Water extraction envisaged",
     "Comment on water extraction envisaged",
@@ -189,6 +189,16 @@ def cache_workbook(file, pickle_filename):
     return ws_dict
 
 
+def parse_hash_shit(hashstring):
+    if not hashstring:
+        return hashstring
+    ret = set()
+    for x in hashstring:
+        date, curr, rest = x.split("#", maxsplit=2)
+        ret.add(f"{date}##{rest}")
+    return ret
+
+
 def compare(file_old, file_new, field=None):
     print("comparing", file_old, file_new, "for field", field)
 
@@ -196,6 +206,8 @@ def compare(file_old, file_new, field=None):
     new_dict = cache_workbook(file_new, "xlsx_compare_new.pickle")
 
     fields = [field] if field else deal_headers
+
+    unknown_deal_numbers = set()
 
     for field in fields:
         print(">>>", field, "<<<")
@@ -206,6 +218,7 @@ def compare(file_old, file_new, field=None):
                 comp = new_dict[deal_id]
             except KeyError:
                 # print(f"could not find {deal_id}")
+                unknown_deal_numbers.add(deal_id)
                 continue
 
             if isinstance(content[field], str) and isinstance(comp[field], str):
@@ -220,16 +233,31 @@ def compare(file_old, file_new, field=None):
             ):
                 content[field] = int(float(content[field]))
                 comp[field] = int(float(comp[field]))
-            if field in ["Size under contract (leased or purchased area, in ha)"]:
-                print("XX")
+
+            if field in [
+                "Size under contract (leased or purchased area, in ha)",
+                "Size in operation (production, in ha)",
+                "Intention of investment",
+                "Negotiation status",
+                "Implementation status",
+            ]:
+                if isinstance(content[field], str):
+                    content[field] = [content[field]]
+                content[field] = parse_hash_shit(content[field])
+                if isinstance(comp[field], str):
+                    comp[field] = [comp[field]]
+                comp[field] = parse_hash_shit(comp[field])
+
             if content[field] != comp[field]:
                 value_mismatch_counter += 1
                 print(f"\n{deal_id}: {content[field]} != {comp[field]}")
-        if value_mismatch_counter >= 5:  # TODO: watch out, remove this when confident!
+        if value_mismatch_counter >= 7:  # TODO: watch out, remove this when confident!
             input("\n\nContinue..\n")
         else:
             print("\n\n")
     print()
+
+    print("unknown_deal_numbers", len(unknown_deal_numbers), ":", unknown_deal_numbers)
 
 
 compare(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)

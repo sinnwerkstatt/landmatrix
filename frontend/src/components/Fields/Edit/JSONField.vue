@@ -104,7 +104,7 @@
     },
     computed: {
       has_current() {
-        console.log(this.formfield, this.formfield.has_current);
+        // console.log(this.formfield, this.formfield.has_current);
         return this.formfield.has_current ? this.formfield.has_current : true;
       },
       vals: {
@@ -143,14 +143,14 @@
         this.$emit("input", vals_with_current);
       },
       convert_to_options(choices) {
-        console.log(choices);
+        // console.log(choices);
         let xx = Object.entries(choices).map(([k, v]) => {
           let newopts = Object.entries(v).map(([h, j]) => {
             return { name: j, value: h };
           });
           return { category: k, options: newopts };
         });
-        console.log(xx);
+        // console.log(xx);
         return xx;
       },
     },

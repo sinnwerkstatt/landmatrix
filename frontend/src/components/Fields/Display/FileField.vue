@@ -2,7 +2,7 @@
   <div>
     <a :href="`${MEDIA_URL}${value}`" target="_blank">
       <i class="far fa-file-pdf"></i>
-      {{ value }}
+      {{ value.replace("uploads/", "") }}
     </a>
   </div>
 </template>

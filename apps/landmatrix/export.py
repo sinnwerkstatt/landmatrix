@@ -682,7 +682,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            x.get("size", ""),
+                            x.get("area", ""),
                             ", ".join(
                                 deal_choices_fields["intention_of_investment"][y]
                                 for y in x.get("choices", [])

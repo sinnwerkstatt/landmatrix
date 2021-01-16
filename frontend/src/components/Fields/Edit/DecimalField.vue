@@ -5,9 +5,10 @@
     <!--    </label>-->
     <input
       :id="formfield.name"
-      v-model="val"
+      v-model="int_val"
       :name="formfield.name"
-      type="text"
+      type="number"
+      step="0.01"
       class="form-control"
       aria-describedby="validatedInputGroupPrepend"
       :required="formfield.required"
@@ -27,14 +28,20 @@
       value: { type: Number, required: false, default: null },
       model: { type: String, required: true },
     },
-    computed: {
-      val: {
-        get() {
-          return this.value;
-        },
-        set(v) {
-          this.$emit("input", v);
-        },
+    data() {
+      return {
+        int_val: this.value,
+      };
+    },
+    watch: {
+      int_val(v) {
+        if (v.includes(".")) {
+          let number = v.split(".");
+          let decimals = number[1];
+          decimals = decimals.length > 2 ? decimals.slice(0, 2) : decimals;
+          this.int_val = `${number[0]}.${decimals}`;
+        }
+        this.$emit("input", +v);
       },
     },
   };

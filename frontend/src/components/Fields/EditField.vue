@@ -32,14 +32,14 @@
   import BooleanField from "./Edit/BooleanField";
   import NullBooleanField from "./Edit/BooleanField";
 
-  // import DateField from "./Display/DateField";
+  import DateField from "./Edit/DateField";
   // import DateTimeField from "./Display/DateField";
 
   import DecimalField from "./Edit/DecimalField";
   import FloatField from "./Edit/DecimalField";
   import IntegerField from "./Edit/DecimalField";
 
-  import FileField from "./Display/FileField";
+  import FileField from "./Edit/FileField";
   import ForeignKey from "./Edit/ForeignKeyField";
 
   import JSONField from "./Edit/JSONField.vue";
@@ -63,7 +63,7 @@
       ArrayField,
       BooleanField,
       CharField,
-      // DateField,
+      DateField,
       // DateTimeField,
       DecimalField,
       EmailField,

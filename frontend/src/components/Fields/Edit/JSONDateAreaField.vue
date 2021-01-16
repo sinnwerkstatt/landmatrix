@@ -8,10 +8,10 @@
 </template>
 
 <script>
-  import JSONField from "./JSONField";
+  import JSONFieldMixin from "../JSONFieldMixin";
 
   export default {
-    mixins: [JSONField],
+    mixins: [JSONFieldMixin],
     data() {
       return {
         vals: this.value ? this.value : [{ date: null, value: null }],

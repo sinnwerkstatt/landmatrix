@@ -1,5 +1,6 @@
 <template>
-  <div class="container" v-if="deal">
+  <div v-if="deal" class="container">
+    {{ deal.datasources }}
     <b-tabs
       id="tabNav"
       :key="dealId + dealVersion"
@@ -19,15 +20,15 @@
         :active="active_tab === '#general'"
         @activated="updateRoute('#general')"
       />
-      <!--            <DealSubmodelSection-->
-      <!--        title="Contracts"-->
-      <!--        model-name="Contract"-->
-      <!--        :entries="deal.contracts"-->
-      <!--        :fields="deal_submodel_sections.contract"-->
-      <!--        model="contract"-->
-      <!--        :active="active_tab === '#contracts'"-->
-      <!--        @activated="updateRoute('#contracts')"-->
-      <!--      />-->
+      <DealSubmodelEditSection
+        title="Contracts"
+        model-name="Contract"
+        :entries="deal.contracts"
+        :fields="deal_submodel_sections.contract"
+        model="contract"
+        :active="active_tab === '#contracts'"
+        @activated="updateRoute('#contracts')"
+      />
       <DealEditSection
         :title="deal_sections.employment.label"
         :deal="deal"
@@ -65,15 +66,15 @@
         <!--        </div>-->
       </DealEditSection>
 
-      <!--      <DealSubmodelSection-->
-      <!--        title="Data Sources"-->
-      <!--        model-name="Data Source"-->
-      <!--        :entries="deal.datasources"-->
-      <!--        :fields="deal_submodel_sections.datasource"-->
-      <!--        model="datasource"-->
-      <!--        :active="active_tab === '#data_sources'"-->
-      <!--        @activated="updateRoute('#data_sources')"-->
-      <!--      />-->
+      <DealSubmodelEditSection
+        title="Data Sources"
+        model-name="Data Source"
+        :entries="deal.datasources"
+        :fields="deal_submodel_sections.datasource"
+        model="datasource"
+        :active="active_tab === '#data_sources'"
+        @activated="updateRoute('#data_sources')"
+      />
 
       <DealEditSection
         :title="deal_sections.local_communities.label"
@@ -136,13 +137,14 @@
 
 <script>
   import DealEditSection from "components/Deal/DealEditSection";
+  import DealSubmodelEditSection from "../../components/Deal/DealSubmodelEditSection";
   import MapEditor from "../../components/MapEditor";
   import { deal_gql_query } from "../../store/queries";
-  import { deal_sections } from "./deal_sections";
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
     name: "DealEdit",
-    components: { MapEditor, DealEditSection },
+    components: { DealSubmodelEditSection, MapEditor, DealEditSection },
     props: {
       dealId: { type: [Number, String], required: true },
       dealVersion: { type: [Number, String], default: null },
@@ -151,6 +153,7 @@
       return {
         deal: null,
         deal_sections,
+        deal_submodel_sections,
       };
     },
     apollo: {
