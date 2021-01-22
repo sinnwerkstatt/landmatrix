@@ -1,7 +1,5 @@
 <template>
   <div class="nowrap">
-    value {{ value }}<br />
-    vals {{ vals }}
     <div v-for="(val, i) in vals" class="row">
       <div class="col-5">
         <input
@@ -22,8 +20,14 @@
         </select>
       </div>
       <div class="col-2">
-        <i class="fa fa-plus" @click="addEntry"></i>
-        <i class="fa fa-minus" @click="removeEntry(i)"></i>
+        <a class="btn" @click.prevent="addEntry"><i class="fa fa-plus"></i></a>
+        <a
+          :class="{ disabled: vals.length <= 1 }"
+          class="btn"
+          @click.prevent="removeEntry(i)"
+        >
+          <i class="fa fa-minus"></i
+        ></a>
       </div>
     </div>
   </div>

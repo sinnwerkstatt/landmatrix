@@ -66,6 +66,7 @@ def parse_general(deal, attrs):
         val2name="area",
         fieldmap=INTENTION_MAP,
         multi_value=True,
+        expected_type2=float,
     )
     deal.intention_of_investment_comment = attrs.get("tg_intention_comment") or ""
     NATURE_OF_DEAL_MAP = {
@@ -505,6 +506,7 @@ def parse_produce_info(deal, attrs):
         val2name="area",
         fieldmap=CROP_MAP,
         multi_value=True,
+        expected_type2=float,
     )
 
     deal.contract_farming_crops_comment = (
@@ -517,6 +519,7 @@ def parse_produce_info(deal, attrs):
         val2name="area",
         fieldmap=ANIMAL_MAP,
         multi_value=True,
+        expected_type2=float,
     )
     deal.contract_farming_animals_comment = (
         attrs.get("tg_contract_farming_animals_comment") or ""

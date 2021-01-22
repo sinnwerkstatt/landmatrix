@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-22 22:11+0100\n"
+"POT-Creation-Date: 2021-01-22 22:25+0100\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4475,6 +4475,10 @@ msgstr ""
 
 #: config/frontend_i18n_strings.py:8
 msgid "Map settings"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:9
+msgid "Contribute"
 msgstr ""
 
 #: templates/404.html:4 templates/404.html:5

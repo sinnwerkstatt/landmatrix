@@ -16,6 +16,7 @@ def _extras_to_json(
     expected_type=str,
     fieldmap=None,
     multi_value=False,
+    expected_type2=str,
 ):
     adict = attr.get_dict(field)
 
@@ -39,7 +40,9 @@ def _extras_to_json(
         ret[0]["current"] = adict["is_current"]
 
     if val2name and adict["value2"]:
-        ret[0][val2name] = adict["value2"]
+        ret[0][val2name] = (
+            expected_type2(adict["value2"]) if expected_type2 else adict["value2"]
+        )
 
     for extra in adict.get("extras", []):
         if not extra:
@@ -56,7 +59,9 @@ def _extras_to_json(
         if extra["is_current"]:
             extra_ret["current"] = extra["is_current"]
         if val2name and extra["value2"]:
-            extra_ret[val2name] = extra["value2"]
+            extra_ret[val2name] = (
+                expected_type2(extra["value2"]) if expected_type2 else extra["value2"]
+            )
         ret += [extra_ret]
     if multi_value:
         mret = {}

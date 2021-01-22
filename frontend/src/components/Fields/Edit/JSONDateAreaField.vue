@@ -1,21 +1,125 @@
 <template>
   <div class="nowrap">
-    <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
-      <span>{{ date_and_current(val) }}</span>
-      <span v-if="val.area">{{ val.area }} ha</span>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Current</th>
+          <th>Date</th>
+          <th>Area (ha)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(val, i) in vals" :key="i" :class="{ 'is-current': val.current }">
+          <td class="text-center" @click="updateCurrent(i)">
+            <div class="form-check form-check-inline">
+              <input
+                :id="`${formfield.name}_current_${i}`"
+                v-model="current"
+                class="form-check-input"
+                type="radio"
+                :name="`${formfield.name}_current`"
+                :value="i"
+              />
+            </div>
+          </td>
+          <td>
+            <input
+              v-model="val.date"
+              type="text"
+              class="form-control year-based-year"
+              placeholder="YYYY-MM-DD"
+              @input="updateEntries"
+            />
+          </td>
+          <td>
+            <LowLevelDecimalField
+              v-model="val.area"
+              :name="formfield.name"
+              :required="formfield.required"
+              unit="ha"
+              @input="updateEntries"
+            />
+          </td>
+
+          <td>
+            <a class="btn" @click.stop="addEntry"><i class="fa fa-plus"></i></a>
+            <a
+              :class="{ disabled: vals.length <= 1 }"
+              class="btn"
+              @click.stop="removeEntry(i)"
+            >
+              <i class="fa fa-minus"></i
+            ></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
   import JSONFieldMixin from "../JSONFieldMixin";
+  import LowLevelDecimalField from "./LowLevelDecimalField";
 
   export default {
+    components: { LowLevelDecimalField },
     mixins: [JSONFieldMixin],
     data() {
       return {
-        vals: this.value ? this.value : [{ date: null, value: null }],
+        current: -1,
+        vals: this.value
+          ? JSON.parse(JSON.stringify(this.value))
+          : [{ date: null, area: null, current: true }],
       };
+    },
+    created() {
+      if (this.value) {
+        this.current = this.value.map((e) => e.current).indexOf(true);
+      }
+    },
+    methods: {
+      updateCurrent(i) {
+        this.current = i;
+        this.updateEntries();
+      },
+      updateEntries() {
+        this.vals = this.vals.map((v, i) => {
+          let current = i === this.current ? { current: true } : {};
+          delete v.current;
+          return { ...v, ...current };
+        });
+        this.$emit(
+          "input",
+          this.vals.filter((x) => x.current || x.date || x.area)
+        );
+      },
+      addEntry() {
+        // this.current = this.vals.length;
+        this.vals.push({ date: null, area: null });
+        this.updateEntries();
+      },
+      removeEntry(index) {
+        this.current = Math.min(this.current, this.vals.length - 2);
+        this.vals.splice(index, 1);
+        this.updateEntries();
+      },
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../scss/colors";
+  th {
+    text-align: center;
+  }
+  td {
+    padding: 0.4em;
+  }
+
+  .is-current {
+    font-weight: bold;
+    background: rgba($primary, 0.5);
+    border-radius: 3px;
+  }
+</style>

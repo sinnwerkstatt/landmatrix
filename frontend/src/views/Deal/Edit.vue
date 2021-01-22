@@ -1,6 +1,5 @@
 <template>
   <div v-if="deal" class="container">
-    {{ deal.datasources }}
     <b-tabs
       id="tabNav"
       :key="dealId + dealVersion"

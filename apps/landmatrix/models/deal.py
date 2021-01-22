@@ -991,8 +991,18 @@ class Deal(models.Model, OldDealMixin):
     top_investors = models.ManyToManyField(
         Investor, verbose_name=_("Top parent companies"), related_name="+"
     )
-    current_contract_size = models.FloatField(blank=True, null=True)
-    current_production_size = models.FloatField(blank=True, null=True)
+    current_contract_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+    current_production_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
     current_intention_of_investment = ArrayField(
         models.CharField(max_length=100),
         choices=INTENTION_CHOICES,
@@ -1013,7 +1023,12 @@ class Deal(models.Model, OldDealMixin):
         models.CharField(max_length=100), blank=True, null=True
     )
 
-    deal_size = models.IntegerField(blank=True, null=True)
+    deal_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
     initiation_year = models.IntegerField(
         blank=True, null=True, validators=[MinValueValidator(1970)]
     )
