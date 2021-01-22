@@ -1,12 +1,14 @@
 <template>
   <div class="nowrap">
-    <div v-for="val in vals" class="row">
+    value {{ value }}<br />
+    vals {{ vals }}
+    <div v-for="(val, i) in vals" class="row">
       <div class="col-5">
         <input
           type="text"
           placeholder="Name"
           aria-label="Name"
-          :value="val.name"
+          v-model="val.name"
           name="name"
           class="form-control"
         />
@@ -19,7 +21,10 @@
           </option>
         </select>
       </div>
-      <div class="col-2"><i class="fa fa-plus"></i> <i class="fa fa-minus"></i></div>
+      <div class="col-2">
+        <i class="fa fa-plus" @click="addEntry"></i>
+        <i class="fa fa-minus" @click="removeEntry(i)"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +38,22 @@
       return {
         vals: this.value ? this.value : [{ name: null, role: [] }],
       };
+    },
+    watch: {
+      vals: {
+        handler(newValue) {
+          this.$emit("input", newValue);
+        },
+        deep: true,
+      },
+    },
+    methods: {
+      addEntry() {
+        this.vals.push({ name: null, role: [] });
+      },
+      removeEntry(index) {
+        this.vals.splice(index, 1);
+      },
     },
   };
 </script>
