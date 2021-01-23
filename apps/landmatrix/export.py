@@ -363,7 +363,7 @@ def flatten_date_current_value(data, field, fieldname) -> None:
                     "current" if x.get("current") else "",
                     x[fieldname]
                     if isinstance(x[fieldname], str)
-                    else f"{x[fieldname]:.0f}",
+                    else str(round(x[fieldname], 2)),
                 ]
             )
             for x in data[field]
@@ -682,7 +682,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            x.get("area", ""),
+                            str(x.get("area", "")),
                             ", ".join(
                                 deal_choices_fields["intention_of_investment"][y]
                                 for y in x.get("choices", [])
@@ -871,7 +871,7 @@ class DataDownload:
                             [
                                 dat.get("date") or "",
                                 "current" if dat.get("current") else "",
-                                dat.get("area") or "",
+                                str(dat.get("area", "")),
                                 ", ".join(
                                     [
                                         mchoices.get(produce_type[17:]).get(x, x)

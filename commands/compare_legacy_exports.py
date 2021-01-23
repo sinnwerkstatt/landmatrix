@@ -195,6 +195,17 @@ def parse_hash_shit(hashstring):
     ret = set()
     for x in hashstring:
         date, curr, rest = x.split("#", maxsplit=2)
+        if "#" in rest:
+            area, choices = rest.split("#", maxsplit=1)
+            if area.endswith(".0"):
+                area = area[:-2]
+            if "Other (please specify)" in choices:
+                choices = choices.replace("Other (please specify)", "Other")
+            if " (for wood and fibre)" in choices:
+                choices = choices.replace(" (for wood and fibre)", "")
+            rest = f"{area}#{choices}"
+        if rest.endswith(".0"):
+            rest = rest[:-2]
         ret.add(f"{date}##{rest}")
     return ret
 
@@ -231,8 +242,14 @@ def compare(file_old, file_new, field=None):
             if isinstance(content[field], (float, int)) or isinstance(
                 comp[field], (float, int)
             ):
-                content[field] = int(float(content[field]))
-                comp[field] = int(float(comp[field]))
+                try:
+                    content[field] = int(float(content[field]))
+                except TypeError:
+                    pass
+                try:
+                    comp[field] = int(float(comp[field]))
+                except TypeError:
+                    pass
 
             if field in [
                 "Size under contract (leased or purchased area, in ha)",
