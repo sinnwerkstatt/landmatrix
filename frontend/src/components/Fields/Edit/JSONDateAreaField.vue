@@ -1,6 +1,6 @@
 <template>
   <div class="nowrap">
-    <table>
+    <table class="w-100">
       <thead>
         <tr>
           <th>Current</th>
@@ -24,11 +24,10 @@
             </div>
           </td>
           <td>
-            <input
+            <LowLevelDateYearField
               v-model="val.date"
-              type="text"
-              class="form-control year-based-year"
-              placeholder="YYYY-MM-DD"
+              :name="formfield.name"
+              :required="formfield.required"
               @input="updateEntries"
             />
           </td>
@@ -60,10 +59,11 @@
 
 <script>
   import JSONFieldMixin from "../JSONFieldMixin";
+  import LowLevelDateYearField from "./LowLevelDateYearField";
   import LowLevelDecimalField from "./LowLevelDecimalField";
 
   export default {
-    components: { LowLevelDecimalField },
+    components: { LowLevelDateYearField, LowLevelDecimalField },
     mixins: [JSONFieldMixin],
     data() {
       return {

@@ -27,6 +27,7 @@
         model="contract"
         :active="active_tab === '#contracts'"
         @activated="updateRoute('#contracts')"
+        @addEntry="addContract"
       />
       <DealEditSection
         :title="deal_sections.employment.label"
@@ -73,6 +74,7 @@
         model="datasource"
         :active="active_tab === '#data_sources'"
         @activated="updateRoute('#data_sources')"
+        @addEntry="addDataSource"
       />
 
       <DealEditSection
@@ -185,6 +187,36 @@
     methods: {
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      },
+      addContract() {
+        this.deal.contracts.push(
+          new Object({
+            number: "",
+            date: null,
+            expiration_date: null,
+            agreement_duration: null,
+            comment: "",
+          })
+        );
+      },
+      addDataSource() {
+        this.deal.datasources.push(
+          new Object({
+            type: "",
+            url: "",
+            file: "",
+            file_not_public: false,
+            publication_title: "",
+            date: "",
+            name: "",
+            company: "",
+            email: "",
+            phone: "",
+            includes_in_country_verified_information: null,
+            open_land_contracts_id: "",
+            comment: "",
+          })
+        );
       },
     },
   };

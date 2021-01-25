@@ -43,7 +43,6 @@
             <template v-if="formfield.choices">
               <multiselect
                 v-model="val.value"
-                class="multiselect"
                 :options="convert_to_options(formfield.choices)"
                 :placeholder="formfield.placeholder"
                 :group-select="true"

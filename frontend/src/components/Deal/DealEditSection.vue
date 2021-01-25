@@ -5,8 +5,10 @@
       <EditField
         v-for="fieldname in section.fields"
         :key="fieldname"
-        :fieldname="fieldname"
         v-model="deal[fieldname]"
+        :fieldname="fieldname"
+        :value-classes="['display-field-label', 'col-12']"
+        :label-classes="['display-field-value', 'col-12']"
       />
     </div>
 
@@ -30,3 +32,9 @@
     methods: {},
   };
 </script>
+
+<style lang="scss" scoped>
+  .display-field-wrapper {
+    margin-top: 2em;
+  }
+</style>

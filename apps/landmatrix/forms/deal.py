@@ -9,27 +9,27 @@ class DealForm(VueForm):
     def attributes(self):
         return {
             "intended_size": {"unit": "ha"},
-            "contract_size": {
-                "class": "JSONDateAreaField",
-                "dimensions": ["date", "area"],
-            },
-            "production_size": {
-                "class": "JSONDateAreaField",
-                "dimensions": ["date", "area"],
-            },
+            "contract_size": {"class": "JSONDateAreaField"},
+            "production_size": {"class": "JSONDateAreaField"},
             "intention_of_investment": {
                 "class": "JSONDateAreaChoicesField",
-                "dimensions": ["date", "choices", "area"],
-                "multiselect": {"with_categories": True, "multiple": True},
+                "with_categories": True,
             },
             "negotiation_status": {
                 "class": "JSONDateChoiceField",
-                "dimensions": ["date", "choice"],
+                "choices": {
+                    "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
+                    "UNDER_NEGOTIATION": "Intended (Under negotiation)",
+                    "MEMORANDUM_OF_UNDERSTANDING": "Intended (Memorandum of understanding)",
+                    "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
+                    "CONTRACT_SIGNED": "Concluded (Contract signed)",
+                    "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
+                    "CONTRACT_CANCELED": "Failed (Contract cancelled)",
+                    "CONTRACT_EXPIRED": "Contract expired",
+                    "CHANGE_OF_OWNERSHIP": "Change of ownership",
+                },
             },
-            "implementation_status": {
-                "class": "JSONDateChoiceField",
-                "dimensions": ["date", "choice"],
-            },
+            "implementation_status": {"class": "JSONDateChoiceField"},
             # "on_the_lease": {
             #     "class": "JSONLeaseField",
             #     "dimensions": ["date", "area", "farmers", "households"],
@@ -50,34 +50,27 @@ class DealForm(VueForm):
             #     "class": "JSONJobsField",
             #     "dimensions": ["date", "jobs", "employees", "workers"],
             # },
-            "involved_actors": {
-                "class": "JSONActorsField",
-                "dimensions": ["name", "role"],
-                "has_current": False,
-            },
+            "involved_actors": {"class": "JSONActorsField"},
             "crops": {
                 "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Crop.objects.all()},
-                "dimensions": ["date", "choices", "area", "yield", "export"],
             },
             "animals": {
                 "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Animal.objects.all()},
-                "dimensions": ["date", "choices", "area", "yield", "export"],
             },
             "resources": {
                 "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Mineral.objects.all()},
-                "dimensions": ["date", "choices", "area", "yield", "export"],
             },
             "contract_farming_crops": {
                 "class": "JSONDateAreaChoicesField",
                 "choices": {c.code: c.name for c in Crop.objects.all()},
-                "dimensions": ["date", "choices", "area"],
+                "with_categories": False,
             },
             "contract_farming_animals": {
                 "class": "JSONDateAreaChoicesField",
                 "choices": {c.code: c.name for c in Animal.objects.all()},
-                "dimensions": ["date", "choices", "area"],
+                "with_categories": False,
             },
         }

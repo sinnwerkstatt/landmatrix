@@ -5,6 +5,13 @@
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
             {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="$emit('removeEntry', index)"
+            >
+              <i class="fa fa-minus"></i>
+            </button>
           </h3>
           <EditField
             v-for="fieldname in fields"
@@ -18,6 +25,11 @@
         </div>
       </div>
       <slot />
+    </div>
+    <div class="mt-5 float-right">
+      <button type="button" class="btn btn-primary" @click="$emit('addEntry')">
+        <i class="fa fa-plus"></i> {{ $t(modelName) }}
+      </button>
     </div>
   </b-tab>
 </template>

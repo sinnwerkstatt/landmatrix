@@ -5,34 +5,34 @@
       :id="name"
       v-model="val"
       :name="name"
-      type="number"
-      step="0.01"
+      type="text"
       class="form-control"
-      placeholder="100.23"
-      :aria-describedby="`${name}_append`"
+      :class="valid_state"
+      placeholder="YYYY-MM-DD"
       :required="required"
     />
-    <div v-if="unit" class="input-group-append">
-      <span :id="`${name}_append`" class="input-group-text">
-        {{ unit }}
-      </span>
-    </div>
   </div>
 </template>
 
 <script>
+  import dayjs from "dayjs";
+  import customParseFormat from "dayjs/plugin/customParseFormat";
+
+  dayjs.extend(customParseFormat);
+
   export default {
-    name: "LowLevelDecimalField",
+    name: "LowLevelDateYearField",
     props: {
       name: { type: String, required: true },
       label: { type: String, required: false, default: "" },
       unit: { type: String, required: false, default: "" },
       required: { type: Boolean, default: false },
-      value: { type: Number, required: false, default: null },
+      value: { type: [String, Date], required: false, default: null },
     },
     data() {
       return {
         val: this.value,
+        valid_state: null,
       };
     },
     watch: {
@@ -44,15 +44,17 @@
           this.$emit("input", null);
           return;
         }
-        let v_str = v.toString();
-        if (v_str.includes(".")) {
-          let number = v_str.split(".");
-          let decimals = number[1];
-          decimals = decimals.length > 2 ? decimals.slice(0, 2) : decimals;
-          v_str = `${number[0]}.${decimals}`;
-          this.val = v_str;
-        }
-        this.$emit("input", +v);
+        v = v.replace("/", "-");
+
+        this.valid_state = dayjs(
+          this.val,
+          ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
+          true
+        ).isValid()
+          ? "is-valid"
+          : "is-invalid";
+
+        this.$emit("input", v);
       },
     },
   };

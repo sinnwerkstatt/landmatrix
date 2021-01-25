@@ -103,7 +103,8 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(DataSource)
 class DataSourceAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__"]
+    list_display = ["pk", "__str__", "file"]
+    readonly_fields = ["deal", "old_group_id"]
 
 
 @admin.register(Contract)

@@ -1,6 +1,6 @@
 <template>
   <div class="nowrap">
-    <table>
+    <table class="w-100">
       <thead>
         <tr>
           <th>Current</th>
@@ -25,11 +25,10 @@
             </div>
           </td>
           <td>
-            <input
+            <LowLevelDateYearField
               v-model="val.date"
-              type="text"
-              class="form-control year-based-year"
-              placeholder="YYYY-MM-DD"
+              :name="formfield.name"
+              :required="formfield.required"
               @input="updateEntries"
             />
           </td>
@@ -46,25 +45,16 @@
           <td>
             <multiselect
               v-model="val.choices"
-              class="multiselect"
-              @input="updateEntries"
               :options="options"
               :placeholder="formfield.placeholder"
               :group-select="true"
-              :multiple="formfield.multiselect && formfield.multiselect.multiple"
-              :group-values="
-                formfield.multiselect && formfield.multiselect.with_categories
-                  ? 'options'
-                  : null
-              "
-              :group-label="
-                formfield.multiselect && formfield.multiselect.with_categories
-                  ? 'category'
-                  : null
-              "
+              :multiple="true"
+              :group-values="formfield.with_categories ? 'options' : null"
+              :group-label="formfield.with_categories ? 'category' : null"
               :custom-label="(x) => labels[x]"
+              :close-on-select="false"
+              @input="updateEntries"
             />
-            <!-- :close-on-select="!formfield.multiselect.multiple"-->
           </td>
 
           <td>
@@ -85,10 +75,11 @@
 
 <script>
   import JSONFieldMixin from "../JSONFieldMixin";
+  import LowLevelDateYearField from "./LowLevelDateYearField";
   import LowLevelDecimalField from "./LowLevelDecimalField";
 
   export default {
-    components: { LowLevelDecimalField },
+    components: { LowLevelDateYearField, LowLevelDecimalField },
     mixins: [JSONFieldMixin],
     data() {
       return {
@@ -104,21 +95,21 @@
       if (this.value) {
         this.current = this.value.map((e) => e.current).indexOf(true);
       }
-      this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
-        let newopts = Object.entries(v).map(([h, j]) => {
-          this.labels[h] = this.$t(j);
-          return h;
+      if (this.formfield.with_categories) {
+        this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
+          let newopts = Object.entries(v).map(([h, j]) => {
+            this.labels[h] = this.$t(j);
+            return h;
+          });
+          return { category: k, options: newopts };
         });
-        return { category: k, options: newopts };
-      });
+      } else {
+        this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
+          this.labels[k] = this.$t(v);
+          return k;
+        });
+      }
     },
-    // computed: {
-    //   options() {
-    //
-    //     console.log(xx);
-    //     return xx;
-    //   }
-    // },
     methods: {
       updateCurrent(i) {
         this.current = i;
@@ -136,7 +127,6 @@
         );
       },
       addEntry() {
-        // this.current = this.vals.length;
         this.vals.push({ date: null, area: null, choices: [] });
         this.updateEntries();
       },
@@ -145,18 +135,6 @@
         this.vals.splice(index, 1);
         this.updateEntries();
       },
-
-      // convert_to_options(choices) {
-      //   console.log(choices);
-      //   let xx = Object.entries(choices).map(([k, v]) => {
-      //     let newopts = Object.entries(v).map(([h, j]) => {
-      //       return h;
-      //     });
-      //     return { category: k, options: newopts };
-      //   });
-      //   console.log(xx);
-      //   return xx;
-      // },
     },
   };
 </script>

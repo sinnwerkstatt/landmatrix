@@ -91,6 +91,8 @@ def _extras_to_json(
         "intention_of_investment",
         "negotiation_status",
         "implementation_status",
+        "contract_farming_crops",
+        "contract_farming_animals",
     ]:
         set_current(ret)
     return ret

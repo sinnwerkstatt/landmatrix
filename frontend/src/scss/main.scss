@@ -52,3 +52,11 @@ a {
   //min-width: 70vw;
   //width: auto;
 }
+
+.form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: rgba(252, 148, 31,0.5);
+  //opacity: 1; /* Firefox */
+}
+.form-control::-ms-input-placeholder { /* Microsoft Edge */
+  color: rgba(252, 148, 31,0.5);
+}
