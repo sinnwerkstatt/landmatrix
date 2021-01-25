@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-22 22:25+0100\n"
+"POT-Creation-Date: 2021-01-25 13:57+0100\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3047,6 +3047,7 @@ msgid "Unknown region"
 msgstr "Región desconocida"
 
 #: apps/grid/templates/grid/includes/investor_network.html:11
+#: config/frontend_i18n_strings.py:23
 msgid "Level of parent investors"
 msgstr "Nivel de inversores matriz"
 
@@ -4463,28 +4464,100 @@ msgid "Tweets by"
 msgstr "Tweets por"
 
 #: config/frontend_i18n_strings.py:4
-msgid "Changes within timespan"
-msgstr "Cambios en el tiempo"
+msgid "About"
+msgstr ""
 
 #: config/frontend_i18n_strings.py:5
-msgid "Current statistics"
-msgstr "Estadísticas actuales"
-
-#: config/frontend_i18n_strings.py:6
-msgid "Resources"
-msgstr "Recursos"
-
-#: config/frontend_i18n_strings.py:7
 msgid "All rights reserved"
 msgstr "Todos los derechos reservados"
 
-#: config/frontend_i18n_strings.py:8
+#: config/frontend_i18n_strings.py:6
+msgid "Areas (as geojson)"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:7 config/frontend_i18n_strings.py:8
+msgid "Changes within timespan"
+msgstr "Cambios en el tiempo"
+
+#: config/frontend_i18n_strings.py:9
+msgid "Compare versions"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:10
+msgid "Compare"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:11
+msgid "Contribute"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:12
+msgid "Country of registration"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:13 config/frontend_i18n_strings.py:14
+msgid "Current statistics"
+msgstr "Estadísticas actuales"
+
+#: config/frontend_i18n_strings.py:15
+msgid "Deal History"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:16
+msgid "Default filter"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:17
+msgid "Download country profiles for"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:18
+msgid "Excluded"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:19
+msgid "Filter"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:20
+msgid "Included"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:21
+msgid "Investor History"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:22
+msgid "Latest tweets"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:24
+msgid "Locations (as geojson)"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:25
 msgid "Map settings"
 msgstr ""
 
-#: config/frontend_i18n_strings.py:9
-msgid "Contribute"
+#: config/frontend_i18n_strings.py:26
+msgid "More details"
 msgstr ""
+
+#: config/frontend_i18n_strings.py:27
+msgid "Number of deal locations"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:28
+msgid "Please click the nodes to get more details."
+msgstr ""
+
+#: config/frontend_i18n_strings.py:29
+msgid "Put each value on a new line, i.e. press enter between each name"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:30
+msgid "Resources"
+msgstr "Recursos"
 
 #: templates/404.html:4 templates/404.html:5
 msgid "Page not found"
