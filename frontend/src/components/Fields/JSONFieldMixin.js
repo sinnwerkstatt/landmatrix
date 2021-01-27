@@ -6,6 +6,20 @@ const myMixin = {
     value: { type: [Array, Object], required: false, default: null },
     model: { type: String, required: true },
   },
+  data() {
+    return {
+      current: -1,
+      vals:
+        this.value && this.value.length > 0
+          ? JSON.parse(JSON.stringify(this.value))
+          : [{}],
+    };
+  },
+  created() {
+    if (this.value) {
+      this.current = this.value.map((e) => e.current).indexOf(true);
+    }
+  },
   methods: {
     date_and_current(value) {
       if (!value.date && !value.current) return;
@@ -39,6 +53,30 @@ const myMixin = {
         else ret += jsonval.value;
       }
       return ret;
+    },
+    updateCurrent(i) {
+      this.current = i;
+      this.updateEntries();
+    },
+    updateEntries() {
+      if (this.filteredVals.length <= 1) {
+        this.current = this.filteredVals.length - 1;
+      }
+      this.vals = this.vals.map((v, i) => {
+        let current = i === this.current ? { current: true } : {};
+        delete v.current;
+        return { ...v, ...current };
+      });
+      this.$emit("input", this.filteredVals);
+    },
+    addEntry() {
+      this.vals.push({});
+      this.updateEntries();
+    },
+    removeEntry(index) {
+      this.current = Math.min(this.current, this.vals.length - 2);
+      this.vals.splice(index, 1);
+      this.updateEntries();
     },
   },
 };

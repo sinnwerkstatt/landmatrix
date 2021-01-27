@@ -1,10 +1,7 @@
 <template>
   <div class="nowrap input-group">
-    <label class="sr-only" :for="name">{{ label }}</label>
     <input
-      :id="name"
       v-model="val"
-      :name="name"
       type="text"
       class="form-control"
       :class="valid_state"
@@ -23,7 +20,6 @@
   export default {
     name: "LowLevelDateYearField",
     props: {
-      name: { type: String, required: true },
       label: { type: String, required: false, default: "" },
       unit: { type: String, required: false, default: "" },
       required: { type: Boolean, default: false },

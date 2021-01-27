@@ -18,7 +18,6 @@
                 v-model="current"
                 class="form-check-input"
                 type="radio"
-                :name="`${formfield.name}_current`"
                 :value="i"
               />
             </div>
@@ -26,7 +25,6 @@
           <td>
             <LowLevelDateYearField
               v-model="val.date"
-              :name="formfield.name"
               :required="formfield.required"
               @input="updateEntries"
             />
@@ -67,56 +65,20 @@
     mixins: [JSONFieldMixin],
     data() {
       return {
-        current: -1,
-        vals: this.value
-          ? JSON.parse(JSON.stringify(this.value))
-          : [{ date: null, choice: null, current: true }],
         options: [],
         labels: {},
       };
     },
+    computed: {
+      filteredVals() {
+        return this.vals.filter((x) => x.date || x.choice);
+      },
+    },
     created() {
-      if (this.value) {
-        this.current = this.value.map((e) => e.current).indexOf(true);
-      }
-
       this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
         this.labels[k] = this.$t(v);
         return k;
       });
-    },
-    // computed: {
-    //   options() {
-    //
-    //     console.log(xx);
-    //     return xx;
-    //   }
-    // },
-    methods: {
-      updateCurrent(i) {
-        this.current = i;
-        this.updateEntries();
-      },
-      updateEntries() {
-        this.vals = this.vals.map((v, i) => {
-          let current = i === this.current ? { current: true } : {};
-          delete v.current;
-          return { ...v, ...current };
-        });
-        this.$emit(
-          "input",
-          this.vals.filter((x) => x.current || x.date || x.choice)
-        );
-      },
-      addEntry() {
-        this.vals.push({ date: null, area: null, choice: null });
-        this.updateEntries();
-      },
-      removeEntry(index) {
-        this.current = Math.min(this.current, this.vals.length - 2);
-        this.vals.splice(index, 1);
-        this.updateEntries();
-      },
     },
   };
 </script>

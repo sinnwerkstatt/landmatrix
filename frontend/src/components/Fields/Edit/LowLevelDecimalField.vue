@@ -1,19 +1,16 @@
 <template>
   <div class="nowrap input-group">
-    <label class="sr-only" :for="name">{{ label }}</label>
     <input
-      :id="name"
       v-model="val"
-      :name="name"
       type="number"
       step="0.01"
       class="form-control"
       placeholder="100.23"
-      :aria-describedby="`${name}_append`"
       :required="required"
+      :max="maxValue"
     />
     <div v-if="unit" class="input-group-append">
-      <span :id="`${name}_append`" class="input-group-text">
+      <span class="input-group-text">
         {{ unit }}
       </span>
     </div>
@@ -24,11 +21,11 @@
   export default {
     name: "LowLevelDecimalField",
     props: {
-      name: { type: String, required: true },
       label: { type: String, required: false, default: "" },
       unit: { type: String, required: false, default: "" },
       required: { type: Boolean, default: false },
       value: { type: Number, required: false, default: null },
+      maxValue: { type: Number, required: false, default: null },
     },
     data() {
       return {
@@ -43,6 +40,9 @@
         if (!v) {
           this.$emit("input", null);
           return;
+        }
+        if (this.maxValue && v > this.maxValue) {
+          this.val = this.maxValue;
         }
         let v_str = v.toString();
         if (v_str.includes(".")) {

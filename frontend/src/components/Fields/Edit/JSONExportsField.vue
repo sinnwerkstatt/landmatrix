@@ -1,7 +1,5 @@
 <template>
   <div class="nowrap">
-    {{ vals }}
-    {{ value }}
     <table class="w-100">
       <thead>
         <tr>
@@ -23,7 +21,6 @@
                 v-model="current"
                 class="form-check-input"
                 type="radio"
-                :name="`${formfield.name}_current`"
                 :value="i"
               />
             </div>
@@ -31,7 +28,6 @@
           <td>
             <LowLevelDateYearField
               v-model="val.date"
-              :name="formfield.name"
               :required="formfield.required"
               @input="updateEntries"
             />
@@ -43,8 +39,6 @@
               :placeholder="formfield.placeholder"
               :group-select="true"
               :multiple="true"
-              :group-values="formfield.with_categories ? 'options' : null"
-              :group-label="formfield.with_categories ? 'category' : null"
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
               @input="updateEntries"
@@ -53,7 +47,6 @@
           <td>
             <LowLevelDecimalField
               v-model="val.area"
-              :name="formfield.name"
               :required="formfield.required"
               unit="ha"
               @input="updateEntries"
@@ -62,7 +55,6 @@
           <td>
             <LowLevelDecimalField
               v-model="val.yield"
-              :name="formfield.name"
               :required="formfield.required"
               unit="tons"
               @input="updateEntries"
@@ -71,8 +63,8 @@
           <td>
             <LowLevelDecimalField
               v-model="val.export"
-              :name="formfield.name"
               :required="formfield.required"
+              :max-value="100"
               unit="%"
               @input="updateEntries"
             />
@@ -104,76 +96,23 @@
     mixins: [JSONFieldMixin],
     data() {
       return {
-        current: -1,
-        vals:
-          this.value && this.value.length > 0
-            ? JSON.parse(JSON.stringify(this.value))
-            : [
-                {
-                  date: null,
-                  choices: [],
-                  area: null,
-                  yield: null,
-                  export: null,
-                  current: true,
-                },
-              ],
         options: [],
         labels: {},
       };
     },
-    created() {
-      if (this.value) {
-        this.current = this.value.map((e) => e.current).indexOf(true);
-      }
-      if (this.formfield.with_categories) {
-        this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
-          let newopts = Object.entries(v).map(([h, j]) => {
-            this.labels[h] = this.$t(j);
-            return h;
-          });
-          return { category: k, options: newopts };
-        });
-      } else {
-        this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
-          this.labels[k] = this.$t(v);
-          return k;
-        });
-      }
-    },
-    methods: {
-      updateCurrent(i) {
-        this.current = i;
-        this.updateEntries();
-      },
-      updateEntries() {
-        this.vals = this.vals.map((v, i) => {
-          let current = i === this.current ? { current: true } : {};
-          delete v.current;
-          return { ...v, ...current };
-        });
-        this.$emit(
-          "input",
-          this.vals.filter(
-            (x) => x.current || x.date || x.area || x.yield || x.export || x.choices
-          )
+
+    computed: {
+      filteredVals() {
+        return this.vals.filter(
+          (x) => x.date || x.area || x.yield || x.export || x.choices
         );
       },
-      addEntry() {
-        this.vals.push({
-          date: null,
-          choices: [],
-          area: null,
-          yield: null,
-          export: null,
-        });
-        this.updateEntries();
-      },
-      removeEntry(index) {
-        this.current = Math.min(this.current, this.vals.length - 2);
-        this.vals.splice(index, 1);
-        this.updateEntries();
-      },
+    },
+    created() {
+      this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
+        this.labels[k] = this.$t(v);
+        return k;
+      });
     },
   };
 </script>

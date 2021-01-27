@@ -3,16 +3,16 @@
     <div v-for="(val, i) in vals" class="row">
       <div class="col-5">
         <input
+          v-model="val.name"
           type="text"
           placeholder="Name"
           aria-label="Name"
-          v-model="val.name"
-          name="name"
           class="form-control"
+          @input="updateEntries"
         />
       </div>
       <div class="col-5">
-        <select v-model="val.role" :name="formfield.name" class="form-control">
+        <select v-model="val.role" class="form-control" @change="updateEntries">
           <option value="">--------</option>
           <option v-for="(v, k) in formfield.choices" :key="k" :value="k">
             {{ v }}
@@ -38,22 +38,15 @@
 
   export default {
     mixins: [JSONFieldMixin],
-    data() {
-      return {
-        vals: this.value ? this.value : [{ name: null, role: [] }],
-      };
-    },
-    watch: {
-      vals: {
-        handler(newValue) {
-          this.$emit("input", newValue);
-        },
-        deep: true,
-      },
-    },
     methods: {
+      updateEntries() {
+        this.$emit(
+          "input",
+          this.vals.filter((x) => x.name || x.role)
+        );
+      },
       addEntry() {
-        this.vals.push({ name: null, role: [] });
+        this.vals.push({});
       },
       removeEntry(index) {
         this.vals.splice(index, 1);

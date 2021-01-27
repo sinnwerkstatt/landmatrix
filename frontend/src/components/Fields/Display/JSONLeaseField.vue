@@ -2,7 +2,15 @@
   <div class="nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
-      <span v-if="val.area">{{ val.area }} ha</span>
+      <span v-if="val.area" class="mx-2">
+        <i class="fas fa-circle-notch"></i> {{ val.area }} ha
+      </span>
+      <span v-if="val.farmers" class="mx-2">
+        <i class="fas fa-tractor"></i> {{ val.farmers }}
+      </span>
+      <span v-if="val.households" class="mx-2">
+        <i class="fas fa-home"></i> {{ val.households }}
+      </span>
     </div>
   </div>
 </template>

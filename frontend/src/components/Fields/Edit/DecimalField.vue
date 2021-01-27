@@ -2,7 +2,6 @@
   <div>
     <LowLevelDecimalField
       v-model="val"
-      :name="formfield.name"
       :required="formfield.required"
       :unit="formfield.unit"
     />
