@@ -4,13 +4,13 @@
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.choices">{{ mapChoices(val.choices) }}</span>
       <span v-if="val.area" class="mx-2">
-        <i class="fas fa-circle-notch"></i> {{ val.area }} ha
+        <i class="fas fa-circle-notch"></i> {{ val.area.toLocaleString() }} ha
       </span>
       <span v-if="val.yield" class="mx-2">
-        <i class="fas fa-weight-hanging"></i> {{ val.yield }} tons
+        <i class="fas fa-weight-hanging"></i> {{ val.yield.toLocaleString() }} tons
       </span>
       <span v-if="val.export" class="mx-2">
-        <i class="fas fa-plane-departure"></i> {{ val.export }} %
+        <i class="fas fa-plane-departure"></i> {{ val.export.toLocaleString() }} %
       </span>
     </div>
   </div>

@@ -3,13 +3,13 @@
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.area" class="mx-2">
-        <i class="fas fa-circle-notch"></i> {{ val.area }} ha
+        <i class="fas fa-circle-notch"></i> {{ val.area.toLocaleString() }} ha
       </span>
       <span v-if="val.farmers" class="mx-2">
-        <i class="fas fa-tractor"></i> {{ val.farmers }}
+        <i class="fas fa-tractor"></i> {{ val.farmers.toLocaleString() }}
       </span>
       <span v-if="val.households" class="mx-2">
-        <i class="fas fa-home"></i> {{ val.households }}
+        <i class="fas fa-home"></i> {{ val.households.toLocaleString() }}
       </span>
     </div>
   </div>

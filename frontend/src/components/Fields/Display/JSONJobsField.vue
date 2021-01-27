@@ -2,9 +2,13 @@
   <div class="nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
-      <span v-if="val.jobs" class="mx-2"> {{ val.jobs }} jobs </span>
-      <span v-if="val.employees" class="mx-2"> {{ val.employees }} employees </span>
-      <span v-if="val.workers" class="mx-2"> {{ val.workers }} workers </span>
+      <span v-if="val.jobs" class="mx-2"> {{ val.jobs.toLocaleString() }} jobs </span>
+      <span v-if="val.employees" class="mx-2">
+        {{ val.employees.toLocaleString() }} employees
+      </span>
+      <span v-if="val.workers" class="mx-2">
+        {{ val.workers.toLocaleString() }} workers
+      </span>
     </div>
   </div>
 </template>
