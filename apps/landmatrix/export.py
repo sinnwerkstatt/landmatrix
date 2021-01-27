@@ -654,9 +654,9 @@ class DataDownload:
             ]
             data["operating_company__comment"] = data["operating_company"]["comment"]
 
-        data["deal_size"] = int(data.get("deal_size", 0))
-        data["current_contract_size"] = int(data.get("current_contract_size", 0))
-        data["current_production_size"] = int(data.get("current_production_size", 0))
+        data["deal_size"] = data.get("deal_size", 0.0)
+        data["current_contract_size"] = data.get("current_contract_size", 0.0)
+        data["current_production_size"] = data.get("current_production_size", 0.0)
 
         imp_stat = data.get("current_implementation_status")
         data["current_implementation_status"] = current_implementation_status_map.get(
@@ -734,8 +734,8 @@ class DataDownload:
             data["purchase_price_type"] = dict(Deal.HA_AREA_CHOICES)[
                 data["purchase_price_type"]
             ]
-        if data.get("purchase_price_area"):
-            data["purchase_price_area"] = int(data["purchase_price_area"])
+        # if data.get("purchase_price_area"):
+        #     data["purchase_price_area"] = data["purchase_price_area"]
 
         if data.get("annual_leasing_fee"):
             data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
@@ -747,8 +747,8 @@ class DataDownload:
             data["annual_leasing_fee_type"] = dict(Deal.HA_AREA_CHOICES)[
                 data["annual_leasing_fee_type"]
             ]
-        if data.get("annual_leasing_fee_area"):
-            data["annual_leasing_fee_area"] = int(data["annual_leasing_fee_area"])
+        # if data.get("annual_leasing_fee_area"):
+        #     data["annual_leasing_fee_area"] = data["annual_leasing_fee_area"]
 
         bool_cast(data, "contract_farming")
         flatten_date_current_value(data, "total_jobs_current", "jobs")

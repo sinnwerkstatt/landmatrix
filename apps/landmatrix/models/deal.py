@@ -1135,9 +1135,9 @@ class Deal(models.Model, OldDealMixin):
         if not negotiation_status:
             return 0
 
-        intended_size = int(self.intended_size or 0)
-        contract_size = int(self.current_contract_size or 0)
-        production_size = int(self.current_production_size or 0)
+        intended_size = self.intended_size or 0.0
+        contract_size = self.current_contract_size or 0.0
+        production_size = self.current_production_size or 0.0
 
         # 1) IF Negotiation status IS Intended
         if negotiation_status in (
@@ -1168,7 +1168,7 @@ class Deal(models.Model, OldDealMixin):
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         else:
-            value = 0
+            value = 0.0
         return value
 
     def _calculate_initiation_year(self):
