@@ -309,44 +309,19 @@ class Deal(models.Model, OldDealMixin):
     # contract_farming = models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
     contract_farming = models.NullBooleanField()
 
-    on_the_lease = models.NullBooleanField(_("On leased / purchased area"))
-    on_the_lease_area = JSONField(
-        _("On leased / purchased area (in ha)"),
-        help_text=_("ha"),
-        blank=True,
-        null=True,
-    )
-    on_the_lease_farmers = JSONField(
-        _("On leased / purchased farmers"),
-        help_text=_("farmers"),
-        blank=True,
-        null=True,
-    )
-    on_the_lease_households = JSONField(
-        _("On leased / purchased households"),
-        help_text=_("households"),
+    on_the_lease_state = models.NullBooleanField(_("On leased / purchased"))
+    on_the_lease = JSONField(
+        _("On leased area/farmers/households"),
         blank=True,
         null=True,
     )
 
-    off_the_lease = models.NullBooleanField(
-        _("Not on leased / purchased area (out-grower)")
+    off_the_lease_state = models.NullBooleanField(
+        _("Not on leased / purchased (out-grower)")
     )
-    off_the_lease_area = JSONField(
-        _("Not on leased / purchased area (out-grower, in ha)"),
+    off_the_lease = JSONField(
+        _("Not on leased area/farmers/households (out-grower)"),
         help_text=_("ha"),
-        blank=True,
-        null=True,
-    )
-    off_the_lease_farmers = JSONField(
-        _("Not on leased / purchased farmers (out-grower)"),
-        help_text=_("farmers"),
-        blank=True,
-        null=True,
-    )
-    off_the_lease_households = JSONField(
-        _("Not on leased / purchased households (out-grower)"),
-        help_text=_("households"),
         blank=True,
         null=True,
     )
@@ -373,20 +348,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     total_jobs_current = JSONField(
-        _("Current number of jobs (total)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    total_jobs_current_employees = JSONField(
-        _("Current number of employees (total)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    total_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (total)"),
-        help_text=_("workers"),
+        _("Current total number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )
@@ -414,20 +376,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     foreign_jobs_current = JSONField(
-        _("Current number of jobs (foreign)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    foreign_jobs_current_employees = JSONField(
-        _("Current number of employees (foreign)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    foreign_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (foreign)"),
-        help_text=_("workers"),
+        _("Current foreign number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )
@@ -455,20 +404,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     domestic_jobs_current = JSONField(
-        _("Current number of jobs (domestic)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    domestic_jobs_current_employees = JSONField(
-        _("Current number of employees (domestic)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    domestic_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (domestic)"),
-        help_text=_("workers"),
+        _("Current domestic number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )

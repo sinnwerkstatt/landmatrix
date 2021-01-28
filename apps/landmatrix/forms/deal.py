@@ -8,6 +8,7 @@ class DealForm(VueForm):
     @property
     def attributes(self):
         return {
+            "deal_size": {"unit": "ha"},
             "intended_size": {"unit": "ha"},
             "contract_size": {"class": "JSONDateAreaField"},
             "production_size": {"class": "JSONDateAreaField"},
@@ -30,26 +31,21 @@ class DealForm(VueForm):
                 },
             },
             "implementation_status": {"class": "JSONDateChoiceField"},
-            # "on_the_lease": {
-            #     "class": "JSONLeaseField",
-            #     "dimensions": ["date", "area", "farmers", "households"],
-            # },
-            # "off_the_lease": {
-            #     "class": "JSONLeaseField",
-            #     "dimensions": ["date", "area", "farmers", "households"],
-            # },
-            # "total_jobs_current": {
-            #     "class": "JSONJobsField",
-            #     "dimensions": ["date", "jobs", "employees", "workers"],
-            # },
-            # "foreign_jobs_current": {
-            #     "class": "JSONJobsField",
-            #     "dimensions": ["date", "jobs", "employees", "workers"],
-            # },
-            # "domestic_jobs_current": {
-            #     "class": "JSONJobsField",
-            #     "dimensions": ["date", "jobs", "employees", "workers"],
-            # },
+            "on_the_lease": {
+                "class": "JSONLeaseField",
+            },
+            "off_the_lease": {
+                "class": "JSONLeaseField",
+            },
+            "total_jobs_current": {
+                "class": "JSONJobsField",
+            },
+            "foreign_jobs_current": {
+                "class": "JSONJobsField",
+            },
+            "domestic_jobs_current": {
+                "class": "JSONJobsField",
+            },
             "involved_actors": {"class": "JSONActorsField"},
             "crops": {
                 "class": "JSONExportsField",

@@ -12,6 +12,8 @@ from apps.landmatrix.synchronization.helpers import (
     _extras_to_list,
     _to_nullbool,
     set_current,
+    _lease_logic,
+    _jobs_merge,
 )
 
 
@@ -74,6 +76,7 @@ def parse_general(deal, attrs):
         "Outright Purchase": "OUTRIGHT_PURCHASE",
         "Compra Directa": "OUTRIGHT_PURCHASE",
         "Lease": "LEASE",
+        "Arrendamiento": "LEASE",
         "Concession": "CONCESSION",
         "Concesión": "CONCESSION",
         "Exploitation permit / license / concession (for mineral resources)": "EXPLOITATION_PERMIT",
@@ -148,26 +151,10 @@ def parse_general(deal, attrs):
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
 
     deal.contract_farming = _to_nullbool(attrs.get("contract_farming"))
-    deal.on_the_lease = _to_nullbool(attrs.get("on_the_lease"))
-    deal.on_the_lease_area = _extras_to_json(
-        attrs, "on_the_lease_area", val1name="area"
-    )
-    deal.on_the_lease_farmers = _extras_to_json(
-        attrs, "on_the_lease_farmers", val1name="farmers", expected_type=int
-    )
-    deal.on_the_lease_households = _extras_to_json(
-        attrs, "on_the_lease_households", val1name="households", expected_type=int
-    )
-    deal.off_the_lease = _to_nullbool(attrs.get("off_the_lease"))
-    deal.off_the_lease_area = _extras_to_json(
-        attrs, "off_the_lease_area", val1name="area"
-    )
-    deal.off_the_lease_farmers = _extras_to_json(
-        attrs, "off_the_lease_farmers", val1name="farmers", expected_type=int
-    )
-    deal.off_the_lease_households = _extras_to_json(
-        attrs, "off_the_lease_households", val1name="households", expected_type=int
-    )
+    deal.on_the_lease_state = _to_nullbool(attrs.get("on_the_lease"))
+    deal.off_the_lease_state = _to_nullbool(attrs.get("off_the_lease"))
+    deal.on_the_lease = _lease_logic(attrs, "on")
+    deal.off_the_lease = _lease_logic(attrs, "off")
     deal.contract_farming_comment = attrs.get("tg_contract_farming_comment") or ""
 
 
@@ -178,15 +165,7 @@ def parse_employment(deal, attrs):
     deal.total_jobs_planned_daily_workers = attrs.get(
         "total_jobs_planned_daily_workers"
     )
-    deal.total_jobs_current = _extras_to_json(
-        attrs, "total_jobs_current", val1name="jobs"
-    )
-    deal.total_jobs_current_employees = _extras_to_json(
-        attrs, "total_jobs_current_employees", val1name="employees"
-    )
-    deal.total_jobs_current_daily_workers = _extras_to_json(
-        attrs, "total_jobs_current_daily_workers", val1name="workers"
-    )
+    deal.total_jobs_current = _jobs_merge(attrs, "total")
     deal.total_jobs_created_comment = (
         attrs.get("tg_total_number_of_jobs_created_comment") or ""
     )
@@ -197,15 +176,7 @@ def parse_employment(deal, attrs):
     deal.foreign_jobs_planned_daily_workers = attrs.get(
         "foreign_jobs_planned_daily_workers"
     )
-    deal.foreign_jobs_current = _extras_to_json(
-        attrs, "foreign_jobs_current", val1name="jobs"
-    )
-    deal.foreign_jobs_current_employees = _extras_to_json(
-        attrs, "foreign_jobs_current_employees", val1name="employees"
-    )
-    deal.foreign_jobs_current_daily_workers = _extras_to_json(
-        attrs, "foreign_jobs_current_daily_workers", val1name="workers"
-    )
+    deal.foreign_jobs_current = _jobs_merge(attrs, "foreign")
     deal.foreign_jobs_created_comment = (
         attrs.get("tg_foreign_jobs_created_comment") or ""
     )
@@ -216,15 +187,7 @@ def parse_employment(deal, attrs):
     deal.domestic_jobs_planned_daily_workers = attrs.get(
         "domestic_jobs_planned_daily_workers"
     )
-    deal.domestic_jobs_current = _extras_to_json(
-        attrs, "domestic_jobs_current", val1name="jobs"
-    )
-    deal.domestic_jobs_current_employees = _extras_to_json(
-        attrs, "domestic_jobs_current_employees", val1name="employees"
-    )
-    deal.domestic_jobs_current_daily_workers = _extras_to_json(
-        attrs, "domestic_jobs_current_daily_workers", val1name="workers"
-    )
+    deal.domestic_jobs_current = _jobs_merge(attrs, "domestic")
     deal.domestic_jobs_created_comment = (
         attrs.get("tg_domestic_jobs_created_comment") or ""
     )
@@ -338,6 +301,7 @@ def parse_local_communities(deal, attrs):
 
     NEGATIVE_IMPACTS_MAP = {
         "Environmental degradation": "ENVIRONMENTAL_DEGRADATION",
+        "Degradación ambiental": "ENVIRONMENTAL_DEGRADATION",
         "Socio-economic": "SOCIO_ECONOMIC",
         "Cultural loss": "CULTURAL_LOSS",
         "Eviction": "EVICTION",
@@ -360,10 +324,12 @@ def parse_local_communities(deal, attrs):
         "Productive infrastructure (e.g. irrigation, tractors, machinery...)": "PRODUCTIVE_INFRASTRUCTURE",
         "Productive infrastructure": "PRODUCTIVE_INFRASTRUCTURE",
         "Roads": "ROADS",
+        "Carreteras": "ROADS",
         "Capacity Building": "CAPACITY_BUILDING",
         "Financial Support": "FINANCIAL_SUPPORT",
         "Community shares in the investment project": "COMMUNITY_SHARES",
         "Other": "OTHER",
+        "Otro": "OTHER",
     }
     deal.promised_benefits = _extras_to_list(attrs, "promised_benefits", BENEFITS_MAP)
     deal.promised_benefits_comment = attrs.get("tg_promised_benefits_comment") or ""

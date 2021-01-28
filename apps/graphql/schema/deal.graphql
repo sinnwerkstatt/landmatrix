@@ -34,39 +34,29 @@ type Deal {
   annual_leasing_fee_comment: String
   ## Contract farming
   contract_farming: Boolean
-  on_the_lease: Boolean
-  on_the_lease_area: [DateValuePair]
-  on_the_lease_farmers: [DateValuePair]
-  on_the_lease_households: [DateValuePair]
-  off_the_lease: Boolean
-  off_the_lease_area: [DateValuePair]
-  off_the_lease_farmers: [DateValuePair]
-  off_the_lease_households: [DateValuePair]
+  on_the_lease_state: Boolean
+  on_the_lease: [Dict]
+  off_the_lease_state: Boolean
+  off_the_lease: [Dict]
   contract_farming_comment: String
   # Employment
   total_jobs_created: Boolean
   total_jobs_planned: Int
   total_jobs_planned_employees: Int
   total_jobs_planned_daily_workers: Int
-  total_jobs_current: [DateValuePair]
-  total_jobs_current_employees: [DateValuePair]
-  total_jobs_current_daily_workers: [DateValuePair]
+  total_jobs_current: [Dict]
   total_jobs_created_comment: String
   foreign_jobs_created: Boolean
   foreign_jobs_planned: Int
   foreign_jobs_planned_employees: Int
   foreign_jobs_planned_daily_workers: Int
-  foreign_jobs_current: [DateValuePair]
-  foreign_jobs_current_employees: [DateValuePair]
-  foreign_jobs_current_daily_workers: [DateValuePair]
+  foreign_jobs_current: [Dict]
   foreign_jobs_created_comment: String
   domestic_jobs_created: Boolean
   domestic_jobs_planned: Int
   domestic_jobs_planned_employees: Int
   domestic_jobs_planned_daily_workers: Int
-  domestic_jobs_current: [DateValuePair]
-  domestic_jobs_current_employees: [DateValuePair]
-  domestic_jobs_current_daily_workers: [DateValuePair]
+  domestic_jobs_current: [Dict]
   domestic_jobs_created_comment: String
   # Investor info
   operating_company: Investor

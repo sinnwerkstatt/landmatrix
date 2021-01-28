@@ -59,38 +59,28 @@ deal_fields = {
     "annual_leasing_fee_area": "Annual leasing fee area",
     "annual_leasing_fee_comment": "Comment on leasing fees",
     "contract_farming": "Contract farming",
-    "on_the_lease": "On leased / purchased area",
-    "on_the_lease_area": "On leased / purchased area (in ha)",
-    "on_the_lease_farmers": "On leased / purchased farmers",
-    "on_the_lease_households": "On leased / purchased households",
-    "off_the_lease": "Not on leased / purchased area (out-grower)",
-    "off_the_lease_area": "Not on leased / purchased area (out-grower, in ha)",
-    "off_the_lease_farmers": "Not on leased / purchased farmers (out-grower)",
-    "off_the_lease_households": "Not on leased / purchased households (out-grower)",
+    "on_the_lease_state": "On leased / purchased",
+    "on_the_lease": "On leased area/farmers/households",
+    "off_the_lease_state": "Not on leased / purchased (out-grower)",
+    "off_the_lease": "Not on leased area/farmers/households (out-grower)",
     "contract_farming_comment": "Comment on contract farming",
     "total_jobs_created": "Jobs created (total)",
     "total_jobs_planned": "Planned number of jobs (total)",
     "total_jobs_planned_employees": "Planned employees (total)",
     "total_jobs_planned_daily_workers": "Planned daily/seasonal workers (total)",
-    "total_jobs_current": "Current number of jobs (total)",
-    "total_jobs_current_employees": "Current number of employees (total)",
-    "total_jobs_current_daily_workers": "Current number of daily/seasonal workers (total)",
+    "total_jobs_current": "Current total number of jobs/employees/ daily/seasonal workers",
     "total_jobs_created_comment": "Comment on jobs created (total)",
     "foreign_jobs_created": "Jobs created (foreign)",
     "foreign_jobs_planned": "Planned number of jobs (foreign)",
     "foreign_jobs_planned_employees": "Planned employees (foreign)",
     "foreign_jobs_planned_daily_workers": "Planned daily/seasonal workers (foreign)",
-    "foreign_jobs_current": "Current number of jobs (foreign)",
-    "foreign_jobs_current_employees": "Current number of employees (foreign)",
-    "foreign_jobs_current_daily_workers": "Current number of daily/seasonal workers (foreign)",
+    "foreign_jobs_current": "Current foreign number of jobs/employees/ daily/seasonal workers",
     "foreign_jobs_created_comment": "Comment on jobs created (foreign)",
     "domestic_jobs_created": "Jobs created (domestic)",
     "domestic_jobs_planned": "Planned number of jobs (domestic)",
     "domestic_jobs_planned_employees": "Planned employees (domestic)",
     "domestic_jobs_planned_daily_workers": "Planned daily/seasonal workers (domestic)",
-    "domestic_jobs_current": "Current number of jobs (domestic)",
-    "domestic_jobs_current_employees": "Current number of employees (domestic)",
-    "domestic_jobs_current_daily_workers": "Current number of daily/seasonal workers (domestic)",
+    "domestic_jobs_current": "Current domestic number of jobs/employees/ daily/seasonal workers",
     "domestic_jobs_created_comment": "Comment on jobs created (domestic)",
     "involved_actors": "Actors involved in the negotiation / admission process",
     "project_name": "Name of investment project",
@@ -751,19 +741,27 @@ class DataDownload:
         #     data["annual_leasing_fee_area"] = data["annual_leasing_fee_area"]
 
         bool_cast(data, "contract_farming")
-        flatten_date_current_value(data, "total_jobs_current", "jobs")
-        flatten_date_current_value(data, "total_jobs_current_employees", "employees")
-        flatten_date_current_value(data, "total_jobs_current_daily_workers", "workers")
-        flatten_date_current_value(data, "foreign_jobs_current", "jobs")
-        flatten_date_current_value(data, "foreign_jobs_current_employees", "employees")
-        flatten_date_current_value(
-            data, "foreign_jobs_current_daily_workers", "workers"
-        )
-        flatten_date_current_value(data, "domestic_jobs_current", "jobs")
-        flatten_date_current_value(data, "domestic_jobs_current_employees", "employees")
-        flatten_date_current_value(
-            data, "domestic_jobs_current_daily_workers", "workers"
-        )
+
+        for xdings in [
+            "total_jobs_current",
+            "foreign_jobs_current",
+            "domestic_jobs_current",
+        ]:
+            if data.get(xdings) is not None:
+                data[xdings] = "|".join(
+                    [
+                        "#".join(
+                            [
+                                dat.get("date") or "",
+                                "current" if dat.get("current") else "",
+                                str(dat.get("jobs") or ""),
+                                str(dat.get("employees") or ""),
+                                str(dat.get("workers") or ""),
+                            ]
+                        )
+                        for dat in data[xdings]
+                    ]
+                )
 
         flatten_array_choices(
             data, "recognition_status", dict(Deal.RECOGNITION_STATUS_CHOICES)
@@ -786,14 +784,25 @@ class DataDownload:
                 ]
             )
 
-        bool_cast(data, "on_the_lease")
-        flatten_date_current_value(data, "on_the_lease_area", "area")
-        flatten_date_current_value(data, "on_the_lease_farmers", "farmers")
-        flatten_date_current_value(data, "on_the_lease_households", "households")
-        bool_cast(data, "off_the_lease")
-        flatten_date_current_value(data, "off_the_lease_area", "area")
-        flatten_date_current_value(data, "off_the_lease_farmers", "farmers")
-        flatten_date_current_value(data, "off_the_lease_households", "households")
+        bool_cast(data, "on_the_lease_state")
+        bool_cast(data, "off_the_lease_state")
+
+        for xdings in ["on_the_lease", "off_the_lease"]:
+            if data.get(xdings) is not None:
+                data[xdings] = "|".join(
+                    [
+                        "#".join(
+                            [
+                                dat.get("date") or "",
+                                "current" if dat.get("current") else "",
+                                str(dat.get("area") or ""),
+                                str(dat.get("farmers") or ""),
+                                str(dat.get("households") or ""),
+                            ]
+                        )
+                        for dat in data[xdings]
+                    ]
+                )
         bool_cast(data, "total_jobs_created")
         bool_cast(data, "foreign_jobs_created")
         bool_cast(data, "domestic_jobs_created")

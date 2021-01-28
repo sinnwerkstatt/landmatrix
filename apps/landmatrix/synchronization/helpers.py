@@ -137,6 +137,106 @@ def _extras_to_list(attr, field: str, mapping: dict):
     return ret
 
 
+def _lease_logic(attrs, onoff):
+    areas = (
+        _extras_to_json(
+            attrs, f"{onoff}_the_lease_area", val1name="area", expected_type=float
+        )
+        or []
+    )
+    farmers = (
+        _extras_to_json(
+            attrs, f"{onoff}_the_lease_farmers", val1name="farmers", expected_type=int
+        )
+        or []
+    )
+    households = (
+        _extras_to_json(
+            attrs,
+            f"{onoff}_the_lease_households",
+            val1name="households",
+            expected_type=int,
+        )
+        or []
+    )
+    if len(areas) == 1 and len(farmers) <= 1 and len(households) <= 1:
+        if len(farmers) == 1 and areas[0].get("date") and not farmers[0].get("date"):
+            areas[0]["farmers"] = farmers[0].get("farmers")
+
+        if (
+            len(households) == 1
+            and areas[0].get("date")
+            and not households[0].get("date")
+        ):
+            areas[0]["households"] = households[0].get("households")
+        set_current(areas)
+        return areas
+
+    for entry in farmers:
+        abgehandelt = False
+        for area in areas:
+            if entry.get("date") == area.get("date"):
+                abgehandelt = True
+                area["farmers"] = entry.get("farmers")
+        if not abgehandelt:
+            areas += [entry]
+    for entry in households:
+        abgehandelt = False
+        for area in areas:
+            if entry.get("date") == area.get("date"):
+                abgehandelt = True
+                area["households"] = entry.get("households")
+        if not abgehandelt:
+            areas += [entry]
+    set_current(areas)
+    return areas
+
+
+def _jobs_merge(attrs, jobtype):
+    jobs = (
+        _extras_to_json(
+            attrs, f"{jobtype}_jobs_current", val1name="jobs", expected_type=int
+        )
+        or []
+    )
+    employees = (
+        _extras_to_json(
+            attrs,
+            f"{jobtype}_jobs_current_employees",
+            val1name="employees",
+            expected_type=int,
+        )
+        or []
+    )
+    daily_workers = (
+        _extras_to_json(
+            attrs,
+            f"{jobtype}_jobs_current_daily_workers",
+            val1name="workers",
+            expected_type=int,
+        )
+        or []
+    )
+    for entry in employees:
+        abgehandelt = False
+        for job in jobs:
+            if entry.get("date") == job.get("date"):
+                abgehandelt = True
+                job["employees"] = entry.get("employees")
+        if not abgehandelt:
+            jobs += [entry]
+    for entry in daily_workers:
+        abgehandelt = False
+        for job in jobs:
+            if entry.get("date") == job.get("date"):
+                abgehandelt = True
+                job["workers"] = entry.get("workers")
+        if not abgehandelt:
+            jobs += [entry]
+    set_current(jobs)
+    return jobs
+
+
 class OldGroup:
     def __init__(self):
         self.attrs = {}
