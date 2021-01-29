@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deal" class="container">
+  <div v-if="deal" class="container deal-edit">
     <b-tabs
       id="tabNav"
       :key="dealId + dealVersion"
@@ -221,3 +221,41 @@
     },
   };
 </script>
+
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .deal-edit {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+
+      &:before {
+        display: none;
+      }
+    }
+
+    .nav-pills {
+      .nav-item {
+        .nav-link {
+          padding-left: 0;
+          border-right: 1px solid $lm_orange;
+          color: $lm_orange;
+          border-radius: 0;
+
+          &.active {
+            border-right-width: 3px;
+            background-color: inherit;
+            color: $lm_dark;
+          }
+        }
+      }
+    }
+
+    .sticky-top {
+      top: 5em;
+      z-index: 90;
+    }
+  }
+</style>

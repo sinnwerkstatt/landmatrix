@@ -10,7 +10,7 @@ env.read_env(".env")
 DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 
-def pg_run(cmd: str, database=None) -> str:
+def pg_run(cmd: str, database="") -> str:
     return f"sudo -u postgres psql {database} -c '{cmd}'"
 
 
@@ -106,6 +106,7 @@ def task_compilemessages():
             "actions": [
                 f"msgfmt -o {mofile} {pofile}",
                 f"npx po2json -p -f mf {pofile} {json_target}",
+                f"""sed -i -e '/.*: "",$/d' {json_target}""",
             ],
             "clean": True,
         }

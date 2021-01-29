@@ -37,38 +37,38 @@ deal_headers = [
     "Annual leasing fee area",
     "Comment on leasing fees",
     "Contract farming",
-    "On leased / purchased area",
-    "On leased / purchased area (in ha)",
-    "On leased / purchased farmers",
-    "On leased / purchased households",
-    "Not on leased / purchased area (out-grower)",
-    "Not on leased / purchased area (out-grower, in ha)",
-    "Not on leased / purchased farmers (out-grower)",
-    "Not on leased / purchased households (out-grower)",
+    # "On leased / purchased",
+    # "On leased / purchased area (in ha)",
+    # "On leased / purchased farmers",
+    # "On leased / purchased households",
+    # "Not on leased / purchased area (out-grower)",
+    # "Not on leased / purchased area (out-grower, in ha)",
+    # "Not on leased / purchased farmers (out-grower)",
+    # "Not on leased / purchased households (out-grower)",
     "Comment on contract farming",
     "Jobs created (total)",
     "Planned number of jobs (total)",
     "Planned employees (total)",
     "Planned daily/seasonal workers (total)",
-    "Current number of jobs (total)",
-    "Current number of employees (total)",
-    "Current number of daily/seasonal workers (total)",
+    # "Current number of jobs (total)",
+    # "Current number of employees (total)",
+    # "Current number of daily/seasonal workers (total)",
     "Comment on jobs created (total)",
     "Jobs created (foreign)",
     "Planned number of jobs (foreign)",
     "Planned employees (foreign)",
     "Planned daily/seasonal workers (foreign)",
-    "Current number of jobs (foreign)",
-    "Current number of employees (foreign)",
-    "Current number of daily/seasonal workers (foreign)",
+    # "Current number of jobs (foreign)",
+    # "Current number of employees (foreign)",
+    # "Current number of daily/seasonal workers (foreign)",
     "Comment on jobs created (foreign)",
     "Jobs created (domestic)",
     "Planned number of jobs (domestic)",
     "Planned employees (domestic)",
     "Planned daily/seasonal workers (domestic)",
-    "Current number of jobs (domestic)",
-    "Current number of employees (domestic)",
-    "Current number of daily/seasonal workers (domestic)",
+    # "Current number of jobs (domestic)",
+    # "Current number of employees (domestic)",
+    # "Current number of daily/seasonal workers (domestic)",
     "Comment on jobs created (domestic)",
     "Actors involved in the negotiation / admission process",
     "Name of investment project",
@@ -103,16 +103,16 @@ deal_headers = [
     "Comment on negative impacts for local communities",
     "Promised compensation (e.g. for damages or resettlements)",
     "Received compensation (e.g. for damages or resettlements)",
-    # "Promised benefits for local communities",
+    "Promised benefits for local communities",
     "Comment on promised benefits for local communities",
-    # "Materialized benefits for local communities",
+    "Materialized benefits for local communities",
     "Comment on materialized benefits for local communities",
     "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
-    # "Former land owner",
+    "Former land owner",
     "Comment on former land owner",
     "Former land use",
     "Comment on former land use",
-    # "Former land cover",
+    "Former land cover",
     "Comment on former land cover",
     # "Crops area/yield/export",
     "Comment on crops",
@@ -257,6 +257,8 @@ def compare(file_old, file_new, field=None):
                 "Intention of investment",
                 "Negotiation status",
                 "Implementation status",
+                "Contract farming crops",
+                "Contract farming livestock",
             ]:
                 if isinstance(content[field], str):
                     content[field] = [content[field]]
@@ -277,4 +279,37 @@ def compare(file_old, file_new, field=None):
     print("unknown_deal_numbers", len(unknown_deal_numbers), ":", unknown_deal_numbers)
 
 
+def compare_special_cases(file_old, file_new):
+    old_dict = cache_workbook(file_old, "xlsx_compare_old.pickle")
+    new_dict = cache_workbook(file_new, "xlsx_compare_new.pickle")
+    print("\n\n\nCOMPARING SPECIAL CASES\n\n\n")
+
+    for deal_id, content in old_dict.items():
+        print(f"\rcomparing {deal_id} ..", end="", flush=True)
+        try:
+            comp = new_dict[deal_id]
+        except KeyError:
+            # print(f"could not find {deal_id}")
+            # unknown_deal_numbers.add(deal_id)
+            continue
+
+        for export in ["Crops", "Livestock", "Resources"]:
+            coni = (
+                content[f"{export} area"],
+                content[f"{export} yield"],
+                content[f"{export} export"],
+            )
+            compi = comp[f"{export} area/yield/export"]
+            if coni[0] and "|" not in coni[0] and "|" not in compi:
+                condate, concurr, conarea, conval = coni[0].split("#")
+                comsplit = compi.split("#")
+                comdate, comcurr, comarea, comyield, comexport, comval = comsplit
+
+                if condate == comdate and conarea == comarea and conval == comval:
+                    continue
+            if any(coni) or compi:
+                print(coni, "\t\t", compi)
+
+
 compare(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
+compare_special_cases(sys.argv[1], sys.argv[2])
