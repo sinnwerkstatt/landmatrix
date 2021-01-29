@@ -134,7 +134,7 @@ const router = new Router({
       path: "/the-land-matrix-initiative",
       redirect: "/about/the-land-matrix-initiative",
     },
-    { path: "/stay-informed", redirect: "/resources" },
+    { path: "/stay-informed/:rest?", redirect: "/resources/:rest?" },
     { path: "/partners-and-donors", redirect: "/about/partners-and-donors" },
     { path: "/privacy-policy", redirect: "/about/privacy-policy" },
     { path: "/disclaimer", redirect: "/about/disclaimer" },
