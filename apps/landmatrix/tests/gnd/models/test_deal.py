@@ -7,17 +7,19 @@ from apps.landmatrix.models import Deal, Location
 def test_get_deal_size():
     Deal.objects.create(
         id=3,
-        intended_size=100.234,
-        contract_size=[{"date": "2008", "area": "1000"}],
-        production_size=[{"area": "10"}],
-        negotiation_status=[{"date": "2008", "choice": "EXPRESSION_OF_INTEREST"}],
+        intended_size=100.23,
+        contract_size=[{"date": "2008", "area": 1000, "current": True}],
+        production_size=[{"area": 10, "current": True}],
+        negotiation_status=[
+            {"date": "2008", "choice": "EXPRESSION_OF_INTEREST", "current": True}
+        ],
         modified_at="2020-10-10",
     )
     d3 = Deal.objects.get(id=3)
-    assert d3.deal_size == 100
+    assert float(d3.deal_size) == 100.23
     d3.negotiation_status = [
         {"date": "2008", "choice": "EXPRESSION_OF_INTEREST"},
-        {"date": "2010", "choice": "ORAL_AGREEMENT"},
+        {"date": "2010", "choice": "ORAL_AGREEMENT", "current": True},
     ]
     d3.save()
     assert d3.deal_size == 1000

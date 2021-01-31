@@ -84,8 +84,10 @@ pytest-django = "*"
 pytest-cov = "*"
 pylint = "<2.5.0"
 pylint-django = "*"
+#pydot = "*"
 pygments = "*"
 mkdocs = "*"
+pydot = "^1.4.1"
 
 [tool.poetry.extras]
 production = ["gunicorn", "sentry_sdk"]
