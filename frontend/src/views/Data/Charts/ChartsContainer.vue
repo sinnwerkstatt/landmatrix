@@ -16,7 +16,7 @@
           class="sideBuffer float-right"
           :class="{ collapsed: !$store.state.map.showContextBar }"
         ></div>
-        <div class="chart-container">
+        <div class="charts-container">
           <slot></slot>
         </div>
       </div>
@@ -41,7 +41,7 @@
 </script>
 
 <style lang="scss">
-  .chart-container {
+  .charts-container {
     text-align: center;
     height: 100%;
     display: flex;
