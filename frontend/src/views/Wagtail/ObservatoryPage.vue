@@ -187,14 +187,14 @@
         if (!this.deal_aggregations) return;
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
-          .reduce((a, b) => a + b, 0)
+          .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
       totalSize() {
         if (!this.deal_aggregations) return;
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
-          .reduce((a, b) => a + b, 0)
+          .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
       negotiationStatusBuckets() {
@@ -210,18 +210,18 @@
             case "UNDER_NEGOTIATION":
             case "MEMORANDUM_OF_UNDERSTANDING":
               retval[0].count += agg.count;
-              retval[0].size += agg.size;
+              retval[0].size += +agg.size;
               break;
             case "ORAL_AGREEMENT":
             case "CONTRACT_SIGNED":
               retval[1].count += agg.count;
-              retval[1].size += agg.size;
+              retval[1].size += +agg.size;
               break;
 
             case "NEGOTIATIONS_FAILED":
             case "CONTRACT_CANCELED":
               retval[2].count += agg.count;
-              retval[2].size += agg.size;
+              retval[2].size += +agg.size;
               break;
           }
         }
