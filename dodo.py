@@ -125,3 +125,23 @@ def task_poetry_install():
     dev = "--no-dev" if not get_var("dev", False) else ""
     prod = "-E production" if get_var("production", False) else ""
     return {"actions": [f"poetry install {dev} {prod}"]}
+
+
+def task_get_db_from_production():
+    return {
+        "actions": [
+            """ssh landmatrix@landmatrix.org "pg_dump landmatrix | bzip2" > landmatrix.sql.bz2"""
+        ]
+    }
+
+
+def task_reset_db_with_dump():
+    replace_db = """bzcat landmatrix.sql.bz2 | psql landmatrix"""
+    reset_site_to_localhost = pg_run(
+        "UPDATE wagtailcore_site SET port=8000, hostname='localhost'",
+        database="landmatrix",
+    )
+    return {
+        "task_dep": ["reset_db"],
+        "actions": [replace_db, reset_site_to_localhost],
+    }
