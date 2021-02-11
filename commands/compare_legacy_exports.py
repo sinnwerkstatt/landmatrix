@@ -224,7 +224,7 @@ def compare(file_old, file_new, field=None):
         print(">>>", field, "<<<")
         value_mismatch_counter = 0
         for deal_id, content in old_dict.items():
-            print(f"\rcomparing {deal_id} ..", end="", flush=True)
+            # print(f"\rcomparing {deal_id} ..", end="", flush=True)
             try:
                 comp = new_dict[deal_id]
             except KeyError:
@@ -234,7 +234,21 @@ def compare(file_old, file_new, field=None):
 
             if isinstance(content[field], str) and isinstance(comp[field], str):
                 content[field] = content[field].strip().replace("\r\n", "\n")
-                comp[field] = comp[field].strip().replace("\r\n", "\n")
+                comp[field] = (
+                    comp[field]
+                    .strip()
+                    .replace("\r\n", "\n")
+                    .replace(
+                        "State institutions (government, ministries, departments, agencies etc.)",
+                        "State institutions",
+                    )
+                    .replace(
+                        "Traditional local authority (e.g. Chiefdom council / Chiefs)",
+                        "Traditional local authority",
+                    )
+                    .replace("Other (please specify)", "Other")
+                )
+
                 if "|" in content[field]:
                     content[field] = set(content[field].split("|"))
                 if "|" in comp[field]:
@@ -269,7 +283,7 @@ def compare(file_old, file_new, field=None):
 
             if content[field] != comp[field]:
                 value_mismatch_counter += 1
-                print(f"\n{deal_id}: {content[field]} != {comp[field]}")
+                print(f"{deal_id};{content[field]};{comp[field]}")
         if value_mismatch_counter >= 7:  # TODO: watch out, remove this when confident!
             input("\n\nContinue..\n")
         else:
@@ -285,7 +299,7 @@ def compare_special_cases(file_old, file_new):
     print("\n\n\nCOMPARING SPECIAL CASES\n\n\n")
 
     for deal_id, content in old_dict.items():
-        print(f"\rcomparing {deal_id} ..", end="", flush=True)
+        # print(f"\rcomparing {deal_id} ..", end="", flush=True)
         try:
             comp = new_dict[deal_id]
         except KeyError:
