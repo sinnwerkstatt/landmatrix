@@ -148,6 +148,31 @@ export const mapModule = {
           return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${sparams}`;
         },
       },
+      {
+        name: "Indigenous and community conserved area, Philippines",
+        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lm/wms", {
+          layers: "ph_icca_areas_2020",
+          format: "image/png",
+          transparent: true,
+          opacity: 0.7,
+          attribution:
+            'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, December 2020</a>',
+        }),
+        legendUrlFunction() {
+          let imgParams = {
+            request: "GetLegendGraphic",
+            service: "WMS",
+            layer: "ph_icca_areas_2020",
+            format: "image/png",
+            width: 25,
+            height: 25,
+            legend_options:
+              "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
+          };
+          let sparams = new URLSearchParams(imgParams).toString();
+          return `http://sdi.cde.unibe.ch/geoserver/lm/wms?${sparams}`;
+        },
+      },
     ],
   }),
   mutations: {
