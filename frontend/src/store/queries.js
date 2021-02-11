@@ -253,14 +253,10 @@ export const deal_gql_query = gql`
       annual_leasing_fee_comment
       ## Contract farming
       contract_farming
+      on_the_lease_state
       on_the_lease
-      on_the_lease_area
-      on_the_lease_farmers
-      on_the_lease_households
+      off_the_lease_state
       off_the_lease
-      off_the_lease_area
-      off_the_lease_farmers
-      off_the_lease_households
       contract_farming_comment
       # Employment
       total_jobs_created
@@ -268,24 +264,18 @@ export const deal_gql_query = gql`
       total_jobs_planned_employees
       total_jobs_planned_daily_workers
       total_jobs_current
-      total_jobs_current_employees
-      total_jobs_current_daily_workers
       total_jobs_created_comment
       foreign_jobs_created
       foreign_jobs_planned
       foreign_jobs_planned_employees
       foreign_jobs_planned_daily_workers
       foreign_jobs_current
-      foreign_jobs_current_employees
-      foreign_jobs_current_daily_workers
       foreign_jobs_created_comment
       domestic_jobs_created
       domestic_jobs_planned
       domestic_jobs_planned_employees
       domestic_jobs_planned_daily_workers
       domestic_jobs_current
-      domestic_jobs_current_employees
-      domestic_jobs_current_daily_workers
       domestic_jobs_created_comment
       # Investor info
       operating_company {

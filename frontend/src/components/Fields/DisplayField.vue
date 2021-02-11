@@ -33,7 +33,14 @@
   import ManyToManyField from "./Display/ManyToManyField";
   import LengthField from "./Display/LengthField";
   import IntegerField from "./Display/DecimalField";
-  import JSONField from "./Display/JSONField";
+  import JSONField from "./Display/JSONField.vue";
+  import JSONActorsField from "./Display/JSONActorsField";
+  import JSONDateAreaField from "./Display/JSONDateAreaField";
+  import JSONDateChoiceField from "./Display/JSONDateChoiceField";
+  import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
+  import JSONExportsField from "./Display/JSONExportsField";
+  import JSONJobsField from "./Display/JSONJobsField";
+  import JSONLeaseField from "./Display/JSONLeaseField";
   import NullBooleanField from "./Display/BooleanField";
   import PointField from "./Display/PointField";
   import TextField from "./Display/TextField";
@@ -43,22 +50,29 @@
   export default {
     name: "DisplayField",
     components: {
-      AutoField,
-      FieldLabel,
       ArrayField,
+      AutoField,
       BooleanField,
       CharField,
       DateField,
       DateTimeField,
       DecimalField,
       EmailField,
+      FieldLabel,
       FileField,
       FloatField,
       ForeignKey,
-      ManyToManyField,
-      LengthField,
       IntegerField,
+      JSONActorsField,
+      JSONDateAreaChoicesField,
+      JSONDateAreaField,
+      JSONDateChoiceField,
+      JSONExportsField,
       JSONField,
+      JSONJobsField,
+      JSONLeaseField,
+      LengthField,
+      ManyToManyField,
       NullBooleanField,
       PointField,
       TextField,

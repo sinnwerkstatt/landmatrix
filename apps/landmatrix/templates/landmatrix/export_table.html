@@ -1,61 +1,119 @@
 {% extends "base.html" %} {% block content %}
-<h2>Deals</h2>
-<table>
-  <thead>
+  <h2>Deals</h2>
+  <table>
+    <thead>
     <tr>
       {% for xheader in deal_headers %}
-      <th>{{ xheader }}</th>
+        <th>{{ xheader }}</th>
       {% endfor %}
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     {% for xitem in deals %}
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Locations</h3>
+  <table>
+    <thead>
     <tr>
-      {% for field in xitem %}
-      <th>{{ field }}</th>
+      {% for xheader in location_headers %}
+        <th>{{ xheader }}</th>
       {% endfor %}
     </tr>
+    </thead>
+    <tbody>
+    {% for xitem in locations %}
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
     {% endfor %}
-  </tbody>
-</table>
+    </tbody>
+  </table>
 
-<h2>Investors</h2>
-<table>
-  <thead>
+  <h3>Contracts</h3>
+  <table>
+    <thead>
+    <tr>
+      {% for xheader in contract_headers %}
+        <th>{{ xheader }}</th>
+      {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for xitem in contracts %}
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <h3>Data Sources</h3>
+  <table>
+    <thead>
+    <tr>
+      {% for xheader in datasource_headers %}
+        <th>{{ xheader }}</th>
+      {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for xitem in datasources %}
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <h2>Investors</h2>
+  <table>
+    <thead>
     <tr>
       {% for xheader in investor_headers %}
-      <th>{{ xheader }}</th>
+        <th>{{ xheader }}</th>
       {% endfor %}
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     {% for xitem in investors %}
-    <tr>
-      {% for field in xitem %}
-      <th>{{ field }}</th>
-      {% endfor %}
-    </tr>
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
     {% endfor %}
-  </tbody>
-</table>
+    </tbody>
+  </table>
 
-<h2>Involvements</h2>
-<table>
-  <thead>
+  <h2>Involvements</h2>
+  <table>
+    <thead>
     <tr>
       {% for xheader in involvement_headers %}
-      <th>{{ xheader }}</th>
+        <th>{{ xheader }}</th>
       {% endfor %}
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     {% for xitem in involvements %}
-    <tr>
-      {% for field in xitem %}
-      <th>{{ field }}</th>
-      {% endfor %}
-    </tr>
+      <tr>
+        {% for field in xitem %}
+          <th>{{ field }}</th>
+        {% endfor %}
+      </tr>
     {% endfor %}
-  </tbody>
-</table>
+    </tbody>
+  </table>
 {% endblock %}

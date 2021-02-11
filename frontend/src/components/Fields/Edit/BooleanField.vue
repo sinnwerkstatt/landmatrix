@@ -1,23 +1,18 @@
 <template>
   <div>
     <div v-if="formfield.class === 'NullBooleanField'">
-      <select
-        :value="value"
-        :name="formfield.name"
-        class="form-control"
-        @input="emitVal"
-      >
-        <option v-if="!formfield.required" value=""></option>
+      <select v-model="val" :name="formfield.name" class="form-control">
+        <option v-if="!formfield.required" :value="null">--------</option>
         <option :value="true">{{ $t("Yes") }}</option>
         <option :value="false">{{ $t("No") }}</option>
       </select>
     </div>
     <input
       v-else
+      v-model="val"
       class="form-check-input"
       type="checkbox"
       :name="formfield.name"
-      :value="value"
     />
   </div>
 </template>
@@ -29,9 +24,14 @@
       value: { type: Boolean, required: false },
       model: { type: String, required: true },
     },
-    methods: {
-      emitVal() {
-        this.$emit("input", this.val);
+    computed: {
+      val: {
+        get() {
+          return this.value;
+        },
+        set(v) {
+          this.$emit("input", v);
+        },
       },
     },
   };

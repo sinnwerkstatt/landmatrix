@@ -11,10 +11,12 @@ def _to_nullbool(val: Optional[str]) -> Optional[bool]:
 def _extras_to_json(
     attr,
     field,
+    val1name: str = "value",
     val2name: str = None,
     expected_type=str,
     fieldmap=None,
     multi_value=False,
+    expected_type2=str,
 ):
     adict = attr.get_dict(field)
 
@@ -26,10 +28,10 @@ def _extras_to_json(
         adict["value"] = adict["value"].replace(",", ".")
 
     if fieldmap:
-        ret = [{"value": fieldmap.get(adict["value"], None)}]
+        ret = [{val1name: fieldmap.get(adict["value"], None)}]
     else:
         calc_val = expected_type(adict["value"]) if adict["value"] else None
-        ret = [{"value": calc_val}]
+        ret = [{val1name: calc_val}]
 
     if adict["date"]:
         ret[0]["date"] = adict["date"]
@@ -38,36 +40,42 @@ def _extras_to_json(
         ret[0]["current"] = adict["is_current"]
 
     if val2name and adict["value2"]:
-        ret[0][val2name] = adict["value2"]
+        ret[0][val2name] = (
+            expected_type2(adict["value2"]) if expected_type2 else adict["value2"]
+        )
 
     for extra in adict.get("extras", []):
         if not extra:
             continue
         if fieldmap:
             extra_ret = {
-                "value": fieldmap.get(extra["value"], None),
+                val1name: fieldmap.get(extra["value"], None),
             }
         else:
             calc_val = expected_type(extra["value"]) if extra["value"] else None
-            extra_ret = {"value": calc_val}
+            extra_ret = {val1name: calc_val}
         if extra["date"]:
             extra_ret["date"] = extra["date"]
         if extra["is_current"]:
             extra_ret["current"] = extra["is_current"]
         if val2name and extra["value2"]:
-            extra_ret[val2name] = extra["value2"]
+            extra_ret[val2name] = (
+                expected_type2(extra["value2"]) if expected_type2 else extra["value2"]
+            )
         ret += [extra_ret]
     if multi_value:
         mret = {}
         for x in ret:
             try:
-                mret[(x.get("date"), x.get(val2name), x.get("current"))] += [x["value"]]
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] += [
+                    x[val1name]
+                ]
             except KeyError:
-                mret[(x.get("date"), x.get(val2name), x.get("current"))] = [x["value"]]
+                mret[(x.get("date"), x.get(val2name), x.get("current"))] = [x[val1name]]
         fret = []
         for keys, values in mret.items():
             date, val2, current = keys
-            add_entry = {"value": values}
+            add_entry = {val1name: values}
             if date:
                 add_entry["date"] = date
             if val2:
@@ -76,7 +84,43 @@ def _extras_to_json(
                 add_entry["current"] = True
             fret += [add_entry]
         ret = fret
+    if field in [
+        "contract_size",
+        "production_size",
+        "intention",
+        "intention_of_investment",
+        "negotiation_status",
+        "implementation_status",
+        "contract_farming_crops",
+        "contract_farming_animals",
+    ]:
+        set_current(ret)
     return ret
+
+
+def set_current(attributes):
+    if not attributes:
+        return
+    # prioritize "current" checkbox if present
+    current = [x for x in attributes if x.get("current")]
+    if current:
+        return
+
+    # last given entry, if it has no date
+    most_recent = attributes[-1]
+    if not most_recent.get("date"):
+        attributes[-1]["current"] = True
+        return
+
+    # most recent year/date given
+    max_year = "0"
+    for i, attr in enumerate(reversed(attributes), 1):
+        attr_year = attr.get("date")
+        if not attr_year or attr_year <= max_year:
+            continue
+        max_year_int = i
+        max_year = attr_year
+    attributes[-max_year_int]["current"] = True
 
 
 def _extras_to_list(attr, field: str, mapping: dict):
@@ -91,6 +135,106 @@ def _extras_to_list(attr, field: str, mapping: dict):
         for extra in adict["extras"]:
             ret += [mapping[extra["value"]]]
     return ret
+
+
+def _lease_logic(attrs, onoff):
+    areas = (
+        _extras_to_json(
+            attrs, f"{onoff}_the_lease_area", val1name="area", expected_type=float
+        )
+        or []
+    )
+    farmers = (
+        _extras_to_json(
+            attrs, f"{onoff}_the_lease_farmers", val1name="farmers", expected_type=int
+        )
+        or []
+    )
+    households = (
+        _extras_to_json(
+            attrs,
+            f"{onoff}_the_lease_households",
+            val1name="households",
+            expected_type=int,
+        )
+        or []
+    )
+    if len(areas) == 1 and len(farmers) <= 1 and len(households) <= 1:
+        if len(farmers) == 1 and areas[0].get("date") and not farmers[0].get("date"):
+            areas[0]["farmers"] = farmers[0].get("farmers")
+
+        if (
+            len(households) == 1
+            and areas[0].get("date")
+            and not households[0].get("date")
+        ):
+            areas[0]["households"] = households[0].get("households")
+        set_current(areas)
+        return areas
+
+    for entry in farmers:
+        abgehandelt = False
+        for area in areas:
+            if entry.get("date") == area.get("date"):
+                abgehandelt = True
+                area["farmers"] = entry.get("farmers")
+        if not abgehandelt:
+            areas += [entry]
+    for entry in households:
+        abgehandelt = False
+        for area in areas:
+            if entry.get("date") == area.get("date"):
+                abgehandelt = True
+                area["households"] = entry.get("households")
+        if not abgehandelt:
+            areas += [entry]
+    set_current(areas)
+    return areas
+
+
+def _jobs_merge(attrs, jobtype):
+    jobs = (
+        _extras_to_json(
+            attrs, f"{jobtype}_jobs_current", val1name="jobs", expected_type=int
+        )
+        or []
+    )
+    employees = (
+        _extras_to_json(
+            attrs,
+            f"{jobtype}_jobs_current_employees",
+            val1name="employees",
+            expected_type=int,
+        )
+        or []
+    )
+    daily_workers = (
+        _extras_to_json(
+            attrs,
+            f"{jobtype}_jobs_current_daily_workers",
+            val1name="workers",
+            expected_type=int,
+        )
+        or []
+    )
+    for entry in employees:
+        abgehandelt = False
+        for job in jobs:
+            if entry.get("date") == job.get("date"):
+                abgehandelt = True
+                job["employees"] = entry.get("employees")
+        if not abgehandelt:
+            jobs += [entry]
+    for entry in daily_workers:
+        abgehandelt = False
+        for job in jobs:
+            if entry.get("date") == job.get("date"):
+                abgehandelt = True
+                job["workers"] = entry.get("workers")
+        if not abgehandelt:
+            jobs += [entry]
+    set_current(jobs)
+    return jobs
 
 
 class OldGroup:

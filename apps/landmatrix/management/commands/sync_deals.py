@@ -15,6 +15,7 @@ from apps.landmatrix.synchronization.deal import histivity_to_deal
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--rewrite-deals", action="store_true")
+        parser.add_argument("--ignore-history", action="store_true")
 
     def handle(self, *args, **options):
         deal_ids = (
@@ -22,6 +23,10 @@ class Command(BaseCommand):
             # .filter(activity_identifier=2)
             .distinct().order_by("activity_identifier")
         )
+        if options["ignore_history"]:
+            print(
+                "\n\n\nATTENTION. We're just syncing the last version of each Deal now!!!\n\n\n"
+            )
         for deal_id in deal_ids:
             if options["rewrite_deals"]:
                 print(f"  Removing Deal {deal_id}... ", end="", flush=True)
@@ -35,5 +40,13 @@ class Command(BaseCommand):
                 print("\033[92m" + "OK" + "\033[0m")
 
             print(f"  Sync Deal {deal_id}... ", end="", flush=True)
-            histivity_to_deal(activity_identifier=deal_id)
+            if options["ignore_history"]:
+                histivity_id = (
+                    HistoricalActivity.objects.filter(activity_identifier=deal_id)
+                    .order_by("-id")
+                    .values_list("id", flat=True)
+                )[0]
+                histivity_to_deal(activity_pk=histivity_id)
+            else:
+                histivity_to_deal(activity_identifier=deal_id)
             print("\033[92m" + "OK" + "\033[0m")

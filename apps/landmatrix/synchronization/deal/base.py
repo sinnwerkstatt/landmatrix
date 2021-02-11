@@ -11,6 +11,9 @@ from apps.landmatrix.synchronization.helpers import (
     _extras_to_json,
     _extras_to_list,
     _to_nullbool,
+    set_current,
+    _lease_logic,
+    _jobs_merge,
 )
 
 
@@ -23,9 +26,11 @@ def parse_general(deal, attrs):
     deal.intended_size = (
         float(attrs.get("intended_size")) if attrs.get("intended_size") else None
     )
-    deal.contract_size = _extras_to_json(attrs, "contract_size", expected_type=float)
+    deal.contract_size = _extras_to_json(
+        attrs, "contract_size", val1name="area", expected_type=float
+    )
     deal.production_size = _extras_to_json(
-        attrs, "production_size", expected_type=float
+        attrs, "production_size", val1name="area", expected_type=float
     )
     deal.land_area_comment = attrs.get("tg_land_area_comment") or ""
 
@@ -57,7 +62,13 @@ def parse_general(deal, attrs):
         "Other": "OTHER",
     }
     deal.intention_of_investment = _extras_to_json(
-        attrs, "intention", "size", fieldmap=INTENTION_MAP, multi_value=True
+        attrs,
+        "intention",
+        val1name="choices",
+        val2name="area",
+        fieldmap=INTENTION_MAP,
+        multi_value=True,
+        expected_type2=float,
     )
     deal.intention_of_investment_comment = attrs.get("tg_intention_comment") or ""
     NATURE_OF_DEAL_MAP = {
@@ -65,9 +76,11 @@ def parse_general(deal, attrs):
         "Outright Purchase": "OUTRIGHT_PURCHASE",
         "Compra Directa": "OUTRIGHT_PURCHASE",
         "Lease": "LEASE",
+        "Arrendamiento": "LEASE",
         "Concession": "CONCESSION",
         "Concesión": "CONCESSION",
         "Exploitation permit / license / concession (for mineral resources)": "EXPLOITATION_PERMIT",
+        "Permiso de explotación/licencia/concesión (para recursos minerales)": "EXPLOITATION_PERMIT",
         "Exploitation permit / license / concession": "EXPLOITATION_PERMIT",
         "Resource exploitation license / concession": "EXPLOITATION_PERMIT",
         "Pure contract farming": "PURE_CONTRACT_FARMING",
@@ -90,7 +103,7 @@ def parse_general(deal, attrs):
         "": None,
     }
     deal.negotiation_status = _extras_to_json(
-        attrs, "negotiation_status", fieldmap=NEG_STATUS_MAP
+        attrs, "negotiation_status", val1name="choice", fieldmap=NEG_STATUS_MAP
     )
     deal.negotiation_status_comment = attrs.get("tg_negotiation_status_comment") or ""
 
@@ -101,7 +114,7 @@ def parse_general(deal, attrs):
         "Project abandoned": "PROJECT_ABANDONED",
     }
     deal.implementation_status = _extras_to_json(
-        attrs, "implementation_status", fieldmap=IMP_STATUS_MAP
+        attrs, "implementation_status", val1name="choice", fieldmap=IMP_STATUS_MAP
     )
     deal.implementation_status_comment = (
         attrs.get("tg_implementation_status_comment") or ""
@@ -138,22 +151,10 @@ def parse_general(deal, attrs):
     deal.annual_leasing_fee_area = attrs.get("annual_leasing_fee_area")
 
     deal.contract_farming = _to_nullbool(attrs.get("contract_farming"))
-    deal.on_the_lease = _to_nullbool(attrs.get("on_the_lease"))
-    deal.on_the_lease_area = _extras_to_json(attrs, "on_the_lease_area")
-    deal.on_the_lease_farmers = _extras_to_json(
-        attrs, "on_the_lease_farmers", expected_type=int
-    )
-    deal.on_the_lease_households = _extras_to_json(
-        attrs, "on_the_lease_households", expected_type=int
-    )
-    deal.off_the_lease = _to_nullbool(attrs.get("off_the_lease"))
-    deal.off_the_lease_area = _extras_to_json(attrs, "off_the_lease_area")
-    deal.off_the_lease_farmers = _extras_to_json(
-        attrs, "off_the_lease_farmers", expected_type=int
-    )
-    deal.off_the_lease_households = _extras_to_json(
-        attrs, "off_the_lease_households", expected_type=int
-    )
+    deal.on_the_lease_state = _to_nullbool(attrs.get("on_the_lease"))
+    deal.off_the_lease_state = _to_nullbool(attrs.get("off_the_lease"))
+    deal.on_the_lease = _lease_logic(attrs, "on")
+    deal.off_the_lease = _lease_logic(attrs, "off")
     deal.contract_farming_comment = attrs.get("tg_contract_farming_comment") or ""
 
 
@@ -164,13 +165,7 @@ def parse_employment(deal, attrs):
     deal.total_jobs_planned_daily_workers = attrs.get(
         "total_jobs_planned_daily_workers"
     )
-    deal.total_jobs_current = _extras_to_json(attrs, "total_jobs_current")
-    deal.total_jobs_current_employees = _extras_to_json(
-        attrs, "total_jobs_current_employees"
-    )
-    deal.total_jobs_current_daily_workers = _extras_to_json(
-        attrs, "total_jobs_current_daily_workers"
-    )
+    deal.total_jobs_current = _jobs_merge(attrs, "total")
     deal.total_jobs_created_comment = (
         attrs.get("tg_total_number_of_jobs_created_comment") or ""
     )
@@ -181,13 +176,7 @@ def parse_employment(deal, attrs):
     deal.foreign_jobs_planned_daily_workers = attrs.get(
         "foreign_jobs_planned_daily_workers"
     )
-    deal.foreign_jobs_current = _extras_to_json(attrs, "foreign_jobs_current")
-    deal.foreign_jobs_current_employees = _extras_to_json(
-        attrs, "foreign_jobs_current_employees"
-    )
-    deal.foreign_jobs_current_daily_workers = _extras_to_json(
-        attrs, "foreign_jobs_current_daily_workers"
-    )
+    deal.foreign_jobs_current = _jobs_merge(attrs, "foreign")
     deal.foreign_jobs_created_comment = (
         attrs.get("tg_foreign_jobs_created_comment") or ""
     )
@@ -198,13 +187,7 @@ def parse_employment(deal, attrs):
     deal.domestic_jobs_planned_daily_workers = attrs.get(
         "domestic_jobs_planned_daily_workers"
     )
-    deal.domestic_jobs_current = _extras_to_json(attrs, "domestic_jobs_current")
-    deal.domestic_jobs_current_employees = _extras_to_json(
-        attrs, "domestic_jobs_current_employees"
-    )
-    deal.domestic_jobs_current_daily_workers = _extras_to_json(
-        attrs, "domestic_jobs_current_daily_workers"
-    )
+    deal.domestic_jobs_current = _jobs_merge(attrs, "domestic")
     deal.domestic_jobs_created_comment = (
         attrs.get("tg_domestic_jobs_created_comment") or ""
     )
@@ -219,9 +202,28 @@ def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
     deal.operating_company_id = involvements[0].fk_investor.investor_identifier
 
 
+actors_map = {
+    "Government / State institutions": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+    "Government / State institutions (government, ministries, departments, agencies etc.)": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+    "Traditional land-owners / communities": "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+    "Traditional local authority (e.g. Chiefdom council / Chiefs)": "TRADITIONAL_LOCAL_AUTHORITY",
+    "Traditional local authority": "TRADITIONAL_LOCAL_AUTHORITY",
+    "Broker": "BROKER",
+    "Intermediary": "INTERMEDIARY",
+    "Other (please specify)": "OTHER",
+    "Other": "OTHER",
+}
+
+
 def parse_investor_info(deal, attrs):
     # deal.operating_company see above "_connect_investor_to_deal"
-    deal.involved_actors = _extras_to_json(attrs, "actors", val2name="role")
+    involved_actors = _extras_to_json(attrs, "actors", val1name="name", val2name="role")
+    if involved_actors:
+        for involved_actor in involved_actors:
+            if involved_actor.get("role"):
+                involved_actor["role"] = actors_map[involved_actor["role"]]
+    deal.involved_actors = involved_actors
+
     deal.project_name = attrs.get("project_name") or ""
     deal.investment_chain_comment = (
         attrs.get("tg_operational_stakeholder_comment") or ""
@@ -299,6 +301,7 @@ def parse_local_communities(deal, attrs):
 
     NEGATIVE_IMPACTS_MAP = {
         "Environmental degradation": "ENVIRONMENTAL_DEGRADATION",
+        "Degradación ambiental": "ENVIRONMENTAL_DEGRADATION",
         "Socio-economic": "SOCIO_ECONOMIC",
         "Cultural loss": "CULTURAL_LOSS",
         "Eviction": "EVICTION",
@@ -321,10 +324,12 @@ def parse_local_communities(deal, attrs):
         "Productive infrastructure (e.g. irrigation, tractors, machinery...)": "PRODUCTIVE_INFRASTRUCTURE",
         "Productive infrastructure": "PRODUCTIVE_INFRASTRUCTURE",
         "Roads": "ROADS",
+        "Carreteras": "ROADS",
         "Capacity Building": "CAPACITY_BUILDING",
         "Financial Support": "FINANCIAL_SUPPORT",
         "Community shares in the investment project": "COMMUNITY_SHARES",
         "Other": "OTHER",
+        "Otro": "OTHER",
     }
     deal.promised_benefits = _extras_to_list(attrs, "promised_benefits", BENEFITS_MAP)
     deal.promised_benefits_comment = attrs.get("tg_promised_benefits_comment") or ""
@@ -371,47 +376,66 @@ def parse_former_use(deal, attrs):
 
 def _merge_area_yield_export(attrs, name, fieldmap):
     areas = (
-        _extras_to_json(attrs, name, "hectares", fieldmap=fieldmap, multi_value=True)
+        _extras_to_json(
+            attrs,
+            name,
+            val1name="choices",
+            val2name="area",
+            fieldmap=fieldmap,
+            multi_value=True,
+        )
         or []
     )
     yyields = (
         _extras_to_json(
-            attrs, f"{name}_yield", "tons", fieldmap=fieldmap, multi_value=True
+            attrs,
+            f"{name}_yield",
+            val1name="choices",
+            val2name="yield",
+            fieldmap=fieldmap,
+            multi_value=True,
         )
         or []
     )
     export_name = f"{name}_export" if name != "minerals" else "export"
     exports = (
         _extras_to_json(
-            attrs, export_name, "percent", fieldmap=fieldmap, multi_value=True
+            attrs,
+            export_name,
+            val1name="choices",
+            val2name="export",
+            fieldmap=fieldmap,
+            multi_value=True,
         )
         or []
     )
     for yyield in yyields:
-        if not yyield.get("value"):
+        if not yyield.get("choices"):
             continue
         abgehandelt = False
         for area in areas:
-            is_subset = set(yyield["value"]).issubset(area.get("value"))
+            is_subset = set(yyield["choices"]).issubset(area.get("choices"))
             if is_subset and yyield.get("date") == area.get("date"):
                 abgehandelt = True
-                if yyield.get("tons"):
-                    area["tons"] = yyield["tons"]
+                if yyield.get("yield"):
+                    area["yield"] = yyield["yield"]
         if not abgehandelt:
             areas += [yyield]
     for export in exports:
-        if not export.get("value"):
+        if not export.get("choices"):
             continue
         abgehandelt = False
         for area in areas:
-            is_subset = set(export["value"]).issubset(area.get("value"))
+            is_subset = set(export["choices"]).issubset(area.get("choices"))
             if is_subset and export.get("date") == area.get("date"):
                 abgehandelt = True
-                if export.get("percent"):
-                    area["percent"] = export["percent"]
+                if export.get("export"):
+                    area["export"] = export["export"]
                     print(area)
         if not abgehandelt:
             areas += [export]
+    if areas:
+        set_current(areas)
     return areas
 
 
@@ -442,13 +466,26 @@ def parse_produce_info(deal, attrs):
     deal.resources_comment = attrs.get("tg_minerals_comment") or ""
 
     deal.contract_farming_crops = _extras_to_json(
-        attrs, "contract_farming_crops", "hectares"
+        attrs,
+        "contract_farming_crops",
+        val1name="choices",
+        val2name="area",
+        fieldmap=CROP_MAP,
+        multi_value=True,
+        expected_type2=float,
     )
+
     deal.contract_farming_crops_comment = (
         attrs.get("tg_contract_farming_crops_comment") or ""
     )
     deal.contract_farming_animals = _extras_to_json(
-        attrs, "contract_farming_animals", "hectares"
+        attrs,
+        "contract_farming_animals",
+        val1name="choices",
+        val2name="area",
+        fieldmap=ANIMAL_MAP,
+        multi_value=True,
+        expected_type2=float,
     )
     deal.contract_farming_animals_comment = (
         attrs.get("tg_contract_farming_animals_comment") or ""
@@ -525,9 +562,7 @@ def parse_produce_info(deal, attrs):
     deal.in_country_processing_comment = (
         attrs.get("tg_in_country_processing_comment") or ""
     )
-    deal.in_country_processing_facilities = (
-        attrs.get("in_country_processing_facilities") or ""
-    )
+    deal.in_country_processing_facilities = attrs.get("processing_facilities") or ""
     deal.in_country_end_products = attrs.get("in_country_end_products") or ""
 
 

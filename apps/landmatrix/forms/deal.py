@@ -8,41 +8,65 @@ class DealForm(VueForm):
     @property
     def attributes(self):
         return {
-            "contract_size": {"jsondings": ["date", "size(ha)"]},
-            "production_size": {"jsondings": ["date", "size(ha)"]},
-            "intention_of_investment": {"jsondings": ["date", "size(ha)", "choice"]},
-            "negotiation_status": {"jsondings": ["date", "choice"]},
-            "implementation_status": {"jsondings": ["date", "choice"]},
-            "on_the_lease": {"jsondings": ["date", "area", "farmers", "households"]},
-            "off_the_lease": {"jsondings": ["date", "area", "farmers", "households"]},
+            "deal_size": {"unit": "ha"},
+            "intended_size": {"unit": "ha"},
+            "contract_size": {"class": "JSONDateAreaField"},
+            "production_size": {"class": "JSONDateAreaField"},
+            "intention_of_investment": {
+                "class": "JSONDateAreaChoicesField",
+                "with_categories": True,
+            },
+            "negotiation_status": {
+                "class": "JSONDateChoiceField",
+                "choices": {
+                    "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
+                    "UNDER_NEGOTIATION": "Intended (Under negotiation)",
+                    "MEMORANDUM_OF_UNDERSTANDING": "Intended (Memorandum of understanding)",
+                    "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
+                    "CONTRACT_SIGNED": "Concluded (Contract signed)",
+                    "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
+                    "CONTRACT_CANCELED": "Failed (Contract cancelled)",
+                    "CONTRACT_EXPIRED": "Contract expired",
+                    "CHANGE_OF_OWNERSHIP": "Change of ownership",
+                },
+            },
+            "implementation_status": {"class": "JSONDateChoiceField"},
+            "on_the_lease": {
+                "class": "JSONLeaseField",
+            },
+            "off_the_lease": {
+                "class": "JSONLeaseField",
+            },
             "total_jobs_current": {
-                "jsondings": ["date", "jobs", "employees", "workers"]
+                "class": "JSONJobsField",
             },
             "foreign_jobs_current": {
-                "jsondings": ["date", "jobs", "employees", "workers"]
+                "class": "JSONJobsField",
             },
             "domestic_jobs_current": {
-                "jsondings": ["date", "jobs", "employees", "workers"]
+                "class": "JSONJobsField",
             },
-            "involved_actors": {"jsondings": ["value", "role"], "is_current": False},
+            "involved_actors": {"class": "JSONActorsField"},
             "crops": {
+                "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Crop.objects.all()},
-                "jsondings": ["date", "choice", "area", "yield", "export"],
             },
             "animals": {
+                "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Animal.objects.all()},
-                "jsondings": ["date", "choice", "area", "yield", "export"],
             },
             "resources": {
+                "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Mineral.objects.all()},
-                "jsondings": ["date", "choice", "area", "yield", "export"],
             },
             "contract_farming_crops": {
+                "class": "JSONDateAreaChoicesField",
                 "choices": {c.code: c.name for c in Crop.objects.all()},
-                "jsondings": ["date", "choice", "area"],
+                "with_categories": False,
             },
             "contract_farming_animals": {
-                "choices": {c.code: c.name for c in Crop.objects.all()},
-                "jsondings": ["date", "choice", "area"],
+                "class": "JSONDateAreaChoicesField",
+                "choices": {c.code: c.name for c in Animal.objects.all()},
+                "with_categories": False,
             },
         }

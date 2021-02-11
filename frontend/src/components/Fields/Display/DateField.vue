@@ -1,5 +1,5 @@
 <template>
-  <div>{{ val }}</div>
+  <div class="nowrap">{{ val }}</div>
 </template>
 
 <script>
@@ -15,6 +15,8 @@
     computed: {
       val() {
         if (this.value) {
+          // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
+          // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
           return dayjs(this.value).format("YYYY-MM-DD");
         } else {
           return "n/a";

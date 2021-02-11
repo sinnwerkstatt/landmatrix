@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="deal">
+  <div v-if="deal" class="container deal-edit">
     <b-tabs
       id="tabNav"
       :key="dealId + dealVersion"
@@ -19,15 +19,16 @@
         :active="active_tab === '#general'"
         @activated="updateRoute('#general')"
       />
-      <!--            <DealSubmodelSection-->
-      <!--        title="Contracts"-->
-      <!--        model-name="Contract"-->
-      <!--        :entries="deal.contracts"-->
-      <!--        :fields="deal_submodel_sections.contract"-->
-      <!--        model="contract"-->
-      <!--        :active="active_tab === '#contracts'"-->
-      <!--        @activated="updateRoute('#contracts')"-->
-      <!--      />-->
+      <DealSubmodelEditSection
+        title="Contracts"
+        model-name="Contract"
+        :entries="deal.contracts"
+        :fields="deal_submodel_sections.contract"
+        model="contract"
+        :active="active_tab === '#contracts'"
+        @activated="updateRoute('#contracts')"
+        @addEntry="addContract"
+      />
       <DealEditSection
         :title="deal_sections.employment.label"
         :deal="deal"
@@ -65,15 +66,16 @@
         <!--        </div>-->
       </DealEditSection>
 
-      <!--      <DealSubmodelSection-->
-      <!--        title="Data Sources"-->
-      <!--        model-name="Data Source"-->
-      <!--        :entries="deal.datasources"-->
-      <!--        :fields="deal_submodel_sections.datasource"-->
-      <!--        model="datasource"-->
-      <!--        :active="active_tab === '#data_sources'"-->
-      <!--        @activated="updateRoute('#data_sources')"-->
-      <!--      />-->
+      <DealSubmodelEditSection
+        title="Data Sources"
+        model-name="Data Source"
+        :entries="deal.datasources"
+        :fields="deal_submodel_sections.datasource"
+        model="datasource"
+        :active="active_tab === '#data_sources'"
+        @activated="updateRoute('#data_sources')"
+        @addEntry="addDataSource"
+      />
 
       <DealEditSection
         :title="deal_sections.local_communities.label"
@@ -136,13 +138,14 @@
 
 <script>
   import DealEditSection from "components/Deal/DealEditSection";
+  import DealSubmodelEditSection from "../../components/Deal/DealSubmodelEditSection";
   import MapEditor from "../../components/MapEditor";
   import { deal_gql_query } from "../../store/queries";
-  import { deal_sections } from "./deal_sections";
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
     name: "DealEdit",
-    components: { MapEditor, DealEditSection },
+    components: { DealSubmodelEditSection, MapEditor, DealEditSection },
     props: {
       dealId: { type: [Number, String], required: true },
       dealVersion: { type: [Number, String], default: null },
@@ -151,6 +154,7 @@
       return {
         deal: null,
         deal_sections,
+        deal_submodel_sections,
       };
     },
     apollo: {
@@ -184,6 +188,74 @@
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
+      addContract() {
+        this.deal.contracts.push(
+          new Object({
+            number: "",
+            date: null,
+            expiration_date: null,
+            agreement_duration: null,
+            comment: "",
+          })
+        );
+      },
+      addDataSource() {
+        this.deal.datasources.push(
+          new Object({
+            type: "",
+            url: "",
+            file: "",
+            file_not_public: false,
+            publication_title: "",
+            date: "",
+            name: "",
+            company: "",
+            email: "",
+            phone: "",
+            includes_in_country_verified_information: null,
+            open_land_contracts_id: "",
+            comment: "",
+          })
+        );
+      },
     },
   };
 </script>
+
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .deal-edit {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+
+      &:before {
+        display: none;
+      }
+    }
+
+    .nav-pills {
+      .nav-item {
+        .nav-link {
+          padding-left: 0;
+          border-right: 1px solid $lm_orange;
+          color: $lm_orange;
+          border-radius: 0;
+
+          &.active {
+            border-right-width: 3px;
+            background-color: inherit;
+            color: $lm_dark;
+          }
+        }
+      }
+    }
+
+    .sticky-top {
+      top: 5em;
+      z-index: 90;
+    }
+  }
+</style>

@@ -309,44 +309,19 @@ class Deal(models.Model, OldDealMixin):
     # contract_farming = models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
     contract_farming = models.NullBooleanField()
 
-    on_the_lease = models.NullBooleanField(_("On leased / purchased area"))
-    on_the_lease_area = JSONField(
-        _("On leased / purchased area (in ha)"),
-        help_text=_("ha"),
-        blank=True,
-        null=True,
-    )
-    on_the_lease_farmers = JSONField(
-        _("On leased / purchased farmers"),
-        help_text=_("farmers"),
-        blank=True,
-        null=True,
-    )
-    on_the_lease_households = JSONField(
-        _("On leased / purchased households"),
-        help_text=_("households"),
+    on_the_lease_state = models.NullBooleanField(_("On leased / purchased"))
+    on_the_lease = JSONField(
+        _("On leased area/farmers/households"),
         blank=True,
         null=True,
     )
 
-    off_the_lease = models.NullBooleanField(
-        _("Not on leased / purchased area (out-grower)")
+    off_the_lease_state = models.NullBooleanField(
+        _("Not on leased / purchased (out-grower)")
     )
-    off_the_lease_area = JSONField(
-        _("Not on leased / purchased area (out-grower, in ha)"),
+    off_the_lease = JSONField(
+        _("Not on leased area/farmers/households (out-grower)"),
         help_text=_("ha"),
-        blank=True,
-        null=True,
-    )
-    off_the_lease_farmers = JSONField(
-        _("Not on leased / purchased farmers (out-grower)"),
-        help_text=_("farmers"),
-        blank=True,
-        null=True,
-    )
-    off_the_lease_households = JSONField(
-        _("Not on leased / purchased households (out-grower)"),
-        help_text=_("households"),
         blank=True,
         null=True,
     )
@@ -373,20 +348,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     total_jobs_current = JSONField(
-        _("Current number of jobs (total)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    total_jobs_current_employees = JSONField(
-        _("Current number of employees (total)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    total_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (total)"),
-        help_text=_("workers"),
+        _("Current total number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )
@@ -414,20 +376,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     foreign_jobs_current = JSONField(
-        _("Current number of jobs (foreign)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    foreign_jobs_current_employees = JSONField(
-        _("Current number of employees (foreign)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    foreign_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (foreign)"),
-        help_text=_("workers"),
+        _("Current foreign number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )
@@ -455,20 +404,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     domestic_jobs_current = JSONField(
-        _("Current number of jobs (domestic)"),
-        help_text=_("jobs"),
-        blank=True,
-        null=True,
-    )
-    domestic_jobs_current_employees = JSONField(
-        _("Current number of employees (domestic)"),
-        help_text=_("employees"),
-        blank=True,
-        null=True,
-    )
-    domestic_jobs_current_daily_workers = JSONField(
-        _("Current number of daily/seasonal workers (domestic)"),
-        help_text=_("workers"),
+        _("Current domestic number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
     )
@@ -505,6 +441,7 @@ class Deal(models.Model, OldDealMixin):
     )
     involved_actors = JSONField(
         _("Actors involved in the negotiation / admission process"),
+        choices=ACTOR_MAP,
         blank=True,
         null=True,
     )
@@ -953,13 +890,13 @@ class Deal(models.Model, OldDealMixin):
     """ Meta Info """
     fully_updated = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
-    PRIVATE_REASON_CHOICES = (
+    CONFIDENTIAL_REASON_CHOICES = (
         ("TEMPORARY_REMOVAL", _("Temporary removal from PI after criticism")),
         ("RESEARCH_IN_PROGRESS", _("Research in progress")),
         ("LAND_OBSERVATORY_IMPORT", _("Land Observatory Import")),
     )
     confidential_reason = models.CharField(
-        max_length=100, choices=PRIVATE_REASON_CHOICES, null=True, blank=True
+        max_length=100, choices=CONFIDENTIAL_REASON_CHOICES, null=True, blank=True
     )
     confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True
@@ -990,8 +927,18 @@ class Deal(models.Model, OldDealMixin):
     top_investors = models.ManyToManyField(
         Investor, verbose_name=_("Top parent companies"), related_name="+"
     )
-    current_contract_size = models.FloatField(blank=True, null=True)
-    current_production_size = models.FloatField(blank=True, null=True)
+    current_contract_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+    current_production_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
     current_intention_of_investment = ArrayField(
         models.CharField(max_length=100),
         choices=INTENTION_CHOICES,
@@ -1012,7 +959,12 @@ class Deal(models.Model, OldDealMixin):
         models.CharField(max_length=100), blank=True, null=True
     )
 
-    deal_size = models.IntegerField(blank=True, null=True)
+    deal_size = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
     initiation_year = models.IntegerField(
         blank=True, null=True, validators=[MinValueValidator(1970)]
     )
@@ -1067,18 +1019,20 @@ class Deal(models.Model, OldDealMixin):
         self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
     ):
         if recalculate_independent:
-            self.current_contract_size = self._get_current("contract_size")
-            self.current_production_size = self._get_current("production_size")
+            self.current_contract_size = self._get_current("contract_size", "area")
+            self.current_production_size = self._get_current("production_size", "area")
             self.current_intention_of_investment = self._get_current(
-                "intention_of_investment"
+                "intention_of_investment", "choices"
             )
-            self.current_negotiation_status = self._get_current("negotiation_status")
+            self.current_negotiation_status = self._get_current(
+                "negotiation_status", "choice"
+            )
             self.current_implementation_status = self._get_current(
-                "implementation_status"
+                "implementation_status", "choice"
             )
-            self.current_crops = self._get_current("crops")
-            self.current_animals = self._get_current("animals")
-            self.current_resources = self._get_current("resources")
+            self.current_crops = self._get_current("crops", "choices")
+            self.current_animals = self._get_current("animals", "choices")
+            self.current_resources = self._get_current("resources", "choices")
 
             # these only depend on the _get_current calls right above.
             self.deal_size = self._calculate_deal_size()
@@ -1098,39 +1052,28 @@ class Deal(models.Model, OldDealMixin):
 
         super().save(*args, **kwargs)
 
-    def _get_current(self, attribute):
+    def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)
         if not attributes:
             return None
         # prioritize "current" checkbox if present
         current = [x for x in attributes if x.get("current")]
         if current:
-            return current[0].get("value")
-
-        # last given entry, if it has no date
-        most_recent = attributes[-1]
-        if not most_recent.get("date"):
-            return most_recent.get("value")
-
-        # most recent year/date given
-        max_year = "0"
-        for attr in reversed(attributes):
-            attr_year = attr.get("date")
-            if not attr_year or attr_year <= max_year:
-                continue
-            max_year = attr_year
-            val = attr.get("value")
-        # We're not initializing "val" because if this errors, it should not go silently
-        return val
+            return current[0].get(field)
+        else:
+            print(self)
+            print(attribute)
+            print(attributes)
+            raise Exception("We should always have a current, now.")
 
     def _calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
         if not negotiation_status:
             return 0
 
-        intended_size = int(self.intended_size or 0)
-        contract_size = int(self.current_contract_size or 0)
-        production_size = int(self.current_production_size or 0)
+        intended_size = self.intended_size or 0.0
+        contract_size = self.current_contract_size or 0.0
+        production_size = self.current_production_size or 0.0
 
         # 1) IF Negotiation status IS Intended
         if negotiation_status in (
@@ -1161,7 +1104,7 @@ class Deal(models.Model, OldDealMixin):
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size
         else:
-            value = 0
+            value = 0.0
         return value
 
     def _calculate_initiation_year(self):
@@ -1170,7 +1113,7 @@ class Deal(models.Model, OldDealMixin):
                 int(x["date"][:4])
                 for x in self.negotiation_status
                 if x.get("date")
-                and x["value"]
+                and x["choice"]
                 in (
                     "UNDER_NEGOTIATION",
                     "ORAL_AGREEMENT",
@@ -1187,7 +1130,7 @@ class Deal(models.Model, OldDealMixin):
                 int(x["date"][:4])
                 for x in self.implementation_status
                 if x.get("date")
-                and x["value"]
+                and x["choice"]
                 in (
                     "STARTUP_PHASE",
                     "IN_OPERATION",

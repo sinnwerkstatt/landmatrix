@@ -1,25 +1,34 @@
 <template>
-  <div class="form-field row" v-if="!file_not_public || user.is_authenticated">
-    <div class="label" :class="labelClasses">
-      {{ formfield.label }}
+  <div>
+    <div v-if="value">
+      Current:
+      <a :href="`${MEDIA_URL}${value}`" target="_blank">
+        <i class="far fa-file-pdf"></i>
+        {{ value.replace("uploads/", "") }}
+      </a>
+      <br />
+      Change: <input type="file" :name="formfield.name" /><br />
+      <label>
+        Clear file
+        <input type="checkbox" :name="`clear_${formfield.name}`" />
+      </label>
     </div>
-    <div class="val" :class="valClasses">
-      <div v-if="readonly">
-        <a :href="`${MEDIA_URL}${val}`" target="_blank">
-          <i :class="[file_not_public ? 'fas' : 'far', 'fa-file-pdf']"></i>
-        </a>
-      </div>
+    <div v-else>
+      <input type="file" :name="formfield.name" />
     </div>
   </div>
 </template>
 
 <script>
-  import { fieldMixin } from "./fieldMixin";
-
   export default {
-    mixins: [fieldMixin],
+    props: {
+      formfield: { type: Object, required: true },
+      value: { type: String, required: true },
+      model: { type: String, required: true },
+    },
     data() {
       return {
+        // eslint-disable-next-line no-undef
         MEDIA_URL: MEDIA_URL,
         user: this.$store.state.page.user,
       };

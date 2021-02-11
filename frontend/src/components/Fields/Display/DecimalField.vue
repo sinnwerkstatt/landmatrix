@@ -1,7 +1,7 @@
 <template>
   <div style="white-space: nowrap;">
     {{ value.toLocaleString() }}
-    <span v-if="formfield.name === 'deal_size'">ha</span>
+    <span v-if="formfield.unit">{{ formfield.unit }}</span>
   </div>
 </template>
 

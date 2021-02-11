@@ -191,7 +191,8 @@ def resolve_deal_aggregations(
     aggs = {}
     for field in fields:
         aggs[field] = list(
-            deals.values(value=F(field))
+            deals.order_by(field, "id")
+            .values(value=F(field))
             .annotate(count=Count("pk"))
             .annotate(size=Sum("deal_size"))
         )

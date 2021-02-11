@@ -9,7 +9,7 @@
     <div :class="valueClasses">
       <component
         :is="formfield.class"
-        :value="value"
+        v-model="_value"
         :formfield="formfield"
         :model="model"
       />
@@ -18,23 +18,31 @@
 </template>
 
 <script>
+  import JSONActorsField from "./Edit/JSONActorsField";
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField";
+  import JSONDateAreaField from "./Edit/JSONDateAreaField";
+  import JSONDateChoiceField from "./Edit/JSONDateChoiceField";
+  import JSONExportsField from "./Edit/JSONExportsField";
+  import JSONJobsField from "./Edit/JSONJobsField";
+  import JSONLeaseField from "./Edit/JSONLeaseField";
+
   // import AutoField from "./Display/AutoField";
   import ArrayField from "./Edit/ArrayField";
 
   import BooleanField from "./Edit/BooleanField";
   import NullBooleanField from "./Edit/BooleanField";
 
-  // import DateField from "./Display/DateField";
+  import DateField from "./Edit/DateField";
   // import DateTimeField from "./Display/DateField";
 
   import DecimalField from "./Edit/DecimalField";
   import FloatField from "./Edit/DecimalField";
   import IntegerField from "./Edit/DecimalField";
 
-  import FileField from "./Display/FileField";
+  import FileField from "./Edit/FileField";
   import ForeignKey from "./Edit/ForeignKeyField";
 
-  import JSONField from "./Edit/JSONField";
+  import JSONField from "./Edit/JSONField.vue";
 
   import CharField from "./Edit/TextField";
   import EmailField from "./Edit/TextField";
@@ -55,7 +63,7 @@
       ArrayField,
       BooleanField,
       CharField,
-      // DateField,
+      DateField,
       // DateTimeField,
       DecimalField,
       EmailField,
@@ -65,7 +73,14 @@
       ManyToManyField,
       LengthField,
       IntegerField,
+      JSONActorsField,
+      JSONDateAreaChoicesField,
+      JSONDateAreaField,
+      JSONDateChoiceField,
+      JSONExportsField,
       JSONField,
+      JSONJobsField,
+      JSONLeaseField,
       NullBooleanField,
       PointField,
       TextField,
@@ -83,16 +98,24 @@
       },
       labelClasses: {
         type: Array,
-        default: () => ["display-field-label", "col-md-5", "col-lg-4"],
+        default: () => ["display-field-label", "col-md-3", "col-lg-3"],
       },
       valueClasses: {
         type: Array,
-        default: () => ["display-field-value", "col-md-5", "col-lg-6"],
+        default: () => ["display-field-value", "col-md-9", "col-lg-9"],
       },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
     },
     computed: {
+      _value: {
+        get() {
+          return this.value;
+        },
+        set(v) {
+          this.$emit("input", v);
+        },
+      },
       _visible() {
         if (!this.visible) return false;
         if (this.formfield.class === "FileField") {
