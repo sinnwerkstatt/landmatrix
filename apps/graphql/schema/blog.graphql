@@ -9,6 +9,7 @@ type BlogPage {
   author: User
   categories: [BlogCategory]
   tags: [BlogTag]
+  url: String
 }
 
 type BlogCategory {

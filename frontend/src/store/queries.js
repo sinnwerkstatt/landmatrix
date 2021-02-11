@@ -37,6 +37,7 @@ export const blogpages_query = gql`
       tags {
         slug
       }
+      url
     }
   }
 `;

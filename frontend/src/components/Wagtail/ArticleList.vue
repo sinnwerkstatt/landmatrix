@@ -15,7 +15,7 @@
             </div>
             <div class="col-9">
               <h5 class="title">
-                <router-link :to="`${article.slug}/`">{{ article.title }}</router-link>
+                <router-link :to="article.url">{{ article.title }}</router-link>
               </h5>
               <div class="excerpt" v-html="article.excerpt"></div>
             </div>
