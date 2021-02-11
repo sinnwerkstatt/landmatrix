@@ -149,6 +149,7 @@
               tags {
                 slug
               }
+              url
             }
           }
         `,

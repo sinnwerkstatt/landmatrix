@@ -38,7 +38,7 @@
             />
             <div class="card-body">
               <h5 class="card-title">
-                <router-link :to="`${article.slug}/`">
+                <router-link :to="article.url">
                   {{ article.title }}
                 </router-link>
               </h5>
