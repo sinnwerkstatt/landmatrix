@@ -25,7 +25,7 @@
         </span>
 
         <FilterCollapse
-          :title="$t('Region')"
+          :title="$t('Land Matrix region')"
           :clearable="!!region_id"
           @click="region_id = null"
         >
