@@ -10,6 +10,8 @@ import VueApollo from "vue-apollo";
 import { apolloClient } from "apolloclient";
 import ScrollLoader from "vue-scroll-loader";
 import VueI18n from "vue-i18n";
+import VueMatomo from "vue-matomo";
+
 import es_messages from "./i18n_messages.es.json";
 import fr_messages from "./i18n_messages.fr.json";
 
@@ -47,6 +49,34 @@ Vue.use(VCalendar);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
 Vue.use(ScrollLoader);
+
+Vue.use(VueMatomo, {
+  host: "https://stats.landmatrix.org",
+  siteId: 1,
+  trackerFileName: "matomo", // or piwik.php ?
+  router: router,
+  enableLinkTracking: true,
+  trackInitialView: true,
+
+  // Require consent before sending tracking information to matomo
+  // Default: false
+  requireConsent: false,
+  // track without cookies? :)
+  disableCookies: false,
+
+  // Enable the heartbeat timer (https://developer.matomo.org/guides/tracking-javascript-guide#accurately-measure-the-time-spent-on-each-page)
+  // Default: false
+  enableHeartBeatTimer: false,
+  heartBeatTimerInterval: 15,
+
+  debug: false,
+
+  // UserID passed to Matomo (see https://developer.matomo.org/guides/tracking-javascript-guide#user-id)
+  // Default: undefined
+  userId: undefined,
+
+  // domains: '*.landmatrix.org',
+});
 
 Vue.component("Multiselect", Multiselect);
 
