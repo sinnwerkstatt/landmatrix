@@ -12,16 +12,16 @@
 
     <table class="table table-striped">
       <thead>
-        <tr>
-          <th></th>
-          <th>{{ fromVersion }}</th>
-          <th>{{ toVersion }}</th>
+        <tr class="d-flex">
+          <th class="col-2"></th>
+          <th class="col-5">{{ fromVersion }}</th>
+          <th class="col-5">{{ toVersion }}</th>
         </tr>
       </thead>
 
       <tbody>
         <template v-for="section in deal_sections" v-if="anyFieldFromSection(section)">
-          <tr>
+          <tr class="d-flex">
             <th colspan="3">
               <h2>{{ section.label }}</h2>
             </th>
@@ -30,13 +30,19 @@
             v-for="subsec in section.subsections"
             v-if="anyFieldFromSubSection(subsec)"
           >
-            <tr>
+            <tr class="d-flex">
               <th colspan="3">
                 <h3>{{ subsec.name }}</h3>
               </th>
             </tr>
-            <tr v-for="field in subsec.fields" v-if="dealdiff.has(field)">
-              <th class="col-2"><FieldLabel :fieldname="field" /></th>
+            <tr
+              v-for="field in subsec.fields"
+              class="d-flex"
+              v-if="dealdiff.has(field)"
+            >
+              <th class="col-2">
+                <FieldLabel :fieldname="field" :label-classes="[]" />
+              </th>
               <td class="col-5">
                 <DisplayField
                   :show-label="false"
