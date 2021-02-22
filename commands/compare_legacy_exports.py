@@ -298,16 +298,18 @@ def compare_special_cases(file_old, file_new):
     new_dict = cache_workbook(file_new, "xlsx_compare_new.pickle")
     print("\n\n\nCOMPARING SPECIAL CASES\n\n\n")
 
-    for deal_id, content in old_dict.items():
-        # print(f"\rcomparing {deal_id} ..", end="", flush=True)
-        try:
-            comp = new_dict[deal_id]
-        except KeyError:
-            # print(f"could not find {deal_id}")
-            # unknown_deal_numbers.add(deal_id)
-            continue
+    for export in ["Crops", "Livestock", "Resources"]:
+        print(">>>", export, "<<<")
 
-        for export in ["Crops", "Livestock", "Resources"]:
+        for deal_id, content in old_dict.items():
+            # print(f"\rcomparing {deal_id} ..", end="", flush=True)
+            try:
+                comp = new_dict[deal_id]
+            except KeyError:
+                # print(f"could not find {deal_id}")
+                # unknown_deal_numbers.add(deal_id)
+                continue
+
             coni = (
                 content[f"{export} area"],
                 content[f"{export} yield"],
@@ -322,7 +324,64 @@ def compare_special_cases(file_old, file_new):
                 if condate == comdate and conarea == comarea and conval == comval:
                     continue
             if any(coni) or compi:
-                print(coni, "\t\t", compi)
+                print(f"{deal_id};{coni};{compi}")
+                # print(coni, "\t\t", compi)
+
+    for lease in ["On", "Not on"]:
+        print(">>>", lease, "<<<")
+
+        for deal_id, content in old_dict.items():
+            # print(f"\rcomparing {deal_id} ..", end="", flush=True)
+            try:
+                comp = new_dict[deal_id]
+            except KeyError:
+                # print(f"could not find {deal_id}")
+                # unknown_deal_numbers.add(deal_id)
+                continue
+
+            coni = (
+                content[
+                    f"{lease} leased / purchased area {'(in ha)' if lease == 'On' else '(out-grower, in ha)'}"
+                ],
+                content[
+                    f"{lease} leased / purchased farmers{'' if lease == 'On' else ' (out-grower)'}"
+                ],
+                content[
+                    f"{lease} leased / purchased households{'' if lease == 'On' else ' (out-grower)'}"
+                ],
+            )
+            if lease == "On":
+                compi = comp["On leased area/farmers/households"]
+            else:
+                compi = comp["Not on leased area/farmers/households (out-grower)"]
+
+            if any(coni) or compi:
+                print(f"{deal_id};{coni};{compi}")
+
+    for location in ["total", "foreign", "domestic"]:
+        print(">>>", location, "<<<")
+
+        for deal_id, content in old_dict.items():
+            # print(f"\rcomparing {deal_id} ..", end="", flush=True)
+            try:
+                comp = new_dict[deal_id]
+            except KeyError:
+                # print(f"could not find {deal_id}")
+                # unknown_deal_numbers.add(deal_id)
+                continue
+
+            coni = (
+                content[f"Current number of jobs ({location})"],
+                content[f"Current number of employees ({location})"],
+                content[f"Current number of daily/seasonal workers ({location})"],
+            )
+
+            compi = comp[
+                f"Current {location} number of jobs/employees/ daily/seasonal workers"
+            ]
+
+            if any(coni) or compi:
+                print(f"{deal_id};{coni};{compi}")
 
 
 compare(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
