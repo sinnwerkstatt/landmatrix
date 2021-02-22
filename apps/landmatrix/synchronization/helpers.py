@@ -160,14 +160,10 @@ def _lease_logic(attrs, onoff):
         or []
     )
     if len(areas) == 1 and len(farmers) <= 1 and len(households) <= 1:
-        if len(farmers) == 1 and areas[0].get("date") and not farmers[0].get("date"):
+        if len(farmers) == 1 and areas[0].get("date"):
             areas[0]["farmers"] = farmers[0].get("farmers")
 
-        if (
-            len(households) == 1
-            and areas[0].get("date")
-            and not households[0].get("date")
-        ):
+        if len(households) == 1 and areas[0].get("date"):
             areas[0]["households"] = households[0].get("households")
         set_current(areas)
         return areas
