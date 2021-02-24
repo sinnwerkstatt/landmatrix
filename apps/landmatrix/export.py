@@ -30,6 +30,7 @@ deal_fields = {
     "is_public": "Is public",
     "transnational": "Deal scope",
     "deal_size": "Deal size",
+    "country": "Target country",
     "current_contract_size": "Current size under contract",
     "current_production_size": "Current size in operation (production)",
     "current_negotiation_status": "Current negotiation status",
@@ -845,7 +846,12 @@ class DataDownload:
         bool_cast(data, "fully_updated")
         bool_cast(data, "confidential")
 
-        for country in ["export_country1", "export_country2", "export_country3"]:
+        for country in [
+            "country",
+            "export_country1",
+            "export_country2",
+            "export_country3",
+        ]:
             if data.get(country):
                 data[country] = mchoices.get("country")[data[country]]
 
