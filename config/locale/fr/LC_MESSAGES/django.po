@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-24 19:37+0100\n"
+"POT-Creation-Date: 2021-02-24 21:26+0100\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4583,19 +4583,19 @@ msgstr ""
 msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
 msgstr ""
 
-#: config/frontend_i18n_strings.py:37
+#: config/frontend_i18n_strings.py:40
 msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
 msgstr ""
 
-#: config/frontend_i18n_strings.py:39
+#: config/frontend_i18n_strings.py:44
 msgid "Dynamics overview charts"
 msgstr ""
 
-#: config/frontend_i18n_strings.py:40
+#: config/frontend_i18n_strings.py:45
 msgid "Country profiles"
 msgstr ""
 
-#: config/frontend_i18n_strings.py:41
+#: config/frontend_i18n_strings.py:46
 msgid "News & publications"
 msgstr "Nouveautés & publications"
 

@@ -31,10 +31,15 @@ _("Resources")
 _("Land Matrix region")
 _("Land Matrix regions")
 _(
-    "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+    "Country profiles present national-level data of large-scale land acquisitions "
+    "and transactions including who the investors are, what the aim of the investment "
+    "is, who the former owner was and what the land was previously used for, and what "
+    "the potential benefits and impacts of the land deals are."
 )
 _(
-    "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+    "By making this information available, the Land Matrix hopes to enhance broad "
+    "engagement and data exchange, facilitating the continuous improvement of the "
+    "data. Find out how to get involved"
 )
 _("Dynamics overview charts")
 _("Country profiles")
