@@ -222,6 +222,7 @@ export const deal_sections = {
           "has_domestic_use",
           "domestic_use",
           "has_export",
+          "export",
           "export_country1",
           "export_country1_ratio",
           "export_country2",

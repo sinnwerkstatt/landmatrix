@@ -397,11 +397,11 @@ def _merge_area_yield_export(attrs, name, fieldmap):
         )
         or []
     )
-    export_name = f"{name}_export" if name != "minerals" else "export"
+
     exports = (
         _extras_to_json(
             attrs,
-            export_name,
+            f"{name}_export",  # if name != "minerals" else "export",
             val1name="choices",
             val2name="export",
             fieldmap=fieldmap,

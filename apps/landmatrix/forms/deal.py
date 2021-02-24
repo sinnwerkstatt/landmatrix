@@ -10,6 +10,7 @@ class DealForm(VueForm):
         return {
             "deal_size": {"unit": "ha"},
             "intended_size": {"unit": "ha"},
+            "export": {"unit": "%"},
             "contract_size": {"class": "JSONDateAreaField"},
             "production_size": {"class": "JSONDateAreaField"},
             "intention_of_investment": {

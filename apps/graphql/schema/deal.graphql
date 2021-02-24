@@ -122,6 +122,7 @@ type Deal {
   has_domestic_use: Boolean
   domestic_use: Float
   has_export: Boolean
+  export: Float
   export_country1: Country
   export_country1_ratio: Float
   export_country2: Country
