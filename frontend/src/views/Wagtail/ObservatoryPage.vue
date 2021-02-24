@@ -69,20 +69,23 @@
       </div>
     </div>
     <ArticleList
-      :articles-label="'Country Profiles'"
+      :articles-label="$t('Country profiles')"
       :articles="filteredCountryProfiles"
     >
       <div class="description">
         <p>
-          Country profiles present national-level data of large-scale land acquisitions
-          and transactions including who the investors are, what the aim of the
-          investment is, who the former owner was and what the land was previously used
-          for, and what the potential benefits and impacts of the land deals are.
+          {{
+            $t(
+              "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+            )
+          }}
         </p>
         <p>
-          By making this information available, the Land Matrix hopes to enhance broad
-          engagement and data exchange, facilitating the continuous improvement of the
-          data. Find out how to get involved
+          {{
+            $t(
+              "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+            )
+          }}
           <router-link :to="`/get-involved/`">
             {{ $t("here") }}
           </router-link>
@@ -91,7 +94,10 @@
         <h4>{{ $t("Download country profiles for") }}:</h4>
       </div>
     </ArticleList>
-    <ArticleList :articles-label="'News & publications'" :articles="filteredNewsPubs" />
+    <ArticleList
+      :articles-label="$t('News & publications')"
+      :articles="filteredNewsPubs"
+    />
     <div v-if="page.twitter_feed" class="container tweets">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">

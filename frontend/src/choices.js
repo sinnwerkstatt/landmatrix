@@ -1,12 +1,12 @@
 export const implementation_status_choices = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
-  IN_OPERATION: "In Operation (production)",
+  IN_OPERATION: "In operation (production)",
   PROJECT_ABANDONED: "Project abandoned",
 };
 
 export const nature_of_deal_choices = {
-  OUTRIGHT_PURCHASE: "Outright Purchase",
+  OUTRIGHT_PURCHASE: "Outright purchase",
   LEASE: "Lease",
   CONCESSION: "Concession",
   EXPLOITATION_PERMIT:
@@ -56,7 +56,7 @@ export const intention_of_investment_choices = {
     INDUSTRY: "Industry",
     CONVERSATION: "Conservation",
     LAND_SPECULATION: "Land speculation",
-    RENEWABLE_ENERGY: "Renewable Energy",
+    RENEWABLE_ENERGY: "Renewable energy",
     OTHER: "Other",
   },
 };
@@ -80,7 +80,7 @@ export const intention_of_investment_map = {
   INDUSTRY: ["Industry", "fas fa-industry"],
   CONVERSATION: ["Conservation", ""],
   LAND_SPECULATION: ["Land speculation", "fas fa-chart-line"],
-  RENEWABLE_ENERGY: ["Renewable Energy", "fas fa-wind"],
+  RENEWABLE_ENERGY: ["Renewable energy", "fas fa-wind"],
   OTHER: ["Other", ""],
 };
 

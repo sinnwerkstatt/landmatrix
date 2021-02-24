@@ -87,7 +87,7 @@ class Deal(models.Model, OldDealMixin):
     # Land area
     country = models.ForeignKey(
         Country,
-        verbose_name=_("Target Country"),
+        verbose_name=_("Target country"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -146,7 +146,7 @@ class Deal(models.Model, OldDealMixin):
                 ("INDUSTRY", _("Industry")),
                 ("CONVERSATION", _("Conservation")),
                 ("LAND_SPECULATION", _("Land speculation")),
-                ("RENEWABLE_ENERGY", _("Renewable Energy")),
+                ("RENEWABLE_ENERGY", _("Renewable energy")),
                 ("OTHER", _("Other")),
             ),
         ),
@@ -160,7 +160,7 @@ class Deal(models.Model, OldDealMixin):
 
     # Nature of the deal
     NATURE_OF_DEAL_CHOICES = (
-        ("OUTRIGHT_PURCHASE", _("Outright Purchase")),
+        ("OUTRIGHT_PURCHASE", _("Outright purchase")),
         ("LEASE", _("Lease")),
         ("CONCESSION", _("Concession")),
         (
@@ -424,7 +424,7 @@ class Deal(models.Model, OldDealMixin):
         (
             "GOVERNMENT_OR_STATE_INSTITUTIONS",
             _(
-                "Government / State institutions (government, ministries, departments, agencies etc.)"
+                "Government / state institutions (government, ministries, departments, agencies etc.)"
             ),
         ),
         (
@@ -603,8 +603,8 @@ class Deal(models.Model, OldDealMixin):
             _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
         ),
         ("ROADS", _("Roads")),
-        ("CAPACITY_BUILDING", _("Capacity Building")),
-        ("FINANCIAL_SUPPORT", _("Financial Support")),
+        ("CAPACITY_BUILDING", _("Capacity building")),
+        ("FINANCIAL_SUPPORT", _("Financial support")),
         ("COMMUNITY_SHARES", _("Community shares in the investment project")),
         ("OTHER", _("Other")),
     )
@@ -911,12 +911,12 @@ class Deal(models.Model, OldDealMixin):
     """ # CALCULATED FIELDS # """
     is_public = models.BooleanField(default=False)
     NOT_PUBLIC_REASON_CHOICES = (
-        ("CONFIDENTIAL", "Confidential Flag"),
-        ("NO_COUNTRY", "No Country"),
-        ("HIGH_INCOME_COUNTRY", "High-Income Country"),
-        ("NO_DATASOURCES", "No Datasources"),
-        ("NO_OPERATING_COMPANY", "No Operating Company"),
-        ("NO_KNOWN_INVESTOR", "No Known Investor"),
+        ("CONFIDENTIAL", "Confidential flag"),
+        ("NO_COUNTRY", "No country"),
+        ("HIGH_INCOME_COUNTRY", "High-income country"),
+        ("NO_DATASOURCES", "No datasources"),
+        ("NO_OPERATING_COMPANY", "No operating company"),
+        ("NO_KNOWN_INVESTOR", "No known investor"),
     )
     not_public_reason = models.CharField(
         max_length=100, blank=True, choices=NOT_PUBLIC_REASON_CHOICES

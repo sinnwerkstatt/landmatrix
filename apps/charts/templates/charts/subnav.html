@@ -27,7 +27,7 @@
                                 <li{% if chart == "chart_intention" %} class="active"{% endif %}><a href="{% url "chart_intention" %}{% filter_query_params %}">{% trans "Intention of investment" %}</a></li>
                                 <li{% if chart == "chart_negotiation_status" %} class="active"{% endif %}><a href="{% url "chart_negotiation_status" %}{% filter_query_params %}">{% trans "Negotiation status" %}</a></li>
                                 <li{% if chart == "chart_implementation_status" %} class="active"{% endif %}><a href="{% url "chart_implementation_status" %}{% filter_query_params %}">{% trans "Implementation status" %}</a></li>
-                                <li{% if chart == "chart_intention_agriculture" %} class="active"{% endif %}><a href="{% url "chart_intention_agriculture" %}{% filter_query_params %}">{% trans "Investment in Agriculture" %}</a></li>
+                                <li{% if chart == "chart_intention_agriculture" %} class="active"{% endif %}><a href="{% url "chart_intention_agriculture" %}{% filter_query_params %}">{% trans "Investment in agriculture" %}</a></li>
                             </ul>
                         </li>
                         {% if not request.GET.country and not request.GET.region %}

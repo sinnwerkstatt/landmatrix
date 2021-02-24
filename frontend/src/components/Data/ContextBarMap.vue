@@ -19,7 +19,7 @@
         {{ totalCount }}
       </div>
       <div class="chart-wrapper">
-        <h5>Negotiation Status</h5>
+        <h5>{{ $t("Negotiation status") }}</h5>
         <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <StatusPieChart
           :deal-data="dealsFilteredByNegStatus"
@@ -29,7 +29,7 @@
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
-        <h5>Implementation Status</h5>
+        <h5>{{ $t("Implementation status") }}</h5>
         <StatusPieChart
           :deal-data="implementationStatusData"
           :display-legend="true"
@@ -38,7 +38,7 @@
         ></StatusPieChart>
       </div>
       <div class="chart-wrapper">
-        <h5>Produce</h5>
+        <h5>{{ $t("Produce") }}</h5>
         <StatusPieChart
           :deal-data="produceData"
           :legends="produceDataLegendItems"
