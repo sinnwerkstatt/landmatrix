@@ -5,7 +5,7 @@
       <thead>
         <tr>
           <th>{{ $t("Created") }}</th>
-          <th v-if="user && user.is_authenticated">{{ $t("User") }}</th>
+          <th v-if="$store.getters.userAuthenticated">{{ $t("User") }}</th>
           <th>{{ $t("Fully updated") }}</th>
           <th>{{ $t("Status") }}</th>
           <th>{{ $t("Comment") }}</th>
@@ -17,7 +17,7 @@
       <tbody>
         <tr v-for="(version, i) in deal.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
-          <td v-if="user && user.is_authenticated">
+          <td v-if="$store.getters.userAuthenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
@@ -90,8 +90,6 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
-
   export default {
     name: "DealHistory",
     props: ["deal", "dealId", "dealVersion"],
@@ -102,9 +100,6 @@
       };
     },
     computed: {
-      ...mapState({
-        user: (state) => state.page.user,
-      }),
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
         if (this.dealVersion) {
