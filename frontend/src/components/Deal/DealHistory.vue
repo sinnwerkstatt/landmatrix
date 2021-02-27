@@ -75,13 +75,19 @@
           <td></td>
           <td></td>
           <td>
-            <button
-              class="btn btn-primary"
-              style="white-space: nowrap;"
-              @click="compareVersions"
+            <router-link
+              :to="{
+                name: 'deal_compare',
+                params: {
+                  dealId: dealId,
+                  fromVersion: compare_from,
+                  toVersion: compare_to,
+                },
+              }"
+              class="btn btn-primary text-nowrap"
             >
               {{ $t("Compare versions") }}
-            </button>
+            </router-link>
           </td>
         </tr>
       </tfoot>
