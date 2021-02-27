@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-12 13:04+0100\n"
+"POT-Creation-Date: 2021-02-24 21:26+0100\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -505,8 +505,8 @@ msgid "Implementation status"
 msgstr "Estado de la implementación"
 
 #: apps/charts/templates/charts/subnav.html:30
-msgid "Investment in Agriculture"
-msgstr "Inversión en Agricultura"
+msgid "Investment in agriculture"
+msgstr "Inversión en agricultura"
 
 #: apps/charts/templates/charts/subnav.html:39
 msgid "Special Interest"
@@ -1104,8 +1104,7 @@ msgstr "Conservación"
 msgid "Land speculation"
 msgstr "Especulación de tierras"
 
-#: apps/grid/forms/choices.py:59 apps/landmatrix/models/deal.py:149
-#: apps/map/views.py:62
+#: apps/grid/forms/choices.py:59 apps/map/views.py:62
 msgid "Renewable Energy"
 msgstr "Energía Renovable"
 
@@ -1115,8 +1114,8 @@ msgid "Other (please specify)"
 msgstr "Otro (por favor, especificar)"
 
 #: apps/grid/forms/choices.py:81 apps/landmatrix/models/deal.py:163
-msgid "Outright Purchase"
-msgstr "Compra Directa"
+msgid "Outright purchase"
+msgstr "Compra directa"
 
 #: apps/grid/forms/choices.py:82 apps/landmatrix/models/deal.py:164
 msgid "Lease"
@@ -1149,7 +1148,7 @@ msgstr "por ha"
 msgid "for specified area"
 msgstr "por área específica"
 
-#: apps/grid/forms/choices.py:102 apps/landmatrix/models/deal.py:427
+#: apps/grid/forms/choices.py:102
 msgid "Government / State institutions (government, ministries, departments, agencies etc.)"
 msgstr "Gobierno/Instituciones estatales (gobierno, ministerios, departamentos, agencias, etc.)"
 
@@ -1940,12 +1939,10 @@ msgid "Roads"
 msgstr "Carreteras"
 
 #: apps/grid/forms/deal_local_communities_form.py:69
-#: apps/landmatrix/models/deal.py:606
 msgid "Capacity Building"
 msgstr "Desarrollo de Capacidades"
 
 #: apps/grid/forms/deal_local_communities_form.py:70
-#: apps/landmatrix/models/deal.py:607
 msgid "Financial Support"
 msgstr "Apoyo Económico"
 
@@ -2361,7 +2358,7 @@ msgid "Facility name"
 msgstr "Nombre de la instalación"
 
 #: apps/grid/forms/deal_spatial_form.py:41 apps/grid/views/filter.py:444
-#: apps/landmatrix/forms/deal_submodels.py:10
+#: apps/landmatrix/forms/deal_submodels.py:10 apps/landmatrix/models/deal.py:90
 #: apps/wagtailcms/templates/widgets/latest-database-modifications.html:8
 msgid "Target country"
 msgstr "País objetivo"
@@ -3757,10 +3754,6 @@ msgstr "Ingresos altos"
 msgid "Is target country"
 msgstr "Es país objetivo"
 
-#: apps/landmatrix/models/deal.py:90
-msgid "Target Country"
-msgstr "País objetivo"
-
 #: apps/landmatrix/models/deal.py:134
 msgid "Timber plantation"
 msgstr "Plantación forestal"
@@ -3768,6 +3761,10 @@ msgstr "Plantación forestal"
 #: apps/landmatrix/models/deal.py:135
 msgid "Forest logging / management"
 msgstr "Tala de árboles/gestión"
+
+#: apps/landmatrix/models/deal.py:149
+msgid "Renewable energy"
+msgstr "Energía renovable"
 
 #: apps/landmatrix/models/deal.py:284
 msgid "Annual leasing fee area type"
@@ -3805,9 +3802,21 @@ msgstr ""
 msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
 msgstr ""
 
+#: apps/landmatrix/models/deal.py:427
+msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
+msgstr "Gobierno/instituciones estatales (gobierno, ministerios, departamentos, agencias, etc.)"
+
 #: apps/landmatrix/models/deal.py:503
 msgid "Comment on recognition status of community land tenure"
 msgstr "Comentario sobre reconocimientos del estado de la tenencia de tierras comunales"
+
+#: apps/landmatrix/models/deal.py:606
+msgid "Capacity building"
+msgstr "Desarrollo de capacidades"
+
+#: apps/landmatrix/models/deal.py:607
+msgid "Financial support"
+msgstr "Apoyo económico"
 
 #: apps/landmatrix/models/deal.py:708
 msgid "Crops area/yield/export"
@@ -4575,6 +4584,26 @@ msgstr ""
 msgid "Land Matrix regions"
 msgstr ""
 
+#: config/frontend_i18n_strings.py:34
+msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+msgstr ""
+
+#: config/frontend_i18n_strings.py:40
+msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:44
+msgid "Dynamics overview charts"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:45
+msgid "Country profiles"
+msgstr ""
+
+#: config/frontend_i18n_strings.py:46
+msgid "News & publications"
+msgstr "Noticias & publicaciones"
+
 #: templates/404.html:4 templates/404.html:5
 msgid "Page not found"
 msgstr "Página no encontrada"
@@ -4891,6 +4920,12 @@ msgstr "Restablecer contraseña"
 #: templates/share.html:3
 msgid "Share"
 msgstr "Compartir"
+
+#~ msgid "Outright Purchase"
+#~ msgstr "Compra Directa"
+
+#~ msgid "Target Country"
+#~ msgstr "País objetivo"
 
 #~ msgid "Intended size"
 #~ msgstr "Tamaño planeado"

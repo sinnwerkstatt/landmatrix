@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th>Created</th>
-          <th v-if="user && user.is_authenticated">User</th>
+          <th v-if="$store.getters.userAuthenticated">User</th>
           <th>Fully updated</th>
           <th>Status</th>
           <th>Comment</th>
@@ -17,7 +17,7 @@
       <tbody>
         <tr v-for="(version, i) in investor.versions" :key="i">
           <td>{{ version.revision.date_created | defaultdate }}</td>
-          <td v-if="user && user.is_authenticated">
+          <td v-if="$store.getters.userAuthenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
           <td>
@@ -86,8 +86,6 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
-
   export default {
     name: "InvestorHistory",
     props: ["investor", "investorId", "investorVersion"],
@@ -98,9 +96,6 @@
       };
     },
     computed: {
-      ...mapState({
-        user: (state) => state.page.user,
-      }),
       deduced_position() {
         if (this.investor.versions.length === 0) return 0;
         if (this.investorVersion) {

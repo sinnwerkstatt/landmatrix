@@ -23,6 +23,21 @@
             {{ $t("Default filter") }}
           </b-form-checkbox>
         </span>
+        <span
+          v-if="$store.getters.userInGroup(['Administrators', 'Editors'])"
+          style="font-size: 0.8em;"
+        >
+          <b-form-checkbox
+            v-model="publicOnly"
+            :class="{ active: publicOnly }"
+            class="default-filter-switch"
+            name="check-button"
+            switch
+            @change="$store.dispatch('setPublicOnly', !publicOnly)"
+          >
+            {{ $t("Active deals only") }}
+          </b-form-checkbox>
+        </span>
 
         <FilterCollapse
           :title="$t('Land Matrix region')"
@@ -546,6 +561,14 @@
       isDefaultFilter: {
         get() {
           return this.$store.state.filters.isDefaultFilter;
+        },
+        set() {
+          // do nothing - only on user action: see updateDefaultFilter()
+        },
+      },
+      publicOnly: {
+        get() {
+          return this.$store.state.filters.publicOnly;
         },
         set() {
           // do nothing - only on user action: see updateDefaultFilter()

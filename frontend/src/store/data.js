@@ -19,14 +19,13 @@ export const dataModule = {
   },
   actions: {
     fetchDeals(context) {
-      let user = context.rootState.page.user;
       apolloClient
         .query({
           query: data_deal_query_gql,
           variables: {
             limit: 0,
             filters: context.getters.filtersForGQL,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+            subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
           },
         })
         .then((data) => {

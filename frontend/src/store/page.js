@@ -33,6 +33,12 @@ export const pageModule = {
     userAuthenticated: (state) => {
       return !!(state.user && state.user.is_authenticated);
     },
+    userInGroup: (state) => (groups) => {
+      if (!state.user) {
+        return false;
+      }
+      return !!state.user.groups.find((g) => groups.includes(g.name));
+    },
   },
   mutations: {
     setUser(state, user) {

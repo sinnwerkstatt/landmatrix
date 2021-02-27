@@ -284,6 +284,7 @@ export default {
     isDefaultFilter: Cookies.get("filters")
       ? isDefaultFilter(JSON.parse(Cookies.get("filters")))
       : true,
+    publicOnly: true,
   }),
   mutations: {
     setFilter(state, { filter, value }) {
@@ -310,6 +311,9 @@ export default {
       };
       state.isDefaultFilter = false;
     },
+    setPublicOnly(state, value) {
+      state.publicOnly = value;
+    },
   },
   actions: {
     setFilter(context, filter) {
@@ -324,6 +328,9 @@ export default {
     clearFilters(context) {
       context.commit("clearFilters");
       context.dispatch("setCookie");
+    },
+    setPublicOnly(context, value) {
+      context.commit("setPublicOnly", value);
     },
     setCookie(context) {
       Cookies.set("filters", context.state.filters, { sameSite: "lax" });

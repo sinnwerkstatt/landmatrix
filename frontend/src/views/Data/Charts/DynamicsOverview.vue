@@ -4,7 +4,7 @@
       <div class="grid-wrapper">
         <div class="grid-container">
           <div class="chart-item left top">
-            <h2>Intention of Investment</h2>
+            <h2>{{ $t("Intention of investment") }}</h2>
             <StatusPieChart
               :deal-data="intentionData"
               :display-legend="true"
@@ -16,7 +16,7 @@
           </div>
 
           <div class="chart-item right top">
-            <h2>Investment in Agriculture</h2>
+            <h2>{{ $t("Investment in agriculture") }}</h2>
             <StatusPieChart
               :deal-data="intentionAgricultureData"
               :display-legend="true"
@@ -27,7 +27,7 @@
           </div>
 
           <div class="chart-item left bottom">
-            <h2>Implementation Status</h2>
+            <h2>{{ $t("Implementation status") }}</h2>
             <StatusPieChart
               :deal-data="implementationStatusData"
               :display-legend="true"
@@ -38,7 +38,7 @@
           </div>
 
           <div class="chart-item right bottom">
-            <h2>Negotiation Status</h2>
+            <h2>{{ $t("Negotiation status") }}</h2>
             <StatusPieChart
               :deal-data="negotiationStatusData"
               :display-legend="true"
@@ -51,7 +51,7 @@
       </div>
     </template>
     <template #ContextBar>
-      <h2 class="bar-title">Dynamics overview charts</h2>
+      <h2 class="bar-title">{{ $t("Dynamics overview charts") }}</h2>
       <div v-html="chart_desc" />
       <DealDisplayToggle />
     </template>

@@ -72,13 +72,13 @@ grouped_intention_choices = (
     ("Other", intention_other_choices),
 )
 
-NATURE_OUTRIGHT_PURCHASE = "Outright Purchase"
+NATURE_OUTRIGHT_PURCHASE = "Outright purchase"
 NATURE_LEASE = "Lease"
 NATURE_CONCESSION = "Concession"
 NATURE_EXPLOITATION_PERMIT = "Exploitation permit / license / concession"
 NATURE_CONTRACT_FARMING = "Pure contract farming"
 nature_choices = (
-    (NATURE_OUTRIGHT_PURCHASE, _("Outright Purchase")),
+    (NATURE_OUTRIGHT_PURCHASE, _("Outright purchase")),
     (NATURE_LEASE, _("Lease")),
     (NATURE_CONCESSION, _("Concession")),
     (

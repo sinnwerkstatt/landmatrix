@@ -157,11 +157,14 @@
           `;
         },
         variables() {
-          let user = this.$store.state.page.user;
           return {
             limit: 0,
             filters: this.$store.getters.filtersForGQL,
-            subset: user && user.is_authenticated ? "ACTIVE" : "PUBLIC",
+            subset: this.$store.getters.userAuthenticated
+              ? this.$store.state.filters.publicOnly
+                ? "ACTIVE"
+                : "UNFILTERED"
+              : "PUBLIC",
           };
         },
       },
