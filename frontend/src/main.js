@@ -12,6 +12,7 @@ import ScrollLoader from "vue-scroll-loader";
 import VueI18n from "vue-i18n";
 import VueMatomo from "vue-matomo";
 
+import en_messages from "./i18n_messages.en.json";
 import es_messages from "./i18n_messages.es.json";
 import fr_messages from "./i18n_messages.fr.json";
 
@@ -107,7 +108,7 @@ const i18n = new VueI18n({
   // eslint-disable-next-line no-undef
   locale: LANGUAGE || "en",
   fallbackLocale: "en",
-  messages: { es: es_messages, fr: fr_messages },
+  messages: { en: en_messages, es: es_messages, fr: fr_messages },
   silentTranslationWarn: true,
 });
 
