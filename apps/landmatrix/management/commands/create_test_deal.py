@@ -152,8 +152,8 @@ class Command(BaseCommand):
                 }
             ],
             animals_comment="animal_comment",
-            resources=[{"value": ["IRO"]}],
-            resources_comment="resources_comment",
+            mineral_resources=[{"value": ["IRO"]}],
+            mineral_resources_comment="resources_comment",
             contract_farming_crops=[
                 {"value": "14", "current": True, "hectares": "1306"}
             ],

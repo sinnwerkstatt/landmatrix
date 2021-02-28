@@ -113,8 +113,8 @@ type Deal {
   crops_comment: String
   animals: [DateValuePair]
   animals_comment: String
-  resources: [DateValuePair]
-  resources_comment: String
+  mineral_resources: [DateValuePair]
+  mineral_resources_comment: String
   contract_farming_crops: [DateValuePair]
   contract_farming_crops_comment: String
   contract_farming_animals: [DateValuePair]
@@ -179,7 +179,7 @@ type Deal {
   current_implementation_status: String
   current_crops: [String]
   current_animals: [String]
-  current_resources: [String]
+  current_mineral_resources: [String]
 
   deal_size: Float
   initiation_year: Int

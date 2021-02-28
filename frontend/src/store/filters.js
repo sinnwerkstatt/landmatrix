@@ -245,7 +245,7 @@ function prepareFilters(filters) {
     }
     if (minerals.length > 0) {
       filterArray.push({
-        field: "current_resources",
+        field: "current_mineral_resources",
         operation: "CONTAINS",
         value: minerals,
       });

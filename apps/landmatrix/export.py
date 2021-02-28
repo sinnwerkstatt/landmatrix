@@ -131,8 +131,8 @@ deal_fields = {
     "crops_comment": "Comment on crops",
     "animals": "Livestock area/yield/export",
     "animals_comment": "Comment on livestock",
-    "resources": "Resources area/yield/export",
-    "resources_comment": "Comment on resources",
+    "mineral_resources": "Mineral resources area/yield/export",
+    "mineral_resources_comment": "Comment on mineral resources",
     "contract_farming_crops": "Contract farming crops",
     "contract_farming_crops_comment": "Comment on contract farming crops",
     "contract_farming_animals": "Contract farming livestock",
@@ -269,7 +269,7 @@ class Choices:
                 self.choices[name] = dict(Crop.objects.values_list("code", "name"))
             if name == "animals":
                 self.choices[name] = dict(Animal.objects.values_list("code", "name"))
-            if name == "resources":
+            if name == "mineral_resources":
                 self.choices[name] = dict(Mineral.objects.values_list("code", "name"))
         return self.choices[name]
 
@@ -855,7 +855,7 @@ class DataDownload:
             if data.get(country):
                 data[country] = mchoices.get("country")[data[country]]
 
-        for produce_type in ["crops", "animals", "resources"]:
+        for produce_type in ["crops", "animals", "mineral_resources"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
                     [

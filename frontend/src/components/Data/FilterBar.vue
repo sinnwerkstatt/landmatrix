@@ -610,7 +610,7 @@
           {
             type: this.$t("Minerals"),
             options: Object.entries(
-              this.dealFormfields.resources.choices
+              this.dealFormfields.mineral_resources.choices
             ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
           },
         ];

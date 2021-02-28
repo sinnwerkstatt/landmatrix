@@ -170,7 +170,7 @@
               color: "#7D4A0F",
             },
             {
-              label: "Mineral Resources",
+              label: "Mineral resources",
               color: "black",
             },
           ];
@@ -178,7 +178,7 @@
       },
       produceData() {
         let data = [];
-        let fields = ["crops", "animals", "resources"];
+        let fields = ["crops", "animals", "mineral_resources"];
         let colors = ["#FC941F", "#7D4A0F", "black"];
         if (this.produceLabelMap && this.dealsWithProduceInfo.length) {
           let counts = {};
@@ -236,7 +236,7 @@
           return {
             ...this.$store.state.formfields.deal.crops.choices,
             ...this.$store.state.formfields.deal.animals.choices,
-            ...this.$store.state.formfields.deal.resources.choices,
+            ...this.$store.state.formfields.deal.mineral_resources.choices,
           };
         }
       },

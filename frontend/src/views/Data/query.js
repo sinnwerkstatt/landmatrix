@@ -57,7 +57,7 @@ export const data_deal_produce_query = {
         id
         current_crops
         current_animals
-        current_resources
+        current_mineral_resources
       }
     }
   `,

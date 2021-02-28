@@ -488,8 +488,8 @@ def parse_produce_info(deal, attrs):
     deal.crops_comment = attrs.get("tg_crops_comment") or ""
     deal.animals = _merge_area_yield_export(attrs, "animals", ANIMAL_MAP)
     deal.animals_comment = attrs.get("tg_animals_comment") or ""
-    deal.resources = _merge_area_yield_export(attrs, "minerals", MINERAL_MAP)
-    deal.resources_comment = attrs.get("tg_minerals_comment") or ""
+    deal.mineral_resources = _merge_area_yield_export(attrs, "minerals", MINERAL_MAP)
+    deal.mineral_resources_comment = attrs.get("tg_minerals_comment") or ""
 
     deal.contract_farming_crops = _extras_to_json(
         attrs,

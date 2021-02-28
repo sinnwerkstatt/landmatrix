@@ -711,8 +711,12 @@ class Deal(models.Model, OldDealMixin):
     animals = JSONField(_("Livestock area/yield/export"), blank=True, null=True)
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    resources = JSONField(_("Resources area/yield/export"), blank=True, null=True)
-    resources_comment = models.TextField(_("Comment on resources"), blank=True)
+    mineral_resources = JSONField(
+        _("Mineral resources area/yield/export"), blank=True, null=True
+    )
+    mineral_resources_comment = models.TextField(
+        _("Comment on mineral resources"), blank=True
+    )
 
     contract_farming_crops = JSONField(
         _("Contract farming crops"), help_text=_("ha"), blank=True, null=True
@@ -955,7 +959,7 @@ class Deal(models.Model, OldDealMixin):
     current_animals = ArrayField(
         models.CharField(max_length=100), blank=True, null=True
     )
-    current_resources = ArrayField(
+    current_mineral_resources = ArrayField(
         models.CharField(max_length=100), blank=True, null=True
     )
 
@@ -1032,7 +1036,9 @@ class Deal(models.Model, OldDealMixin):
             )
             self.current_crops = self._get_current("crops", "choices")
             self.current_animals = self._get_current("animals", "choices")
-            self.current_resources = self._get_current("resources", "choices")
+            self.current_mineral_resources = self._get_current(
+                "mineral_resources", "choices"
+            )
 
             # these only depend on the _get_current calls right above.
             self.deal_size = self._calculate_deal_size()

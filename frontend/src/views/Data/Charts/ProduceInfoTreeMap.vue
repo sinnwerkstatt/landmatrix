@@ -166,9 +166,9 @@
                 children: this.produceData.animals,
               },
               {
-                name: "Mineral Resources",
+                name: "Mineral resources",
                 color: "black",
-                children: this.produceData.resources,
+                children: this.produceData.mineral_resources,
               },
               {
                 name: "Crops",
@@ -184,7 +184,7 @@
       produceData() {
         let data = null;
         let areaTotals = {};
-        let fields = ["crops", "animals", "resources"];
+        let fields = ["crops", "animals", "mineral_resources"];
         let totalSize = 0;
         if (
           this.deals.length &&

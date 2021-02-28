@@ -203,8 +203,8 @@ export const deal_sections = {
           "crops_comment",
           "animals",
           "animals_comment",
-          "resources",
-          "resources_comment",
+          "mineral_resources",
+          "mineral_resources_comment",
         ],
       },
       {
