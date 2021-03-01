@@ -43,8 +43,8 @@ export const data_deal_query = {
       filters: this.$store.getters.filtersForGQL,
       subset: this.$store.getters.userAuthenticated
         ? this.$store.state.filters.publicOnly
-          ? "ACTIVE"
-          : "UNFILTERED"
+          ? "PUBLIC"
+          : "ACTIVE"
         : "PUBLIC",
     };
   },
