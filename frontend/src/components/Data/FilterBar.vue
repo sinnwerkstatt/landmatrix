@@ -35,7 +35,7 @@
             switch
             @change="$store.dispatch('setPublicOnly', !publicOnly)"
           >
-            {{ publicOnly ? $t("Public deals only") : $t("All active deals") }}
+            {{ $t("Public deals only") }}
           </b-form-checkbox>
         </span>
 
