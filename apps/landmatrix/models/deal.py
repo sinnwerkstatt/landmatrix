@@ -27,6 +27,7 @@ class DealQuerySet(models.QuerySet):
         return self.active().filter(is_public=True)
 
     def visible(self, user=None, subset="PUBLIC"):
+        # TODO: welche user duerfen unfiltered bekommen?
         if not user or not user.is_authenticated:
             return self.public()
 

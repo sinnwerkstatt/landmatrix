@@ -388,6 +388,7 @@ class DataDownload:
         self.user = request.user
         deal_id = self.request.GET.get("deal_id")
         filters = self.request.GET.get("filters")
+        self.subset = self.request.GET.get("subset", "PUBLIC")
         self.return_format = self.request.GET.get("format", "html")
 
         if deal_id:
@@ -396,7 +397,7 @@ class DataDownload:
             self._multiple_deals(filters)
 
     def _single_deal(self, deal_id):
-        qs = Deal.objects.filter(id=deal_id)
+        qs = Deal.objects.visible(self.user, self.subset).filter(id=deal_id)
         deal = qs[0]
         self.deals = [
             self.deal_download_format(qs_dict)
@@ -433,8 +434,7 @@ class DataDownload:
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filters):
-
-        qs = Deal.objects.visible(self.user, subset="ACTIVE").order_by("id")
+        qs = Deal.objects.visible(self.user, subset=self.subset).order_by("id")
         if filters:
             qs = qs.filter(parse_filters(json.loads(filters)))
 
