@@ -23,21 +23,21 @@
             {{ $t("Default filter") }}
           </b-form-checkbox>
         </span>
-        <!--        <span-->
-        <!--          v-if="$store.getters.userInGroup(['Administrators', 'Editors'])"-->
-        <!--          style="font-size: 0.8em;"-->
-        <!--        >-->
-        <!--          <b-form-checkbox-->
-        <!--            v-model="publicOnly"-->
-        <!--            :class="{ active: publicOnly }"-->
-        <!--            class="default-filter-switch"-->
-        <!--            name="check-button"-->
-        <!--            switch-->
-        <!--            @change="$store.dispatch('setPublicOnly', !publicOnly)"-->
-        <!--          >-->
-        <!--            {{ $t("Active deals only") }}-->
-        <!--          </b-form-checkbox>-->
-        <!--        </span>-->
+        <span
+          v-if="$store.getters.userInGroup(['Administrators', 'Editors'])"
+          style="font-size: 0.8em;"
+        >
+          <b-form-checkbox
+            v-model="publicOnly"
+            :class="{ active: publicOnly }"
+            class="default-filter-switch"
+            name="check-button"
+            switch
+            @change="$store.dispatch('setPublicOnly', !publicOnly)"
+          >
+            {{ $t("Public deals only") }}
+          </b-form-checkbox>
+        </span>
 
         <FilterCollapse
           :title="$t('Land Matrix region')"
@@ -610,7 +610,7 @@
           {
             type: this.$t("Minerals"),
             options: Object.entries(
-              this.dealFormfields.resources.choices
+              this.dealFormfields.mineral_resources.choices
             ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
           },
         ];

@@ -131,8 +131,8 @@ deal_fields = {
     "crops_comment": "Comment on crops",
     "animals": "Livestock area/yield/export",
     "animals_comment": "Comment on livestock",
-    "resources": "Resources area/yield/export",
-    "resources_comment": "Comment on resources",
+    "mineral_resources": "Mineral resources area/yield/export",
+    "mineral_resources_comment": "Comment on mineral resources",
     "contract_farming_crops": "Contract farming crops",
     "contract_farming_crops_comment": "Comment on contract farming crops",
     "contract_farming_animals": "Contract farming livestock",
@@ -269,7 +269,7 @@ class Choices:
                 self.choices[name] = dict(Crop.objects.values_list("code", "name"))
             if name == "animals":
                 self.choices[name] = dict(Animal.objects.values_list("code", "name"))
-            if name == "resources":
+            if name == "mineral_resources":
                 self.choices[name] = dict(Mineral.objects.values_list("code", "name"))
         return self.choices[name]
 
@@ -388,6 +388,7 @@ class DataDownload:
         self.user = request.user
         deal_id = self.request.GET.get("deal_id")
         filters = self.request.GET.get("filters")
+        self.subset = self.request.GET.get("subset", "PUBLIC")
         self.return_format = self.request.GET.get("format", "html")
 
         if deal_id:
@@ -396,7 +397,7 @@ class DataDownload:
             self._multiple_deals(filters)
 
     def _single_deal(self, deal_id):
-        qs = Deal.objects.filter(id=deal_id)
+        qs = Deal.objects.visible(self.user, self.subset).filter(id=deal_id)
         deal = qs[0]
         self.deals = [
             self.deal_download_format(qs_dict)
@@ -433,8 +434,7 @@ class DataDownload:
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filters):
-
-        qs = Deal.objects.visible(self.user, subset="ACTIVE").order_by("id")
+        qs = Deal.objects.visible(self.user, subset=self.subset).order_by("id")
         if filters:
             qs = qs.filter(parse_filters(json.loads(filters)))
 
@@ -855,7 +855,7 @@ class DataDownload:
             if data.get(country):
                 data[country] = mchoices.get("country")[data[country]]
 
-        for produce_type in ["crops", "animals", "resources"]:
+        for produce_type in ["crops", "animals", "mineral_resources"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
                     [

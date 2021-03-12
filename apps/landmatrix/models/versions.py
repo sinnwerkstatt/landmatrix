@@ -90,7 +90,7 @@ class Version(models.Model):
         fields = self.serialized_data[0]["fields"]
         fields["id"] = self.object_id
         for field in self.model._meta.fields:
-            if fields[field.name] is None:
+            if fields.get(field.name) is None:
                 continue
             if isinstance(field, (DateTimeField, DateField)):
                 content = fields[field.name]

@@ -257,7 +257,10 @@ def parse_local_communities(deal, attrs):
         "Free prior and informed consent": "FPIC",
         "Free, Prior and Informed Consent (FPIC)": "FPIC",
         "Certified Free, Prior and Informed Consent (FPIC)": "FPIC",
+        "Certificación de Consentimiento Libre, Previo e Informado (CLPI)": "FPIC",
+        "Consentimiento Libre, Previo e Informado (CLPI)": "FPIC",
         "Other": "OTHER",
+        "Otro": "OTHER",
     }
     deal.community_consultation = COMMUNITY_CONSULTATION_MAP[
         attrs.get("community_consultation")
@@ -268,9 +271,11 @@ def parse_local_communities(deal, attrs):
 
     COMMUNITY_REACTION_MAP = {
         "Consent": "CONSENT",
+        "Consentimiento  ": "CONSENT",
         "Mixed reaction": "MIXED_REACTION",
         "Reacción mixta": "MIXED_REACTION",
         "Rejection": "REJECTION",
+        "Rechazo": "REJECTION",
     }
     deal.community_reaction = (
         COMMUNITY_REACTION_MAP[attrs.get("community_reaction")]
@@ -304,6 +309,7 @@ def parse_local_communities(deal, attrs):
         "Degradación ambiental": "ENVIRONMENTAL_DEGRADATION",
         "Socio-economic": "SOCIO_ECONOMIC",
         "Cultural loss": "CULTURAL_LOSS",
+        "Pérdida cultural": "CULTURAL_LOSS",
         "Eviction": "EVICTION",
         "Displacement": "DISPLACEMENT",
         "Violence": "VIOLENCE",
@@ -320,14 +326,20 @@ def parse_local_communities(deal, attrs):
 
     BENEFITS_MAP = {
         "Health": "HEALTH",
+        "Salud": "HEALTH",
         "Education": "EDUCATION",
+        "Educación": "EDUCATION",
         "Productive infrastructure (e.g. irrigation, tractors, machinery...)": "PRODUCTIVE_INFRASTRUCTURE",
+        "Infraestructura productiva (ej. irrigación, tractores, maquinaria…)": "PRODUCTIVE_INFRASTRUCTURE",
         "Productive infrastructure": "PRODUCTIVE_INFRASTRUCTURE",
         "Roads": "ROADS",
         "Carreteras": "ROADS",
         "Capacity Building": "CAPACITY_BUILDING",
+        "Desarrollo de Capacidades": "CAPACITY_BUILDING",
         "Financial Support": "FINANCIAL_SUPPORT",
+        "Apoyo Económico": "FINANCIAL_SUPPORT",
         "Community shares in the investment project": "COMMUNITY_SHARES",
+        "Participaciones de la comunidad en el proyecto de inversión": "COMMUNITY_SHARES",
         "Other": "OTHER",
         "Otro": "OTHER",
     }
@@ -345,6 +357,7 @@ def parse_local_communities(deal, attrs):
 def parse_former_use(deal, attrs):
     FORMER_LAND_OWNER_MAP = {
         "State": "STATE",
+        "Estado": "STATE",
         "Private (smallholders)": "PRIVATE_SMALLHOLDERS",
         "Private (large-scale farm)": "PRIVATE_LARGE_SCALE",
         "Private (large-scale)": "PRIVATE_LARGE_SCALE",
@@ -355,16 +368,29 @@ def parse_former_use(deal, attrs):
     deal.former_land_owner = _extras_to_list(attrs, "land_owner", FORMER_LAND_OWNER_MAP)
     deal.former_land_owner_comment = attrs.get("tg_land_owner_comment") or ""
 
-    FORMER_LAND_USE_MAP = {v: k for k, v in Deal.FORMER_LAND_USE_CHOICES}
+    FORMER_LAND_USE_MAP = {
+        "Commercial (large-scale) agriculture": "COMMERCIAL_AGRICULTURE",
+        "Smallholder agriculture": "SMALLHOLDER_AGRICULTURE",
+        "Shifting cultivation": "SHIFTING_CULTIVATION",
+        "Pastoralism": "PASTORALISM",
+        "Pastoralismo": "PASTORALISM",
+        "Hunting/Gathering": "HUNTING_GATHERING",
+        "Forestry": "FORESTRY",
+        "Conservation": "CONSERVATION",
+        "Conservación": "CONSERVATION",
+        "Other": "OTHER",
+    }
     deal.former_land_use = _extras_to_list(attrs, "land_use", FORMER_LAND_USE_MAP)
     deal.former_land_use_comment = attrs.get("tg_land_use_comment") or ""
 
     FORMER_LAND_COVER_MAP = {
         "Cropland": "CROPLAND",
         "Forest land": "FOREST_LAND",
+        "Bosques": "FOREST_LAND",
         "Pasture": "PASTURE",
         "Shrub land/Grassland (Rangeland)": "RANGELAND",
         "Shrub land/Grassland": "RANGELAND",
+        "Matorrales/Praderas (Pastizales)": "RANGELAND",
         "Marginal land": "MARGINAL_LAND",
         "Wetland": "WETLAND",
         "Other land (e.g. developed land – specify in comment field)": "OTHER_LAND",
@@ -462,8 +488,8 @@ def parse_produce_info(deal, attrs):
     deal.crops_comment = attrs.get("tg_crops_comment") or ""
     deal.animals = _merge_area_yield_export(attrs, "animals", ANIMAL_MAP)
     deal.animals_comment = attrs.get("tg_animals_comment") or ""
-    deal.resources = _merge_area_yield_export(attrs, "minerals", MINERAL_MAP)
-    deal.resources_comment = attrs.get("tg_minerals_comment") or ""
+    deal.mineral_resources = _merge_area_yield_export(attrs, "minerals", MINERAL_MAP)
+    deal.mineral_resources_comment = attrs.get("tg_minerals_comment") or ""
 
     deal.contract_farming_crops = _extras_to_json(
         attrs,
@@ -567,7 +593,13 @@ def parse_produce_info(deal, attrs):
 
 
 def parse_water(deal, attrs):
-    WATER_SOURCE_MAP = {v: k for k, v in Deal.WATER_SOURCE_CHOICES}
+    WATER_SOURCE_MAP = {
+        "Groundwater": "GROUNDWATER",
+        "Aguas subterráneas": "GROUNDWATER",
+        "Surface water": "SURFACE_WATER",
+        "River": "RIVER",
+        "Lake": "LAKE",
+    }
 
     deal.water_extraction_envisaged = _to_nullbool(
         attrs.get("water_extraction_envisaged")

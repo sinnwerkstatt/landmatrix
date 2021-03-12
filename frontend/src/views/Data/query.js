@@ -43,8 +43,8 @@ export const data_deal_query = {
       filters: this.$store.getters.filtersForGQL,
       subset: this.$store.getters.userAuthenticated
         ? this.$store.state.filters.publicOnly
-          ? "ACTIVE"
-          : "UNFILTERED"
+          ? "PUBLIC"
+          : "ACTIVE"
         : "PUBLIC",
     };
   },
@@ -57,7 +57,7 @@ export const data_deal_produce_query = {
         id
         current_crops
         current_animals
-        current_resources
+        current_mineral_resources
       }
     }
   `,

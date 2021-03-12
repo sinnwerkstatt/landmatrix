@@ -56,7 +56,7 @@ class DealForm(VueForm):
                 "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Animal.objects.all()},
             },
-            "resources": {
+            "mineral_resources": {
                 "class": "JSONExportsField",
                 "choices": {c.code: c.name for c in Mineral.objects.all()},
             },

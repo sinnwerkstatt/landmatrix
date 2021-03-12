@@ -326,8 +326,8 @@ export const deal_gql_query = gql`
       crops_comment
       animals
       animals_comment
-      resources
-      resources_comment
+      mineral_resources
+      mineral_resources_comment
       contract_farming_crops
       contract_farming_crops_comment
       contract_farming_animals
