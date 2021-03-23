@@ -24,7 +24,7 @@
       <!--        </b>-->
       <!--      </div>-->
       <div v-if="investing_countries.length > 0">
-        <b>Countries investing in {{ country.name }}</b>
+        <b>{{ $t('Countries investing in {country}', { country: country.name }) }}</b>
         <table class="table-striped">
           <tbody>
             <tr v-for="icountry in investing_countries" :key="icountry.country_name">

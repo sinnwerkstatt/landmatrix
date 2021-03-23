@@ -44,3 +44,7 @@ _(
 _("Dynamics overview charts")
 _("Country profiles")
 _("News & publications")
+_("Livestock")
+_("Mineral resources")
+_("Crops")
+_('Countries investing in {country}')

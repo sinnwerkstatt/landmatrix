@@ -161,17 +161,17 @@
             name: "",
             children: [
               {
-                name: "Livestock",
+                name: this.$t("Livestock"),
                 color: "#7D4A0F",
                 children: this.produceData.animals,
               },
               {
-                name: "Mineral resources",
+                name: this.$t("Mineral resources"),
                 color: "black",
                 children: this.produceData.mineral_resources,
               },
               {
-                name: "Crops",
+                name: this.$t("Crops"),
                 color: "#FC941F",
                 children: this.produceData.crops,
               },
