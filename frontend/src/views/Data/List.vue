@@ -20,12 +20,12 @@
         <FilterCollapse title="Download" :init-expanded="true">
           <ul>
             <li>
-              <a :href="`/api/legacy_export/?filters=${filters}&format=xlsx`">
+              <a :href="download_link('xlsx')">
                 <i class="fas fa-file-download" /> XLSX
               </a>
             </li>
             <li>
-              <a :href="`/api/legacy_export/?filters=${filters}&format=csv`">
+              <a :href="download_link('csv')">
                 <i class="fas fa-file-download" /> CSV
               </a>
             </li>
@@ -52,15 +52,19 @@
       });
     },
     computed: {
-      filters() {
-        return JSON.stringify(this.$store.getters.filtersForGQL);
-      },
       targetModel() {
         if (this.$route.name === "list_investors") {
           return "investor";
         } else {
           return "deal";
         }
+      },
+    },
+    methods: {
+      download_link(format) {
+        let filters = JSON.stringify(this.$store.getters.filtersForGQL);
+        let subset = this.$store.state.filters.publicOnly ? "PUBLIC" : "ACTIVE";
+        return `/api/legacy_export/?filters=${filters}&subset=${subset}&format=${format}`;
       },
     },
   };

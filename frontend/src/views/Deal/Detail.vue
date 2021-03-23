@@ -219,8 +219,8 @@
         @click="updateRoute('#actions')"
       >
         <h4><i class="fa fa-download"></i> Download</h4>
-        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=xlsx`">XLSX</a><br />
-        <a :href="`/api/legacy_export/?deal_id=${deal.id}&format=csv`">CSV</a>
+        <a :href="download_link('xlsx')">XLSX</a><br />
+        <a :href="download_link('csv')">CSV</a>
       </b-tab>
     </b-tabs>
   </div>
@@ -366,6 +366,9 @@
             { name: title },
           ],
         });
+      },
+      download_link(format) {
+        return `/api/legacy_export/?deal_id=${this.deal.id}&subset=UNFILTERED&format=${format}`;
       },
     },
   };
