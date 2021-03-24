@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-03 11:31+0100\n"
+"POT-Creation-Date: 2021-03-24 17:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,54 +18,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/blog/abstract.py:24 apps/blog/models.py:28
 msgid "Blog index"
 msgstr ""
 
-#: apps/blog/abstract.py:29
 msgid "Category Name"
 msgstr ""
 
-#: apps/blog/abstract.py:37
 msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
 msgstr ""
 
-#: apps/blog/abstract.py:48 apps/blog/models.py:103
 msgid "Blog Category"
 msgstr ""
 
-#: apps/blog/abstract.py:49 apps/blog/models.py:104
 msgid "Blog Categories"
 msgstr ""
 
-#: apps/blog/abstract.py:78
 msgid "Category"
 msgstr ""
 
-#: apps/blog/abstract.py:116
 msgid "body"
 msgstr ""
 
-#: apps/blog/abstract.py:119
 msgid "Post date"
 msgstr ""
 
-#: apps/blog/abstract.py:122
 msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
 msgstr ""
 
-#: apps/blog/abstract.py:132
 msgid "Header image"
 msgstr ""
 
-#: apps/blog/abstract.py:139
 msgid "Author"
 msgstr ""
 
-#: apps/blog/abstract.py:179 apps/blog/models.py:150
 msgid "Blog page"
 msgstr ""
 
-#: apps/blog/abstract.py:180 apps/blog/models.py:151
 msgid "Blog pages"
 msgstr ""
