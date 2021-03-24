@@ -1,0 +1,20 @@
+{% extends 'admin/change_form.html' %}
+
+
+{% block admin_change_form_document_ready %}
+  {{ block.super }}
+  <script>
+    const target_c_box = document.getElementById("id_is_target_country");
+    const region_select = document.getElementById("id_fk_region");
+
+    document.getElementById('country_form').removeAttribute("novalidate");
+
+    function set_required_region() {
+      region_select.required=target_c_box.checked;
+      region_select.options[0].disabled=target_c_box.checked;
+    }
+
+    target_c_box.addEventListener("click", set_required_region);
+    set_required_region();
+  </script>
+{% endblock %}
