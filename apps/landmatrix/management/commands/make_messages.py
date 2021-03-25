@@ -2,4 +2,10 @@ from django.core.management.commands import makemessages
 
 
 class Command(makemessages.Command):
-    msgmerge_options = ["-q", "--previous", "--no-fuzzy-matching", "--no-wrap"]
+    msgmerge_options = [
+        "-q",
+        "--previous",
+        "--no-fuzzy-matching",
+        "--no-wrap",
+        "--no-location",
+    ]

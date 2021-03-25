@@ -5,7 +5,7 @@ from django_comments.models import Comment
 from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Deal, Country, Investor
+from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.models.versions import Revision
 from apps.utils import qs_values_to_dict
@@ -43,9 +43,15 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC
     if version:
         rev = Revision.objects.get(id=version)
         deal = rev.dealversion_set.get().fields
-        deal["locations"] = [v.fields for v in rev.locationversion_set.all()]
-        deal["datasources"] = [v.fields for v in rev.datasourceversion_set.all()]
-        deal["contracts"] = [v.fields for v in rev.contractversion_set.all()]
+        deal["locations"] = [
+            v.fields for v in rev.locationversion_set.all().order_by("id")
+        ]
+        deal["datasources"] = [
+            v.fields for v in rev.datasourceversion_set.all().order_by("id")
+        ]
+        deal["contracts"] = [
+            v.fields for v in rev.contractversion_set.all().order_by("id")
+        ]
     else:
         visible_deals = Deal.objects.visible(
             info.context["request"].user, subset

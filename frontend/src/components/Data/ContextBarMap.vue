@@ -162,15 +162,15 @@
         if (this.produceData) {
           return [
             {
-              label: "Crops",
+              label: this.$t("Crops"),
               color: "#FC941F",
             },
             {
-              label: "Livestock",
+              label: this.$t("Livestock"),
               color: "#7D4A0F",
             },
             {
-              label: "Mineral resources",
+              label: this.$t("Mineral resources"),
               color: "black",
             },
           ];

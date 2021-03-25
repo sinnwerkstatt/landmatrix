@@ -11,7 +11,11 @@ class CountryManager(models.Manager):
 
 class Country(models.Model):
     fk_region = models.ForeignKey(
-        "Region", verbose_name=_("Region"), on_delete=models.PROTECT
+        "Region",
+        verbose_name=_("Region"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
@@ -80,6 +84,7 @@ class Country(models.Model):
 
     class Meta:
         ordering = ("name",)
+        verbose_name_plural = "Countries"
 
     @property
     def short_description(self):

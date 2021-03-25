@@ -156,6 +156,8 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesSto
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024 * 1024
+
 LOCALE_PATHS = [BASE_DIR("config/locale")]
 
 CACHES = {

@@ -16,46 +16,43 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Blog index"
 msgstr ""
 
 msgid "Category Name"
-msgstr "Nom de la Catégorie"
+msgstr ""
 
 msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
-msgstr "Les catégories, contrairement aux libellés, peuvent avoir une hiérarchie. Vous pouvez avoir une catégorie Jazz, qui aura pour sous-catégorie Bebop et Big Band. Optionnel."
+msgstr ""
 
 msgid "Blog Category"
-msgstr "Catégorie du Blog"
+msgstr ""
 
 msgid "Blog Categories"
-msgstr "Catégories du Blog"
+msgstr ""
 
 msgid "Category"
-msgstr "Catégorie"
+msgstr ""
 
 msgid "body"
-msgstr "corps"
+msgstr ""
 
 msgid "Post date"
-msgstr "Date de publication"
+msgstr ""
 
 msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
-msgstr "Cette date peut être affichée dans l'article. Elle n'est pas utilisée pour planifier la publication de l'article."
+msgstr ""
 
 msgid "Header image"
-msgstr "Image d'en-tête"
+msgstr ""
 
 msgid "Author"
-msgstr "Auteur"
+msgstr ""
 
 msgid "Blog page"
-msgstr "page de blog"
+msgstr ""
 
 msgid "Blog pages"
-msgstr "Pages de blog"
-
-#~ msgid "Categories"
-#~ msgstr "Catégories"
+msgstr ""
