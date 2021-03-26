@@ -225,7 +225,7 @@
       </b-tab>
       <b-tab>
         <template #title>
-          <h5>{{ $t("Investor History") }}</h5>
+          <h5>{{ $t("Investor history") }}</h5>
         </template>
         <InvestorHistory
           :investor="investor"
