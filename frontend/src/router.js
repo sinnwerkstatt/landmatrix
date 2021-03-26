@@ -100,6 +100,12 @@ const router = new Router({
       props: true,
     },
     {
+      path: "/deal/manage/:dealId/:dealVersion?/",
+      name: "deal_manage",
+      component: DealDetail,
+      props: (route) => ({ manage: true, ...route.params }),
+    },
+    {
       path: "/deal/:dealId/:dealVersion?/",
       name: "deal_detail",
       component: DealDetail,

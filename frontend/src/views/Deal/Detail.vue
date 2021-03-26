@@ -1,6 +1,7 @@
 <template>
   <div v-if="deal" class="container deal-detail">
-    <div class="row">
+    <ManageHeader v-if="manage" :deal="deal" />
+    <div v-else class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal.id }}</h1>
       </div>
@@ -12,30 +13,7 @@
         >
           <i class="fas fa-edit"></i> {{ $t("Edit") }}
         </a>
-        <div class="meta-panel">
-          <DisplayField
-            :wrapper-classes="['inlinefield']"
-            :label-classes="['inlinelabel']"
-            :value-classes="['inlineval']"
-            fieldname="created_at"
-            :value="deal.created_at"
-          />
-          <DisplayField
-            :wrapper-classes="['inlinefield']"
-            :label-classes="['inlinelabel']"
-            :value-classes="['inlineval']"
-            fieldname="modified_at"
-            :value="deal.modified_at"
-          />
-          <DisplayField
-            :wrapper-classes="['inlinefield']"
-            :label-classes="['inlinelabel']"
-            :value-classes="['inlineval']"
-            fieldname="fully_updated_at"
-            :value="deal.fully_updated_at"
-            :visible="!!deal.fully_updated_at"
-          />
-        </div>
+        <DealDates :deal="deal" />
       </div>
     </div>
 
@@ -233,23 +211,25 @@
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import { deal_gql_query } from "store/queries";
 
-  import DealSection from "components/Deal/DealSection";
+  import DealComments from "components/Deal/DealComments";
+  import DealDates from "components/Deal/DealDates";
   import DealHistory from "components/Deal/DealHistory";
   import DealLocationsSection from "components/Deal/DealLocationsSection";
+  import DealSection from "components/Deal/DealSection";
   import DealSubmodelSection from "components/Deal/DealSubmodelSection";
   import InvestorGraph from "components/Investor/InvestorGraph";
-  import DealComments from "components/Deal/DealComments";
-  import DisplayField from "components/Fields/DisplayField";
+  import ManageHeader from "components/Deal/ManageHeader";
 
   export default {
     components: {
-      DisplayField,
       DealComments,
-      InvestorGraph,
+      DealDates,
       DealHistory,
-      DealSection,
       DealLocationsSection,
+      DealSection,
       DealSubmodelSection,
+      InvestorGraph,
+      ManageHeader,
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -263,11 +243,11 @@
     props: {
       dealId: { type: [Number, String], required: true },
       dealVersion: { type: [Number, String], default: null },
+      manage: { type: Boolean, default: false },
     },
     data() {
       return {
         deal: null,
-
         deal_sections,
         deal_submodel_sections,
         investor: { involvements: [] },

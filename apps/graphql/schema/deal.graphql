@@ -171,6 +171,7 @@ type Deal {
 
   #### Calculated fields
   is_public: Boolean
+  has_known_investor: Boolean
   not_public_reason: String
   current_contract_size: Float
   current_production_size: Float

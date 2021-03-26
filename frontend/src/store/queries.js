@@ -384,6 +384,8 @@ export const deal_gql_query = gql`
       confidential
       confidential_reason
       confidential_comment
+      is_public
+      has_known_investor
       locations {
         id
         name
