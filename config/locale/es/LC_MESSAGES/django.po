@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-24 17:53+0100\n"
+"POT-Creation-Date: 2021-03-26 18:16+0100\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2858,6 +2858,36 @@ msgstr "Excluido"
 msgid "Filter"
 msgstr "Filtro"
 
+msgid "Produce"
+msgstr "Producto"
+
+msgid "Not publicly visible"
+msgstr ""
+
+msgid "Not confidential"
+msgstr ""
+
+msgid "Confidential"
+msgstr ""
+
+msgid "Target country is set"
+msgstr ""
+
+msgid "Target country is NOT set"
+msgstr ""
+
+msgid "At least one data source"
+msgstr ""
+
+msgid "No data source"
+msgstr "No fuente de datos"
+
+msgid "At least one investor"
+msgstr ""
+
+msgid "No investor"
+msgstr ""
+
 msgid "Included"
 msgstr "Incluido"
 
@@ -3002,6 +3032,8 @@ msgstr "Su cuenta está ahora activada."
 msgid "Activate account at"
 msgstr "Activar cuenta en"
 
+#, fuzzy, python-format
+#| msgid "Link is valid for %(expiration_days)s days."
 msgid "Link is valid for %(expiration_days)s days."
 msgstr "El enlace es válido por %(expiration_days) días."
 

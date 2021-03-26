@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-24 17:53+0100\n"
+"POT-Creation-Date: 2021-03-26 18:16+0100\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2852,6 +2852,36 @@ msgstr "Exclues"
 
 msgid "Filter"
 msgstr "Filtre"
+
+msgid "Produce"
+msgstr ""
+
+msgid "Not publicly visible"
+msgstr ""
+
+msgid "Not confidential"
+msgstr ""
+
+msgid "Confidential"
+msgstr ""
+
+msgid "Target country is set"
+msgstr ""
+
+msgid "Target country is NOT set"
+msgstr ""
+
+msgid "At least one data source"
+msgstr ""
+
+msgid "No data source"
+msgstr ""
+
+msgid "At least one investor"
+msgstr ""
+
+msgid "No investor"
+msgstr ""
 
 msgid "Included"
 msgstr "Incluses"

@@ -138,5 +138,8 @@
         }
       ]
     ]
+  },
+  "devDependencies": {
+    "vue-i18n-extract": "^1.2.0"
   }
 }
