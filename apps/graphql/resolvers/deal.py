@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.utils import timezone
 from django.utils.html import linebreaks
 from django_comments.models import Comment
 from graphql import GraphQLResolveInfo, GraphQLError
@@ -7,7 +8,7 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion
-from apps.landmatrix.models.versions import Revision
+from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
 
 
@@ -147,3 +148,49 @@ def resolve_dealversions(
         qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
 
     return [dv.to_dict() for dv in qs]
+
+
+def resolve_change_deal_status(_, info, id, transition) -> int:
+    deal = Deal.objects.get(id=id)
+
+    status = Deal.STATUS_DRAFT
+    if transition == "TO_DRAFT":
+        draft_status = Deal.DRAFT_STATUS_DRAFT
+    elif transition == "TO_REVIEW":
+        draft_status = Deal.DRAFT_STATUS_REVIEW
+    elif transition == "TO_ACTIVATION":
+        draft_status = Deal.DRAFT_STATUS_ACTIVATION
+    elif transition == "ACTIVATE":
+        status = (
+            Deal.STATUS_LIVE
+            if deal.status == Deal.STATUS_DRAFT
+            else Deal.STATUS_UPDATED
+        )
+        draft_status = None
+    else:
+        raise GraphQLError(f"Invalid transition {transition}")
+
+    # Note: Assuming here, that we're always operating on the latest Version object if we're already live.
+    if deal.status != Deal.STATUS_DRAFT:
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
+        deal = (
+            DealVersion.objects.filter(object_id=deal.id)
+            .order_by("-id")[0]
+            .retrieve_object()
+        )
+
+    status_str = dict(Deal.STATUS_CHOICES).get(status, "")
+    draft_status_str = dict(Deal.DRAFT_STATUS_CHOICES).get(draft_status, "")
+    # TODO: assure neccessary rights concerning user and updating the deal
+    if (user := info.context["request"].user) and user.is_authenticated:
+        deal.draft_status = draft_status
+        deal.status = status
+        if not draft_status:
+            deal.save()
+        rev = deal.save_revision(
+            date_created=timezone.now(),
+            user=user,
+            comment=f"Changed Status: {status_str} {draft_status_str}",
+        )
+        return rev.id
+    return -1

@@ -60,7 +60,7 @@ user_regional_info_type.set_field("country", lambda obj, info: obj.country.all()
 user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
 
 
-def resolve_login(_, info, username, password):
+def resolve_login(_, info, username, password) -> dict:
     request = info.context["request"]
     user = auth.authenticate(request, username=username, password=password)
     if user:
@@ -69,7 +69,7 @@ def resolve_login(_, info, username, password):
     return {"status": False, "error": "Invalid username or password"}
 
 
-def resolve_logout(_, info: GraphQLResolveInfo):
+def resolve_logout(_, info: GraphQLResolveInfo) -> bool:
     request = info.context["request"]
     if request.user.is_authenticated:
         auth.logout(request)

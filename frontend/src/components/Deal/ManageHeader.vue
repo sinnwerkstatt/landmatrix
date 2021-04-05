@@ -6,18 +6,65 @@
           <h1>Deal #{{ deal.id }}</h1>
         </div>
         <div class="col-sm-7 col-md-9 panel-container">
-          <DealDates :deal="deal"></DealDates>
+          <DealDates :deal="deal" />
         </div>
       </div>
       <div class="row fat-stati">
-        <div class="col active">{{ $t("Draft") }}</div>
-        <div class="col">Submitted for review</div>
-        <div class="col">Submitted for activation</div>
-        <div class="col">Activated</div>
+        <div class="col" :class="{ active: deal.draft_status === 1 }">
+          {{ $t("Draft") }}
+        </div>
+        <div class="col" :class="{ active: deal.draft_status === 2 }">
+          {{ $t("Submitted for review") }}
+        </div>
+        <div class="col" :class="{ active: deal.draft_status === 3 }">
+          {{ $t("Submitted for activation") }}
+        </div>
+        <div class="col" :class="{ active: deal.draft_status === null }">
+          {{ $t("Activated") }}
+        </div>
       </div>
       <div class="row">
-        <a href="" class="btn btn-secondary">Request improvement</a>
-        <a href="" class="btn btn-primary">Submit for activation</a>
+        <div class="col text-right">
+          <a
+            v-if="deal.draft_status === 1"
+            class="btn btn-primary"
+            @click="change_deal_status('TO_REVIEW')"
+          >
+            {{ $t("Submit for review") }}
+          </a>
+          <a
+            v-if="deal.draft_status === 2"
+            class="btn btn-secondary"
+            @click="change_deal_status('TO_DRAFT')"
+          >
+            {{ $t("Request improvement") }}
+          </a>
+        </div>
+        <div class="col text-center">
+          <a
+            v-if="deal.draft_status === 2"
+            class="btn btn-primary"
+            @click="change_deal_status('TO_ACTIVATION')"
+          >
+            {{ $t("Submit for activation") }}
+          </a>
+          <a
+            v-if="deal.draft_status === 3"
+            class="btn btn-secondary"
+            @click="change_deal_status('TO_REVIEW')"
+          >
+            {{ $t("Request improvement") }}
+          </a>
+        </div>
+        <div class="col text-left">
+          <a
+            v-if="deal.draft_status === 3"
+            class="btn btn-primary"
+            @click="change_deal_status('ACTIVATE')"
+          >
+            {{ $t("Activate") }}
+          </a>
+        </div>
       </div>
       <div class="row d-flex align-items-center p-3">
         <div v-if="last_revision" class="col-8">
@@ -94,6 +141,7 @@
 </template>
 
 <script>
+  import gql from "graphql-tag";
   import DealDates from "./DealDates";
   export default {
     name: "ManageHeader",
@@ -113,6 +161,27 @@
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
           LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
         }[deal.confidential_reason];
+      },
+      change_deal_status(transition) {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation($id: Int!, $transition: WorkflowTransition) {
+                change_deal_status(id: $id, transition: $transition)
+              }
+            `,
+            variables: { id: this.deal.id, transition },
+          })
+          .then((data) => {
+            this.$router.push({
+              name: "deal_manage",
+              params: {
+                dealId: this.deal.id,
+                dealVersion: data.data.change_deal_status,
+              },
+            });
+          })
+          .catch((error) => console.error(error));
       },
     },
   };

@@ -23,6 +23,7 @@ from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
     resolve_dealversions,
+    resolve_change_deal_status,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
@@ -86,6 +87,7 @@ query.set_field("markers", resolve_markers)
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
+mutation.set_field("change_deal_status", resolve_change_deal_status)
 
 schema = make_executable_schema(
     type_defs,
