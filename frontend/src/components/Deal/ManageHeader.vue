@@ -20,8 +20,22 @@
         <a href="" class="btn btn-primary">Submit for activation</a>
       </div>
       <div class="row d-flex align-items-center p-3">
-        <div class="col-8">
-          Last changes by Kurt
+        <div v-if="last_revision" class="col-8">
+          Last changes by {{ last_revision.user.full_name }} on
+          {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm") }}<br />
+          <router-link
+            v-if="deal.versions.length > 1"
+            :to="{
+              name: 'deal_compare',
+              params: {
+                dealId: deal.id,
+                fromVersion: deal.versions[1].revision.id,
+                toVersion: deal.versions[0].revision.id,
+              },
+            }"
+          >
+            Show latest changes
+          </router-link>
         </div>
         <div class="col-4 visibility-container">
           <span v-if="deal.is_public">
@@ -86,6 +100,11 @@
     components: { DealDates },
     props: {
       deal: { type: Object, required: true },
+    },
+    computed: {
+      last_revision() {
+        return this.deal?.versions[0]?.revision ?? "";
+      },
     },
     methods: {
       get_confidential_reason(deal) {

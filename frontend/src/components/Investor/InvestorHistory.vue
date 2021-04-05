@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr v-for="(version, i) in investor.versions" :key="i">
-          <td>{{ version.revision.date_created | defaultdate }}</td>
+          <td>{{ version.revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}</td>
           <td v-if="$store.getters.userAuthenticated">
             {{ version.revision.user && version.revision.user.full_name }}
           </td>
