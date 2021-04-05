@@ -9,9 +9,13 @@
       nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
       nav-class="sticky-nav"
     >
-      <!--      <b-tab title="Location">-->
-      <!--        <map-editor />-->
-      <!--      </b-tab>-->
+      <b-tab
+        title="Locations"
+        :active="active_tab === '#locations'"
+        @click="updateRoute('#locations')"
+      >
+        <MapEditor :deal="deal" />
+      </b-tab>
       <DealEditSection
         :title="deal_sections.general_info.label"
         :deal="deal"

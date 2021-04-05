@@ -1,8 +1,9 @@
 <template>
   <div class="container">
-    <big-map
-      :container-style="{ 'max-height': '300px', height: '300px' }"
-      @ready="pinTheMap"
+    <BigMap
+      :center="[12, 30]"
+      :container-style="{ 'max-height': '600px', height: '600px' }"
+      @ready="mapIsReady"
     />
     <form enctype="multipart/form-data" novalidate>
       Upload GeoJSON file
@@ -12,25 +13,82 @@
 </template>
 
 <script>
-  import "leaflet-draw";
-  import { Draw } from "leaflet-draw";
+  import "@geoman-io/leaflet-geoman-free";
   import BigMap from "components/BigMap";
-  import { Control, FeatureGroup, GeoJSON } from "leaflet";
+  import { FeatureGroup, GeoJSON } from "leaflet";
 
+  export default {
+    components: { BigMap },
+    props: { deal: { type: Object, required: true } },
+    data() {
+      return {
+        bigmap: null,
+        editableFeatures: new FeatureGroup(),
+      };
+    },
+    methods: {
+      features_changed() {
+        this.deal.geojson = this.editableFeatures.toGeoJSON();
+      },
+      mapIsReady(map) {
+        this.bigmap = map;
+        map.addLayer(this.editableFeatures);
+        map.pm.setGlobalOptions({ layerGroup: this.editableFeatures });
+        map.pm.addControls({
+          position: "topleft",
+          drawCircle: false,
+          drawCircleMarker: false,
+          drawRectangle: false,
+          drawPolyline: false,
+          cutPolygon: false,
+        });
+
+        this.addGeoJson(this.deal.geojson);
+
+        map.on("pm:create", this.features_changed);
+        map.on("pm:remove", this.features_changed);
+        this.editableFeatures.on("pm:update", this.features_changed);
+        this.editableFeatures.on("pm:dragend", this.features_changed);
+        map.on("layeradd", this.features_changed);
+      },
+      addGeoJson(res_json) {
+        new GeoJSON(res_json, {
+          onEachFeature: (feature, layer) => {
+            addPropertiesPopup(layer, feature);
+            this.editableFeatures.addLayer(layer);
+          },
+        });
+        let bounds = this.editableFeatures.getBounds();
+        if (bounds.isValid()) {
+          this.bigmap.fitBounds(bounds.pad(1.5));
+        }
+      },
+      uploadFiles(event) {
+        for (let file of event.target.files) {
+          const reader = new FileReader();
+          reader.addEventListener("load", (event) => {
+            this.addGeoJson(JSON.parse(event.target.result));
+          });
+          reader.readAsText(file);
+        }
+        event.target.value = null;
+      },
+    },
+  };
   function addPropertiesPopup(layer, feature) {
+    let colormap = {
+      contract_area: "yellow",
+      intended_area: "orange",
+      production_area: "red",
+    };
+    if (feature.geometry.type === "Point") return;
     let select = document.createElement("select"),
       option0 = document.createElement("option"),
       option1 = document.createElement("option"),
       option2 = document.createElement("option");
 
     select.addEventListener("change", function () {
-      feature.properties.value = this.value;
-      console.log(feature);
-      let colormap = {
-        contract_area: "yellow",
-        intended_area: "orange",
-        production_area: "red",
-      };
+      feature.properties.type = this.value;
       layer.setStyle({ color: colormap[this.value] });
     });
     option0.value = "contract_area";
@@ -44,60 +102,9 @@
     select.appendChild(option2);
     select.value = feature.properties.type;
 
+    layer.setStyle({ color: colormap[select.value] });
     layer.bindPopup(select);
   }
-  export default {
-    components: {
-      BigMap,
-    },
-    data() {
-      return {
-        bigmap: null,
-        editableFeatures: new FeatureGroup(),
-      };
-    },
-    methods: {
-      pinTheMap(x) {
-        this.bigmap = x;
-        this.bigmap.addLayer(this.editableFeatures);
-
-        this.bigmap.addControl(
-          new Control.Draw({
-            draw: {
-              rectangle: false,
-              circle: false,
-              polyline: false,
-              circlemarker: false,
-            },
-            edit: {
-              featureGroup: this.editableFeatures,
-            },
-          })
-        );
-
-        this.bigmap.on(Draw.Event.CREATED, ({ layer }) =>
-          this.editableFeatures.addLayer(layer)
-        );
-      },
-      uploadFiles(event) {
-        for (let file of event.target.files) {
-          const reader = new FileReader();
-          reader.addEventListener("load", (event) => {
-            let res_json = JSON.parse(event.target.result);
-            new GeoJSON(res_json, {
-              onEachFeature: (feature, layer) => {
-                addPropertiesPopup(layer, feature);
-                this.editableFeatures.addLayer(layer);
-              },
-            });
-          });
-          reader.readAsText(file);
-        }
-        // TODO: Clear file selector afterwards.
-        // event.target.value=null;
-      },
-    },
-  };
 </script>
 
 <style lang="scss" scoped></style>

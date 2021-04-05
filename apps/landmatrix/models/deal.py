@@ -1204,6 +1204,14 @@ class Deal(models.Model, OldDealMixin):
                 for feat in feats:
                     feat["properties"]["name"] = loc.name
                     feat["properties"]["id"] = loc.id
+                    if (
+                        feat["geometry"]["type"] == "MultiPolygon"
+                        and len(feat["geometry"]["coordinates"]) == 1
+                    ):
+                        feat["geometry"]["type"] = "Polygon"
+                        feat["geometry"]["coordinates"] = feat["geometry"][
+                            "coordinates"
+                        ][0]
                     features += [feat]
         if not features:
             return None
