@@ -19,12 +19,15 @@
   </div>
 </template>
 <script>
+  import { markers_query } from "$store/queries";
+  import { styleCircle } from "$utils/map_helper";
+
+  import { DivIcon, FeatureGroup, Marker } from "leaflet";
   import { MarkerClusterGroup } from "leaflet.markercluster";
-  import { markers_query } from "../store/queries";
-  import { styleCircle } from "../utils/map_helper";
+
   import BigMap from "./BigMap";
   import LoadingPulse from "./Data/LoadingPulse";
-  import { DivIcon, FeatureGroup, Marker } from "leaflet";
+
   const ZOOM_LEVEL_COUNTRY = 4;
 
   export default {

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import EditField from "components/Fields/EditField";
+  import EditField from "$components/Fields/EditField";
 
   export default {
     components: { EditField },

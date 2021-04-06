@@ -1,6 +1,6 @@
 // this whole file is only a test at the moment.
-import { apolloClient } from "apolloclient";
-import { data_deal_query_gql } from "views/Data/query";
+import { apolloClient } from "$utils/apolloclient";
+import { data_deal_query_gql } from "$views/Data/query";
 
 export const dataModule = {
   state: () => ({

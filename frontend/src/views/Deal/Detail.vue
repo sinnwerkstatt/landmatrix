@@ -205,16 +205,17 @@
 </template>
 
 <script>
-  import DealComments from "components/Deal/DealComments";
-  import DealDates from "components/Deal/DealDates";
-  import DealHistory from "components/Deal/DealHistory";
-  import DealLocationsSection from "components/Deal/DealLocationsSection";
-  import DealSection from "components/Deal/DealSection";
-  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
-  import ManageHeader from "components/Deal/ManageHeader";
-  import InvestorGraph from "components/Investor/InvestorGraph";
+  import DealComments from "$components/Deal/DealComments";
+  import DealDates from "$components/Deal/DealDates";
+  import DealHistory from "$components/Deal/DealHistory";
+  import DealLocationsSection from "$components/Deal/DealLocationsSection";
+  import DealSection from "$components/Deal/DealSection";
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
+  import ManageHeader from "$components/Deal/ManageHeader";
+  import InvestorGraph from "$components/Investor/InvestorGraph";
+  import { deal_gql_query } from "$store/queries";
+
   import gql from "graphql-tag";
-  import { deal_gql_query } from "store/queries";
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";

@@ -23,8 +23,11 @@
 
 <script>
   import dayjs from "dayjs";
-  dayjs.extend(require("dayjs/plugin/utc"));
-  dayjs.extend(require("dayjs/plugin/timezone"));
+  import * as timezone from "dayjs/plugin/timezone";
+  import * as utc from "dayjs/plugin/utc";
+
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
 
   export default {
     props: {

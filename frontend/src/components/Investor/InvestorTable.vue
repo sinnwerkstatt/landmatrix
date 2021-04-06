@@ -48,8 +48,6 @@
 </template>
 
 <script>
-  const slugify = require("slugify");
-
   const STATUS_MAP = {
     1: "Draft",
     2: "Active",

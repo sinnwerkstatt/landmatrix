@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { arraysAreEqual } from "../utils";
+import { arraysAreEqual } from "$utils";
 
 const DEFAULT_FILTERS = {
   region_id: null,

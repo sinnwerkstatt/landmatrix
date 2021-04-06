@@ -24,7 +24,7 @@
       <!--        </b>-->
       <!--      </div>-->
       <div v-if="investing_countries.length > 0">
-        <b>{{ $t('Countries investing in {country}', { country: country.name }) }}</b>
+        <b>{{ $t("Countries investing in {country}", { country: country.name }) }}</b>
         <table class="table-striped">
           <tbody>
             <tr v-for="icountry in investing_countries" :key="icountry.country_name">
@@ -85,7 +85,7 @@
   import {
     country_investments_and_rankings_query,
     global_rankings_query,
-  } from "store/queries";
+  } from "$store/queries";
 
   export default {
     name: "ContextBarWebOfTransnationalDeals",

@@ -271,7 +271,7 @@
   </nav>
 </template>
 <script>
-  import { blogcategories_query } from "store/queries";
+  import { blogcategories_query } from "$store/queries";
 
   export default {
     data() {

@@ -16,13 +16,16 @@
 </template>
 
 <script>
-  import LoadingPulse from "components/Data/LoadingPulse";
-  import { data_deal_produce_query, data_deal_query } from "../query";
-  import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
+  import Legend from "$components/Charts/Legend";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+
   import { format } from "d3-format";
+  import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
   import { select, selectAll } from "d3-selection";
+
+  import { data_deal_produce_query, data_deal_query } from "../query";
+
   import ChartsContainer from "./ChartsContainer";
-  import Legend from "components/Charts/Legend";
 
   let count = 0;
 

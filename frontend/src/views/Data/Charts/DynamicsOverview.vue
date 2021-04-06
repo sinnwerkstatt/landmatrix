@@ -59,17 +59,17 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
-  import { data_deal_query } from "../query";
+  import StatusPieChart from "$components/Charts/StatusPieChart";
+  import DealDisplayToggle from "$components/Shared/DealDisplayToggle";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
-  } from "choices";
-  import { prepareNegotianStatusData, sum } from "utils/data_processing";
+  } from "$utils/choices";
+  import { prepareNegotianStatusData, sum } from "$utils/data_processing";
+  import { mapState } from "vuex";
+  import { data_deal_query } from "../query";
 
   import ChartsContainer from "./ChartsContainer";
-  import DealDisplayToggle from "components/Shared/DealDisplayToggle";
-  import StatusPieChart from "components/Charts/StatusPieChart";
 
   const NO_INTENTION = "No intention";
 

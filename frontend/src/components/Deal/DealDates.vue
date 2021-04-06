@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import DisplayField from "components/Fields/DisplayField";
+  import DisplayField from "$components/Fields/DisplayField";
   export default {
     name: "DealDates",
     components: { DisplayField },

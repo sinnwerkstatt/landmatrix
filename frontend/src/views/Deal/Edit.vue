@@ -141,10 +141,11 @@
 </template>
 
 <script>
-  import DealEditSection from "components/Deal/DealEditSection";
-  import DealSubmodelEditSection from "../../components/Deal/DealSubmodelEditSection";
-  import MapEditor from "../../components/MapEditor";
-  import { deal_gql_query } from "../../store/queries";
+  import DealEditSection from "$components/Deal/DealEditSection";
+  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
+  import MapEditor from "$components/MapEditor";
+  import { deal_gql_query } from "$store/queries";
+
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {

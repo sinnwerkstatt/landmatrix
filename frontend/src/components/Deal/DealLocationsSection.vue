@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import BigMap from "components/BigMap";
+  import BigMap from "$components/BigMap";
   import { LGeoJson } from "vue2-leaflet";
   import { GeoJSON, LatLngBounds } from "leaflet";
   import DealSubmodelSection from "./DealSubmodelSection";

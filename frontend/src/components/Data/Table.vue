@@ -85,13 +85,13 @@
 </template>
 
 <script>
-  import LoadingPulse from "components/Data/LoadingPulse";
-  import { mapState } from "vuex";
-  import DisplayField from "components/Fields/DisplayField";
-  import FieldLabel from "components/Fields/FieldLabel";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import DisplayField from "$components/Fields/DisplayField";
+  import FieldLabel from "$components/Fields/FieldLabel";
+  import { sortAnything } from "$utils";
+  import { data_deal_query } from "$views/Data/query";
   import gql from "graphql-tag";
-  import { data_deal_query } from "views/Data/query";
-  import { sortAnything } from "utils";
+  import { mapState } from "vuex";
 
   const DEAL_DEFAULT_QUERY_FIELDS = [
     "id",
@@ -500,6 +500,7 @@
           }
         }
       }
+
       tr {
         td {
           padding: 0.3em 0.3em;

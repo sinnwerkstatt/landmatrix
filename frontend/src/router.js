@@ -1,20 +1,33 @@
 import Vue from "vue";
 import Router from "vue-router";
-import store from "store";
-// const DataMap = () => import("./views/Data/GlobalMap");
-import DataMap from "./views/Data/GlobalMap";
-import DynamicsOverview from "views/Data/Charts/DynamicsOverview";
-import ProduceInfoTreeMap from "./views/Data/Charts/ProduceInfoTreeMap";
-import WebOfTransnationalDeals from "./views/Data/Charts/WebOfTransnationalDeals";
-import DataList from "./views/Data/List";
-import CaseStatistics from "views/Manager/CaseStatistics";
-import DealCompare from "./views/Deal/Compare";
-import DealDetail from "./views/Deal/Detail";
-import DealEdit from "./views/Deal/Edit";
-import InvestorDetail from "./views/Investor/Detail";
-import Dashboard from "./views/Manager/Dashboard";
-import NotFound from "./views/NotFound";
-import Wagtail from "./views/Wagtail/WagtailSwitch";
+import store from "./store";
+// const DataMap = () => import("$views/Data/GlobalMap");
+// const DynamicsOverview = () => import("$views/Data/Charts/DynamicsOverview");
+// const ProduceInfoTreeMap = () => import("$views/Data/Charts/ProduceInfoTreeMap");
+// const WebOfTransnationalDeals = () =>
+//   import("$views/Data/Charts/WebOfTransnationalDeals");
+// const DataList = () => import("$views/Data/List");
+// const CaseStatistics = () => import("$views/Manager/CaseStatistics");
+// const DealCompare = () => import("$views/Deal/Compare");
+// const DealDetail = () => import("$views/Deal/Detail");
+// const DealEdit = () => import("$views/Deal/Edit");
+// const InvestorDetail = () => import("$views/Investor/Detail");
+// const Dashboard = () => import("$views/Manager/Dashboard");
+// const NotFound = () => import("$views/NotFound");
+// const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
+import DataMap from "$views/Data/GlobalMap";
+import DynamicsOverview from "$views/Data/Charts/DynamicsOverview";
+import ProduceInfoTreeMap from "$views/Data/Charts/ProduceInfoTreeMap";
+import WebOfTransnationalDeals from "$views/Data/Charts/WebOfTransnationalDeals";
+import DataList from "$views/Data/List";
+import CaseStatistics from "$views/Manager/CaseStatistics";
+import DealCompare from "$views/Deal/Compare";
+import DealDetail from "$views/Deal/Detail";
+import DealEdit from "$views/Deal/Edit";
+import InvestorDetail from "$views/Investor/Detail";
+import Dashboard from "$views/Manager/Dashboard";
+import NotFound from "$views/NotFound";
+import Wagtail from "$views/Wagtail/WagtailSwitch";
 
 Vue.use(Router);
 
@@ -179,7 +192,7 @@ const router = new Router({
   //     // route level code-splitting
   //     // this generates a separate chunk (about.[hash].js) for this route
   //     // which is lazy-loaded when the route is visited.
-  //     // component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+  //     // component: () => import(/* webpackChunkName: "about" */ '$views/About.vue')
   //   // }
   // ]
 });

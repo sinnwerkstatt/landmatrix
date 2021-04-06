@@ -13,8 +13,8 @@
 </template>
 
 <script>
+  import BigMap from "$components/BigMap";
   import "@geoman-io/leaflet-geoman-free";
-  import BigMap from "components/BigMap";
   import { FeatureGroup, GeoJSON } from "leaflet";
 
   export default {
@@ -75,6 +75,7 @@
       },
     },
   };
+
   function addPropertiesPopup(layer, feature) {
     let colormap = {
       contract_area: "yellow",

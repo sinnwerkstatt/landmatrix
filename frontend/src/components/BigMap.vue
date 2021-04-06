@@ -40,9 +40,9 @@
 
   delete Icon.Default.prototype._getIconUrl;
   Icon.Default.mergeOptions({
-    iconRetinaUrl: require("static/images/marker-icon-2x.png"),
-    iconUrl: require("static/images/marker-icon.png"),
-    shadowUrl: require("static/images/marker-shadow.png"),
+    iconRetinaUrl: "/static/images/marker-icon-2x.png",
+    iconUrl: "/static/images/marker-icon.png",
+    shadowUrl: "/static/images/marker-shadow.png",
   });
 
   export default {

@@ -1,4 +1,4 @@
-import { negotiation_status_choices } from "../choices";
+import { negotiation_status_choices } from "$utils/choices";
 
 export const sum = function (items, prop) {
   return items.reduce(function (a, b) {

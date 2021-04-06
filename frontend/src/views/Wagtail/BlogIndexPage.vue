@@ -55,9 +55,9 @@
 </template>
 
 <script>
-  import LoadingPulse from "components/Data/LoadingPulse";
-  import PageTitle from "components/PageTitle";
-  import { blogcategories_query, blogpages_query } from "store/queries";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import PageTitle from "$components/PageTitle";
+  import { blogcategories_query, blogpages_query } from "$store/queries";
 
   export default {
     components: { LoadingPulse, PageTitle },

@@ -344,15 +344,14 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
-  import { investors_query } from "store/queries";
-  import FilterCollapse from "./FilterCollapse";
-
+  import { investors_query } from "$store/queries";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
-  } from "choices";
+  } from "$utils/choices";
+  import { mapState } from "vuex";
+  import FilterCollapse from "./FilterCollapse";
 
   export default {
     name: "FilterBar",
@@ -737,14 +736,18 @@
 
     .form-check {
       padding: 0;
+
       .custom-control.custom-checkbox {
         min-height: 0;
         padding-left: 1.3rem;
+
         label.custom-control-label {
           &:hover {
             cursor: pointer;
           }
+
           line-height: 1.2;
+
           &:before,
           &:after {
             top: 1px;
@@ -752,17 +755,20 @@
           }
         }
       }
+
       .custom-control-input:focus ~ .custom-control-label {
         &:before {
           border-color: #adb5bd;
         }
       }
+
       .custom-control-input:checked ~ .custom-control-label {
         &:before {
           background-color: rgba($lm_orange, 1);
           border-color: transparent;
         }
       }
+
       &:not(:first-child) {
         .custom-control.custom-checkbox {
           margin-top: 2px;

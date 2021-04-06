@@ -1,4 +1,4 @@
-import { flatten_choices } from "utils";
+import { flatten_choices } from "$utils";
 
 const myMixin = {
   props: {

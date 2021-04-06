@@ -91,8 +91,8 @@
 </template>
 
 <script>
-  import DealTable from "components/Deal/DealTable";
-  import InvestorTable from "components/Investor/InvestorTable";
+  import DealTable from "$components/Deal/DealTable";
+  import InvestorTable from "$components/Investor/InvestorTable";
   import DownloadJsonCSV from "vue-json-csv";
   import dayjs from "dayjs";
 

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import DisplayField from "components/Fields/DisplayField";
+  import DisplayField from "$components/Fields/DisplayField";
 
   export default {
     components: { DisplayField },

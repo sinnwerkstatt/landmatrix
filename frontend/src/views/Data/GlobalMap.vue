@@ -86,20 +86,19 @@
 </template>
 
 <script>
-  import { Marker, LayerGroup, FeatureGroup, Popup, DivIcon } from "leaflet";
+  import BigMap from "$components/BigMap";
+  import FilterCollapse from "$components/Data/FilterCollapse";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import MapMarkerPopup from "$components/Map/MapMarkerPopup";
+  import { styleCircle } from "$utils/map_helper";
+
+  import { DivIcon, FeatureGroup, LayerGroup, Marker, Popup } from "leaflet";
   import { MarkerClusterGroup } from "leaflet.markercluster/src";
-
   import { groupBy } from "lodash";
-  import { mapState } from "vuex";
   import Vue from "vue";
+  import { mapState } from "vuex";
 
-  import MapMarkerPopup from "components/Map/MapMarkerPopup";
-  import { styleCircle } from "utils/map_helper";
   import DataContainer from "./DataContainer";
-  import BigMap from "components/BigMap";
-  import FilterCollapse from "components/Data/FilterCollapse";
-  import LoadingPulse from "components/Data/LoadingPulse";
-
   import { data_deal_query } from "./query";
 
   const ZOOM_LEVEL = {

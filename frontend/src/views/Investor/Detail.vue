@@ -238,13 +238,13 @@
 </template>
 
 <script>
-  import store from "store";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import DisplayField from "$components/Fields/DisplayField";
+  import InvestorGraph from "$components/Investor/InvestorGraph";
+  import InvestorHistory from "$components/Investor/InvestorHistory";
+  import store from "$store";
+  import { investor_query } from "$store/queries";
   import { mapState } from "vuex";
-  import InvestorGraph from "components/Investor/InvestorGraph";
-  import DisplayField from "components/Fields/DisplayField";
-  import LoadingPulse from "components/Data/LoadingPulse";
-  import InvestorHistory from "components/Investor/InvestorHistory";
-  import { investor_query } from "store/queries";
 
   export default {
     name: "InvestorDetail",

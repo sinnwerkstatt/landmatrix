@@ -14,12 +14,18 @@ module.exports = {
   output: {
     filename: "[name].js",
     path: path.resolve("./dist/"),
-    publicPath: "",
+    publicPath: "/static/",
     chunkFilename: "[id]-[chunkhash].js", // DO have Webpack hash chunk filename, see below
   },
   resolve: {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
     extensions: [".js", ".vue"],
+    alias: {
+      $components: path.resolve(__dirname, "src/components/"),
+      $views: path.resolve("src/views"),
+      $store: path.resolve("src/store"),
+      $utils: path.resolve("src/utils"),
+    },
   },
   module: {
     rules: [
@@ -34,11 +40,6 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-
-        use: "babel-loader",
-      },
-      {
-        test: /\.js$/,
         use: {
           loader: "babel-loader",
           options: {
