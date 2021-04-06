@@ -74,7 +74,7 @@
           <td></td>
           <td></td>
           <td></td>
-          <td>
+          <td v-if="compare_from && compare_to">
             <router-link
               :to="{
                 name: 'deal_compare',
