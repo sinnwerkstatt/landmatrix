@@ -122,8 +122,7 @@ class DataSource(models.Model, OldDataSourceMixin):
         _("Includes in-country-verified information")
     )
     open_land_contracts_id = models.CharField(
-        _("Open Contracting ID"),
-        max_length=500, blank=True
+        _("Open Contracting ID"), max_length=500, blank=True
     )
     comment = models.TextField(_("Comment on data source"), blank=True)
 
