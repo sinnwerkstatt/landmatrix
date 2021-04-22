@@ -45,6 +45,7 @@
   import PointField from "./Display/PointField";
   import TextField from "./Display/TextField";
   import URLField from "./Display/TextField";
+  import OCIDField from "./Display/OCIDField";
   import FieldLabel from "./FieldLabel";
 
   export default {
@@ -77,6 +78,7 @@
       PointField,
       TextField,
       URLField,
+      OCIDField,
     },
     props: {
       fieldname: { type: String, required: true },
