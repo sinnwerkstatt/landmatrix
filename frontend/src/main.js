@@ -21,7 +21,7 @@ import "bootstrap";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import "leaflet/dist/leaflet.css";
-import "leaflet-draw/dist/leaflet.draw.css";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
@@ -100,8 +100,8 @@ Vue.component("wagtail-latest_news", LatestNews);
 Vue.component("wagtail-latest_database_modifications", LatestDatabaseModifications);
 Vue.component("wagtail-statistics", Statistics);
 
-Vue.filter("defaultdate", function (value) {
-  return dayjs(value).format("YYYY-MM-DD HH:mm");
+Vue.filter("dayjs", function (value, date_format) {
+  return dayjs(value).format(date_format);
 });
 
 const i18n = new VueI18n({

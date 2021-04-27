@@ -21,4 +21,5 @@ class DataSourceForm(VueForm):
         "file_not_public": {"hidden_in_detail_view": True},
         "url": {"type": "url"},
         "company": {"label": _("Organisation")},
+        "open_land_contracts_id": {"class": "OCIDField"},
     }

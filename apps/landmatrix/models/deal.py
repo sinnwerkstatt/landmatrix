@@ -915,6 +915,7 @@ class Deal(models.Model, OldDealMixin):
 
     """ # CALCULATED FIELDS # """
     is_public = models.BooleanField(default=False)
+    has_known_investor = models.BooleanField(default=False)
     NOT_PUBLIC_REASON_CHOICES = (
         ("CONFIDENTIAL", "Confidential flag"),
         ("NO_COUNTRY", "No country"),
@@ -1049,6 +1050,7 @@ class Deal(models.Model, OldDealMixin):
             # With the help of signals these fields are recalculated on changes to:
             # Location, Contract, DataSource
             # as well as Investor and InvestorVentureInvolvement
+            self.has_known_investor = not self._has_no_known_investor()
             self.not_public_reason = self._calculate_public_state()
             self.is_public = self.not_public_reason == ""
             # this might error because it's m2m and we need the
@@ -1202,6 +1204,14 @@ class Deal(models.Model, OldDealMixin):
                 for feat in feats:
                     feat["properties"]["name"] = loc.name
                     feat["properties"]["id"] = loc.id
+                    if (
+                        feat["geometry"]["type"] == "MultiPolygon"
+                        and len(feat["geometry"]["coordinates"]) == 1
+                    ):
+                        feat["geometry"]["type"] = "Polygon"
+                        feat["geometry"]["coordinates"] = feat["geometry"][
+                            "coordinates"
+                        ][0]
                     features += [feat]
         if not features:
             return None
@@ -1244,7 +1254,7 @@ class Deal(models.Model, OldDealMixin):
         if not self.operating_company_id:
             # 3. No operating company
             return "NO_OPERATING_COMPANY"
-        if self._has_no_known_investor():
+        if not self.has_known_investor:
             # 4. Unknown operating company AND no known operating company parents
             return "NO_KNOWN_INVESTOR"
         return ""

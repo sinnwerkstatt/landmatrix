@@ -16,13 +16,15 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--rewrite-deals", action="store_true")
         parser.add_argument("--ignore-history", action="store_true")
+        parser.add_argument("deal_ids", nargs="*", type=int)
 
     def handle(self, *args, **options):
-        deal_ids = (
-            HistoricalActivity.objects.values_list("activity_identifier", flat=True)
-            # .filter(activity_identifier=2)
-            .distinct().order_by("activity_identifier")
+        deal_ids = HistoricalActivity.objects.values_list(
+            "activity_identifier", flat=True
         )
+        if options["deal_ids"]:
+            deal_ids = deal_ids.filter(activity_identifier__in=options["deal_ids"])
+        deal_ids = deal_ids.distinct().order_by("activity_identifier")
         if options["ignore_history"]:
             print(
                 "\n\n\nATTENTION. We're just syncing the last version of each Deal now!!!\n\n\n"
