@@ -19,6 +19,7 @@
             :model="model"
             :label-classes="labelClasses"
             :value-classes="valueClasses"
+            :file-not-public="entry.file_not_public"
           />
         </div>
       </div>
