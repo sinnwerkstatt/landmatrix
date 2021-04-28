@@ -10,11 +10,15 @@
       nav-class="sticky-nav"
     >
       <b-tab
-        title="Locations"
+        :title="$t('Locations')"
         :active="active_tab === '#locations'"
         @click="updateRoute('#locations')"
       >
-        <MapEditor :deal="deal" />
+        <MapEditor
+          :deal="deal"
+          :sections="deal_sections.general_info.subsections"
+          :fields="deal_submodel_sections.location"
+        />
       </b-tab>
       <DealEditSection
         :title="deal_sections.general_info.label"
@@ -192,6 +196,17 @@
     methods: {
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      },
+      addLocation() {
+        // this.deal.contracts.push(
+        //   new Object({
+        //     number: "",
+        //     date: null,
+        //     expiration_date: null,
+        //     agreement_duration: null,
+        //     comment: "",
+        //   })
+        // );
       },
       addContract() {
         this.deal.contracts.push(

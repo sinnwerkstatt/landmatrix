@@ -27,6 +27,7 @@ export default defineConfig({
       "/wagtailapi": "http://localhost:8000",
       "/media": "http://localhost:8000",
       "/static": "http://localhost:8000",
+      "/legacy": "http://localhost:8000",
     },
   },
 });

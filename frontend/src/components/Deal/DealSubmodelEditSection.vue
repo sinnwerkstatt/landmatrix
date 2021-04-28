@@ -56,11 +56,8 @@
       },
     },
     computed: {
-      hasDefaultSlot() {
-        return !!this.$slots.default;
-      },
       wrapperClasses() {
-        if (this.hasDefaultSlot) return ["col-md-12", "col-lg-7", "col-xl-6"];
+        if (!!this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
         else return ["col-12"];
       },
     },
