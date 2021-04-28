@@ -16,6 +16,12 @@ from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
+class RichTextBlock(blocks.RichTextBlock):
+    def get_api_representation(self, value, context=None):
+        prep_val = self.get_prep_value(value)
+        return expand_db_html(prep_val)
+
+
 class ExternalLinkMixin:
     def _is_external_link(self, url):
         current_site = Site.objects.get_current()
@@ -69,7 +75,7 @@ class AnchorBlock(StructBlock):
 class FAQBlock(StructBlock):
     slug = blocks.CharBlock()
     question = blocks.CharBlock()
-    answer = blocks.RichTextBlock()
+    answer = RichTextBlock()
 
 
 class FAQsBlock(StructBlock):
@@ -180,7 +186,7 @@ class SectionDivider(StructBlock):
 class LinkedImageBlock(ExternalLinkMixin, StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label="URL")
-    caption = blocks.RichTextBlock(required=False)
+    caption = RichTextBlock(required=False)
 
     class Meta:
         icon = "image"
@@ -305,12 +311,6 @@ class TitleWithIconBlock(StructBlock):
         icon = "title"
         label = "Title with Icon"
         template = "widgets/title.html"
-
-
-class RichTextBlock(blocks.RichTextBlock):
-    def get_api_representation(self, value, context=None):
-        prep_val = self.get_prep_value(value)
-        return expand_db_html(prep_val)
 
 
 CONTENT_BLOCKS = [

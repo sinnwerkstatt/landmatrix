@@ -48,6 +48,7 @@
   import EmailField from "./Edit/TextField";
   import TextField from "./Edit/TextField";
   import URLField from "./Edit/TextField";
+  import OCIDField from "./Edit/TextField";
 
   import ManyToManyField from "./Display/ManyToManyField";
   import LengthField from "./Display/LengthField";
@@ -85,6 +86,7 @@
       PointField,
       TextField,
       URLField,
+      OCIDField,
     },
     props: {
       fieldname: { type: String, required: true },

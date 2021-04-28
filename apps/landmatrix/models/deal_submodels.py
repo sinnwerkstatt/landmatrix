@@ -121,7 +121,9 @@ class DataSource(models.Model, OldDataSourceMixin):
     includes_in_country_verified_information = models.NullBooleanField(
         _("Includes in-country-verified information")
     )
-    open_land_contracts_id = models.CharField(max_length=500, blank=True)
+    open_land_contracts_id = models.CharField(
+        _("Open Contracting ID"), max_length=500, blank=True
+    )
     comment = models.TextField(_("Comment on data source"), blank=True)
 
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="datasources")
