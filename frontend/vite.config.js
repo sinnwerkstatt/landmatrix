@@ -12,8 +12,21 @@ export default defineConfig({
       $components: resolve("src/components"),
       $views: resolve("src/views"),
       $store: resolve("src/store"),
-      static: resolve("src/static"),
       $utils: resolve("src/utils"),
+      $static: resolve("src/static"),
+    },
+  },
+  build: {
+    target: "es2015",
+    assetsDir: "static/assets",
+  },
+  server: {
+    proxy: {
+      "/api": "http://localhost:8000",
+      "/graphql": "http://localhost:8000",
+      "/wagtailapi": "http://localhost:8000",
+      "/media": "http://localhost:8000",
+      "/static": "http://localhost:8000",
     },
   },
 });

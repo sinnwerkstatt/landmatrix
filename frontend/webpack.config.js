@@ -25,6 +25,7 @@ module.exports = {
       $views: path.resolve("src/views"),
       $store: path.resolve("src/store"),
       $utils: path.resolve("src/utils"),
+      $static: path.resolve("src/static"),
     },
   },
   module: {
