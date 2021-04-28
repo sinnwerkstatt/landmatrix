@@ -75,6 +75,7 @@ def parse_general(deal, attrs):
         None: None,
         "Outright Purchase": "OUTRIGHT_PURCHASE",
         "Compra Directa": "OUTRIGHT_PURCHASE",
+        "Compra directa": "OUTRIGHT_PURCHASE",
         "Lease": "LEASE",
         "Arrendamiento": "LEASE",
         "Concession": "CONCESSION",
@@ -376,6 +377,7 @@ def parse_former_use(deal, attrs):
         "Pastoralismo": "PASTORALISM",
         "Hunting/Gathering": "HUNTING_GATHERING",
         "Forestry": "FORESTRY",
+        "Silvicultura": "FORESTRY",
         "Conservation": "CONSERVATION",
         "Conservación": "CONSERVATION",
         "Other": "OTHER",
@@ -676,6 +678,7 @@ def parse_remaining(deal, attrs):
         None: None,
         "Temporary removal from PI after criticism": "TEMPORARY_REMOVAL",
         "Research in progress": "RESEARCH_IN_PROGRESS",
+        "Investigación en marcha": "RESEARCH_IN_PROGRESS",
         "Land Observatory Import": "LAND_OBSERVATORY_IMPORT",
     }
     deal.confidential_reason = CONFIDENTIAL_REASON_MAP[attrs.get("not_public_reason")]
