@@ -55,6 +55,7 @@
   import PointField from "./Display/PointField";
 
   import FieldLabel from "./FieldLabel";
+  import LocationGoogleField from "./Edit/LocationGoogleField";
 
   export default {
     name: "EditField",
@@ -71,6 +72,7 @@
       FileField,
       FloatField,
       ForeignKey,
+      LocationGoogleField,
       ManyToManyField,
       LengthField,
       IntegerField,

@@ -1,9 +1,8 @@
 <template>
   <div class="container">
     <div class="locationlist">
-      <div @click="activeLocation = null">View all locations</div>
       <div v-for="(loc, index) in deal.locations" :key="index" class="panel-body">
-        <h3 @click="activeLocation = loc">
+        <h3 @click="activeLocation = activeLocation !== loc ? loc : null">
           {{ $t("Location") }} <small>#{{ index + 1 }}</small>
           <button
             type="button"
@@ -47,8 +46,8 @@
 
 <script>
   import BigMap from "$components/BigMap";
-  import "@geoman-io/leaflet-geoman-free";
   import EditField from "$components/Fields/EditField";
+  import "@geoman-io/leaflet-geoman-free";
   import { FeatureGroup, GeoJSON } from "leaflet";
 
   export default {
@@ -65,8 +64,8 @@
       };
     },
     computed: {
-      locations() {
-        return this.deal.locations;
+      locationGoogleAutocomplete() {
+        return this.$store.state.map.locationGoogleAutocomplete;
       },
     },
     watch: {
@@ -82,12 +81,33 @@
             relevant_element.classList.remove("leaflet-hidden");
           }
         });
-        console.log("loccik");
+        // map.pm.controls
+        //  control-icon leaflet-pm-icon-marker
+      },
+      locationGoogleAutocomplete() {
+        let lGA = this.locationGoogleAutocomplete;
+        this.editableFeatures.eachLayer((l) => {
+          if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
+            l.setLatLng(lGA.latLng);
+
+            if (!this.bigmap.getBounds().contains(lGA.latLng)) {
+              if (lGA.viewport) {
+                let vp_json = lGA.viewport.toJSON();
+                this.bigmap.fitBounds([
+                  [vp_json.south, vp_json.west],
+                  [vp_json.north, vp_json.east],
+                ]);
+              } else {
+                this.bigmap.setView(lGA.latLng);
+              }
+            }
+          }
+        });
+        console.log(lGA);
       },
     },
     methods: {
       features_changed() {
-        console.log(this.deal.geojson.features);
         this.deal.geojson = this.editableFeatures.toGeoJSON();
       },
       mapIsReady(map) {
@@ -104,16 +124,12 @@
         });
 
         this.addGeoJson(this.deal.geojson);
-        this.activeLocation = this.locations[0];
+
         map.on("pm:create", ({ layer, shape }) => {
-          // const id = getUID();
           const leafId = layer._leaflet_id;
           const featureGroup = new FeatureGroup().addLayer(layer);
           this.editableFeatures.eachLayer((lay) => {
-            if (lay._leaflet_id === leafId) {
-              console.log("LAY", lay);
-              this.editableFeatures.removeLayer(lay);
-            }
+            if (lay._leaflet_id === leafId) this.editableFeatures.removeLayer(lay);
           });
           const data = featureGroup.toGeoJSON();
           data.features[0].properties = {
@@ -132,12 +148,21 @@
       addGeoJson(res_json) {
         new GeoJSON(res_json, {
           onEachFeature: (feature, layer) => {
-            this.addPropertiesPopup(layer, feature);
+            if (feature.geometry.type === "Point") {
+              layer.addEventListener("click", () => {
+                let loc = this.deal.locations.filter(
+                  (l) => l.id === feature.properties.id
+                )[0];
+                this.activeLocation = this.activeLocation !== loc ? loc : null;
+              });
+            } else {
+              this.addPropertiesPopup(layer, feature);
+            }
             this.editableFeatures.addLayer(layer);
           },
         });
-        let bounds = this.editableFeatures.getBounds();
 
+        let bounds = this.editableFeatures.getBounds();
         if (bounds.isValid()) this.bigmap.fitBounds(bounds.pad(1.5));
       },
       uploadFiles(event) {
@@ -151,8 +176,6 @@
         event.target.value = null;
       },
       addPropertiesPopup(layer, feature) {
-        if (feature.geometry.type === "Point") return;
-
         let colormap = {
           contract_area: "yellow",
           intended_area: "orange",
@@ -202,11 +225,12 @@
 </style>
 
 <style>
-  .leaflet-hidden {
+  svg.leaflet-hidden {
     display: none;
-    /*opacity: 0.1;*/
+    /*opacity: 0.15;*/
   }
-  .leaflet-shadow-pane {
-    display: none;
+  img.leaflet-hidden {
+    /*display: none;*/
+    opacity: 0.15;
   }
 </style>

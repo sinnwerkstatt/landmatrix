@@ -42,7 +42,8 @@
   import iconRetinaUrl from "$static/images/marker-icon-2x.png";
   import iconUrl from "$static/images/marker-icon.png";
   import shadowUrl from "$static/images/marker-shadow.png";
-  Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+  let shadowSize = [0, 0];
+  Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
 
   export default {
     name: "BigMap",

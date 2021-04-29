@@ -7,6 +7,7 @@ export const mapModule = {
     showFilterBar: true,
     showContextBar: true,
     displayDealsCount: true,
+    locationGoogleAutocomplete: null,
     visibleLayer: "Map",
     layers: [
       {
@@ -188,6 +189,9 @@ export const mapModule = {
     setDisplayDealsCount(state, payload) {
       state.displayDealsCount = payload;
     },
+    setLocationGoogleAutocomplete(state, payload) {
+      state.locationGoogleAutocomplete = payload;
+    },
   },
   actions: {
     setCurrentLayer(context, layer) {
@@ -198,6 +202,9 @@ export const mapModule = {
     },
     showContextBar(context, payload) {
       context.commit("showContextBar", payload);
+    },
+    locationGoogleAutocomplete(context, payload) {
+      context.commit("setLocationGoogleAutocomplete", payload);
     },
   },
 };
