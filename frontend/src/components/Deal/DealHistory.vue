@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>{{ $t("Deal History") }}</h3>
+    <h3>{{ $t("Deal history") }}</h3>
     <table class="table table-condensed">
       <thead>
         <tr>

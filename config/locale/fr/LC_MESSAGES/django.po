@@ -1814,7 +1814,7 @@ msgstr "Par région de l'investisseur"
 msgid "By Investor Country"
 msgstr "Par pays investisseur"
 
-msgid "By Data Source"
+msgid "By data dource"
 msgstr "Par source des données"
 
 msgid "By Intention"
@@ -2838,7 +2838,7 @@ msgstr "Pays de domiciliation"
 msgid "Current statistics"
 msgstr "Statistiques actuelles"
 
-msgid "Deal History"
+msgid "Deal history"
 msgstr "Historique de la transaction"
 
 msgid "Default filter"

@@ -104,8 +104,8 @@
       </DealSection>
 
       <DealSubmodelSection
-        title="Data Sources"
-        model-name="Data Source"
+        title="Data sources"
+        model-name="Data source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         model="datasource"
@@ -176,7 +176,7 @@
       </b-tab>
 
       <b-tab
-        :title="$t('Deal History')"
+        :title="$t('Deal history')"
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >

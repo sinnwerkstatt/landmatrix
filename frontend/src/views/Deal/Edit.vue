@@ -75,8 +75,8 @@
       </DealEditSection>
 
       <DealSubmodelEditSection
-        title="Data Sources"
-        model-name="Data Source"
+        title="Data sources"
+        model-name="Data source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         model="datasource"

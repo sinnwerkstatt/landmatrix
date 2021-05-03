@@ -1819,7 +1819,7 @@ msgstr "Por Región Inversora"
 msgid "By Investor Country"
 msgstr "Por País Inversor"
 
-msgid "By Data Source"
+msgid "By data source"
 msgstr "Por Fuente de Datos"
 
 msgid "By Intention"
@@ -2843,7 +2843,7 @@ msgstr "País de registro"
 msgid "Current statistics"
 msgstr "Estadísticas actuales"
 
-msgid "Deal History"
+msgid "Deal history"
 msgstr "Historial de transacción"
 
 msgid "Default filter"
