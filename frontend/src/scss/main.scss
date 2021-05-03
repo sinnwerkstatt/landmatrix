@@ -19,6 +19,9 @@ $fa-font-path: "/static/assets";
 @import "loadingscreen";
 @import "wagtail";
 
+:root {
+  --color-lm-orange: $lm_orange;
+}
 body {
   font-family: "Open Sans", Arial, sans-serif;
 }

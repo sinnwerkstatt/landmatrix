@@ -23,7 +23,7 @@
           {{ $t("Activated") }}
         </div>
       </div>
-      <div class="row">
+      <div class="row workflow-buttons">
         <div class="col text-right">
           <a
             v-if="deal.draft_status === 1"
@@ -33,7 +33,7 @@
             {{ $t("Submit for review") }}
           </a>
           <a
-            v-if="deal.draft_status === 2"
+            v-if="deal.draft_status === 2 || deal.draft_status === 3"
             class="btn btn-secondary"
             @click="change_deal_status('TO_DRAFT')"
           >
@@ -47,13 +47,6 @@
             @click="change_deal_status('TO_ACTIVATION')"
           >
             {{ $t("Submit for activation") }}
-          </a>
-          <a
-            v-if="deal.draft_status === 3"
-            class="btn btn-secondary"
-            @click="change_deal_status('TO_REVIEW')"
-          >
-            {{ $t("Request improvement") }}
           </a>
         </div>
         <div class="col text-left">
@@ -133,6 +126,12 @@
           </ul>
         </div>
       </div>
+      <div class="row edit-button">
+        <div class="col" style="margin-bottom: -1rem;">
+          <a href="" class="btn btn-primary btn-lg">Edit</a>
+          <a href="" class="btn btn-danger btn-sm">Delete</a>
+        </div>
+      </div>
     </div>
     <div class="col-md-2 comments">
       Comments
@@ -193,6 +192,7 @@
   }
   .manage-interface {
     background: #e5e5e5;
+    margin-bottom: 2rem;
   }
   .fat-stati > .col {
     margin: 0.5rem;

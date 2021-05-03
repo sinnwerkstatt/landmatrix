@@ -23,11 +23,15 @@
 
 <script>
   import dayjs from "dayjs";
-  import * as timezone from "dayjs/plugin/timezone";
-  import * as utc from "dayjs/plugin/utc";
 
-  dayjs.extend(utc);
-  dayjs.extend(timezone);
+  // NOTE this does not build at the moment with vite/rollup. some stupid bug.
+  // let utc = require("dayjs/plugin/utc"); // dependent on utc plugin
+  // let timezone = require("dayjs/plugin/timezone");
+  // import * as timezone from "dayjs/plugin/timezone";
+  // import * as utc from "dayjs/plugin/utc";
+  //
+  // dayjs.extend(utc);
+  // dayjs.extend(timezone);
 
   export default {
     props: {

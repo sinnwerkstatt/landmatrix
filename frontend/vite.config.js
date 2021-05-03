@@ -18,7 +18,13 @@ export default defineConfig({
   },
   build: {
     target: "es2015",
-    assetsDir: "static/assets",
+    rollupOptions: {
+      output: {
+        entryFileNames: `[name].js`,
+        chunkFileNames: `[name].js`,
+        assetFileNames: `[name].[ext]`,
+      },
+    },
   },
   server: {
     proxy: {

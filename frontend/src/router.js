@@ -1,33 +1,34 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "./store";
-// const DataMap = () => import("$views/Data/GlobalMap");
-// const DynamicsOverview = () => import("$views/Data/Charts/DynamicsOverview");
-// const ProduceInfoTreeMap = () => import("$views/Data/Charts/ProduceInfoTreeMap");
-// const WebOfTransnationalDeals = () =>
-//   import("$views/Data/Charts/WebOfTransnationalDeals");
-// const DataList = () => import("$views/Data/List");
-// const CaseStatistics = () => import("$views/Manager/CaseStatistics");
-// const DealCompare = () => import("$views/Deal/Compare");
-// const DealDetail = () => import("$views/Deal/Detail");
-// const DealEdit = () => import("$views/Deal/Edit");
-// const InvestorDetail = () => import("$views/Investor/Detail");
-// const Dashboard = () => import("$views/Manager/Dashboard");
-// const NotFound = () => import("$views/NotFound");
-// const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
-import DataMap from "$views/Data/GlobalMap";
-import DynamicsOverview from "$views/Data/Charts/DynamicsOverview";
-import ProduceInfoTreeMap from "$views/Data/Charts/ProduceInfoTreeMap";
-import WebOfTransnationalDeals from "$views/Data/Charts/WebOfTransnationalDeals";
-import DataList from "$views/Data/List";
-import CaseStatistics from "$views/Manager/CaseStatistics";
-import DealCompare from "$views/Deal/Compare";
-import DealDetail from "$views/Deal/Detail";
-import DealEdit from "$views/Deal/Edit";
-import InvestorDetail from "$views/Investor/Detail";
-import Dashboard from "$views/Manager/Dashboard";
-import NotFound from "$views/NotFound";
-import Wagtail from "$views/Wagtail/WagtailSwitch";
+const DataMap = () => import("$views/Data/GlobalMap");
+const DynamicsOverview = () => import("$views/Data/Charts/DynamicsOverview");
+const ProduceInfoTreeMap = () => import("$views/Data/Charts/ProduceInfoTreeMap");
+const WebOfTransnationalDeals = () =>
+  import("$views/Data/Charts/WebOfTransnationalDeals");
+const DataList = () => import("$views/Data/List");
+const CaseStatistics = () => import("$views/Manager/CaseStatistics");
+const DealCompare = () => import("$views/Deal/Compare");
+const DealDetail = () => import("$views/Deal/Detail");
+const DealEdit = () => import("$views/Deal/Edit");
+const InvestorDetail = () => import("$views/Investor/Detail");
+const Dashboard = () => import("$views/Manager/Dashboard");
+const NotFound = () => import("$views/NotFound");
+const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
+
+// import DataMap from "$views/Data/GlobalMap";
+// import DynamicsOverview from "$views/Data/Charts/DynamicsOverview";
+// import ProduceInfoTreeMap from "$views/Data/Charts/ProduceInfoTreeMap";
+// import WebOfTransnationalDeals from "$views/Data/Charts/WebOfTransnationalDeals";
+// import DataList from "$views/Data/List";
+// import CaseStatistics from "$views/Manager/CaseStatistics";
+// import DealCompare from "$views/Deal/Compare";
+// import DealDetail from "$views/Deal/Detail";
+// import DealEdit from "$views/Deal/Edit";
+// import InvestorDetail from "$views/Investor/Detail";
+// import Dashboard from "$views/Manager/Dashboard";
+// import NotFound from "$views/NotFound";
+// import Wagtail from "$views/Wagtail/WagtailSwitch";
 
 Vue.use(Router);
 
@@ -42,11 +43,6 @@ const router = new Router({
       meta: {
         hideBreadcrumbs: true,
       },
-    },
-    {
-      path: "/charts/",
-      name: "charts",
-      redirect: { name: "web-of-transnational-deals" },
     },
     {
       path: "/charts/web-of-transnational-deals/",
@@ -71,18 +67,6 @@ const router = new Router({
       meta: {
         hideBreadcrumbs: true,
       },
-    },
-    {
-      path: "/data/",
-      redirect: { name: "list_deals" },
-    },
-    {
-      path: "/data/investors/",
-      redirect: { name: "list_investors" },
-    },
-    {
-      path: "/list/",
-      redirect: { name: "list_deals" },
     },
     {
       path: "/list/deals/",
@@ -131,28 +115,20 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/",
-      redirect: { name: "list_deals" },
-    },
-    {
       path: "/investor/:investorId/:investorVersion?/",
       name: "investor_detail",
       component: InvestorDetail,
       props: true,
     },
-    {
-      path: "/investor/",
-      redirect: { name: "list_investors" },
-    },
-    {
-      path: "/dashboard/",
-      name: "dashboard",
-      component: Dashboard,
-    },
-    {
-      path: "/the-land-matrix-initiative",
-      redirect: "/about/the-land-matrix-initiative",
-    },
+    { path: "/dashboard/", name: "dashboard", component: Dashboard },
+    { path: "/case_statistics/", name: "case_statistics", component: CaseStatistics },
+
+    // redirects
+    { path: "/data/", redirect: { name: "list_deals" } },
+    { path: "/data/investors/", redirect: { name: "list_investors" } },
+    { path: "/list/", redirect: { name: "list_deals" } },
+    { path: "/deal/", redirect: { name: "list_deals" } },
+    { path: "/investor/", redirect: { name: "list_investors" } },
     { path: "/stay-informed/:rest?", redirect: "/resources/:rest?" },
     { path: "/partners-and-donors", redirect: "/about/partners-and-donors" },
     { path: "/privacy-policy", redirect: "/about/privacy-policy" },
@@ -163,15 +139,17 @@ const router = new Router({
     { path: "/country/:country", redirect: "/observatory/:country" },
     { path: "/global", redirect: "/observatory/global" },
     {
-      path: "/case_statistics/",
-      name: "case_statistics",
-      component: CaseStatistics,
+      path: "/charts/",
+      name: "charts",
+      redirect: { name: "web-of-transnational-deals" },
     },
     {
-      path: "*",
-      name: "wagtail",
-      component: Wagtail,
+      path: "/the-land-matrix-initiative",
+      redirect: "/about/the-land-matrix-initiative",
     },
+
+    // wagtail
+    { path: "*", name: "wagtail", component: Wagtail },
     {
       path: "*",
       name: "404",
