@@ -91,7 +91,7 @@ const router = new Router({
       props: true,
     },
     {
-      path: "/deal/edit/:dealId/",
+      path: "/deal/edit/:dealId/:dealVersion?/",
       name: "deal_edit",
       component: DealEdit,
       props: true,

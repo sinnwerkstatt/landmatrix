@@ -128,7 +128,15 @@
       </div>
       <div class="row edit-button">
         <div class="col" style="margin-bottom: -1rem;">
-          <a href="" class="btn btn-primary btn-lg">Edit</a>
+          <router-link
+            class="btn btn-primary btn-lg"
+            :to="{
+              name: 'deal_edit',
+              params: { dealId: deal.id, dealVersion: dealVersion },
+            }"
+          >
+            Edit
+          </router-link>
           <a href="" class="btn btn-danger btn-sm">Delete</a>
         </div>
       </div>
@@ -147,6 +155,7 @@
     components: { DealDates },
     props: {
       deal: { type: Object, required: true },
+      dealVersion: { type: [Number, String], default: null },
     },
     computed: {
       last_revision() {

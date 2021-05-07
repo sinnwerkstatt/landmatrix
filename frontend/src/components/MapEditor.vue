@@ -140,11 +140,24 @@
     methods: {
       features_changed() {
         this.deal.geojson = this.editableFeatures.toGeoJSON();
-        // this.editableFeatures.eachLayer((l) => {
-        //
-        // })
-        let loc = this.activeLocation;
-        console.log(loc);
+        let deal_location_map = {};
+        this.deal.locations.forEach((l) => {
+          deal_location_map[l.id] = l;
+        });
+
+        this.editableFeatures.eachLayer((l) => {
+          let locJson = l.toGeoJSON();
+          // if (layer.feature.geometry.type ==='Point') {
+          if (locJson.geometry.type === "Point") {
+            console.log({ oldP: this.activeLocation.point, newP: l.getLatLng() });
+            this.activeLocation.point = l.getLatLng();
+          }
+
+          console.log({ locJson });
+          console.log(deal_location_map[locJson.properties.id].areas);
+        });
+        // let loc = this.activeLocation;
+        // console.log(loc);
       },
       mapIsReady(map) {
         this.bigmap = map;
@@ -171,7 +184,6 @@
         map.on("pm:remove", this.features_changed);
         this.editableFeatures.on("pm:update", this.features_changed);
         this.editableFeatures.on("pm:dragend", ({ layer }) => {
-          this.activeLocation.point = layer.getLatLng();
           this.features_changed();
         });
         map.on("layeradd", this.features_changed);

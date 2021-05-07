@@ -4,7 +4,10 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 
 export const cache = new InMemoryCache();
 export const apolloClient = new ApolloClient({
-  // TODO You should use an absolute URL here (really though?)
-  link: createHttpLink({ uri: "/graphql/", fetchOptions: { method: "GET" } }),
+  // Note: One should use an absolute URL here (really though?)
+  link: createHttpLink({
+    uri: "/graphql/",
+    // fetchOptions: { method: "GET" }
+  }),
   cache: cache,
 });

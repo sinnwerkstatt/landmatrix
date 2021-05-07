@@ -1,6 +1,6 @@
 <template>
   <div v-if="deal" class="container deal-detail">
-    <ManageHeader v-if="manage" :deal="deal" />
+    <ManageHeader v-if="manage" :deal="deal" :dealVersion="dealVersion" />
     <div v-else class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ deal.id }}</h1>

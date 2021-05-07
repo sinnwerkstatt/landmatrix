@@ -141,6 +141,18 @@
         @activated="updateRoute('#overall_comment')"
       />
     </b-tabs>
+
+    <div class="savebar">
+      <button @click="deal_save" class="btn btn-primary btn-sm mx-2">Save</button>
+      <router-link
+        class="btn btn-gray btn-sm mx-2"
+        :to="{
+          name: 'deal_manage',
+          params: { dealId: deal.id, dealVersion: dealVersion },
+        }"
+        >Cancel</router-link
+      >
+    </div>
   </div>
 </template>
 
@@ -149,6 +161,7 @@
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
   import MapEditor from "$components/MapEditor";
   import { deal_gql_query } from "$store/queries";
+  import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
@@ -197,6 +210,25 @@
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
+      deal_save() {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation($id: Int!, $version: Int, $payload: Payload) {
+                deal_edit(id: $id, version: $version, payload: $payload)
+              }
+            `,
+            variables: {
+              id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
+              payload: { ...this.deal, versions: null, comments: null },
+            },
+          })
+          .then((data) => {
+            console.log(data);
+          });
+      },
+
       addLocation() {
         // this.deal.contracts.push(
         //   new Object({
@@ -277,5 +309,16 @@
       top: 5em;
       z-index: 90;
     }
+  }
+
+  .savebar {
+    margin: 0 auto;
+    width: clamp(300px, 80%, 800px);
+    //height: 3rem;
+    padding: 1rem;
+    background: #e5e5e5;
+  }
+  .btn-gray {
+    background: #b1b1b1;
   }
 </style>

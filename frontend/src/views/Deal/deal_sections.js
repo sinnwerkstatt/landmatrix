@@ -324,7 +324,6 @@ export const deal_submodel_sections = {
     "description",
     "point",
     "facility_name",
-    "country",
     "comment",
   ],
   contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
