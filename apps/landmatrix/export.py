@@ -536,7 +536,7 @@ class DataDownload:
         [ws.append(item) for item in self.contracts]
 
         ## DataSources tab
-        ws = wb.create_sheet(title="Data Sources")
+        ws = wb.create_sheet(title="Data sources")
         ws.append(list(datasource_fields.values()))
         [ws.append(item) for item in self.datasources]
 

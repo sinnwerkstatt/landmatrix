@@ -120,7 +120,7 @@ def task_migrate():
 
 
 def task_git_pull():
-    branch = get_var("branch", "master")
+    branch = get_var("branch", "main")
     return {"actions": [f"git checkout {branch}", "git pull"]}
 
 

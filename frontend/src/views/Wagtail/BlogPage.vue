@@ -23,8 +23,8 @@
 </template>
 
 <script>
-  import PageTitle from "components/PageTitle";
-  import { blogpage_query } from "store/queries";
+  import PageTitle from "$components/PageTitle";
+  import { blogpage_query } from "$store/queries";
 
   export default {
     components: { PageTitle },

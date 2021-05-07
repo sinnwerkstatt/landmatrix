@@ -10,11 +10,15 @@
       nav-class="sticky-nav"
     >
       <b-tab
-        title="Locations"
+        :title="$t('Locations')"
         :active="active_tab === '#locations'"
         @click="updateRoute('#locations')"
       >
-        <MapEditor :deal="deal" />
+        <MapEditor
+          :deal="deal"
+          :sections="deal_sections.general_info.subsections"
+          :fields="deal_submodel_sections.location"
+        />
       </b-tab>
       <DealEditSection
         :title="deal_sections.general_info.label"
@@ -71,8 +75,8 @@
       </DealEditSection>
 
       <DealSubmodelEditSection
-        title="Data Sources"
-        model-name="Data Source"
+        title="Data sources"
+        model-name="Data source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         model="datasource"
@@ -141,10 +145,11 @@
 </template>
 
 <script>
-  import DealEditSection from "components/Deal/DealEditSection";
-  import DealSubmodelEditSection from "../../components/Deal/DealSubmodelEditSection";
-  import MapEditor from "../../components/MapEditor";
-  import { deal_gql_query } from "../../store/queries";
+  import DealEditSection from "$components/Deal/DealEditSection";
+  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
+  import MapEditor from "$components/MapEditor";
+  import { deal_gql_query } from "$store/queries";
+
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
@@ -191,6 +196,17 @@
     methods: {
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      },
+      addLocation() {
+        // this.deal.contracts.push(
+        //   new Object({
+        //     number: "",
+        //     date: null,
+        //     expiration_date: null,
+        //     agreement_duration: null,
+        //     comment: "",
+        //   })
+        // );
       },
       addContract() {
         this.deal.contracts.push(

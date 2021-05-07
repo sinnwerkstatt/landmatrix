@@ -5,8 +5,8 @@
 </template>
 
 <script>
-  import { flatten_choices } from "utils";
-  import { intention_of_investment_map } from "choices";
+  import { flatten_choices } from "$utils";
+  import { intention_of_investment_map } from "$utils/choices";
 
   export default {
     props: {

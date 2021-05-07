@@ -39,9 +39,9 @@
 
 <script>
   import DataContainer from "./DataContainer";
-  import Table from "components/Data/Table";
-  import LoadingPulse from "components/Data/LoadingPulse";
-  import FilterCollapse from "components/Data/FilterCollapse";
+  import Table from "$components/Data/Table";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import FilterCollapse from "$components/Data/FilterCollapse";
 
   export default {
     name: "DataList",

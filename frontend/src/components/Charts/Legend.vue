@@ -21,6 +21,7 @@
     },
   };
 </script>
+
 <style lang="scss" scoped>
   .legend {
     list-style: none;

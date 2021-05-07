@@ -5,7 +5,9 @@ from django.utils.translation import ugettext as _
 
 class LocationForm(VueForm):
     model = Location
-    attributes = {"name": {"label": _("Location")}}
+    attributes = {
+        "name": {"label": _("Location"), "class": "LocationGoogleField"},
+    }
     extra_display_fields = {
         "country": {"class": "CharField", "label": _("Target country")}
     }

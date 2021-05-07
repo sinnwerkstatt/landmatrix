@@ -53,14 +53,14 @@
 </template>
 
 <script>
-  import StatusPieChart from "../Charts/StatusPieChart";
+  import { implementation_status_choices } from "$utils/choices";
+  import { prepareNegotianStatusData, sum } from "$utils/data_processing";
+  import { data_deal_produce_query, data_deal_query } from "$views/Data/query";
   import numeral from "numeral/numeral";
-  import { implementation_status_choices } from "choices";
-  import { prepareNegotianStatusData, sum } from "utils/data_processing";
-  import { data_deal_produce_query, data_deal_query } from "views/Data/query";
-  import ContextBarContainer from "./ContextBarContainer";
   import { mapGetters, mapState } from "vuex";
+  import StatusPieChart from "../Charts/StatusPieChart";
   import DealDisplayToggle from "../Shared/DealDisplayToggle";
+  import ContextBarContainer from "./ContextBarContainer";
 
   export default {
     name: "ContextBarMap",

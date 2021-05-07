@@ -1,4 +1,4 @@
-import { primary_color } from "colors";
+import { primary_color } from "$utils/colors";
 
 export function styleCircle(
   circle,

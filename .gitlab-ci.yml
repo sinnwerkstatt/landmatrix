@@ -64,7 +64,7 @@ deploy to staging:
       mv maintenance.html maintenance.html_
       E=O=F
   only:
-    - master
+    - main
 
 deploy to production:
   stage: deploy

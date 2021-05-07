@@ -47,6 +47,7 @@
   import URLField from "./Display/TextField";
   import OCIDField from "./Display/OCIDField";
   import FieldLabel from "./FieldLabel";
+  import LocationGoogleField from "./Display/TextField";
 
   export default {
     name: "DisplayField",
@@ -73,6 +74,7 @@
       JSONJobsField,
       JSONLeaseField,
       LengthField,
+      LocationGoogleField,
       ManyToManyField,
       NullBooleanField,
       PointField,

@@ -68,15 +68,17 @@
 </template>
 
 <script>
+  import { classification_choices } from "$utils/choices";
+  import { investor_color, primary_color } from "$utils/colors";
+
   import cytoscape from "cytoscape";
   import coseBilkent from "cytoscape-cose-bilkent";
   import popper from "cytoscape-popper";
-  import tippy from "tippy.js";
   import { pick } from "lodash";
-  import { investor_color, primary_color } from "colors";
-  import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
+  import tippy from "tippy.js";
+
   import InvestorDetailDealModal from "./InvestorDetailDealModal";
-  import { classification_choices } from "choices";
+  import InvestorDetailInvestorModal from "./InvestorDetailInvestorModal";
 
   cytoscape.use(coseBilkent);
   cytoscape.use(popper);
@@ -390,6 +392,7 @@
 
   .network_fs {
     min-height: 60vh;
+
     .bottom-content {
       padding: 15px;
       height: 40%;

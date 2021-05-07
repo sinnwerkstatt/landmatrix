@@ -180,12 +180,14 @@
 </template>
 
 <script>
-  import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "store/queries";
+  import DisplayField from "$components/Fields/DisplayField";
+  import FieldLabel from "$components/Fields/FieldLabel";
+  import { deal_gql_query } from "$store/queries";
+  import { apolloClient } from "$utils/apolloclient";
+
   import { diff } from "deep-object-diff";
-  import { apolloClient } from "apolloclient";
-  import DisplayField from "components/Fields/DisplayField";
-  import FieldLabel from "components/Fields/FieldLabel";
+
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
     name: "Compare",

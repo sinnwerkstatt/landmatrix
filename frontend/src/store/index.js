@@ -1,4 +1,4 @@
-import { apolloClient } from "apolloclient";
+import { apolloClient } from "$utils/apolloclient";
 import axios from "axios";
 import gql from "graphql-tag";
 import Vue from "vue";

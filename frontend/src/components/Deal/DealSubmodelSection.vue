@@ -19,6 +19,7 @@
             :model="model"
             :label-classes="labelClasses"
             :value-classes="valueClasses"
+            :file-not-public="entry.file_not_public"
           />
         </div>
       </div>
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-  import DisplayField from "components/Fields/DisplayField";
+  import DisplayField from "$components/Fields/DisplayField";
 
   export default {
     components: { DisplayField },
@@ -49,11 +50,8 @@
       },
     },
     computed: {
-      hasDefaultSlot() {
-        return !!this.$slots.default;
-      },
       wrapperClasses() {
-        if (this.hasDefaultSlot) return ["col-md-12", "col-lg-7", "col-xl-6"];
+        if (!!this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
         else return ["col-12"];
       },
     },

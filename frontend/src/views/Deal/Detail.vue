@@ -104,8 +104,8 @@
       </DealSection>
 
       <DealSubmodelSection
-        title="Data Sources"
-        model-name="Data Source"
+        title="Data sources"
+        model-name="Data source"
         :entries="deal.datasources"
         :fields="deal_submodel_sections.datasource"
         model="datasource"
@@ -176,7 +176,7 @@
       </b-tab>
 
       <b-tab
-        :title="$t('Deal History')"
+        :title="$t('Deal history')"
         :active="active_tab === '#history'"
         @click="updateRoute('#history')"
       >
@@ -205,20 +205,20 @@
 </template>
 
 <script>
+  import DealComments from "$components/Deal/DealComments";
+  import DealDates from "$components/Deal/DealDates";
+  import DealHistory from "$components/Deal/DealHistory";
+  import DealLocationsSection from "$components/Deal/DealLocationsSection";
+  import DealSection from "$components/Deal/DealSection";
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
+  import ManageHeader from "$components/Deal/ManageHeader";
+  import InvestorGraph from "$components/Investor/InvestorGraph";
+  import { deal_gql_query } from "$store/queries";
+
   import gql from "graphql-tag";
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import { deal_gql_query } from "store/queries";
-
-  import DealComments from "components/Deal/DealComments";
-  import DealDates from "components/Deal/DealDates";
-  import DealHistory from "components/Deal/DealHistory";
-  import DealLocationsSection from "components/Deal/DealLocationsSection";
-  import DealSection from "components/Deal/DealSection";
-  import DealSubmodelSection from "components/Deal/DealSubmodelSection";
-  import InvestorGraph from "components/Investor/InvestorGraph";
-  import ManageHeader from "components/Deal/ManageHeader";
 
   export default {
     components: {
@@ -271,6 +271,21 @@
               replace: true,
             });
           }
+          if (
+            this.manage &&
+            !this.dealVersion &&
+            data.deal.status !== 1 &&
+            data.deal.draft_status
+          ) {
+            this.$router.push({
+              name: "deal_manage",
+              params: {
+                dealId: this.dealId,
+                dealVersion: data.deal.versions[0].revision.id,
+              },
+            });
+          }
+
           return data.deal;
         },
       },

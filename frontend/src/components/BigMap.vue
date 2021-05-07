@@ -39,11 +39,11 @@
   Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
   delete Icon.Default.prototype._getIconUrl;
-  Icon.Default.mergeOptions({
-    iconRetinaUrl: require("static/images/marker-icon-2x.png"),
-    iconUrl: require("static/images/marker-icon.png"),
-    shadowUrl: require("static/images/marker-shadow.png"),
-  });
+  import iconRetinaUrl from "$static/images/marker-icon-2x.png";
+  import iconUrl from "$static/images/marker-icon.png";
+  import shadowUrl from "$static/images/marker-shadow.png";
+  let shadowSize = [0, 0];
+  Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
 
   export default {
     name: "BigMap",

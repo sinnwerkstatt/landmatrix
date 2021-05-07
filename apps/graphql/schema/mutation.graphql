@@ -1,4 +1,13 @@
 type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
+
+  change_deal_status(id: Int!, transition: WorkflowTransition): Int
+}
+
+enum WorkflowTransition {
+  TO_DRAFT
+  TO_REVIEW
+  TO_ACTIVATION
+  ACTIVATE
 }

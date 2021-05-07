@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version, register_version
+from apps.landmatrix.models.versions import Version, register_version, Revision
 
 
 class ArrayField(_ArrayField):
@@ -1060,6 +1060,21 @@ class Deal(models.Model, OldDealMixin):
             self.geojson = self._combine_geojson()
 
         super().save(*args, **kwargs)
+
+    def save_revision(self, date_created, user, comment) -> Revision:
+        rev = Revision.objects.create(
+            date_created=date_created,
+            user=user,
+            comment=comment,
+        )
+        for submodel in (
+            list(self.locations.all())
+            + list(self.contracts.all())
+            + list(self.datasources.all())
+        ):
+            Version.create_from_obj(submodel, rev)
+        Version.create_from_obj(self, rev)
+        return rev
 
     def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)
