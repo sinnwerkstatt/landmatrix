@@ -3,7 +3,10 @@ type Mutation {
   logout: Boolean!
 
   change_deal_status(id: Int!, transition: WorkflowTransition): Int
+  deal_edit(id: Int!, version: Int, payload: Payload): Int
 }
+
+scalar Payload
 
 enum WorkflowTransition {
   TO_DRAFT

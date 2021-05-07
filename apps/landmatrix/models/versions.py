@@ -58,6 +58,9 @@ class Version(models.Model):
     def __str__(self):
         return f"{self.object_id} @ {self.revision.date_created.date()}"
 
+    # def get_version(self, obj, rev_id):
+    #     return
+
     @classmethod
     def _get_current_subclass(cls, obj):
         subclasses = [s for s in cls.__subclasses__() if s.model == obj.__class__]
@@ -68,14 +71,29 @@ class Version(models.Model):
         return subclasses[0]
 
     @classmethod
-    def create_from_obj(cls, obj, revision):
+    def create_from_obj(cls, obj, revision_id):
         subclass = cls._get_current_subclass(obj)
 
         serialized_json = serializers.serialize("json", (obj,))
         serialized_fields = json.loads(serialized_json)
 
         version = subclass(
-            revision=revision, object_id=obj.pk, serialized_data=serialized_fields
+            revision_id=revision_id, object_id=obj.pk, serialized_data=serialized_fields
+        )
+        version.save()
+        return version
+
+    # TODO!
+    @classmethod
+    def edit_from_obj(cls, obj, version_id, revision_id):
+        subclass = cls._get_current_subclass(obj)
+
+        serialized_json = serializers.serialize("json", (obj,))
+        serialized_fields = json.loads(serialized_json)
+
+        version = subclass.objects.get(id=version_id)
+        version = subclass(
+            revision_id=revision_id, object_id=obj.pk, serialized_data=serialized_fields
         )
         version.save()
         return version

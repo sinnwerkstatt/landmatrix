@@ -6,7 +6,7 @@ from django_comments.models import Comment
 from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Deal, Country
+from apps.landmatrix.models import Deal, Country, Location
 from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
@@ -196,3 +196,26 @@ def resolve_change_deal_status(_, info, id, transition) -> int:
         )
         return rev.id
     return -1
+
+
+def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> int:
+    print(f"id: {id}")
+    print(f"version: {version}")
+    print(f"payload: {payload}")
+    # TODO make sure user is authorized
+    # TODO: check draft_status and create a new one accordingly
+    deal = Deal.objects.get(id=id)
+    deal.update_from_dict(payload)
+
+    # all_locations = set(c.id for c in deal.locations.all())
+    # for loc in payload.get("locations", []):
+    #     l1 = Location.objects.get(id=loc["id"])
+    #     l1.update_from_dict(loc)
+    #     Version.edit_from_obj(l1, version_id, version)
+    #     all_locations.remove(l1.id)
+    # deal.locations.set()
+    # elif key in ["locations", "contracts", "datasources"]:
+    # print(f"handle reverse fk {key} {value}")
+
+    if deal.draft_status == Deal.DRAFT_STATUS_DRAFT:
+        Version.edit_from_obj(deal, version_id="x", revision_id=version)

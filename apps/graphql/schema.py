@@ -24,6 +24,7 @@ from apps.graphql.resolvers.deal import (
     resolve_deals,
     resolve_dealversions,
     resolve_change_deal_status,
+    resolve_deal_edit,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
@@ -52,7 +53,7 @@ from apps.graphql.resolvers.user import (
 )
 from apps.graphql.scalars import geopoint_scalar
 
-schema_folder = pathlib.Path(__file__).parent.joinpath("schema")
+schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
 type_defs = load_schema_from_path(schema_folder)
 
 query = ObjectType("Query")
@@ -88,6 +89,7 @@ mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
+mutation.set_field("deal_edit", resolve_deal_edit)
 
 schema = make_executable_schema(
     type_defs,

@@ -8,9 +8,6 @@ class LocationForm(VueForm):
     attributes = {
         "name": {"label": _("Location"), "class": "LocationGoogleField"},
     }
-    extra_display_fields = {
-        "country": {"class": "CharField", "label": _("Target country")}
-    }
 
 
 class ContractForm(VueForm):

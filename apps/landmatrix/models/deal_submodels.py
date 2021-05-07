@@ -8,6 +8,7 @@ from apps.landmatrix.models.mixins import (
     OldContractMixin,
     OldDataSourceMixin,
     OldLocationMixin,
+    FromDictMixin,
 )
 from apps.landmatrix.models.versions import Version, register_version
 
@@ -25,7 +26,7 @@ class LocationVersion(Version):
 
 
 @register_version(LocationVersion)
-class Location(models.Model, OldLocationMixin):
+class Location(models.Model, FromDictMixin, OldLocationMixin):
     name = models.CharField(max_length=2000, blank=True)
     description = models.CharField(max_length=2000, blank=True)
     point = gismodels.PointField(blank=True, null=True)

@@ -61,6 +61,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             deal.contracts.all().delete()
             deal.datasources.all().delete()
         else:
+            # take locations from here, to generate the geojson down below if new draft
             locations = submodels.create_locations(
                 deal, meta_activity.loc_groups, do_save, rev1
             )
@@ -77,7 +78,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             deal.save()
         elif new_status == 1:
             deal.geojson = deal._combine_geojson(locations)
-        Version.create_from_obj(deal, rev1)
+        Version.create_from_obj(deal, rev1.id)
 
         if not do_save:
             # FIXME: it seems like this is not happening... might have to investigate

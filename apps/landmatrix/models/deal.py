@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.mixins import OldDealMixin
+from apps.landmatrix.models.mixins import OldDealMixin, FromDictMixin
 from apps.landmatrix.models.versions import Version, register_version, Revision
 
 
@@ -78,7 +78,7 @@ class DealVersion(Version):
 
 
 @register_version(DealVersion)
-class Deal(models.Model, OldDealMixin):
+class Deal(models.Model, FromDictMixin, OldDealMixin):
     """ Deal """
 
     """ Locations """
@@ -911,7 +911,6 @@ class Deal(models.Model, OldDealMixin):
     "previous_identifier"
     "assign_to_user"
     "tg_feedback_comment"
-    "terms"
 
     """ # CALCULATED FIELDS # """
     is_public = models.BooleanField(default=False)
@@ -1072,8 +1071,8 @@ class Deal(models.Model, OldDealMixin):
             + list(self.contracts.all())
             + list(self.datasources.all())
         ):
-            Version.create_from_obj(submodel, rev)
-        Version.create_from_obj(self, rev)
+            Version.create_from_obj(submodel, rev.id)
+        Version.create_from_obj(self, rev.id)
         return rev
 
     def _get_current(self, attribute, field):

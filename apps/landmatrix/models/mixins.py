@@ -1,5 +1,7 @@
 import warnings
 
+from django.contrib.gis.geos import Point
+
 
 class UnderscoreDisplayParseMixin:
     pass
@@ -20,6 +22,38 @@ unclear_fields = [
 ]
 
 warnings.warn("GND Obsoletion Warning", FutureWarning)
+
+
+class FromDictMixin:
+    def update_from_dict(self, d: dict):
+        for key, value in d.items():
+            if key in [
+                "id",
+                "created_at",
+                "modified_at",
+                "fully_updated",
+                "fully_updated_at",
+                "is_public",
+                "has_known_investor",
+                "versions",
+                "comments",
+                "status",
+                "draft_status",
+                "__typename",
+            ]:
+                continue  # ignore these fields
+            elif key in ["locations", "datasources", "contracts"]:
+                continue  # handle these fields extra!
+            elif key in [
+                x.name
+                for x in self._meta.fields
+                if x.__class__.__name__ == "ForeignKey"
+            ]:
+                self.__setattr__(f"{key}_id", value["id"] if value else None)
+            elif key == "point":
+                self.point = Point(value["lng"], value["lat"])
+            else:
+                self.__setattr__(key, value)
 
 
 class OldDealMixin:

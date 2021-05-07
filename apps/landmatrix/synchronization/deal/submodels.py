@@ -92,7 +92,7 @@ def create_locations(deal, groups, do_save, revision):
         locations += [location]
         if do_save:
             location.save()
-        Version.create_from_obj(location, revision)
+        Version.create_from_obj(location, revision.id)
     if do_save and all_locations:
         Location.objects.filter(id__in=all_locations).delete()
     return locations
@@ -131,7 +131,7 @@ def create_contracts(deal, groups, do_save, revision):
 
         if do_save:
             contract.save()
-        Version.create_from_obj(contract, revision)
+        Version.create_from_obj(contract, revision.id)
     if do_save and all_contracts:
         Contract.objects.filter(id__in=all_contracts).delete()
 
@@ -216,7 +216,7 @@ def create_data_sources(deal, groups, do_save, revision):
         data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
         if do_save:
             data_source.save()
-        Version.create_from_obj(data_source, revision)
+        Version.create_from_obj(data_source, revision.id)
 
     if do_save and all_old_ds:
         DataSource.objects.filter(id__in=all_old_ds).delete()

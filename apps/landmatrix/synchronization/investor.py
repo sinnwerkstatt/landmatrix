@@ -80,7 +80,7 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
         # or: the new status is Live, Updated or Deleted
         investor.save()
 
-    Version.create_from_obj(investor, rev1)
+    Version.create_from_obj(investor, rev1.id)
 
     if not do_save:
         # otherwise update the draft_status of the current_model
@@ -122,7 +122,7 @@ def _create_involvements_for_investor(investor, histvestor, do_save, revision):
         )
         if do_save:
             ivi.save()
-        Version.create_from_obj(ivi, revision)
+        Version.create_from_obj(ivi, revision.id)
 
 
 ROLE_MAP = {"ST": "PARENT", "IN": "LENDER"}
