@@ -182,7 +182,9 @@ def resolve_change_deal_status(_, info, id, transition) -> int:
     status_str = dict(Deal.STATUS_CHOICES).get(status, "")
     draft_status_str = dict(Deal.DRAFT_STATUS_CHOICES).get(draft_status, "")
     # TODO: assure neccessary rights concerning user and updating the deal
-    if (user := info.context["request"].user) and user.is_authenticated:
+    # TODO: stupid old ubuntu
+    user = info.context["request"].user
+    if user and user.is_authenticated:
         deal.draft_status = draft_status
         deal.status = status
         if not draft_status:
