@@ -109,7 +109,7 @@
         if (this.formfield.class === "FileField") {
           return !this.fileNotPublic || this.$store.getters.userAuthenticated;
         }
-        return true;
+        return !!this.value;
       },
       formfield() {
         return {

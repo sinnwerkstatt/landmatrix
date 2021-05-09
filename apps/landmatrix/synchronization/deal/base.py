@@ -411,6 +411,7 @@ def _merge_area_yield_export(attrs, name, fieldmap):
             val2name="area",
             fieldmap=fieldmap,
             multi_value=True,
+            expected_type2=float,
         )
         or []
     )
@@ -422,6 +423,7 @@ def _merge_area_yield_export(attrs, name, fieldmap):
             val2name="yield",
             fieldmap=fieldmap,
             multi_value=True,
+            expected_type2=float,
         )
         or []
     )
@@ -434,6 +436,7 @@ def _merge_area_yield_export(attrs, name, fieldmap):
             val2name="export",
             fieldmap=fieldmap,
             multi_value=True,
+            expected_type2=float,
         )
         or []
     )

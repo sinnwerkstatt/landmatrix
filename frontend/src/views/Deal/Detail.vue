@@ -221,6 +221,7 @@
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export default {
+    name: "Detail",
     components: {
       DealComments,
       DealDates,
