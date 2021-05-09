@@ -14,7 +14,7 @@ python = "^3.6"
 Django = "<2.3"
 wagtail = "<2.8"
 
-simplejson = "*"
+fastjsonschema = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
 # greennewdeal
