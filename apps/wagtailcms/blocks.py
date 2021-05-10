@@ -10,7 +10,6 @@ from wagtail.core.rich_text import expand_db_html
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
-from apps.blog.models import BlogPage
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.twitter import TwitterTimeline
@@ -403,6 +402,8 @@ class LatestNewsBlock(StructBlock):
                 parent_context.get("request"), parent_context.get("page")
             )
         )
+        from apps.blog.models import BlogPage
+
         queryset = BlogPage.objects.live().public().order_by("-date")
         tag = None
         if context.get("country"):

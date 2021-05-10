@@ -34,6 +34,7 @@ export default defineConfig({
       "/media": "http://localhost:8000",
       "/static": "http://localhost:8000",
       "/legacy": "http://localhost:8000",
+      "/cms": "http://localhost:8000",
     },
   },
 });
