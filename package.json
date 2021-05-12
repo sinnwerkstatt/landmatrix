@@ -10,7 +10,7 @@
   "dependencies": {
     "bootstrap": "3.3.6",
     "bootstrap-switch": "3.3.2",
-    "chart.js": "~2.5.0",
+    "chart.js": "~2.9.4",
     "d3": "~3.5",
     "d3-sankey": "~0.12.1",
     "eonasdan-bootstrap-datetimepicker": "~4.17.47",
