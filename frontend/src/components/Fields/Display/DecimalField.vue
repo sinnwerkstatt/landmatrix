@@ -1,6 +1,6 @@
 <template>
   <div style="white-space: nowrap;">
-    {{ value.toLocaleString() }}
+    {{ value | thousandsep }}
     <span v-if="formfield.unit">{{ formfield.unit }}</span>
   </div>
 </template>

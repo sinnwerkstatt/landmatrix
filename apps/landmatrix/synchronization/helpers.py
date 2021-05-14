@@ -1,7 +1,14 @@
+import re
 from collections import defaultdict
+from datetime import datetime
 from typing import Optional
 
-from apps.landmatrix.models import Contract, DataSource, Deal, Location, Investor
+from apps.landmatrix.models import Deal, Investor
+from apps.landmatrix.models.mixins import (
+    OldContractMixin,
+    OldLocationMixin,
+    OldDataSourceMixin,
+)
 
 
 def _to_nullbool(val: Optional[str]) -> Optional[bool]:
@@ -283,15 +290,15 @@ class MetaActivity:
 
         for attr in activity.attributes.all().order_by("pk"):
             # Locations
-            if attr.name in Location.old_attribute_names():
+            if attr.name in OldLocationMixin.old_attribute_names():
                 self.loc_groups[attr.fk_group_id].update(attr)
 
             # Contracts
-            elif attr.name in Contract.old_attribute_names():
+            elif attr.name in OldContractMixin.old_attribute_names():
                 self.con_groups[attr.fk_group_id].update(attr)
 
             # DataSources
-            elif attr.name in DataSource.old_attribute_names():
+            elif attr.name in OldDataSourceMixin.old_attribute_names():
                 self.ds_groups[attr.fk_group_id].update(attr)
 
             # Deal
@@ -382,3 +389,22 @@ def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
         raise Exception("status must be between 1 and 6")
 
     return new_status, new_draft_status
+
+
+just_year = re.compile(r"^\d{4}$")
+year_month = re.compile(r"^(\d{4})-(0?[1-9]|1[012])$")
+fulldate = re.compile(r"^(\d{4})-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$")
+
+
+def date_year_field(data: str) -> bool:
+    if just_year.findall(data):
+        return True
+    if year_month.findall(data):
+        return True
+    if fulldate.findall(data):
+        try:
+            datetime.strptime(data, "%Y-%m-%d")
+            return True
+        except ValueError:
+            return False
+    return False

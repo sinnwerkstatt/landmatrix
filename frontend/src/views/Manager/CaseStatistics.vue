@@ -139,6 +139,9 @@
   }
 
   function isPublicDeal(deal) {
+    console.log("deal public?", deal.is_public);
+    // TODO: see if we can simplify like so:
+    // return deal.is_public;
     if (deal.confidential) return false;
     if (!deal.country || deal.country.high_income) return false;
     if (!deal.datasources.length) return false;
@@ -492,9 +495,7 @@
             id
             high_income
           }
-          datasources {
-            id
-          }
+          datasources
           not_public_reason
         }
         investors_pending: investors(limit:0, filters:[

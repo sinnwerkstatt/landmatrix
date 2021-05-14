@@ -164,7 +164,7 @@ type Deal {
   #confidential_reason_display: String
   confidential_comment: String
 
-  # Foreign Keys
+  # Foreign Keys - not anymore
   locations(version: Int): [Location]
   contracts(version: Int): [Contract]
   datasources(version: Int): [DataSource]
@@ -207,45 +207,48 @@ type Deal {
   datasources_count: Int
 }
 
-type Location {
-  id: Int
-  name: String
-  description: String
-  point: GeoPoint
-  facility_name: String
-  level_of_accuracy: String
-  #level_of_accuracy_display: String
-  comment: String
-  areas: GeoJSON
-  deal: Deal
-}
+scalar Location
+#type Location {
+#  id: Int
+#  name: String
+#  description: String
+#  point: GeoPoint
+#  facility_name: String
+#  level_of_accuracy: String
+#  #level_of_accuracy_display: String
+#  comment: String
+#  areas: GeoJSON
+#  deal: Deal
+#}
 
-type Contract {
-  id: Int
-  number: String
-  date: Date
-  expiration_date: Date
-  agreement_duration: Int
-  comment: String
-}
+scalar Contract
+#type Contract {
+#  id: Int
+#  number: String
+#  date: Date
+#  expiration_date: Date
+#  agreement_duration: Int
+#  comment: String
+#}
 
-type DataSource {
-  id: Int
-  type: String
-  # type_display: String
-  url: String
-  file: String
-  file_not_public: Boolean
-  publication_title: String
-  date: Date
-  name: String
-  company: String
-  email: String
-  phone: String
-  includes_in_country_verified_information: Boolean
-  open_land_contracts_id: String
-  comment: String
-}
+scalar DataSource
+#type DataSource {
+#  id: Int
+#  type: String
+#  # type_display: String
+#  url: String
+#  file: String
+#  file_not_public: Boolean
+#  publication_title: String
+#  date: Date
+#  name: String
+#  company: String
+#  email: String
+#  phone: String
+#  includes_in_country_verified_information: Boolean
+#  open_land_contracts_id: String
+#  comment: String
+#}
 
 type Actor {
   role: String

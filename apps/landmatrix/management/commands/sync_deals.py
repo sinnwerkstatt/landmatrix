@@ -3,9 +3,6 @@ from django.core.management.base import BaseCommand
 from apps.landmatrix.models import (
     HistoricalActivity,
     Deal,
-    Location,
-    DataSource,
-    Contract,
 )
 from apps.landmatrix.models.deal import DealTopInvestors, DealParentCompanies
 from apps.landmatrix.models.versions import Revision
@@ -22,6 +19,7 @@ class Command(BaseCommand):
         deal_ids = HistoricalActivity.objects.values_list(
             "activity_identifier", flat=True
         )
+        # deal_ids = deal_ids.filter(activity_identifier__gte=958)
         if options["deal_ids"]:
             deal_ids = deal_ids.filter(activity_identifier__in=options["deal_ids"])
         deal_ids = deal_ids.distinct().order_by("activity_identifier")
@@ -35,9 +33,6 @@ class Command(BaseCommand):
                 Revision.objects.filter(dealversion__object_id=deal_id).delete()
                 DealTopInvestors.objects.filter(deal_id=deal_id).delete()
                 DealParentCompanies.objects.filter(deal_id=deal_id).delete()
-                Location.objects.filter(deal_id=deal_id).delete()
-                DataSource.objects.filter(deal_id=deal_id).delete()
-                Contract.objects.filter(deal_id=deal_id).delete()
                 Deal.objects.filter(id=deal_id).delete()
                 print("\033[92m" + "OK" + "\033[0m")
 

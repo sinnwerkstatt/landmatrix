@@ -1,14 +1,10 @@
 from django.contrib import admin
-from django.contrib.admin import TabularInline
 
 from apps.landmatrix import models
 from apps.landmatrix.models import (
-    Contract,
-    DataSource,
     Deal,
     Investor,
     InvestorVentureInvolvement,
-    Location,
 )
 
 
@@ -76,40 +72,9 @@ class InvestorAdmin(admin.ModelAdmin):
 
 
 # ### Green New Deal ### #
-class InlineLocations(TabularInline):
-    model = Location
-    extra = 0
-
-
-class InlineContracts(TabularInline):
-    model = Contract
-    extra = 0
-
-
-class InlineDataSources(TabularInline):
-    model = DataSource
-    extra = 0
-
-
 @admin.register(Deal)
 class DealAdmin(admin.ModelAdmin):
-    inlines = [InlineLocations, InlineContracts, InlineDataSources]
-
-
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__"]
-
-
-@admin.register(DataSource)
-class DataSourceAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__", "file"]
-    readonly_fields = ["deal", "old_group_id"]
-
-
-@admin.register(Contract)
-class ContractAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__"]
+    pass
 
 
 @admin.register(Investor)
@@ -120,6 +85,3 @@ class InvestorAdmin(admin.ModelAdmin):
 @admin.register(InvestorVentureInvolvement)
 class InvestorVentureInvolvementAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__"]
-
-
-# ### Green New Deal ### #

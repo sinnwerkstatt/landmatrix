@@ -1,15 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models import (
-    Deal,
-    Location,
-    Contract,
-    DataSource,
-    Investor,
-    InvestorVentureInvolvement,
-)
-from apps.landmatrix.models.deal import DealTopInvestors
+from apps.landmatrix.models import Deal
 
+from apps.landmatrix.models.deal import DealTopInvestors
 
 x = """
     delete from landmatrix_contract;
@@ -53,12 +46,6 @@ x = """
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        print("Deleting Datasources")
-        DataSource.objects.all().delete()
-        print("Deleting Locations")
-        Location.objects.all().delete()
-        print("Deleting Contracts")
-        Contract.objects.all().delete()
         print("Deleting Deal Top Investors")
         DealTopInvestors.objects.all().delete()
         print("Deleting Deals")

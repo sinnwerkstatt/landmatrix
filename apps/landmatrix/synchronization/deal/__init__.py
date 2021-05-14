@@ -56,15 +56,9 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
 
         do_save = deal.status == 1 or new_status in [2, 3, 4]
 
-        if new_status == 4:
-            deal.locations.all().delete()
-            deal.contracts.all().delete()
-            deal.datasources.all().delete()
-        else:
+        if new_status != 4:
             # take locations from here, to generate the geojson down below if new draft
-            locations = submodels.create_locations(
-                deal, meta_activity.loc_groups, do_save, rev1
-            )
+            submodels.create_locations(deal, meta_activity.loc_groups, do_save, rev1)
             submodels.create_contracts(deal, meta_activity.con_groups, do_save, rev1)
             submodels.create_data_sources(deal, meta_activity.ds_groups, do_save, rev1)
 
@@ -77,7 +71,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             # or: the new status is Live, Updated or Deleted
             deal.save()
         elif new_status == 1:
-            deal.geojson = deal._combine_geojson(locations)
+            deal.geojson = deal._combine_geojson()
         Version.create_from_obj(deal, rev1.id)
 
         if not do_save:

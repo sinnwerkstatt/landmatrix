@@ -11,25 +11,27 @@
     @activated="$emit('activated')"
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">
-      <big-map
+      <BigMap
         :container-style="{ 'max-height': '90%', height: '90%' }"
         :bounds="bounds"
       >
-        <l-geo-json
+        <LGeoJson
           v-if="deal.geojson"
           :geojson="deal.geojson"
           :options="geojson_options"
           :options-style="geojson_styleFunction"
         />
-      </big-map>
+      </BigMap>
     </div>
   </DealSubmodelSection>
 </template>
 
 <script>
   import BigMap from "$components/BigMap";
-  import { LGeoJson } from "vue2-leaflet";
+
+  import { area } from "@turf/turf";
   import { GeoJSON, LatLngBounds } from "leaflet";
+  import { LGeoJson } from "vue2-leaflet";
   import DealSubmodelSection from "./DealSubmodelSection";
 
   export default {
@@ -45,8 +47,8 @@
     },
     computed: {
       entries() {
-        return this.deal.locations.map((l, index) => {
-          return { ...l, loc_no: index + 1, country: this.deal.country.name };
+        return this.deal.locations.map((l) => {
+          return { ...l, country: this.deal.country.name };
         });
       },
       bounds() {
@@ -76,14 +78,28 @@
       },
       onEachFeatureFunction() {
         return (feature, layer) => {
-          let tooltip = `<div>
-                  <div>Location #${
-                    this.entries.find((l) => l.id === feature.properties.id).loc_no
-                  }</div>
-                  <div>Name: ${feature.properties.name}</div>
-                  <div>Type: ${feature.properties.type}</div>
-              </div>`;
-          layer.bindTooltip(tooltip, { permanent: false, sticky: true });
+          let tooltip = "<div>";
+
+          tooltip += `<div>Location #${feature.properties.id}</div>
+                      <div>Name: ${feature.properties.name}</div>
+                      <div>Type: ${feature.properties.type}</div>`;
+
+          if (feature.geometry.type !== "Point") {
+            let farea = (area(layer.toGeoJSON()) / 10000)
+              .toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            tooltip += `<div>Area: ${farea} ha</div>`;
+          }
+          tooltip += "</div>";
+
+          layer.bindPopup(tooltip, {
+            permanent: false,
+            sticky: true,
+            keepInView: true,
+          });
+          layer.on("mouseover", () => layer.openPopup());
+          layer.on("mouseout", () => layer.closePopup());
         };
       },
       geojson_styleFunction() {

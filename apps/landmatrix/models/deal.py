@@ -1,22 +1,23 @@
 import json
-from typing import Optional, Set
+from typing import Optional
 
-from django.contrib.postgres.fields import ArrayField as _ArrayField, JSONField
+from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Sum, F
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from apps.landmatrix.models.fields import (
+    LocationsField,
+    ArrayField,
+    ContractsField,
+    DatasourcesField,
+)
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin, FromDictMixin
 from apps.landmatrix.models.versions import Version, register_version, Revision
-
-
-class ArrayField(_ArrayField):
-    def value_to_string(self, obj):
-        return self.value_from_object(obj)
 
 
 class DealQuerySet(models.QuerySet):
@@ -82,7 +83,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     """ Deal """
 
     """ Locations """
-    # is a foreign key
+    locations = LocationsField(_("Locations"), blank=True, null=True)
 
     """ General info """
     # Land area
@@ -332,7 +333,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     )
 
     """ Contracts """
-    # is a foreign key
+    contracts = ContractsField(_("Contracts"), blank=True, null=True)
 
     """ Employment """
     total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
@@ -454,7 +455,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     )
 
     """ Data sources """
-    # is a foreign key
+    datasources = DatasourcesField(_("Data sources"), blank=True, null=True)
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
@@ -1066,12 +1067,12 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             user=user,
             comment=comment,
         )
-        for submodel in (
-            list(self.locations.all())
-            + list(self.contracts.all())
-            + list(self.datasources.all())
-        ):
-            Version.create_from_obj(submodel, rev.id)
+        # for submodel in (
+        #     # list(self.locations.all())
+        #     # + list(self.contracts.all())
+        #     # + list(self.datasources.all())
+        # ):
+        #     Version.create_from_obj(submodel, rev.id)
         Version.create_from_obj(self, rev.id)
         return rev
 
@@ -1197,27 +1198,30 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
         # `True` if we have investors in other countries else `False`
         return bool(set(investors_countries) - {self.country_id})
 
-    def _combine_geojson(self, locations=None):
-        locs = locations if locations else self.locations.all()
+    def _combine_geojson(self):
         features = []
-        for loc in locs:
-            if loc.point:
+        for i, loc in enumerate(self.locations or [], 1):  # type: dict
+            if loc["point"]:
                 point = {
                     "type": "Feature",
-                    "geometry": (json.loads(loc.point.geojson)),
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [loc["point"]["lng"], loc["point"]["lat"]],
+                    },
                     "properties": {
-                        "id": loc.id,
-                        "name": loc.name,
+                        "id": i,
+                        "name": loc["name"],
                         "type": "point",
-                        "spatial_accuracy": loc.level_of_accuracy,
+                        "spatial_accuracy": loc["level_of_accuracy"],
                     },
                 }
                 features += [point]
-            if loc.areas:
-                feats = loc.areas["features"]
+            areas = loc["areas"]
+            if areas:
+                feats = areas["features"]
                 for feat in feats:
-                    feat["properties"]["name"] = loc.name
-                    feat["properties"]["id"] = loc.id
+                    feat["properties"]["name"] = loc["name"]
+                    feat["properties"]["id"] = i
                     if (
                         feat["geometry"]["type"] == "MultiPolygon"
                         and len(feat["geometry"]["coordinates"]) == 1
@@ -1262,7 +1266,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
         if Country.objects.get(id=self.country_id).high_income:
             # High Income Country
             return "HIGH_INCOME_COUNTRY"
-        if not self.datasources.exists():
+        if not self.datasources:
             # No DataSource
             return "NO_DATASOURCES"
         if not self.operating_company_id:

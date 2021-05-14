@@ -9,9 +9,6 @@ from apps.editor.models import UserRegionalInfo
 
 # pylint: disable=unused-argument
 from apps.landmatrix.models import (
-    DataSource,
-    Location,
-    Contract,
     Investor,
     InvestorVentureInvolvement,
 )
@@ -42,14 +39,14 @@ def invalidate_cache(sender, instance, **kwargs):
 post_save.connect(invalidate_cache)
 
 
-@receiver(post_save, sender=Location)
-@receiver(post_delete, sender=Location)
-@receiver(post_save, sender=Contract)
-@receiver(post_delete, sender=Contract)
-@receiver(post_save, sender=DataSource)
-@receiver(post_delete, sender=DataSource)
-def deal_submodels_trigger_refresh_calculated_deal_fields(sender, instance, **kwargs):
-    instance.deal.save(recalculate_independent=False)
+# @receiver(post_save, sender=Location)
+# @receiver(post_delete, sender=Location)
+# @receiver(post_save, sender=Contract)
+# @receiver(post_delete, sender=Contract)
+# @receiver(post_save, sender=DataSource)
+# @receiver(post_delete, sender=DataSource)
+# def deal_submodels_trigger_refresh_calculated_deal_fields(sender, instance, **kwargs):
+#     instance.deal.save(recalculate_independent=False)
 
 
 @receiver(post_save, sender=Investor)

@@ -25,7 +25,6 @@ from apps.landmatrix.models.investor import (
 from .currency import Currency
 from .gndinvestor import Investor, InvestorVentureInvolvement
 from .deal import Deal
-from .deal_submodels import Contract, DataSource, Location
 
 
 class AgriculturalProduce(models.Model):

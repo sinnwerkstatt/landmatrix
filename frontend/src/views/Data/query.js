@@ -15,11 +15,12 @@ export const data_deal_query_gql = gql`
       current_intention_of_investment
       current_negotiation_status
       current_implementation_status
-      locations {
-        id
-        point
-        level_of_accuracy
-      }
+      locations
+#      locations {
+#        id
+#        point
+#        level_of_accuracy
+#      }
       fully_updated_at # for listing
       operating_company {
         # for map pin popover & listing

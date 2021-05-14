@@ -103,6 +103,9 @@ Vue.component("wagtail-statistics", Statistics);
 Vue.filter("dayjs", function (value, date_format) {
   return dayjs(value).format(date_format);
 });
+Vue.filter("thousandsep", function (value) {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+});
 
 const i18n = new VueI18n({
   // eslint-disable-next-line no-undef

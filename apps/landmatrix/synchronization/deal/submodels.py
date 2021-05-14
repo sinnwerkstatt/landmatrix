@@ -1,21 +1,15 @@
 import json
 import re
 
-from dateutil import parser
 from django.contrib.gis.geos import Point
 from geojson_rewind import rewind
 
-from apps.landmatrix.models import Contract, DataSource, Location
-from apps.landmatrix.models.versions import Version
-from apps.landmatrix.synchronization.helpers import _to_nullbool
+from apps.landmatrix.synchronization.helpers import _to_nullbool, date_year_field
 
 
 def create_locations(deal, groups, do_save, revision):
-    # track former locations, throw out the ones that still exist now, delete the rest
-    all_locations = set(c.id for c in deal.locations.all())
-
     ACCURACY_MAP = {
-        None: None,
+        None: "",
         "Country": "COUNTRY",
         "Administrative region": "ADMINISTRATIVE_REGION",
         "Región administrativa": "ADMINISTRATIVE_REGION",
@@ -27,16 +21,14 @@ def create_locations(deal, groups, do_save, revision):
     }
     locations = []
     for group_id, attrs in sorted(groups.items()):
-        try:
-            location = Location.objects.get(deal=deal, old_group_id=group_id)
-            all_locations.remove(location.id)
-        except Location.DoesNotExist:
-            location = Location(deal=deal, old_group_id=group_id)
-
-        location.name = attrs.get("location") or ""
-        location.description = attrs.get("location_description") or ""
-
-        location.comment = attrs.get("tg_location_comment") or ""
+        location = {
+            "old_group_id": group_id,
+            "name": attrs.get("location") or "",
+            "description": attrs.get("location_description") or "",
+            "comment": attrs.get("tg_location_comment") or "",
+            "facility_name": attrs.get("facility_name") or "",
+            "level_of_accuracy": ACCURACY_MAP[attrs.get("level_of_accuracy")],
+        }
 
         # location.point
         if attrs.get("point_lat") and attrs.get("point_lon"):
@@ -51,14 +43,16 @@ def create_locations(deal, groups, do_save, revision):
             except ValueError:
                 pass
             try:
-                location.point = Point(point_lon, point_lat)
+                Point(point_lon, point_lat)
+                location["point"] = {"lat": point_lat, "lng": point_lon}
             except:
-                location.comment += f"\n\nWas unable to parse location. The values are: lat:{point_lat} lon:{point_lon}"
+                location["comment"] += (
+                    f"\n\nWas unable to parse location."
+                    f" The values are: lat:{point_lat} lon:{point_lon}"
+                )
+                location["point"] = None
         else:
-            location.point = None
-
-        location.facility_name = attrs.get("facility_name") or ""
-        location.level_of_accuracy = ACCURACY_MAP[attrs.get("level_of_accuracy")]
+            location["point"] = None
 
         features = []
         contract_area = attrs.get("contract_area", "polygon")
@@ -86,62 +80,52 @@ def create_locations(deal, groups, do_save, revision):
             }
             features += [rewind(area_feature)]
 
-        location.areas = (
+        location["areas"] = (
             {"type": "FeatureCollection", "features": features} if features else None
         )
         locations += [location]
-        if do_save:
-            location.save()
-        Version.create_from_obj(location, revision.id)
-    if do_save and all_locations:
-        Location.objects.filter(id__in=all_locations).delete()
-    return locations
+
+    deal.locations = locations
 
 
 def create_contracts(deal, groups, do_save, revision):
     # track former contracts, throw out the ones that still exist now, delete the rest
-    all_contracts = set(c.id for c in deal.contracts.all())
-
+    # all_contracts = set(c.id for c in deal.contracts.all())
+    contracts = []
     for group_id, attrs in sorted(groups.items()):
-        try:
-            contract = Contract.objects.get(deal=deal, old_group_id=group_id)
-            all_contracts.remove(contract.id)
-        except Contract.DoesNotExist:
-            contract = Contract(deal=deal, old_group_id=group_id)
-
-        contract.number = attrs.get("contract_number") or ""
-
-        contract.date = (
-            parser.parse(attrs.get("contract_date")).date()
-            if attrs.get("contract_date")
-            else None
-        )
-
-        contract.expiration_date = (
-            parser.parse(attrs.get("contract_expiration_date")).date()
-            if attrs.get("contract_expiration_date")
-            else None
-        )
+        contract = {
+            "old_group_id": group_id,
+            "number": attrs.get("contract_number") or "",
+            "comment": attrs.get("tg_contract_comment") or "",
+        }
+        cdate = attrs.get("contract_date")
+        if cdate:
+            if date_year_field(cdate):
+                contract["date"] = cdate
+            else:
+                raise Exception("!!")
+        expdate = attrs.get("contract_expiration_date")
+        if expdate:
+            if date_year_field(expdate):
+                contract["expiration_date"] = expdate
+            else:
+                raise Exception("!!")
 
         agreement_duration = attrs.get("agreement_duration")
         if agreement_duration == "99 years":
             agreement_duration = 99
-        contract.agreement_duration = agreement_duration
-        contract.comment = attrs.get("tg_contract_comment") or ""
-
-        if do_save:
-            contract.save()
-        Version.create_from_obj(contract, revision.id)
-    if do_save and all_contracts:
-        Contract.objects.filter(id__in=all_contracts).delete()
+        contract["agreement_duration"] = (
+            int(agreement_duration) if agreement_duration else None
+        )
+        contracts += [contract]
+    deal.contracts = contracts
 
 
 def create_data_sources(deal, groups, do_save, revision):
-    # track former datasources, throw out the ones that still exist now, delete the rest
-    all_old_ds = set(c.id for c in deal.datasources.all())
+    datasources = []
 
     TYPE_MAP = {
-        None: None,
+        None: "",
         "Media report": "MEDIA_REPORT",
         "Informe de prensa": "MEDIA_REPORT",
         "Research Paper / Policy Report": "RESEARCH_PAPER_OR_POLICY_REPORT",
@@ -160,22 +144,28 @@ def create_data_sources(deal, groups, do_save, revision):
         "Otro": "OTHER",
     }
     for group_id, attrs in sorted(groups.items()):
-        try:
-            data_source = DataSource.objects.get(deal=deal, old_group_id=group_id)
-            all_old_ds.remove(data_source.id)
-        except DataSource.DoesNotExist:
-            data_source = DataSource(deal=deal, old_group_id=group_id)
 
-        data_source.type = TYPE_MAP[attrs.get("type")]
-        data_source.url = attrs.get("url")
-        if attrs.get("file"):
-            data_source.file.name = f"uploads/{attrs.get('file')}"
-        else:
-            data_source.file = None
-        data_source.file_not_public = attrs.get("file_not_public") == "True"
-        data_source.publication_title = attrs.get("publication_title") or ""
+        url = attrs.get("url") or ""
+        if url == "http%3A%2F%2Ffarmlandgrab.org%2F2510":
+            url = "http://farmlandgrab.org/2510"
 
-        data_source.comment = attrs.get("tg_data_source_comment") or ""
+        ds = {
+            "old_group_id": group_id,
+            "type": TYPE_MAP[attrs.get("type")],
+            "url": url,
+            "file": f"uploads/{attrs.get('file')}" if attrs.get("file") else None,
+            "file_not_public": attrs.get("file_not_public") == "True",
+            "publication_title": attrs.get("publication_title") or "",
+            "comment": attrs.get("tg_data_source_comment") or "",
+            "name": attrs.get("name") or "",
+            "company": attrs.get("company") or "",
+            "email": attrs.get("email") or "",
+            "phone": attrs.get("phone") or "",
+            "includes_in_country_verified_information": _to_nullbool(
+                attrs.get("includes_in_country_verified_information"),
+            ),
+            "open_land_contracts_id": attrs.get("open_land_contracts_id") or "",
+        }
 
         ds_date = attrs.get("date")
         if ds_date:
@@ -200,23 +190,11 @@ def create_data_sources(deal, groups, do_save, revision):
             except KeyError:
                 pass
 
-            try:
-                data_source.date = parser.parse(ds_date).date()
-            except:
-                data_source.comment += f"\n\nOld Date value: {ds_date}"
+            if date_year_field(ds_date):
+                ds["date"] = ds_date
+            else:
+                ds["comment"] += f"\n\nOld Date value: {ds_date}"
         else:
-            data_source.date = None
-        data_source.name = attrs.get("name") or ""
-        data_source.company = attrs.get("company") or ""
-        data_source.email = attrs.get("email") or ""
-        data_source.phone = attrs.get("phone") or ""
-        data_source.includes_in_country_verified_information = _to_nullbool(
-            attrs.get("includes_in_country_verified_information")
-        )
-        data_source.open_land_contracts_id = attrs.get("open_land_contracts_id") or ""
-        if do_save:
-            data_source.save()
-        Version.create_from_obj(data_source, revision.id)
-
-    if do_save and all_old_ds:
-        DataSource.objects.filter(id__in=all_old_ds).delete()
+            ds["date"] = None
+        datasources += [ds]
+    deal.datasources = datasources
