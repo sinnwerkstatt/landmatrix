@@ -74,6 +74,7 @@ def parse_general(deal, attrs):
     NATURE_OF_DEAL_MAP = {
         None: None,
         "Outright Purchase": "OUTRIGHT_PURCHASE",
+        "Outright purchase": "OUTRIGHT_PURCHASE",
         "Compra Directa": "OUTRIGHT_PURCHASE",
         "Compra directa": "OUTRIGHT_PURCHASE",
         "Lease": "LEASE",

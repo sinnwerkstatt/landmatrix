@@ -20,8 +20,11 @@ def create_locations(deal, groups, do_save, revision):
         "Coordenadas": "COORDINATES",
     }
     locations = []
+    i = 0
     for group_id, attrs in sorted(groups.items()):
+        i += 1
         location = {
+            "id": i,
             "old_group_id": group_id,
             "name": attrs.get("location") or "",
             "description": attrs.get("location_description") or "",
@@ -92,8 +95,11 @@ def create_contracts(deal, groups, do_save, revision):
     # track former contracts, throw out the ones that still exist now, delete the rest
     # all_contracts = set(c.id for c in deal.contracts.all())
     contracts = []
+    i = 0
     for group_id, attrs in sorted(groups.items()):
+        i += 1
         contract = {
+            "id": i,
             "old_group_id": group_id,
             "number": attrs.get("contract_number") or "",
             "comment": attrs.get("tg_contract_comment") or "",
@@ -104,13 +110,19 @@ def create_contracts(deal, groups, do_save, revision):
                 contract["date"] = cdate
             else:
                 raise Exception("!!")
+        else:
+            contract["date"] = None
         expdate = attrs.get("contract_expiration_date")
         if expdate:
+            if expdate == "2035-09-31":
+                expdate = "2035-09-30"
             if date_year_field(expdate):
                 contract["expiration_date"] = expdate
             else:
+                print(expdate)
                 raise Exception("!!")
-
+        else:
+            contract["expiration_date"] = None
         agreement_duration = attrs.get("agreement_duration")
         if agreement_duration == "99 years":
             agreement_duration = 99
@@ -122,8 +134,6 @@ def create_contracts(deal, groups, do_save, revision):
 
 
 def create_data_sources(deal, groups, do_save, revision):
-    datasources = []
-
     TYPE_MAP = {
         None: "",
         "Media report": "MEDIA_REPORT",
@@ -143,13 +153,16 @@ def create_data_sources(deal, groups, do_save, revision):
         "Other": "OTHER",
         "Otro": "OTHER",
     }
+    i = 0
+    datasources = []
     for group_id, attrs in sorted(groups.items()):
-
+        i += 1
         url = attrs.get("url") or ""
         if url == "http%3A%2F%2Ffarmlandgrab.org%2F2510":
             url = "http://farmlandgrab.org/2510"
 
         ds = {
+            "id": i,
             "old_group_id": group_id,
             "type": TYPE_MAP[attrs.get("type")],
             "url": url,

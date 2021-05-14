@@ -4,9 +4,6 @@ from django.core.management.base import BaseCommand
 from apps.landmatrix.models import (
     Deal,
     Country,
-    Location,
-    Contract,
-    DataSource,
     Investor,
     InvestorVentureInvolvement,
 )
@@ -16,27 +13,32 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Deal.objects.filter(id=9999).delete()
         countries = Country.objects.all()[:4]
+
         deal = Deal.objects.create(
             id=9999,
             country=Country.objects.get(name="Uganda"),
             intended_size=123.45,
-            contract_size=[{"date": "2020", "value": 234.56}],
-            production_size=[{"date": "2020", "value": 456.78}],
+            contract_size=[{"date": "2020", "area": 234.56, "current": True}],
+            production_size=[{"date": "2020", "area": 456.78, "current": True}],
             land_area_comment="land_area_comment",
             intention_of_investment=[
-                {"date": "2016", "value": ["TIMBER_PLANTATION", "INDUSTRY"]}
+                {
+                    "date": "2016",
+                    "choices": ["TIMBER_PLANTATION", "INDUSTRY"],
+                    "current": True,
+                }
             ],
             intention_of_investment_comment="intention_of_investment_comment",
             nature_of_deal=["LEASE", "EXPLOITATION_PERMIT"],
             nature_of_deal_comment="nature_of_deal_comment",
             negotiation_status=[
-                {"date": "2006", "value": "CONTRACT_SIGNED"},
-                {"value": "CONTRACT_CANCELED"},
+                {"date": "2006", "choice": "CONTRACT_SIGNED"},
+                {"choice": "CONTRACT_CANCELED", "current": True},
             ],
             negotiation_status_comment="negotiation_status_comment",
             implementation_status=[
-                {"date": "2006", "value": "STARTUP_PHASE"},
-                {"value": "PROJECT_ABANDONED"},
+                {"date": "2006", "choice": "STARTUP_PHASE"},
+                {"choice": "PROJECT_ABANDONED", "current": True},
             ],
             implementation_status_comment="implementation_status_comment",
             purchase_price=123_456.78,
@@ -95,7 +97,7 @@ class Command(BaseCommand):
             involved_actors=[
                 {
                     "role": "Government / State institutions",
-                    "value": "Ayeyarwaddy Development company ",
+                    "actor": "Ayeyarwaddy Development company ",
                 }
             ],
             project_name="Sta. Elvira (Martinez) project",
@@ -138,27 +140,28 @@ class Command(BaseCommand):
             former_land_cover=["CROPLAND"],
             former_land_cover_comment="former_land_cover_comment",
             crops=[
-                {"value": ["CAW"], "hectares": "695"},
-                {"value": ["MAN"], "hectares": "50"},
+                {"choices": ["CAW"], "hectares": "695"},
+                {"choices": ["MAN"], "hectares": "50", "current": True},
             ],
             crops_comment="crops_comment",
             animals=[
                 {
-                    "value": ["SHP", "DCT"],
+                    "choices": ["SHP", "DCT"],
                     "date": "2010-02-23",
                     "tons": "10000",
                     "hectares": "2000",
                     "percent": "30",
+                    "current": True,
                 }
             ],
             animals_comment="animal_comment",
-            mineral_resources=[{"value": ["IRO"]}],
+            mineral_resources=[{"choices": ["IRO"], "current": True}],
             mineral_resources_comment="resources_comment",
-            contract_farming_crops=[
-                {"value": "14", "current": True, "hectares": "1306"}
-            ],
+            # contract_farming_crops=[
+            #     {"value": "14", "current": True, "hectares": "1306"}
+            # ],
             contract_farming_crops_comment="contract_farming_crops_comment",
-            contract_farming_animals=[{"value": "14"}],
+            # contract_farming_animals=[{"value": "14"}],
             contract_farming_animals_comment="contract_farming_animals_comment",
             has_domestic_use=True,
             domestic_use=50,
@@ -196,66 +199,69 @@ class Command(BaseCommand):
             confidential_comment="confidential_comment",
             status=2,
             draft_status=1,
+            locations=[
+                {
+                    "name": "Kreuzberg",
+                    "description": "Ich komm aus Kreuzberg, du ***",
+                    "point": {"lng": 13.402981, "lat": 52.497216},
+                    "facility_name": "Atomwaffen An- und Verkauf",
+                    "level_of_accuracy": "COORDINATES",
+                    "comment": "Im Keller der Sinnwerkstatt",
+                    "areas": None,
+                },
+                {
+                    "name": "Bern",
+                    "description": "hat auch nen Bären.",
+                    "point": {"lng": 7.459640, "lat": 46.948007},
+                    "facility_name": "Bärengraben",
+                    "level_of_accuracy": "COORDINATES",
+                    "comment": "Achtung, Braunbär.",
+                    "areas": None,
+                },
+            ],
         )
 
-        Location.objects.create(
-            name="Kreuzberg",
-            description="Ich komm aus Kreuzberg, du ***",
-            point=Point(13.402981, 52.497216),
-            facility_name="Atomwaffen An- und Verkauf",
-            level_of_accuracy="COORDINATES",
-            comment="Im Keller der Sinnwerkstatt",
-            deal=deal,
-        )
-        Location.objects.create(
-            name="Bern",
-            description="hat auch nen Bären.",
-            point=Point(7.459640, 46.948007),
-            facility_name="Bärengraben",
-            level_of_accuracy="COORDINATES",
-            comment="Achtung, Braunbär.",
-            deal=deal,
-        )
-        Contract.objects.create(
-            number="TSC12312",
-            date="2020-02-22",
-            expiration_date="2021-01-01",
-            agreement_duration=1,
-            comment="Halt n Vertrag",
-            deal=deal,
-        )
-        Contract.objects.create(
-            number="Streng geheim!",
-            date="1985-03-11",
-            expiration_date="2024-01-01",
-            agreement_duration=1,
-            comment="geheimer Vertrag",
-            deal=deal,
-        )
+        # )
+        # Contract.objects.create(
+        #     number="TSC12312",
+        #     date="2020-02-22",
+        #     expiration_date="2021-01-01",
+        #     agreement_duration=1,
+        #     comment="Halt n Vertrag",
+        #     deal=deal,
+        # )
+        # Contract.objects.create(
+        #     number="Streng geheim!",
+        #     date="1985-03-11",
+        #     expiration_date="2024-01-01",
+        #     agreement_duration=1,
+        #     comment="geheimer Vertrag",
+        #     deal=deal,
+        # )
 
-        DataSource.objects.create(
-            type="MEDIA_REPORT",
-            url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-            file="ricky.pdf",
-            file_not_public=False,
-            publication_title="Never gonna give you up!",
-            date="2009-10-24",
-            name="Mr. Astley",
-            company="Trolling Inc.",
-            email="rick@rolled.com",
-            phone="+1234567890",
-            includes_in_country_verified_information=True,
-            open_land_contracts_id="RRLD000012",
-            comment="Rick-rollin' comment",
-            deal=deal,
-        )
-        DataSource.objects.create(
-            type="CONTRACT",
-            publication_title="Never gonna give you up!",
-            date="2012-01-23",
-            comment="Rick-rollin' comment",
-            deal=deal,
-        )
+        # DataSource.objects.create(
+        #     type="MEDIA_REPORT",
+        #     url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        #     file="ricky.pdf",
+        #     file_not_public=False,
+        #     publication_title="Never gonna give you up!",
+        #     date="2009-10-24",
+        #     name="Mr. Astley",
+        #     company="Trolling Inc.",
+        #     email="rick@rolled.com",
+        #     phone="+1234567890",
+        #     includes_in_country_verified_information=True,
+        #     open_land_contracts_id="RRLD000012",
+        #     comment="Rick-rollin' comment",
+        #     deal=deal,
+        # )
+        # DataSource.objects.create(
+        #     type="CONTRACT",
+        #     publication_title="Never gonna give you up!",
+        #     date="2012-01-23",
+        #     comment="Rick-rollin' comment",
+        #     deal=deal,
+        # )
         deal.save()
         print("Adding investor")
         i1 = Investor.objects.create(

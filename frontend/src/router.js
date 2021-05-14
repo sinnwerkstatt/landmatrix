@@ -17,20 +17,6 @@ const Dashboard = () => import("$views/Manager/Dashboard");
 const NotFound = () => import("$views/NotFound");
 const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
 
-// import DataMap from "$views/Data/GlobalMap";
-// import DynamicsOverview from "$views/Data/Charts/DynamicsOverview";
-// import ProduceInfoTreeMap from "$views/Data/Charts/ProduceInfoTreeMap";
-// import WebOfTransnationalDeals from "$views/Data/Charts/WebOfTransnationalDeals";
-// import DataList from "$views/Data/List";
-// import CaseStatistics from "$views/Manager/CaseStatistics";
-// import DealCompare from "$views/Deal/Compare";
-// import DealDetail from "$views/Deal/Detail";
-// import DealEdit from "$views/Deal/Edit";
-// import InvestorDetail from "$views/Investor/Detail";
-// import Dashboard from "$views/Manager/Dashboard";
-// import NotFound from "$views/NotFound";
-// import Wagtail from "$views/Wagtail/WagtailSwitch";
-
 Vue.use(Router);
 
 const router = new Router({

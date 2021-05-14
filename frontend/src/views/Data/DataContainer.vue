@@ -21,7 +21,7 @@
     components: { ContextBarMap, FilterBar, ViewSwitcher },
   };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .datacontainer {
     position: relative;
     padding: 0;

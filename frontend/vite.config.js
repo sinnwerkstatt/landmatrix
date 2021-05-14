@@ -28,13 +28,15 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      "/admin": "http://localhost:8000",
       "/api": "http://localhost:8000",
+      "/cms": "http://localhost:8000",
       "/graphql": "http://localhost:8000",
-      "/wagtailapi": "http://localhost:8000",
+      "/language": "http://localhost:8000",
+      "/legacy": "http://localhost:8000",
       "/media": "http://localhost:8000",
       "/static": "http://localhost:8000",
-      "/legacy": "http://localhost:8000",
-      "/language": "http://localhost:8000",
+      "/wagtailapi": "http://localhost:8000",
     },
   },
 });

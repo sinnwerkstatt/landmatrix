@@ -7,6 +7,7 @@
       :class="valid_state"
       placeholder="YYYY-MM-DD"
       :required="required"
+      ref="inputfield"
     />
   </div>
 </template>
@@ -38,17 +39,27 @@
       val(v) {
         if (!v) {
           this.$emit("input", null);
+          this.valid_state = "";
+          this.$refs.inputfield.setCustomValidity("");
           return;
         }
         v = v.replace("/", "-");
 
-        this.valid_state = dayjs(
+        let field_valid = dayjs(
           this.val,
           ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
           true
-        ).isValid()
-          ? "is-valid"
-          : "is-invalid";
+        ).isValid();
+
+        if (field_valid) {
+          this.valid_state = "is-valid";
+          this.$refs.inputfield.setCustomValidity("");
+        } else {
+          this.valid_state = "is-invalid";
+          this.$refs.inputfield.setCustomValidity(
+            "Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"
+          );
+        }
 
         this.$emit("input", v);
       },

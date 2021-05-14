@@ -36,7 +36,11 @@
     },
     computed: {
       placeholder() {
-        if (this.minValue !== null && this.maxValue !== null) {
+        if (
+          this.minValue !== null &&
+          this.maxValue !== null &&
+          this.minValue !== -2147483648
+        ) {
           return `${this.minValue} - ${this.maxValue}`;
         }
         return "100.23";

@@ -41,6 +41,16 @@
 </script>
 
 <style lang="scss">
+  .datacontainer {
+    position: relative;
+    padding: 0;
+    width: 100%;
+    height: calc(100vh - 60px - 31px);
+    .main-content {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .charts-container {
     text-align: center;
     height: 100%;

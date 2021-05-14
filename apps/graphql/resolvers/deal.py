@@ -57,6 +57,13 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC
             ["top_investors", "parent_companies"],
         )[0]
 
+    if deal.get("locations") is None:
+        deal["locations"] = []
+    if deal.get("contracts") is None:
+        deal["contracts"] = []
+    if deal.get("datasources") is None:
+        deal["datasources"] = []
+
     if add_versions:
         deal["versions"] = [
             dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
