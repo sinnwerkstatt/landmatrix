@@ -8,15 +8,21 @@ from django.utils.translation import ugettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, FieldRowPanel
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    MultiFieldPanel,
+    FieldRowPanel,
+    StreamFieldPanel,
+)
 from wagtail.api import APIField
-from wagtail.core.fields import RichTextField
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.images import get_image_model_string
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 
 from .utils import unique_slugify
+from ..wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 
 
 class BlogIndexPageAbstract(Page):
@@ -113,7 +119,7 @@ def limit_author_choices():
 
 
 class BlogPageAbstract(Page):
-    body = RichTextField(verbose_name=_("body"), blank=True)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS, verbose_name=_("body"), blank=True)
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(
         _("Post date"),
@@ -190,5 +196,5 @@ class BlogPageAbstract(Page):
             heading="Tags and Categories",
         ),
         ImageChooserPanel("header_image"),
-        FieldPanel("body", classname="full"),
+        StreamFieldPanel("body", classname="full"),
     ]

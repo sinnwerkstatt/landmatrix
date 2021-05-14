@@ -167,7 +167,7 @@ class BlogPage(BlogPageAbstract):
         except (AttributeError, SourceImageIOError):
             header_image = None
 
-        body = expand_db_html(self.body)
+        body = str(self.body)
         return {
             "id": self.id,
             "title": self.title,
