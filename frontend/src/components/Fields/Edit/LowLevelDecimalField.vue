@@ -5,9 +5,10 @@
       type="number"
       step="0.01"
       class="form-control"
-      placeholder="100.23"
+      :placeholder="placeholder"
       :required="required"
       :max="maxValue"
+      :min="minValue"
     />
     <div v-if="unit" class="input-group-append">
       <span class="input-group-text">
@@ -26,24 +27,33 @@
       required: { type: Boolean, default: false },
       value: { type: Number, required: false, default: null },
       maxValue: { type: Number, required: false, default: null },
+      minValue: { type: Number, required: false, default: null },
     },
     data() {
       return {
         val: this.value,
       };
     },
+    computed: {
+      placeholder() {
+        if (this.minValue !== null && this.maxValue !== null) {
+          return `${this.minValue} - ${this.maxValue}`;
+        }
+        return "100.23";
+      },
+    },
     watch: {
       value(newValue) {
         this.val = newValue;
       },
       val(v) {
-        if (!v) {
+        if (!v && v !== 0) {
           this.$emit("input", null);
           return;
         }
-        if (this.maxValue && v > this.maxValue) {
-          this.val = this.maxValue;
-        }
+        if (this.maxValue && v > this.maxValue) this.val = this.maxValue;
+        if (this.minValue && v < this.maxValue) this.val = this.minValue;
+
         let v_str = v.toString();
         if (v_str.includes(".")) {
           let number = v_str.split(".");

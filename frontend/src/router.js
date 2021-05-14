@@ -12,6 +12,7 @@ const DealCompare = () => import("$views/Deal/Compare");
 const DealDetail = () => import("$views/Deal/Detail");
 const DealEdit = () => import("$views/Deal/Edit");
 const InvestorDetail = () => import("$views/Investor/Detail");
+const InvestorEdit = () => import("$views/Investor/Edit");
 const Dashboard = () => import("$views/Manager/Dashboard");
 const NotFound = () => import("$views/NotFound");
 const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
@@ -112,6 +113,12 @@ const router = new Router({
       path: "/deal/:dealId/compare/:fromVersion/:toVersion/",
       name: "deal_compare",
       component: DealCompare,
+      props: true,
+    },
+    {
+      path: "/investor/edit/:investorId/:investorVersion?/",
+      name: "investor_edit",
+      component: InvestorEdit,
       props: true,
     },
     {

@@ -101,8 +101,19 @@ export const investors_query = {
 
 export const investor_query = {
   query: gql`
-    query Investor($id: Int!, $version: Int, $depth: Int, $includeDeals: Boolean!) {
-      investor(id: $id, version: $version, involvements_depth: $depth) {
+    query Investor(
+      $id: Int!
+      $version: Int
+      $depth: Int
+      $includeDeals: Boolean!
+      $involvements_include_ventures: Boolean
+    ) {
+      investor(
+        id: $id
+        version: $version
+        involvements_depth: $depth
+        involvements_include_ventures: $involvements_include_ventures
+      ) {
         id
         name
         country {
@@ -160,6 +171,7 @@ export const investor_query = {
       version: +this.investorVersion,
       depth: this.depth,
       includeDeals: this.includeDealsInQuery,
+      involvements_include_ventures: this.involvementsIncludeVentures,
     };
   },
   update(data) {
@@ -385,6 +397,7 @@ export const deal_gql_query = gql`
       confidential_reason
       confidential_comment
       is_public
+      not_public_reason
       has_known_investor
       locations {
         id

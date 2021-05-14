@@ -11,5 +11,6 @@ class InvestorForm(VueForm):
 class InvestorVentureInvolvementForm(VueForm):
     model = InvestorVentureInvolvement
     attributes = {
-        "involvement_type": {"class": "TextField", "label": _("Involvement type")}
+        "involvement_type": {"class": "TextField", "label": _("Involvement type")},
+        "percentage": {"unit": "%"},
     }

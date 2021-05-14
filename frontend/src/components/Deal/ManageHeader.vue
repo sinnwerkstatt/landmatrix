@@ -6,7 +6,7 @@
           <h1>Deal #{{ deal.id }}</h1>
         </div>
         <div class="col-sm-7 col-md-9 panel-container">
-          <DealDates :deal="deal" />
+          <HeaderDates :obj="deal" />
         </div>
       </div>
       <div class="row fat-stati">
@@ -149,10 +149,11 @@
 
 <script>
   import gql from "graphql-tag";
-  import DealDates from "./DealDates";
+  import HeaderDates from "../HeaderDates";
+
   export default {
     name: "ManageHeader",
-    components: { DealDates },
+    components: { HeaderDates },
     props: {
       deal: { type: Object, required: true },
       dealVersion: { type: [Number, String], default: null },

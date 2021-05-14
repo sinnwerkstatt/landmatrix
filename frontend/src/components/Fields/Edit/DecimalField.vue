@@ -4,6 +4,8 @@
       v-model="val"
       :required="formfield.required"
       :unit="formfield.unit"
+      :max-value="formfield.max_value"
+      :min-value="formfield.min_value"
     />
   </div>
 </template>

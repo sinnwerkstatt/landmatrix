@@ -30,7 +30,7 @@
       <DealSubmodelEditSection
         title="Contracts"
         model-name="Contract"
-        :entries="deal.contracts"
+        :entries="deal.contracts || []"
         :fields="deal_submodel_sections.contract"
         model="contract"
         :active="active_tab === '#contracts'"
@@ -77,7 +77,7 @@
       <DealSubmodelEditSection
         title="Data sources"
         model-name="Data source"
-        :entries="deal.datasources"
+        :entries="deal.datasources || []"
         :fields="deal_submodel_sections.datasource"
         model="datasource"
         :active="active_tab === '#data_sources'"

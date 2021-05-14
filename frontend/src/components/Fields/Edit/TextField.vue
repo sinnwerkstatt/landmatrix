@@ -27,6 +27,7 @@
         :aria-label="formfield.placeholder || formfield.label"
         :name="formfield.name"
         class="form-control"
+        :maxlength="formfield.max_length"
       />
     </div>
     <!--      <div v-if="formfield.unit" class="input-group-append">-->

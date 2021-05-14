@@ -2,10 +2,13 @@
   <div v-if="deal" class="container deal-detail">
     <ManageHeader v-if="manage" :deal="deal" :dealVersion="dealVersion" />
     <div v-else class="row">
-      <div class="col-sm-5 col-md-3">
-        <h1>Deal #{{ deal.id }}</h1>
+      <div>
+        <h1>
+          Deal #{{ deal.id }}
+          <span v-if="deal.country">in {{ deal.country.name }}</span>
+        </h1>
       </div>
-      <div class="col-sm-7 col-md-9 panel-container">
+      <div class="ml-auto">
         <a
           v-if="$store.getters.userAuthenticated"
           :href="`/legacy/deal/edit/${deal.id}/`"
@@ -13,11 +16,11 @@
         >
           <i class="fas fa-edit"></i> {{ $t("Edit") }}
         </a>
-        <DealDates :deal="deal" />
+        <HeaderDates :obj="deal" />
       </div>
     </div>
 
-    <p v-if="not_public" class="alert alert-danger mb-4">{{ $t(not_public) }}</p>
+    <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
     <!--    <div class="quicknav">-->
     <!--      <div v-for="(version, i) in deal.versions">-->
     <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
@@ -59,7 +62,7 @@
       <DealSubmodelSection
         title="Contracts"
         model-name="Contract"
-        :entries="deal.contracts"
+        :entries="deal.contracts || []"
         :fields="deal_submodel_sections.contract"
         model="contract"
         :active="active_tab === '#contracts'"
@@ -106,7 +109,7 @@
       <DealSubmodelSection
         title="Data sources"
         model-name="Data source"
-        :entries="deal.datasources"
+        :entries="deal.datasources || []"
         :fields="deal_submodel_sections.datasource"
         model="datasource"
         :active="active_tab === '#data_sources'"
@@ -206,13 +209,13 @@
 
 <script>
   import DealComments from "$components/Deal/DealComments";
-  import DealDates from "$components/Deal/DealDates";
   import DealHistory from "$components/Deal/DealHistory";
   import DealLocationsSection from "$components/Deal/DealLocationsSection";
   import DealSection from "$components/Deal/DealSection";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
   import ManageHeader from "$components/Deal/ManageHeader";
   import InvestorGraph from "$components/Investor/InvestorGraph";
+  import HeaderDates from "$components/HeaderDates";
   import { deal_gql_query } from "$store/queries";
 
   import gql from "graphql-tag";
@@ -223,8 +226,8 @@
   export default {
     name: "Detail",
     components: {
+      HeaderDates,
       DealComments,
-      DealDates,
       DealHistory,
       DealLocationsSection,
       DealSection,
@@ -330,11 +333,15 @@
       not_public() {
         if (this.deal) {
           if (this.deal.status === 1 || this.deal.status === 6)
-            return "This deal version is pending.";
+            return this.$t("This deal version is pending.");
           if (this.deal.status === 4)
-            return "This deal has been deleted. It is not visible for public users.";
+            return this.$t(
+              "This deal has been deleted. It is not visible for public users."
+            );
           if (this.deal.status === 5)
-            return "This deal version has been rejected. It is not visible for public users.";
+            return this.$t(
+              "This deal version has been rejected. It is not visible for public users."
+            );
         }
         return null;
       },
@@ -429,38 +436,6 @@
     .sticky-top {
       top: 5em;
       z-index: 90;
-    }
-  }
-
-  .panel-container {
-    text-align: right;
-
-    .meta-panel {
-      text-align: left;
-      display: inline-block;
-      background-color: darken(white, 2);
-      padding: 0.5em 1em;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      color: rgba(0, 0, 0, 0.25);
-
-      .inlinefield {
-        display: inline-block;
-
-        &:not(:last-child) {
-          margin-right: 1em;
-        }
-
-        .inlinelabel {
-          display: inline-block;
-          color: rgba(0, 0, 0, 0.3);
-        }
-
-        .inlineval {
-          display: inline-block;
-          font-style: italic;
-        }
-      }
     }
   }
 </style>

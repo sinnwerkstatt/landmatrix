@@ -1,10 +1,12 @@
 <template>
   <div>
-    <select v-model="val" class="form-control">
-      <option v-for="choice in choices" :key="choice.id" :value="choice.id">
-        {{ choice.name }}
-      </option>
-    </select>
+    <multiselect
+      v-model="val"
+      :options="choices"
+      label="name"
+      :custom-label="fancyName"
+      track-by="id"
+    />
   </div>
 </template>
 
@@ -20,12 +22,22 @@
     data() {
       return {
         currencies: [],
+        investors: [],
       };
     },
     apollo: {
       currencies: gql`
         query {
           currencies {
+            id
+            name
+            code
+          }
+        }
+      `,
+      investors: gql`
+        query {
+          investors(sort: "name", limit: 0) {
             id
             name
           }
@@ -35,11 +47,12 @@
     computed: {
       val: {
         get() {
-          return this.value ? this.value.id : null;
+          return this.value;
         },
         set(v) {
-          let choice = this.choices.find((c) => c.id === v);
-          this.$emit("input", { id: choice.id, name: choice.name });
+          let ret = { id: v.id, name: v.name };
+          if (this.formfield.related_model === "Currency") ret["code"] = v.code;
+          this.$emit("input", ret);
         },
       },
 
@@ -47,8 +60,21 @@
         let options = {
           Country: this.$store.state.page.countries,
           Currency: this.currencies,
+          Investor: this.investors,
         };
         return options[this.formfield.related_model];
+      },
+    },
+    methods: {
+      fancyName(model) {
+        switch (this.formfield.related_model) {
+          case "Investor":
+            return `${model.name} (#${model.id})`;
+          case "Currency":
+            return `${model.name} (${model.code})`;
+          default:
+            return model.name;
+        }
       },
     },
   };

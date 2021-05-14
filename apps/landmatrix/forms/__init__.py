@@ -43,6 +43,14 @@ class VueForm:
             richfield["choices"] = choices
         if mfield.help_text:
             richfield["help_text"] = gettext(mfield.help_text)
+        if mfield.max_length:
+            richfield["max_length"] = mfield.max_length
+
+        for validator in mfield.validators:
+            if "MinValueValidator" == validator.__class__.__name__:
+                richfield["min_value"] = validator.limit_value
+            if "MaxValueValidator" == validator.__class__.__name__:
+                richfield["max_value"] = validator.limit_value
 
         if mfield.name in list(self._attributes.keys()):
             richfield.update(self._attributes[mfield.name])

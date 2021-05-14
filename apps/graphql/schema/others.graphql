@@ -32,6 +32,8 @@ type Region {
 type Currency {
   id: Int
   name: String
+  symbol: String
+  code: String
 }
 
 type Animal {

@@ -4,10 +4,10 @@
       <LoadingPulse />
     </div>
     <div v-else class="row">
-      <div class="col-sm-5 col-md-3">
+      <div>
         <h1>Investor #{{ investor.id }}</h1>
       </div>
-      <div class="col-sm-7 col-md-9 panel-container">
+      <div class="panel-container ml-auto">
         <a
           v-if="$store.getters.userAuthenticated"
           :href="`/legacy/investor/edit/${investor.id}/`"
@@ -15,24 +15,7 @@
         >
           <i class="fas fa-edit" /> {{ $t("Edit") }}
         </a>
-        <div class="meta-panel">
-          <DisplayField
-            :wrapper-classes="['inlinefield']"
-            :label-classes="['inlinelabel']"
-            :value-classes="['inlineval']"
-            fieldname="created_at"
-            model="investor"
-            :value="investor.created_at"
-          />
-          <DisplayField
-            :wrapper-classes="['inlinefield']"
-            :label-classes="['inlinelabel']"
-            :value-classes="['inlineval']"
-            fieldname="modified_at"
-            model="investor"
-            :value="investor.modified_at"
-          />
-        </div>
+        <HeaderDates :obj="investor" />
       </div>
     </div>
     <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
@@ -240,6 +223,7 @@
 <script>
   import LoadingPulse from "$components/Data/LoadingPulse";
   import DisplayField from "$components/Fields/DisplayField";
+  import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
   import InvestorHistory from "$components/Investor/InvestorHistory";
   import store from "$store";
@@ -248,7 +232,13 @@
 
   export default {
     name: "InvestorDetail",
-    components: { InvestorHistory, LoadingPulse, InvestorGraph, DisplayField },
+    components: {
+      HeaderDates,
+      InvestorHistory,
+      LoadingPulse,
+      InvestorGraph,
+      DisplayField,
+    },
     props: {
       investorId: { type: [Number, String], required: true },
       investorVersion: { type: [Number, String], default: null },

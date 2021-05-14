@@ -1,19 +1,15 @@
 <template>
   <div>
-    <v-date-picker
-      v-model="val"
-      :masks="{ input: 'YYYY-MM-DD' }"
-      :max-date="new Date()"
-      :input-props="{ style: 'width: 100%' }"
-    />
+    <LowLevelDateYearField v-model="val" />
   </div>
 </template>
 
 <script>
-  import dayjs from "dayjs";
+  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField";
 
   export default {
     name: "DateField",
+    components: { LowLevelDateYearField },
     props: {
       formfield: { type: Object, required: true },
       value: { type: [Date, String], required: false, default: null },
@@ -22,10 +18,10 @@
     computed: {
       val: {
         get() {
-          return this.value ? dayjs(this.value).toDate() : null;
+          return this.value;
         },
         set(v) {
-          this.$emit("input", dayjs(v).format("YYYY-MM-DD"));
+          this.$emit("input", v);
         },
       },
     },
