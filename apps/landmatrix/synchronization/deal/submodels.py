@@ -16,6 +16,7 @@ def create_locations(deal, groups, do_save, revision):
         "Approximate location": "APPROXIMATE_LOCATION",
         "Ubicación aproximada": "APPROXIMATE_LOCATION",
         "Exact location": "EXACT_LOCATION",
+        "Ubicación exacta": "EXACT_LOCATION",
         "Coordinates": "COORDINATES",
         "Coordenadas": "COORDINATES",
     }
@@ -35,6 +36,7 @@ def create_locations(deal, groups, do_save, revision):
 
         # location.point
         if attrs.get("point_lat") and attrs.get("point_lon"):
+            print(attrs.get("point_lat"), attrs.get("point_lon"))
             try:
                 point_lat = attrs.get("point_lat").replace(",", ".").replace("°", "")
                 point_lat = float(point_lat)

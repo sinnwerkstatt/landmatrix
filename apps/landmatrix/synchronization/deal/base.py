@@ -256,6 +256,7 @@ def parse_local_communities(deal, attrs):
         "Not consulted": "NOT_CONSULTED",
         "Sin consultar": "NOT_CONSULTED",
         "Limited consultation": "LIMITED_CONSULTATION",
+        "Consulta limitada": "LIMITED_CONSULTATION",
         "Free prior and informed consent": "FPIC",
         "Free, Prior and Informed Consent (FPIC)": "FPIC",
         "Certified Free, Prior and Informed Consent (FPIC)": "FPIC",
@@ -310,10 +311,12 @@ def parse_local_communities(deal, attrs):
         "Environmental degradation": "ENVIRONMENTAL_DEGRADATION",
         "Degradación ambiental": "ENVIRONMENTAL_DEGRADATION",
         "Socio-economic": "SOCIO_ECONOMIC",
+        "Socio-económico": "SOCIO_ECONOMIC",
         "Cultural loss": "CULTURAL_LOSS",
         "Pérdida cultural": "CULTURAL_LOSS",
         "Eviction": "EVICTION",
         "Displacement": "DISPLACEMENT",
+        "Desplazamiento": "DISPLACEMENT",
         "Violence": "VIOLENCE",
         "Violencia": "VIOLENCE",
         "Other": "OTHER",
@@ -361,11 +364,15 @@ def parse_former_use(deal, attrs):
         "State": "STATE",
         "Estado": "STATE",
         "Private (smallholders)": "PRIVATE_SMALLHOLDERS",
+        "Privado (pequeños agricultures)": "PRIVATE_SMALLHOLDERS",
         "Private (large-scale farm)": "PRIVATE_LARGE_SCALE",
+        "Privado  (agricultura a gran escala)": "PRIVATE_LARGE_SCALE",
         "Private (large-scale)": "PRIVATE_LARGE_SCALE",
         "Community": "COMMUNITY",
+        "Comunidad": "COMMUNITY",
         "Indigenous people": "INDIGENOUS_PEOPLE",
         "Other": "OTHER",
+        "Otro": "OTHER",
     }
     deal.former_land_owner = _extras_to_list(attrs, "land_owner", FORMER_LAND_OWNER_MAP)
     deal.former_land_owner_comment = attrs.get("tg_land_owner_comment") or ""
@@ -373,6 +380,7 @@ def parse_former_use(deal, attrs):
     FORMER_LAND_USE_MAP = {
         "Commercial (large-scale) agriculture": "COMMERCIAL_AGRICULTURE",
         "Smallholder agriculture": "SMALLHOLDER_AGRICULTURE",
+        "Agricultura minifundista": "SMALLHOLDER_AGRICULTURE",
         "Shifting cultivation": "SHIFTING_CULTIVATION",
         "Pastoralism": "PASTORALISM",
         "Pastoralismo": "PASTORALISM",
@@ -382,21 +390,25 @@ def parse_former_use(deal, attrs):
         "Conservation": "CONSERVATION",
         "Conservación": "CONSERVATION",
         "Other": "OTHER",
+        "Otro": "OTHER",
     }
     deal.former_land_use = _extras_to_list(attrs, "land_use", FORMER_LAND_USE_MAP)
     deal.former_land_use_comment = attrs.get("tg_land_use_comment") or ""
 
     FORMER_LAND_COVER_MAP = {
         "Cropland": "CROPLAND",
+        "Tierra de cultivo": "CROPLAND",
         "Forest land": "FOREST_LAND",
         "Bosques": "FOREST_LAND",
         "Pasture": "PASTURE",
+        "Pastura": "PASTURE",
         "Shrub land/Grassland (Rangeland)": "RANGELAND",
         "Shrub land/Grassland": "RANGELAND",
         "Matorrales/Praderas (Pastizales)": "RANGELAND",
         "Marginal land": "MARGINAL_LAND",
         "Wetland": "WETLAND",
         "Other land (e.g. developed land – specify in comment field)": "OTHER_LAND",
+        "Otras tierras (ej. terrenos urbanizados - especifíquese en el campo para comentarios)": "OTHER_LAND",
         "Other land": "OTHER_LAND",
     }
     deal.former_land_cover = _extras_to_list(attrs, "land_cover", FORMER_LAND_COVER_MAP)
@@ -603,7 +615,9 @@ def parse_water(deal, attrs):
         "Groundwater": "GROUNDWATER",
         "Aguas subterráneas": "GROUNDWATER",
         "Surface water": "SURFACE_WATER",
+        "Aguas superficiales": "SURFACE_WATER",
         "River": "RIVER",
+        "Río": "RIVER",
         "Lake": "LAKE",
     }
 
