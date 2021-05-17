@@ -4,7 +4,6 @@ from apps.landmatrix.models import (
     Deal,
     Investor,
     Country,
-    DataSource,
     InvestorVentureInvolvement,
 )
 
@@ -22,8 +21,8 @@ def public_deal(db) -> Deal:
         country=c1,
         operating_company=i1,
         status=2,
+        datasources=[{"name": "Test data source"}],
     )
-    DataSource.objects.create(deal=deal, name="Test data source")
 
     assert Deal.objects.filter(id=3).count() == 1
     assert Deal.objects.get(id=3).operating_company
