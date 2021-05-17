@@ -69,7 +69,7 @@
     },
   };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .sideBuffer {
     min-width: 220px;
     max-width: 300px;
