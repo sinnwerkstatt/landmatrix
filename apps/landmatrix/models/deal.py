@@ -83,7 +83,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     """ Deal """
 
     """ Locations """
-    locations = LocationsField(_("Locations"), blank=True, null=True)
+    locations = LocationsField(_("Locations"), default=list)
 
     """ General info """
     # Land area
@@ -333,7 +333,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     )
 
     """ Contracts """
-    contracts = ContractsField(_("Contracts"), blank=True, null=True)
+    contracts = ContractsField(_("Contracts"), default=list)
 
     """ Employment """
     total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
@@ -455,7 +455,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     )
 
     """ Data sources """
-    datasources = DatasourcesField(_("Data sources"), blank=True, null=True)
+    datasources = DatasourcesField(_("Data sources"), default=list)
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
@@ -1247,9 +1247,9 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
                 top_inv = [x for x in parent_companies if x.is_top_investor]
                 self.top_investors.set(top_inv)
                 return
-
-        self.parent_companies.set([])
-        self.top_investors.set([])
+        if self.id:
+            self.parent_companies.set([])
+            self.top_investors.set([])
 
     def _calculate_public_state(self) -> str:
         """

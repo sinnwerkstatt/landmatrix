@@ -475,7 +475,6 @@ def _merge_area_yield_export(attrs, name, fieldmap):
                 abgehandelt = True
                 if export.get("export"):
                     area["export"] = export["export"]
-                    print(area)
         if not abgehandelt:
             areas += [export]
     if areas:

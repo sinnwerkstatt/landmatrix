@@ -7,13 +7,18 @@ export default defineConfig({
   plugins: [createVuePlugin(/*options*/)],
 
   resolve: {
-    extensions: [".js", ".vue"],
+    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     alias: {
       $components: resolve("src/components"),
       $views: resolve("src/views"),
       $store: resolve("src/store"),
       $utils: resolve("src/utils"),
       $static: resolve("src/static"),
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [require("autoprefixer")],
     },
   },
   build: {
@@ -23,11 +28,17 @@ export default defineConfig({
         entryFileNames: `[name].js`,
         chunkFileNames: `[name].js`,
         assetFileNames: `[name].[ext]`,
+        // chunkFileNames: ({ name }) =>
+        //   name === "vendor" ? "vendor.js" : "[name]-[hash].js",
+        // assetFileNames: ({ name }) =>
+        //   name === "index.css" ? "index.css" : `[name].[hash].[ext]`,
       },
     },
   },
   server: {
+    host: "0.0.0.0",
     proxy: {
+      "/accounts": "http://localhost:8000",
       "/admin": "http://localhost:8000",
       "/api": "http://localhost:8000",
       "/cms": "http://localhost:8000",

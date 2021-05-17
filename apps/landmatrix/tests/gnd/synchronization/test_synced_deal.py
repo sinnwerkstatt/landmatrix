@@ -14,7 +14,6 @@ from apps.landmatrix.models import (
 #  loesche deal: stelle sicher, dass die revisionen erhalten bleiben?
 #    also vermutlich nur als geloescht markieren
 from apps.landmatrix.models.deal import DealVersion
-from apps.landmatrix.models.deal_submodels import LocationVersion
 
 
 @pytest.mark.django_db
@@ -206,8 +205,8 @@ def test_activity_with_attributes():
     d1 = Deal.objects.get(id=ID)
     loc1 = d1.locations.get()
     assert loc1.point.coords == (10.0123, 5.0123)
-    loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
-    assert len(loc_versions) == 1
+    # loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
+    # assert len(loc_versions) == 1
 
     histact2 = HistoricalActivity(activity_identifier=ID, fk_status_id=3)
     histact2.save(update_elasticsearch=False)
@@ -232,10 +231,10 @@ def test_activity_with_attributes():
     loc1 = d1.locations.get()
     assert loc1.point.coords == (10.456, 5.456)
     assert loc1.description == "Loc1.a"
-    loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
-    assert len(loc_versions) == 2
-    assert loc_versions[0].fields["point"].coords == (10.456, 5.456)
-    assert loc_versions[1].fields["point"].coords == (10.0123, 5.0123)
+    # loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
+    # assert len(loc_versions) == 2
+    # assert loc_versions[0].fields["point"].coords == (10.456, 5.456)
+    # assert loc_versions[1].fields["point"].coords == (10.0123, 5.0123)
 
 
 @pytest.mark.django_db

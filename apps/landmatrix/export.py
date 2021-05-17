@@ -1,10 +1,12 @@
 import json
 import zipfile
+from datetime import datetime
 from io import BytesIO
 
 import unicodecsv as csv
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
@@ -14,9 +16,6 @@ from apps.landmatrix.models import (
     Investor,
     InvestorVentureInvolvement,
     Currency,
-    Location,
-    DataSource,
-    Contract,
     Country,
     Crop,
     Animal,
@@ -405,23 +404,16 @@ class DataDownload:
                 qs, deal_flattened_fields, deal_sub_fields.keys()
             )
         ]
-        self.locations = [
-            self.location_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                deal.locations.all(), list(location_fields.keys())
-            )
-        ]
-        self.contracts = [
-            self.contracts_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                deal.contracts.all(), list(contract_fields.keys())
-            )
-        ]
+
+        [loc.update({"deal_id": deal_id}) for loc in deal.locations]
+        self.locations = [self.location_download_format(x) for x in deal.locations]
+
+        [d.update({"deal_id": deal_id}) for d in deal.contracts]
+        self.contracts = [self.contracts_download_format(x) for x in deal.contracts]
+
+        [d.update({"deal_id": deal_id}) for d in deal.datasources]
         self.datasources = [
-            self.datasource_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                deal.datasources.all(), list(datasource_fields.keys())
-            )
+            self.datasource_download_format(x) for x in deal.datasources
         ]
 
         self.investors = []
@@ -447,30 +439,26 @@ class DataDownload:
             )
         ]
 
-        self.locations = [
-            self.location_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                Location.objects.filter(deal_id__in=deal_ids).order_by("deal_id", "id"),
-                list(location_fields.keys()),
-            )
-        ]
-        self.contracts = [
-            self.contracts_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                Contract.objects.filter(deal_id__in=deal_ids).order_by("deal_id", "id"),
-                list(contract_fields.keys()),
-            )
-        ]
+        self.locations = []
+        for d in qs:
+            if d.locations:
+                for loc in d.locations:
+                    loc.update({"deal_id": d.id})
+                    self.locations += [self.location_download_format(loc)]
 
-        self.datasources = [
-            self.datasource_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                DataSource.objects.filter(deal_id__in=deal_ids).order_by(
-                    "deal_id", "id"
-                ),
-                list(datasource_fields.keys()),
-            )
-        ]
+        self.contracts = []
+        for d in qs:
+            if d.contracts:
+                for con in d.contracts:
+                    con.update({"deal_id": d.id})
+                    self.contracts += [self.contracts_download_format(con)]
+
+        self.datasources = []
+        for d in qs:
+            if d.datasources:
+                for ds in d.datasources:
+                    ds.update({"deal_id": d.id})
+                    self.datasources += [self.datasource_download_format(ds)]
 
         qs = Investor.objects.visible(self.user).order_by("id")
         self.investors = [
@@ -863,9 +851,9 @@ class DataDownload:
                             [
                                 dat.get("date") or "",
                                 "current" if dat.get("current") else "",
-                                dat.get("area") or "",
-                                dat.get("yield") or "",
-                                dat.get("export") or "",
+                                str(dat.get("area") or ""),
+                                str(dat.get("yield") or ""),
+                                str(dat.get("export") or ""),
                                 ", ".join(
                                     [
                                         mchoices.get(produce_type).get(x, x)
@@ -920,17 +908,41 @@ class DataDownload:
     @staticmethod
     def location_download_format(data):
         if data.get("point"):
-            data["point"] = f"{data['point'].y},{data['point'].x}"
+            data["point"] = f"{data['point']['lat']},{data['point']['lng']}"
         if data.get("level_of_accuracy"):
-            data["level_of_accuracy"] = dict(Location.ACCURACY_CHOICES)[
-                data["level_of_accuracy"]
-            ]
+            data["level_of_accuracy"] = {
+                "COUNTRY": _("Country"),
+                "ADMINISTRATIVE_REGION": _("Administrative region"),
+                "APPROXIMATE_LOCATION": _("Approximate location"),
+                "EXACT_LOCATION": _("Exact location"),
+                "COORDINATES": _("Coordinates"),
+            }[data["level_of_accuracy"]]
         return [
             "" if field not in data else data[field] for field in location_fields.keys()
         ]
 
     @staticmethod
     def contracts_download_format(data):
+        if data.get("date"):
+            try:
+                data["date"] = datetime.strptime(
+                    data.get("date", ""), "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                pass
+        else:
+            data["date"] = ""
+
+        if data.get("expiration_date"):
+            try:
+                data["expiration_date"] = datetime.strptime(
+                    data.get("expiration_date", ""), "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                pass
+        else:
+            data["expiration_date"] = ""
+
         return [
             "" if field not in data else data[field] for field in contract_fields.keys()
         ]
@@ -938,7 +950,28 @@ class DataDownload:
     @staticmethod
     def datasource_download_format(data):
         if data.get("type"):
-            data["type"] = dict(DataSource.TYPE_CHOICES)[data["type"]]
+            data["type"] = {
+                "MEDIA_REPORT": _("Media report"),
+                "RESEARCH_PAPER_OR_POLICY_REPORT": _("Research Paper / Policy Report"),
+                "GOVERNMENT_SOURCES": _("Government sources"),
+                "COMPANY_SOURCES": _("Company sources"),
+                "CONTRACT": _("Contract"),
+                "CONTRACT_FARMING_AGREEMENT": _(
+                    "Contract (contract farming agreement)"
+                ),
+                "PERSONAL_INFORMATION": _("Personal information"),
+                "CROWDSOURCING": _("Crowdsourcing"),
+                "OTHER": _("Other (Please specify in comment field)"),
+            }[data["type"]]
+
+        if data.get("date"):
+            try:
+                data["date"] = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
+            except ValueError:
+                pass
+        else:
+            data["date"] = ""
+
         return [
             "" if field not in data else data[field]
             for field in datasource_fields.keys()
