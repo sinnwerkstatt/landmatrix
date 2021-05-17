@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-26 18:16+0100\n"
+"POT-Creation-Date: 2021-05-17 16:16+0200\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1814,7 +1814,7 @@ msgstr "Par région de l'investisseur"
 msgid "By Investor Country"
 msgstr "Par pays investisseur"
 
-msgid "By data dource"
+msgid "By data source"
 msgstr "Par source des données"
 
 msgid "By Intention"
