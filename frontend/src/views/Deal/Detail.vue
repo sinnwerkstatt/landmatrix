@@ -41,7 +41,7 @@
       <b-tabs
         id="tabNav"
         :key="dealId + dealVersion"
-        content-class="mb-3"
+        content-class="mb-3 col-sm-7 col-md-9"
         vertical
         pills
         nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
