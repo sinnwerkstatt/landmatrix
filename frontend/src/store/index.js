@@ -128,29 +128,34 @@ const store = new Vuex.Store({
 
     login(context, { username, password }) {
       return new Promise(function (resolve, reject) {
-        axios
-          .post("/graphql/", {
-            query: `
+        apolloClient
+          .mutate({
+            mutation: gql`
               mutation Login($username: String!, $password: String!) {
                 login(username: $username, password: $password) {
                   status
                   error
-                  user {
-                    full_name
-                    username
-                    is_authenticated
-                    is_impersonate
-                  }
+                  #                  user {
+                  #                    full_name
+                  #                    username
+                  #                    is_authenticated
+                  #                    is_impersonate
+                  #                    groups {
+                  #                      id
+                  #                      name
+                  #                    }
+                  #                  }
                 }
               }
             `,
             variables: { username, password },
           })
-          .then((response) => {
-            let login_data = response.data.data.login;
+          .then(({ data }) => {
+            let login_data = data.login;
             if (login_data.status === true) {
-              context.commit("setUser", login_data.user);
-              resolve(login_data);
+              location.reload();
+              // context.commit("setUser", login_data.user);
+              // resolve(login_data);
             } else {
               reject(login_data);
             }
@@ -158,12 +163,20 @@ const store = new Vuex.Store({
       });
     },
     logout(context) {
-      let query = "mutation { logout }";
-      return axios.post("/graphql/", { query: query }).then((response) => {
-        if (response.data.data.logout === true) {
-          context.commit("setUser", null);
-        }
-      });
+      return apolloClient
+        .mutate({
+          mutation: gql`
+            mutation {
+              logout
+            }
+          `,
+        })
+        .then(({ data }) => {
+          if (data.logout === true) {
+            location.reload();
+            // context.commit("setUser", null);
+          }
+        });
     },
   },
 });

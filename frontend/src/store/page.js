@@ -54,15 +54,15 @@ export const pageModule = {
 
         if (groupi.length) {
           let ret = "";
-          if (groupi.indexOf("Reporters") > -1) ret = "Reporter";
-          if (groupi.indexOf("Editors") > -1) ret = "Editor";
-          if (groupi.indexOf("Administrators") > -1) ret = "Administrator";
+          if (groupi.includes("Reporters")) ret = "Reporter";
+          if (groupi.includes("Editors")) ret = "Editor";
+          if (groupi.includes("Administrators")) ret = "Administrator";
           let uri = user.userregionalinfo;
           if (uri) {
             let area = uri.region.map((c) => c.name);
             area = area.concat(uri.country.map((c) => c.name));
             if (area.length) {
-              return `${ret} of ${area.join(", ")}`;
+              ret = `${ret} of ${area.join(", ")}`;
             }
           }
           role = ret;
