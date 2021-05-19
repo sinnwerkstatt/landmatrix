@@ -7,8 +7,8 @@ type Investor {
   opencorporates: String
   comment: String
 
-  #    ventures: [Involvement]
-  #    investors: [Involvement]
+  ventures: [Involvement]
+  investors: [Involvement]
   involvements: InvolvementsNetwork
   deals: [Deal]
 
@@ -29,6 +29,7 @@ type InvestorVersion {
 }
 
 type Involvement {
+  id: Int!
   investor: Investor
   venture: Investor
   role: String

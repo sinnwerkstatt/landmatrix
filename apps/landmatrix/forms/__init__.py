@@ -47,9 +47,16 @@ class VueForm:
             richfield["max_length"] = mfield.max_length
 
         for validator in mfield.validators:
-            if "MinValueValidator" == validator.__class__.__name__:
+            if (
+                "MinValueValidator" == validator.__class__.__name__
+                and validator.limit_value != -2147483648
+            ):
+
                 richfield["min_value"] = validator.limit_value
-            if "MaxValueValidator" == validator.__class__.__name__:
+            if (
+                "MaxValueValidator" == validator.__class__.__name__
+                and validator.limit_value != 2147483647
+            ):
                 richfield["max_value"] = validator.limit_value
 
         if mfield.name in list(self._attributes.keys()):

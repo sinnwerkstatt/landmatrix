@@ -1,5 +1,5 @@
 <template>
-  <component :is="pageType" />
+  <component v-if="pageType" :is="pageType" />
 </template>
 
 <script>
@@ -26,6 +26,7 @@
     },
     computed: {
       pageType() {
+        if (!this.$store.state?.page?.wagtailPage) return null;
         let page = this.$store.state.page.wagtailPage;
         switch (page.meta?.type) {
           case "blog.BlogIndexPage":

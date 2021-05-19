@@ -50,7 +50,7 @@ def resolve_investor(
         investor = qs_values_to_dict(
             visible_investors,
             filtered_fields,
-            ["involvements"],
+            ["involvements", "investors", "ventures"],
         )[0]
 
     if add_versions:
@@ -96,7 +96,9 @@ def resolve_investors(
     if limit != 0:
         qs = qs[:limit]
 
-    return qs_values_to_dict(qs, fields, ["involvements", "deals"])
+    return qs_values_to_dict(
+        qs, fields, ["involvements", "ventures", "investors", "deals"]
+    )
 
 
 def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):

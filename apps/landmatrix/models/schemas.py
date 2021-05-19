@@ -16,13 +16,13 @@ locations_schema_def = {
                 "properties": {
                     "lat": {
                         "type": "number",
-                        # "minimum": -90,
-                        # "maximum": 90,
+                        "minimum": -90,
+                        "maximum": 90,
                     },
                     "lng": {
                         "type": "number",
-                        # "minimum": -180,
-                        # "maximum": 180,
+                        "minimum": -180,
+                        "maximum": 180,
                     },
                 },
             },

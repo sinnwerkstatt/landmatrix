@@ -90,9 +90,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        on_delete=models.PROTECT,
         related_name="deals",
     )
     intended_size = models.DecimalField(
@@ -338,16 +336,25 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     """ Employment """
     total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
     total_jobs_planned = models.IntegerField(
-        _("Planned number of jobs (total)"), help_text=_("jobs"), blank=True, null=True
+        _("Planned number of jobs (total)"),
+        help_text=_("jobs"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
     )
     total_jobs_planned_employees = models.IntegerField(
-        _("Planned employees (total)"), help_text=_("employees"), blank=True, null=True
+        _("Planned employees (total)"),
+        help_text=_("employees"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
     )
     total_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (total)"),
         help_text=_("workers"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     total_jobs_current = JSONField(
         _("Current total number of jobs/employees/ daily/seasonal workers"),
@@ -364,18 +371,21 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
         help_text=_("jobs"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     foreign_jobs_planned_employees = models.IntegerField(
         _("Planned employees (foreign)"),
         help_text=_("employees"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     foreign_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (foreign)"),
         help_text=_("workers"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     foreign_jobs_current = JSONField(
         _("Current foreign number of jobs/employees/ daily/seasonal workers"),
@@ -392,18 +402,21 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
         help_text=_("jobs"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     domestic_jobs_planned_employees = models.IntegerField(
         _("Planned employees (domestic)"),
         help_text=_("employees"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     domestic_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (domestic)"),
         help_text=_("workers"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     domestic_jobs_current = JSONField(
         _("Current domestic number of jobs/employees/ daily/seasonal workers"),
@@ -544,28 +557,40 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
 
     displacement_of_people = models.NullBooleanField(_("Displacement of people"))
     displaced_people = models.IntegerField(
-        _("Number of people actually displaced"), blank=True, null=True
+        _("Number of people actually displaced"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
     )
     displaced_households = models.IntegerField(
-        _("Number of households actually displaced"), blank=True, null=True
+        _("Number of households actually displaced"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
     )
     displaced_people_from_community_land = models.IntegerField(
         _("Number of people displaced out of their community land"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     displaced_people_within_community_land = models.IntegerField(
-        _("Number of people displaced staying on community land"), blank=True, null=True
+        _("Number of people displaced staying on community land"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
     )
     displaced_households_from_fields = models.IntegerField(
         _('Number of households displaced "only" from their agricultural fields'),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     displaced_people_on_completion = models.IntegerField(
         _("Number of people facing displacement once project is fully implemented"),
         blank=True,
         null=True,
+        validators=[MinValueValidator(0)],
     )
     displacement_of_people_comment = models.TextField(
         _("Comment on displacement of people"), blank=True

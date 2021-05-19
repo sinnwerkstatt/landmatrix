@@ -3,7 +3,7 @@
     <input
       v-model="val"
       type="number"
-      step="0.01"
+      :step="step"
       class="form-control"
       :placeholder="placeholder"
       :required="required"
@@ -28,6 +28,7 @@
       value: { type: Number, required: false, default: null },
       maxValue: { type: Number, required: false, default: null },
       minValue: { type: Number, required: false, default: null },
+      step: { type: Number, required: false, default: 0.01 },
     },
     data() {
       return {
@@ -36,13 +37,10 @@
     },
     computed: {
       placeholder() {
-        if (
-          this.minValue !== null &&
-          this.maxValue !== null &&
-          this.minValue !== -2147483648
-        ) {
+        if (this.minValue !== null && this.maxValue !== null) {
           return `${this.minValue} - ${this.maxValue}`;
         }
+        if (this.step === 1) return "";
         return "100.23";
       },
     },

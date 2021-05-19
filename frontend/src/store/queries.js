@@ -124,7 +124,6 @@ export const investor_query = {
         homepage
         opencorporates
         comment
-        # involvements
         status
         created_at
         modified_at
@@ -172,6 +171,63 @@ export const investor_query = {
       depth: this.depth,
       includeDeals: this.includeDealsInQuery,
       involvements_include_ventures: this.involvementsIncludeVentures,
+    };
+  },
+  update(data) {
+    if (!data.investor) {
+      this.$router.push({
+        name: "404",
+        params: [this.$router.currentRoute.path],
+        replace: true,
+      });
+    }
+    return data.investor;
+  },
+};
+
+export const investor_edit_query = {
+  query: gql`
+    query Investor($id: Int!, $version: Int) {
+      investor(id: $id, version: $version) {
+        id
+        name
+        country {
+          id
+          name
+        }
+        classification
+        homepage
+        opencorporates
+        comment
+        status
+        created_at
+        modified_at
+        investors {
+          id
+          investor {
+            id
+            name
+          }
+          role
+          investment_type
+          percentage
+          loans_amount
+          loans_currency {
+            id
+            code
+            name
+          }
+          loans_date
+          parent_relation
+          comment
+        }
+      }
+    }
+  `,
+  variables() {
+    return {
+      id: +this.investorId,
+      version: +this.investorVersion,
     };
   },
   update(data) {

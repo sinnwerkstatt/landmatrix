@@ -36,7 +36,7 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
                 if "__" in key:
                     keyprefix, restkey = key.split("__", 1)
                     if many_to_many_relations and keyprefix in many_to_many_relations:
-                        manytomany_combine[keyprefix][restkey] = val
+                        _subkey_expode(manytomany_combine[keyprefix], restkey, val)
                     elif firstround:
                         _subkey_expode(richdeal, key, val)
                 elif firstround:

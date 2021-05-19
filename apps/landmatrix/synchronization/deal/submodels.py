@@ -37,26 +37,30 @@ def create_locations(deal, groups, do_save, revision):
         # location.point
 
         plat = attrs.get("point_lat")
-        plon = attrs.get("point_lon")
-        if plon == "-3.0001328124999426666666cro":
-            plon = "-3.00013281249994266"
+        plng = attrs.get("point_lon")
+        if plng == "-3.0001328124999426666666cro":
+            plng = "-3.00013281249994266"
 
-        if plat and plon:
+        if plat and plng:
             try:
                 point_lat = plat.replace(",", ".").replace(" ", "")
                 point_lat = round(float(point_lat), 8)
             except ValueError:
                 pass
             try:
-                point_lon = plon.replace(",", ".").replace("°", "")
+                point_lon = plng.replace(",", ".").replace("°", "")
                 point_lon = round(float(point_lon), 8)
             except ValueError:
                 pass
+
             try:
+                assert 90 >= point_lat >= -90
+                assert 180 >= point_lon >= -180
+                # TODO: throw out -90>lat>90, -180>lng>180
                 Point(point_lon, point_lat)
                 location["point"] = {"lat": point_lat, "lng": point_lon}
             except:
-                print(plat, plon)
+                print(plat, plng)
                 location["comment"] += (
                     f"\n\nWas unable to parse location.\n"
                     f"The values are: lat:{point_lat} lon:{point_lon}"

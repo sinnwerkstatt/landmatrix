@@ -6,6 +6,7 @@
       :unit="formfield.unit"
       :max-value="formfield.max_value"
       :min-value="formfield.min_value"
+      :step="formfield.class === 'IntegerField' ? 1 : 0.01"
     />
   </div>
 </template>

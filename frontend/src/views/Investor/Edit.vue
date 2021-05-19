@@ -35,6 +35,9 @@
           </h3>
           <InvolvementEdit :involvement="parent"></InvolvementEdit>
         </div>
+        <button type="button" class="btn btn-primary" @click="addInvestor('PARENT')">
+          <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
+        </button>
       </b-tab>
 
       <b-tab
@@ -48,13 +51,16 @@
           </h3>
           <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
         </div>
+        <button type="button" class="btn btn-primary" @click="addInvestor('LENDER')">
+          <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
+        </button>
       </b-tab>
     </b-tabs>
   </div>
 </template>
 
 <script>
-  import { investor_query } from "$store/queries";
+  import { investor_edit_query } from "$store/queries";
   import EditField from "$components/Fields/EditField";
   import InvolvementEdit from "$components/Investor/InvolvementEdit";
 
@@ -68,9 +74,6 @@
     data() {
       return {
         investor: null,
-        includeDealsInQuery: false,
-        involvementsIncludeVentures: false,
-        depth: 1,
         general_fields: [
           "name",
           "country",
@@ -81,19 +84,19 @@
         ],
       };
     },
-    apollo: { investor: investor_query },
+    apollo: { investor: investor_edit_query },
 
     computed: {
       active_tab() {
         return location.hash ? location.hash : "#general";
       },
       parents() {
-        return this.investor.involvements
+        return this.investor.investors
           .filter((i) => i.role === "PARENT")
           .sort((a, b) => a.id - b.id);
       },
       lenders() {
-        return this.investor.involvements
+        return this.investor.investors
           .filter((i) => i.role === "LENDER")
           .sort((a, b) => a.id - b.id);
       },
@@ -101,6 +104,9 @@
     methods: {
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      },
+      addInvestor(role) {
+        this.investor.investors.push({ role });
       },
     },
   };
