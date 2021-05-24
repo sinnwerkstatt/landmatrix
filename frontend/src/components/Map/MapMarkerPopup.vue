@@ -44,6 +44,7 @@
 
 <script>
   import DisplayField from "../Fields/DisplayField";
+
   export default {
     name: "MapPopup",
     components: { DisplayField },

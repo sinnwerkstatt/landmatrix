@@ -4,10 +4,10 @@
 
 <script>
   import store from "$store";
-  import WagtailPage from "./WagtailPage";
   import BlogIndexPage from "./BlogIndexPage";
   import BlogPage from "./BlogPage";
   import ObservatoryPage from "./ObservatoryPage";
+  import WagtailPage from "./WagtailPage";
 
   export default {
     name: "WagtailSwitch",

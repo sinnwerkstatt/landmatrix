@@ -6,8 +6,8 @@
 </template>
 
 <script>
-  import Streamfield from "$components/Streamfield";
   import PageTitle from "$components/PageTitle";
+  import Streamfield from "$components/Streamfield";
 
   export default {
     components: { PageTitle, Streamfield },

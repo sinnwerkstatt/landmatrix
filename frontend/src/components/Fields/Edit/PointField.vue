@@ -23,6 +23,7 @@
 
 <script>
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField";
+
   export default {
     components: { LowLevelDecimalField },
     props: {

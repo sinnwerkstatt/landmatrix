@@ -28,6 +28,7 @@
 
 <script>
   import DisplayField from "$components/Fields/DisplayField";
+
   export default {
     name: "HeaderDates",
     components: { DisplayField },

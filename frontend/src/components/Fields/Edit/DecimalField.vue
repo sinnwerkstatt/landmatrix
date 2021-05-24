@@ -13,6 +13,7 @@
 
 <script>
   import LowLevelDecimalField from "./LowLevelDecimalField";
+
   export default {
     components: { LowLevelDecimalField },
     props: {

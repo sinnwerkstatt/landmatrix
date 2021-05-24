@@ -38,10 +38,10 @@
 </template>
 
 <script>
-  import DataContainer from "$components/DataContainer";
-  import Table from "$components/Data/Table";
-  import LoadingPulse from "$components/Data/LoadingPulse";
   import FilterCollapse from "$components/Data/FilterCollapse";
+  import LoadingPulse from "$components/Data/LoadingPulse";
+  import Table from "$components/Data/Table";
+  import DataContainer from "$components/DataContainer";
 
   export default {
     name: "DataList",

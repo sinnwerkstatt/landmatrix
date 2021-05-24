@@ -1,9 +1,9 @@
 // source https://observablehq.com/@d3/hierarchical-edge-bundling
 
+import { ascending, cluster } from "d3";
 import { hierarchy } from "d3-hierarchy";
-import { lineRadial, curveBundle } from "d3-shape";
 import { select, selectAll } from "d3-selection";
-import { cluster, ascending } from "d3";
+import { curveBundle, lineRadial } from "d3-shape";
 
 let width = 954;
 let radius = width / 2;

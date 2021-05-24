@@ -11,10 +11,10 @@
 </template>
 
 <script>
-  import Navbar from "$components/Navbar";
-  import Messages from "$components/Messages";
   import BreadcrumbBar from "$components/BreadcrumbBar";
   import Footer from "$components/Footer";
+  import Messages from "$components/Messages";
+  import Navbar from "$components/Navbar";
 
   export default {
     name: "Landmatrix",

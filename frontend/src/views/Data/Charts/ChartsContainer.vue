@@ -25,9 +25,9 @@
 </template>
 
 <script>
-  import ViewSwitcher from "$components/Data/ViewSwitcher";
-  import FilterBar from "$components/Data/FilterBar";
   import ContextBarContainer from "$components/Data/ContextBarContainer";
+  import FilterBar from "$components/Data/FilterBar";
+  import ViewSwitcher from "$components/Data/ViewSwitcher";
 
   export default {
     name: "ChartsContainer",

@@ -20,34 +20,34 @@
 
 <script>
   import ArrayField from "./Display/ArrayField";
+  import AutoField from "./Display/AutoField";
   import BooleanField from "./Display/BooleanField";
-  import CharField from "./Display/TextField";
+  import NullBooleanField from "./Display/BooleanField";
   import DateField from "./Display/DateField";
   import DateTimeField from "./Display/DateField";
-  import AutoField from "./Display/AutoField";
   import DecimalField from "./Display/DecimalField";
-  import EmailField from "./Display/TextField";
-  import FileField from "./Display/FileField";
   import FloatField from "./Display/DecimalField";
-  import ForeignKey from "./Display/ForeignKeyField";
-  import ManyToManyField from "./Display/ManyToManyField";
-  import LengthField from "./Display/LengthField";
   import IntegerField from "./Display/DecimalField";
-  import JSONField from "./Display/JSONField.vue";
+  import FileField from "./Display/FileField";
+  import ForeignKey from "./Display/ForeignKeyField";
   import JSONActorsField from "./Display/JSONActorsField";
+  import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
   import JSONDateAreaField from "./Display/JSONDateAreaField";
   import JSONDateChoiceField from "./Display/JSONDateChoiceField";
-  import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
   import JSONExportsField from "./Display/JSONExportsField";
+  import JSONField from "./Display/JSONField.vue";
   import JSONJobsField from "./Display/JSONJobsField";
   import JSONLeaseField from "./Display/JSONLeaseField";
-  import NullBooleanField from "./Display/BooleanField";
+  import LengthField from "./Display/LengthField";
+  import ManyToManyField from "./Display/ManyToManyField";
+  import OCIDField from "./Display/OCIDField";
   import PointField from "./Display/PointField";
+  import CharField from "./Display/TextField";
+  import EmailField from "./Display/TextField";
   import TextField from "./Display/TextField";
   import URLField from "./Display/TextField";
-  import OCIDField from "./Display/OCIDField";
-  import FieldLabel from "./FieldLabel";
   import LocationGoogleField from "./Display/TextField";
+  import FieldLabel from "./FieldLabel";
 
   export default {
     name: "DisplayField",

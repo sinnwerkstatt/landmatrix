@@ -224,8 +224,8 @@
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
   import ManageHeader from "$components/Deal/ManageHeader";
   import DisplayField from "$components/Fields/DisplayField";
-  import InvestorGraph from "$components/Investor/InvestorGraph";
   import HeaderDates from "$components/HeaderDates";
+  import InvestorGraph from "$components/Investor/InvestorGraph";
   import { deal_gql_query } from "$store/queries";
 
   import gql from "graphql-tag";

@@ -18,13 +18,7 @@
 </template>
 
 <script>
-  import JSONActorsField from "./Edit/JSONActorsField";
-  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField";
-  import JSONDateAreaField from "./Edit/JSONDateAreaField";
-  import JSONDateChoiceField from "./Edit/JSONDateChoiceField";
-  import JSONExportsField from "./Edit/JSONExportsField";
-  import JSONJobsField from "./Edit/JSONJobsField";
-  import JSONLeaseField from "./Edit/JSONLeaseField";
+  import ManyToManyField from "./Display/ManyToManyField";
 
   // import AutoField from "./Display/AutoField";
   import ArrayField from "./Edit/ArrayField";
@@ -34,15 +28,23 @@
 
   import DateField from "./Edit/DateField";
   // import DateTimeField from "./Display/DateField";
-
   import DecimalField from "./Edit/DecimalField";
   import FloatField from "./Edit/DecimalField";
   import IntegerField from "./Edit/DecimalField";
 
   import FileField from "./Edit/FileField";
   import ForeignKey from "./Edit/ForeignKeyField";
+  import JSONActorsField from "./Edit/JSONActorsField";
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField";
+  import JSONDateAreaField from "./Edit/JSONDateAreaField";
+  import JSONDateChoiceField from "./Edit/JSONDateChoiceField";
+  import JSONExportsField from "./Edit/JSONExportsField";
 
   import JSONField from "./Edit/JSONField.vue";
+  import JSONJobsField from "./Edit/JSONJobsField";
+  import JSONLeaseField from "./Edit/JSONLeaseField";
+  import LocationGoogleField from "./Edit/LocationGoogleField";
+  import PointField from "./Edit/PointField";
 
   import CharField from "./Edit/TextField";
   import EmailField from "./Edit/TextField";
@@ -50,11 +52,7 @@
   import URLField from "./Edit/TextField";
   import OCIDField from "./Edit/TextField";
 
-  import ManyToManyField from "./Display/ManyToManyField";
-  import PointField from "./Edit/PointField";
-
   import FieldLabel from "./FieldLabel";
-  import LocationGoogleField from "./Edit/LocationGoogleField";
 
   export default {
     name: "EditField",

@@ -81,15 +81,17 @@
 </template>
 
 <script>
-  import { mapGetters } from "vuex";
   import {
     country_investments_and_rankings_query,
     global_rankings_query,
   } from "$store/queries";
+  import { mapGetters } from "vuex";
 
   export default {
     name: "ContextBarWebOfTransnationalDeals",
-    props: ["filters"],
+    props: {
+      filters: { type: Object, required: true },
+    },
     apollo: {
       global_rankings: global_rankings_query,
       country_investments_and_rankings: country_investments_and_rankings_query,

@@ -110,14 +110,14 @@
 </template>
 
 <script>
-  import gql from "graphql-tag";
-  import { deal_aggregations_query } from "$store/queries";
-  import Streamfield from "$components/Streamfield";
   import StatusPieChart from "$components/Charts/StatusPieChart";
-  import MapDataCharts from "$components/Wagtail/MapDataCharts";
-  import ArticleList from "$components/Wagtail/ArticleList";
-  import Twitter from "$components/Wagtail/Twitter";
   import QuasiStaticMap from "$components/QuasiStaticMap";
+  import Streamfield from "$components/Streamfield";
+  import ArticleList from "$components/Wagtail/ArticleList";
+  import MapDataCharts from "$components/Wagtail/MapDataCharts";
+  import Twitter from "$components/Wagtail/Twitter";
+  import { deal_aggregations_query } from "$store/queries";
+  import gql from "graphql-tag";
 
   export default {
     name: "ObservatoryPage",

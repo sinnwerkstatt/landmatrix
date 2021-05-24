@@ -12,8 +12,8 @@
 </template>
 
 <script>
-  import FilterBar from "$components/Data/FilterBar";
   import ContextBarMap from "$components/Data/ContextBarMap";
+  import FilterBar from "$components/Data/FilterBar";
   import ViewSwitcher from "$components/Data/ViewSwitcher";
 
   export default {

@@ -89,6 +89,7 @@
   import BigMap from "$components/BigMap";
   import FilterCollapse from "$components/Data/FilterCollapse";
   import LoadingPulse from "$components/Data/LoadingPulse";
+  import DataContainer from "$components/DataContainer";
   import MapMarkerPopup from "$components/Map/MapMarkerPopup";
   import { styleCircle } from "$utils/map_helper";
 
@@ -97,8 +98,6 @@
   import { groupBy } from "lodash";
   import Vue from "vue";
   import { mapState } from "vuex";
-
-  import DataContainer from "$components/DataContainer";
   import { data_deal_query } from "./query";
 
   const ZOOM_LEVEL = {

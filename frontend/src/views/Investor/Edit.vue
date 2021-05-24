@@ -64,9 +64,9 @@
 </template>
 
 <script>
-  import { investor_edit_query } from "$store/queries";
   import EditField from "$components/Fields/EditField";
   import InvolvementEdit from "$components/Investor/InvolvementEdit";
+  import { investor_edit_query } from "$store/queries";
 
   export default {
     name: "InvestorEdit",

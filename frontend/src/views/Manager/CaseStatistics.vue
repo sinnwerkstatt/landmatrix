@@ -113,9 +113,9 @@
   import axios from "axios";
   import dayjs from "dayjs";
   import { mapState } from "vuex";
-  import StatisticsTable from "./Statistics/StatisticsTable.vue";
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
+  import StatisticsTable from "./Statistics/StatisticsTable.vue";
 
   function uniq(a, keepLatest = false) {
     if (keepLatest) {

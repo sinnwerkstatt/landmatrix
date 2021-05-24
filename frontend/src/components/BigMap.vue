@@ -26,22 +26,21 @@
 </template>
 
 <script>
-  import { LMap, LTileLayer } from "vue2-leaflet";
+  import iconRetinaUrl from "$static/images/marker-icon-2x.png";
+  import iconUrl from "$static/images/marker-icon.png";
+  import shadowUrl from "$static/images/marker-shadow.png";
 
-  import { Map, Icon } from "leaflet";
+  import { Icon, Map } from "leaflet";
   import { GestureHandling } from "leaflet-gesture-handling";
-
-  import "leaflet/dist/leaflet.css";
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+  import "leaflet/dist/leaflet.css";
+  import { LMap, LTileLayer } from "vue2-leaflet";
   import { mapState } from "vuex";
   import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher";
 
   Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
   delete Icon.Default.prototype._getIconUrl;
-  import iconRetinaUrl from "$static/images/marker-icon-2x.png";
-  import iconUrl from "$static/images/marker-icon.png";
-  import shadowUrl from "$static/images/marker-shadow.png";
   let shadowSize = [0, 0];
   Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
 

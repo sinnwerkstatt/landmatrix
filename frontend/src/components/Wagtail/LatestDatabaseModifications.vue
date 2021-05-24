@@ -31,10 +31,13 @@
 </template>
 
 <script>
-  import gql from "graphql-tag";
   import dayjs from "dayjs";
+  import gql from "graphql-tag";
+
   export default {
-    props: ["value"],
+    props: {
+      value: { type: Object, required: true },
+    },
     data: function () {
       return {
         modifications: [],

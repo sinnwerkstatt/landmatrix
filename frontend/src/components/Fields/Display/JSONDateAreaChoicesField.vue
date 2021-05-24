@@ -12,6 +12,7 @@
 
 <script>
   import JSONFieldMixin from "../JSONFieldMixin";
+
   export default {
     mixins: [JSONFieldMixin],
     data() {
