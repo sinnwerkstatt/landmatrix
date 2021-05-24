@@ -98,7 +98,7 @@
   import Vue from "vue";
   import { mapState } from "vuex";
 
-  import DataContainer from "./DataContainer";
+  import DataContainer from "$components/DataContainer";
   import { data_deal_query } from "./query";
 
   const ZOOM_LEVEL = {
@@ -120,6 +120,9 @@
   export default {
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
+    metaInfo() {
+      return { title: this.$t("Map") };
+    },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         // vm.$store.dispatch("fetchDeals");

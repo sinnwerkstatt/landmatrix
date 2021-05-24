@@ -258,7 +258,11 @@
         ],
         depth: 0,
         includeDealsInQuery: false,
+        title: "Investor",
       };
+    },
+    metaInfo() {
+      return { title: this.title };
     },
     apollo: { investor: investor_query },
     computed: {
@@ -311,13 +315,12 @@
           this.includeDealsInQuery = true;
           this.depth = 1;
         }
-        let title = `${investor.name} <small>(#${investor.id})</small>`;
+        this.title = `${investor.name} (#${investor.id})`;
         store.dispatch("setPageContext", {
-          title,
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
             { link: { name: "list_investors" }, name: "Data" },
-            { name: `Investor #${investor.id}` },
+            { name: this.title },
           ],
         });
       },

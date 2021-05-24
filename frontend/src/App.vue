@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <Navbar />
-    <div class="content">
-      <Messages />
-      <BreadcrumbBar />
+    <Messages />
+    <BreadcrumbBar />
+    <main class="content">
       <router-view />
-    </div>
+    </main>
     <Footer />
   </div>
 </template>
@@ -19,11 +19,15 @@
   export default {
     name: "Landmatrix",
     components: { Navbar, Messages, BreadcrumbBar, Footer },
+    metaInfo: {
+      title: "Land Matrix",
+      titleTemplate: "%s | Land Matrix",
+    },
   };
 </script>
 
 <style lang="scss" scoped>
   .content {
-    min-height: calc(100vh - 60px - 31px);
+    min-height: calc(100vh - 60px - 31px - 31px);
   }
 </style>

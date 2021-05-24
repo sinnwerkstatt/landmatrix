@@ -154,37 +154,19 @@ const router = new Router({
       name: "404",
       component: NotFound,
       beforeEnter(to, from, next) {
-        store.dispatch("setPageContext", {
-          title: "Page not found",
-          breadcrumbs: [],
-        });
+        store.dispatch("setPageContext", { breadcrumbs: [] });
         next();
       },
     },
   ],
-
-  //   // {
-  //     // path: '/about',
-  //     // name: 'about',
-  //     // route level code-splitting
-  //     // this generates a separate chunk (about.[hash].js) for this route
-  //     // which is lazy-loaded when the route is visited.
-  //     // component: () => import(/* webpackChunkName: "about" */ '$views/About.vue')
-  //   // }
-  // ]
 });
-const DEFAULT_TITLE = "Land Matrix";
+
 router.afterEach((to) => {
-  // Use next tick to handle router history correctly
-  // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
-  Vue.nextTick(() => {
-    // document.title = to.meta.title || DEFAULT_TITLE;
-    document.title = store.state.page.title || DEFAULT_TITLE;
-    if (to.matched.some((record) => record.meta.hideBreadcrumbs)) {
-      store.dispatch("breadcrumbBar", false);
-    } else {
-      store.dispatch("breadcrumbBar", true);
-    }
+  Vue.nextTick((vm) => {
+    store.dispatch(
+      "breadcrumbBar",
+      !to.matched.some((record) => record.meta.hideBreadcrumbs)
+    );
   });
 });
 

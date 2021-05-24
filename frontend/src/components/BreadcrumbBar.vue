@@ -4,7 +4,9 @@
       <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
           <li v-for="bcrumb in $store.state.page.breadcrumbs" :key="bcrumb.name">
-            <a v-if="bcrumb.link" :href="getUrl(bcrumb.link)">{{ bcrumb.name }}</a>
+            <router-link v-if="bcrumb.link" :to="bcrumb.link">{{
+              bcrumb.name
+            }}</router-link>
             <template v-else>{{ bcrumb.name }}</template>
           </li>
         </ul>
@@ -14,13 +16,7 @@
 </template>
 
 <script>
-  export default {
-    methods: {
-      getUrl(route_name) {
-        return this.$router.resolve(route_name).href;
-      },
-    },
-  };
+  export default {};
 </script>
 
 <style lang="scss" scoped>

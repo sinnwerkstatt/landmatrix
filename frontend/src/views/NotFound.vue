@@ -13,5 +13,8 @@
 <script>
   export default {
     name: "NotFound",
+    metaInfo() {
+      return { title: "404 - Page not found." };
+    },
   };
 </script>

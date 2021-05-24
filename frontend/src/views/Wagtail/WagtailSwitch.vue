@@ -24,6 +24,11 @@
         .then(() => next())
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
+    metaInfo() {
+      let ret = { title: this.$store.state.page.title };
+      if (this.$route.path === "/") ret.titleTemplate = "Land Matrix";
+      return ret;
+    },
     computed: {
       pageType() {
         if (!this.$store.state?.page?.wagtailPage) return null;

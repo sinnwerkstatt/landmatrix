@@ -7,7 +7,7 @@
       </div>
     </template>
     <template #ContextBar>
-      <h2 class="bar-title">Produce info map</h2>
+      <h2 class="bar-title">{{ $t("Produce info map") }}</h2>
       <div v-html="chart_desc" />
 
       <Legend :items="legendItems"></Legend>
@@ -126,6 +126,9 @@
   export default {
     name: "ProduceInfoTreeMap",
     components: { ChartsContainer, LoadingPulse, Legend },
+    metaInfo() {
+      return { title: this.$t("Produce info map") };
+    },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         vm.$store.dispatch("showContextBar", true);

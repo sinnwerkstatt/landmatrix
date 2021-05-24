@@ -76,6 +76,9 @@
   export default {
     name: "DynamicsOverview",
     components: { ChartsContainer, StatusPieChart, DealDisplayToggle },
+    metaInfo() {
+      return { title: this.$t("Dynamics overview") };
+    },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         vm.$store.dispatch("showContextBar", true);

@@ -260,12 +260,16 @@
       dealVersion: { type: [Number, String], default: null },
       manage: { type: Boolean, default: false },
     },
+    metaInfo() {
+      return { title: this.title };
+    },
     data() {
       return {
         deal: null,
         deal_sections,
         deal_submodel_sections,
         investor: { involvements: [] },
+        title: "Deal",
       };
     },
     apollo: {
@@ -371,13 +375,12 @@
         }
       },
       updatePageContext(to) {
-        let title = `Deal #${to.params.dealId}`;
+        this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
-          title,
           breadcrumbs: [
             { link: { name: "wagtail" }, name: "Home" },
             { link: { name: "list_deals" }, name: "Deals" },
-            { name: title },
+            { name: this.title },
           ],
         });
       },

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-  import DataContainer from "./DataContainer";
+  import DataContainer from "$components/DataContainer";
   import Table from "$components/Data/Table";
   import LoadingPulse from "$components/Data/LoadingPulse";
   import FilterCollapse from "$components/Data/FilterCollapse";
@@ -50,6 +50,11 @@
       next((vm) => {
         vm.$store.dispatch("showContextBar", false);
       });
+    },
+    metaInfo() {
+      return {
+        title: this.targetModel === "deal" ? this.$t("Deals") : this.$t("Investors"),
+      };
     },
     computed: {
       targetModel() {

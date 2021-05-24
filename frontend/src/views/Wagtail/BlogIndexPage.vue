@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle :title="pageTitle()" />
+    <PageTitle :title="pageTitle" />
     <div class="container">
       <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
       <!--    <div class="row " v-if="tag">-->
@@ -60,17 +60,20 @@
   import { blogcategories_query, blogpages_query } from "$store/queries";
 
   export default {
+    name: "BlogIndexPage",
     components: { LoadingPulse, PageTitle },
     data() {
       return {
         blogpages: null,
-        category: null,
         tag: null,
         blogcategories: [],
       };
     },
     apollo: { blogpages: blogpages_query, blogcategories: blogcategories_query },
     computed: {
+      category() {
+        return this.$route.query.category || null;
+      },
       blogcategories_with_all() {
         return [{ slug: null, name: "All categories" }, ...this.blogcategories];
       },
@@ -87,27 +90,13 @@
         }
         return this.blogpages;
       },
-    },
-    watch: {
-      $route() {
-        this.updatePageTitle();
-      },
-    },
-    mounted() {
-      this.updatePageTitle();
-    },
-    methods: {
       pageTitle() {
-        this.category = this.$route.query.category || null;
-        this.tag = this.$route.query.tag || null;
         let title = this.$store.state.page.wagtailPage.title;
+        this.tag = this.$route.query.tag || null;
         if (this.tag) {
-          title += ` - &nbsp;<span class="small"><i class="fas fa-tags"></i>${this.tag}</span>`;
+          title += ` &nbsp;&nbsp;<small><i class="fas fa-tags"></i> ${this.tag}</small>`;
         }
         return title;
-      },
-      updatePageTitle() {
-        this.$store.commit("setTitle", this.pageTitle());
       },
     },
   };

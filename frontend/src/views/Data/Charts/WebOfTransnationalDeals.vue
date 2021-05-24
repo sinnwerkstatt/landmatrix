@@ -36,6 +36,9 @@
         },
       },
     },
+    metaInfo() {
+      return { title: this.$t("Web of transnational deals") };
+    },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         vm.$store.dispatch("showContextBar", true);

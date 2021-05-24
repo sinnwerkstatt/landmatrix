@@ -11,7 +11,7 @@
           <router-link
             v-for="tag in blogpage.tags"
             :key="tag.slug"
-            :to="`/stay-informed/?tag=${tag.slug}`"
+            :to="`/resources/?tag=${tag.slug}`"
           >
             <i class="fas fa-tags" /> {{ tag.name }}
           </router-link>
