@@ -3,12 +3,12 @@
     <input
       v-model="val"
       type="number"
-      :step="step"
       class="form-control"
       :placeholder="placeholder"
       :required="required"
-      :max="maxValue"
       :min="minValue"
+      :max="maxValue"
+      :step="step"
     />
     <div v-if="unit" class="input-group-append">
       <span class="input-group-text">
@@ -22,31 +22,44 @@
   export default {
     name: "LowLevelDecimalField",
     props: {
-      label: { type: String, required: false, default: "" },
       unit: { type: String, required: false, default: "" },
       required: { type: Boolean, default: false },
       value: { type: Number, required: false, default: null },
       maxValue: { type: Number, required: false, default: null },
       minValue: { type: Number, required: false, default: null },
-      step: { type: Number, required: false, default: 0.01 },
+      decimals: { type: Number, default: 2 },
     },
     data() {
       return {
-        val: this.value,
+        val: JSON.parse(JSON.stringify(this.value)),
       };
     },
+    // Nice to have: on up/down-arrow: change the number where the cursor is on..
+    // methods: {
+    //   updowndings(e) {
+    //     if (["ArrowUp", "ArrowDown"].includes(e.key)) {
+    //       e.preventDefault();
+    //       console.log(e.key);
+    //       console.log(e.target.selectionStart);
+    //       console.log(e.target);
+    //     }
+    //   },
+    // },
     computed: {
       placeholder() {
         if (this.minValue !== null && this.maxValue !== null) {
-          return `${this.minValue} - ${this.maxValue}`;
+          return `${this.minValue} – ${this.maxValue}`;
         }
         if (this.step === 1) return "";
         return "100.23";
       },
+      step() {
+        return 1 / 10 ** this.decimals;
+      },
     },
     watch: {
       value(newValue) {
-        this.val = newValue;
+        this.val = JSON.parse(JSON.stringify(newValue));
       },
       val(v) {
         if (!v && v !== 0) {
@@ -54,14 +67,14 @@
           return;
         }
         if (this.maxValue && v > this.maxValue) this.val = this.maxValue;
-        if (this.minValue && v < this.maxValue) this.val = this.minValue;
+        if (this.minValue && v < this.minValue) this.val = this.minValue;
 
         let v_str = v.toString();
         if (v_str.includes(".")) {
           let number = v_str.split(".");
-          let decimals = number[1];
-          decimals = decimals.length > 2 ? decimals.slice(0, 2) : decimals;
-          v_str = `${number[0]}.${decimals}`;
+          let decs = number[1];
+          decs = decs.length > this.decimals ? decs.slice(0, this.decimals) : decs;
+          v_str = `${number[0]}.${decs}`;
           this.val = v_str;
         }
         this.$emit("input", +v);

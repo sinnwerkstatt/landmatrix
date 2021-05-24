@@ -51,8 +51,7 @@
   import OCIDField from "./Edit/TextField";
 
   import ManyToManyField from "./Display/ManyToManyField";
-  import LengthField from "./Display/LengthField";
-  import PointField from "./Display/PointField";
+  import PointField from "./Edit/PointField";
 
   import FieldLabel from "./FieldLabel";
   import LocationGoogleField from "./Edit/LocationGoogleField";
@@ -74,7 +73,6 @@
       ForeignKey,
       LocationGoogleField,
       ManyToManyField,
-      LengthField,
       IntegerField,
       JSONActorsField,
       JSONDateAreaChoicesField,

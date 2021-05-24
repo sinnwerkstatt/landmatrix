@@ -29,22 +29,20 @@
           </div>
         </div>
       </div>
+      <button type="button" class="btn btn-primary" @click="$emit('addEntry')">
+        <i class="fa fa-plus"></i> {{ $t("Location") }}
+      </button>
     </div>
     <div class="mapview">
       <BigMap
         :center="[12, 30]"
-        :container-style="{ 'max-height': '600px', height: '600px' }"
+        :container-style="{ 'max-height': '65vh', height: '65vh' }"
         @ready="mapIsReady"
       />
-      <form enctype="multipart/form-data" novalidate>
+      <form enctype="multipart/form-data" novalidate class="mt-3">
         Upload GeoJSON file
         <input type="file" multiple class="input-file" @change="uploadFiles" />
       </form>
-      <ul class="small">
-        <li v-for="feat in this.deal.geojson.features">
-          {{ feat.geometry }} --- {{ feat.properties }}
-        </li>
-      </ul>
     </div>
   </div>
 </template>
@@ -72,6 +70,9 @@
     computed: {
       locationGoogleAutocomplete() {
         return this.$store.state.map.locationGoogleAutocomplete;
+      },
+      locationPoint() {
+        return this.$store.state.map.locationPoint;
       },
     },
     watch: {
@@ -115,8 +116,7 @@
         // map.pm.controls
         //  control-icon leaflet-pm-icon-marker
       },
-      locationGoogleAutocomplete() {
-        let lGA = this.locationGoogleAutocomplete;
+      locationGoogleAutocomplete(lGA) {
         this.editableFeatures.eachLayer((l) => {
           if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
             l.setLatLng(lGA.latLng);
@@ -135,6 +135,19 @@
           }
         });
         console.log(lGA);
+      },
+      locationPoint: {
+        deep: true,
+        handler(lPo) {
+          this.editableFeatures.eachLayer((l) => {
+            if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
+              l.setLatLng(lPo);
+              this.bigmap.setView(lPo);
+              // alternative approach to focussing
+              // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
+            }
+          });
+        },
       },
     },
     methods: {
@@ -167,6 +180,9 @@
         this.addGeoJson(this.deal.geojson);
 
         map.on("pm:create", ({ layer, shape }) => {
+          // do a little three-card monte carlo:
+          // save the current id, remove it from existing layers and add it
+          // back in geojson style after giving it props. 🙄
           const leafId = layer._leaflet_id;
           const featureGroup = new FeatureGroup().addLayer(layer);
           this.editableFeatures.eachLayer((lay) => {
@@ -261,7 +277,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../scss/colors";
+  @import "../../scss/colors";
   h3.highlighted {
     color: $lm_orange;
     //color: var(--color-lm-orange);

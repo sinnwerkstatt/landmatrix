@@ -1,8 +1,12 @@
 <template>
-  <div v-if="investor" class="container investor-edit">
+  <div class="container investor-edit">
+    <h1>
+      {{ investor.name }}
+    </h1>
+    {{ investor }}
     <b-tabs
       id="tabNav"
-      :key="investorId + investorVersion"
+      :key="investorId ? investorId + investorVersion : -1"
       content-class="mb-3"
       vertical
       pills
@@ -68,7 +72,7 @@
     name: "InvestorEdit",
     components: { InvolvementEdit, EditField },
     props: {
-      investorId: { type: [Number, String], required: true },
+      investorId: { type: [Number, String], required: false },
       investorVersion: { type: [Number, String], default: null },
     },
     data() {
@@ -100,6 +104,11 @@
           .filter((i) => i.role === "LENDER")
           .sort((a, b) => a.id - b.id);
       },
+    },
+    created() {
+      if (!this.investorId) {
+        this.investor = { investors: [] };
+      }
     },
     methods: {
       updateRoute(emiter) {

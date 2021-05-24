@@ -1,22 +1,17 @@
 <template>
   <form @submit="deal_save">
-    <div v-if="!this.dealId && !this.deal.country" class="container">
-      To create a new Deal, first specify a target country:
-      <EditField
-        v-model="deal.country"
-        fieldname="country"
-        :value-classes="['display-field-label', 'col-12']"
-        :label-classes="['display-field-value', 'col-12']"
-      />
-    </div>
-    <div v-if="deal && deal.country" class="container deal-edit">
-      <h1 v-if="dealId">Editing Deal #{{ dealId }} in {{ deal.country.name }}</h1>
-      <h1 v-else>Adding new deal in: {{ deal.country.name }}</h1>
-      <div v-if="!dealId">{{ deal }}</div>
-      {{ deal.locations }}
+    <div v-if="deal" class="container deal-edit">
+      <h1 v-if="dealId">
+        Editing Deal #{{ dealId }} in {{ deal.country && deal.country.name }}
+      </h1>
+      <h1 v-else>
+        Adding new deal <span v-if="deal.country">in {{ deal.country.name }}</span>
+      </h1>
+      <!--      <div v-if="!dealId">{{ deal }}</div>-->
+      {{ deal.datasources }}
       <b-tabs
         id="tabNav"
-        :key="dealId + dealVersion"
+        :key="dealId ? dealId + dealVersion : -1"
         content-class="mb-3"
         vertical
         pills
@@ -28,10 +23,17 @@
           :active="active_tab === '#locations'"
           @click="updateRoute('#locations')"
         >
-          <MapEditor
+          <EditField
+            v-model="deal.country"
+            fieldname="country"
+            :label-classes="['col-12', 'small']"
+            :value-classes="['col-12']"
+          />
+          <DealLocationsEditSection
             :deal="deal"
             :sections="deal_sections.general_info.subsections"
             :fields="deal_submodel_sections.location"
+            @addEntry="addLocation"
           />
         </b-tab>
         <DealEditSection
@@ -174,9 +176,9 @@
 
 <script>
   import DealEditSection from "$components/Deal/DealEditSection";
+  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
   import EditField from "$components/Fields/EditField";
-  import MapEditor from "$components/MapEditor";
   import { deal_gql_query } from "$store/queries";
   import gql from "graphql-tag";
 
@@ -184,7 +186,12 @@
 
   export default {
     name: "DealEdit",
-    components: { EditField, DealSubmodelEditSection, MapEditor, DealEditSection },
+    components: {
+      DealLocationsEditSection,
+      EditField,
+      DealSubmodelEditSection,
+      DealEditSection,
+    },
     props: {
       dealId: { type: [Number, String], required: false },
       dealVersion: { type: [Number, String], default: null },
@@ -256,45 +263,19 @@
       },
 
       addLocation() {
-        // this.deal.contracts.push(
-        //   new Object({
-        //     number: "",
-        //     date: null,
-        //     expiration_date: null,
-        //     agreement_duration: null,
-        //     comment: "",
-        //   })
-        // );
+        let maxid = 0;
+        this.deal.locations.forEach((l) => (maxid = Math.max(l.id, maxid)));
+        this.deal.locations.push(new Object({ id: maxid + 1 }));
       },
       addContract() {
-        this.deal.contracts.push(
-          new Object({
-            number: "",
-            date: null,
-            expiration_date: null,
-            agreement_duration: null,
-            comment: "",
-          })
-        );
+        let maxid = 0;
+        this.deal.contracts.forEach((l) => (maxid = Math.max(l.id, maxid)));
+        this.deal.contracts.push(new Object({ id: maxid + 1 }));
       },
       addDataSource() {
-        this.deal.datasources.push(
-          new Object({
-            type: "",
-            url: "",
-            file: "",
-            file_not_public: false,
-            publication_title: "",
-            date: "",
-            name: "",
-            company: "",
-            email: "",
-            phone: "",
-            includes_in_country_verified_information: null,
-            open_land_contracts_id: "",
-            comment: "",
-          })
-        );
+        let maxid = 0;
+        this.deal.datasources.forEach((l) => (maxid = Math.max(l.id, maxid)));
+        this.deal.datasources.push(new Object({ id: maxid + 1 }));
       },
     },
   };

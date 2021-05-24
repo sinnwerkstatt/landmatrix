@@ -240,6 +240,9 @@ export const investor_edit_query = {
     }
     return data.investor;
   },
+  skip() {
+    return !this.investorId;
+  },
 };
 
 export const markers_query = {

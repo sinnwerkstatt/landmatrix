@@ -8,6 +8,7 @@ export const mapModule = {
     showContextBar: true,
     displayDealsCount: true,
     locationGoogleAutocomplete: null,
+    locationPoint: null,
     visibleLayer: "Map",
     layers: [
       {
@@ -192,6 +193,9 @@ export const mapModule = {
     setLocationGoogleAutocomplete(state, payload) {
       state.locationGoogleAutocomplete = payload;
     },
+    changeLocationPoint(state, payload) {
+      state.locationPoint = payload;
+    },
   },
   actions: {
     setCurrentLayer(context, layer) {
@@ -205,6 +209,9 @@ export const mapModule = {
     },
     locationGoogleAutocomplete(context, payload) {
       context.commit("setLocationGoogleAutocomplete", payload);
+    },
+    changeLocationPoint(context, payload) {
+      context.commit("changeLocationPoint", payload);
     },
   },
 };

@@ -47,6 +47,12 @@
         nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
         nav-class="sticky-nav"
       >
+        <DisplayField
+          v-model="deal.country"
+          fieldname="country"
+          :label-classes="['col-3']"
+          :value-classes="['col-9', 'fw-bold']"
+        />
         <DealLocationsSection
           :deal="deal"
           :fields="deal_submodel_sections.location"
@@ -217,6 +223,7 @@
   import DealSection from "$components/Deal/DealSection";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
   import ManageHeader from "$components/Deal/ManageHeader";
+  import DisplayField from "$components/Fields/DisplayField";
   import InvestorGraph from "$components/Investor/InvestorGraph";
   import HeaderDates from "$components/HeaderDates";
   import { deal_gql_query } from "$store/queries";
@@ -229,6 +236,7 @@
   export default {
     name: "Detail",
     components: {
+      DisplayField,
       HeaderDates,
       DealComments,
       DealHistory,

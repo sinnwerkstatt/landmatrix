@@ -102,6 +102,12 @@ const router = new Router({
       props: true,
     },
     {
+      path: "/investor/add/",
+      name: "investor_add",
+      component: InvestorEdit,
+      props: true,
+    },
+    {
       path: "/investor/edit/:investorId/:investorVersion?/",
       name: "investor_edit",
       component: InvestorEdit,

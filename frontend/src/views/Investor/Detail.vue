@@ -5,7 +5,9 @@
     </div>
     <div v-else class="row">
       <div>
-        <h1>Investor #{{ investor.id }}</h1>
+        <h1>
+          {{ investor.name }} <small>#{{ investor.id }}</small>
+        </h1>
       </div>
       <div class="panel-container ml-auto">
         <a

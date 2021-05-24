@@ -5,7 +5,6 @@ export const deal_sections = {
       {
         name: "Land area",
         fields: [
-          "country",
           "intended_size",
           "contract_size",
           "production_size",

@@ -1,19 +1,36 @@
 <template>
   <div>
-    <multiselect
-      v-model="val"
-      :options="choices"
-      label="name"
-      :custom-label="fancyName"
-      track-by="id"
-    />
+    <div>
+      <multiselect
+        v-model="val"
+        :options="choices"
+        label="name"
+        :custom-label="fancyName"
+        track-by="id"
+        :taggable="formfield.related_model === 'Investor'"
+        :tag-placeholder="$t('Press enter to create a new Investor')"
+        @tag="addInvestor"
+        :allow-empty="!formfield.required"
+      />
+    </div>
+    <div style="margin: 0.3rem;" v-if="value && formfield.related_model === 'Investor'">
+      <router-link
+        target="_blank"
+        :to="{ name: 'investor_detail', params: { investorId: value.id } }"
+      >
+        <span class="id-display investor-id-display">{{ value.id }}</span>
+        {{ value.name }}</router-link
+      >
+    </div>
   </div>
 </template>
 
 <script>
+  import AutoField from "$components/Fields/Display/AutoField";
   import gql from "graphql-tag";
 
   export default {
+    components: { AutoField },
     props: {
       formfield: { type: Object, required: true },
       value: { type: Object, required: false, default: null },
@@ -75,6 +92,15 @@
           default:
             return model.name;
         }
+      },
+      addInvestor(newInv) {
+        console.log(newInv);
+        // const tag = {
+        //   name: newTag,
+        //   code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        // }
+        // this.options.push(tag)
+        // this.value.push(tag)
       },
     },
   };

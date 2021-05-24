@@ -1,15 +1,17 @@
+import dayjs from "dayjs";
+
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
+import Multiselect from "vue-multiselect";
+import ScrollLoader from "vue-scroll-loader";
+import VCalendar from "v-calendar";
+import VueApollo from "vue-apollo";
+import VueI18n from "vue-i18n";
+import VueMatomo from "vue-matomo";
+
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import Multiselect from "vue-multiselect";
-import VCalendar from "v-calendar";
-import dayjs from "dayjs";
-import VueApollo from "vue-apollo";
-import ScrollLoader from "vue-scroll-loader";
-import VueI18n from "vue-i18n";
-import VueMatomo from "vue-matomo";
 import { apolloClient } from "$utils/apolloclient";
 
 import en_messages from "./i18n_messages.en.json";
@@ -19,12 +21,10 @@ import fr_messages from "./i18n_messages.fr.json";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
 import "vue-multiselect/dist/vue-multiselect.min.css";
-
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-
 import "./scss/main.scss";
 
 // needs to be registered globally for streamfield loops

@@ -2,7 +2,12 @@
 
 .multiselect {
   min-width: 200px;
+  font-size: 1rem !important;
 }
+.multiselect__single {
+  font-size: 1rem !important;
+}
+
 .multiselect__tag {
   background: $primary;
 }
