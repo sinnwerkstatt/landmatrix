@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div class="row">
+    <div class="col-md-6">
       Lat:
       <LowLevelDecimalField
         v-model="val.lat"
@@ -9,7 +9,7 @@
         :decimals="8"
       />
     </div>
-    <div>
+    <div class="col-md-6">
       Lng:
       <LowLevelDecimalField
         v-model="val.lng"
@@ -27,9 +27,7 @@
   export default {
     components: { LowLevelDecimalField },
     props: {
-      formfield: { type: Object, required: true },
       value: { type: Object, required: false, default: () => ({}) },
-      model: { type: String, required: true },
     },
     data() {
       return {
@@ -41,7 +39,7 @@
         deep: true,
         handler(v) {
           this.$emit("input", v);
-          this.$store.dispatch("changeLocationPoint", v);
+          // this.$store.dispatch("changeLocationPoint", v);
         },
       },
     },

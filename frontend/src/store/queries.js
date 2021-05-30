@@ -289,6 +289,11 @@ export const deal_gql_query = gql`
       country {
         id
         name
+        code_alpha2
+        point_lat_min
+        point_lat_max
+        point_lon_min
+        point_lon_max
       }
       intended_size
       contract_size

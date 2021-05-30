@@ -4,62 +4,68 @@
       {{ investor.name }}
     </h1>
     {{ investor }}
-    <b-tabs
-      id="tabNav"
-      :key="investorId ? investorId + investorVersion : -1"
-      content-class="mb-3"
-      vertical
-      pills
-      nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
-      nav-class="sticky-nav"
-    >
-      <b-tab
-        :title="$t('General')"
-        :active="active_tab === '#general'"
-        @click="updateRoute('#general')"
+    <form @submit="submitInvestor">
+      <b-tabs
+        id="tabNav"
+        :key="investorId ? investorId + investorVersion : -1"
+        content-class="mb-3"
+        vertical
+        pills
+        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
+        nav-class="sticky-nav"
       >
-        <EditField
-          v-for="fieldname in general_fields"
-          :key="fieldname"
-          v-model="investor[fieldname]"
-          model="investor"
-          :fieldname="fieldname"
-          :label-classes="['display-field-value', 'col-md-3']"
-          :value-classes="['display-field-label', 'col-md-9']"
-        />
-      </b-tab>
-      <b-tab
-        :title="$t('Parent companies')"
-        :active="active_tab === '#parents'"
-        @click="updateRoute('#parents')"
-      >
-        <div v-for="(parent, i) in parents" :key="parent.id">
-          <h3>
-            {{ $t("Parent company") }} <small>#{{ i + 1 }}</small>
-          </h3>
-          <InvolvementEdit :involvement="parent"></InvolvementEdit>
-        </div>
-        <button type="button" class="btn btn-primary" @click="addInvestor('PARENT')">
-          <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
-        </button>
-      </b-tab>
+        <b-tab
+          :title="$t('General')"
+          :active="active_tab === '#general'"
+          @click="updateRoute('#general')"
+        >
+          <EditField
+            v-for="fieldname in general_fields"
+            :key="fieldname"
+            v-model="investor[fieldname]"
+            model="investor"
+            :fieldname="fieldname"
+            :label-classes="['display-field-value', 'col-md-3']"
+            :value-classes="['display-field-label', 'col-md-9']"
+          />
+        </b-tab>
+        <b-tab
+          :title="$t('Parent companies')"
+          :active="active_tab === '#parents'"
+          @click="updateRoute('#parents')"
+        >
+          <div v-for="(parent, i) in parents" :key="parent.id">
+            <h3>
+              {{ $t("Parent company") }} <small>#{{ i + 1 }}</small>
+            </h3>
+            <InvolvementEdit :involvement="parent"></InvolvementEdit>
+          </div>
+          <button type="button" class="btn btn-primary" @click="addInvestor('PARENT')">
+            <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
+          </button>
+        </b-tab>
 
-      <b-tab
-        :title="$t('Tertiary investors/lenders')"
-        :active="active_tab === '#tertiary'"
-        @click="updateRoute('#tertiary')"
-      >
-        <div v-for="(lender, i) in lenders" :key="lender.id">
-          <h3>
-            {{ $t("Tertiary investor/lender") }} <small>#{{ i + 1 }}</small>
-          </h3>
-          <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
-        </div>
-        <button type="button" class="btn btn-primary" @click="addInvestor('LENDER')">
-          <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
-        </button>
-      </b-tab>
-    </b-tabs>
+        <b-tab
+          :title="$t('Tertiary investors/lenders')"
+          :active="active_tab === '#tertiary'"
+          @click="updateRoute('#tertiary')"
+        >
+          <div v-for="(lender, i) in lenders" :key="lender.id">
+            <h3>
+              {{ $t("Tertiary investor/lender") }} <small>#{{ i + 1 }}</small>
+            </h3>
+            <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
+          </div>
+          <button type="button" class="btn btn-primary" @click="addInvestor('LENDER')">
+            <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
+          </button>
+        </b-tab>
+      </b-tabs>
+
+      <div class="savebar">
+        <button class="btn btn-primary">Save</button>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -72,7 +78,7 @@
     name: "InvestorEdit",
     components: { InvolvementEdit, EditField },
     props: {
-      investorId: { type: [Number, String], required: false },
+      investorId: { type: [Number, String], required: false, default: null },
       investorVersion: { type: [Number, String], default: null },
     },
     data() {
@@ -109,6 +115,9 @@
       if (!this.investorId) {
         this.investor = { investors: [] };
       }
+      if (this.$route.query.newName) {
+        this.investor.name = this.$route.query.newName;
+      }
     },
     methods: {
       updateRoute(emiter) {
@@ -116,6 +125,11 @@
       },
       addInvestor(role) {
         this.investor.investors.push({ role });
+      },
+      submitInvestor() {
+        if (this.$route.query.newName) {
+          window.close("juchu!");
+        }
       },
     },
   };

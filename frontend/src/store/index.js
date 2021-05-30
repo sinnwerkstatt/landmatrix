@@ -58,6 +58,7 @@ const store = new Vuex.Store({
                 countries {
                   id
                   name
+                  code_alpha2
                   slug
                   point_lat
                   point_lon
@@ -66,7 +67,6 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   observatory_page_id
-
                   deals {
                     id
                   }

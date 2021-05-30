@@ -1,5 +1,5 @@
 <template>
-  <component v-if="pageType" :is="pageType" />
+  <component :is="pageType" v-if="pageType" />
 </template>
 
 <script>

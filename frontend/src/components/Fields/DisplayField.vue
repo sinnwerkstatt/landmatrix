@@ -30,6 +30,9 @@
   import IntegerField from "./Display/DecimalField";
   import FileField from "./Display/FileField";
   import ForeignKey from "./Display/ForeignKeyField";
+  import CountryForeignKey from "./Display/ForeignKeyField";
+  import InvestorForeignKey from "./Display/ForeignKeyField";
+
   import JSONActorsField from "./Display/JSONActorsField";
   import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
   import JSONDateAreaField from "./Display/JSONDateAreaField";
@@ -46,7 +49,6 @@
   import EmailField from "./Display/TextField";
   import TextField from "./Display/TextField";
   import URLField from "./Display/TextField";
-  import LocationGoogleField from "./Display/TextField";
   import FieldLabel from "./FieldLabel";
 
   export default {
@@ -64,6 +66,8 @@
       FileField,
       FloatField,
       ForeignKey,
+      CountryForeignKey,
+      InvestorForeignKey,
       IntegerField,
       JSONActorsField,
       JSONDateAreaChoicesField,
@@ -74,7 +78,6 @@
       JSONJobsField,
       JSONLeaseField,
       LengthField,
-      LocationGoogleField,
       ManyToManyField,
       NullBooleanField,
       PointField,

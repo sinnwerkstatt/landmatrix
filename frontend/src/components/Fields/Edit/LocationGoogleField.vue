@@ -1,49 +1,55 @@
 <template>
-  <div>
-    <div class="input-group">
-      <input
-        v-model="val"
-        type="text"
-        :placeholder="formfield.placeholder || formfield.label"
-        :aria-label="formfield.placeholder || formfield.label"
-        :name="formfield.name"
-        class="form-control"
-        id="location-input"
-      />
-    </div>
+  <div class="input-group">
+    <input
+      id="location-input"
+      v-model="val"
+      :placeholder="$t('Location')"
+      :aria-label="$t('Location')"
+      class="form-control"
+    />
   </div>
 </template>
 
 <script>
   export default {
     props: {
-      formfield: { type: Object, required: true },
       value: { type: String, required: false, default: "" },
-      model: { type: String, required: true },
+      countryCode: { type: String, required: false, default: "" },
+    },
+    data() {
+      return { autocomplete: null };
     },
     computed: {
       val: {
         get() {
           return this.value;
         },
-        set(v) {
-          this.$emit("input", v);
-        },
+        set() {},
+      },
+    },
+    watch: {
+      countryCode(cCode) {
+        this.autocomplete.setComponentRestrictions({ country: cCode });
       },
     },
     created() {
       this.$nextTick(() => {
-        const autocomplete = new google.maps.places.Autocomplete(
-          document.getElementById("location-input"),
-          { fields: ["geometry"], strictBounds: false }
-        );
+        const input_field = document.getElementById("location-input");
 
-        autocomplete.addListener("place_changed", () => {
-          let geometry = autocomplete.getPlace().geometry;
-          this.$store.dispatch("locationGoogleAutocomplete", {
+        let opts = { fields: ["geometry"], strictBounds: true };
+        if (this.countryCode)
+          opts.componentRestrictions = { country: this.countryCode };
+
+        // eslint-disable-next-line no-undef
+        this.autocomplete = new google.maps.places.Autocomplete(input_field, opts);
+
+        this.autocomplete.addListener("place_changed", () => {
+          const geometry = this.autocomplete.getPlace().geometry;
+          this.$emit("change", {
             latLng: [geometry.location.lat(), geometry.location.lng()],
             viewport: geometry.viewport,
           });
+          this.$emit("input", input_field.value);
         });
       });
     },

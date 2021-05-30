@@ -32,26 +32,21 @@
     "d3-shape": "^2.1.0",
     "dayjs": "^1.10.4",
     "deep-object-diff": "^1.1.0",
-    "eslint": "^7.27.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-vue": "^7.9.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.12.4",
-    "js-cookie": "^2.2.1",
     "jquery": "~2.2.4",
+    "js-cookie": "^2.2.1",
     "leaflet": "^1.7.1",
     "leaflet-gesture-handling": "^1.2.1",
     "leaflet.markercluster": "^1.5.0",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
     "popper.js": "^1.16.1",
-    "prettier": "^2.3.0",
     "sass": "~1.32.13",
     "tippy.js": "^5.2.1",
     "v-calendar": "^1.0.6",
     "vue": "~2.6.12",
     "vue-apollo": "^3.0.7",
-    "vue-eslint-parser": "^7.6.0",
     "vue-i18n": "^8.24.4",
     "vue-json-csv": "^1.2.11",
     "vue-matomo": "^3.14.0-0",
@@ -64,8 +59,13 @@
   },
   "devDependencies": {
     "@types/leaflet": "^1.7.0",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-vue": "^7.9.0",
+    "prettier": "^2.3.0",
     "vite": "~2.2.4",
     "vite-plugin-vue2": "^1.5.1",
+    "vue-eslint-parser": "^7.6.0",
     "vue-i18n-extract": "^1.2.3"
   },
   "prettier": {
@@ -76,21 +76,25 @@
     "extends": "stylelint-config-recommended"
   },
   "eslintConfig": {
-    "parser": "@babel/eslint-parser",
+    "env": {
+      "browser": true,
+      "es2017": true
+    },
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module",
+      "ecmaFeatures": {}
+    },
     "extends": [
       "eslint:recommended",
       "plugin:vue/recommended",
-      "prettier",
-      "prettier/vue"
+      "prettier"
     ],
-    "env": {
-      "browser": true,
-      "node": true,
-      "es6": true
-    },
     "rules": {
       "no-unused-vars": "warn",
       "vue/no-unused-vars": "error",
+      "vue/no-v-html": "warn",
       "vue/max-attributes-per-line": [
         "warn",
         {
@@ -101,27 +105,9 @@
           }
         }
       ]
-    },
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "ecmaFeatures": {}
     }
   },
   "browserslist": [
     "since 2017-06"
-  ],
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ],
-    "plugins": [
-      [
-        "babel-plugin-graphql-tag",
-        {
-          "strip": true
-        }
-      ]
-    ]
-  }
+  ]
 }

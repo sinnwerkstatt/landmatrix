@@ -12,6 +12,7 @@
         v-model="_value"
         :formfield="formfield"
         :model="model"
+        :disabled="disabled"
       />
     </div>
   </div>
@@ -34,6 +35,8 @@
 
   import FileField from "./Edit/FileField";
   import ForeignKey from "./Edit/ForeignKeyField";
+  import CountryForeignKey from "./Edit/CountryForeignKeyField";
+  import InvestorForeignKey from "./Edit/InvestorForeignKeyField";
   import JSONActorsField from "./Edit/JSONActorsField";
   import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField";
   import JSONDateAreaField from "./Edit/JSONDateAreaField";
@@ -43,7 +46,6 @@
   import JSONField from "./Edit/JSONField.vue";
   import JSONJobsField from "./Edit/JSONJobsField";
   import JSONLeaseField from "./Edit/JSONLeaseField";
-  import LocationGoogleField from "./Edit/LocationGoogleField";
   import PointField from "./Edit/PointField";
 
   import CharField from "./Edit/TextField";
@@ -69,7 +71,8 @@
       FileField,
       FloatField,
       ForeignKey,
-      LocationGoogleField,
+      CountryForeignKey,
+      InvestorForeignKey,
       ManyToManyField,
       IntegerField,
       JSONActorsField,
@@ -106,6 +109,7 @@
       },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
+      disabled: { type: Boolean, default: false },
     },
     computed: {
       _value: {

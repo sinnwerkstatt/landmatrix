@@ -8,6 +8,8 @@ class DealForm(VueForm):
     @property
     def attributes(self):
         return {
+            "country": {"class": "CountryForeignKey"},
+            "operating_company": {"class": "InvestorForeignKey"},
             "deal_size": {"unit": "ha"},
             "intended_size": {"unit": "ha"},
             "export": {"unit": "%"},

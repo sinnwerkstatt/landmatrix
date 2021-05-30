@@ -7,8 +7,6 @@ export const mapModule = {
     showFilterBar: true,
     showContextBar: true,
     displayDealsCount: true,
-    locationGoogleAutocomplete: null,
-    locationPoint: null,
     visibleLayer: "Map",
     layers: [
       {
@@ -20,8 +18,7 @@ export const mapModule = {
         name: "Map",
         attribution:
           'Maps &copy; <a href="http://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-        url:
-          "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
+        url: "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
       },
     ],
     contextLayers: [
@@ -178,40 +175,14 @@ export const mapModule = {
     ],
   }),
   mutations: {
-    setCurrentLayer(state, layer) {
-      state.visibleLayer = layer;
-    },
-    showFilterBar(state, payload) {
-      state.showFilterBar = payload;
-    },
-    showContextBar(state, payload) {
-      state.showContextBar = payload;
-    },
-    setDisplayDealsCount(state, payload) {
-      state.displayDealsCount = payload;
-    },
-    setLocationGoogleAutocomplete(state, payload) {
-      state.locationGoogleAutocomplete = payload;
-    },
-    changeLocationPoint(state, payload) {
-      state.locationPoint = payload;
-    },
+    setCurrentLayer: (state, layer) => (state.visibleLayer = layer),
+    showFilterBar: (state, payload) => (state.showFilterBar = payload),
+    showContextBar: (state, payload) => (state.showContextBar = payload),
+    setDisplayDealsCount: (state, payload) => (state.displayDealsCount = payload),
   },
   actions: {
-    setCurrentLayer(context, layer) {
-      context.commit("setCurrentLayer", layer);
-    },
-    showFilterBar(context, payload) {
-      context.commit("showFilterBar", payload);
-    },
-    showContextBar(context, payload) {
-      context.commit("showContextBar", payload);
-    },
-    locationGoogleAutocomplete(context, payload) {
-      context.commit("setLocationGoogleAutocomplete", payload);
-    },
-    changeLocationPoint(context, payload) {
-      context.commit("changeLocationPoint", payload);
-    },
+    setCurrentLayer: (context, layer) => context.commit("setCurrentLayer", layer),
+    showFilterBar: (context, payload) => context.commit("showFilterBar", payload),
+    showContextBar: (context, payload) => context.commit("showContextBar", payload),
   },
 };

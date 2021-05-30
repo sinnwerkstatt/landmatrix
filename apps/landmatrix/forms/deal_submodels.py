@@ -2,7 +2,7 @@ location_fields = {
     "id": {"label": "ID", "class": "AutoField", "required": False},
     "name": {
         "label": "Location",
-        "class": "LocationGoogleField",
+        "class": "TextField",
         "required": False,
     },
     "description": {
