@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="locationlist">
-      {{ deal.locations }}
       <div v-for="(loc, index) in deal.locations" :key="index" class="panel-body">
         <h3
           :class="{ highlighted: hoverLocID === loc.id }"
@@ -75,7 +74,7 @@
   import PointField from "$components/Fields/Edit/PointField";
   import EditField from "$components/Fields/EditField";
   import "@geoman-io/leaflet-geoman-free";
-  import { GeoJSON, Marker } from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker } from "leaflet";
 
   export default {
     components: { PointField, LocationGoogleField, EditField, BigMap },
@@ -86,7 +85,6 @@
       return {
         fields: ["level_of_accuracy", "description", "facility_name", "comment"],
         bigmap: null,
-        // editableFeatures: new FeatureGroup(),
         activeLocation: null,
         hoverLocID: null,
         locationFGs: new Map(),
@@ -154,8 +152,8 @@
         if (actLoc) {
           if (!this.locationFGs.get(actLoc.id)) {
             let fg = new GeoJSON(null, this.geojson_options);
+            fg.on("pm:update", this.features_changed);
             this.locationFGs.set(actLoc.id, fg);
-
             this.bigmap.addLayer(fg);
           }
           this.currentFG = this.locationFGs.get(actLoc.id);
@@ -240,12 +238,12 @@
           }
         });
         if (!hasMarker) {
-          let xx = new Marker(lGA.latLng).toGeoJSON();
-          xx.properties = {
+          let lpoint = new Marker(lGA.latLng).toGeoJSON();
+          lpoint.properties = {
             id: this.activeLocation?.id,
             name: this.activeLocation.name,
           };
-          this.currentFG.addData(xx);
+          this.currentFG.addData(lpoint);
         }
       },
       features_changed() {
@@ -253,7 +251,13 @@
         this.deal.locations.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
           if (lfg) {
-            l.areas = lfg.toGeoJSON();
+            let lfggeo = lfg.toGeoJSON();
+            l.areas = lfggeo;
+            let lpoint = lfggeo.features.find((f) => f.geometry.type === "Point");
+            if (lpoint) {
+              const [lng, lat] = lpoint.geometry.coordinates;
+              l.point = { lat, lng };
+            }
           }
           newlocs.push(l);
         });
@@ -275,42 +279,31 @@
       mapIsReady(map) {
         this.bigmap = map;
 
+        let bounds = new LatLngBounds([]);
         this.deal.locations.forEach((loc) => {
           let fg = new GeoJSON(null, this.geojson_options);
+          fg.on("pm:update", this.features_changed);
           this.locationFGs[loc.id] = fg;
           this.bigmap.addLayer(fg);
 
-          if (loc.areas) {
-            fg.addData(loc.areas);
-          }
+          if (loc.areas) fg.addData(loc.areas);
 
           if (loc.point) {
-            const pt = {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [loc.point.lng, loc.point.lat],
-              },
-              properties: {
-                id: loc.id,
-                name: loc.name,
-                type: "point",
-                spatial_accuracy: loc.spatial_accuracy,
-              },
-            };
+            let pt = new Marker(loc.point).toGeoJSON();
+            pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
             fg.addData(pt);
           }
+          bounds.extend(fg.getBounds());
         });
 
-        this.bigmap.fitBounds([
-          [this.deal.country.point_lat_min, this.deal.country.point_lon_min],
-          [this.deal.country.point_lat_max, this.deal.country.point_lon_max],
-        ]);
-        // map.addLayer(this.editableFeatures);
-        // map.pm.setGlobalOptions({ layerGroup: this.editableFeatures });
+        if (!bounds.isValid()) {
+          bounds = [
+            [this.deal.country.point_lat_min, this.deal.country.point_lon_min],
+            [this.deal.country.point_lat_max, this.deal.country.point_lon_max],
+          ];
+        }
+        this.bigmap.fitBounds(bounds);
 
-        // this.addGeoJson(this.deal.geojson, this.editableFeatures);
-        //
         map.on("pm:create", ({ layer, shape }) => {
           // do a little three-card monte carlo:
           // save the current id, remove it from existing layers and add it
@@ -335,7 +328,6 @@
         });
 
         // map.on("pm:remove", this.features_changed);
-        // this.editableFeatures.on("pm:update", this.features_changed);
         // this.editableFeatures.on("pm:dragend", ({ layer }) => {
         //   this.features_changed();
         // });
@@ -352,35 +344,35 @@
         // event.target.value = null;
       },
       addPropertiesPopup(layer, feature) {
-        // let colormap = {
-        //   contract_area: "yellow",
-        //   intended_area: "orange",
-        //   production_area: "red",
-        // };
-        //
-        // let select = document.createElement("select"),
-        //   option0 = document.createElement("option"),
-        //   option1 = document.createElement("option"),
-        //   option2 = document.createElement("option");
-        //
-        // select.addEventListener("change", ({ target }) => {
-        //   feature.properties.type = target.value;
-        //   layer.setStyle({ color: colormap[target.value] });
-        //   this.features_changed();
-        // });
-        // option0.value = "contract_area";
-        // option0.innerHTML = "Contract area";
-        // option1.value = "intended_area";
-        // option1.innerHTML = "Intended area";
-        // option2.value = "production_area";
-        // option2.innerHTML = "Production area";
-        // select.appendChild(option0);
-        // select.appendChild(option1);
-        // select.appendChild(option2);
-        // select.value = feature.properties.type;
-        //
-        // layer.setStyle({ color: colormap[select.value] });
-        // layer.bindPopup(select);
+        let colormap = {
+          contract_area: "yellow",
+          intended_area: "orange",
+          production_area: "red",
+        };
+
+        let select = document.createElement("select"),
+          option0 = document.createElement("option"),
+          option1 = document.createElement("option"),
+          option2 = document.createElement("option");
+
+        select.addEventListener("change", ({ target }) => {
+          feature.properties.type = target.value;
+          layer.setStyle({ color: colormap[target.value] });
+          this.features_changed();
+        });
+        option0.value = "contract_area";
+        option0.innerHTML = "Contract area";
+        option1.value = "intended_area";
+        option1.innerHTML = "Intended area";
+        option2.value = "production_area";
+        option2.innerHTML = "Production area";
+        select.appendChild(option0);
+        select.appendChild(option1);
+        select.appendChild(option2);
+        select.value = feature.properties.type;
+
+        layer.setStyle({ color: colormap[select.value] });
+        layer.bindPopup(select);
       },
     },
   };

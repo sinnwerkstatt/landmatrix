@@ -7,9 +7,11 @@
       <h1 v-else>
         Adding new deal <span v-if="deal.country">in {{ deal.country.name }}</span>
       </h1>
-      <div v-if="!dealId">{{ deal }}</div>
-      {{ deal.locations }}<br /><br />
-      {{ deal.geojson }}
+      <div style="font-size: 0.8rem">
+        <div v-if="!dealId">{{ deal }}</div>
+        {{ deal.locations }}<br /><br />
+        {{ deal.geojson }}
+      </div>
       <b-tabs
         id="tabNav"
         :key="dealId ? dealId + dealVersion : -1"
