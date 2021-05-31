@@ -138,6 +138,14 @@ def task_get_db_from_production():
     }
 
 
+def task_get_db_from_staging():
+    return {
+        "actions": [
+            """ssh landmatrix@dev.landmatrix.org "pg_dump landmatrix | bzip2" > landmatrix.sql.bz2"""
+        ]
+    }
+
+
 def task_reset_db_with_dump():
     replace_db = """bzcat landmatrix.sql.bz2 | psql landmatrix"""
     reset_site_to_localhost = pg_run(
