@@ -9,8 +9,9 @@
                 <div class="container">
                   <div class="row">
                     <div class="col-12 col-lg-4">
-                      <h1>Deal #{{ deal.id }}
-                        <span v-if="deal.country">in {{ deal.country.name }}</span>
+                      <h1>
+                        Deal #{{ deal.id }}
+                        <span class="headercountry">{{ deal.country.name }}</span>
                       </h1>
                     </div>
                     <div class="col-12 col-lg-8  panel-container">
@@ -630,6 +631,11 @@
     &:before {
       content: none;
     }
+  }
+  .headercountry {
+    white-space: nowrap;
+    display: block;
+    font-size: 1rem;
   }
 
 </style>
