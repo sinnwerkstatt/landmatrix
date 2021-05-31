@@ -27,7 +27,8 @@ webpack-stats.json
 /frontend/node_modules/
 /frontend/.cache/
 /frontend/.env
-/frontend/dist/
+/frontend/dist/*
+!/frontend/dist/.gitkeep
 
 # IDEs
 .idea/
