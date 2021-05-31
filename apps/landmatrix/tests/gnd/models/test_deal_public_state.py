@@ -27,7 +27,7 @@ def public_deal(db) -> Deal:
     assert Deal.objects.filter(id=3).count() == 1
     assert Deal.objects.get(id=3).operating_company
     assert Deal.objects.get(id=3).operating_company.investors.exists()
-    assert Deal.objects.get(id=3).datasources.exists()
+    assert len(Deal.objects.get(id=3).datasources) > 0
 
     assert deal.is_public
     assert Deal.objects.public().count() == 1
@@ -63,7 +63,8 @@ def test_public_deal_country_problems(public_deal: Deal):
 
 
 def test_public_deal_no_datasources(public_deal: Deal):
-    public_deal.datasources.all().delete()
+    public_deal.datasources = []
+    public_deal.save()
     assert not public_deal.is_public
     assert public_deal.not_public_reason == "NO_DATASOURCES"
     assert Deal.objects.public().count() == 0

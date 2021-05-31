@@ -203,8 +203,8 @@ def test_activity_with_attributes():
     histact.trigger_gnd()
 
     d1 = Deal.objects.get(id=ID)
-    loc1 = d1.locations.get()
-    assert loc1.point.coords == (10.0123, 5.0123)
+    loc1 = d1.locations[0]
+    assert loc1["point"] == {"lng": 10.0123, "lat": 5.0123}
     # loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
     # assert len(loc_versions) == 1
 
@@ -228,9 +228,9 @@ def test_activity_with_attributes():
     histact2.trigger_gnd()
 
     d1.refresh_from_db()
-    loc1 = d1.locations.get()
-    assert loc1.point.coords == (10.456, 5.456)
-    assert loc1.description == "Loc1.a"
+    loc1 = d1.locations[0]
+    assert loc1["point"] == {"lat": 5.456, "lng": 10.456}
+    assert loc1["description"] == "Loc1.a"
     # loc_versions = LocationVersion.objects.filter(object_id=loc1.id)
     # assert len(loc_versions) == 2
     # assert loc_versions[0].fields["point"].coords == (10.456, 5.456)
@@ -245,7 +245,7 @@ def test_activity_draft_with_location():
     histact.trigger_gnd()
     d15 = Deal.objects.get(id=15)
     assert d15
-    assert not d15.locations.exists()
+    assert not len(d15.locations)
 
     fk_group = ActivityAttributeGroup.objects.create(id=5, name="testgroup")
 
@@ -275,4 +275,4 @@ def test_activity_draft_with_location():
     assert versions[0].fields["fully_updated"]
     assert not versions[1].fields["fully_updated"]
     assert not d15.fully_updated
-    assert not d15.locations.exists()
+    assert not len(d15.locations)

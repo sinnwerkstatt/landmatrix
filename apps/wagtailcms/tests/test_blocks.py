@@ -1,6 +1,7 @@
 from django.test import RequestFactory, TestCase
 from wagtail.images.tests.utils import Image, get_test_image_file
 
+from apps.blog.models import BlogPage
 from apps.wagtailcms.blocks import *
 
 
