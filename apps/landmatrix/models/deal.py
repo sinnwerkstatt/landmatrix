@@ -90,7 +90,9 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
         related_name="deals",
     )
     intended_size = models.DecimalField(

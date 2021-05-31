@@ -31,21 +31,6 @@ class Migration(migrations.Migration):
             model_name='locationversion',
             name='revision',
         ),
-        migrations.AddField(
-            model_name='deal',
-            name='contracts',
-            field=apps.landmatrix.models.fields.ContractsField(blank=True, null=True, verbose_name='Contracts'),
-        ),
-        migrations.AddField(
-            model_name='deal',
-            name='datasources',
-            field=apps.landmatrix.models.fields.DatasourcesField(blank=True, null=True, verbose_name='Data sources'),
-        ),
-        migrations.AddField(
-            model_name='deal',
-            name='locations',
-            field=apps.landmatrix.models.fields.LocationsField(blank=True, null=True, verbose_name='Locations'),
-        ),
         migrations.DeleteModel(
             name='Contract',
         ),
@@ -63,5 +48,20 @@ class Migration(migrations.Migration):
         ),
         migrations.DeleteModel(
             name='LocationVersion',
+        ),
+        migrations.AddField(
+            model_name='deal',
+            name='contracts',
+            field=apps.landmatrix.models.fields.ContractsField(default=list, verbose_name='Contracts'),
+        ),
+        migrations.AddField(
+            model_name='deal',
+            name='datasources',
+            field=apps.landmatrix.models.fields.DatasourcesField(default=list, verbose_name='Data sources'),
+        ),
+        migrations.AddField(
+            model_name='deal',
+            name='locations',
+            field=apps.landmatrix.models.fields.LocationsField(default=list, verbose_name='Locations'),
         ),
     ]
