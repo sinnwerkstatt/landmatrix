@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-md-6">
-      Lat:
+      <div class="small">Lat:</div>
       <LowLevelDecimalField
         v-model="val.lat"
         :min-value="-90"
@@ -10,7 +10,7 @@
       />
     </div>
     <div class="col-md-6">
-      Lng:
+      <div class="small">Lng:</div>
       <LowLevelDecimalField
         v-model="val.lng"
         :min-value="-180"

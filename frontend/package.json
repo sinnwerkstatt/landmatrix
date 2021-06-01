@@ -12,6 +12,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@geoman-io/leaflet-geoman-free": "^2.11.1",
+    "@googlemaps/js-api-loader": "^1.11.4",
     "@turf/turf": "^6.3.0",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",

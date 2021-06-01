@@ -2,7 +2,7 @@
   <div>
     <div v-if="value">
       Current:
-      <a :href="`${MEDIA_URL}${value}`" target="_blank">
+      <a :href="`${media_url}${value}`" target="_blank">
         <i class="far fa-file-pdf"></i>
         {{ value.replace("uploads/", "") }}
       </a>
@@ -23,13 +23,12 @@
   export default {
     props: {
       formfield: { type: Object, required: true },
-      value: { type: String, required: false },
+      value: { type: String, required: false, default: "" },
       model: { type: String, required: true },
     },
     data() {
       return {
-        // eslint-disable-next-line no-undef
-        MEDIA_URL: MEDIA_URL,
+        media_url: import.meta.env.VITE_MEDIA_URL,
         user: this.$store.state.page.user,
       };
     },

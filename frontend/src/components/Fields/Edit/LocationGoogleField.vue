@@ -11,6 +11,13 @@
 </template>
 
 <script>
+  import { Loader } from "@googlemaps/js-api-loader";
+
+  const loader = new Loader({
+    apiKey: import.meta.env.VITE_GAPI_KEY,
+    libraries: ["places"],
+  });
+
   export default {
     props: {
       value: { type: String, required: false, default: "" },
@@ -40,16 +47,17 @@
         if (this.countryCode)
           opts.componentRestrictions = { country: this.countryCode };
 
-        // eslint-disable-next-line no-undef
-        this.autocomplete = new google.maps.places.Autocomplete(input_field, opts);
-
-        this.autocomplete.addListener("place_changed", () => {
-          const geometry = this.autocomplete.getPlace().geometry;
-          this.$emit("change", {
-            latLng: [geometry.location.lat(), geometry.location.lng()],
-            viewport: geometry.viewport,
+        loader.load().then(() => {
+          // eslint-disable-next-line no-undef
+          this.autocomplete = new google.maps.places.Autocomplete(input_field, opts);
+          this.autocomplete.addListener("place_changed", () => {
+            const geometry = this.autocomplete.getPlace().geometry;
+            this.$emit("change", {
+              latLng: [geometry.location.lat(), geometry.location.lng()],
+              viewport: geometry.viewport,
+            });
+            this.$emit("input", input_field.value);
           });
-          this.$emit("input", input_field.value);
         });
       });
     },

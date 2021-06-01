@@ -31,7 +31,7 @@
     },
     computed: {
       legacy_link() {
-        let base = process.env.NEW_ROUTES === "False" ? "" : "/legacy";
+        let base = "/legacy";
         return base + this.$route.path;
       },
     },

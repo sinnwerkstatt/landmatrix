@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import Cookies from "js-cookie";
 
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
@@ -109,9 +110,10 @@ Vue.filter("thousandsep", function (value) {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 });
 
+const locale = Cookies.get("django_language") ?? "en";
+
 const i18n = new VueI18n({
-  // eslint-disable-next-line no-undef
-  locale: LANGUAGE || "en",
+  locale,
   fallbackLocale: "en",
   messages: { en: en_messages, es: es_messages, fr: fr_messages },
   silentTranslationWarn: true,
@@ -127,8 +129,7 @@ let vue_app = new Vue({
   render: (h) => h(App),
 });
 
-// eslint-disable-next-line no-undef
-store.dispatch("fetchFields", LANGUAGE || "en");
+store.dispatch("fetchFields", locale);
 store.dispatch("fetchMessages");
 store.dispatch("fetchBasicData").then(() => {
   vue_app.$mount("#app");

@@ -145,23 +145,23 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <i class="fa fa-language" aria-hidden="true" style="display: inline;"></i>
-              {{ LANGUAGES[LANGUAGE] }}
+              <i class="fa fa-language" aria-hidden="true" style="display: inline"></i>
+              {{ languages[language] }}
             </a>
             <div class="dropdown-menu">
-              <a
-                v-for="(lingo, lcode) in LANGUAGES"
-                :key="lcode"
-                :href="`/language/${lcode}/`"
+              <div
+                v-for="(lingo, lcode) in languages"
+                :key="lingo"
+                :class="{ active: lcode === language }"
                 class="dropdown-item"
-                :class="{ active: lcode === LANGUAGE }"
+                @click="switchLanguage(lcode)"
               >
                 {{ lingo }} ({{ lcode }})
-              </a>
+              </div>
             </div>
           </li>
           <li v-if="user" class="nav-item">
-            <p class="navbar-text dropdown-header" style="line-height: 1.2em;">
+            <p class="navbar-text dropdown-header" style="line-height: 1.2em">
               {{ user.full_name }}
               <br />
               <small>{{ $t(user.role) }}</small>
@@ -272,6 +272,7 @@
 </template>
 <script>
   import { blogcategories_query } from "$store/queries";
+  import Cookies from "js-cookie";
 
   export default {
     data() {
@@ -279,9 +280,8 @@
         username: null,
         password: null,
         login_failed_message: "",
-        // eslint-disable-next-line no-undef
-        LANGUAGE: LANGUAGE,
-        LANGUAGES: { en: "English", es: "Español", fr: "Français" },
+        language: Cookies.get("django_language") ?? "en",
+        languages: { en: "English", es: "Español", fr: "Français" },
         blogcategories: [],
         data_links: [
           { name: "Map", link: { name: "map" } },
@@ -318,6 +318,12 @@
       },
     },
     methods: {
+      switchLanguage(locale) {
+        Cookies.set("django_language", locale);
+        this.$i18n.locale = locale;
+        this.language = locale;
+        this.$store.dispatch("fetchFields", locale);
+      },
       dispatchLogout() {
         this.$store.dispatch("logout");
       },

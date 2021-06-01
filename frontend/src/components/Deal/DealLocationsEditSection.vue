@@ -24,7 +24,7 @@
             </div>
             <div class="col-12">
               <LocationGoogleField
-                v-model="loc.location"
+                v-model="loc.name"
                 :country-code="deal.country.code_alpha2"
                 @change="locationGoogleAutocomplete"
               />

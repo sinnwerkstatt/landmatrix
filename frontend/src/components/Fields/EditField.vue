@@ -91,7 +91,6 @@
     },
     props: {
       fieldname: { type: String, required: true },
-      // eslint-disable-next-line vue/require-prop-types
       value: { required: true },
       model: { type: String, default: "deal" },
       showLabel: { type: Boolean, default: true },

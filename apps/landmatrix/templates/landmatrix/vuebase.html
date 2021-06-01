@@ -24,16 +24,6 @@
         Land Matrix is loading...
       </div>
     </div>
-    <script>
-      const MEDIA_URL = "{{ MEDIA_URL }}";
-      const LANGUAGE = "{{ LANGUAGE_CODE }}";
-      {#const GAPIKEY = "{{  }}"#}
-    </script>
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"
-    ></script>
-
     <script type="module" crossorigin src="{% static 'index.js' %}"></script>
     <link rel="modulepreload" href="{% static 'vendor.js' %}" />
     <link rel="stylesheet" href="{% static 'index.css' %}" />

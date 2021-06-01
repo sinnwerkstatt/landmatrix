@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a :href="`${MEDIA_URL}${value}`" target="_blank">
+    <a :href="`${media_url}${value}`" target="_blank">
       <i class="far fa-file-pdf"></i>
       {{ value.replace("uploads/", "") }}
     </a>
@@ -15,10 +15,7 @@
       model: { type: String, required: true },
     },
     data() {
-      return {
-        // eslint-disable-next-line no-undef
-        MEDIA_URL: MEDIA_URL,
-      };
+      return { media_url: import.meta.env.VITE_MEDIA_URL };
     },
   };
 </script>
