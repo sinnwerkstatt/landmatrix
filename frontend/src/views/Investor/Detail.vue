@@ -1,6 +1,6 @@
 <template>
   <div class="container investor-detail">
-    <div v-if="!investor" class="row" style="height: 100%;">
+    <div v-if="!investor" class="row" style="height: 100%">
       <LoadingPulse />
     </div>
     <div v-else class="row">
@@ -38,7 +38,7 @@
         class="col-lg-8 col-xl-6 mb-3"
         :class="{ loading_wrapper: !graphDataIsReady }"
       >
-        <div v-if="!graphDataIsReady" style="height: 400px;">
+        <div v-if="!graphDataIsReady" style="height: 400px">
           <LoadingPulse />
         </div>
         <InvestorGraph
@@ -51,7 +51,7 @@
       <div
         v-else
         class="col-lg-8 col-xl-6 mb-3 d-flex justify-center align-items-center"
-        style="color: #585858; background: #d4d4d4; border-radius: 5px;"
+        style="color: #585858; background: #d4d4d4; border-radius: 5px"
       >
         {{
           $t(
@@ -64,7 +64,7 @@
     <b-tabs v-if="graphDataIsReady" content-class="mb-3">
       <b-tab>
         <template #title>
-          <h5 v-html="`Involvements (${involvements.length})`" />
+          <h5>{{ $t("Involvements") }} ({{ involvements.length }})</h5>
         </template>
         <table class="table data-table">
           <thead>
@@ -131,11 +131,10 @@
       </b-tab>
       <b-tab v-if="'deals' in investor">
         <template #title>
-          <h5
-            v-html="
-              `Deals (Involvements as Operating company) (${investor.deals.length})`
-            "
-          />
+          <h5>
+            {{ $t("Deals (Involvements as Operating company)") }}
+            ({{ investor.deals.length }})
+          </h5>
         </template>
         <table class="table data-table">
           <thead>
@@ -326,16 +325,16 @@
       },
     },
     methods: {
-      detect_role(investor) {
-        if (investor.role === "PARENT") {
-          if (investor.involvement_type === "INVESTOR") return "Parent company";
-          if (investor.involvement_type === "VENTURE")
+      detect_role(/** @type {Involvement} */ involvement) {
+        if (involvement.role === "PARENT") {
+          if (involvement.involvement_type === "INVESTOR") return "Parent company";
+          if (involvement.involvement_type === "VENTURE")
             return "Involved in as Parent Company";
         }
-        if (investor.role === "LENDER") {
-          if (investor.involvement_type === "INVESTOR")
+        if (involvement.role === "LENDER") {
+          if (involvement.involvement_type === "INVESTOR")
             return "Tertiary investor/lender";
-          if (investor.involvement_type === "VENTURE")
+          if (involvement.involvement_type === "VENTURE")
             return "Involved in as Tertiary investor/lender";
         }
       },

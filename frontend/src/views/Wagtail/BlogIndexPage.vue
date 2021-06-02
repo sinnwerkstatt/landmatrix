@@ -42,6 +42,7 @@
                   {{ article.title }}
                 </router-link>
               </h5>
+              <!-- eslint-disable-next-line vue/no-v-html -->
               <p class="card-text" v-html="article.excerpt" />
               <p class="card-text">
                 <small class="text-muted">{{ article.date }}</small>

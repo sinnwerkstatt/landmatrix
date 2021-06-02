@@ -9,7 +9,7 @@
       </h1>
       <div style="font-size: 0.8rem">
         <div v-if="!dealId">{{ deal }}</div>
-        {{ deal.locations }}<br /><br />
+        {{ deal.locations[0].areas }}<br /><br />
         {{ deal.geojson }}
       </div>
       <b-tabs
@@ -57,6 +57,7 @@
           :active="active_tab === '#contracts'"
           @activated="updateRoute('#contracts')"
           @addEntry="addContract"
+          @removeEntry="removeContract"
         />
         <DealEditSection
           :title="deal_sections.employment.label"
@@ -104,6 +105,7 @@
           :active="active_tab === '#data_sources'"
           @activated="updateRoute('#data_sources')"
           @addEntry="addDataSource"
+          @removeEntry="removeDataSource"
         />
 
         <DealEditSection
@@ -164,7 +166,21 @@
       </b-tabs>
 
       <div class="savebar">
-        <button type="submit" class="btn btn-primary btn-sm mx-2">Save</button>
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm mx-2"
+          :disabled="saving_in_progress"
+        >
+          <span
+            v-if="saving_in_progress"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span
+          >&nbsp;
+          <span v-if="false">{{ $t("Save") }}</span>
+          <span v-else>{{ $t("Create new draft") }}</span>
+        </button>
         <router-link
           v-if="dealId"
           class="btn btn-gray btn-sm mx-2"
@@ -206,6 +222,7 @@
         deal: null,
         deal_sections,
         deal_submodel_sections,
+        saving_in_progress: false,
       };
     },
     apollo: {
@@ -263,6 +280,7 @@
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
       deal_save(e) {
+        this.saving_in_progress = true;
         e.preventDefault();
         this.$apollo
           .mutate({
@@ -278,7 +296,14 @@
             },
           })
           .then((data) => {
-            console.log(data);
+            console.log({ data });
+            this.$router.push({
+              name: "deal_manage",
+              params: { dealId: +this.dealId, dealVersion: data.revision },
+            });
+          })
+          .catch((e) => {
+            console.error({ e });
           });
       },
 
@@ -291,6 +316,18 @@
         let maxid = 0;
         this.deal.datasources.forEach((l) => (maxid = Math.max(l.id, maxid)));
         this.deal.datasources.push(new Object({ id: maxid + 1 }));
+      },
+      removeContract(index) {
+        if (confirm(this.$t("Do you really want to remove this contract?")) === true) {
+          this.deal.contracts.splice(index, 1);
+        }
+      },
+      removeDataSource(index) {
+        if (
+          confirm(this.$t("Do you really want to remove this data source?")) === true
+        ) {
+          this.deal.datasources.splice(index, 1);
+        }
       },
     },
   };

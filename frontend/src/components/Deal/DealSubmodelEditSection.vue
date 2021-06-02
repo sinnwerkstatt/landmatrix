@@ -16,8 +16,8 @@
           <EditField
             v-for="fieldname in fields"
             :key="fieldname"
-            :fieldname="fieldname"
             v-model="entry[fieldname]"
+            :fieldname="fieldname"
             :model="model"
             :label-classes="labelClasses"
             :value-classes="valueClasses"
@@ -26,7 +26,7 @@
       </div>
       <slot />
     </div>
-    <div class="mt-5 float-right">
+    <div class="mt-5">
       <button type="button" class="btn btn-primary" @click="$emit('addEntry')">
         <i class="fa fa-plus"></i> {{ $t(modelName) }}
       </button>
@@ -57,7 +57,7 @@
     },
     computed: {
       wrapperClasses() {
-        if (!!this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
+        if (this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
         else return ["col-12"];
       },
     },

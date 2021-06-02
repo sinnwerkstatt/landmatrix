@@ -17,6 +17,7 @@
           </router-link>
         </div>
       </div>
+      <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="blog-body" v-html="blogpage.body" />
     </div>
   </div>

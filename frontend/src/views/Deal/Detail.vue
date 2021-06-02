@@ -1,6 +1,6 @@
 <template>
   <div v-if="deal">
-    <ManageHeader v-if="manage" :deal="deal" :dealVersion="dealVersion" />
+    <ManageHeader v-if="manage" :deal="deal" :deal-version="dealVersion" />
     <div v-else class="container deal-detail">
       <div class="row">
         <div>
@@ -95,7 +95,7 @@
           <div class="row">
             <div
               class="col-md-12 col-lg-10 col-xl-9"
-              :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"
+              :class="{ loading_wrapper: $apollo.queries.investor.loading }"
             >
               <template v-if="investor.involvements.length">
                 <h3 class="mb-2">
@@ -286,7 +286,8 @@
           if (!data.deal) {
             this.$router.push({
               name: "404",
-              params: [this.$router.currentRoute.path],
+              // TODO: this seems to have no effect. initially i wanted to leave the navigated-to path
+              // params: [this.$router.currentRoute.path],
               replace: true,
             });
           }

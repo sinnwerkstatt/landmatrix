@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/static/",
+    "build": "vite build --base=/static/; touch dist/.gitkeep",
     "lint": "eslint --ext .js,.vue src",
     "style": "prettier src/ --write"
   },
