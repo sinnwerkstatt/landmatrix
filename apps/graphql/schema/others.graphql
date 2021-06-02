@@ -90,6 +90,10 @@ scalar WebOfTransnationalDeals
 scalar CountryInvestmentsAndRankings
 scalar Rankings
 
-scalar ChartDescriptions
+type ChartDescriptions {
+  web_of_transnational_deals: String
+  dynamics_overview: String
+  produce_info_map: String
+}
 
 scalar DealAggregations

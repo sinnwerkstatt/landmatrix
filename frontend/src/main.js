@@ -119,20 +119,13 @@ const i18n = new VueI18n({
   silentTranslationWarn: true,
 });
 
-let vue_app = new Vue({
-  router,
-  store,
-  i18n,
-  apolloProvider: new VueApollo({
-    defaultClient: apolloClient,
-  }),
-  render: (h) => h(App),
-});
+const apolloProvider = new VueApollo({ defaultClient: apolloClient });
+let vue_app;
 
 store.dispatch("fetchFields", locale);
 store.dispatch("fetchMessages");
 store.dispatch("fetchBasicData").then(() => {
+  vue_app = new Vue({ router, store, i18n, apolloProvider, render: (h) => h(App) });
   vue_app.$mount("#app");
 });
-
 export default vue_app;

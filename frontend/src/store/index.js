@@ -27,7 +27,7 @@ const store = new Vuex.Store({
   },
   actions: {
     fetchBasicData(context) {
-      context.dispatch("fetchAboutPages");
+      let about_promise = context.dispatch("fetchAboutPages");
       let obs_promise = context.dispatch("fetchObservatoryPages");
 
       let rest_promise = new Promise(function (resolve, reject) {
@@ -81,7 +81,11 @@ const store = new Vuex.Store({
                   point_lon_max
                   observatory_page_id
                 }
-                chart_descriptions
+                chart_descriptions {
+                  web_of_transnational_deals
+                  dynamics_overview
+                  produce_info_map
+                }
               }
             `,
           })
@@ -96,7 +100,7 @@ const store = new Vuex.Store({
             reject(error);
           });
       });
-      return Promise.all([obs_promise, rest_promise]);
+      return Promise.all([about_promise, obs_promise, rest_promise]);
     },
     fetchFields(context, language = "en") {
       apolloClient
@@ -135,16 +139,26 @@ const store = new Vuex.Store({
                 login(username: $username, password: $password) {
                   status
                   error
-                  #                  user {
-                  #                    full_name
-                  #                    username
-                  #                    is_authenticated
-                  #                    is_impersonate
-                  #                    groups {
-                  #                      id
-                  #                      name
-                  #                    }
-                  #                  }
+                  user {
+                    full_name
+                    username
+                    is_authenticated
+                    is_impersonate
+                    userregionalinfo {
+                      country {
+                        id
+                        name
+                      }
+                      region {
+                        id
+                        name
+                      }
+                    }
+                    groups {
+                      id
+                      name
+                    }
+                  }
                 }
               }
             `,
@@ -153,30 +167,30 @@ const store = new Vuex.Store({
           .then(({ data }) => {
             let login_data = data.login;
             if (login_data.status === true) {
-              location.reload();
-              // context.commit("setUser", login_data.user);
-              // resolve(login_data);
+              context.commit("setUser", login_data.user);
+              resolve(login_data);
             } else {
               reject(login_data);
             }
           });
       });
     },
-    logout(context) {
-      return apolloClient
-        .mutate({
-          mutation: gql`
-            mutation {
-              logout
-            }
-          `,
-        })
-        .then(({ data }) => {
-          if (data.logout === true) {
-            location.reload();
-            // context.commit("setUser", null);
-          }
-        });
+    logout() {
+      return new Promise(function (resolve, reject) {
+        apolloClient
+          .mutate({
+            mutation: gql`
+              mutation {
+                logout
+              }
+            `,
+          })
+          .then(({ data }) => {
+            if (data.logout === true) resolve();
+            else reject();
+          })
+          .catch(reject);
+      });
     },
   },
 });

@@ -28,6 +28,6 @@
 
 <style lang="scss" scoped>
   .content {
-    min-height: calc(100vh - 60px - 31px - 31px);
+    min-height: calc(100vh - 60px - 35px - 39px);
   }
 </style>

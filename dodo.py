@@ -11,7 +11,7 @@ DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 
 def pg_run(cmd: str, database="") -> str:
-    return f"sudo -u postgres psql {database} -c '{cmd}'"
+    return f'sudo -u postgres psql {database} -c "{cmd}"'
 
 
 def task_update():

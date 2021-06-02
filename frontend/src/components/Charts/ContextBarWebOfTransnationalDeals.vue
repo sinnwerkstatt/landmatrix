@@ -1,6 +1,7 @@
 <template>
   <div>
     <h2 class="bar-title">Web of transnational deals</h2>
+    <!-- eslint-disable-next-line vue/no-v-html -->
     <div v-html="chart_desc" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>

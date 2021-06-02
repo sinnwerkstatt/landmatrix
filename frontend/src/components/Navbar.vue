@@ -2,7 +2,7 @@
   <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="'/'">
-        <img src="$static/images/lm-logo.png" alt="Landmatrix Logo" />
+        <img :src="lm_logo" alt="Landmatrix Logo" />
       </router-link>
       <button
         class="navbar-toggler"
@@ -204,9 +204,9 @@
               <router-link class="dropdown-item" :to="{ name: 'case_statistics' }">
                 {{ $t("Case statistics") }}
               </router-link>
-              <a class="dropdown-item" @click.prevent="dispatchLogout">{{
-                $t("Logout")
-              }}</a>
+              <a class="dropdown-item" @click.prevent="dispatchLogout">
+                {{ $t("Logout") }}
+              </a>
             </div>
           </li>
           <li v-if="!user" class="nav-item dropdown">
@@ -226,7 +226,7 @@
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="#navbarDropdownAnonymous"
             >
-              <form class="px-4 pt-3">
+              <form class="px-4 pt-3" @submit.prevent="dispatchLogin">
                 <div class="form-group">
                   <input
                     id="username"
@@ -234,7 +234,7 @@
                     type="text"
                     class="form-control"
                     autocomplete="username"
-                    placeholder="username"
+                    placeholder="Username"
                   />
                 </div>
                 <div class="form-group">
@@ -244,14 +244,10 @@
                     type="password"
                     class="form-control"
                     autocomplete="current-password"
-                    placeholder="password"
+                    placeholder="Password"
                   />
                 </div>
-                <button
-                  type="submit"
-                  class="btn btn-secondary"
-                  @click.prevent="dispatchLogin"
-                >
+                <button type="submit" class="btn btn-secondary">
                   {{ $t("Login") }}
                 </button>
                 <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
@@ -273,10 +269,12 @@
 <script>
   import { blogcategories_query } from "$store/queries";
   import Cookies from "js-cookie";
+  import lm_logo from "$static/images/lm-logo.png";
 
   export default {
     data() {
       return {
+        lm_logo,
         username: null,
         password: null,
         login_failed_message: "",
@@ -325,16 +323,17 @@
         this.$store.dispatch("fetchFields", locale);
       },
       dispatchLogout() {
-        this.$store.dispatch("logout");
+        this.$store.dispatch("logout").then(() => location.reload());
       },
       dispatchLogin() {
         this.$store
           .dispatch("login", { username: this.username, password: this.password })
           .then(() => {
-            this.login_failed_message = "";
-            if (this.$refs.userMenu) {
-              this.$refs.userMenu.classList.remove("show");
-            }
+            location.reload();
+            // this.login_failed_message = "";
+            // if (this.$refs.userMenu) {
+            //   this.$refs.userMenu.classList.remove("show");
+            // }
           })
           .catch((response) => {
             this.login_failed_message = response.error;

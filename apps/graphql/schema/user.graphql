@@ -19,11 +19,7 @@ type UserGroup {
   name: String!
 }
 
-type LoginPayload {
-  status: Boolean!
-  error: String
-  user: User
-}
+
 
 type UserRegionalInfo {
   user: User

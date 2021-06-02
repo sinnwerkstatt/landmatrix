@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const pageModule = {
   state: () => ({
+    /** @type {User} */
     user: null,
     countries: [],
     regions: [],
@@ -13,23 +14,18 @@ export const pageModule = {
     searchDescription: null,
     breadcrumbs: [],
     showBreadcrumbs: true,
-    chartDescriptions: [],
+    chartDescriptions: null,
   }),
   getters: {
-    getCountryOrRegion: (state) => ({ type, id }) => {
-      let roc =
-        type === "region"
-          ? state.regions.find((region) => region.id === +id)
-          : state.countries.find((countries) => countries.id === +id);
-
-      if (!roc) {
-        roc = {
-          name: "UNKNOWN",
-        };
-      }
-
-      return roc;
-    },
+    getCountryOrRegion:
+      (state) =>
+      ({ type, id }) => {
+        let roc =
+          type === "region"
+            ? state.regions.find((region) => region.id === +id)
+            : state.countries.find((countries) => countries.id === +id);
+        return roc ? roc : { name: "UNKNOWN" };
+      },
     userAuthenticated: (state) => {
       return !!(state.user && state.user.is_authenticated);
     },

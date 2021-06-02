@@ -13,6 +13,7 @@ const DealDetail = () => import("$views/Deal/Detail");
 const DealEdit = () => import("$views/Deal/Edit");
 const InvestorDetail = () => import("$views/Investor/Detail");
 const InvestorEdit = () => import("$views/Investor/Edit");
+const Login = () => import("$views/Login");
 const Dashboard = () => import("$views/Manager/Dashboard");
 const NotFound = () => import("$views/NotFound");
 const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
@@ -27,6 +28,22 @@ const router = new Router({
       path: "/map/",
       name: "map",
       component: DataMap,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/list/deals/",
+      name: "list_deals",
+      component: DataList,
+      meta: {
+        hideBreadcrumbs: true,
+      },
+    },
+    {
+      path: "/list/investors/",
+      name: "list_investors",
+      component: DataList,
       meta: {
         hideBreadcrumbs: true,
       },
@@ -55,39 +72,27 @@ const router = new Router({
         hideBreadcrumbs: true,
       },
     },
-    {
-      path: "/list/deals/",
-      name: "list_deals",
-      component: DataList,
-      meta: {
-        hideBreadcrumbs: true,
-      },
-    },
-    {
-      path: "/list/investors/",
-      name: "list_investors",
-      component: DataList,
-      meta: {
-        hideBreadcrumbs: true,
-      },
-    },
+
     {
       path: "/deal/add/",
       name: "deal_add",
       component: DealEdit,
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: "/deal/edit/:dealId/:dealVersion?/",
       name: "deal_edit",
       component: DealEdit,
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: "/deal/manage/:dealId/:dealVersion?/",
       name: "deal_manage",
       component: DealDetail,
       props: (route) => ({ manage: true, ...route.params }),
+      meta: { requiresAuth: true },
     },
     {
       path: "/deal/:dealId/:dealVersion?/",
@@ -106,12 +111,14 @@ const router = new Router({
       name: "investor_add",
       component: InvestorEdit,
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: "/investor/edit/:investorId/:investorVersion?/",
       name: "investor_edit",
       component: InvestorEdit,
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: "/investor/:investorId/:investorVersion?/",
@@ -119,8 +126,23 @@ const router = new Router({
       component: InvestorDetail,
       props: true,
     },
-    { path: "/dashboard/", name: "dashboard", component: Dashboard },
-    { path: "/case_statistics/", name: "case_statistics", component: CaseStatistics },
+    {
+      path: "/dashboard/",
+      name: "dashboard",
+      component: Dashboard,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/case_statistics/",
+      name: "case_statistics",
+      component: CaseStatistics,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/login/",
+      name: "login",
+      component: Login,
+    },
 
     // redirects
     { path: "/data/", redirect: { name: "list_deals" } },
@@ -154,15 +176,22 @@ const router = new Router({
       name: "404",
       component: NotFound,
       beforeEnter(to, from, next) {
-        store.dispatch("setPageContext", { breadcrumbs: [] });
-        next();
+        store.dispatch("setPageContext", { breadcrumbs: [] }).then(next);
       },
     },
   ],
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!store.getters.userAuthenticated) {
+      next({ name: "login", query: { next: to.fullPath } });
+    } else next();
+  } else next();
+});
+
 router.afterEach((to) => {
-  Vue.nextTick((vm) => {
+  Vue.nextTick(() => {
     store.dispatch(
       "breadcrumbBar",
       !to.matched.some((record) => record.meta.hideBreadcrumbs)
