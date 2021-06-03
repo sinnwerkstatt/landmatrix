@@ -7,19 +7,23 @@
         {{ value.replace("uploads/", "") }}
       </a>
       <br />
-      Change: <input type="file" :name="formfield.name" /><br />
-      <label>
-        Clear file
-        <input type="checkbox" :name="`clear_${formfield.name}`" />
-      </label>
+      Change:
+      <input
+        style="display: inline-block"
+        type="file"
+        :name="formfield.name"
+        @change="uploadFile"
+      /><br />
     </div>
     <div v-else>
-      <input type="file" :name="formfield.name" />
+      <input type="file" :name="formfield.name" @change="uploadFile" />
     </div>
   </div>
 </template>
 
 <script>
+  import gql from "graphql-tag";
+
   export default {
     props: {
       formfield: { type: Object, required: true },
@@ -31,6 +35,30 @@
         media_url: import.meta.env.VITE_MEDIA_URL,
         user: this.$store.state.page.user,
       };
+    },
+    methods: {
+      uploadFile({ target: { files = [] } }) {
+        if (!files.length) return;
+        let fr = new FileReader();
+        fr.onload = () => {
+          this.$apollo
+            .mutate({
+              mutation: gql`
+                mutation ($filename: String!, $payload: String!) {
+                  upload_datasource_file(filename: $filename, payload: $payload)
+                }
+              `,
+              variables: {
+                filename: files[0].name,
+                payload: fr.result,
+              },
+            })
+            .then(({ data: { upload_datasource_file } }) => {
+              this.$emit("input", upload_datasource_file);
+            });
+        };
+        fr.readAsDataURL(files[0]);
+      },
     },
   };
 </script>

@@ -4,6 +4,7 @@ type Mutation {
 
   change_deal_status(id: Int!, transition: WorkflowTransition): Int
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditPayload
+  upload_datasource_file(filename: String!, payload: String!): String
 }
 
 scalar Payload
