@@ -250,7 +250,6 @@
     props: {
       dealId: { type: [Number, String], required: true },
       dealVersion: { type: [Number, String], default: null },
-      manage: { type: Boolean, default: false },
     },
     metaInfo() {
       return { title: this.title };
@@ -352,6 +351,9 @@
             );
         }
         return null;
+      },
+      manage() {
+        return this.$store.state.page.user && this.$store.state.page.user.is_authenticated;
       },
       ...mapState({
         formFields: (state) => state.formfields,

@@ -88,11 +88,8 @@ const router = new Router({
       meta: { requiresAuth: true },
     },
     {
-      path: "/deal/manage/:dealId/:dealVersion?/",
-      name: "deal_manage",
-      component: DealDetail,
-      props: (route) => ({ manage: true, ...route.params }),
-      meta: { requiresAuth: true },
+      path: "/deal/manage/:dealId/:dealVersion?",
+      redirect: "/deal/:dealId/:dealVersion?"
     },
     {
       path: "/deal/:dealId/:dealVersion?/",
