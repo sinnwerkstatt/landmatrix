@@ -5,7 +5,8 @@
         <div class="full-width-wrapper">
           <div class="container">
             <div class="row">
-              <div class="col-sm-12 col-md-8 content-area"> <!-- only use left half, rest for comments -->
+              <div class="col-sm-12 col-md-8 content-area">
+                <!-- only use left half, rest for comments -->
                 <div class="container">
                   <div class="row">
                     <div class="col-12 col-lg-4">
@@ -14,7 +15,7 @@
                         <span class="headercountry">{{ deal.country.name }}</span>
                       </h1>
                     </div>
-                    <div class="col-12 col-lg-8  panel-container">
+                    <div class="col-12 col-lg-8 panel-container">
                       <HeaderDates :obj="deal" />
                     </div>
                   </div>
@@ -78,12 +79,17 @@
           </div>
           <div class="container">
             <div class="row">
-              <div class="col-sm-12 col-md-8 content-area"> <!-- only use left half, rest for comments -->
+              <div class="col-sm-12 col-md-8 content-area">
+                <!-- only use left half, rest for comments -->
 
                 <div class="row d-flex align-items-center p-3">
-                  <div v-if="last_revision" class="col-sm-8 col-md-7 col-lg-8 last-changes">
+                  <div
+                    v-if="last_revision"
+                    class="col-sm-8 col-md-7 col-lg-8 last-changes"
+                  >
                     Last changes by {{ last_revision.user.full_name }} on
-                    {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm") }}<br />
+                    {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm")
+                    }}<br />
                     <router-link
                       v-if="deal.versions.length > 1"
                       :to="{
@@ -100,7 +106,8 @@
                   </div>
                   <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
                     <div v-if="deal.is_public">
-                      <i class="fas fa-eye fa-fw fa-lg"></i> {{ $t("Publicly visible") }}
+                      <i class="fas fa-eye fa-fw fa-lg"></i>
+                      {{ $t("Publicly visible") }}
                     </div>
                     <div v-else>
                       <i class="fas fa-eye-slash fa-fw fa-lg"></i>
@@ -114,7 +121,12 @@
                         <i class="fas fa-times fa-fw"></i>
                         <b-button
                           id="confidential"
-                          style="color: black; background: inherit; border: 0; padding: 0;"
+                          style="
+                            color: black;
+                            background: inherit;
+                            border: 0;
+                            padding: 0;
+                          "
                         >
                           {{ $t("Confidential") }}
                         </b-button>
@@ -126,23 +138,29 @@
                       </li>
 
                       <li v-if="deal.country">
-                        <i class="fas fa-check fa-fw"></i> {{ $t("Target country is set") }}
+                        <i class="fas fa-check fa-fw"></i>
+                        {{ $t("Target country is set") }}
                       </li>
                       <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("Target country is NOT set") }}
+                        <i class="fas fa-times fa-fw"></i>
+                        {{ $t("Target country is NOT set") }}
                       </li>
 
                       <li v-if="deal.datasources.length > 0">
-                        <i class="fas fa-check fa-fw"></i> {{ $t("At least one data source") }}
+                        <i class="fas fa-check fa-fw"></i>
+                        {{ $t("At least one data source") }}
                       </li>
                       <li v-else>
                         <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
                       </li>
 
                       <li v-if="deal.has_known_investor">
-                        <i class="fas fa-check fa-fw"></i> {{ $t("At least one investor") }}
+                        <i class="fas fa-check fa-fw"></i>
+                        {{ $t("At least one investor") }}
                       </li>
-                      <li v-else><i class="fas fa-times fa-fw"></i> {{ $t("No investor") }}</li>
+                      <li v-else>
+                        <i class="fas fa-times fa-fw"></i> {{ $t("No investor") }}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -160,18 +178,24 @@
             </div>
             <div class="send">
               <span>{{ $t("Send to:") }}</span>
-              <input type="text" name="to"></input>
+              <input type="text" name="to" />
               <button class="btn btn-default" type="submit">{{ $t("Save") }}</button>
             </div>
           </form>
         </div>
         <div class="comments-list">
-          <div v-for="c in comments" class="comment">
+          <div v-for="wfi in deal.workflowinfos" :key="wfi.timestamp" class="comment">
             <div class="meta">
-              <span class="date">{{ c.date }}</span>
-              <span class="from-to">{{ $t("From {from} to {to}", { from: c.author, to: c.to }) }}</span>
+              <span class="date">{{ wfi.timestamp | dayjs("YYYY-MM-DD HH:mm") }}</span>
+              <span class="from-to">
+                {{ $t("From") }} {{ wfi.from_user.full_name }}
+                <span v-if="wfi.to_user">
+                  {{ $t("to") }} {{ wfi.to_user.full_name }}
+                </span>
+              </span>
             </div>
-            <div class="message">{{ c.text }}</div>
+            <div>{{ get_draft_status(wfi) }}</div>
+            <div class="message">{{ wfi.comment }}</div>
           </div>
         </div>
       </div>
@@ -198,16 +222,15 @@
         <router-link
           class="btn btn-primary"
           :to="{
-        name: 'deal_edit',
-        params: { dealId: deal.id, dealVersion: dealVersion },
-      }"
+            name: 'deal_edit',
+            params: { dealId: deal.id, dealVersion: dealVersion },
+          }"
         >
           Edit
         </router-link>
         <a href="" class="btn btn-danger btn-sm">Delete</a>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -217,91 +240,54 @@
 
   export default {
     name: "ManageHeader",
-  components: { HeaderDates },
-    data() {
-      return {
-        comments: [
-          {
-            date: "20-12-23",
-            author: "Kurt Gerber",
-            to: "Angela Harding",
-            text: "I have added the coordinates"
-          }, {
-            date: "20-12-20",
-            author: "Angela Harding",
-            to: "Kurt Gerber",
-            text: "This deal needs some extra Geocordinates. Can you please add them"
-          },
-          {
-            date: "20-12-23",
-            author: "Kurt Gerber",
-            to: "Angela Harding",
-            text: "I have added the coordinates"
-          }, {
-            date: "20-12-20",
-            author: "Angela Harding",
-            to: "Kurt Gerber",
-            text: "This deal needs some extra Geocordinates. Can you please add them"
-          },
-          {
-            date: "20-12-23",
-            author: "Kurt Gerber",
-            to: "Angela Harding",
-            text: "I have added the coordinates"
-          }, {
-            date: "20-12-20",
-            author: "Angela Harding",
-            to: "Kurt Gerber",
-            text: "This deal needs some extra Geocordinates. Can you please add them"
-          }
-        ]
-      };
-    },
+    components: { HeaderDates },
     props: {
       deal: { type: Object, required: true },
-      dealVersion:
-        {
-          type: [Number, String],
-          default: null
-        }
+      dealVersion: { type: [Number, String], default: null },
     },
-    computed:
-      {
-        last_revision() {
-          return this.deal?.versions[0]?.revision ?? "";
-        }
-      }
-    ,
+    data() {
+      return {};
+    },
+    computed: {
+      last_revision() {
+        return this.deal?.versions[0]?.revision ?? "";
+      },
+    },
     methods: {
+      get_draft_status(wfi) {
+        let ret = `${wfi.draft_status_before ?? ""}`;
+        if (wfi.draft_status_after) ret += `→ ${wfi.draft_status_after}`;
+        return ret;
+      },
       get_confidential_reason(deal) {
         return {
           TEMPORARY_REMOVAL: this.$t("Temporary removal from PI after criticism"),
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
-          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import")
+          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
         }[deal.confidential_reason];
-      }
-      ,
+      },
       change_deal_status(transition) {
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $transition: WorkflowTransition) {
+              mutation ($id: Int!, $transition: WorkflowTransition) {
                 change_deal_status(id: $id, transition: $transition)
               }
             `,
-            variables: { id: this.deal.id, transition }
+            variables: { id: this.deal.id, transition },
           })
           .then((data) => {
             this.$router.push({
               name: "deal_manage",
               params: {
-                dealId: this.deal.id,
-                dealVersion: data.data.change_deal_status
-              }
+                dealId: this.deal.id.toString(),
+                dealVersion: data.data.change_deal_status.toString(),
+              },
             });
-          }).catch((error) => console.error(error));
-      }
-    }
+          })
+          .catch((error) => console.error(error));
+      },
+    },
   };
 </script>
 
@@ -316,7 +302,7 @@
   }
 
   .manage-interface {
-    margin-top: - 10px;
+    margin-top: -10px;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
@@ -333,7 +319,7 @@
       background: #e5e5e5;
       margin: 1em 0;
       position: relative;
-      padding-right: 0px;
+      padding-right: 0;
       height: 400px;
 
       @include media-breakpoint-down(sm) {
@@ -373,7 +359,6 @@
         display: flex;
       }
 
-
       $arrow-height: 33px;
       $max-z-index: 10;
 
@@ -382,7 +367,7 @@
         flex-flow: row wrap;
         margin-top: 1em;
 
-        @media(max-width: 400px) {
+        @media (max-width: 400px) {
           font-size: 0.9rem;
           line-height: 1.1;
         }
@@ -393,11 +378,11 @@
           background: #dbdbdb;
           flex-grow: 1;
           text-align: center;
-          height: $arrow-height*2;
+          height: $arrow-height * 2;
           display: flex;
           align-items: center;
           justify-content: center;
-          opacity: .7;
+          opacity: 0.7;
 
           &.active {
             background: #93c7c8;
@@ -416,7 +401,7 @@
 
           &:before {
             // arrow to the right
-            content: '';
+            content: "";
             border-left: $arrow-height/2 solid #e5e5e5;
             border-top: $arrow-height solid transparent;
             border-bottom: $arrow-height solid transparent;
@@ -430,7 +415,7 @@
 
           &:after {
             // arrow to the right
-            content: '';
+            content: "";
             border-left: $arrow-height/2 solid #dbdbdb;
             border-top: $arrow-height solid transparent;
             border-bottom: $arrow-height solid transparent;
@@ -525,7 +510,8 @@
           }
 
           .message {
-            background: #E5E5E5;
+            white-space: pre;
+            background: #e5e5e5;
             padding: 0.3em 0.5em;
           }
         }
@@ -569,7 +555,6 @@
         }
       }
     }
-
   }
 
   .visibility-container {
@@ -601,8 +586,6 @@
         color: black;
       }
     }
-
-
   }
 
   .btn {
@@ -612,7 +595,8 @@
     &.btn-secondary {
       background: rgba($lm_investor, 0.8);
       border-color: $lm_investor;
-      &:hover, &:active {
+      &:hover,
+      &:active {
         background: rgba($lm_investor, 1);
         color: white;
       }
@@ -637,5 +621,4 @@
     display: block;
     font-size: 1rem;
   }
-
 </style>

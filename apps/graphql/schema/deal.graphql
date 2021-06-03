@@ -199,6 +199,7 @@ type Deal {
   fully_updated_at: DateTime
 
   versions: [DealVersion]
+  workflowinfos: [DealWorkflowInfo]
 
   comments: [DealComment]
 
@@ -266,6 +267,18 @@ type DealVersion {
   deal: Deal
   revision: Revision
   object_id: Int
+}
+
+type DealWorkflowInfo {
+  from_user: User!
+  to_user: User
+  draft_status_before: Int
+  draft_status_after: Int
+  timestamp: DateTime!
+  comment: String
+  processed_by_receiver: Boolean!
+  deal: Deal!
+#  deal_version: Deal
 }
 
 type DealComment {

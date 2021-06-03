@@ -183,7 +183,6 @@
   import DisplayField from "$components/Fields/DisplayField";
   import FieldLabel from "$components/Fields/FieldLabel";
   import { deal_gql_query } from "$store/queries";
-  import { apolloClient } from "$utils/apolloclient";
 
   import { diff } from "deep-object-diff";
 
@@ -234,7 +233,7 @@
       },
     },
     created() {
-      apolloClient
+      this.$apollo
         .query({
           query: deal_gql_query,
           variables: {
@@ -244,7 +243,7 @@
           },
         })
         .then((data) => (this.from_deal = data.data.deal));
-      apolloClient
+      this.$apollo
         .query({
           query: deal_gql_query,
           variables: {
