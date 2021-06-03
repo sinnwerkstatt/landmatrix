@@ -42,8 +42,6 @@ class FromDictMixin:
                 "__typename",
             ]:
                 continue  # ignore these fields
-            elif key in ["locations", "datasources", "contracts"]:
-                continue  # handle these fields extra!
             elif key in [
                 x.name
                 for x in self._meta.fields
@@ -52,6 +50,8 @@ class FromDictMixin:
                 self.__setattr__(f"{key}_id", value["id"] if value else None)
             elif key == "point":
                 self.point = Point(value["lng"], value["lat"])
+            # elif key in ["locations", "datasources", "contracts"]:
+            #     self.__setattr__(key, value)
             else:
                 self.__setattr__(key, value)
 

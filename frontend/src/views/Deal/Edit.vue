@@ -9,8 +9,9 @@
       </h1>
       <div style="font-size: 0.8rem">
         <div v-if="!dealId">{{ deal }}</div>
-        {{ deal.locations[0].areas }}<br /><br />
-        {{ deal.geojson }}
+        <!--        {{ deal.locations[0].areas }}<br /><br />-->
+        <!--        {{ deal.geojson }}-->
+        <!--        {{ deal.datasources }}-->
       </div>
       <b-tabs
         id="tabNav"
@@ -286,20 +287,22 @@
           .mutate({
             mutation: gql`
               mutation ($id: Int!, $version: Int, $payload: Payload) {
-                deal_edit(id: $id, version: $version, payload: $payload)
+                deal_edit(id: $id, version: $version, payload: $payload) {
+                  dealId
+                  dealVersion
+                }
               }
             `,
             variables: {
-              id: +this.dealId,
+              id: this.dealId ? +this.dealId : -1,
               version: this.dealVersion ? +this.dealVersion : null,
               payload: { ...this.deal, versions: null, comments: null },
             },
           })
           .then((data) => {
-            console.log({ data });
             this.$router.push({
               name: "deal_manage",
-              params: { dealId: +this.dealId, dealVersion: data.revision },
+              params: data.data.deal_edit,
             });
           })
           .catch((e) => {
