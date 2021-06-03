@@ -13,14 +13,19 @@
         @tag="addInvestor"
       />
     </div>
-    <div v-if="value" style="margin: 0.3rem">
+    <div v-if="value" class="investor">
       <router-link
         target="_blank"
         :to="{ name: 'investor_detail', params: { investorId: value.id } }"
-      >
-        <span class="id-display investor-id-display">{{ value.id }}</span>
-        {{ value.name }}</router-link
-      >
+        class="id-display investor-id-display"
+      >{{ value.id }}
+      </router-link>
+      <router-link
+        target="_blank"
+        :to="{ name: 'investor_detail', params: { investorId: value.id } }"
+        style="padding-left: 0.3em; font-size: 0.9em; color: black;"
+      >{{ value.name }}
+      </router-link>
     </div>
   </div>
 </template>
@@ -32,11 +37,11 @@
     props: {
       formfield: { type: Object, required: true },
       value: { type: Object, required: false, default: null },
-      model: { type: String, required: true },
+      model: { type: String, required: true }
     },
     data() {
       return {
-        investors: [],
+        investors: []
       };
     },
     apollo: {
@@ -47,7 +52,7 @@
             name
           }
         }
-      `,
+      `
     },
     computed: {
       val: {
@@ -56,24 +61,38 @@
         },
         set(v) {
           this.$emit("input", { id: v.id, name: v.name });
-        },
-      },
+        }
+      }
     },
     methods: {
       addInvestor(newInv) {
         let props = this.$router.resolve({
-          name: "investor_add",
+          name: "investor_add"
         });
         let new_investor_window = window.open(
           `${props.href}?newName=${newInv}`,
           "_blank",
           "menubar=no"
         );
-        new_investor_window.onbeforeunload = function (x) {
+        new_investor_window.onbeforeunload = function(x) {
           console.log(x);
           // this.$apollo.queries.investors.refetch();
         };
-      },
-    },
+      }
+    }
   };
 </script>
+
+<style lang="scss" scoped>
+  .investor {
+    padding: 0.5em 0.3em 1em 0.7em;
+    background-color: rgba(0,0,0,0.05);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    a {
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+</style>

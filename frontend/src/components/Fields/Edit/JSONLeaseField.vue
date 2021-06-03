@@ -1,6 +1,5 @@
 <template>
   <div class="nowrap">
-    {{ value }}
     <table class="w-100">
       <thead>
         <tr>
@@ -59,7 +58,7 @@
             />
           </td>
 
-          <td>
+          <td class="buttons">
             <a class="btn" @click.stop="addEntry"><i class="fa fa-plus"></i></a>
             <a
               :class="{ disabled: vals.length <= 1 }"
@@ -99,11 +98,5 @@
   }
   td {
     padding: 0.4em;
-  }
-
-  .is-current {
-    font-weight: bold;
-    background: rgba($primary, 0.5);
-    border-radius: 3px;
   }
 </style>

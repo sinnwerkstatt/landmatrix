@@ -11,7 +11,7 @@
         rows="5"
         class="form-control"
       />
-      <div v-else-if="formfield.choices">
+      <div v-else-if="formfield.choices" class="select">
         <select v-model="val" :name="formfield.name" class="form-control">
           <option v-if="!formfield.required" :value="null">--------</option>
           <option v-for="(v, k) in formfield.choices" :key="k" :value="k">

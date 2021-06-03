@@ -36,12 +36,6 @@
     padding: 0.4em;
   }
 
-  .is-current {
-    font-weight: bold;
-    background: rgba($primary, 0.5);
-    border-radius: 3px;
-  }
-
   .multiselect {
     width: 60%;
   }

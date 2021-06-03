@@ -7,8 +7,6 @@
         :key="fieldname"
         v-model="deal[fieldname]"
         :fieldname="fieldname"
-        :value-classes="['display-field-label', 'col-12']"
-        :label-classes="['display-field-value', 'col-12']"
       />
     </div>
 
@@ -26,15 +24,30 @@
       title: { type: String, required: true },
       sections: { type: Array, required: true },
       deal: { type: Object, required: true },
-      active: { type: Boolean, default: false },
+      active: { type: Boolean, default: false }
     },
     computed: {},
-    methods: {},
+    methods: {}
   };
 </script>
 
 <style lang="scss" scoped>
   .display-field-wrapper {
     margin-top: 2em;
+  }
+
+  .panel-body {
+    background-color: rgba(200, 200, 200, 0.1);
+    background-image: linear-gradient(to bottom, rgba(200, 200, 200, 0.04), rgba(200, 200, 200, 0.1));
+    margin-left: -15px;
+    margin-right: -15px;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+
+    > h3:first-child {
+      margin-top: 0;
+    }
   }
 </style>

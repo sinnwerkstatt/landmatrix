@@ -54,3 +54,17 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../scss/colors";
+
+  .row {
+    margin-bottom: 1em;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  td {
+    padding: 0.4em;
+  }
+</style>

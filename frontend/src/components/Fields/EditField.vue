@@ -3,10 +3,10 @@
     <FieldLabel
       v-if="showLabel"
       :fieldname="fieldname"
-      :label-classes="labelClasses"
+      :label-classes="getLabelClasses"
       :model="model"
     />
-    <div :class="valueClasses">
+    <div :class="getValueClasses">
       <component
         :is="formfield.class"
         v-model="_value"
@@ -87,7 +87,7 @@
       PointField,
       TextField,
       URLField,
-      OCIDField,
+      OCIDField
     },
     props: {
       fieldname: { type: String, required: true },
@@ -96,19 +96,17 @@
       showLabel: { type: Boolean, default: true },
       wrapperClasses: {
         type: Array,
-        default: () => ["display-field-wrapper", "form-field", "row"],
+        default: () => ["display-field-wrapper", "form-field", "row"]
       },
       labelClasses: {
-        type: Array,
-        default: () => ["display-field-label", "col-md-3", "col-lg-3"],
+        type: Array
       },
       valueClasses: {
-        type: Array,
-        default: () => ["display-field-value", "col-md-9", "col-lg-9"],
+        type: Array
       },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
-      disabled: { type: Boolean, default: false },
+      disabled: { type: Boolean, default: false }
     },
     computed: {
       _value: {
@@ -117,7 +115,7 @@
         },
         set(v) {
           this.$emit("input", v);
-        },
+        }
       },
       _visible() {
         if (!this.visible) return false;
@@ -129,11 +127,46 @@
       formfield() {
         return {
           name: this.fieldname,
-          ...this.$store.state.formfields[this.model][this.fieldname],
+          ...this.$store.state.formfields[this.model][this.fieldname]
         };
       },
+      getLabelClasses() {
+        if (!this.labelClasses) {
+          if (this.isShortField) {
+            return ["display-field-label", "col-md-6", "col-xl-3"];
+          } else {
+            return ["display-field-label", "col-12"];
+          }
+        } else {
+          return this.labelClasses;
+        }
+      },
+      getValueClasses() {
+        if (!this.valueClasses) {
+          if (this.isShortField) {
+            return ["display-field-value", "col-md-6", "col-xl-3"];
+          } else {
+            return ["display-field-value", "col-12"];
+          }
+        } else {
+          return this.valueClasses;
+        }
+      },
+      isShortField() {
+        return [
+          "IntegerField",
+          "DecimalField",
+          "DateField",
+          "LowLevelDecimalField",
+          "BooleanField",
+          "NullBooleanField"
+        ].includes(this.formfield.class) || ([
+          "TextField", "CharField"
+        ].includes(this.formfield.class) && this.formfield.choices);
+      }
+
     },
-    methods: {},
+    methods: {}
   };
 </script>
 
@@ -144,11 +177,92 @@
     margin-bottom: 0.7em;
     line-height: 1.2;
   }
+
   .display-field-label {
-    font-weight: 500;
+    font-weight: 600;
+    align-self: center;
+    color: #4a4a4a;
+
+    &.col-12 {
+      margin-bottom: 0.5em;
+    }
   }
+
   .display-field-value {
     line-height: 1.2;
     color: $lm_dark;
+
+    .select {
+      width: 100%;
+    }
+
+    .form-control.is-valid {
+      border-color: lightgrey;
+    }
+
+    textarea:focus::placeholder {
+      color: lightgrey;
+      opacity: 1;
+      font-weight: normal;
+    }
+
+    th {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.8em;
+      opacity: 0.8;
+      padding-bottom: 5px;
+    }
+
+    td {
+      padding: 0.25em;
+
+      &.buttons {
+        white-space: nowrap;
+
+        a {
+          padding: 7px;
+
+          &:first-child {
+            padding-left: 0;
+          }
+        }
+      }
+
+      .form-check-inline {
+        margin-right: 0;
+      }
+    }
+
+    tr.is-current {
+      td {
+        background: rgba($primary, 0.20);
+
+        $radius: 5px;
+        &:first-child {
+          border-top-left-radius: $radius;
+          border-bottom-left-radius: $radius;
+        }
+
+        &:last-child {
+          border-top-right-radius: $radius;
+          border-bottom-right-radius: $radius;
+        }
+      }
+    }
+
+    select[multiple] {
+      appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+
+      option:checked {
+        background-color: rgba($primary, 0.20);
+        // WTF: Only works when setting a gradient!!!
+        background: linear-gradient(#FFC894,#FFC894);
+        color: black;
+      }
+
+    }
   }
 </style>
