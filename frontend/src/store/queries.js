@@ -518,6 +518,21 @@ export const deal_gql_query = gql`
         }
         object_id
       }
+      workflowinfos {
+        from_user {
+          username
+          full_name
+        }
+        to_user {
+          username
+          full_name
+        }
+        draft_status_before
+        draft_status_after
+        timestamp
+        comment
+        processed_by_receiver
+      }
       comments {
         id
         userinfo

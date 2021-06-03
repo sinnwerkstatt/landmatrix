@@ -1,6 +1,7 @@
 import json
 from typing import Optional
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -1088,7 +1089,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
 
         super().save(*args, **kwargs)
 
-    def save_revision(self, date_created, user, comment) -> Revision:
+    def save_revision(self, date_created, user, comment="") -> Revision:
         rev = Revision.objects.create(
             date_created=date_created,
             user=user,
@@ -1228,7 +1229,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
     def _combine_geojson(self):
         features = []
         for i, loc in enumerate(self.locations or [], 1):  # type: dict
-            if loc["point"]:
+            if loc.get("point"):
                 point = {
                     "type": "Feature",
                     "geometry": {
@@ -1237,13 +1238,13 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
                     },
                     "properties": {
                         "id": i,
-                        "name": loc["name"],
+                        "name": loc.get("name"),
                         "type": "point",
-                        "spatial_accuracy": loc["level_of_accuracy"],
+                        "spatial_accuracy": loc.get("level_of_accuracy"),
                     },
                 }
                 features += [point]
-            areas = loc["areas"]
+            areas = loc.get("areas")
             if areas:
                 feats = areas["features"]
                 for feat in feats:
@@ -1313,6 +1314,45 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             return False
         # only if no known Investor exists, we return True
         return not oc.investors.filter(investor__is_actually_unknown=False).exists()
+
+
+class DealWorkflowInfo(models.Model):
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    draft_status_before = models.IntegerField(
+        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
+    draft_status_after = models.IntegerField(
+        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
+    timestamp = models.DateTimeField(default=timezone.now)
+    comment = models.TextField(blank=True)
+    processed_by_receiver = models.BooleanField(default=False)
+    # watch out: ignore the draft_status within this DealVersion object, it will change
+    # when the workflow moves along. the payload will remain consistent though.
+    deal = models.ForeignKey(Deal, on_delete=models.PROTECT)
+    deal_version = models.ForeignKey(DealVersion, on_delete=models.PROTECT)
+
+    def to_dict(self) -> dict:
+        return {
+            "from_user": self.from_user,
+            "to_user": self.to_user,
+            "draft_status_before": self.draft_status_before,
+            "draft_status_after": self.draft_status_after,
+            "timestamp": self.timestamp,
+            "comment": self.comment,
+            "processed_by_receiver": self.processed_by_receiver,
+            "deal": self.deal,
+            "deal_version": self.deal_version,
+        }
 
 
 class DealParentCompanies(models.Model):

@@ -1,10 +1,13 @@
 from django.contrib.auth import get_user_model
 
 from apps.landmatrix.models import Deal
+from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.landmatrix.synchronization.deal import base, submodels
 from apps.landmatrix.synchronization.helpers import MetaActivity, calculate_new_stati
 from apps.landmatrix.models import HistoricalActivity
+
+User = get_user_model()
 
 
 def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
@@ -48,11 +51,8 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         base.parse_remaining(deal, meta_activity.group_remaining)
 
         new_status = histivity.fk_status_id
-        rev1 = Revision.objects.create(
-            date_created=histivity.history_date,
-            user=get_user_model().objects.filter(id=histivity.history_user_id).first(),
-            comment=histivity.comment or "",
-        )
+        user = User.objects.filter(id=histivity.history_user_id).first()
+        rev1 = Revision.objects.create(date_created=histivity.history_date, user=user)
 
         do_save = deal.status == 1 or new_status in [2, 3, 4]
 
@@ -62,6 +62,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             submodels.create_contracts(deal, meta_activity.con_groups, do_save, rev1)
             submodels.create_data_sources(deal, meta_activity.ds_groups, do_save, rev1)
 
+        old_deal_draft_status = deal.draft_status
         deal.status, deal.draft_status = calculate_new_stati(deal, new_status)
 
         if do_save:
@@ -72,7 +73,32 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             deal.save()
         elif new_status == 1:
             deal.geojson = deal._combine_geojson()
-        Version.create_from_obj(deal, rev1.id)
+
+        deal_version = Version.create_from_obj(deal, rev1.id)
+
+        assign_user = meta_activity.group_remaining.get("assign_to_user")
+        assuser = User.objects.get(id=assign_user) if assign_user else None
+
+        comment = histivity.comment or ""
+        feedback_comment = meta_activity.group_remaining.get("tg_feedback_comment")
+        if feedback_comment:
+            if comment:
+                comment += f"\n\n{feedback_comment}"
+            else:
+                comment = feedback_comment
+
+        dwi = DealWorkflowInfo.objects.create(
+            from_user=user,
+            to_user=assuser,
+            draft_status_before=old_deal_draft_status,
+            draft_status_after=deal.draft_status,
+            timestamp=histivity.history_date,
+            comment=comment,
+            processed_by_receiver=True,
+            deal=deal,
+            deal_version=deal_version,
+        )
+        # print(dwi.to_dict())
 
         if not do_save:
             # FIXME: it seems like this is not happening... might have to investigate

@@ -83,20 +83,11 @@ class Version(models.Model):
         version.save()
         return version
 
-    # TODO!
-    @classmethod
-    def edit_from_obj(cls, obj, version_id, revision_id):
-        subclass = cls._get_current_subclass(obj)
-
+    def update_from_obj(self, obj):
         serialized_json = serializers.serialize("json", (obj,))
         serialized_fields = json.loads(serialized_json)
-
-        version = subclass.objects.get(id=version_id)
-        version = subclass(
-            revision_id=revision_id, object_id=obj.pk, serialized_data=serialized_fields
-        )
-        version.save()
-        return version
+        self.serialized_data = serialized_fields
+        self.save()
 
     def retrieve_object(self):
         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]

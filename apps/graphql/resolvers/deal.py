@@ -7,35 +7,38 @@ from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
-from apps.landmatrix.models.deal import DealVersion
-from apps.landmatrix.models.versions import Revision, Version
+from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
+from apps.landmatrix.models.versions import Revision
 from apps.utils import qs_values_to_dict
 
 
-def map_raw_sql():
-    sql = """
-    select json_build_object(
-    'id',ld.id,
-    'deal_size',ld.deal_size,
-    'country',(SELECT json_build_object('id',c.id,'name',c.name) from landmatrix_country c where c.id=ld.country_id),
-    'locations',(
-        SELECT json_agg(locs)
-        from landmatrix_location locs where locs.deal_id=ld.id
-        )
-    ) from landmatrix_deal ld
-    where ld.id=6869;
-    """
+# def map_raw_sql():
+#     sql = """
+#     select json_build_object(
+#     'id',ld.id,
+#     'deal_size',ld.deal_size,
+#     'country',(SELECT json_build_object('id',c.id,'name',c.name) from landmatrix_country c where c.id=ld.country_id),
+#     'locations',(
+#         SELECT json_agg(locs)
+#         from landmatrix_location locs where locs.deal_id=ld.id
+#         )
+#     ) from landmatrix_deal ld
+#     where ld.id=6869;
+#     """
 
 
-def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
+def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     add_versions = False
+    add_workflowinfos = False
     add_comments = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
             add_versions = True
+        elif "workflowinfos" in field:
+            add_workflowinfos = True
         elif "comments" in field:
             add_comments = True
         else:
@@ -67,6 +70,10 @@ def resolve_deal(obj, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC
     if add_versions:
         deal["versions"] = [
             dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
+        ]
+    if add_workflowinfos:
+        deal["workflowinfos"] = [
+            dwi.to_dict() for dwi in DealWorkflowInfo.objects.filter(deal_id=id)
         ]
     if add_comments:
         deal["comments"] = [
@@ -190,24 +197,44 @@ def resolve_change_deal_status(_, info, id, transition) -> int:
     return -1
 
 
-def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> int:
-    print(f"id: {id}")
-    print(f"version: {version}")
-    print(f"payload: {payload}")
-    # TODO make sure user is authorized
-    # TODO: check draft_status and create a new one accordingly
+def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
+    user = info.context["request"].user
+    # print(f"id: {id}")
+    # print(f"version: {version}")
+    # print(f"payload: {payload}")
+
+    if not user.is_authenticated:
+
+        raise GraphQLError("not authorized")
+
+    # this is a new Deal
+    if id == -1:
+        deal = Deal()
+        deal.update_from_dict(payload)
+        deal.status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
+        deal.save()
+        rev = deal.save_revision(
+            date_created=timezone.now(),
+            user=info.context["request"].user,
+        )
+        return {"dealId": deal.id, "dealVersion": rev.id}
+
+    # TODO make sure user is allowed to edit this deal.
     deal = Deal.objects.get(id=id)
-    deal.update_from_dict(payload)
 
-    # all_locations = set(c.id for c in deal.locations.all())
-    # for loc in payload.get("locations", []):
-    #     l1 = Location.objects.get(id=loc["id"])
-    #     l1.update_from_dict(loc)
-    #     Version.edit_from_obj(l1, version_id, version)
-    #     all_locations.remove(l1.id)
-    # deal.locations.set()
-    # elif key in ["locations", "contracts", "datasources"]:
-    # print(f"handle reverse fk {key} {value}")
+    # this is a live Deal for which we create a new Version
+    if not version:
+        deal.update_from_dict(payload)
+        deal.draft_status = Deal.DRAFT_STATUS_DRAFT
+        rev = deal.save_revision(
+            date_created=timezone.now(), user=info.context["request"].user
+        )
+        Deal.objects.filter(id=id).update(draft_status=Deal.DRAFT_STATUS_DRAFT)
+    # we update the existing version.
+    else:
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        deal.update_from_dict(payload)
+        deal_version.update_from_obj(deal)
 
-    if deal.draft_status == Deal.DRAFT_STATUS_DRAFT:
-        Version.edit_from_obj(deal, version_id="x", revision_id=version)
+    return {"dealId": id, "dealVersion": rev.id}

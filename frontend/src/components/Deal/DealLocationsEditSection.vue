@@ -12,7 +12,7 @@
           <button
             type="button"
             class="btn btn-secondary"
-            @click="$emit('removeEntry', index)"
+            @click="removeLocation(loc.id)"
           >
             <i class="fa fa-minus"></i>
           </button>
@@ -36,7 +36,7 @@
               {{ $t("Point") }}
             </div>
             <div class="col-12">
-              <PointField v-model="loc.point" @input="pointChange" />
+              <PointField :value="loc.point" @input="pointChange" />
             </div>
           </div>
           <div v-for="fieldname in fields" :key="fieldname">
@@ -113,7 +113,7 @@
                 let loc = this.deal.locations.filter(
                   (l) => l.id === feature.properties.id
                 )[0];
-                this.activeLocation = this.activeLocation !== loc ? loc : null;
+                this.activeLocation = loc;
               });
             } else {
               this.addPropertiesPopup(layer, feature);
@@ -122,21 +122,7 @@
         },
       };
     },
-    computed: {
-      // locationFGs() {
-      //   let ret = {};
-      //   if (!this.bigmap) return ret;
-      //   this.deal.locations.forEach((loc) => {
-      //     let fg = new FeatureGroup();
-      //     ret[loc.id] = fg;
-      //     this.addGeoJson(loc.areas, fg);
-      //     this.bigmap.addLayer(fg);
-      //     // console.log(loc.point);
-      //     // console.log(loc.areas);
-      //   });
-      //   return ret;
-      // },
-    },
+    computed: {},
     watch: {
       "deal.country"(nCa) {
         this.bigmap.fitBounds([
@@ -144,26 +130,16 @@
           [nCa.point_lat_max, nCa.point_lon_max],
         ]);
       },
-      // currentFG() {
-      //   this.bigmap.pm.setGlobalOptions({ layerGroup: this.currentFG });
-      // },
       activeLocation(actLoc) {
         let drawMarker = true;
         if (actLoc) {
-          if (!this.locationFGs.get(actLoc.id)) {
-            let fg = new GeoJSON(null, this.geojson_options);
-            fg.on("pm:update", this.features_changed);
-            this.locationFGs.set(actLoc.id, fg);
-            this.bigmap.addLayer(fg);
-          }
+          if (!this.locationFGs.get(actLoc.id)) this.addNewLayerGroup(actLoc.id);
           this.currentFG = this.locationFGs.get(actLoc.id);
-
           this.currentFG.eachLayer((l) => {
             if (l.feature.geometry.type === "Point") {
               drawMarker = false;
             }
           });
-
           this.bigmap.pm.setGlobalOptions({ layerGroup: this.currentFG });
           this.bigmap.pm.addControls({
             ...this.geoman_opts,
@@ -172,30 +148,24 @@
         } else {
           this.bigmap.pm.removeControls();
         }
-
-        // this.editableFeatures.eachLayer((l) => {
-        //   let relevant_element = l?._icon || l._renderer._container;
-        //   if (actLoc && l.feature.properties.id !== this.activeLocation.id) {
-        //     relevant_element.classList.add("leaflet-hidden");
-        //   } else {
-        //     if (l.feature.geometry.type === "Point") {
-        //       drawMarker = false;
-        //     }
-        //     relevant_element.classList.remove("leaflet-hidden");
-        //   }
-        // });
+        this.locationFGs.forEach((value, key) => {
+          value.eachLayer((l) => {
+            let relevant_element = l?._icon || l._renderer._container;
+            if (actLoc && key !== this.hoverLocID)
+              relevant_element.classList.add("leaflet-hidden");
+            else relevant_element.classList.remove("leaflet-hidden");
+          });
+        });
       },
       hoverLocID() {
-        // this.editableFeatures.onEachFeature((l) => {
-        //   let relevant_element = l?._icon || l._renderer._container;
-        //   if (this.hoverLocID && l.feature.properties.id !== this.hoverLocID) {
-        //     relevant_element.classList.add("leaflet-unhighlight");
-        //   } else {
-        //     relevant_element.classList.remove("leaflet-unhighlight");
-        //   }
-        // });
-        // map.pm.controls
-        //  control-icon leaflet-pm-icon-marker
+        this.locationFGs.forEach((value, key) => {
+          value.eachLayer((l) => {
+            let relevant_element = l?._icon || l._renderer._container;
+            if (this.hoverLocID && key !== this.hoverLocID)
+              relevant_element.classList.add("leaflet-unhighlight");
+            else relevant_element.classList.remove("leaflet-unhighlight");
+          });
+        });
       },
     },
     methods: {
@@ -206,16 +176,33 @@
         this.deal.locations.push(newloc);
         this.activeLocation = newloc;
       },
+      removeLocation(locId) {
+        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
+          console.log({ locId });
+          this.deal.locations.splice(index, 1);
+        }
+      },
       pointChange(lPo) {
-        // console.log({ lPo });
-        // this.editableFeatures.eachLayer((l) => {
+        console.log({ lPo });
+
+        // let hasMarker = false;
+        // this.currentFG.eachLayer((l) => {
         //   if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
+        //     hasMarker = true;
         //     l.setLatLng(lPo);
         //     this.bigmap.setView(lPo);
         //     // alternative approach to focussing
         //     // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
         //   }
         // });
+        // if (!hasMarker) {
+        //   let lpoint = new Marker(lPo).toGeoJSON();
+        //   lpoint.properties = {
+        //     id: this.activeLocation?.id,
+        //     name: this.activeLocation.name,
+        //   };
+        //   this.currentFG.addData(lpoint);
+        // }
       },
       locationGoogleAutocomplete(lGA) {
         let hasMarker = false;
@@ -247,21 +234,21 @@
         }
       },
       features_changed() {
-        let newlocs = [];
         this.deal.locations.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
           if (lfg) {
             let lfggeo = lfg.toGeoJSON();
             l.areas = lfggeo;
             let lpoint = lfggeo.features.find((f) => f.geometry.type === "Point");
-            if (lpoint) {
-              const [lng, lat] = lpoint.geometry.coordinates;
-              l.point = { lat, lng };
-            }
+            console.log({ lpoint });
+            // TODO: this gets us stuck in a loop.. dont really know why :(
+            // if (lpoint) {
+            //   const [lng, lat] = lpoint.geometry.coordinates;
+            //   l.point = { lat, lng };
+            // }
           }
-          newlocs.push(l);
         });
-        this.deal.locations = newlocs;
+        // this.deal.locations = newlocs;
         // this.editableFeatures.eachLayer((l) => {
         //   let locJson = l.toGeoJSON();
         //   // if (layer.feature.geometry.type ==='Point') {
@@ -276,18 +263,22 @@
         // let loc = this.activeLocation;
         // console.log(loc);
       },
+      addNewLayerGroup(id) {
+        let fg = new GeoJSON(null, this.geojson_options);
+        fg.on("pm:update", this.features_changed);
+        fg.on("pm:dragend", this.features_changed);
+        fg.on("pm:rotateend", this.features_changed);
+        this.locationFGs.set(id, fg);
+        this.bigmap.addLayer(fg);
+        return fg;
+      },
       mapIsReady(map) {
         this.bigmap = map;
 
         let bounds = new LatLngBounds([]);
         this.deal.locations.forEach((loc) => {
-          let fg = new GeoJSON(null, this.geojson_options);
-          fg.on("pm:update", this.features_changed);
-          this.locationFGs[loc.id] = fg;
-          this.bigmap.addLayer(fg);
-
+          let fg = this.addNewLayerGroup(loc.id);
           if (loc.areas) fg.addData(loc.areas);
-
           if (loc.point) {
             let pt = new Marker(loc.point).toGeoJSON();
             pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
@@ -304,25 +295,30 @@
         }
         this.bigmap.fitBounds(bounds);
 
-        map.on("pm:create", ({ layer, shape }) => {
+        this.bigmap.on("pm:create", ({ layer, shape }) => {
           // do a little three-card monte carlo:
           // save the current id, remove it from existing layers and add it
           // back in geojson style after giving it props. 🙄
           const leafId = layer._leaflet_id;
-          let tmpfg = new GeoJSON().addLayer(layer);
+          const tmpfg = new GeoJSON().addLayer(layer).toGeoJSON();
           this.currentFG.eachLayer((lay) => {
             if (lay._leaflet_id === leafId) this.currentFG.removeLayer(lay);
           });
-          const data = tmpfg.toGeoJSON();
-          data.features[0].properties = {
+          tmpfg.features[0].properties = {
             id: this.activeLocation?.id,
             name: this.activeLocation.name,
           };
-          this.currentFG.addData(data);
+          this.currentFG.addData(tmpfg);
 
-          this.bigmap.pm.disableDraw();
-          this.bigmap.pm.removeControls();
-          this.bigmap.pm.addControls(this.geoman_opts);
+          // reset Marker
+          if (shape === "Marker") {
+            let [lng, lat] = tmpfg.features[0].geometry.coordinates;
+            this.activeLocation.point = { lat, lng };
+
+            this.bigmap.pm.disableDraw();
+            this.bigmap.pm.removeControls();
+            this.bigmap.pm.addControls(this.geoman_opts);
+          }
 
           this.features_changed();
         });
