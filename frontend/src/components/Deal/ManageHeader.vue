@@ -278,7 +278,7 @@
           })
           .then((data) => {
             this.$router.push({
-              name: "deal_manage",
+              name: "deal_detail",
               params: {
                 dealId: this.deal.id.toString(),
                 dealVersion: data.data.change_deal_status.toString(),

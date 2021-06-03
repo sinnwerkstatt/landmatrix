@@ -166,12 +166,13 @@
         />
       </b-tabs>
 
-      <div class="savebar">
-        <button
-          type="submit"
-          class="btn btn-primary btn-sm mx-2"
-          :disabled="saving_in_progress"
-        >
+      <div class="savebar-container">
+        <div class="savebar">
+          <button
+            type="submit"
+            class="btn btn-primary btn-sm mx-2"
+            :disabled="saving_in_progress"
+          >
           <span
             v-if="saving_in_progress"
             class="spinner-border spinner-border-sm"
@@ -179,18 +180,23 @@
             aria-hidden="true"
           ></span
           >&nbsp;
-          <span v-if="false">{{ $t("Save") }}</span>
-          <span v-else>{{ $t("Create new draft") }}</span>
-        </button>
-        <router-link
-          v-if="dealId"
-          class="btn btn-gray btn-sm mx-2"
-          :to="{
-            name: 'deal_manage',
+            <span v-if="is_new_deal">{{ $t("Create new draft") }}</span>
+            <span v-else>{{ $t("Save") }}</span>
+          </button>
+          <span v-if="is_new_deal">{{ $t("Saves your edits as a new draft") }}</span>
+          <span v-else>{{ $t("Saves your edits") }}</span>
+          <router-link
+            v-if="dealId"
+            class="btn btn-gray btn-sm mx-2"
+            :to="{
+            name: 'deal_detail',
             params: { dealId: deal.id, dealVersion: dealVersion },
           }"
-          >Cancel</router-link
-        >
+          >Cancel
+          </router-link>
+          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
+          <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>
+        </div>
       </div>
     </div>
   </form>
@@ -212,18 +218,18 @@
       DealLocationsEditSection,
       EditField,
       DealSubmodelEditSection,
-      DealEditSection,
+      DealEditSection
     },
     props: {
       dealId: { type: [Number, String], required: false, default: null },
-      dealVersion: { type: [Number, String], default: null },
+      dealVersion: { type: [Number, String], default: null }
     },
     data() {
       return {
         deal: null,
         deal_sections,
         deal_submodel_sections,
-        saving_in_progress: false,
+        saving_in_progress: false
       };
     },
     apollo: {
@@ -233,7 +239,7 @@
           return {
             id: +this.dealId,
             version: +this.dealVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC"
           };
         },
         update(data) {
@@ -241,20 +247,23 @@
             this.$router.push({
               name: "404",
               params: [this.$router.currentRoute.path],
-              replace: true,
+              replace: true
             });
           }
           return data.deal;
         },
         skip() {
           return !this.dealId;
-        },
-      },
+        }
+      }
     },
     computed: {
       active_tab() {
         return location.hash ? location.hash : "#locations";
       },
+      is_new_deal() {
+        return !this.dealId;
+      }
     },
     created() {
       if (!this.dealId) {
@@ -268,11 +277,11 @@
             point_lat_min: -1.469921875,
             point_lat_max: 4.22021484375,
             point_lon_min: 29.5619140625,
-            point_lon_max: 34.9782226563,
+            point_lon_max: 34.9782226563
           },
           locations: [],
           contracts: [],
-          datasources: [],
+          datasources: []
         };
       }
     },
@@ -296,13 +305,13 @@
             variables: {
               id: this.dealId ? +this.dealId : -1,
               version: this.dealVersion ? +this.dealVersion : null,
-              payload: { ...this.deal, versions: null, comments: null },
-            },
+              payload: { ...this.deal, versions: null, comments: null }
+            }
           })
           .then((data) => {
             this.$router.push({
-              name: "deal_manage",
-              params: data.data.deal_edit,
+              name: "deal_detail",
+              params: data.data.deal_edit
             });
           })
           .catch((e) => {
@@ -331,8 +340,8 @@
         ) {
           this.deal.datasources.splice(index, 1);
         }
-      },
-    },
+      }
+    }
   };
 </script>
 
@@ -373,14 +382,39 @@
     }
   }
 
-  .savebar {
-    margin: 0 auto;
-    width: clamp(300px, 80%, 800px);
-    //height: 3rem;
-    padding: 1rem;
-    background: #e5e5e5;
+  .savebar-container {
+    padding: 3em;
+
+    .savebar {
+      width: clamp(300px, auto, 800px);
+      //height: 3rem;
+      padding: 0.5rem;
+      background-color: rgba(#DEDEDE,0.90);
+      filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
+      position: fixed;
+      right: 5px;
+      bottom: 40px;
+      display: grid;
+      grid-template-columns: 2fr 5fr;
+      gap: 5px 10px;
+      border-radius: 5px;
+      z-index: 1000;
+
+      .btn {
+        margin: 0 !important;
+        font-size: 1.15em;
+      }
+      > span {
+        align-self: center;
+      }
+    }
   }
+
   .btn-gray {
-    background: #b1b1b1;
+    background-color: #b1b1b1;
+    &:hover {
+      color: white;
+      background-color: darken(#b1b1b1, 5%);
+    }
   }
 </style>

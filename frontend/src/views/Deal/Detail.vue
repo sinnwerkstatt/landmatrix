@@ -289,7 +289,7 @@
             data.deal.draft_status
           ) {
             this.$router.push({
-              name: "deal_manage",
+              name: "deal_detail",
               params: {
                 dealId: this.dealId,
                 dealVersion: data.deal.versions[0].revision.id,

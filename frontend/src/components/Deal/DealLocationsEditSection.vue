@@ -11,7 +11,7 @@
           {{ $t("Location") }} <small>#{{ loc.id }}</small>
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-primary ml-2"
             @click="removeLocation(loc.id)"
           >
             <i class="fa fa-minus"></i>
@@ -50,7 +50,7 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-primary" @click="addLocation">
+      <button type="button" class="btn btn-secondary" @click="addLocation">
         <i class="fa fa-plus"></i> {{ $t("Location") }}
       </button>
     </div>

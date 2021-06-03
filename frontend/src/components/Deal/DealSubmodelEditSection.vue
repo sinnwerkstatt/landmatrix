@@ -7,7 +7,7 @@
             {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-primary ml-2"
               @click="$emit('removeEntry', index)"
             >
               <i class="fa fa-minus"></i>
@@ -27,7 +27,7 @@
       <slot />
     </div>
     <div class="mt-5">
-      <button type="button" class="btn btn-primary" @click="$emit('addEntry')">
+      <button type="button" class="btn btn-secondary" @click="$emit('addEntry')">
         <i class="fa fa-plus"></i> {{ $t(modelName) }}
       </button>
     </div>

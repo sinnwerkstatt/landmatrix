@@ -101,3 +101,12 @@ a {
     background-color: darken($lm_orange, 10%);
   }
 }
+
+.btn-secondary {
+  background-color: #b1b1b1;
+
+  &:hover {
+    color: white;
+    background-color: darken(#b1b1b1, 5%);
+  }
+}

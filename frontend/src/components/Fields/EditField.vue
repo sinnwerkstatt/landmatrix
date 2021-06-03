@@ -179,7 +179,7 @@
   }
 
   .display-field-label {
-    font-weight: 600;
+    font-weight: 500;
     align-self: center;
     color: #4a4a4a;
 
@@ -208,7 +208,7 @@
 
     th {
       text-align: center;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.8em;
       opacity: 0.8;
       padding-bottom: 5px;
