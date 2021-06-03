@@ -195,7 +195,7 @@
               </span>
             </div>
             <div>{{ get_draft_status(wfi) }}</div>
-            <div class="message">{{ wfi.comment }}</div>
+            <div class="message" v-html="linebreaks(wfi.comment)"></div>
           </div>
         </div>
       </div>
@@ -235,6 +235,7 @@
 </template>
 
 <script>
+  import { linebreaks } from "$utils/filters";
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
 
@@ -246,7 +247,9 @@
       dealVersion: { type: [Number, String], default: null },
     },
     data() {
-      return {};
+      return {
+        linebreaks,
+      };
     },
     computed: {
       last_revision() {
@@ -510,7 +513,6 @@
           }
 
           .message {
-            white-space: pre;
             background: #e5e5e5;
             padding: 0.3em 0.5em;
           }

@@ -103,11 +103,8 @@ Vue.component("wagtail-latest_news", LatestNews);
 Vue.component("wagtail-latest_database_modifications", LatestDatabaseModifications);
 Vue.component("wagtail-statistics", Statistics);
 
-Vue.filter("dayjs", function (value, date_format) {
+Vue.filter("dayjs", (value, date_format) => {
   return dayjs(value).format(date_format);
-});
-Vue.filter("thousandsep", function (value) {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 });
 
 const locale = Cookies.get("django_language") ?? "en";
