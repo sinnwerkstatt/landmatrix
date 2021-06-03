@@ -66,7 +66,7 @@ def task_reset_db():
 
 #############################
 def task_npm_install():
-    actions = ["npm install"]
+    actions = ["cd frontend; npm install"]
     if get_var("production", False):
         actions += ["npm run build_frontend"]
     return {
