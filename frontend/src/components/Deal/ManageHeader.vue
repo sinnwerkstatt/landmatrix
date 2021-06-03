@@ -510,6 +510,7 @@
           }
 
           .message {
+            white-space: pre;
             background: #e5e5e5;
             padding: 0.3em 0.5em;
           }
