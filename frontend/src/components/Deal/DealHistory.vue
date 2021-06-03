@@ -8,8 +8,7 @@
           <th v-if="$store.getters.userAuthenticated">{{ $t("User") }}</th>
           <th>{{ $t("Fully updated") }}</th>
           <th>{{ $t("Status") }}</th>
-          <th>{{ $t("Comment") }}</th>
-          <th style="text-align: right;">
+          <th style="text-align: right">
             {{ $t("Show") }} / <a @click="compareVersions">{{ $t("Compare") }}</a>
           </th>
         </tr>
@@ -34,8 +33,7 @@
           <td>
             {{ $t(derive_status(version.deal.status, version.deal.draft_status)) }}
           </td>
-          <td>{{ version.revision.comment }}</td>
-          <td style="white-space: nowrap; text-align: right;">
+          <td style="white-space: nowrap; text-align: right">
             <span v-if="i === deduced_position">{{ $t("Current") }}</span>
             <span v-else>
               <router-link
@@ -49,7 +47,7 @@
                 <a :href="href">{{ $t("Show") }}</a>
               </router-link>
             </span>
-            <span class="ml-4" style="white-space: nowrap; text-align: right;">
+            <span class="ml-4" style="white-space: nowrap; text-align: right">
               <input
                 v-model="compare_from"
                 type="radio"
@@ -69,7 +67,6 @@
       </tbody>
       <tfoot>
         <tr>
-          <td></td>
           <td></td>
           <td></td>
           <td></td>

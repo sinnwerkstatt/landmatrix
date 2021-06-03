@@ -25,6 +25,7 @@ from apps.graphql.resolvers.deal import (
     resolve_dealversions,
     resolve_change_deal_status,
     resolve_deal_edit,
+    resolve_upload_datasource_file,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
@@ -90,6 +91,7 @@ mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
+mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)
 
 schema = make_executable_schema(
     type_defs,

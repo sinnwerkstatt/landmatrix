@@ -1,5 +1,8 @@
+import base64
+import os
 from typing import Any
 
+from django.core.files.storage import DefaultStorage
 from django.utils import timezone
 from django.utils.html import linebreaks
 from django_comments.models import Comment
@@ -147,6 +150,18 @@ def resolve_dealversions(
         qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
 
     return [dv.to_dict() for dv in qs]
+
+
+storage = DefaultStorage()
+
+
+def resolve_upload_datasource_file(_, info, filename, payload) -> str:
+    _, data = payload.split(",")
+    dec = base64.b64decode(data)
+    fname = storage.get_available_name(f"uploads/{filename}")
+    with open(os.path.join(storage.base_location, fname), "wb+") as f:
+        f.write(dec)
+    return fname
 
 
 def resolve_change_deal_status(_, info, id, transition) -> int:
