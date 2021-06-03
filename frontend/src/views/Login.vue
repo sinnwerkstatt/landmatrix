@@ -1,6 +1,9 @@
 <template>
   <div class="login-wrapper">
-    <div class="login-container">
+    <div v-if="$store.getters.userAuthenticated">
+      {{ $t("You are already logged in.") }}
+    </div>
+    <div v-else class="login-container">
       <form @submit.prevent="dispatchLogin">
         <label>
           Username
@@ -41,7 +44,11 @@
         login_failed_message: "",
       };
     },
-    computed: {},
+    created() {
+      if (this.$store.getters.userAuthenticated) {
+        this.$router.push(this.$route.query.next);
+      }
+    },
     methods: {
       dispatchLogin() {
         this.$store
