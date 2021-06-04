@@ -1,7 +1,6 @@
 <template>
   <div>
     <div v-if="value">
-      Current:
       <a :href="`${media_url}${value}`" target="_blank">
         <i class="far fa-file-pdf"></i>
         {{ value.replace("uploads/", "") }}
@@ -9,11 +8,12 @@
       <br />
       Change:
       <input
-        style="display: inline-block"
+        style="display: inline"
         type="file"
         :name="formfield.name"
         @change="uploadFile"
       /><br />
+      <a href="#" @click.prevent="removeFile">Remove this file</a>
     </div>
     <div v-else>
       <input type="file" :name="formfield.name" @change="uploadFile" />
@@ -37,6 +37,11 @@
       };
     },
     methods: {
+      removeFile() {
+        if (confirm(this.$t("Do you really want to remove this file?")) === true) {
+          this.$emit("input", "");
+        }
+      },
       uploadFile({ target: { files = [] } }) {
         if (!files.length) return;
         let fr = new FileReader();

@@ -108,6 +108,7 @@
     computed: {
       _visible() {
         if (!this.visible) return false;
+        if (this.fieldname === "file_not_public") return false;
         if (this.formfield.class === "FileField") {
           return !this.fileNotPublic || this.$store.getters.userAuthenticated;
         }

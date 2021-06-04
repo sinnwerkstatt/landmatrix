@@ -1,6 +1,11 @@
 <template>
   <div v-if="deal">
-    <ManageHeader v-if="manage" :deal="deal" :deal-version="dealVersion" />
+    <ManageHeader
+      v-if="manage"
+      :deal="deal"
+      :deal-version="dealVersion"
+      @change_deal_status="change_deal_status"
+    />
     <div v-else class="container deal-detail">
       <div class="row">
         <div>
@@ -353,13 +358,41 @@
         return null;
       },
       manage() {
-        return this.$store.state.page.user && this.$store.state.page.user.is_authenticated;
+        return (
+          this.$store.state.page.user && this.$store.state.page.user.is_authenticated
+        );
       },
       ...mapState({
         formFields: (state) => state.formfields,
       }),
     },
     methods: {
+      change_deal_status(transition) {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!, $transition: WorkflowTransition) {
+                change_deal_status(id: $id, transition: $transition)
+              }
+            `,
+            variables: { id: this.deal.id, transition },
+          })
+          .then((data) => {
+            const active_trans = transition === "ACTIVE";
+            if (transition === "ACTIVE") this.$apollo.queries.deal.refetch();
+            this.$apollo.queries.deal.refetch();
+            this.$router.push({
+              name: "deal_detail",
+              params: {
+                dealId: this.deal.id.toString(),
+                dealVersion: active_trans
+                  ? null
+                  : data.data.change_deal_status.toString(),
+              },
+            });
+          })
+          .catch((error) => console.error(error));
+      },
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },

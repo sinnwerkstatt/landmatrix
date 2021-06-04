@@ -1248,7 +1248,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             if areas:
                 feats = areas["features"]
                 for feat in feats:
-                    feat["properties"]["name"] = loc["name"]
+                    feat["properties"]["name"] = loc.get("name")
                     feat["properties"]["id"] = i
                     if (
                         feat["geometry"]["type"] == "MultiPolygon"

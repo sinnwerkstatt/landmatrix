@@ -44,14 +44,14 @@
                   <a
                     v-if="deal.draft_status === 1"
                     class="btn btn-secondary"
-                    @click="change_deal_status('TO_REVIEW')"
+                    @click="$emit('change_deal_status', 'TO_REVIEW')"
                   >
                     {{ $t("Submit for review") }}
                   </a>
                   <a
                     v-if="deal.draft_status === 2 || deal.draft_status === 3"
                     class="btn btn-primary"
-                    @click="change_deal_status('TO_DRAFT')"
+                    @click="$emit('change_deal_status', 'TO_DRAFT')"
                   >
                     {{ $t("Request improvement") }}
                   </a>
@@ -60,7 +60,7 @@
                   <a
                     v-if="deal.draft_status === 2"
                     class="btn btn-secondary"
-                    @click="change_deal_status('TO_ACTIVATION')"
+                    @click="$emit('change_deal_status', 'TO_ACTIVATION')"
                   >
                     {{ $t("Submit for activation") }}
                   </a>
@@ -69,7 +69,7 @@
                   <a
                     v-if="deal.draft_status === 3"
                     class="btn btn-secondary"
-                    @click="change_deal_status('ACTIVATE')"
+                    @click="$emit('change_deal_status', 'ACTIVATE')"
                   >
                     {{ $t("Activate") }}
                   </a>
@@ -195,6 +195,7 @@
               </span>
             </div>
             <div>{{ get_draft_status(wfi) }}</div>
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <div class="message" v-html="linebreaks(wfi.comment)"></div>
           </div>
         </div>
@@ -268,27 +269,6 @@
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
           LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
         }[deal.confidential_reason];
-      },
-      change_deal_status(transition) {
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: Int!, $transition: WorkflowTransition) {
-                change_deal_status(id: $id, transition: $transition)
-              }
-            `,
-            variables: { id: this.deal.id, transition },
-          })
-          .then((data) => {
-            this.$router.push({
-              name: "deal_detail",
-              params: {
-                dealId: this.deal.id.toString(),
-                dealVersion: data.data.change_deal_status.toString(),
-              },
-            });
-          })
-          .catch((error) => console.error(error));
       },
     },
   };

@@ -169,8 +169,7 @@ export const deal_sections = {
         fields: ["materialized_benefits", "materialized_benefits_comment"],
       },
       {
-        name:
-          "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
+        name: "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
         fields: ["presence_of_organizations"],
       },
     ],
@@ -254,8 +253,7 @@ export const deal_sections = {
         fields: ["source_of_water_extraction", "source_of_water_extraction_comment"],
       },
       {
-        name:
-          "How much do investors pay for water and the use of water infrastructure?",
+        name: "How much do investors pay for water and the use of water infrastructure?",
         fields: ["how_much_do_investors_pay_comment"],
       },
       {
@@ -330,6 +328,7 @@ export const deal_submodel_sections = {
     "type",
     "url",
     "file",
+    "file_not_public",
     "publication_title",
     "date",
     "name",

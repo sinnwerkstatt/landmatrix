@@ -7,13 +7,7 @@
         <option :value="false">{{ $t("No") }}</option>
       </select>
     </div>
-    <input
-      v-else
-      v-model="val"
-      class="form-check-input"
-      type="checkbox"
-      :name="formfield.name"
-    />
+    <input v-else v-model="val" type="checkbox" :name="formfield.name" />
   </div>
 </template>
 
