@@ -40,6 +40,8 @@
             :deal="deal"
             :sections="deal_sections.general_info.subsections"
             :fields="deal_submodel_sections.location"
+            @addEntry="addLocation"
+            @removeEntry="removeLocation"
           />
         </b-tab>
         <DealEditSection
@@ -173,13 +175,13 @@
             class="btn btn-primary btn-sm mx-2"
             :disabled="saving_in_progress"
           >
-          <span
-            v-if="saving_in_progress"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span
-          >&nbsp;
+            <span
+              v-if="saving_in_progress"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span
+            >&nbsp;
             <span v-if="is_new_deal">{{ $t("Create new draft") }}</span>
             <span v-else>{{ $t("Save") }}</span>
           </button>
@@ -189,10 +191,10 @@
             v-if="dealId"
             class="btn btn-gray btn-sm mx-2"
             :to="{
-            name: 'deal_detail',
-            params: { dealId: deal.id, dealVersion: dealVersion },
-          }"
-          >Cancel
+              name: 'deal_detail',
+              params: { dealId: deal.id, dealVersion: dealVersion },
+            }"
+            >Cancel
           </router-link>
           <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
           <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>
@@ -218,18 +220,18 @@
       DealLocationsEditSection,
       EditField,
       DealSubmodelEditSection,
-      DealEditSection
+      DealEditSection,
     },
     props: {
       dealId: { type: [Number, String], required: false, default: null },
-      dealVersion: { type: [Number, String], default: null }
+      dealVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
         deal: null,
         deal_sections,
         deal_submodel_sections,
-        saving_in_progress: false
+        saving_in_progress: false,
       };
     },
     apollo: {
@@ -239,7 +241,7 @@
           return {
             id: +this.dealId,
             version: +this.dealVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC"
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
           };
         },
         update(data) {
@@ -247,15 +249,15 @@
             this.$router.push({
               name: "404",
               params: [this.$router.currentRoute.path],
-              replace: true
+              replace: true,
             });
           }
           return data.deal;
         },
         skip() {
           return !this.dealId;
-        }
-      }
+        },
+      },
     },
     computed: {
       active_tab() {
@@ -263,7 +265,7 @@
       },
       is_new_deal() {
         return !this.dealId;
-      }
+      },
     },
     created() {
       if (!this.dealId) {
@@ -277,11 +279,11 @@
             point_lat_min: -1.469921875,
             point_lat_max: 4.22021484375,
             point_lon_min: 29.5619140625,
-            point_lon_max: 34.9782226563
+            point_lon_max: 34.9782226563,
           },
           locations: [],
           contracts: [],
-          datasources: []
+          datasources: [],
         };
       }
     },
@@ -305,20 +307,27 @@
             variables: {
               id: this.dealId ? +this.dealId : -1,
               version: this.dealVersion ? +this.dealVersion : null,
-              payload: { ...this.deal, versions: null, comments: null }
-            }
+              payload: { ...this.deal, versions: null, comments: null },
+            },
           })
           .then((data) => {
             this.$router.push({
               name: "deal_detail",
-              params: data.data.deal_edit
+              params: data.data.deal_edit,
             });
           })
           .catch((e) => {
             console.error({ e });
           });
       },
-
+      addLocation(loc) {
+        this.deal.locations.push(loc);
+      },
+      removeLocation(index) {
+        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
+          this.deal.locations.splice(index, 1);
+        }
+      },
       addContract() {
         let maxid = 0;
         this.deal.contracts.forEach((l) => (maxid = Math.max(l.id, maxid)));
@@ -340,8 +349,8 @@
         ) {
           this.deal.datasources.splice(index, 1);
         }
-      }
-    }
+      },
+    },
   };
 </script>
 
@@ -389,7 +398,7 @@
       width: clamp(300px, auto, 800px);
       //height: 3rem;
       padding: 0.5rem;
-      background-color: rgba(#DEDEDE,0.90);
+      background-color: rgba(#dedede, 0.9);
       filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
       position: fixed;
       right: 5px;

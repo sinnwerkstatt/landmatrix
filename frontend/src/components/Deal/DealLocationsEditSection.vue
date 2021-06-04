@@ -12,12 +12,19 @@
           <button
             type="button"
             class="btn btn-primary ml-2"
-            @click="removeLocation(loc.id)"
+            @click="$emit('removeEntry', index)"
           >
             <i class="fa fa-minus"></i>
           </button>
         </h3>
         <div v-if="activeLocation === loc">
+          <EditField
+            v-model="loc.level_of_accuracy"
+            fieldname="level_of_accuracy"
+            model="location"
+            :label-classes="['col-12', 'small']"
+            :value-classes="['col-12']"
+          />
           <div class="form-field row">
             <div class="col-12 small">
               {{ $t("Location") }}
@@ -48,9 +55,17 @@
               :value-classes="['col-12']"
             />
           </div>
+          <div class="row">
+            <form enctype="multipart/form-data" novalidate class="mt-3">
+              <div class="col-12 small">{{ $t("Upload GeoJSON") }}</div>
+              <div class="col-12">
+                <input type="file" multiple class="input-file" @change="uploadFiles" />
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary" @click="addLocation">
+      <button type="button" class="btn btn-secondary mt-5" @click="addLocation">
         <i class="fa fa-plus"></i> {{ $t("Location") }}
       </button>
     </div>
@@ -60,10 +75,6 @@
         :container-style="{ 'max-height': '65vh', height: '65vh' }"
         @ready="mapIsReady"
       />
-      <form enctype="multipart/form-data" novalidate class="mt-3">
-        Upload GeoJSON file
-        <input type="file" multiple class="input-file" @change="uploadFiles" />
-      </form>
     </div>
   </div>
 </template>
@@ -83,7 +94,7 @@
     },
     data() {
       return {
-        fields: ["level_of_accuracy", "description", "facility_name", "comment"],
+        fields: ["description", "facility_name", "comment"],
         bigmap: null,
         activeLocation: null,
         hoverLocID: null,
@@ -110,10 +121,9 @@
 
             if (feature.geometry.type === "Point") {
               layer.addEventListener("click", () => {
-                let loc = this.deal.locations.filter(
+                this.activeLocation = this.deal.locations.filter(
                   (l) => l.id === feature.properties.id
                 )[0];
-                this.activeLocation = loc;
               });
             } else {
               this.addPropertiesPopup(layer, feature);
@@ -140,6 +150,7 @@
               drawMarker = false;
             }
           });
+          // noinspection JSCheckFunctionSignatures
           this.bigmap.pm.setGlobalOptions({ layerGroup: this.currentFG });
           this.bigmap.pm.addControls({
             ...this.geoman_opts,
@@ -150,6 +161,7 @@
         }
         this.locationFGs.forEach((value, key) => {
           value.eachLayer((l) => {
+            // noinspection JSUnresolvedVariable
             let relevant_element = l?._icon || l._renderer._container;
             if (actLoc && key !== this.hoverLocID)
               relevant_element.classList.add("leaflet-hidden");
@@ -173,14 +185,8 @@
         let maxid = 0;
         this.deal.locations.forEach((l) => (maxid = Math.max(l.id, maxid)));
         let newloc = new Object({ id: maxid + 1 });
-        this.deal.locations.push(newloc);
         this.activeLocation = newloc;
-      },
-      removeLocation(locId) {
-        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
-          console.log({ locId });
-          this.deal.locations.splice(index, 1);
-        }
+        this.$emit("addEntry", newloc);
       },
       pointChange(lPo) {
         console.log({ lPo });
@@ -330,14 +336,17 @@
         // map.on("layeradd", this.features_changed);
       },
       uploadFiles(event) {
-        // for (let file of event.target.files) {
-        //   const reader = new FileReader();
-        //   reader.addEventListener("load", (event) => {
-        //     this.addGeoJson(JSON.parse(event.target.result));
-        //   });
-        //   reader.readAsText(file);
-        // }
-        // event.target.value = null;
+        for (let file of event.target.files) {
+          const reader = new FileReader();
+          reader.addEventListener("load", (event) => {
+            this.currentFG.addData(JSON.parse(event.target.result));
+            let bounds = this.bigmap.getBounds();
+            bounds.extend(this.currentFG.getBounds());
+            this.bigmap.fitBounds(bounds);
+          });
+          reader.readAsText(file);
+        }
+        event.target.value = null;
       },
       addPropertiesPopup(layer, feature) {
         let colormap = {
@@ -399,6 +408,7 @@
   }
 </style>
 
+<!--suppress CssUnusedSymbol -->
 <style>
   .leaflet-unhighlight {
     opacity: 0.8;

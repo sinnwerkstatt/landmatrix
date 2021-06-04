@@ -88,7 +88,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
                 comment = feedback_comment
 
         dwi = DealWorkflowInfo.objects.create(
-            from_user=user,
+            from_user=user or User.objects.get(id=1),
             to_user=assuser,
             draft_status_before=old_deal_draft_status,
             draft_status_after=deal.draft_status,

@@ -76,7 +76,10 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
         ]
     if add_workflowinfos:
         deal["workflowinfos"] = [
-            dwi.to_dict() for dwi in DealWorkflowInfo.objects.filter(deal_id=id)
+            dwi.to_dict()
+            for dwi in DealWorkflowInfo.objects.filter(deal_id=id).order_by(
+                "-timestamp"
+            )
         ]
     if add_comments:
         deal["comments"] = [
