@@ -2,7 +2,7 @@ export const implementation_status_choices = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
   IN_OPERATION: "In operation (production)",
-  PROJECT_ABANDONED: "Project abandoned",
+  PROJECT_ABANDONED: "Project abandoned"
 };
 
 export const nature_of_deal_choices = {
@@ -11,26 +11,26 @@ export const nature_of_deal_choices = {
   CONCESSION: "Concession",
   EXPLOITATION_PERMIT:
     "Exploitation permit / license / concession (for mineral resources)",
-  PURE_CONTRACT_FARMING: "Pure contract farming",
+  PURE_CONTRACT_FARMING: "Pure contract farming"
 };
 
 export const negotiation_status_choices = {
   Intended: {
     EXPRESSION_OF_INTEREST: "Expression of interest",
     UNDER_NEGOTIATION: "Under negotiation",
-    MEMORANDUM_OF_UNDERSTANDING: "Memorandum of understanding",
+    MEMORANDUM_OF_UNDERSTANDING: "Memorandum of understanding"
   },
   Concluded: {
     ORAL_AGREEMENT: "Oral agreement",
-    CONTRACT_SIGNED: "Contract signed",
+    CONTRACT_SIGNED: "Contract signed"
   },
   Failed: {
     NEGOTIATIONS_FAILED: "Negotiations failed",
-    CONTRACT_CANCELED: "Contract canceled",
+    CONTRACT_CANCELED: "Contract canceled"
   },
 
   CONTRACT_EXPIRED: "Contract expired",
-  CHANGE_OF_OWNERSHIP: "Change of ownership",
+  CHANGE_OF_OWNERSHIP: "Change of ownership"
 };
 
 export const intention_of_investment_choices = {
@@ -40,13 +40,13 @@ export const intention_of_investment_choices = {
     FODDER: "Fodder",
     LIVESTOCK: "Livestock",
     NON_FOOD_AGRICULTURE: "Non-food agricultural commodities",
-    AGRICULTURE_UNSPECIFIED: "Agriculture unspecified",
+    AGRICULTURE_UNSPECIFIED: "Agriculture unspecified"
   },
   Forestry: {
     TIMBER_PLANTATION: "Timber plantation",
     FOREST_LOGGING: "Forest logging / management",
     CARBON: "For carbon sequestration/REDD",
-    FORESTRY_UNSPECIFIED: "Forestry unspecified",
+    FORESTRY_UNSPECIFIED: "Forestry unspecified"
   },
 
   Other: {
@@ -57,8 +57,8 @@ export const intention_of_investment_choices = {
     CONVERSATION: "Conservation",
     LAND_SPECULATION: "Land speculation",
     RENEWABLE_ENERGY: "Renewable energy",
-    OTHER: "Other",
-  },
+    OTHER: "Other"
+  }
 };
 
 export const intention_of_investment_map = {
@@ -81,7 +81,7 @@ export const intention_of_investment_map = {
   CONVERSATION: ["Conservation", ""],
   LAND_SPECULATION: ["Land speculation", "fas fa-chart-line"],
   RENEWABLE_ENERGY: ["Renewable energy", "fas fa-wind"],
-  OTHER: ["Other", ""],
+  OTHER: ["Other", ""]
 };
 
 export const classification_choices = {
@@ -102,5 +102,21 @@ export const classification_choices = {
   PRIVATE_EQUITY_FIRM: "Private equity firm",
   INDIVIDUAL_ENTREPRENEUR: "Individual entrepreneur",
   NON_PROFIT: "Non - Profit organization (e.g. Church, University etc.)",
-  OTHER: "Other (please specify in comment field)",
+  OTHER: "Other (please specify in comment field)"
+};
+
+export const status_map = {
+  1: "Draft",
+  2: "Active", //"Live",
+  3: "Active", // "Updated",
+  4: "Deleted",
+  5: "Rejected", // legacy
+  6: "To Delete" // legacy
+};
+export const draft_status_map = {
+  1: "Draft",
+  2: "Review",
+  3: "Activation",
+  4: "Rejected", // legacy
+  5: "To Delete" // legacy
 };

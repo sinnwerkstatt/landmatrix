@@ -48,20 +48,7 @@
 </template>
 
 <script>
-  const STATUS_MAP = {
-    1: "Draft",
-    2: "Active",
-    3: "Active",
-    4: "Deleted",
-    5: "Rejected",
-    6: "To Delete",
-  };
-
-  const DRAFT_STATUS_MAP = {
-    1: "Draft",
-    2: "Review",
-    3: "Activation",
-  };
+  import { draft_status_map, status_map } from "$utils/choices";
 
   export default {
     props: ["investors", "fields", "pageSize"],
@@ -125,9 +112,9 @@
       displayField(data, field) {
         let val = data[field];
         if (field === "status") {
-          return STATUS_MAP[val];
+          return status_map[val];
         } else if (field === "draft_status") {
-          return DRAFT_STATUS_MAP[val];
+          return draft_status_map[val];
         } else {
           return val;
         }

@@ -86,6 +86,8 @@
 </template>
 
 <script>
+  import { draft_status_map, status_map } from "$utils/choices";
+
   export default {
     name: "InvestorHistory",
     props: ["investor", "investorId", "investorVersion"],
@@ -117,24 +119,9 @@
     },
     methods: {
       derive_status(status, draft_status) {
-        const status_map = {
-          1: "Draft",
-          2: "Live",
-          3: "Updated",
-          4: "Deleted",
-        };
-        const draft_status_map = {
-          1: "Draft",
-          2: "Review",
-          3: "Activation",
-          4: "Rejected",
-          5: "To Delete",
-        };
-
         if (draft_status) {
           return draft_status_map[draft_status];
         }
-
         let st = status_map[status];
         if (draft_status) {
           return `${st} + ${draft_status_map[draft_status]}`;

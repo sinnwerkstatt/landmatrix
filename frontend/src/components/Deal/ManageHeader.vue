@@ -194,7 +194,7 @@
                 </span>
               </span>
             </div>
-            <div>{{ get_draft_status(wfi) }}</div>
+            <div v-if="get_draft_status(wfi)" class="status-change" v-html="get_draft_status(wfi)"></div>
             <!-- eslint-disable-next-line vue/no-v-html -->
             <div class="message" v-html="linebreaks(wfi.comment)"></div>
           </div>
@@ -237,28 +237,50 @@
 
 <script>
   import { linebreaks } from "$utils/filters";
-  import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
+  import { draft_status_map, status_map } from "$utils/choices";
 
   export default {
     name: "ManageHeader",
     components: { HeaderDates },
     props: {
       deal: { type: Object, required: true },
-      dealVersion: { type: [Number, String], default: null },
+      dealVersion: { type: [Number, String], default: null }
     },
     data() {
       return {
-        linebreaks,
+        linebreaks
       };
     },
     computed: {
       last_revision() {
         return this.deal?.versions[0]?.revision ?? "";
-      },
+      }
     },
     methods: {
       get_draft_status(wfi) {
+        let before = wfi.draft_status_before;
+        let after = wfi.draft_status_after;
+        if (before !== after) {
+          if (!before) {
+            return `<div class="status">${draft_status_map[after]}</div>`;
+          } else {
+            let before_status = draft_status_map[before];
+            let after_status;
+            if (!after) {
+              after_status = status_map[2];
+            } else {
+              after_status = draft_status_map[after];
+            }
+            let ret = `<div class="status">${before_status}</div>`;
+            ret += `→`;
+            ret += `<div class="status">${after_status}</div>`;
+            return ret;
+          }
+        } else {
+          return null;
+        }
+        // TODO: deal draft status choices (formfields.deal. blabla)
         let ret = `${wfi.draft_status_before ?? ""}`;
         if (wfi.draft_status_after) ret += `→ ${wfi.draft_status_after}`;
         return ret;
@@ -267,10 +289,10 @@
         return {
           TEMPORARY_REMOVAL: this.$t("Temporary removal from PI after criticism"),
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
-          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
+          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import")
         }[deal.confidential_reason];
-      },
-    },
+      }
+    }
   };
 </script>
 
@@ -454,6 +476,8 @@
 
         textarea {
           width: 100%;
+          border: 1px solid lightgrey;
+          border-radius: 5px;
         }
 
         .send {
@@ -467,13 +491,19 @@
           input {
             flex: 1;
             width: 100px;
-            margin: 0 0.5em;
+            margin: 0 2px 0 0.5em;
+            border: 1px solid lightgrey;
+            border-radius: 5px;
           }
 
           .btn {
             background: $lm_investor;
             padding: 0.15em 0.7em;
             font-size: 0.9em;
+            border-radius: 5px;
+            &:hover {
+              background-color: lighten($lm_investor, 5%);
+            }
           }
         }
       }
@@ -492,9 +522,14 @@
             }
           }
 
+          .status-change {
+            margin-bottom: 2px;
+          }
+
           .message {
             background: #e5e5e5;
             padding: 0.3em 0.5em;
+            border-radius: 5px;
           }
         }
       }
@@ -529,6 +564,7 @@
           background: white;
           margin-left: 1.5em;
           font-size: 0.8em;
+
           &:hover {
             border-color: red;
             color: white;
@@ -577,6 +613,7 @@
     &.btn-secondary {
       background: rgba($lm_investor, 0.8);
       border-color: $lm_investor;
+
       &:hover,
       &:active {
         background: rgba($lm_investor, 1);
@@ -598,9 +635,30 @@
       content: none;
     }
   }
+
   .headercountry {
     white-space: nowrap;
     display: block;
     font-size: 1rem;
+  }
+</style>
+<style lang="scss">
+  @import "../../scss/colors";
+
+  .status-change .status {
+    display: inline-block;
+    padding: 2px 5px 3px;
+    line-height: 1;
+    color: white;
+    background-color: darken(#E4E4E4, 8%);
+    color: #5E5E64;
+    border-radius: 8px;
+    filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.1));
+
+
+    &:last-child {
+      background-color: #93c7c8;
+      color: white;
+    }
   }
 </style>
