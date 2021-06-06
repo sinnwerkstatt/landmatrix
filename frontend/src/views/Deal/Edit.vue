@@ -1,5 +1,5 @@
 <template>
-  <form @submit="deal_save">
+  <form @submit.prevent="deal_save">
     <div v-if="deal" class="container deal-edit">
       <h1 v-if="dealId">
         Editing Deal #{{ dealId }} in {{ deal.country && deal.country.name }}
@@ -9,7 +9,7 @@
       </h1>
       <div style="font-size: 0.8rem">
         <div v-if="!dealId">{{ deal }}</div>
-        <!--        {{ deal.locations[0].areas }}<br /><br />-->
+        <!--        {{ deal.locations }}<br /><br />-->
         <!--        {{ deal.geojson }}-->
         <!--        {{ deal.datasources }}-->
       </div>
@@ -37,11 +37,13 @@
           />
           <DealLocationsEditSection
             v-if="deal.country"
-            :deal="deal"
+            :locations="deal.locations"
+            :country="deal.country"
             :sections="deal_sections.general_info.subsections"
             :fields="deal_submodel_sections.location"
             @addEntry="addLocation"
             @removeEntry="removeLocation"
+            @input="(newlocs) => (deal.locations = newlocs)"
           />
         </b-tab>
         <DealEditSection
@@ -182,11 +184,9 @@
               aria-hidden="true"
             ></span
             >&nbsp;
-            <span v-if="is_new_deal">{{ $t("Create new draft") }}</span>
-            <span v-else>{{ $t("Save") }}</span>
+            {{ dealId ? $t("Save") : $t("Create new draft") }}
           </button>
-          <span v-if="is_new_deal">{{ $t("Saves your edits as a new draft") }}</span>
-          <span v-else>{{ $t("Saves your edits") }}</span>
+          {{ dealId ? $t("Saves your edits") : $t("Saves your edits as a new draft") }}
           <router-link
             v-if="dealId"
             class="btn btn-gray btn-sm mx-2"
@@ -263,9 +263,6 @@
       active_tab() {
         return location.hash ? location.hash : "#locations";
       },
-      is_new_deal() {
-        return !this.dealId;
-      },
     },
     created() {
       if (!this.dealId) {
@@ -291,9 +288,8 @@
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
-      deal_save(e) {
+      deal_save() {
         this.saving_in_progress = true;
-        e.preventDefault();
         this.$apollo
           .mutate({
             mutation: gql`

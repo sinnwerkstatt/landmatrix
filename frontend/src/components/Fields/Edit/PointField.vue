@@ -6,7 +6,7 @@
         v-model="val.lat"
         :min-value="-90"
         :max-value="90"
-        :decimals="8"
+        :decimals="5"
       />
     </div>
     <div class="col-md-6">
@@ -15,7 +15,7 @@
         v-model="val.lng"
         :min-value="-180"
         :max-value="180"
-        :decimals="8"
+        :decimals="5"
       />
     </div>
   </div>
@@ -35,11 +35,14 @@
       };
     },
     watch: {
+      value(newValue, oldValue) {
+        if (newValue.lat === oldValue.lat && newValue.lng === oldValue.lng) return;
+        this.val = JSON.parse(JSON.stringify(newValue));
+      },
       val: {
         deep: true,
         handler(v) {
           this.$emit("input", v);
-          // this.$store.dispatch("changeLocationPoint", v);
         },
       },
     },

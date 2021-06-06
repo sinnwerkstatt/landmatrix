@@ -6,6 +6,7 @@
       :placeholder="$t('Location')"
       :aria-label="$t('Location')"
       class="form-control"
+      @keydown.enter.prevent=""
     />
   </div>
 </template>

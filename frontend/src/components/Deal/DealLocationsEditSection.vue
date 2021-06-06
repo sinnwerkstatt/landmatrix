@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <div class="locationlist">
-      <div v-for="(loc, index) in deal.locations" :key="index" class="panel-body">
+      <div v-for="(loc, index) in locs" :key="index" class="panel-body">
         <h3
           :class="{ highlighted: hoverLocID === loc.id }"
-          @click="activeLocation = activeLocation !== loc ? loc : null"
+          @click="actLoc = actLoc !== loc ? loc : null"
           @mouseover="hoverLocID = loc.id"
           @mouseout="hoverLocID = null"
         >
@@ -17,7 +17,7 @@
             <i class="fa fa-minus"></i>
           </button>
         </h3>
-        <div v-if="activeLocation === loc">
+        <div v-if="actLoc === loc">
           <EditField
             v-model="loc.level_of_accuracy"
             fieldname="level_of_accuracy"
@@ -32,7 +32,7 @@
             <div class="col-12">
               <LocationGoogleField
                 v-model="loc.name"
-                :country-code="deal.country.code_alpha2"
+                :country-code="country.code_alpha2"
                 @change="locationGoogleAutocomplete"
               />
             </div>
@@ -90,16 +90,18 @@
   export default {
     components: { PointField, LocationGoogleField, EditField, BigMap },
     props: {
-      deal: { type: Object, required: true },
+      locations: { type: Array, required: true },
+      country: { type: Object, required: true },
     },
     data() {
       return {
         fields: ["description", "facility_name", "comment"],
         bigmap: null,
-        activeLocation: null,
+        locs: null,
+        actLoc: null,
         hoverLocID: null,
         locationFGs: new Map(),
-        currentFG: null,
+        actFG: null,
         geoman_opts: {
           position: "topleft",
           drawCircle: false,
@@ -107,7 +109,6 @@
           drawRectangle: false,
           drawPolyline: false,
           cutPolygon: false,
-          removalMode: false,
           drawMarker: false,
         },
         geojson_options: {
@@ -121,7 +122,7 @@
 
             if (feature.geometry.type === "Point") {
               layer.addEventListener("click", () => {
-                this.activeLocation = this.deal.locations.filter(
+                this.actLoc = this.locs.filter(
                   (l) => l.id === feature.properties.id
                 )[0];
               });
@@ -132,30 +133,26 @@
         },
       };
     },
-    computed: {},
     watch: {
-      "deal.country"(nCa) {
+      country(nCa) {
         this.bigmap.fitBounds([
           [nCa.point_lat_min, nCa.point_lon_min],
           [nCa.point_lat_max, nCa.point_lon_max],
         ]);
       },
-      activeLocation(actLoc) {
+      actLoc(actLoc) {
         let drawMarker = true;
         if (actLoc) {
           if (!this.locationFGs.get(actLoc.id)) this.addNewLayerGroup(actLoc.id);
-          this.currentFG = this.locationFGs.get(actLoc.id);
-          this.currentFG.eachLayer((l) => {
+          this.actFG = this.locationFGs.get(actLoc.id);
+          this.actFG.eachLayer((l) => {
             if (l.feature.geometry.type === "Point") {
               drawMarker = false;
             }
           });
           // noinspection JSCheckFunctionSignatures
-          this.bigmap.pm.setGlobalOptions({ layerGroup: this.currentFG });
-          this.bigmap.pm.addControls({
-            ...this.geoman_opts,
-            drawMarker,
-          });
+          this.bigmap.pm.setGlobalOptions({ layerGroup: this.actFG });
+          this.bigmap.pm.addControls({ ...this.geoman_opts, drawMarker });
         } else {
           this.bigmap.pm.removeControls();
         }
@@ -180,100 +177,92 @@
         });
       },
     },
+    created() {
+      this.locs = JSON.parse(JSON.stringify(this.locations));
+    },
     methods: {
       addLocation() {
         let maxid = 0;
-        this.deal.locations.forEach((l) => (maxid = Math.max(l.id, maxid)));
+        this.locs.forEach((l) => (maxid = Math.max(l.id, maxid)));
         let newloc = new Object({ id: maxid + 1 });
-        this.activeLocation = newloc;
+        this.actLoc = newloc;
         this.$emit("addEntry", newloc);
       },
       pointChange(lPo) {
-        console.log({ lPo });
-
-        // let hasMarker = false;
-        // this.currentFG.eachLayer((l) => {
-        //   if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
-        //     hasMarker = true;
-        //     l.setLatLng(lPo);
-        //     this.bigmap.setView(lPo);
-        //     // alternative approach to focussing
-        //     // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
-        //   }
-        // });
-        // if (!hasMarker) {
-        //   let lpoint = new Marker(lPo).toGeoJSON();
-        //   lpoint.properties = {
-        //     id: this.activeLocation?.id,
-        //     name: this.activeLocation.name,
-        //   };
-        //   this.currentFG.addData(lpoint);
-        // }
+        let hasMarker = false;
+        this.actFG.eachLayer((l) => {
+          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
+            hasMarker = true;
+            l.setLatLng(lPo);
+            // this.bigmap.setView(lPo);
+            // alternative approach to focussing
+            // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
+          }
+        });
+        if (!hasMarker) {
+          let lpoint = new Marker(lPo).toGeoJSON();
+          lpoint.properties = {
+            id: this.actLoc?.id,
+            name: this.actLoc.name,
+          };
+          this.actFG.addData(lpoint);
+        }
+        this.features_changed();
       },
       locationGoogleAutocomplete(lGA) {
         let hasMarker = false;
-        this.currentFG.eachLayer((l) => {
-          if (l?._icon && l.feature.properties.id === this.activeLocation.id) {
+        this.actFG.eachLayer((l) => {
+          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
             hasMarker = true;
             l.setLatLng(lGA.latLng);
-
-            if (!this.bigmap.getBounds().contains(lGA.latLng)) {
-              if (lGA.viewport) {
-                let vp_json = lGA.viewport.toJSON();
-                this.bigmap.fitBounds([
-                  [vp_json.south, vp_json.west],
-                  [vp_json.north, vp_json.east],
-                ]);
-              } else {
-                this.bigmap.setView(lGA.latLng);
-              }
-            }
           }
         });
         if (!hasMarker) {
           let lpoint = new Marker(lGA.latLng).toGeoJSON();
-          lpoint.properties = {
-            id: this.activeLocation?.id,
-            name: this.activeLocation.name,
-          };
-          this.currentFG.addData(lpoint);
+          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
+          this.actFG.addData(lpoint);
         }
+        if (!this.bigmap.getBounds().contains(lGA.latLng)) {
+          if (lGA.viewport) {
+            let vp_json = lGA.viewport.toJSON();
+            this.bigmap.fitBounds([
+              [vp_json.south, vp_json.west],
+              [vp_json.north, vp_json.east],
+            ]);
+          } else {
+            this.bigmap.setView(lGA.latLng);
+          }
+        }
+        this.features_changed();
       },
       features_changed() {
-        this.deal.locations.forEach((l) => {
+        this.locs.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
           if (lfg) {
             let lfggeo = lfg.toGeoJSON();
+
+            let pointIndex = lfggeo.features.findIndex(
+              (f) => f.geometry.type === "Point"
+            );
+            if (pointIndex >= 0) {
+              let lpoint = lfggeo.features.splice(pointIndex, 1);
+              const [lng, lat] = lpoint[0].geometry.coordinates;
+              l.point = { lat, lng };
+            } else {
+              l.point = {};
+            }
+
             l.areas = lfggeo;
-            let lpoint = lfggeo.features.find((f) => f.geometry.type === "Point");
-            console.log({ lpoint });
-            // TODO: this gets us stuck in a loop.. dont really know why :(
-            // if (lpoint) {
-            //   const [lng, lat] = lpoint.geometry.coordinates;
-            //   l.point = { lat, lng };
-            // }
           }
         });
-        // this.deal.locations = newlocs;
-        // this.editableFeatures.eachLayer((l) => {
-        //   let locJson = l.toGeoJSON();
-        //   // if (layer.feature.geometry.type ==='Point') {
-        //   if (locJson.geometry.type === "Point") {
-        //     console.log({ oldP: this.activeLocation.point, newP: l.getLatLng() });
-        //     this.activeLocation.point = l.getLatLng();
-        //   }
-        //
-        //   console.log({ locJson });
-        //   console.log(deal_location_map[locJson.properties.id].areas);
-        // });
-        // let loc = this.activeLocation;
-        // console.log(loc);
+        this.$emit("input", this.locs);
       },
       addNewLayerGroup(id) {
         let fg = new GeoJSON(null, this.geojson_options);
         fg.on("pm:update", this.features_changed);
         fg.on("pm:dragend", this.features_changed);
         fg.on("pm:rotateend", this.features_changed);
+
         this.locationFGs.set(id, fg);
         this.bigmap.addLayer(fg);
         return fg;
@@ -282,7 +271,7 @@
         this.bigmap = map;
 
         let bounds = new LatLngBounds([]);
-        this.deal.locations.forEach((loc) => {
+        this.locs.forEach((loc) => {
           let fg = this.addNewLayerGroup(loc.id);
           if (loc.areas) fg.addData(loc.areas);
           if (loc.point) {
@@ -295,31 +284,31 @@
 
         if (!bounds.isValid()) {
           bounds = [
-            [this.deal.country.point_lat_min, this.deal.country.point_lon_min],
-            [this.deal.country.point_lat_max, this.deal.country.point_lon_max],
+            [this.country.point_lat_min, this.country.point_lon_min],
+            [this.country.point_lat_max, this.country.point_lon_max],
           ];
         }
         this.bigmap.fitBounds(bounds);
-
+        this.bigmap.on("pm:remove", this.features_changed);
         this.bigmap.on("pm:create", ({ layer, shape }) => {
           // do a little three-card monte carlo:
           // save the current id, remove it from existing layers and add it
           // back in geojson style after giving it props. 🙄
           const leafId = layer._leaflet_id;
           const tmpfg = new GeoJSON().addLayer(layer).toGeoJSON();
-          this.currentFG.eachLayer((lay) => {
-            if (lay._leaflet_id === leafId) this.currentFG.removeLayer(lay);
+          this.actFG.eachLayer((lay) => {
+            if (lay._leaflet_id === leafId) this.actFG.removeLayer(lay);
           });
           tmpfg.features[0].properties = {
-            id: this.activeLocation?.id,
-            name: this.activeLocation.name,
+            id: this.actLoc?.id,
+            name: this.actLoc.name,
           };
-          this.currentFG.addData(tmpfg);
+          this.actFG.addData(tmpfg);
 
           // reset Marker
           if (shape === "Marker") {
             let [lng, lat] = tmpfg.features[0].geometry.coordinates;
-            this.activeLocation.point = { lat, lng };
+            this.actLoc.point = { lat, lng };
 
             this.bigmap.pm.disableDraw();
             this.bigmap.pm.removeControls();
@@ -328,20 +317,14 @@
 
           this.features_changed();
         });
-
-        // map.on("pm:remove", this.features_changed);
-        // this.editableFeatures.on("pm:dragend", ({ layer }) => {
-        //   this.features_changed();
-        // });
-        // map.on("layeradd", this.features_changed);
       },
       uploadFiles(event) {
         for (let file of event.target.files) {
           const reader = new FileReader();
           reader.addEventListener("load", (event) => {
-            this.currentFG.addData(JSON.parse(event.target.result));
+            this.actFG.addData(JSON.parse(event.target.result));
             let bounds = this.bigmap.getBounds();
-            bounds.extend(this.currentFG.getBounds());
+            bounds.extend(this.actFG.getBounds());
             this.bigmap.fitBounds(bounds);
           });
           reader.readAsText(file);
@@ -355,25 +338,23 @@
           production_area: "red",
         };
 
-        let select = document.createElement("select"),
-          option0 = document.createElement("option"),
-          option1 = document.createElement("option"),
-          option2 = document.createElement("option");
-
+        let select = document.createElement("select");
+        const options = [
+          { value: "contract_area", innerHTML: "Contract area" },
+          { value: "intended_area", innerHTML: "Intended area" },
+          { value: "production_area", innerHTML: "Production area" },
+        ];
+        options.forEach((optn) => {
+          let option = document.createElement("option");
+          option.value = optn.value;
+          option.innerHTML = optn.innerHTML;
+          select.appendChild(option);
+        });
         select.addEventListener("change", ({ target }) => {
           feature.properties.type = target.value;
           layer.setStyle({ color: colormap[target.value] });
           this.features_changed();
         });
-        option0.value = "contract_area";
-        option0.innerHTML = "Contract area";
-        option1.value = "intended_area";
-        option1.innerHTML = "Intended area";
-        option2.value = "production_area";
-        option2.innerHTML = "Production area";
-        select.appendChild(option0);
-        select.appendChild(option1);
-        select.appendChild(option2);
         select.value = feature.properties.type;
 
         layer.setStyle({ color: colormap[select.value] });
