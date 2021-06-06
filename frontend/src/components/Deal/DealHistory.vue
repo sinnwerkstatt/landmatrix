@@ -93,6 +93,8 @@
 </template>
 
 <script>
+  import { draft_status_map, status_map } from "$utils/choices";
+
   export default {
     name: "DealHistory",
     props: ["deal", "dealId", "dealVersion"],
@@ -124,20 +126,6 @@
     },
     methods: {
       derive_status(status, draft_status) {
-        const status_map = {
-          1: "Draft",
-          2: "Live",
-          3: "Updated",
-          4: "Deleted",
-        };
-        const draft_status_map = {
-          1: "Draft",
-          2: "Review",
-          3: "Activation",
-          4: "Rejected",
-          5: "To Delete",
-        };
-
         return draft_status ? draft_status_map[draft_status] : status_map[status];
       },
       compareVersions() {
