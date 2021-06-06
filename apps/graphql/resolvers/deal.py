@@ -167,62 +167,54 @@ def resolve_upload_datasource_file(_, info, filename, payload) -> str:
     return fname
 
 
-def resolve_change_deal_status(_, info, id, transition) -> int:
-    deal = Deal.objects.get(id=id)
-
-    status = Deal.STATUS_DRAFT
-    if transition == "TO_DRAFT":
-        draft_status = Deal.DRAFT_STATUS_DRAFT
-    elif transition == "TO_REVIEW":
-        draft_status = Deal.DRAFT_STATUS_REVIEW
-    elif transition == "TO_ACTIVATION":
-        draft_status = Deal.DRAFT_STATUS_ACTIVATION
-    elif transition == "ACTIVATE":
-        status = (
-            Deal.STATUS_LIVE
-            if deal.status == Deal.STATUS_DRAFT
-            else Deal.STATUS_UPDATED
-        )
-        draft_status = None
-    else:
-        raise GraphQLError(f"Invalid transition {transition}")
-
-    # Note: Assuming here, that we're always operating on the latest Version object if we're already live.
-    if deal.status != Deal.STATUS_DRAFT:
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
-        deal = (
-            DealVersion.objects.filter(object_id=deal.id)
-            .order_by("-id")[0]
-            .retrieve_object()
-        )
-
-    status_str = dict(Deal.STATUS_CHOICES).get(status, "")
-    draft_status_str = dict(Deal.DRAFT_STATUS_CHOICES).get(draft_status, "")
-    # TODO: assure neccessary rights concerning user and updating the deal
-    # TODO: stupid old ubuntu
+def resolve_change_deal_status(
+    _, info, id: int, version: int, transition: str = ""
+) -> dict:
     user = info.context["request"].user
-    if user and user.is_authenticated:
-        deal.draft_status = draft_status
-        deal.status = status
-        if not draft_status:
-            deal.save()
-        rev = deal.save_revision(
-            date_created=timezone.now(),
-            user=user,
-            comment=f"Changed Status: {status_str} {draft_status_str}",
-        )
-        return rev.id
-    return -1
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
+    deal = Deal.objects.get(id=id)
+    rev = Revision.objects.get(id=version)
+    deal_version = DealVersion.objects.get(revision=rev)
+
+    old_draft_status = deal.draft_status
+    # # TODO: assure neccessary rights concerning user and updating the deal
+    if transition == "ACTIVATE":
+        if deal.status == Deal.STATUS_DRAFT:
+            deal.status = Deal.STATUS_LIVE
+        else:
+            deal.status = Deal.STATUS_UPDATED
+        deal.draft_status = None
+        deal.save()
+        deal_version.update_from_obj(deal)
+        deal_version.save()
+    else:
+        if transition == "TO_DRAFT":
+            deal.draft_status = Deal.DRAFT_STATUS_DRAFT
+        elif transition == "TO_REVIEW":
+            deal.draft_status = Deal.DRAFT_STATUS_REVIEW
+        elif transition == "TO_ACTIVATION":
+            deal.draft_status = Deal.DRAFT_STATUS_ACTIVATION
+        else:
+            raise GraphQLError(f"Invalid transition {transition}")
+        deal_version.update_from_obj(deal)
+        deal_version.save()
+    DealWorkflowInfo.objects.create(
+        deal=deal,
+        deal_version=deal_version,
+        from_user=user,
+        # to_user
+        draft_status_before=old_draft_status,
+        draft_status_after=deal.draft_status,
+        # comment
+    )
+    return {"dealId": deal.id, "dealVersion": rev.id}
 
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     user = info.context["request"].user
-    # print(f"id: {id}")
-    # print(f"version: {version}")
-    # print(f"payload: {payload}")
-
     if not user.is_authenticated:
-
         raise GraphQLError("not authorized")
 
     # this is a new Deal
@@ -254,5 +246,6 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal_version = DealVersion.objects.get(revision=rev)
         deal.update_from_dict(payload)
         deal_version.update_from_obj(deal)
+        deal_version.save()
 
     return {"dealId": id, "dealVersion": rev.id}

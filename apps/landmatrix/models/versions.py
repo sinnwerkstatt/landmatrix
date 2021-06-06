@@ -87,7 +87,6 @@ class Version(models.Model):
         serialized_json = serializers.serialize("json", (obj,))
         serialized_fields = json.loads(serialized_json)
         self.serialized_data = serialized_fields
-        self.save()
 
     def retrieve_object(self):
         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]

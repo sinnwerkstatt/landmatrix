@@ -368,28 +368,38 @@
     },
     methods: {
       change_deal_status(transition) {
+        if (transition === "TO_DRAFT") {
+          console.warn("need to show a modal here with comment box");
+        }
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!, $transition: WorkflowTransition) {
-                change_deal_status(id: $id, transition: $transition)
+              mutation ($id: Int!, $version: Int!, $transition: WorkflowTransition) {
+                change_deal_status(
+                  id: $id
+                  version: $version
+                  transition: $transition
+                ) {
+                  dealId
+                  dealVersion
+                }
               }
             `,
-            variables: { id: this.deal.id, transition },
+            variables: {
+              id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
+              transition,
+            },
           })
-          .then((data) => {
-            const active_trans = transition === "ACTIVE";
-            if (transition === "ACTIVE") this.$apollo.queries.deal.refetch();
+          .then(({ data: { change_deal_status } }) => {
+            console.log({ change_deal_status });
             this.$apollo.queries.deal.refetch();
-            this.$router.push({
-              name: "deal_detail",
-              params: {
-                dealId: this.deal.id.toString(),
-                dealVersion: active_trans
-                  ? null
-                  : data.data.change_deal_status.toString(),
-              },
-            });
+            if (transition === "ACTIVATE") {
+              this.$router.push({
+                name: "deal_detail",
+                params: { dealId: change_deal_status.dealId.toString() },
+              });
+            }
           })
           .catch((error) => console.error(error));
       },

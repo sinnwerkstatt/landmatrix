@@ -2,7 +2,7 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
 
-  change_deal_status(id: Int!, transition: WorkflowTransition): Int
+  change_deal_status(id: Int!, version: Int!, transition: WorkflowTransition): DealEditPayload
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditPayload
   upload_datasource_file(filename: String!, payload: String!): String
 }

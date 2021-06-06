@@ -184,9 +184,9 @@
               aria-hidden="true"
             ></span
             >&nbsp;
-            {{ dealId ? $t("Save") : $t("Create new draft") }}
+            {{ $t("Save") }}
           </button>
-          {{ dealId ? $t("Saves your edits") : $t("Saves your edits as a new draft") }}
+          {{ dealId ? $t("Saves your edits") : $t("Saves the deal as draft") }}
           <router-link
             v-if="dealId"
             class="btn btn-gray btn-sm mx-2"
@@ -194,7 +194,8 @@
               name: 'deal_detail',
               params: { dealId: deal.id, dealVersion: dealVersion },
             }"
-            >Cancel
+          >
+            {{ $t("Cancel save") }}
           </router-link>
           <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
           <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>
