@@ -194,7 +194,11 @@
                 </span>
               </span>
             </div>
-            <div v-if="get_draft_status(wfi)" class="status-change" v-html="get_draft_status(wfi)"></div>
+            <div
+              v-if="get_draft_status(wfi)"
+              class="status-change"
+              v-html="get_draft_status(wfi)"
+            ></div>
             <!-- eslint-disable-next-line vue/no-v-html -->
             <div class="message" v-html="linebreaks(wfi.comment)"></div>
           </div>
@@ -237,6 +241,7 @@
 
 <script>
   import { linebreaks } from "$utils/filters";
+  import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
   import { draft_status_map, status_map } from "$utils/choices";
 
@@ -245,17 +250,28 @@
     components: { HeaderDates },
     props: {
       deal: { type: Object, required: true },
-      dealVersion: { type: [Number, String], default: null }
+      dealVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
-        linebreaks
+        users: [],
+        linebreaks,
       };
+    },
+    apollo: {
+      users: gql`
+        {
+          users {
+            id
+            full_name
+          }
+        }
+      `,
     },
     computed: {
       last_revision() {
         return this.deal?.versions[0]?.revision ?? "";
-      }
+      },
     },
     methods: {
       get_draft_status(wfi) {
@@ -289,10 +305,10 @@
         return {
           TEMPORARY_REMOVAL: this.$t("Temporary removal from PI after criticism"),
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
-          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import")
+          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
         }[deal.confidential_reason];
-      }
-    }
+      },
+    },
   };
 </script>
 
@@ -649,12 +665,10 @@
     display: inline-block;
     padding: 2px 5px 3px;
     line-height: 1;
-    color: white;
-    background-color: darken(#E4E4E4, 8%);
-    color: #5E5E64;
+    background-color: darken(#e4e4e4, 8%);
+    color: #5e5e64;
     border-radius: 8px;
     filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.1));
-
 
     &:last-child {
       background-color: #93c7c8;

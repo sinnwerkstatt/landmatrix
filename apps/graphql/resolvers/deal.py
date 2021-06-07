@@ -178,7 +178,7 @@ def resolve_change_deal_status(
     rev = Revision.objects.get(id=version)
     deal_version = DealVersion.objects.get(revision=rev)
 
-    old_draft_status = deal.draft_status
+    old_draft_status = deal_version.retrieve_object().draft_status
     # # TODO: assure neccessary rights concerning user and updating the deal
     if transition == "ACTIVATE":
         if deal.status == Deal.STATUS_DRAFT:
@@ -200,6 +200,7 @@ def resolve_change_deal_status(
             raise GraphQLError(f"Invalid transition {transition}")
         deal_version.update_from_obj(deal)
         deal_version.save()
+
     DealWorkflowInfo.objects.create(
         deal=deal,
         deal_version=deal_version,
