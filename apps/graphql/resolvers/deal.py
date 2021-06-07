@@ -348,9 +348,17 @@ def resolve_set_confidential(
     user = info.context["request"].user
     if not user.is_authenticated:
         raise GraphQLError("not authorized")
-    # if it's just a draft,
+
     if version:
-        ...  # TODO
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        tmpdeal = deal_version.retrieve_object()
+        tmpdeal.confidential = True
+        tmpdeal.confidential_reason = reason
+        tmpdeal.confidential_comment = comment
+        deal_version.update_from_obj(tmpdeal)
+        deal_version.save()
+
     else:
         deal = Deal.objects.get(id=id)
         deal.confidential = True
