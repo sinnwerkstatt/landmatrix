@@ -97,7 +97,9 @@
               class="col-md-12 col-lg-10 col-xl-9"
               :class="{ loading_wrapper: $apollo.queries.investor.loading }"
             >
-              <template v-if="investor.involvements.length">
+              <div
+                v-if="investor && investor.involvements && investor.involvements.length"
+              >
                 <h3 class="mb-2">
                   Network of parent companies and tertiary investors/lenders
                 </h3>
@@ -108,7 +110,7 @@
                   :controls="false"
                   :init-depth="4"
                 />
-              </template>
+              </div>
               <div v-else class="loader"></div>
             </div>
           </div>
@@ -370,7 +372,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int!, $transition: WorkflowTransition) {
+              mutation ($id: Int!, $version: Int!, $transition: WorkflowTransition) {
                 change_deal_status(
                   id: $id
                   version: $version

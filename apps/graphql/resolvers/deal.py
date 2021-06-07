@@ -21,21 +21,6 @@ from apps.utils import qs_values_to_dict
 User = get_user_model()
 
 
-# def map_raw_sql():
-#     sql = """
-#     select json_build_object(
-#     'id',ld.id,
-#     'deal_size',ld.deal_size,
-#     'country',(SELECT json_build_object('id',c.id,'name',c.name) from landmatrix_country c where c.id=ld.country_id),
-#     'locations',(
-#         SELECT json_agg(locs)
-#         from landmatrix_location locs where locs.deal_id=ld.id
-#         )
-#     ) from landmatrix_deal ld
-#     where ld.id=6869;
-#     """
-
-
 def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
@@ -308,6 +293,17 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
         deal_version.update_from_obj(deal)
-        deal_version.save()
+        if deal.draft_status in [
+            Deal.DRAFT_STATUS_REVIEW,
+            Deal.DRAFT_STATUS_ACTIVATION,
+        ]:
+            rev = Revision.objects.create(
+                date_created=timezone.now(), user=user, comment=""
+            )
+            tmp_deal = deal_version.retrieve_object()
+            tmp_deal.draft_status = Deal.DRAFT_STATUS_DRAFT
+            Version.create_from_obj(tmp_deal, revision_id=rev.id)
+        else:
+            deal_version.save()
 
     return {"dealId": id, "dealVersion": rev.id}

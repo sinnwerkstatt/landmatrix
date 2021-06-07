@@ -181,6 +181,7 @@
     },
     created() {
       this.locs = JSON.parse(JSON.stringify(this.locations));
+      if (this.locs.length === 1) this.actLoc = this.locs[0];
     },
     methods: {
       addLocation() {

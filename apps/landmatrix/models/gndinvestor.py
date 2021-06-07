@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models import Country, Currency
-from apps.landmatrix.models.mixins import FromDictMixin
 from apps.landmatrix.models.versions import Version, register_version
 
 
@@ -44,7 +43,7 @@ class InvestorVersion(Version):
 
 
 @register_version(InvestorVersion)
-class Investor(FromDictMixin, models.Model):
+class Investor(models.Model):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
@@ -203,6 +202,31 @@ class Investor(FromDictMixin, models.Model):
             seen_investors.add(involvements.venture)
             deals.update(involvements.venture.get_affected_deals(seen_investors))
         return deals
+
+    def update_from_dict(self, d: dict):
+        for key, value in d.items():
+            if key in [
+                "id",
+                "created_at",
+                "modified_at",
+                "versions",
+                "comments",
+                "status",
+                "draft_status",
+                "__typename",
+            ]:
+                continue  # ignore these fields
+            elif key in [
+                x.name
+                for x in self._meta.fields
+                if x.__class__.__name__ == "ForeignKey"
+            ]:
+                self.__setattr__(f"{key}_id", value["id"] if value else None)
+            elif key == "investors":
+                ...
+                # TODO: IMPLEMENT THIS!
+            else:
+                self.__setattr__(key, value)
 
     def to_dict(self):
         country = (
