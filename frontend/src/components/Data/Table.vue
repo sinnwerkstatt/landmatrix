@@ -353,6 +353,22 @@
         }
       },
     },
+    watch: {
+      rowData() {
+        if (!this.$apollo.loading) {
+          this.resetPages();
+        }
+      },
+      targetModel() {
+        this.sortField =
+          this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
+        this.sortAscending = false;
+      },
+    },
+    created() {
+      this.sortField =
+        this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
+    },
     methods: {
       getLabel(fieldName, targetModel = "deal") {
         if (!targetModel) targetModel = this.targetModel;
@@ -392,22 +408,6 @@
         this.page = 1;
         this.disableScrollLoader = false;
       },
-    },
-    watch: {
-      rowData() {
-        if (!this.$apollo.loading) {
-          this.resetPages();
-        }
-      },
-      targetModel() {
-        this.sortField =
-          this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
-        this.sortAscending = false;
-      },
-    },
-    created() {
-      this.sortField =
-        this.targetModel === "investor" ? "modified_at" : "fully_updated_at";
     },
   };
 </script>
@@ -488,12 +488,14 @@
               &.asc:before {
                 font-weight: 600;
                 content: "\f077";
+                //noinspection CssNoGenericFontName
                 font-family: "Font Awesome 5 Free";
               }
 
               &:not(.asc):before {
                 font-weight: 600;
                 content: "\f078";
+                //noinspection CssNoGenericFontName
                 font-family: "Font Awesome 5 Free";
               }
             }

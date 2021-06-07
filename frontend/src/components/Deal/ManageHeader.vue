@@ -767,8 +767,8 @@
     .multiselect__select {
       height: 32px;
       width: 32px;
-      padding-left: 0px;
-      padding-right: 0px;
+      padding-left: 0;
+      padding-right: 0;
     }
 
     .multiselect__placeholder,

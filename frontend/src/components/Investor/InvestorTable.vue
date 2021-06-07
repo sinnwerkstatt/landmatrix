@@ -139,11 +139,13 @@
 
     &.asc:before {
       content: "\f078";
+      //noinspection CssNoGenericFontName
       font-family: "Font Awesome 5 Free";
     }
 
     &:not(.asc):before {
       content: "\f077";
+      //noinspection CssNoGenericFontName
       font-family: "Font Awesome 5 Free";
     }
   }

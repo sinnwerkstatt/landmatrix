@@ -11,6 +11,7 @@
                 :data-target="`#collapse-${faq.slug}`"
                 aria-expanded="true"
                 :aria-controls="`collapse-${faq.slug}`"
+                @click="updateHash(`#${faq.slug}`)"
               >
                 {{ faq.question }}
               </button>
@@ -19,6 +20,7 @@
           <div
             :id="`collapse-${faq.slug}`"
             class="collapse"
+            :class="{ show: location_hash === `#${faq.slug}` }"
             aria-labelledby="headingOne"
             data-parent="#accordion"
           >
@@ -34,6 +36,15 @@
   export default {
     props: {
       value: { type: Object, required: true },
+    },
+    data() {
+      return { location_hash: location.hash };
+    },
+    methods: {
+      updateHash(slug) {
+        if (location.hash === slug) this.$router.push(this.$route.path);
+        else this.$router.push(this.$route.path + slug);
+      },
     },
   };
 </script>

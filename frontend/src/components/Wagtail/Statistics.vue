@@ -7,7 +7,7 @@
             We currently have information about:
             <a
               class="toggle-tooltip bottom"
-              href="/about/#what-is-a-land-deal"
+              href="/faq/#what-is-a-land-deal"
               data-original-title=""
               title=""
               ><i class="icon icon-question-sign"></i
@@ -20,17 +20,17 @@
           <h4>Size</h4>
           <p class="number number-concluded">0 ha</p>
           <div class="progress progress-concluded">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-concluded">0%</p>
           <p class="number number-intended">0 ha</p>
           <div class="progress progress-intended">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-intended">0%</p>
           <p class="number number-failed">0 ha</p>
           <div class="progress progress-failed">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-failed">0%</p>
         </div>
@@ -38,17 +38,17 @@
           <h4>No of deals</h4>
           <p class="number number-concluded">0</p>
           <div class="progress progress-concluded">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-concluded">0%</p>
           <p class="number number-intended">0</p>
           <div class="progress progress-intended">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-intended">0%</p>
           <p class="number number-failed">0</p>
           <div class="progress progress-failed">
-            <div class="bar" style="width: 0;"></div>
+            <div class="bar" style="width: 0"></div>
           </div>
           <p class="percentage percentage-failed">0%</p>
         </div>
@@ -56,15 +56,15 @@
       <div class="well-square legend">
         <ul class="list-inline">
           <li>
-            <i class="icon icon-none" style="background-color: #ed881b;"></i>
+            <i class="icon icon-none" style="background-color: #ed881b"></i>
             Concluded
           </li>
           <li>
-            <i class="icon icon-none" style="background-color: #b96c12;"></i>
+            <i class="icon icon-none" style="background-color: #b96c12"></i>
             Intended
           </li>
           <li>
-            <i class="icon icon-none" style="background-color: #884e0e;"></i>
+            <i class="icon icon-none" style="background-color: #884e0e"></i>
             Failed
           </li>
         </ul>

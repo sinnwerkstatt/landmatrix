@@ -51,8 +51,6 @@
   import { sortAnything } from "$utils";
   import { draft_status_map, status_map } from "$utils/choices";
 
-
-
   export default {
     props: ["deals", "fields", "pageSize"],
     data() {
@@ -141,11 +139,13 @@
 
     &.asc:before {
       content: "\f078";
+      //noinspection CssNoGenericFontName
       font-family: "Font Awesome 5 Free";
     }
 
     &:not(.asc):before {
       content: "\f077";
+      //noinspection CssNoGenericFontName
       font-family: "Font Awesome 5 Free";
     }
   }
