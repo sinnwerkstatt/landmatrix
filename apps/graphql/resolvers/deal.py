@@ -288,6 +288,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         rev = deal.save_revision(date_created=timezone.now(), user=user)
         Deal.objects.filter(id=id).update(draft_status=Deal.DRAFT_STATUS_DRAFT)
+
     # we update the existing version.
     else:
         rev = Revision.objects.get(id=version)
@@ -297,12 +298,20 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
             Deal.DRAFT_STATUS_REVIEW,
             Deal.DRAFT_STATUS_ACTIVATION,
         ]:
+            oldstatus = deal.draft_status
             rev = Revision.objects.create(
                 date_created=timezone.now(), user=user, comment=""
             )
             tmp_deal = deal_version.retrieve_object()
             tmp_deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-            Version.create_from_obj(tmp_deal, revision_id=rev.id)
+            dv = Version.create_from_obj(tmp_deal, revision_id=rev.id)
+            DealWorkflowInfo.objects.create(
+                deal=deal,
+                deal_version=dv,
+                from_user=user,
+                draft_status_before=oldstatus,
+                draft_status_after=Deal.DRAFT_STATUS_DRAFT,
+            )
         else:
             deal_version.save()
 

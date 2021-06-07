@@ -281,26 +281,18 @@
             subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
           };
         },
-        update(data) {
-          if (!data.deal && !this.$store.getters.userAuthenticated)
+        update({ deal }) {
+          if (!deal && !this.$store.getters.userAuthenticated)
             this.$router.push({ name: "login", query: { next: this.$route.fullPath } });
-
-          // if (
-          //   this.manage &&
-          //   !this.dealVersion &&
-          //   data.deal.status !== 1 &&
-          //   data.deal.draft_status
-          // ) {
-          //   this.$router.push({
-          //     name: "deal_detail",
-          //     params: {
-          //       dealId: this.dealId,
-          //       dealVersion: data.deal.versions[0].revision.id,
-          //     },
-          //   });
-          // }
-
-          return data.deal;
+          if (deal.status === 1 && !this.dealVersion)
+            this.$router.push({
+              name: "deal_detail",
+              params: {
+                dealId: this.dealId,
+                dealVersion: deal.versions[0].revision.id,
+              },
+            });
+          return deal;
         },
       },
       investor: {

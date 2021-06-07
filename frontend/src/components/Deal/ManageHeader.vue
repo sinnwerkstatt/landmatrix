@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div>
     <div class="jumbotron jumbotron-fluid manage-interface">
@@ -23,7 +24,16 @@
               </div>
             </div>
           </div>
-          <div class="status-wrapper">
+          <div v-if="deal.status !== 1 && !dealVersion" class="status-wrapper">
+            <div class="col-sm-12 col-md-8">
+              <div class="row fat-stati">
+                <div class="col" :class="{ active: deal.draft_status === null }">
+                  <span>{{ $t("Activated") }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="status-wrapper">
             <div class="col-sm-12 col-md-8">
               <div class="row fat-stati">
                 <div class="col" :class="{ active: deal.draft_status === 1 }">
@@ -205,12 +215,13 @@
                 </span>
               </span>
             </div>
+
             <div
               v-if="get_draft_status(wfi)"
               class="status-change"
               v-html="get_draft_status(wfi)"
             ></div>
-            <!-- eslint-disable-next-line vue/no-v-html -->
+
             <div
               v-if="wfi.comment"
               class="message"
@@ -232,6 +243,23 @@
           Edit
         </router-link>
         <a href="" class="btn btn-danger btn-sm">Delete</a>
+        <router-link
+          v-if="!dealVersion && deal.draft_status"
+          class="ml-4 btn btn-primary btn-sm"
+          :to="{
+            name: 'deal_detail',
+            params: { dealId: deal.id, dealVersion: last_revision.id },
+          }"
+        >
+          {{ $t("Go to current draft") }}
+        </router-link>
+        <router-link
+          v-if="dealVersion && [2, 3].includes(deal.status)"
+          class="ml-4 btn btn-primary btn-sm"
+          :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
+        >
+          {{ $t("Go to live version") }}
+        </router-link>
       </div>
     </div>
   </div>
@@ -309,7 +337,7 @@
           this.$apollo
             .mutate({
               mutation: gql`
-                mutation(
+                mutation (
                   $id: Int!
                   $version: Int
                   $comment: String!
