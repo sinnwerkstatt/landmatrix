@@ -76,8 +76,12 @@
           "_blank",
           "menubar=no"
         );
-        new_investor_window.onbeforeunload = (x) => {
-          this.$apollo.queries.investors.refetch();
+        new_investor_window.onbeforeunload = () => {
+          this.$apollo.queries.investors.refetch().then(() => {
+            this.val = this.investors.filter(
+              (i) => i.name.lower() === newInv.lower()
+            )[0];
+          });
         };
       },
     },

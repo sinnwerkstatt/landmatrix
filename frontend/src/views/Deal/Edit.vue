@@ -9,7 +9,7 @@
       </h1>
       <div style="font-size: 0.8rem">
         <div v-if="!dealId">{{ deal }}</div>
-        <!--        {{ deal.locations }}<br /><br />-->
+        {{ deal.locations }}<br /><br />
         <!--        {{ deal.geojson }}-->
         <!--        {{ deal.datasources }}-->
       </div>
@@ -278,11 +278,8 @@
               payload: { ...this.deal, versions: null, comments: null },
             },
           })
-          .then((data) => {
-            this.$router.push({
-              name: "deal_detail",
-              params: data.data.deal_edit,
-            });
+          .then(({ data: { deal_edit } }) => {
+            this.$router.push({ name: "deal_detail", params: deal_edit });
           })
           .catch((e) => {
             console.error({ e });

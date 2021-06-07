@@ -4,7 +4,7 @@
       {{ investor.name }}
     </h1>
     {{ investor }}
-    <form @submit="submitInvestor">
+    <form @submit.prevent="submitInvestor">
       <b-tabs
         id="tabNav"
         :key="investorId ? investorId + investorVersion : -1"
@@ -73,6 +73,7 @@
   import EditField from "$components/Fields/EditField";
   import InvolvementEdit from "$components/Investor/InvolvementEdit";
   import { investor_edit_query } from "$store/queries";
+  import gql from "graphql-tag";
 
   export default {
     name: "InvestorEdit",
@@ -127,9 +128,32 @@
         this.investor.investors.push({ role });
       },
       submitInvestor() {
-        if (this.$route.query.newName) {
-          window.close("juchu!");
-        }
+        this.saving_in_progress = true;
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!, $version: Int, $payload: Payload) {
+                investor_edit(id: $id, version: $version, payload: $payload) {
+                  investorId
+                  investorVersion
+                }
+              }
+            `,
+            variables: {
+              id: this.investorId ? +this.investorId : -1,
+              version: this.investorVersion ? +this.investorVersion : null,
+              payload: { ...this.investor, versions: null, comments: null },
+            },
+          })
+          .then(({ data: { investor_edit } }) => {
+            if (this.$route.query.newName) {
+              window.close();
+            }
+            this.$router.push({ name: "investor_detail", params: investor_edit });
+          })
+          .catch((e) => {
+            console.error({ e });
+          });
       },
     },
   };

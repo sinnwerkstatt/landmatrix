@@ -94,7 +94,7 @@
     },
     updated() {
       // TODO! this does not work yet :(
-      this.mapIsReady();
+      // this.mapIsReady();
     },
     methods: {
       mapIsReady(map) {

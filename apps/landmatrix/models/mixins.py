@@ -1,3 +1,4 @@
+import json
 import warnings
 
 from django.contrib.gis.geos import Point
@@ -50,6 +51,10 @@ class FromDictMixin:
                 self.__setattr__(f"{key}_id", value["id"] if value else None)
             elif key == "point":
                 self.point = Point(value["lng"], value["lat"])
+            elif key == "investors":
+                ...
+                # TODO: IMPLEMENT THIS!
+
             # elif key in ["locations", "datasources", "contracts"]:
             #     self.__setattr__(key, value)
             else:
