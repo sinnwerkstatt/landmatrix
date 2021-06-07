@@ -6,7 +6,7 @@
       :options="mapOptions"
       :center="center"
       :bounds="bounds"
-      @ready="leafletMapReady"
+      @ready="(map) => $emit('ready', map)"
     >
       <l-tile-layer
         v-for="tileProvider in tileLayers"
@@ -81,11 +81,6 @@
           // height: "75vh",
           ...this.containerStyle,
         };
-      },
-    },
-    methods: {
-      leafletMapReady(map) {
-        this.$emit("ready", map);
       },
     },
   };

@@ -2,7 +2,7 @@
   <DealSubmodelSection
     title="Locations"
     model-name="Location"
-    :entries="entries"
+    :entries="deal.locations"
     :fields="fields"
     model="location"
     :active="active"
@@ -13,15 +13,9 @@
     <div class="locations col-md-12 col-lg-5 col-xl-6">
       <BigMap
         :container-style="{ 'max-height': '90%', height: '90%' }"
-        :bounds="bounds"
-      >
-        <LGeoJson
-          v-if="deal.geojson"
-          :geojson="deal.geojson"
-          :options="geojson_options"
-          :options-style="geojson_styleFunction"
-        />
-      </BigMap>
+        :center="[0, 0]"
+        @ready="mapIsReady"
+      />
     </div>
   </DealSubmodelSection>
 </template>
@@ -31,102 +25,94 @@
 
   import { area } from "@turf/turf";
   import { GeoJSON, LatLngBounds } from "leaflet";
-  import { LGeoJson } from "vue2-leaflet";
   import DealSubmodelSection from "./DealSubmodelSection";
+
+  let styles = {
+    contract_area: {
+      dashArray: "5, 5",
+      dashOffset: "0",
+      fillColor: "#ffec03",
+    },
+    intended_area: {
+      dashArray: "5, 5",
+      dashOffset: "0",
+      fillColor: "#ff8900",
+    },
+    production_area: {
+      fillColor: "#ff0000",
+    },
+  };
 
   export default {
     components: {
       DealSubmodelSection,
       BigMap,
-      LGeoJson,
     },
     props: {
       fields: { type: Array, required: true },
       deal: { type: Object, required: true },
       active: { type: Boolean, default: false },
     },
-    computed: {
-      entries() {
-        return this.deal.locations.map((l) => {
-          return { ...l, country: this.deal.country.name };
-        });
-      },
-      bounds() {
-        if (!this.deal) return null;
-        let mybounds = new GeoJSON(this.deal.geojson).getBounds();
-        let ne = mybounds.getNorthEast();
-        let sw = mybounds.getSouthWest();
-        if (!ne || !sw) return null;
-        if (ne && ne.equals(sw)) {
-          ne.lat += 10;
-          ne.lng += 10;
-          sw.lat -= 10;
-          sw.lng -= 10;
-          return new LatLngBounds(ne, sw);
-        }
-        return mybounds.pad(1.5);
-      },
-      geojson_options() {
-        return {
-          onEachFeature: this.onEachFeatureFunction,
-          // pointToLayer: function (feature, latlng) {
-          //   return L.circleMarker(latlng, {
-          //     radius: 8,
-          //   });
-          // },
-        };
-      },
-      onEachFeatureFunction() {
-        return (feature, layer) => {
-          let tooltip = "<div>";
+    data() {
+      return {
+        geojson_options: {
+          style: (feature) => {
+            return {
+              weight: 2,
+              color: "#000000",
+              opacity: 1,
+              fillOpacity: 0.2,
+              ...styles[feature.properties.type],
+            };
+          },
+          onEachFeature: (feature, layer) => {
+            let tooltip = "<div>";
 
-          tooltip += `<div>Location #${feature.properties.id}</div>
+            tooltip += `<div>Location #${feature.properties.id}</div>
                       <div>Name: ${feature.properties.name}</div>
                       <div>Type: ${feature.properties.type}</div>`;
 
-          if (feature.geometry.type !== "Point") {
-            let farea = (area(layer.toGeoJSON()) / 10000)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            tooltip += `<div>Area: ${farea} ha</div>`;
-          }
-          tooltip += "</div>";
+            if (feature.geometry.type !== "Point") {
+              let farea = (area(layer.toGeoJSON()) / 10000)
+                .toFixed(2)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+              tooltip += `<div>Area: ${farea} ha</div>`;
+            }
+            tooltip += "</div>";
 
-          layer.bindPopup(tooltip, {
-            permanent: false,
-            sticky: true,
-            keepInView: true,
-          });
-          layer.on("mouseover", () => layer.openPopup());
-          layer.on("mouseout", () => layer.closePopup());
-        };
-      },
-      geojson_styleFunction() {
-        let styles = {
-          contract_area: {
-            dashArray: "5, 5",
-            dashOffset: "0",
-            fillColor: "#ffec03",
+            layer.bindPopup(tooltip, {
+              permanent: false,
+              sticky: true,
+              keepInView: true,
+            });
+            layer.on("mouseover", () => layer.openPopup());
+            layer.on("mouseout", () => layer.closePopup());
           },
-          intended_area: {
-            dashArray: "5, 5",
-            dashOffset: "0",
-            fillColor: "#ff8900",
-          },
-          production_area: {
-            fillColor: "#ff0000",
-          },
-        };
-        return (feature) => {
-          return {
-            weight: 2,
-            color: "#000000",
-            opacity: 1,
-            fillOpacity: 0.2,
-            ...styles[feature.properties.type],
-          };
-        };
+        },
+      };
+    },
+    updated() {
+      // TODO! this does not work yet :(
+      this.mapIsReady();
+    },
+    methods: {
+      mapIsReady(map) {
+        let lay = new GeoJSON(this.deal.geojson, this.geojson_options);
+        let mybounds = lay.getBounds();
+        let ne = mybounds.getNorthEast();
+        let sw = mybounds.getSouthWest();
+        if (ne && sw) {
+          if (ne.equals(sw)) {
+            ne.lat += 10;
+            ne.lng += 10;
+            sw.lat -= 10;
+            sw.lng -= 10;
+            map.fitBounds(new LatLngBounds(ne, sw));
+          }
+          map.fitBounds(mybounds.pad(1.2));
+        }
+        map.addLayer(lay);
       },
     },
   };
