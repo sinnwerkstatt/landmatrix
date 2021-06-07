@@ -23,6 +23,7 @@ from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
     resolve_dealversions,
+    resolve_add_deal_comment,
     resolve_change_deal_status,
     resolve_deal_edit,
     resolve_upload_datasource_file,
@@ -89,6 +90,7 @@ query.set_field("markers", resolve_markers)
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
+mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
 mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)

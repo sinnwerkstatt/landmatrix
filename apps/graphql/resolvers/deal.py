@@ -2,17 +2,23 @@ import base64
 import os
 from typing import Any
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.storage import DefaultStorage
 from django.utils import timezone
 from django.utils.html import linebreaks
+from django.utils.translation import ugettext
 from django_comments.models import Comment
 from graphql import GraphQLResolveInfo, GraphQLError
+from wagtail.core.models import Site
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
+
+User = get_user_model()
 
 
 # def map_raw_sql():
@@ -166,6 +172,55 @@ def resolve_upload_datasource_file(_, info, filename, payload) -> str:
     with open(os.path.join(storage.base_location, fname), "wb+") as f:
         f.write(dec)
     return fname
+
+
+def resolve_add_deal_comment(
+    _, info, id: int, version: int, comment: str, to_user_id=None
+) -> dict:
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
+    deal = Deal.objects.get(id=id)
+    deal_version = None
+    draft_status = None
+    if version:
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        deal_v_obj = deal_version.retrieve_object()
+        draft_status = deal_v_obj.draft_status
+
+    DealWorkflowInfo.objects.create(
+        deal=deal,
+        deal_version=deal_version,
+        from_user=user,
+        to_user_id=to_user_id,
+        draft_status_before=draft_status,
+        draft_status_after=draft_status,
+        comment=comment,
+    )
+
+    if to_user_id:
+        reciever = User.objects.get(id=to_user_id)
+        subject = "[Landmatrix] " + ugettext("New comment")
+        print(user.__dict__)
+        message = ugettext(
+            f"{user.get_full_name()} has addressed you in a comment on deal {deal.id}:"
+        )
+        message += "\n\n" + comment
+
+        site = Site.objects.get(is_default_site=True)
+        url = f"http{'s' if site.port == 444 else ''}://{site.hostname}"
+        if site.port not in [80, 443]:
+            url += f":{site.port}"
+        url += f"/deal/{deal.id}"
+        if version:
+            url += f"/{version}"
+        message += "\n\n" + ugettext(f"Please review at {url}")
+
+        reciever.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
+
+    return {"dealId": deal.id, "dealVersion": rev.id}
 
 
 def resolve_change_deal_status(

@@ -9,13 +9,13 @@
                 <!-- only use left half, rest for comments -->
                 <div class="container">
                   <div class="row">
-                    <div class="col-12 col-lg-4">
+                    <div class="col-sm-4">
                       <h1>
                         Deal #{{ deal.id }}
                         <span class="headercountry">{{ deal.country.name }}</span>
                       </h1>
                     </div>
-                    <div class="col-12 col-lg-8 panel-container">
+                    <div class="col-sm-8 panel-container">
                       <HeaderDates :obj="deal" />
                     </div>
                   </div>
@@ -174,12 +174,23 @@
         <div class="new-comment">
           <form action="." method="post">
             <div>
-              <textarea rows="2"></textarea>
+              <textarea v-model="comment" rows="2" required="required"></textarea>
             </div>
             <div class="send">
               <span>{{ $t("Send to:") }}</span>
-              <input type="text" name="to" />
-              <button class="btn btn-default" type="submit">{{ $t("Save") }}</button>
+              <multiselect
+                v-model="send_to_user"
+                :options="users"
+                :multiple="false"
+                :close-on-select="true"
+                :allow-empty="true"
+                placeholder="Send to"
+                track-by="id"
+                label="full_name"
+              />
+              <a class="btn btn-default" @click.prevent="add_deal_comment">
+                {{ $t("Send") }}
+              </a>
             </div>
           </form>
         </div>
@@ -200,27 +211,14 @@
               v-html="get_draft_status(wfi)"
             ></div>
             <!-- eslint-disable-next-line vue/no-v-html -->
-            <div class="message" v-html="linebreaks(wfi.comment)"></div>
+            <div
+              v-if="wfi.comment"
+              class="message"
+              v-html="linebreaks(wfi.comment)"
+            ></div>
           </div>
         </div>
       </div>
-      <!--    <div class="container">-->
-      <!--      <div class="row">-->
-      <!--    <div class="col-md-10">-->
-      <!--      <div class="row">-->
-      <!--        <div class="col-sm-5 col-md-3">-->
-      <!--          <h1>Deal #{{ deal.id }}</h1>-->
-      <!--        </div>-->
-      <!--        <div class="col-sm-7 col-md-9 panel-container">-->
-      <!--          <DealDates :deal="deal"></DealDates>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--    </div>-->
-      <!--    <div class="col-md-2 comments">-->
-      <!--      Comments-->
-      <!--    </div>-->
-      <!--  </div>-->
-      <!--    </div>-->
     </div>
     <div class="container edit-buttons">
       <div class="links">
@@ -255,6 +253,8 @@
     data() {
       return {
         users: [],
+        comment: "",
+        send_to_user: null,
         linebreaks,
       };
     },
@@ -296,10 +296,6 @@
         } else {
           return null;
         }
-        // TODO: deal draft status choices (formfields.deal. blabla)
-        let ret = `${wfi.draft_status_before ?? ""}`;
-        if (wfi.draft_status_after) ret += `→ ${wfi.draft_status_after}`;
-        return ret;
       },
       get_confidential_reason(deal) {
         return {
@@ -307,6 +303,42 @@
           RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
           LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
         }[deal.confidential_reason];
+      },
+      add_deal_comment() {
+        if (this.comment) {
+          this.$apollo
+            .mutate({
+              mutation: gql`
+                mutation(
+                  $id: Int!
+                  $version: Int
+                  $comment: String!
+                  $to_user_id: Int
+                ) {
+                  add_deal_comment(
+                    id: $id
+                    version: $version
+                    comment: $comment
+                    to_user_id: $to_user_id
+                  ) {
+                    dealId
+                    dealVersion
+                  }
+                }
+              `,
+              variables: {
+                id: +this.deal.id,
+                version: this.dealVersion ? +this.dealVersion : this.deal?.versions[0],
+                comment: this.comment,
+                to_user_id: this.send_to_user ? +this.send_to_user.id : null,
+              },
+            })
+            .then(() => {
+              this.$emit("reload_deal");
+              this.comment = "";
+            })
+            .catch((error) => console.error(error));
+        }
       },
     },
   };
@@ -351,7 +383,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100vw;
+        width: calc(100vw - 12px); // arghh, compensate for scrollbar
 
         .container {
           padding: 0;
@@ -387,7 +419,6 @@
         display: flex;
         flex-flow: row wrap;
         margin-top: 1em;
-
         @media (max-width: 400px) {
           font-size: 0.9rem;
           line-height: 1.1;
@@ -458,7 +489,7 @@
           }
 
           &:last-child {
-            margin-right: 0.5em;
+            margin-right: 0;
 
             &:after {
               display: none;
@@ -494,6 +525,14 @@
           width: 100%;
           border: 1px solid lightgrey;
           border-radius: 5px;
+          z-index: 1;
+          position: relative;
+          font-size: 0.9em;
+
+          &:focus {
+            border-color: transparent;
+            outline: none;
+          }
         }
 
         .send {
@@ -514,11 +553,17 @@
 
           .btn {
             background: $lm_investor;
-            padding: 0.15em 0.7em;
+            padding: 0.38em 0.7em;
             font-size: 0.9em;
             border-radius: 5px;
+
             &:hover {
               background-color: lighten($lm_investor, 5%);
+            }
+
+            &:focus,
+            &:active {
+              outline: none;
             }
           }
         }
@@ -674,5 +719,44 @@
       background-color: #93c7c8;
       color: white;
     }
+  }
+
+  .send {
+    .multiselect,
+    .multiselect__tags {
+      min-height: 30px;
+    }
+
+    .multiselect {
+      min-width: auto;
+    }
+    .multiselect__tags {
+      padding-top: 4px;
+      padding-left: 2px;
+      padding-right: 25px;
+    }
+
+    .multiselect__select {
+      height: 32px;
+      width: 32px;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .multiselect__placeholder,
+    .multiselect__single {
+      margin-bottom: 0 !important;
+    }
+    .multiselect__placeholder {
+      padding-top: 0;
+      padding-left: 5px;
+    }
+    .multiselect__input {
+      font-size: 1em;
+      margin-bottom: 2px;
+    }
+  }
+  .comment .message p:last-child {
+    margin-bottom: 0;
   }
 </style>

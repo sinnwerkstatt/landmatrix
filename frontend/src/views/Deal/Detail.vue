@@ -5,6 +5,7 @@
       :deal="deal"
       :deal-version="dealVersion"
       @change_deal_status="change_deal_status"
+      @reload_deal="reload_deal"
     />
     <div v-else class="container deal-detail">
       <div class="row">
@@ -374,7 +375,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!, $version: Int!, $transition: WorkflowTransition) {
+              mutation($id: Int!, $version: Int!, $transition: WorkflowTransition) {
                 change_deal_status(
                   id: $id
                   version: $version
@@ -424,6 +425,9 @@
       },
       download_link(format) {
         return `/api/legacy_export/?deal_id=${this.deal.id}&subset=UNFILTERED&format=${format}`;
+      },
+      reload_deal() {
+        this.$apollo.queries.deal.refetch();
       },
     },
   };
