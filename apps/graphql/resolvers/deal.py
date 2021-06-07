@@ -220,7 +220,7 @@ def resolve_add_deal_comment(
 
         reciever.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
 
-    return {"dealId": deal.id, "dealVersion": rev.id}
+    return {"dealId": deal.id, "dealVersion": version}
 
 
 def resolve_change_deal_status(

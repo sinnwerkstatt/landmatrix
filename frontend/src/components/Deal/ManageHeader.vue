@@ -328,7 +328,7 @@
               `,
               variables: {
                 id: +this.deal.id,
-                version: this.dealVersion ? +this.dealVersion : this.deal?.versions[0],
+                version: this.dealVersion ? +this.dealVersion : null,
                 comment: this.comment,
                 to_user_id: this.send_to_user ? +this.send_to_user.id : null,
               },
