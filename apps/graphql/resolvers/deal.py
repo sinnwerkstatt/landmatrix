@@ -11,7 +11,7 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
-from apps.landmatrix.models.versions import Revision
+from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
 
 
@@ -31,6 +31,7 @@ from apps.utils import qs_values_to_dict
 
 
 def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
+    user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     add_versions = False
@@ -48,12 +49,12 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             filtered_fields += [field]
 
     if version:
+        # if not user.is_authenticated:
+        #     return
         rev = Revision.objects.get(id=version)
         deal = rev.dealversion_set.get().fields
     else:
-        visible_deals = Deal.objects.visible(
-            info.context["request"].user, subset
-        ).filter(id=id)
+        visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
             return
 
@@ -178,28 +179,33 @@ def resolve_change_deal_status(
     rev = Revision.objects.get(id=version)
     deal_version = DealVersion.objects.get(revision=rev)
 
-    old_draft_status = deal_version.retrieve_object().draft_status
-    # # TODO: assure neccessary rights concerning user and updating the deal
+    deal_v_obj = deal_version.retrieve_object()
+    old_draft_status = deal_v_obj.draft_status
+
+    # TODO: assure neccessary rights concerning user and updating the deal
     if transition == "ACTIVATE":
-        if deal.status == Deal.STATUS_DRAFT:
-            deal.status = Deal.STATUS_LIVE
-        else:
-            deal.status = Deal.STATUS_UPDATED
-        deal.draft_status = None
-        deal.save()
-        deal_version.update_from_obj(deal)
+        draft_status = None
+        deal_v_obj.status = (
+            Deal.STATUS_LIVE
+            if deal.status == Deal.STATUS_DRAFT
+            else Deal.STATUS_UPDATED
+        )
+        deal_v_obj.draft_status = draft_status
+        deal_v_obj.save()
+        deal_version.update_from_obj(deal_v_obj)
         deal_version.save()
+
     else:
-        if transition == "TO_DRAFT":
-            deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-        elif transition == "TO_REVIEW":
-            deal.draft_status = Deal.DRAFT_STATUS_REVIEW
-        elif transition == "TO_ACTIVATION":
-            deal.draft_status = Deal.DRAFT_STATUS_ACTIVATION
-        else:
-            raise GraphQLError(f"Invalid transition {transition}")
-        deal_version.update_from_obj(deal)
+        draft_status = {
+            "TO_DRAFT": Deal.DRAFT_STATUS_DRAFT,
+            "TO_REVIEW": Deal.DRAFT_STATUS_REVIEW,
+            "TO_ACTIVATION": Deal.DRAFT_STATUS_ACTIVATION,
+        }[transition]
+        deal_v_obj.draft_status = draft_status
+        deal_version.update_from_obj(deal_v_obj)
         deal_version.save()
+
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
 
     DealWorkflowInfo.objects.create(
         deal=deal,
@@ -207,7 +213,7 @@ def resolve_change_deal_status(
         from_user=user,
         # to_user
         draft_status_before=old_draft_status,
-        draft_status_after=deal.draft_status,
+        draft_status_after=draft_status,
         # comment
     )
     return {"dealId": deal.id, "dealVersion": rev.id}
@@ -222,30 +228,30 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     if id == -1:
         deal = Deal()
         deal.update_from_dict(payload)
+        deal.recalculate_fields()
         deal.status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         deal.save()
-        rev = deal.save_revision(
-            date_created=timezone.now(),
-            user=info.context["request"].user,
+        rev = Revision.objects.create(
+            date_created=timezone.now(), user=user, comment=""
         )
+        Version.create_from_obj(deal, revision_id=rev.id)
         return {"dealId": deal.id, "dealVersion": rev.id}
 
     # TODO make sure user is allowed to edit this deal.
+
     deal = Deal.objects.get(id=id)
+    deal.update_from_dict(payload)
+    deal.recalculate_fields()
 
     # this is a live Deal for which we create a new Version
     if not version:
-        deal.update_from_dict(payload)
         deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-        rev = deal.save_revision(
-            date_created=timezone.now(), user=info.context["request"].user
-        )
+        rev = deal.save_revision(date_created=timezone.now(), user=user)
         Deal.objects.filter(id=id).update(draft_status=Deal.DRAFT_STATUS_DRAFT)
     # we update the existing version.
     else:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
-        deal.update_from_dict(payload)
         deal_version.update_from_obj(deal)
         deal_version.save()
 

@@ -1048,11 +1048,8 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             return f"#{self.id} in {self.country}"
         return f"#{self.id}"
 
-    @transaction.atomic
-    def save(
-        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
-    ):
-        if recalculate_independent:
+    def recalculate_fields(self, independent=True, dependent=True):
+        if independent:
             self.current_contract_size = self._get_current("contract_size", "area")
             self.current_production_size = self._get_current("production_size", "area")
             self.current_intention_of_investment = self._get_current(
@@ -1074,7 +1071,7 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             self.deal_size = self._calculate_deal_size()
             self.initiation_year = self._calculate_initiation_year()
             self.forest_concession = self._calculate_forest_concession()
-        if recalculate_dependent:
+        if dependent:
             # With the help of signals these fields are recalculated on changes to:
             # Location, Contract, DataSource
             # as well as Investor and InvestorVentureInvolvement
@@ -1087,21 +1084,16 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
             self.transnational = self._calculate_transnational()
             self.geojson = self._combine_geojson()
 
+    @transaction.atomic
+    def save(
+        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
+    ):
+        self.recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save(*args, **kwargs)
 
-    def save_revision(self, date_created, user, comment="") -> Revision:
-        rev = Revision.objects.create(
-            date_created=date_created,
-            user=user,
-            comment=comment,
-        )
-        # for submodel in (
-        #     # list(self.locations.all())
-        #     # + list(self.contracts.all())
-        #     # + list(self.datasources.all())
-        # ):
-        #     Version.create_from_obj(submodel, rev.id)
-        Version.create_from_obj(self, rev.id)
+    def save_revision(self, date_created, user) -> Revision:
+        rev = Revision.objects.create(date_created=date_created, user=user, comment="")
+        Version.create_from_obj(self, revision_id=rev.id)
         return rev
 
     def _get_current(self, attribute, field):
