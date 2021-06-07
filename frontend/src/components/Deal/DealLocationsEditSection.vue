@@ -12,7 +12,7 @@
           <button
             type="button"
             class="btn btn-primary ml-2"
-            @click="$emit('removeEntry', index)"
+            @click="removeLocation(index)"
           >
             <i class="fa fa-minus"></i>
           </button>
@@ -186,7 +186,17 @@
         this.locs.forEach((l) => (maxid = Math.max(l.id, maxid)));
         let newloc = new Object({ id: maxid + 1 });
         this.actLoc = newloc;
-        this.$emit("addEntry", newloc);
+        this.locs.push(newloc);
+        this.features_changed();
+      },
+      removeLocation(index) {
+        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
+          let loc = this.locs.splice(index, 1)[0];
+          let fg = this.locationFGs.get(loc.id);
+          this.locationFGs.delete(loc.id);
+          this.bigmap.removeLayer(fg);
+          this.features_changed();
+        }
       },
       pointChange(lPo) {
         let hasMarker = false;
@@ -200,11 +210,9 @@
           }
         });
         if (!hasMarker) {
+          if (!lPo.lat || !lPo.lng) return;
           let lpoint = new Marker(lPo).toGeoJSON();
-          lpoint.properties = {
-            id: this.actLoc?.id,
-            name: this.actLoc.name,
-          };
+          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
           this.actFG.addData(lpoint);
         }
         this.features_changed();
@@ -235,6 +243,19 @@
         }
         this.features_changed();
       },
+      fit_bounds() {
+        let bounds = new LatLngBounds([]);
+        this.locationFGs.forEach((value) => {
+          bounds.extend(value.getBounds());
+        });
+        if (!bounds.isValid()) {
+          bounds = [
+            [this.country.point_lat_min, this.country.point_lon_min],
+            [this.country.point_lat_max, this.country.point_lon_max],
+          ];
+        }
+        this.bigmap.fitBounds(bounds);
+      },
       features_changed() {
         this.locs.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
@@ -256,6 +277,7 @@
           }
         });
         this.$emit("input", this.locs);
+        this.fit_bounds();
       },
       addNewLayerGroup(id) {
         let fg = new GeoJSON(null, this.geojson_options);
@@ -270,7 +292,6 @@
       mapIsReady(map) {
         this.bigmap = map;
 
-        let bounds = new LatLngBounds([]);
         this.locs.forEach((loc) => {
           let fg = this.addNewLayerGroup(loc.id);
           if (loc.areas) fg.addData(loc.areas);
@@ -279,16 +300,8 @@
             pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
             fg.addData(pt);
           }
-          bounds.extend(fg.getBounds());
         });
-
-        if (!bounds.isValid()) {
-          bounds = [
-            [this.country.point_lat_min, this.country.point_lon_min],
-            [this.country.point_lat_max, this.country.point_lon_max],
-          ];
-        }
-        this.bigmap.fitBounds(bounds);
+        this.fit_bounds();
         this.bigmap.on("pm:remove", this.features_changed);
         this.bigmap.on("pm:create", ({ layer, shape }) => {
           // do a little three-card monte carlo:

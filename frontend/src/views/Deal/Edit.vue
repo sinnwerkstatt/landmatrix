@@ -41,8 +41,6 @@
             :country="deal.country"
             :sections="deal_sections.general_info.subsections"
             :fields="deal_submodel_sections.location"
-            @addEntry="addLocation"
-            @removeEntry="removeLocation"
             @input="(newlocs) => (deal.locations = newlocs)"
           />
         </b-tab>
