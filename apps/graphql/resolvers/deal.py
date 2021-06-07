@@ -318,17 +318,43 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     return {"dealId": id, "dealVersion": rev.id}
 
 
-def resolve_deal_delete(_, info, id) -> bool:
+def resolve_deal_delete(_, info, id, version=None) -> bool:
     # TODO make sure user is allowed to edit this deal.
     user = info.context["request"].user
     if not user.is_authenticated:
         raise GraphQLError("not authorized")
 
-    deal = Deal.objects.get(id=id)
-    deal.status = (
-        Deal.STATUS_UPDATED
-        if deal.status == Deal.STATUS_DELETED
-        else Deal.STATUS_DELETED
-    )
-    deal.save()
+    # if it's just a draft,
+    if version:
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        ...
+        # TODO
+    else:
+        deal = Deal.objects.get(id=id)
+        deal.status = (
+            Deal.STATUS_UPDATED
+            if deal.status == Deal.STATUS_DELETED
+            else Deal.STATUS_DELETED
+        )
+        deal.save()
+    return True
+
+
+def resolve_set_confidential(
+    _, info, id, version=None, reason=None, comment=None
+) -> bool:
+    # TODO make sure user is allowed to edit this deal.
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+    # if it's just a draft,
+    if version:
+        ...  # TODO
+    else:
+        deal = Deal.objects.get(id=id)
+        deal.confidential = True
+        deal.confidential_reason = reason
+        deal.confidential_comment = comment
+        deal.save()
     return True

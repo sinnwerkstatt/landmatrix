@@ -7,6 +7,7 @@
       @change_deal_status="change_deal_status"
       @reload_deal="reload_deal"
       @delete="deleteDeal"
+      @set_confidential="setConfidential"
     />
     <div v-else class="container deal-detail">
       <div class="row">
@@ -382,19 +383,48 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!) {
-                deal_delete(id: $id)
+              mutation ($id: Int!, $version: Int!) {
+                deal_delete(id: $id, version: $version)
               }
             `,
             variables: {
               id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
             },
           })
           .then((data) => {
             this.$apollo.queries.deal.refetch();
           });
       },
-
+      setConfidential() {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation (
+                $id: Int!
+                $version: Int
+                $reason: ConfidentialReason
+                $comment: String
+              ) {
+                deal_set_confidential(
+                  id: $id
+                  version: $version
+                  reason: $reason
+                  comment: $comment
+                )
+              }
+            `,
+            variables: {
+              id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
+              reason: "TEMPORARY_REMOVAL",
+              comment: "ich mag deals nicht",
+            },
+          })
+          .then((data) => {
+            this.$apollo.queries.deal.refetch();
+          });
+      },
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },

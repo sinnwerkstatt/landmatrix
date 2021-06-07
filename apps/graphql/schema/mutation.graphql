@@ -5,13 +5,20 @@ type Mutation {
   add_deal_comment(id: Int!, version: Int, comment: String!, to_user_id: Int): DealEditReturn
   change_deal_status(id: Int!, version: Int!, transition: WorkflowTransition): DealEditReturn
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditReturn
-  deal_delete(id: Int!): Boolean
+  deal_delete(id: Int!, version: Int): Boolean
   upload_datasource_file(filename: String!, payload: String!): String
+  deal_set_confidential(id: Int!, version: Int, reason: ConfidentialReason, comment: String): Boolean
 
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
 }
 
 scalar Payload
+
+enum ConfidentialReason {
+  TEMPORARY_REMOVAL
+  RESEARCH_IN_PROGRESS
+  LAND_OBSERVATORY_IMPORT
+}
 
 enum WorkflowTransition {
   TO_DRAFT
