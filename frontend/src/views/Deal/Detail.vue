@@ -6,6 +6,7 @@
       :deal-version="dealVersion"
       @change_deal_status="change_deal_status"
       @reload_deal="reload_deal"
+      @delete="deleteDeal"
     />
     <div v-else class="container deal-detail">
       <div class="row">
@@ -28,7 +29,6 @@
       </div>
     </div>
     <div class="container deal-detail">
-      <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
       <!--    <div class="quicknav">-->
       <!--      <div v-for="(version, i) in deal.versions">-->
       <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
@@ -332,21 +332,6 @@
       active_tab() {
         return location.hash ? location.hash : "#locations";
       },
-      not_public() {
-        if (this.deal) {
-          if (this.deal.status === 1 || this.deal.status === 6)
-            return this.$t("This deal version is pending.");
-          if (this.deal.status === 4)
-            return this.$t(
-              "This deal has been deleted. It is not visible for public users."
-            );
-          if (this.deal.status === 5)
-            return this.$t(
-              "This deal version has been rejected. It is not visible for public users."
-            );
-        }
-        return null;
-      },
       manage() {
         return (
           this.$store.state.page.user && this.$store.state.page.user.is_authenticated
@@ -382,7 +367,6 @@
             },
           })
           .then(({ data: { change_deal_status } }) => {
-            console.log({ change_deal_status });
             this.$apollo.queries.deal.refetch().then(() => {
               if (transition === "ACTIVATE") {
                 this.$router.push({
@@ -394,6 +378,23 @@
           })
           .catch((error) => console.error(error));
       },
+      deleteDeal() {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!) {
+                deal_delete(id: $id)
+              }
+            `,
+            variables: {
+              id: +this.dealId,
+            },
+          })
+          .then((data) => {
+            this.$apollo.queries.deal.refetch();
+          });
+      },
+
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },

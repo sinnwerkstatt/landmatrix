@@ -27,6 +27,7 @@ from apps.graphql.resolvers.deal import (
     resolve_change_deal_status,
     resolve_deal_edit,
     resolve_upload_datasource_file,
+    resolve_deal_delete,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.investor import (
@@ -94,6 +95,7 @@ mutation.set_field("logout", resolve_logout)
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
+mutation.set_field("deal_delete", resolve_deal_delete)
 mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)
 
 mutation.set_field("investor_edit", resolve_investor_edit)

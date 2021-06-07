@@ -27,9 +27,10 @@
           <div v-if="deal.status !== 1 && !dealVersion" class="status-wrapper">
             <div class="col-sm-12 col-md-8">
               <div class="row fat-stati">
-                <div class="col" :class="{ active: deal.draft_status === null }">
-                  <span>{{ $t("Activated") }}</span>
+                <div v-if="deal.status === 4" class="col deleted">
+                  {{ $t("Deleted") }}
                 </div>
+                <div v-else class="col active">{{ $t("Activated") }}</div>
               </div>
             </div>
           </div>
@@ -242,7 +243,15 @@
         >
           Edit
         </router-link>
-        <a href="" class="btn btn-danger btn-sm">Delete</a>
+        <button class="btn btn-danger btn-sm" @click.prevent="$emit('delete')">
+          {{ deal.status === 4 ? $t("Undelete") : $t("Delete") }}
+        </button>
+        <button
+          class="btn btn-danger btn-sm"
+          @click.prevent="$emit('set_confidential')"
+        >
+          {{ $t("Set confidential") }}
+        </button>
         <router-link
           v-if="!dealVersion && deal.draft_status"
           class="ml-4 btn btn-primary btn-sm"
@@ -471,6 +480,10 @@
             &:after {
               border-left-color: #93c7c8;
             }
+          }
+          &.deleted {
+            background: hsl(0, 33%, 68%);
+            color: white;
           }
 
           @for $i from 0 to $max-z-index {

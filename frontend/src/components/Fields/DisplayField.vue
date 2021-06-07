@@ -13,6 +13,7 @@
         :value="value"
         :formfield="formfield"
         :model="model"
+        :file-not-public="fileNotPublic"
       />
     </div>
   </div>

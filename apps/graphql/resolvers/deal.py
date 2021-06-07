@@ -316,3 +316,19 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
             deal_version.save()
 
     return {"dealId": id, "dealVersion": rev.id}
+
+
+def resolve_deal_delete(_, info, id) -> bool:
+    # TODO make sure user is allowed to edit this deal.
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
+    deal = Deal.objects.get(id=id)
+    deal.status = (
+        Deal.STATUS_UPDATED
+        if deal.status == Deal.STATUS_DELETED
+        else Deal.STATUS_DELETED
+    )
+    deal.save()
+    return True

@@ -30,7 +30,7 @@
               </div>
               <h3 class="mt-5">Quality goals</h3>
               <hr />
-              <GoalsTable :goal_statistics="goal_statistics"></GoalsTable>
+              <GoalsTable :goal-statistics="goal_statistics" />
               <h3 class="mt-5">Indicator listings</h3>
               <hr />
               <StatisticsTable
