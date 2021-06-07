@@ -34,6 +34,7 @@ from apps.graphql.resolvers.investor import (
     resolve_investors,
     # resolve_involvements,
     resolve_investorversions,
+    resolve_investor_edit,
 )
 from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
@@ -94,6 +95,8 @@ mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
 mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)
+
+mutation.set_field("investor_edit", resolve_investor_edit)
 
 schema = make_executable_schema(
     type_defs,

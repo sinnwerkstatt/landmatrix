@@ -76,28 +76,7 @@
           :sections="deal_sections.investor_info.subsections"
           :active="active_tab === '#investor_info'"
           @activated="updateRoute('#investor_info')"
-        >
-          <!--        <div class="row">-->
-          <!--          <div-->
-          <!--            class="col-md-12 col-lg-10 col-xl-9"-->
-          <!--            :class="{ loading_wrapper: this.$apollo.queries.investor.loading }"-->
-          <!--          >-->
-          <!--            <template v-if="investor.involvements.length">-->
-          <!--              <h3 class="mb-2">-->
-          <!--                Network of parent companies and tertiary investors/lenders-->
-          <!--              </h3>-->
-          <!--              <InvestorGraph-->
-          <!--                ref="investorGraph"-->
-          <!--                :investor="investor"-->
-          <!--                :show-deals-on-load="false"-->
-          <!--                :controls="false"-->
-          <!--                :init-depth="4"-->
-          <!--              />-->
-          <!--            </template>-->
-          <!--            <div v-else class="loader"></div>-->
-          <!--          </div>-->
-          <!--        </div>-->
-        </DealEditSection>
+        />
 
         <DealSubmodelEditSection
           title="Data sources"
@@ -200,6 +179,7 @@
         </div>
       </div>
     </div>
+    <div v-else class="container">Couldn't fetch this deal</div>
   </form>
 </template>
 
@@ -244,13 +224,6 @@
           };
         },
         update(data) {
-          if (!data.deal) {
-            this.$router.push({
-              name: "404",
-              params: [this.$router.currentRoute.path],
-              replace: true,
-            });
-          }
           return data.deal;
         },
         skip() {

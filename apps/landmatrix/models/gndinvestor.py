@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models import Country, Currency
+from apps.landmatrix.models.mixins import FromDictMixin
 from apps.landmatrix.models.versions import Version, register_version
 
 
@@ -43,7 +44,7 @@ class InvestorVersion(Version):
 
 
 @register_version(InvestorVersion)
-class Investor(models.Model):
+class Investor(FromDictMixin, models.Model):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
         Country,
@@ -135,10 +136,13 @@ class Investor(models.Model):
     # FIXME This should be replaced by an option to _NOT_ specify the investor name.
     is_actually_unknown = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
+    def calculate_actually_unknown(self):
         self.is_actually_unknown = bool(
             re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
         )
+
+    def save(self, *args, **kwargs):
+        self.calculate_actually_unknown()
         super().save(*args, **kwargs)
 
     def __str__(self):

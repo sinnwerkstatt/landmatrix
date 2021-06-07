@@ -280,28 +280,23 @@
           };
         },
         update(data) {
-          if (!data.deal) {
-            this.$router.push({
-              name: "404",
-              // TODO: this seems to have no effect. initially i wanted to leave the navigated-to path
-              // params: [this.$router.currentRoute.path],
-              replace: true,
-            });
-          }
-          if (
-            this.manage &&
-            !this.dealVersion &&
-            data.deal.status !== 1 &&
-            data.deal.draft_status
-          ) {
-            this.$router.push({
-              name: "deal_detail",
-              params: {
-                dealId: this.dealId,
-                dealVersion: data.deal.versions[0].revision.id,
-              },
-            });
-          }
+          if (!data.deal && !this.$store.getters.userAuthenticated)
+            this.$router.push({ name: "login", query: { next: this.$route.fullPath } });
+
+          // if (
+          //   this.manage &&
+          //   !this.dealVersion &&
+          //   data.deal.status !== 1 &&
+          //   data.deal.draft_status
+          // ) {
+          //   this.$router.push({
+          //     name: "deal_detail",
+          //     params: {
+          //       dealId: this.dealId,
+          //       dealVersion: data.deal.versions[0].revision.id,
+          //     },
+          //   });
+          // }
 
           return data.deal;
         },
@@ -394,13 +389,14 @@
           })
           .then(({ data: { change_deal_status } }) => {
             console.log({ change_deal_status });
-            this.$apollo.queries.deal.refetch();
-            if (transition === "ACTIVATE") {
-              this.$router.push({
-                name: "deal_detail",
-                params: { dealId: change_deal_status.dealId.toString() },
-              });
-            }
+            this.$apollo.queries.deal.refetch().then(() => {
+              if (transition === "ACTIVATE") {
+                this.$router.push({
+                  name: "deal_detail",
+                  params: { dealId: change_deal_status.dealId.toString() },
+                });
+              }
+            });
           })
           .catch((error) => console.error(error));
       },

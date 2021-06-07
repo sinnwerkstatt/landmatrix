@@ -174,13 +174,6 @@
   export default {
     name: "CaseStatistics",
     components: { LocationFilter, GoalsTable, StatisticsTable },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        if (!vm.$store.getters.userAuthenticated) {
-          window.location = `/accounts/login/?next=${to.path}`;
-        }
-      });
-    },
     data: function () {
       return {
         loading: false,

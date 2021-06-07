@@ -24,6 +24,7 @@
             model="location"
             :label-classes="['col-12', 'small']"
             :value-classes="['col-12']"
+            @input="features_changed"
           />
           <div class="form-field row">
             <div class="col-12 small">
@@ -53,6 +54,7 @@
               model="location"
               :label-classes="['col-12', 'small']"
               :value-classes="['col-12']"
+              @input="features_changed"
             />
           </div>
           <div class="row">

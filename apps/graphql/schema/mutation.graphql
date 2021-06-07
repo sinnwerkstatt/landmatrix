@@ -2,10 +2,12 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
 
-  add_deal_comment(id: Int!, version: Int, comment: String!, to_user_id: Int): DealEditPayload
-  change_deal_status(id: Int!, version: Int!, transition: WorkflowTransition): DealEditPayload
-  deal_edit(id: Int!, version: Int, payload: Payload): DealEditPayload
+  add_deal_comment(id: Int!, version: Int, comment: String!, to_user_id: Int): DealEditReturn
+  change_deal_status(id: Int!, version: Int!, transition: WorkflowTransition): DealEditReturn
+  deal_edit(id: Int!, version: Int, payload: Payload): DealEditReturn
   upload_datasource_file(filename: String!, payload: String!): String
+
+  investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
 }
 
 scalar Payload
@@ -17,9 +19,13 @@ enum WorkflowTransition {
   ACTIVATE
 }
 
-type DealEditPayload {
+type DealEditReturn {
   dealId: Int
   dealVersion: Int
+}
+type InvestorEditReturn {
+  investorId: Int
+  investorVersion: Int
 }
 
 type LoginPayload {
