@@ -55,12 +55,14 @@
         nav-class="sticky-nav"
       >
         <DealLocationsSection
+          key="1"
           :deal="deal"
           :fields="deal_submodel_sections.location"
           :active="active_tab === '#locations'"
           @activated="updateRoute('#locations')"
         />
         <DealSection
+          key="2"
           :title="deal_sections.general_info.label"
           :deal="deal"
           :sections="deal_sections.general_info.subsections"
@@ -69,6 +71,7 @@
         />
 
         <DealSubmodelSection
+          key="3"
           title="Contracts"
           model-name="Contract"
           :entries="deal.contracts"
@@ -79,6 +82,7 @@
         />
 
         <DealSection
+          key="4"
           :title="deal_sections.employment.label"
           :deal="deal"
           :sections="deal_sections.employment.subsections"
@@ -87,6 +91,7 @@
         />
 
         <DealSection
+          key="5"
           :title="deal_sections.investor_info.label"
           :deal="deal"
           :sections="deal_sections.investor_info.subsections"
@@ -118,6 +123,7 @@
         </DealSection>
 
         <DealSubmodelSection
+          key="6"
           title="Data sources"
           model-name="Data source"
           :entries="deal.datasources"
@@ -128,6 +134,7 @@
         />
 
         <DealSection
+          key="7"
           :title="deal_sections.local_communities.label"
           :deal="deal"
           :sections="deal_sections.local_communities.subsections"
@@ -136,6 +143,7 @@
         />
 
         <DealSection
+          key="8"
           :title="deal_sections.former_use.label"
           :deal="deal"
           :sections="deal_sections.former_use.subsections"
@@ -144,6 +152,7 @@
         />
 
         <DealSection
+          key="9"
           :title="deal_sections.produce_info.label"
           :deal="deal"
           :sections="deal_sections.produce_info.subsections"
@@ -152,6 +161,7 @@
         />
 
         <DealSection
+          key="10"
           :title="deal_sections.water.label"
           :deal="deal"
           :sections="deal_sections.water.subsections"
@@ -160,6 +170,7 @@
         />
 
         <DealSection
+          key="11"
           :title="deal_sections.gender_related_info.label"
           :deal="deal"
           :sections="deal_sections.gender_related_info.subsections"
@@ -168,6 +179,7 @@
         />
 
         <DealSection
+          key="12"
           :title="deal_sections.guidelines_and_principles.label"
           :deal="deal"
           :sections="deal_sections.guidelines_and_principles.subsections"
@@ -176,6 +188,7 @@
         />
 
         <DealSection
+          key="13"
           :title="deal_sections.overall_comment.label"
           :deal="deal"
           :sections="deal_sections.overall_comment.subsections"
@@ -183,13 +196,14 @@
           @activated="updateRoute('#overall_comment')"
         />
 
-        <b-tab disabled>
+        <b-tab key="14" disabled>
           <template #title>
             <hr />
           </template>
         </b-tab>
 
         <b-tab
+          key="15"
           :title="$t('Deal history')"
           :active="active_tab === '#history'"
           @click="updateRoute('#history')"
@@ -198,6 +212,7 @@
         </b-tab>
 
         <b-tab
+          key="16"
           :title="$t('Comments')"
           :active="active_tab === '#comments'"
           @click="updateRoute('#comments')"
@@ -206,6 +221,7 @@
         </b-tab>
 
         <b-tab
+          key="17"
           :title="$t('Actions')"
           :active="active_tab === '#actions'"
           @click="updateRoute('#actions')"
@@ -270,6 +286,7 @@
         deal_submodel_sections,
         investor: { involvements: [] },
         title: "Deal",
+        active_tab: "#locations",
       };
     },
     apollo: {
@@ -330,9 +347,6 @@
       },
     },
     computed: {
-      active_tab() {
-        return location.hash ? location.hash : "#locations";
-      },
       manage() {
         return (
           this.$store.state.page.user && this.$store.state.page.user.is_authenticated
@@ -341,6 +355,9 @@
       ...mapState({
         formFields: (state) => state.formfields,
       }),
+    },
+    mounted() {
+      this.updateRoute(this.active_tab);
     },
     methods: {
       change_deal_status(transition_info) {
@@ -385,35 +402,38 @@
           })
           .catch((error) => console.error(error));
       },
-      deleteDeal() {
+      deleteDeal(comment) {
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int) {
-                deal_delete(id: $id, version: $version)
+              mutation($id: Int!, $version: Int, $comment: String) {
+                deal_delete(id: $id, version: $version, comment: $comment)
               }
             `,
             variables: {
               id: +this.dealId,
               version: this.dealVersion ? +this.dealVersion : null,
+              comment,
             },
           })
           .then((data) => {
             this.$apollo.queries.deal.refetch();
           });
       },
-      setConfidential() {
+      setConfidential(data) {
         this.$apollo
           .mutate({
             mutation: gql`
               mutation(
                 $id: Int!
+                $confidential: Boolean!
                 $version: Int
                 $reason: ConfidentialReason
                 $comment: String
               ) {
                 deal_set_confidential(
                   id: $id
+                  confidential: $confidential
                   version: $version
                   reason: $reason
                   comment: $comment
@@ -423,8 +443,9 @@
             variables: {
               id: +this.dealId,
               version: this.dealVersion ? +this.dealVersion : null,
-              reason: "TEMPORARY_REMOVAL",
-              comment: "ich mag deals nicht",
+              confidential: data.confidential,
+              reason: data.reason,
+              comment: data.comment,
             },
           })
           .then((data) => {
@@ -441,6 +462,11 @@
         }
       },
       updatePageContext(to) {
+        this.active_tab = to.hash;
+        if (!this.active_tab) {
+          this.updateRoute("#locations");
+          return;
+        }
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           breadcrumbs: [

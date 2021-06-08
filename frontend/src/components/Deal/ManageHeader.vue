@@ -120,38 +120,41 @@
                     </router-link>
                   </div>
                   <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
-                    <div v-if="deal.is_public">
+                    <div v-if="deal.is_public" class="visibility">
                       <i class="fas fa-eye fa-fw fa-lg"></i>
-                      {{ $t("Publicly visible") }}
+                      <span>{{ $t("Publicly visible") }}</span>
                     </div>
-                    <div v-else>
+                    <div v-else class="visibility">
                       <i class="fas fa-eye-slash fa-fw fa-lg"></i>
-                      {{ $t("Not publicly visible") }}
+                      <span>{{ $t("Not publicly visible") }}</span>
+                    </div>
+                    <div class="confidential-toggle">
+                      <b-form-checkbox
+                        :checked="deal.confidential"
+                        :class="{ active: deal.confidential }"
+                        class="confidential-switch"
+                        name="check-button"
+                        switch
+                        :title="$t('Toggle deal confidentiality')"
+                        @change="toggle_confidential"
+                      >
+                        <template v-if="deal.confidential">
+                          {{ $t("Confidential") }}
+                        </template>
+                        <template v-else>
+                          {{ $t("Not confidential") }}
+                        </template>
+                      </b-form-checkbox>
+                      <a id="confidential-reason"
+                        ><span v-if="deal.confidential">(reason)</span></a
+                      >
+                      <b-tooltip target="confidential-reason" triggers="click">
+                        <strong>{{ get_confidential_reason }}</strong>
+                        <br />
+                        {{ deal.confidential_comment }}
+                      </b-tooltip>
                     </div>
                     <ul>
-                      <li v-if="!deal.confidential">
-                        <i class="fas fa-check fa-fw"></i> {{ $t("Not confidential") }}
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i>
-                        <b-button
-                          id="confidential"
-                          style="
-                            color: black;
-                            background: inherit;
-                            border: 0;
-                            padding: 0;
-                          "
-                        >
-                          {{ $t("Confidential") }}
-                        </b-button>
-                        <b-tooltip target="confidential" triggers="hover">
-                          <strong>{{ get_confidential_reason(deal) }}</strong>
-                          <br />
-                          {{ deal.confidential_comment }}
-                        </b-tooltip>
-                      </li>
-
                       <li v-if="deal.country">
                         <i class="fas fa-check fa-fw"></i>
                         {{ $t("Target country is set") }}
@@ -244,26 +247,25 @@
     <div class="container edit-buttons">
       <div class="links">
         <router-link
+          v-if="deal_is_editable"
           class="btn btn-primary"
           :to="{
             name: 'deal_edit',
             params: { dealId: deal.id, dealVersion: dealVersion },
           }"
         >
-          Edit
+          {{ $t("Edit") }}
         </router-link>
-        <button class="btn btn-danger btn-sm" @click.prevent="$emit('delete')">
+        <button
+          v-if="deal_is_deletable"
+          class="btn btn-danger btn-sm"
+          @click.prevent="handle_delete"
+        >
           {{ deal.status === 4 ? $t("Undelete") : $t("Delete") }}
         </button>
-        <button
-          class="btn btn-danger btn-sm"
-          @click.prevent="$emit('set_confidential')"
-        >
-          {{ $t("Set confidential") }}
-        </button>
         <router-link
-          v-if="!dealVersion && deal.draft_status"
-          class="ml-4 btn btn-primary btn-sm"
+          v-if="deal_is_active_with_draft"
+          class="btn btn-primary btn-sm"
           :to="{
             name: 'deal_detail',
             params: { dealId: deal.id, dealVersion: last_revision.id },
@@ -272,8 +274,8 @@
           {{ $t("Go to current draft") }}
         </router-link>
         <router-link
-          v-if="dealVersion && [2, 3].includes(deal.status)"
-          class="ml-4 btn btn-primary btn-sm"
+          v-if="deal_is_draft_with_active"
+          class="btn btn-primary btn-sm"
           :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
         >
           {{ $t("Go to live version") }}
@@ -285,6 +287,7 @@
       :transition="transition"
       @cancel_transition="cancel_transition"
       @do_transition="do_transition"
+      @do_set_confidential="do_set_confidential"
     ></TransitionCommentOverlay>
   </div>
 </template>
@@ -293,7 +296,11 @@
   import { linebreaks } from "$utils/filters";
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
-  import { draft_status_map, status_map } from "$utils/choices";
+  import {
+    confidential_reason_choices,
+    draft_status_map,
+    status_map,
+  } from "$utils/choices";
   import TransitionCommentOverlay from "./TransitionCommentOverlay";
 
   export default {
@@ -327,6 +334,27 @@
       last_revision() {
         return this.deal?.versions[0]?.revision ?? "";
       },
+      get_confidential_reason() {
+        return this.$t(confidential_reason_choices[this.deal.confidential_reason]);
+      },
+      deal_is_editable() {
+        // deal ist deleted
+        if (this.deal.status === 4) return false;
+        // active deal with draft
+        if (this.deal_is_active_with_draft) return false;
+        return true;
+      },
+      deal_is_deletable() {
+        // active deal with draft
+        if (this.deal_is_active_with_draft) return false;
+        return true;
+      },
+      deal_is_active_with_draft() {
+        return !this.dealVersion && this.deal.draft_status;
+      },
+      deal_is_draft_with_active() {
+        return this.dealVersion && [2, 3].includes(this.deal.status);
+      },
     },
     methods: {
       get_draft_status(wfi) {
@@ -352,19 +380,12 @@
           return null;
         }
       },
-      get_confidential_reason(deal) {
-        return {
-          TEMPORARY_REMOVAL: this.$t("Temporary removal from PI after criticism"),
-          RESEARCH_IN_PROGRESS: this.$t("Research in progress"),
-          LAND_OBSERVATORY_IMPORT: this.$t("Land Observatory Import"),
-        }[deal.confidential_reason];
-      },
       add_deal_comment() {
         if (this.$refs.comment.checkValidity()) {
           this.$apollo
             .mutate({
               mutation: gql`
-                mutation (
+                mutation(
                   $id: Int!
                   $version: Int
                   $comment: String!
@@ -409,10 +430,55 @@
         this.show_comment_overlay = false;
       },
       do_transition(comment) {
-        this.transition.comment = comment;
-        this.$emit("change_deal_status", this.transition);
+        if (["DELETE", "UNDELETE"].includes(this.transition.transition)) {
+          this.do_delete(comment);
+        } else {
+          // status change
+          this.transition.comment = comment;
+          this.$emit("change_deal_status", this.transition);
+        }
         this.transition = null;
         this.show_comment_overlay = false;
+      },
+      do_set_confidential(data) {
+        this.$emit("set_confidential", {
+          confidential: true,
+          reason: data.reason,
+          comment: data.comment,
+        });
+        this.transition = null;
+        this.show_comment_overlay = false;
+      },
+      toggle_confidential() {
+        if (this.deal.confidential) {
+          // unset confidential
+          this.$emit("set_confidential", {
+            confidential: false,
+            reason: null,
+          });
+        } else {
+          // open overlay and ask for reason
+          this.open_comment_overlay_for(
+            "SET_CONFIDENTIAL",
+            this.$t("Set confidential")
+          );
+        }
+      },
+      handle_delete() {
+        if (!this.dealVersion) {
+          // activated deal, comment required
+          if (this.deal.status === 4) {
+            this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
+          } else {
+            this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
+          }
+        } else {
+          // draft, no comment, just delete
+          this.do_delete();
+        }
+      },
+      do_delete(comment = null) {
+        this.$emit("delete", comment);
       },
     },
   };
@@ -457,7 +523,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: calc(100vw - 12px); // arghh, compensate for scrollbar
+        width: calc(100vw - 15px); // arghh, compensate for scrollbar
 
         .container {
           padding: 0;
@@ -518,6 +584,7 @@
               border-left-color: #93c7c8;
             }
           }
+
           &.deleted {
             background: hsl(0, 33%, 68%);
             color: white;
@@ -620,6 +687,7 @@
 
           span {
             white-space: nowrap;
+            padding-right: 5px;
           }
 
           input {
@@ -631,6 +699,7 @@
           }
 
           .btn {
+            margin-left: 7px;
             background: $lm_investor;
             padding: 0.38em 0.7em;
             font-size: 0.9em;
@@ -651,6 +720,12 @@
       .comments-list {
         margin-top: 1em;
         overflow-y: scroll;
+        margin-right: -0.7rem;
+        height: 100%;
+        box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),
+          inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
+        padding: 2px 4px;
+        margin-left: -4px;
 
         .comment {
           font-size: 0.8em;
@@ -696,13 +771,14 @@
 
         &.btn-primary {
           padding: 0.3em 2.5em;
+          margin-right: 1.5em;
         }
 
         &.btn-danger {
           border-color: red;
           color: red;
           background: white;
-          margin-left: 1.5em;
+          margin-right: 1.5em;
           font-size: 0.8em;
 
           &:hover {
@@ -716,13 +792,48 @@
   }
 
   .visibility-container {
-    div {
-      margin-left: -1.6em;
-      font-weight: bold;
+    .visibility {
+      margin-left: -2.2em;
       font-size: 0.9em;
+      display: flex;
+      align-items: center;
 
       i {
-        font-size: 1.2em;
+        font-size: 1.8em;
+      }
+
+      span {
+        font-size: 1.1em;
+        font-weight: bold;
+        padding-left: 0.5em;
+      }
+    }
+
+    .confidential-toggle {
+      margin-left: -1.5em;
+      margin-bottom: -3px;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      .confidential-switch {
+        padding-left: 2rem;
+        font-size: 0.8em;
+        display: flex;
+        align-items: center;
+      }
+
+      a#confidential-reason {
+        font-size: 0.8em;
+        padding-left: 0.3em;
+        text-decoration: underline;
+
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 
@@ -732,11 +843,11 @@
       padding: 0;
 
       li {
-        margin-left: -1.4em;
+        margin-left: -1.5em;
 
         i {
           font-size: 0.8em;
-          margin-right: 5px;
+          margin-right: 11px;
         }
       }
 
@@ -841,5 +952,12 @@
 
   .comment .message p:last-child {
     margin-bottom: 0;
+  }
+
+  .confidential-switch {
+    label {
+      font-weight: normal;
+      line-height: 1.9em;
+    }
   }
 </style>

@@ -934,7 +934,7 @@ class Deal(models.Model, OldDealMixin):
         max_length=100, choices=CONFIDENTIAL_REASON_CHOICES, null=True, blank=True
     )
     confidential_comment = models.TextField(
-        _("Comment why this deal is private"), blank=True
+        _("Comment why this deal is private"), blank=True, null=True
     )
 
     # Meta info

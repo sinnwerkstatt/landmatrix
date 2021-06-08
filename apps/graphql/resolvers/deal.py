@@ -318,7 +318,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     return {"dealId": id, "dealVersion": rev.id}
 
 
-def resolve_deal_delete(_, info, id, version=None) -> bool:
+def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
     # TODO make sure user is allowed to edit this deal.
     user = info.context["request"].user
     if not user.is_authenticated:
@@ -338,11 +338,26 @@ def resolve_deal_delete(_, info, id, version=None) -> bool:
             else Deal.STATUS_DELETED
         )
         deal.save()
+        DealWorkflowInfo.objects.create(
+            deal=deal,
+            from_user=user,
+            draft_status_before=(
+                None
+                if deal.status == Deal.STATUS_DELETED
+                else Deal.DRAFT_STATUS_TO_DELETE
+            ),
+            draft_status_after=(
+                Deal.DRAFT_STATUS_TO_DELETE
+                if deal.status == Deal.STATUS_DELETED
+                else None
+            ),
+            comment=comment,
+        )
     return True
 
 
 def resolve_set_confidential(
-    _, info, id, version=None, reason=None, comment=None
+    _, info, id, confidential, version=None, reason=None, comment=None
 ) -> bool:
     # TODO make sure user is allowed to edit this deal.
     user = info.context["request"].user
@@ -353,7 +368,7 @@ def resolve_set_confidential(
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
         tmpdeal = deal_version.retrieve_object()
-        tmpdeal.confidential = True
+        tmpdeal.confidential = confidential
         tmpdeal.confidential_reason = reason
         tmpdeal.confidential_comment = comment
         deal_version.update_from_obj(tmpdeal)
@@ -361,7 +376,7 @@ def resolve_set_confidential(
 
     else:
         deal = Deal.objects.get(id=id)
-        deal.confidential = True
+        deal.confidential = confidential
         deal.confidential_reason = reason
         deal.confidential_comment = comment
         deal.save()
