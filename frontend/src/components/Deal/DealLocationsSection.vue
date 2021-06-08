@@ -8,7 +8,7 @@
     :active="active"
     :label-classes="['display-field-label', 'col-md-6']"
     :value-classes="['display-field-value', 'col-md-6']"
-    @activated="$emit('activated')"
+    @activated="activateTab"
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">
       <BigMap
@@ -55,6 +55,7 @@
     },
     data() {
       return {
+        bigmap: null,
         geojson_options: {
           style: (feature) => {
             return {
@@ -92,12 +93,13 @@
         },
       };
     },
-    updated() {
-      // TODO! this does not work yet :(
-      // this.mapIsReady();
-    },
     methods: {
+      activateTab() {
+        this.$emit("activated");
+        this.$nextTick(() => this.bigmap.invalidateSize());
+      },
       mapIsReady(map) {
+        this.bigmap = map;
         let lay = new GeoJSON(this.deal.geojson, this.geojson_options);
         let mybounds = lay.getBounds();
         let ne = mybounds.getNorthEast();

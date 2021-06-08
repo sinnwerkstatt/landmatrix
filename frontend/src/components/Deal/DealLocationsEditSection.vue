@@ -162,7 +162,7 @@
           value.eachLayer((l) => {
             // noinspection JSUnresolvedVariable
             let relevant_element = l?._icon || l._renderer._container;
-            if (actLoc && key !== this.hoverLocID)
+            if (actLoc && key !== actLoc.id)
               relevant_element.classList.add("leaflet-hidden");
             else relevant_element.classList.remove("leaflet-hidden");
           });
@@ -332,6 +332,7 @@
 
           this.features_changed();
         });
+        if (this.locs.length === 1) this.actLoc = this.locs[0];
       },
       uploadFiles(event) {
         for (let file of event.target.files) {

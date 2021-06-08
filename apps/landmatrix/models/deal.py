@@ -2,6 +2,7 @@ import json
 from typing import Optional
 
 from django.conf import settings
+from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -17,7 +18,7 @@ from apps.landmatrix.models.fields import (
 )
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.mixins import OldDealMixin, FromDictMixin
+from apps.landmatrix.models.mixins import OldDealMixin
 from apps.landmatrix.models.versions import Version, register_version, Revision
 
 
@@ -80,7 +81,7 @@ class DealVersion(Version):
 
 
 @register_version(DealVersion)
-class Deal(models.Model, FromDictMixin, OldDealMixin):
+class Deal(models.Model, OldDealMixin):
     """ Deal """
 
     """ Locations """
@@ -1095,6 +1096,40 @@ class Deal(models.Model, FromDictMixin, OldDealMixin):
         rev = Revision.objects.create(date_created=date_created, user=user, comment="")
         Version.create_from_obj(self, revision_id=rev.id)
         return rev
+
+    def update_from_dict(self, d: dict):
+        for key, value in d.items():
+            if key in [
+                "id",
+                "created_at",
+                "modified_at",
+                "fully_updated",
+                "fully_updated_at",
+                "is_public",
+                "has_known_investor",
+                "versions",
+                "comments",
+                "status",
+                "draft_status",
+                "__typename",
+            ]:
+                continue  # ignore these fields
+            elif key in [
+                x.name
+                for x in self._meta.fields
+                if x.__class__.__name__ == "ForeignKey"
+            ]:
+                self.__setattr__(f"{key}_id", value["id"] if value else None)
+            elif key == "point":
+                self.point = Point(value["lng"], value["lat"])
+            elif key in ["locations", "datasources", "contracts"]:
+                # TODO: Throw out "empty" locations, datasources, contracts.. maybe
+                # if value:
+                #     if [list(x.keys()) == ['id'] for x in value]:
+                #         continue
+                self.__setattr__(key, value)
+            else:
+                self.__setattr__(key, value)
 
     def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)

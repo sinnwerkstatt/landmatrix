@@ -6,6 +6,8 @@
       :deal-version="dealVersion"
       @change_deal_status="change_deal_status"
       @reload_deal="reload_deal"
+      @delete="deleteDeal"
+      @set_confidential="setConfidential"
     />
     <div v-else class="container deal-detail">
       <div class="row">
@@ -28,7 +30,6 @@
       </div>
     </div>
     <div class="container deal-detail">
-      <p v-if="not_public" class="alert alert-danger mb-4">{{ not_public }}</p>
       <!--    <div class="quicknav">-->
       <!--      <div v-for="(version, i) in deal.versions">-->
       <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
@@ -97,7 +98,9 @@
               class="col-md-12 col-lg-10 col-xl-9"
               :class="{ loading_wrapper: $apollo.queries.investor.loading }"
             >
-              <template v-if="investor.involvements.length">
+              <div
+                v-if="investor && investor.involvements && investor.involvements.length"
+              >
                 <h3 class="mb-2">
                   Network of parent companies and tertiary investors/lenders
                 </h3>
@@ -108,7 +111,7 @@
                   :controls="false"
                   :init-depth="4"
                 />
-              </template>
+              </div>
               <div v-else class="loader"></div>
             </div>
           </div>
@@ -279,26 +282,18 @@
             subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
           };
         },
-        update(data) {
-          if (!data.deal && !this.$store.getters.userAuthenticated)
+        update({ deal }) {
+          if (!deal && !this.$store.getters.userAuthenticated)
             this.$router.push({ name: "login", query: { next: this.$route.fullPath } });
-
-          // if (
-          //   this.manage &&
-          //   !this.dealVersion &&
-          //   data.deal.status !== 1 &&
-          //   data.deal.draft_status
-          // ) {
-          //   this.$router.push({
-          //     name: "deal_detail",
-          //     params: {
-          //       dealId: this.dealId,
-          //       dealVersion: data.deal.versions[0].revision.id,
-          //     },
-          //   });
-          // }
-
-          return data.deal;
+          if (deal.status === 1 && !this.dealVersion)
+            this.$router.push({
+              name: "deal_detail",
+              params: {
+                dealId: this.dealId,
+                dealVersion: deal.versions[0].revision.id,
+              },
+            });
+          return deal;
         },
       },
       investor: {
@@ -337,21 +332,6 @@
     computed: {
       active_tab() {
         return location.hash ? location.hash : "#locations";
-      },
-      not_public() {
-        if (this.deal) {
-          if (this.deal.status === 1 || this.deal.status === 6)
-            return this.$t("This deal version is pending.");
-          if (this.deal.status === 4)
-            return this.$t(
-              "This deal has been deleted. It is not visible for public users."
-            );
-          if (this.deal.status === 5)
-            return this.$t(
-              "This deal version has been rejected. It is not visible for public users."
-            );
-        }
-        return null;
       },
       manage() {
         return (
@@ -394,7 +374,6 @@
             },
           })
           .then(({ data: { change_deal_status } }) => {
-            console.log({ change_deal_status });
             this.$apollo.queries.deal.refetch().then(() => {
               if (transition === "ACTIVATE") {
                 this.$router.push({
@@ -405,6 +384,52 @@
             });
           })
           .catch((error) => console.error(error));
+      },
+      deleteDeal() {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation($id: Int!, $version: Int!) {
+                deal_delete(id: $id, version: $version)
+              }
+            `,
+            variables: {
+              id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
+            },
+          })
+          .then((data) => {
+            this.$apollo.queries.deal.refetch();
+          });
+      },
+      setConfidential() {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation(
+                $id: Int!
+                $version: Int
+                $reason: ConfidentialReason
+                $comment: String
+              ) {
+                deal_set_confidential(
+                  id: $id
+                  version: $version
+                  reason: $reason
+                  comment: $comment
+                )
+              }
+            `,
+            variables: {
+              id: +this.dealId,
+              version: this.dealVersion ? +this.dealVersion : null,
+              reason: "TEMPORARY_REMOVAL",
+              comment: "ich mag deals nicht",
+            },
+          })
+          .then((data) => {
+            this.$apollo.queries.deal.refetch();
+          });
       },
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);

@@ -20,9 +20,7 @@
         <td></td>
       </tr>
       <tr>
-        <th class="label">
-          Deals with with multiple data sources
-        </th>
+        <th class="label">Deals with with multiple data sources</th>
         <td>{{ goal_statistics.deals_public_multi_ds_count }}</td>
         <td>
           {{
@@ -54,9 +52,7 @@
         <td></td>
       </tr>
       <tr>
-        <th class="label">
-          Deals with polygon data
-        </th>
+        <th class="label">Deals with polygon data</th>
         <td>{{ goal_statistics.deals_public_polygons }}</td>
         <td>
           {{
@@ -82,7 +78,9 @@
 <script>
   export default {
     name: "GoalsTable",
-    props: ["goal_statistics"],
+    props: {
+      goalStatistics: { type: Object, required: true },
+    },
     methods: {
       percentRatio(partialValue, totalValue) {
         if (totalValue) {

@@ -21,21 +21,6 @@ from apps.utils import qs_values_to_dict
 User = get_user_model()
 
 
-# def map_raw_sql():
-#     sql = """
-#     select json_build_object(
-#     'id',ld.id,
-#     'deal_size',ld.deal_size,
-#     'country',(SELECT json_build_object('id',c.id,'name',c.name) from landmatrix_country c where c.id=ld.country_id),
-#     'locations',(
-#         SELECT json_agg(locs)
-#         from landmatrix_location locs where locs.deal_id=ld.id
-#         )
-#     ) from landmatrix_deal ld
-#     where ld.id=6869;
-#     """
-
-
 def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
@@ -303,11 +288,81 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         rev = deal.save_revision(date_created=timezone.now(), user=user)
         Deal.objects.filter(id=id).update(draft_status=Deal.DRAFT_STATUS_DRAFT)
+
     # we update the existing version.
     else:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
         deal_version.update_from_obj(deal)
-        deal_version.save()
+        if deal.draft_status in [
+            Deal.DRAFT_STATUS_REVIEW,
+            Deal.DRAFT_STATUS_ACTIVATION,
+        ]:
+            oldstatus = deal.draft_status
+            rev = Revision.objects.create(
+                date_created=timezone.now(), user=user, comment=""
+            )
+            tmp_deal = deal_version.retrieve_object()
+            tmp_deal.draft_status = Deal.DRAFT_STATUS_DRAFT
+            dv = Version.create_from_obj(tmp_deal, revision_id=rev.id)
+            DealWorkflowInfo.objects.create(
+                deal=deal,
+                deal_version=dv,
+                from_user=user,
+                draft_status_before=oldstatus,
+                draft_status_after=Deal.DRAFT_STATUS_DRAFT,
+            )
+        else:
+            deal_version.save()
 
     return {"dealId": id, "dealVersion": rev.id}
+
+
+def resolve_deal_delete(_, info, id, version=None) -> bool:
+    # TODO make sure user is allowed to edit this deal.
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
+    # if it's just a draft,
+    if version:
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        ...
+        # TODO
+    else:
+        deal = Deal.objects.get(id=id)
+        deal.status = (
+            Deal.STATUS_UPDATED
+            if deal.status == Deal.STATUS_DELETED
+            else Deal.STATUS_DELETED
+        )
+        deal.save()
+    return True
+
+
+def resolve_set_confidential(
+    _, info, id, version=None, reason=None, comment=None
+) -> bool:
+    # TODO make sure user is allowed to edit this deal.
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
+    if version:
+        rev = Revision.objects.get(id=version)
+        deal_version = DealVersion.objects.get(revision=rev)
+        tmpdeal = deal_version.retrieve_object()
+        tmpdeal.confidential = True
+        tmpdeal.confidential_reason = reason
+        tmpdeal.confidential_comment = comment
+        deal_version.update_from_obj(tmpdeal)
+        deal_version.save()
+
+    else:
+        deal = Deal.objects.get(id=id)
+        deal.confidential = True
+        deal.confidential_reason = reason
+        deal.confidential_comment = comment
+        deal.save()
+    return True

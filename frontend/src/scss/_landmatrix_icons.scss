@@ -11,6 +11,7 @@
 [class^="lm-"],
 [class*=" lm-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
+  //noinspection CssNoGenericFontName
   font-family: "landmatrix" !important;
   speak: none;
   font-style: normal;
