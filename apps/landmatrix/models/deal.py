@@ -1326,7 +1326,7 @@ class DealWorkflowInfo(models.Model):
         choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
     )
     timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True)
+    comment = models.TextField(blank=True, null=True)
     processed_by_receiver = models.BooleanField(default=False)
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.

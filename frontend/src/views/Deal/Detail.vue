@@ -363,18 +363,23 @@
       }),
     },
     methods: {
-      change_deal_status(transition) {
-        if (transition === "TO_DRAFT") {
-          console.warn("need to show a modal here with comment box");
-        }
+      change_deal_status(transition_info) {
+        let transition = transition_info.transition;
+        let comment = "comment" in transition_info ? transition_info.comment : null;
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int!, $transition: WorkflowTransition) {
+              mutation(
+                $id: Int!
+                $version: Int!
+                $transition: WorkflowTransition
+                $comment: String
+              ) {
                 change_deal_status(
                   id: $id
                   version: $version
                   transition: $transition
+                  comment: $comment
                 ) {
                   dealId
                   dealVersion
@@ -385,6 +390,7 @@
               id: +this.dealId,
               version: this.dealVersion ? +this.dealVersion : null,
               transition,
+              comment,
             },
           })
           .then(({ data: { change_deal_status } }) => {

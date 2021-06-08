@@ -224,7 +224,7 @@ def resolve_add_deal_comment(
 
 
 def resolve_change_deal_status(
-    _, info, id: int, version: int, transition: str = ""
+    _, info, id: int, version: int, transition: str = "", comment: str = None
 ) -> dict:
     user = info.context["request"].user
     if not user.is_authenticated:
@@ -269,7 +269,7 @@ def resolve_change_deal_status(
         # to_user
         draft_status_before=old_draft_status,
         draft_status_after=draft_status,
-        # comment
+        comment=comment,
     )
     return {"dealId": deal.id, "dealVersion": rev.id}
 

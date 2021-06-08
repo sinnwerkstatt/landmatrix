@@ -44,14 +44,16 @@
                   <a
                     v-if="deal.draft_status === 1"
                     class="btn btn-secondary"
-                    @click="$emit('change_deal_status', 'TO_REVIEW')"
+                    @click="$emit('change_deal_status', { transition: 'TO_REVIEW' })"
                   >
                     {{ $t("Submit for review") }}
                   </a>
                   <a
                     v-if="deal.draft_status === 2 || deal.draft_status === 3"
                     class="btn btn-primary"
-                    @click="$emit('change_deal_status', 'TO_DRAFT')"
+                    @click="
+                      open_comment_overlay_for('TO_DRAFT', $t('Request improvement'))
+                    "
                   >
                     {{ $t("Request improvement") }}
                   </a>
@@ -60,7 +62,9 @@
                   <a
                     v-if="deal.draft_status === 2"
                     class="btn btn-secondary"
-                    @click="$emit('change_deal_status', 'TO_ACTIVATION')"
+                    @click="
+                      $emit('change_deal_status', { transition: 'TO_ACTIVATION' })
+                    "
                   >
                     {{ $t("Submit for activation") }}
                   </a>
@@ -69,7 +73,7 @@
                   <a
                     v-if="deal.draft_status === 3"
                     class="btn btn-secondary"
-                    @click="$emit('change_deal_status', 'ACTIVATE')"
+                    @click="$emit('change_deal_status', { transition: 'ACTIVATE' })"
                   >
                     {{ $t("Activate") }}
                   </a>
@@ -174,7 +178,12 @@
         <div class="new-comment">
           <form action="." method="post">
             <div>
-              <textarea v-model="comment" rows="2" required="required"></textarea>
+              <textarea
+                ref="comment"
+                v-model="comment"
+                rows="2"
+                required="required"
+              ></textarea>
             </div>
             <div class="send">
               <span>{{ $t("Send to:") }}</span>
@@ -234,6 +243,12 @@
         <a href="" class="btn btn-danger btn-sm">Delete</a>
       </div>
     </div>
+    <TransitionCommentOverlay
+      :show="show_comment_overlay"
+      :transition="transition"
+      @cancel_transition="cancel_transition"
+      @do_transition="do_transition"
+    ></TransitionCommentOverlay>
   </div>
 </template>
 
@@ -242,10 +257,11 @@
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
   import { draft_status_map, status_map } from "$utils/choices";
+  import TransitionCommentOverlay from "./TransitionCommentOverlay";
 
   export default {
     name: "ManageHeader",
-    components: { HeaderDates },
+    components: { HeaderDates, TransitionCommentOverlay },
     props: {
       deal: { type: Object, required: true },
       dealVersion: { type: [Number, String], default: null },
@@ -255,6 +271,8 @@
         users: [],
         comment: "",
         send_to_user: null,
+        show_comment_overlay: false,
+        transition: null,
         linebreaks,
       };
     },
@@ -305,7 +323,7 @@
         }[deal.confidential_reason];
       },
       add_deal_comment() {
-        if (this.comment) {
+        if (this.$refs.comment.checkValidity()) {
           this.$apollo
             .mutate({
               mutation: gql`
@@ -338,7 +356,26 @@
               this.comment = "";
             })
             .catch((error) => console.error(error));
+        } else {
+          this.$refs.comment.reportValidity();
         }
+      },
+      open_comment_overlay_for(transition, title) {
+        this.transition = {
+          transition,
+          title,
+        };
+        this.show_comment_overlay = true;
+      },
+      cancel_transition() {
+        this.transition = null;
+        this.show_comment_overlay = false;
+      },
+      do_transition(comment) {
+        this.transition.comment = comment;
+        this.$emit("change_deal_status", this.transition);
+        this.transition = null;
+        this.show_comment_overlay = false;
       },
     },
   };
@@ -522,6 +559,7 @@
         font-size: 0.9em;
 
         textarea {
+          padding: 0.2em 0.5em;
           width: 100%;
           border: 1px solid lightgrey;
           border-radius: 5px;
@@ -730,6 +768,7 @@
     .multiselect {
       min-width: auto;
     }
+
     .multiselect__tags {
       padding-top: 4px;
       padding-left: 2px;
@@ -747,15 +786,18 @@
     .multiselect__single {
       margin-bottom: 0 !important;
     }
+
     .multiselect__placeholder {
       padding-top: 0;
       padding-left: 5px;
     }
+
     .multiselect__input {
       font-size: 1em;
       margin-bottom: 2px;
     }
   }
+
   .comment .message p:last-child {
     margin-bottom: 0;
   }

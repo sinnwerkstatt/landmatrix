@@ -1,0 +1,103 @@
+<template>
+  <div v-if="show" class="overlay-bg" @click.self="$emit('cancel_transition')">
+    <div class="overlay">
+      <h3>{{ transition.title }}</h3>
+      <p>{{ $t("Please provide a comment giving a reason for your request") }}</p>
+      <textarea ref="comment" v-model="comment" required="required"></textarea>
+      <div class="actions">
+        <a class="btn btn-primary" @click.prevent.stop="submit_comment">{{
+          transition.title
+        }}</a>
+        <a class="btn btn-secondary" @click.prevent.stop="$emit('cancel_transition')">{{
+          $t("Cancel")
+        }}</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import { linebreaks } from "$utils/filters";
+
+  export default {
+    name: "RequiredMessageOverlay",
+    props: {
+      show: { type: Boolean, default: false },
+      transition: null,
+    },
+    data() {
+      return {
+        comment: "",
+        send_to_user: null,
+        linebreaks,
+      };
+    },
+    methods: {
+      submit_comment() {
+        if (this.$refs.comment.checkValidity()) {
+          this.$emit("do_transition", this.comment);
+          this.comment = "";
+        } else {
+          this.$refs.comment.reportValidity();
+        }
+      },
+    },
+  };
+</script>
+
+<style lang="scss" scoped>
+  @import "../../scss/colors";
+  @import "node_modules/bootstrap/scss/functions";
+  @import "node_modules/bootstrap/scss/variables";
+  @import "node_modules/bootstrap/scss/mixins/_breakpoints";
+
+  .overlay-bg {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+    background-color: rgba(black, 0.3);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .overlay {
+    width: 70vw;
+    max-width: 800px;
+    min-width: 300px;
+
+    @include media-breakpoint-down(sm) {
+      width: 85vw;
+    }
+
+    padding: 0.8em 1.8em 1.8em;
+    box-shadow: 0 0 15px rgba(black, 0.5);
+    color: $lm_dark;
+    border-color: $lm_orange;
+    background-color: $lm_light;
+
+    textarea {
+      width: 100%;
+      border: 1px solid $lm_grey;
+      border-radius: 5px;
+      padding: 0.2em 0.5em;
+
+      &:focus {
+        border: 1px solid $lm_grey;
+        outline: none;
+      }
+    }
+
+    .actions {
+      margin-top: 1em;
+      text-align: right;
+
+      .btn {
+        margin-left: 0.5em;
+      }
+    }
+  }
+</style>
