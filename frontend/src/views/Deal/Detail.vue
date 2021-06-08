@@ -266,15 +266,13 @@
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         vm.updatePageContext(to);
-        vm.active_tab = to.hash;
-        if (!vm.active_tab) {
-          vm.updateRoute("#locations");
+        if (!to.hash) {
+          vm.active_tab = "#locations";
         }
       });
     },
     beforeRouteUpdate(to, from, next) {
       this.updatePageContext(to);
-      this.active_tab = to.hash;
       next();
     },
     props: {
@@ -360,9 +358,6 @@
       ...mapState({
         formFields: (state) => state.formfields,
       }),
-    },
-    mounted() {
-      this.updateRoute(this.active_tab);
     },
     methods: {
       change_deal_status(transition_info) {
@@ -467,6 +462,7 @@
         }
       },
       updatePageContext(to) {
+        this.active_tab = to.hash;
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           breadcrumbs: [
