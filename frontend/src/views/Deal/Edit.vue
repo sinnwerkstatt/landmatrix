@@ -163,7 +163,9 @@
             >&nbsp;
             {{ $t("Save") }}
           </button>
-          {{ dealId ? $t("Saves your edits") : $t("Saves the deal as draft") }}
+          <span>{{
+            dealId ? $t("Saves your edits") : $t("Saves the deal as draft")
+          }}</span>
           <router-link
             v-if="dealId"
             class="btn btn-gray btn-sm mx-2"

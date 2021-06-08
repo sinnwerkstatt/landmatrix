@@ -266,10 +266,15 @@
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         vm.updatePageContext(to);
+        vm.active_tab = to.hash;
+        if (!vm.active_tab) {
+          vm.updateRoute("#locations");
+        }
       });
     },
     beforeRouteUpdate(to, from, next) {
       this.updatePageContext(to);
+      this.active_tab = to.hash;
       next();
     },
     props: {
@@ -462,11 +467,6 @@
         }
       },
       updatePageContext(to) {
-        this.active_tab = to.hash;
-        if (!this.active_tab) {
-          this.updateRoute("#locations");
-          return;
-        }
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           breadcrumbs: [
