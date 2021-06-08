@@ -389,7 +389,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int!) {
+              mutation($id: Int!, $version: Int) {
                 deal_delete(id: $id, version: $version)
               }
             `,

@@ -239,21 +239,6 @@
     created() {
       if (!this.dealId) {
         this.deal = { country: null, locations: [], contracts: [], datasources: [] };
-        // TODO: deleteme, just for development
-        this.deal = {
-          country: {
-            id: 800,
-            name: "Uganda",
-            code_alpha2: "UG",
-            point_lat_min: -1.469921875,
-            point_lat_max: 4.22021484375,
-            point_lon_min: 29.5619140625,
-            point_lon_max: 34.9782226563,
-          },
-          locations: [],
-          contracts: [],
-          datasources: [],
-        };
       }
     },
     methods: {
@@ -265,7 +250,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!, $version: Int, $payload: Payload) {
+              mutation($id: Int!, $version: Int, $payload: Payload) {
                 deal_edit(id: $id, version: $version, payload: $payload) {
                   dealId
                   dealVersion
