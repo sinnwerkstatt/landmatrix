@@ -349,6 +349,11 @@
         },
       },
     },
+    watch: {
+      deal() {
+        this.$apollo.queries.deal.refetch();
+      },
+    },
     computed: {
       manage() {
         return (
@@ -366,7 +371,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation (
+              mutation(
                 $id: Int!
                 $version: Int!
                 $transition: WorkflowTransition
@@ -406,7 +411,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!, $version: Int, $comment: String) {
+              mutation($id: Int!, $version: Int, $comment: String) {
                 deal_delete(id: $id, version: $version, comment: $comment)
               }
             `,
@@ -432,7 +437,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation (
+              mutation(
                 $id: Int!
                 $confidential: Boolean!
                 $version: Int
@@ -470,7 +475,10 @@
         }
       },
       updatePageContext(to) {
-        this.active_tab = to.hash;
+        if (to.hash) {
+          // only update if hash is present (otherwise #locations are active by default)
+          this.active_tab = to.hash;
+        }
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
           breadcrumbs: [

@@ -253,7 +253,7 @@
         <router-link
           v-if="deal_is_editable"
           class="btn btn-primary"
-          :class="{ disabled: last_revision.id !== +dealVersion }"
+          :class="{ disabled: deal_is_old_draft }"
           :to="{
             name: 'deal_edit',
             params: { dealId: deal.id, dealVersion: dealVersion },
@@ -269,7 +269,7 @@
           {{ deal.status === 4 ? $t("Undelete") : $t("Delete") }}
         </button>
         <router-link
-          v-if="deal_is_active_with_draft || last_revision.id !== +dealVersion"
+          v-if="deal_is_active_with_draft || deal_is_old_draft"
           class="btn btn-primary btn-sm"
           :to="{
             name: 'deal_detail',
@@ -345,13 +345,12 @@
       deal_is_editable() {
         // deal ist deleted
         if (this.deal.status === 4) return false;
-        // active deal with draft
         if (this.deal_is_active_with_draft) return false;
         return true;
       },
       deal_is_deletable() {
-        // active deal with draft
         if (this.deal_is_active_with_draft) return false;
+        if (this.deal_is_old_draft) return false;
         return true;
       },
       deal_is_active_with_draft() {
@@ -359,6 +358,9 @@
       },
       deal_is_draft_with_active() {
         return this.dealVersion && [2, 3].includes(this.deal.status);
+      },
+      deal_is_old_draft() {
+        return this.dealVersion && this.last_revision.id !== +this.dealVersion;
       },
     },
     methods: {
@@ -390,7 +392,7 @@
           this.$apollo
             .mutate({
               mutation: gql`
-                mutation (
+                mutation(
                   $id: Int!
                   $version: Int
                   $comment: String!

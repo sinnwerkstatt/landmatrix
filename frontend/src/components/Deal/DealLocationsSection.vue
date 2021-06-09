@@ -56,6 +56,7 @@
     data() {
       return {
         bigmap: null,
+        layer: null,
         geojson_options: {
           style: (feature) => {
             return {
@@ -93,15 +94,22 @@
         },
       };
     },
+    watch: {
+      deal() {
+        this.refreshMap();
+      },
+    },
     methods: {
       activateTab() {
         this.$emit("activated");
         this.$nextTick(() => this.bigmap.invalidateSize());
       },
-      mapIsReady(map) {
-        this.bigmap = map;
-        let lay = new GeoJSON(this.deal.geojson, this.geojson_options);
-        let mybounds = lay.getBounds();
+      refreshMap() {
+        if (this.layer) {
+          this.bigmap.removeLayer(this.layer);
+        }
+        this.layer = new GeoJSON(this.deal.geojson, this.geojson_options);
+        let mybounds = this.layer.getBounds();
         let ne = mybounds.getNorthEast();
         let sw = mybounds.getSouthWest();
         if (ne && sw) {
@@ -110,11 +118,15 @@
             ne.lng += 10;
             sw.lat -= 10;
             sw.lng -= 10;
-            map.fitBounds(new LatLngBounds(ne, sw));
+            this.bigmap.fitBounds(new LatLngBounds(ne, sw));
           }
-          map.fitBounds(mybounds.pad(1.2));
+          this.bigmap.fitBounds(mybounds.pad(1.2));
         }
-        map.addLayer(lay);
+        this.bigmap.addLayer(this.layer);
+      },
+      mapIsReady(map) {
+        this.bigmap = map;
+        this.refreshMap();
       },
     },
   };
