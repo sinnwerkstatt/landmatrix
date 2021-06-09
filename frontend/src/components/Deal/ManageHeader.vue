@@ -55,6 +55,7 @@
                   <a
                     v-if="deal.draft_status === 1"
                     class="btn btn-secondary"
+                    :class="{ disabled: last_revision.id !== +dealVersion }"
                     @click="$emit('change_deal_status', { transition: 'TO_REVIEW' })"
                   >
                     {{ $t("Submit for review") }}
@@ -62,6 +63,7 @@
                   <a
                     v-if="deal.draft_status === 2 || deal.draft_status === 3"
                     class="btn btn-primary"
+                    :class="{ disabled: last_revision.id !== +dealVersion }"
                     @click="
                       open_comment_overlay_for('TO_DRAFT', $t('Request improvement'))
                     "
@@ -73,6 +75,7 @@
                   <a
                     v-if="deal.draft_status === 2"
                     class="btn btn-secondary"
+                    :class="{ disabled: last_revision.id !== +dealVersion }"
                     @click="
                       $emit('change_deal_status', { transition: 'TO_ACTIVATION' })
                     "
@@ -84,6 +87,7 @@
                   <a
                     v-if="deal.draft_status === 3"
                     class="btn btn-secondary"
+                    :class="{ disabled: last_revision.id !== +dealVersion }"
                     @click="$emit('change_deal_status', { transition: 'ACTIVATE' })"
                   >
                     {{ $t("Activate") }}
@@ -249,6 +253,7 @@
         <router-link
           v-if="deal_is_editable"
           class="btn btn-primary"
+          :class="{ disabled: last_revision.id !== +dealVersion }"
           :to="{
             name: 'deal_edit',
             params: { dealId: deal.id, dealVersion: dealVersion },
@@ -264,7 +269,7 @@
           {{ deal.status === 4 ? $t("Undelete") : $t("Delete") }}
         </button>
         <router-link
-          v-if="deal_is_active_with_draft"
+          v-if="deal_is_active_with_draft || last_revision.id !== +dealVersion"
           class="btn btn-primary btn-sm"
           :to="{
             name: 'deal_detail',
@@ -385,7 +390,7 @@
           this.$apollo
             .mutate({
               mutation: gql`
-                mutation(
+                mutation (
                   $id: Int!
                   $version: Int
                   $comment: String!
@@ -465,16 +470,10 @@
         }
       },
       handle_delete() {
-        if (!this.dealVersion) {
-          // activated deal, comment required
-          if (this.deal.status === 4) {
-            this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
-          } else {
-            this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
-          }
+        if (!this.dealVersion && this.deal.status === 4) {
+          this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
         } else {
-          // draft, no comment, just delete
-          this.do_delete();
+          this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
         }
       },
       do_delete(comment = null) {

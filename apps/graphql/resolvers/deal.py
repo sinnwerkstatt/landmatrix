@@ -234,10 +234,13 @@ def resolve_change_deal_status(
         deal_v_obj.save()
         deal_version.update_from_obj(deal_v_obj)
         deal_version.save()
-
+    elif transition == "TO_DRAFT":
+        draft_status = Deal.DRAFT_STATUS_DRAFT
+        deal_v_obj.draft_status = draft_status
+        rev = deal_v_obj.save_revision(date_created=timezone.now(), user=user)
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
     else:
         draft_status = {
-            "TO_DRAFT": Deal.DRAFT_STATUS_DRAFT,
             "TO_REVIEW": Deal.DRAFT_STATUS_REVIEW,
             "TO_ACTIVATION": Deal.DRAFT_STATUS_ACTIVATION,
         }[transition]

@@ -366,7 +366,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation(
+              mutation (
                 $id: Int!
                 $version: Int!
                 $transition: WorkflowTransition
@@ -406,7 +406,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int, $comment: String) {
+              mutation ($id: Int!, $version: Int, $comment: String) {
                 deal_delete(id: $id, version: $version, comment: $comment)
               }
             `,
@@ -416,7 +416,15 @@
               comment,
             },
           })
-          .then((data) => {
+          .then(() => {
+            if (this.dealVersion) {
+              this.$router
+                .push({
+                  name: "deal_detail",
+                  params: { dealId: this.dealId.toString() },
+                })
+                .then(this.$apollo.queries.deal.refetch);
+            }
             this.$apollo.queries.deal.refetch();
           });
       },
@@ -424,7 +432,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation(
+              mutation (
                 $id: Int!
                 $confidential: Boolean!
                 $version: Int
@@ -448,7 +456,7 @@
               comment: data.comment,
             },
           })
-          .then((data) => {
+          .then(() => {
             this.$apollo.queries.deal.refetch();
           });
       },
