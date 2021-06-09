@@ -345,13 +345,12 @@
       deal_is_editable() {
         // deal ist deleted
         if (this.deal.status === 4) return false;
-        // active deal with draft
         if (this.deal_is_active_with_draft) return false;
         return true;
       },
       deal_is_deletable() {
-        // active deal with draft
         if (this.deal_is_active_with_draft) return false;
+        if (this.deal_is_old_draft) return false;
         return true;
       },
       deal_is_active_with_draft() {

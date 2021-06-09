@@ -2,21 +2,27 @@
   <div class="container">
     <div class="locationlist">
       <div v-for="(loc, index) in locs" :key="index" class="panel-body">
-        <h3
-          :class="{ highlighted: hoverLocID === loc.id }"
-          @click="actLoc = actLoc !== loc ? loc : null"
-          @mouseover="hoverLocID = loc.id"
-          @mouseout="hoverLocID = null"
-        >
-          {{ $t("Location") }} <small>#{{ loc.id }}</small>
-          <button
-            type="button"
-            class="btn btn-primary ml-2"
-            @click="removeLocation(index)"
+        <div class="location-header">
+          <i
+            class="expand-toggle fas fa-chevron-down"
+            :class="{
+              'fa-chevron-down': actLoc === loc,
+              'fa-chevron-up': actLoc !== loc,
+            }"
+            @click="actLoc = actLoc !== loc ? loc : null"
+          ></i>
+          <h3
+            :class="{ highlighted: hoverLocID === loc.id }"
+            @click="actLoc = actLoc !== loc ? loc : null"
+            @mouseover="hoverLocID = loc.id"
+            @mouseout="hoverLocID = null"
           >
-            <i class="fa fa-minus"></i>
-          </button>
-        </h3>
+            {{ $t("Location") }} <small>#{{ loc.id }}</small>
+          </h3>
+          <a class="trashbin" @click="removeLocation(index)">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
         <div v-if="actLoc === loc">
           <EditField
             v-model="loc.level_of_accuracy"
@@ -402,6 +408,29 @@
 
   .mapview {
     grid-column: span 8;
+  }
+
+  .location-header {
+    display: flex;
+    align-items: center;
+    h3 {
+      margin: 0;
+    }
+    margin-bottom: 1em;
+
+    .expand-toggle {
+      margin-right: 0.5em;
+    }
+  }
+
+  .trashbin {
+    margin-left: 2em;
+    color: $lm_orange;
+    &:hover {
+      cursor: pointer;
+      color: lighten($lm_orange, 10%);
+      text-decoration: none;
+    }
   }
 </style>
 
