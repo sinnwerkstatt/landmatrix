@@ -1,6 +1,7 @@
 from unittest import mock
 
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.db import transaction
 from django.test import TestCase, override_settings
 from django.utils.datastructures import MultiValueDict
@@ -8,6 +9,8 @@ from django.utils.datastructures import MultiValueDict
 from apps.grid.templatetags.custom_tags import get_user_role
 from apps.landmatrix.models.investor import InvestorBase
 from tests.mixins import MockRequestMixin
+
+User = get_user_model()
 
 
 class PermissionsTestCaseMixin:

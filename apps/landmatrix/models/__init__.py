@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -21,7 +21,6 @@ from apps.landmatrix.models.investor import (
     HistoricalInvestorActivityInvolvement,
     HistoricalInvestorVentureInvolvement,
 )
-
 from .currency import Currency
 from .gndinvestor import Investor, InvestorVentureInvolvement
 from .deal import Deal
@@ -47,7 +46,11 @@ class Comment(models.Model):
     comment = models.TextField(_("Comment"))
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     fk_user = models.ForeignKey(
-        User, verbose_name=_("User"), blank=True, null=True, on_delete=models.SET_NULL
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("User"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     def __str__(self):

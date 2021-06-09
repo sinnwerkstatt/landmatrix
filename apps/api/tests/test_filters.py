@@ -1,8 +1,11 @@
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 
 from apps.api.filters import *
 from apps.landmatrix.models import FilterPreset
+
+User = get_user_model()
 
 
 class FiltersTestCase(TestCase):
