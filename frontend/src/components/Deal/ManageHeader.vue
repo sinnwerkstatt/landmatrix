@@ -136,7 +136,7 @@
                         name="check-button"
                         switch
                         :title="$t('Toggle deal confidentiality')"
-                        @change="toggle_confidential"
+                        @click.native.prevent="toggle_confidential"
                       >
                         <template v-if="deal.confidential">
                           {{ $t("Confidential") }}
@@ -815,10 +815,6 @@
       display: flex;
       align-items: center;
 
-      &:hover {
-        cursor: pointer;
-      }
-
       .confidential-switch {
         padding-left: 2rem;
         font-size: 0.8em;
@@ -958,6 +954,9 @@
     label {
       font-weight: normal;
       line-height: 1.9em;
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 </style>
