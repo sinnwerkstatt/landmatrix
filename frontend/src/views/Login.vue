@@ -46,7 +46,7 @@
     },
     created() {
       if (this.$store.getters.userAuthenticated) {
-        this.$router.push(this.$route.query.next);
+        if (this.$route.query.next) this.$router.push(this.$route.query.next);
       }
     },
     methods: {
@@ -54,7 +54,7 @@
         this.$store
           .dispatch("login", { username: this.username, password: this.password })
           .then(() => {
-            this.$router.push(this.$route.query.next);
+            this.$router.push(this.$route.query.next || "/");
           })
           .catch((response) => {
             this.login_failed_message = response.error;
