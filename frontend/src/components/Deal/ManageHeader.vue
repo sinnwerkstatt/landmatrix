@@ -470,16 +470,10 @@
         }
       },
       handle_delete() {
-        if (!this.dealVersion) {
-          // activated deal, comment required
-          if (this.deal.status === 4) {
-            this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
-          } else {
-            this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
-          }
+        if (!this.dealVersion && this.deal.status === 4) {
+          this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
         } else {
-          // draft, no comment, just delete
-          this.do_delete();
+          this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
         }
       },
       do_delete(comment = null) {
