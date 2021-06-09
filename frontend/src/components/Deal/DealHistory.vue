@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(version, i) in deal.versions" :key="i">
+        <tr v-for="(version, i) in enriched_versions" :key="i">
           <td>{{ version.revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}</td>
           <td v-if="$store.getters.userAuthenticated">
             {{ version.revision.user && version.revision.user.full_name }}
@@ -36,13 +36,7 @@
           <td style="white-space: nowrap; text-align: right">
             <span v-if="i === deduced_position">{{ $t("Current") }}</span>
             <span v-else>
-              <router-link
-                v-slot="{ href }"
-                :to="{
-                  name: 'deal_detail',
-                  params: { dealId, dealVersion: version.revision.id },
-                }"
-              >
+              <router-link v-slot="{ href }" :to="version.link">
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
                 <a :href="href">{{ $t("Show") }}</a>
               </router-link>
@@ -97,7 +91,11 @@
 
   export default {
     name: "DealHistory",
-    props: ["deal", "dealId", "dealVersion"],
+    props: {
+      deal: { type: Object, required: true },
+      dealId: { type: [Number, String], required: true },
+      dealVersion: { type: [Number, String], default: null },
+    },
     data() {
       return {
         compare_from: null,
@@ -105,6 +103,20 @@
       };
     },
     computed: {
+      enriched_versions() {
+        let current_active = false;
+        return this.deal.versions.map((v) => {
+          if (!v.deal.draft_status && !current_active) {
+            v.link = { name: "deal_detail", params: { dealId: this.dealId } };
+            current_active = true;
+          } else
+            v.link = {
+              name: "deal_detail",
+              params: { dealId: this.dealId, dealVersion: v.revision.id },
+            };
+          return v;
+        });
+      },
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
         if (this.dealVersion) {
