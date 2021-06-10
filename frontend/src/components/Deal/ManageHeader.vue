@@ -559,10 +559,10 @@
         .panel-container {
           padding-right: 0;
           margin-top: 1em;
+          text-align: right;
 
           .meta-panel {
             background: rgba(white, 0.2);
-            color: rgba(black, 0.5);
           }
         }
       }

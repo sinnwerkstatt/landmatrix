@@ -38,7 +38,7 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .meta-panel {
     text-align: left;
     display: inline-block;
@@ -47,22 +47,22 @@
     border-radius: 5px;
     font-size: 0.9rem;
     color: rgba(0, 0, 0, 0.25);
-  }
-  .inlinefield {
-    display: inline-block;
 
-    &:not(:last-child) {
-      margin-right: 1em;
-    }
-
-    .inlinelabel {
+    .inlinefield {
       display: inline-block;
-      color: rgba(0, 0, 0, 0.3);
-    }
 
-    .inlineval {
-      display: inline-block;
-      font-style: italic;
+      &:not(:last-child) {
+        margin-right: 1.5em;
+      }
+
+      .inlinelabel {
+        display: inline-block;
+        color: rgba(0, 0, 0, 0.3);
+      }
+
+      .inlineval {
+        font-style: italic;
+      }
     }
   }
 </style>
