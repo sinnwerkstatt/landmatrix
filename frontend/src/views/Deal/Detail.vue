@@ -277,7 +277,6 @@
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         console.log("Deal detail: Route enter");
-        vm.reload_deal();
         vm.updatePageContext(to);
         if (!to.hash) {
           vm.active_tab = "#locations";
@@ -286,18 +285,8 @@
     },
     beforeRouteUpdate(to, from, next) {
       console.log("Deal detail: Route update");
-      // console.log(to.params);
-      // console.log(to.params.dealVersion);
-      // console.log(+this.dealVersion);
-      // if (!equalDealParams(to.params, from.params)) {
-      //   this.reload_deal();
-      // }
-      console.log("Before");
-      console.log(+this.dealVersion);
       this.updatePageContext(to);
       next();
-      console.log("After");
-      console.log(+this.dealVersion);
     },
     props: {
       dealId: { type: [Number, String], required: true },

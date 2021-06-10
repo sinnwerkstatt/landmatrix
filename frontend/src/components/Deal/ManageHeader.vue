@@ -266,10 +266,10 @@
           class="btn btn-danger btn-sm"
           @click.prevent="handle_delete"
         >
-          {{ deal.status === 4 ? $t("Undelete") : $t("Delete") }}
+          {{ deal_is_deleted ? $t("Undelete") : $t("Delete") }}
         </button>
         <router-link
-          v-if="deal_is_active_with_draft || deal_is_old_draft"
+          v-if="deal_has_newer_draft"
           class="btn btn-primary btn-sm"
           :to="{
             name: 'deal_detail',
@@ -344,7 +344,7 @@
       },
       deal_is_editable() {
         // deal ist deleted
-        if (this.deal.status === 4) return false;
+        if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.deal_is_active_with_draft) return false;
         return true;
       },
@@ -353,14 +353,32 @@
         if (this.deal_is_old_draft) return false;
         return true;
       },
+      deal_is_deleted() {
+        // active and deleted
+        if (!this.dealVersion && this.deal.status === 4) return true;
+      },
       deal_is_active_with_draft() {
         return !this.dealVersion && this.deal.draft_status;
       },
       deal_is_draft_with_active() {
-        return this.dealVersion && [2, 3].includes(this.deal.status);
+        // current draft with active deal
+        if (this.dealVersion && [2, 3].includes(this.deal.status)) return true;
+        // old draft with activated deal
+        return (
+          this.deal_is_old_draft && [2, 3].includes(this.latest_deal_version.status)
+        );
       },
       deal_is_old_draft() {
         return this.dealVersion && this.last_revision.id !== +this.dealVersion;
+      },
+      deal_has_newer_draft() {
+        if (this.deal_is_active_with_draft) return true;
+        // old with newer draft
+        return this.deal_is_old_draft && this.latest_deal_version.draft_status;
+      },
+      latest_deal_version() {
+        return this.deal.versions.find((v) => v.revision.id === this.last_revision.id)
+          .deal;
       },
     },
     methods: {
