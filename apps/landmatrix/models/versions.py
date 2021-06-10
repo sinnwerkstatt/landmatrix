@@ -83,10 +83,11 @@ class Version(models.Model):
         version.save()
         return version
 
-    def update_from_obj(self, obj):
+    def update_from_obj(self, obj) -> "Version":
         serialized_json = serializers.serialize("json", (obj,))
         serialized_fields = json.loads(serialized_json)
         self.serialized_data = serialized_fields
+        return self
 
     def retrieve_object(self):
         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]

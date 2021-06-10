@@ -9,7 +9,7 @@
       </h1>
       <div style="font-size: 0.8rem">
         <div v-if="!dealId">{{ deal }}</div>
-        {{ deal.locations }}<br /><br />
+        <!--        {{ deal.locations }}<br /><br />-->
         <!--        {{ deal.geojson }}-->
         <!--        {{ deal.datasources }}-->
       </div>
@@ -252,7 +252,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int, $payload: Payload) {
+              mutation ($id: Int!, $version: Int, $payload: Payload) {
                 deal_edit(id: $id, version: $version, payload: $payload) {
                   dealId
                   dealVersion

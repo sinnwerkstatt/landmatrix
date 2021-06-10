@@ -18,7 +18,13 @@ from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
 
+from .user_utils import (
+    has_authorization_for_country,
+    get_user_roles,
+)
+
 User = get_user_model()
+storage = DefaultStorage()
 
 
 def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
@@ -147,10 +153,11 @@ def resolve_dealversions(
     return [dv.to_dict() for dv in qs]
 
 
-storage = DefaultStorage()
-
-
 def resolve_upload_datasource_file(_, info, filename, payload) -> str:
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("not authorized")
+
     _, data = payload.split(",")
     dec = base64.b64decode(data)
     fname = storage.get_available_name(f"uploads/{filename}")
@@ -186,7 +193,7 @@ def resolve_add_deal_comment(
     )
 
     if to_user_id:
-        reciever = User.objects.get(id=to_user_id)
+        receiver = User.objects.get(id=to_user_id)
         subject = "[Landmatrix] " + ugettext("New comment")
         print(user.__dict__)
         message = ugettext(
@@ -203,7 +210,7 @@ def resolve_add_deal_comment(
             url += f"/{version}"
         message += "\n\n" + ugettext(f"Please review at {url}")
 
-        reciever.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
+        receiver.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
 
     return {"dealId": deal.id, "dealVersion": version}
 
@@ -232,22 +239,30 @@ def resolve_change_deal_status(
         )
         deal_v_obj.draft_status = draft_status
         deal_v_obj.save()
-        deal_version.update_from_obj(deal_v_obj)
-        deal_version.save()
+        deal_version.update_from_obj(deal_v_obj).save()
     elif transition == "TO_DRAFT":
+        if not has_authorization_for_country(user, deal.country):
+            raise GraphQLError("not authorized")
         draft_status = Deal.DRAFT_STATUS_DRAFT
         deal_v_obj.draft_status = draft_status
         rev = deal_v_obj.save_revision(date_created=timezone.now(), user=user)
         Deal.objects.filter(id=id).update(draft_status=draft_status)
-    else:
-        draft_status = {
-            "TO_REVIEW": Deal.DRAFT_STATUS_REVIEW,
-            "TO_ACTIVATION": Deal.DRAFT_STATUS_ACTIVATION,
-        }[transition]
+    elif transition == "TO_REVIEW":
+        if not (
+            deal_version.revision.user == user
+            or ({"Administrator", "Editor"} & set(get_user_roles(user)))
+        ):
+            raise GraphQLError("not authorized")
+        draft_status = Deal.DRAFT_STATUS_REVIEW
         deal_v_obj.draft_status = draft_status
-        deal_version.update_from_obj(deal_v_obj)
-        deal_version.save()
-
+        deal_version.update_from_obj(deal_v_obj).save()
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
+    else:
+        if not has_authorization_for_country(user, deal.country):
+            raise GraphQLError("not authorized")
+        draft_status = Deal.DRAFT_STATUS_ACTIVATION
+        deal_v_obj.draft_status = draft_status
+        deal_version.update_from_obj(deal_v_obj).save()
         Deal.objects.filter(id=id).update(draft_status=draft_status)
 
     DealWorkflowInfo.objects.create(
@@ -337,14 +352,28 @@ def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
     if not user.is_authenticated:
         raise GraphQLError("not authorized")
 
+    deal = Deal.objects.get(id=id)
     # if it's just a draft,
     if version:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
-        ...
-        # TODO
+        deal_version.delete()
+        DealWorkflowInfo.objects.create(
+            deal=deal,
+            from_user=user,
+            draft_status_before=(
+                None
+                if deal.status == Deal.STATUS_DELETED
+                else Deal.DRAFT_STATUS_TO_DELETE
+            ),
+            draft_status_after=(
+                Deal.DRAFT_STATUS_TO_DELETE
+                if deal.status == Deal.STATUS_DELETED
+                else None
+            ),
+            comment=comment,
+        )
     else:
-        deal = Deal.objects.get(id=id)
         deal.status = (
             Deal.STATUS_UPDATED
             if deal.status == Deal.STATUS_DELETED
@@ -380,12 +409,11 @@ def resolve_set_confidential(
     if version:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
-        tmpdeal = deal_version.retrieve_object()
-        tmpdeal.confidential = confidential
-        tmpdeal.confidential_reason = reason
-        tmpdeal.confidential_comment = comment
-        deal_version.update_from_obj(tmpdeal)
-        deal_version.save()
+        deal_v_obj = deal_version.retrieve_object()
+        deal_v_obj.confidential = confidential
+        deal_v_obj.confidential_reason = reason
+        deal_v_obj.confidential_comment = comment
+        deal_version.update_from_obj(deal_v_obj).save()
 
     else:
         deal = Deal.objects.get(id=id)
