@@ -66,6 +66,7 @@
       right: 15px;
       bottom: 1px;
       a {
+        margin-left: 1em;
         &:hover {
           text-decoration: none;
           color: theme-color-level("primary", -3);

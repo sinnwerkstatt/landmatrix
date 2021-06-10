@@ -251,6 +251,17 @@
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
+  function equalDealParams(from_params, to_params) {
+    if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
+    if ("dealVersion" in from_params && "dealVersion" in to_params) {
+      if (parseInt(from_params.dealVersion) !== parseInt(to_params.dealVersion))
+        return false;
+    } else {
+      return false;
+    }
+    return true;
+  }
+
   export default {
     name: "Detail",
     components: {
@@ -265,6 +276,8 @@
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
+        console.log("Deal detail: Route enter");
+        vm.reload_deal();
         vm.updatePageContext(to);
         if (!to.hash) {
           vm.active_tab = "#locations";
@@ -272,8 +285,19 @@
       });
     },
     beforeRouteUpdate(to, from, next) {
+      console.log("Deal detail: Route update");
+      // console.log(to.params);
+      // console.log(to.params.dealVersion);
+      // console.log(+this.dealVersion);
+      // if (!equalDealParams(to.params, from.params)) {
+      //   this.reload_deal();
+      // }
+      console.log("Before");
+      console.log(+this.dealVersion);
       this.updatePageContext(to);
       next();
+      console.log("After");
+      console.log(+this.dealVersion);
     },
     props: {
       dealId: { type: [Number, String], required: true },
@@ -298,7 +322,7 @@
         variables() {
           return {
             id: +this.dealId,
-            version: +this.dealVersion,
+            version: this.dealVersion ? +this.dealVersion : null,
             subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
           };
         },
@@ -315,6 +339,7 @@
             });
           return deal;
         },
+        fetchPolicy: "network-only",
       },
       investor: {
         query: gql`
@@ -349,12 +374,8 @@
         },
       },
     },
-    watch: {
-      deal() {
-        this.$apollo.queries.deal.refetch();
-      },
-    },
     computed: {
+      current_deal_query_vars() {},
       manage() {
         return (
           this.$store.state.page.user && this.$store.state.page.user.is_authenticated
@@ -466,15 +487,18 @@
           });
       },
       updateRoute(emiter) {
+        console.log("Deal detail: update route");
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
       triggerInvestorGraphRefresh() {
+        console.log("Deal detail: investor graph refresh");
         this.updateRoute("#investor_info");
         if ("investorGraph" in this.$refs) {
           this.$refs.investorGraph.refresh_graph();
         }
       },
       updatePageContext(to) {
+        console.log("Deal detail: update page context");
         if (to.hash) {
           // only update if hash is present (otherwise #locations are active by default)
           this.active_tab = to.hash;
@@ -492,6 +516,7 @@
         return `/api/legacy_export/?deal_id=${this.deal.id}&subset=UNFILTERED&format=${format}`;
       },
       reload_deal() {
+        console.log("Deal detail: reload");
         this.$apollo.queries.deal.refetch();
       },
     },

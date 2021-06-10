@@ -372,7 +372,7 @@
   }
 
   .btn-gray {
-    background-color: #b1b1b1;
+    background-color: #b1b1b1 !important;
     &:hover {
       color: white;
       background-color: darken(#b1b1b1, 5%);
