@@ -11,6 +11,7 @@ from apps.utils import qs_values_to_dict
 
 
 def vuebase(request, *args, **kwargs):
+    # this template file comes from `npm run build` in frontend
     return render(request, template_name="vuebase.html")
 
 
