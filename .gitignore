@@ -30,6 +30,8 @@ webpack-stats.json
 /frontend/dist/*
 !/frontend/dist/.gitkeep
 
+/templates/vuebase.html
+
 # IDEs
 .idea/
 .vscode/
