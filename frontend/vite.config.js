@@ -25,9 +25,9 @@ export default defineConfig({
     target: "es2015",
     rollupOptions: {
       output: {
-        entryFileNames: `[name].js`,
-        chunkFileNames: `[name].js`,
-        assetFileNames: `[name].[ext]`,
+        // entryFileNames: `[name].js`,
+        // chunkFileNames: `[name].js`,
+        // assetFileNames: `[name].[ext]`,
         // chunkFileNames: ({ name }) =>
         //   name === "vendor" ? "vendor.js" : "[name]-[hash].js",
         // assetFileNames: ({ name }) =>

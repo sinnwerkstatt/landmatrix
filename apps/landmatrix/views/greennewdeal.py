@@ -11,7 +11,7 @@ from apps.utils import qs_values_to_dict
 
 
 def vuebase(request, *args, **kwargs):
-    return render(request, template_name="landmatrix/vuebase.html")
+    return render(request, template_name="vuebase.html")
 
 
 def gis_export(request):
