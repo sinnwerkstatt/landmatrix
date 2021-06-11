@@ -1,6 +1,9 @@
 from typing import Union
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
+from wagtail.core.models import Site
 
 from apps.landmatrix.models import Country
 
@@ -46,3 +49,26 @@ def has_authorization_for_country(user: User, country: Union[Country, int]) -> b
             return True
 
     return False
+
+
+def send_comment_to_user(deal, comment, from_user, to_user_id, version_id=None):
+    receiver = User.objects.get(id=to_user_id)
+    subject = "[Landmatrix] " + _("New comment")
+    if comment:
+        message = _(
+            f"{from_user.get_full_name()} has addressed you in a comment on deal {deal.id}:"
+        )
+        message += "\n\n" + comment
+    else:
+        message = _(f"{from_user.get_full_name()} has updated deal {deal.id}:")
+
+    site = Site.objects.get(is_default_site=True)
+    url = f"http{'s' if site.port == 444 else ''}://{site.hostname}"
+    if site.port not in [80, 443]:
+        url += f":{site.port}"
+    url += f"/deal/{deal.id}"
+    if version_id:
+        url += f"/{version_id}"
+    message += "\n\n" + _(f"Please review at {url}")
+
+    receiver.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
