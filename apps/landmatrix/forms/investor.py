@@ -6,11 +6,14 @@ from django.utils.translation import ugettext as _
 class InvestorForm(VueForm):
     model = Investor
     extra_display_fields = {"deals": {"class": "LengthField", "label": _("Deals")}}
+    attributes = {"country": {"class": "CountryForeignKey"}}
 
 
 class InvestorVentureInvolvementForm(VueForm):
     model = InvestorVentureInvolvement
     attributes = {
         "involvement_type": {"class": "TextField", "label": _("Involvement type")},
+        "investor": {"class": "InvestorForeignKey"},
+        "venture": {"class": "InvestorForeignKey"},
         "percentage": {"unit": "%"},
     }
