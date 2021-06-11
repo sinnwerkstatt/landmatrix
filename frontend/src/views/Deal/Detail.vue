@@ -375,16 +375,7 @@
       }),
     },
     methods: {
-      change_deal_status(transition_info) {
-        let transition = transition_info.transition;
-        let comment = "comment" in transition_info ? transition_info.comment : null;
-        let to_user_id = null;
-        if (transition === "TO_DRAFT") {
-          let latest_draft_version = this.deal.versions.find((v) => {
-            return v.deal.draft_status === 1;
-          });
-          to_user_id = latest_draft_version.revision.user.id;
-        }
+      change_deal_status({ transition, comment = null, to_user = null }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -412,7 +403,7 @@
               version: this.dealVersion ? +this.dealVersion : null,
               transition,
               comment,
-              to_user_id: to_user_id,
+              to_user_id: to_user ? to_user.id : null,
             },
           })
           .then(({ data: { change_deal_status } }) => {

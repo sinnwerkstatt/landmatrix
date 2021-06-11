@@ -259,7 +259,6 @@ def resolve_change_deal_status(
         comment=comment,
     )
 
-    print(to_user_id)
     if to_user_id:
         send_comment_to_user(deal, comment, user, to_user_id, version)
 

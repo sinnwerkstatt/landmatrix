@@ -520,6 +520,7 @@ export const deal_gql_query = gql`
       }
       workflowinfos {
         from_user {
+          id
           username
           full_name
         }

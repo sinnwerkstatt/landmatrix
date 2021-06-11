@@ -15,8 +15,22 @@
           </option>
         </select>
       </div>-->
-      <p>{{ $t("Please provide a comment explaining your request") }}</p>
+      <label>{{ $t("Please provide a comment explaining your request") }}</label>
       <textarea ref="comment" v-model="comment" required="required"></textarea>
+      <div if="to_user" class="assign-to-user">
+        <label>{{ $t("Assign to user") }}</label>
+        <multiselect
+          :value="selected_user"
+          :options="users"
+          :multiple="false"
+          :close-on-select="true"
+          :allow-empty="false"
+          placeholder="Send to"
+          track-by="id"
+          label="full_name"
+          @select="select_user"
+        />
+      </div>
       <div class="actions">
         <a class="btn btn-primary" @click.prevent.stop="submit_comment">{{
           transition.title
@@ -37,25 +51,38 @@
     name: "RequiredMessageOverlay",
     props: {
       show: { type: Boolean, default: false },
-      transition: null,
+      transition: { type: Object, default: null },
+      users: {
+        type: Array,
+        default() {
+          return [];
+        },
+      },
+      to_user: { type: Object, default: null },
     },
     data() {
       return {
         comment: "",
-        send_to_user: null,
         confidential_reason: null,
+        to_user_selected: null,
         linebreaks,
       };
     },
     computed: {
       is_set_confidential() {
-        return this.transition.transition === "SET_CONFIDENTIAL";
+        return this.transition.key === "SET_CONFIDENTIAL";
       },
       confidential_reason_choices() {
         return confidential_reason_choices;
       },
+      selected_user() {
+        return this.to_user_selected ? this.to_user_selected : this.to_user;
+      },
     },
     methods: {
+      select_user(user) {
+        this.to_user_selected = user;
+      },
       submit_comment() {
         if (this.is_set_confidential) {
           // if (this.$refs.comment.checkValidity() && this.$refs.reason.checkValidity()) {
@@ -72,7 +99,11 @@
         } else {
           // status change
           if (this.$refs.comment.checkValidity()) {
-            this.$emit("do_transition", this.comment);
+            console.log(this.selected_user);
+            this.$emit("do_transition", {
+              comment: this.comment,
+              to_user: this.selected_user,
+            });
           } else {
             this.$refs.comment.reportValidity();
             return;
@@ -80,6 +111,7 @@
         }
         this.comment = "";
         this.reason = null;
+        this.to_user_selected = null;
       },
     },
   };
@@ -138,6 +170,15 @@
       &:focus {
         border: 1px solid $lm_grey;
         outline: none;
+      }
+    }
+
+    .assign-to-user {
+      margin-top: 1em;
+
+      .multiselect {
+        border: 1px solid $lm_grey;
+        border-radius: 5px;
       }
     }
 

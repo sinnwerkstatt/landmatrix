@@ -291,6 +291,8 @@
     <TransitionCommentOverlay
       :show="show_comment_overlay"
       :transition="transition"
+      :users="users"
+      :to_user="get_transition_to_user()"
       @cancel_transition="cancel_transition"
       @do_transition="do_transition"
       @do_set_confidential="do_set_confidential"
@@ -444,24 +446,36 @@
           this.$refs.comment.reportValidity();
         }
       },
-      open_comment_overlay_for(transition, title) {
+      open_comment_overlay_for(key, title) {
         this.transition = {
-          transition,
+          key,
           title,
         };
         this.show_comment_overlay = true;
+      },
+      get_transition_to_user() {
+        if (this.transition && this.transition.key === "TO_DRAFT") {
+          let latest_draft_creation = this.deal.workflowinfos.find((v) => {
+            return !v.draft_status_before && v.draft_status_after === 1;
+          });
+          return latest_draft_creation.from_user;
+        }
+        return null;
       },
       cancel_transition() {
         this.transition = null;
         this.show_comment_overlay = false;
       },
-      do_transition(comment) {
-        if (["DELETE", "UNDELETE"].includes(this.transition.transition)) {
+      do_transition({ comment, to_user }) {
+        if (["DELETE", "UNDELETE"].includes(this.transition.key)) {
           this.do_delete(comment);
         } else {
           // status change
-          this.transition.comment = comment;
-          this.$emit("change_deal_status", this.transition);
+          this.$emit("change_deal_status", {
+            transition: this.transition.key,
+            comment,
+            to_user,
+          });
         }
         this.transition = null;
         this.show_comment_overlay = false;
