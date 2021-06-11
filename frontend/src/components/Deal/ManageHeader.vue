@@ -153,8 +153,9 @@
                         ><span v-if="deal.confidential">(reason)</span></a
                       >
                       <b-tooltip target="confidential-reason" triggers="click">
+                        <!--
                         <strong>{{ get_confidential_reason }}</strong>
-                        <br />
+                        <br />-->
                         {{ deal.confidential_comment }}
                       </b-tooltip>
                     </div>
@@ -973,6 +974,7 @@
     label {
       font-weight: normal;
       line-height: 1.9em;
+
       &:hover {
         cursor: pointer;
       }

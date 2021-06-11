@@ -2,6 +2,7 @@
   <div v-if="show" class="overlay-bg" @click.self="$emit('cancel_transition')">
     <div class="overlay">
       <h3>{{ transition.title }}</h3>
+      <!-- no reason, but keep if they redecide
       <div v-if="is_set_confidential" class="reason">
         {{ $t("Reason") }}
         <select ref="reason" v-model="confidential_reason" required="required">
@@ -13,7 +14,7 @@
             {{ $t(confidential_reason_choices[key]) }}
           </option>
         </select>
-      </div>
+      </div>-->
       <p>{{ $t("Please provide a comment explaining your request") }}</p>
       <textarea ref="comment" v-model="comment" required="required"></textarea>
       <div class="actions">
@@ -57,14 +58,15 @@
     methods: {
       submit_comment() {
         if (this.is_set_confidential) {
-          if (this.$refs.comment.checkValidity() && this.$refs.reason.checkValidity()) {
+          // if (this.$refs.comment.checkValidity() && this.$refs.reason.checkValidity()) {
+          if (this.$refs.comment.checkValidity()) {
             this.$emit("do_set_confidential", {
               comment: this.comment,
               reason: this.confidential_reason,
             });
           } else {
             this.$refs.comment.reportValidity();
-            this.$refs.reason.reportValidity();
+            //this.$refs.reason.reportValidity();
             return;
           }
         } else {
