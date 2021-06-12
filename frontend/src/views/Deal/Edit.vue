@@ -179,7 +179,9 @@
         </div>
       </div>
     </div>
-    <div v-else class="container">Couldn't fetch this deal</div>
+    <div v-else>
+      <LoadingPulse></LoadingPulse>
+    </div>
   </form>
 </template>
 
@@ -192,10 +194,12 @@
   import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import LoadingPulse from "$components/Data/LoadingPulse";
 
   export default {
     name: "DealEdit",
     components: {
+      LoadingPulse,
       DealLocationsEditSection,
       EditField,
       DealSubmodelEditSection,
