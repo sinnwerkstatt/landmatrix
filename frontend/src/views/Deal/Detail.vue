@@ -290,7 +290,6 @@
     },
     beforeRouteUpdate(to, from, next) {
       console.log("Deal detail: Route update");
-      this.deal = null;
       this.updatePageContext(to);
       next();
     },

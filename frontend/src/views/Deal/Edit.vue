@@ -205,6 +205,20 @@
       DealSubmodelEditSection,
       DealEditSection,
     },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        console.log("Deal edit: Route enter");
+        vm.updatePageContext(to);
+        if (!to.hash) {
+          vm.active_tab = "#locations";
+        }
+      });
+    },
+    beforeRouteUpdate(to, from, next) {
+      console.log("Deal edit: Route update");
+      this.updatePageContext(to);
+      next();
+    },
     props: {
       dealId: { type: [Number, String], required: false, default: null },
       dealVersion: { type: [Number, String], default: null },
@@ -216,6 +230,7 @@
         deal_submodel_sections,
         saving_in_progress: false,
         confirm_delete: false,
+        active_tab: "#locations",
       };
     },
     apollo: {
@@ -237,9 +252,6 @@
       },
     },
     computed: {
-      active_tab() {
-        return location.hash ? location.hash : "#locations";
-      },
       get_save_description() {
         if (!this.dealId) {
           // deal add
@@ -262,6 +274,12 @@
     methods: {
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      },
+      updatePageContext(to) {
+        if (to.hash) {
+          // only update if hash is present (otherwise #locations are active by default)
+          this.active_tab = to.hash;
+        }
       },
       deal_save() {
         this.saving_in_progress = true;
