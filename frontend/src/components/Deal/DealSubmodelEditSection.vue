@@ -3,32 +3,40 @@
     <div class="row">
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
-          <h3>
-            {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
-            <button
-              type="button"
-              class="btn btn-primary ml-2"
-              @click="$emit('removeEntry', index)"
-            >
-              <i class="fa fa-minus"></i>
-            </button>
-          </h3>
-          <EditField
-            v-for="fieldname in fields"
-            :key="fieldname"
-            v-model="entry[fieldname]"
-            :fieldname="fieldname"
-            :model="model"
-            :label-classes="labelClasses"
-            :value-classes="valueClasses"
-          />
+          <div class="submodel-header">
+            <i
+              class="expand-toggle fas fa-chevron-down"
+              :class="{
+                'fa-chevron-up': active_entry === entry,
+                'fa-chevron-down': active_entry !== entry,
+              }"
+              @click="active_entry = active_entry !== entry ? entry : null"
+            ></i>
+            <h3 @click="active_entry = active_entry !== entry ? entry : null">
+              {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
+            </h3>
+            <a class="trashbin" @click="$emit('removeEntry', index)">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+          <div v-if="active_entry === entry" class="submodel-body">
+            <EditField
+              v-for="fieldname in fields"
+              :key="fieldname"
+              v-model="entry[fieldname]"
+              :fieldname="fieldname"
+              :model="model"
+              :label-classes="labelClasses"
+              :value-classes="valueClasses"
+            />
+          </div>
         </div>
       </div>
       <slot />
     </div>
-    <div class="mt-5">
-      <button type="button" class="btn btn-secondary" @click="$emit('addEntry')">
-        <i class="fa fa-plus"></i> {{ $t(modelName) }}
+    <div class="mt-3">
+      <button type="button" class="btn btn-secondary" @click="add_entry">
+        <i class="fa fa-plus"></i> {{ $t("Add " + modelName) }}
       </button>
     </div>
   </b-tab>
@@ -55,18 +63,75 @@
         default: () => ["display-field-value", "col-md-7", "col-lg-8"],
       },
     },
+    data() {
+      return {
+        active_entry: null,
+      };
+    },
     computed: {
       wrapperClasses() {
         if (this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
         else return ["col-12"];
       },
     },
+    methods: {
+      add_entry() {
+        this.$emit("addEntry");
+        this.active_entry = this.entries[this.entries.length - 1];
+      },
+    },
   };
 </script>
 
 <style lang="scss" scoped>
+  @import "../../scss/colors";
+
   h3 small {
     font-size: 70%;
     color: #777;
+  }
+
+  .submodel-header {
+    display: flex;
+    align-items: center;
+
+    .expand-toggle {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    h3 {
+      margin: 0;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    margin-bottom: 1em;
+
+    & .expand-toggle {
+      margin-right: 0.5em;
+    }
+  }
+
+  .submodel-body {
+    margin-bottom: 2em;
+  }
+
+  .fa-plus {
+    margin-right: 0.3em;
+  }
+
+  .trashbin {
+    margin-left: 2em;
+    color: $lm_orange;
+
+    &:hover {
+      cursor: pointer;
+      color: lighten($lm_orange, 10%);
+      text-decoration: none;
+    }
   }
 </style>

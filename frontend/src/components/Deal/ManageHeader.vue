@@ -10,13 +10,13 @@
                 <!-- only use left half, rest for comments -->
                 <div class="container">
                   <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-5">
                       <h1>
                         Deal #{{ deal.id }}
                         <span class="headercountry">{{ deal.country.name }}</span>
                       </h1>
                     </div>
-                    <div class="col-sm-8 panel-container">
+                    <div class="col-sm-7 panel-container">
                       <HeaderDates :obj="deal" />
                     </div>
                   </div>
@@ -101,7 +101,7 @@
               <div class="col-sm-12 col-md-8 content-area">
                 <!-- only use left half, rest for comments -->
 
-                <div class="row d-flex align-items-center p-3">
+                <div class="row d-flex align-items-center">
                   <div
                     v-if="last_revision"
                     class="col-sm-8 col-md-7 col-lg-8 last-changes"
@@ -559,16 +559,16 @@
         left: 0;
         width: calc(100vw - 15px); // arghh, compensate for scrollbar
 
-        .container {
-          padding: 0;
-        }
-
         > .container > .row {
           margin-right: -30px;
         }
 
         .content-area {
           padding-right: 0;
+
+          .container {
+            padding: 0;
+          }
         }
 
         .panel-container {
@@ -760,6 +760,7 @@
           inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
         padding: 2px 4px;
         margin-left: -4px;
+        max-height: 300px;
 
         .comment {
           font-size: 0.8em;

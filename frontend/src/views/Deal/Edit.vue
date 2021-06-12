@@ -213,6 +213,7 @@
         deal_sections,
         deal_submodel_sections,
         saving_in_progress: false,
+        confirm_delete: false,
       };
     },
     apollo: {
@@ -252,7 +253,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation ($id: Int!, $version: Int, $payload: Payload) {
+              mutation($id: Int!, $version: Int, $payload: Payload) {
                 deal_edit(id: $id, version: $version, payload: $payload) {
                   dealId
                   dealVersion
@@ -272,14 +273,6 @@
             console.error({ e });
           });
       },
-      addLocation(loc) {
-        this.deal.locations.push(loc);
-      },
-      removeLocation(index) {
-        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
-          this.deal.locations.splice(index, 1);
-        }
-      },
       addContract() {
         let maxid = 0;
         this.deal.contracts.forEach((l) => (maxid = Math.max(l.id, maxid)));
@@ -291,16 +284,27 @@
         this.deal.datasources.push(new Object({ id: maxid + 1 }));
       },
       removeContract(index) {
-        if (confirm(this.$t("Do you really want to remove this contract?")) === true) {
-          this.deal.contracts.splice(index, 1);
-        }
+        this.removeSubmodelEntry(this.deal.contracts, index, "contract");
       },
       removeDataSource(index) {
-        if (
-          confirm(this.$t("Do you really want to remove this data source?")) === true
-        ) {
-          this.deal.datasources.splice(index, 1);
-        }
+        this.removeSubmodelEntry(this.deal.datasources, index, "data source");
+      },
+      removeSubmodelEntry(submodels, index, label) {
+        this.confirm_delete = false;
+        let message =
+          this.$t("Do you really want to remove " + label) + ` #${index + 1}?`;
+        this.$bvModal
+          .msgBoxConfirm(message, {
+            size: "sm",
+            okTitle: this.$t("Delete"),
+            cancelTitle: this.$t("Cancel"),
+            centered: true,
+          })
+          .then((confirmed) => {
+            if (confirmed) {
+              submodels.splice(index, 1);
+            }
+          });
       },
     },
   };
@@ -353,8 +357,8 @@
       background-color: rgba(#dedede, 0.9);
       filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
       position: fixed;
-      right: 5px;
-      bottom: 40px;
+      right: 10px;
+      bottom: 45px;
       display: grid;
       grid-template-columns: 2fr 5fr;
       gap: 5px 10px;
@@ -365,6 +369,7 @@
         margin: 0 !important;
         font-size: 1.15em;
       }
+
       > span {
         align-self: center;
       }
@@ -373,6 +378,7 @@
 
   .btn-gray {
     background-color: #b1b1b1 !important;
+
     &:hover {
       color: white;
       background-color: darken(#b1b1b1, 5%);

@@ -6,8 +6,8 @@
           <i
             class="expand-toggle fas fa-chevron-down"
             :class="{
-              'fa-chevron-down': actLoc === loc,
-              'fa-chevron-up': actLoc !== loc,
+              'fa-chevron-up': actLoc === loc,
+              'fa-chevron-down': actLoc !== loc,
             }"
             @click="actLoc = actLoc !== loc ? loc : null"
           ></i>
@@ -23,7 +23,7 @@
             <i class="fas fa-trash"></i>
           </a>
         </div>
-        <div v-if="actLoc === loc">
+        <div v-if="actLoc === loc" class="location-body">
           <EditField
             v-model="loc.level_of_accuracy"
             fieldname="level_of_accuracy"
@@ -73,8 +73,8 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary mt-5" @click="addLocation">
-        <i class="fa fa-plus"></i> {{ $t("Location") }}
+      <button type="button" class="btn btn-secondary mt-3" @click="addLocation">
+        <i class="fa fa-plus"></i> {{ $t("Add location") }}
       </button>
     </div>
     <div class="mapview">
@@ -139,6 +139,7 @@
             }
           },
         },
+        confirm_delete: false,
       };
     },
     watch: {
@@ -198,13 +199,26 @@
         this.features_changed();
       },
       removeLocation(index) {
-        if (confirm(this.$t("Do you really want to remove this location?")) === true) {
-          let loc = this.locs.splice(index, 1)[0];
-          let fg = this.locationFGs.get(loc.id);
-          this.locationFGs.delete(loc.id);
-          this.bigmap.removeLayer(fg);
-          this.features_changed();
-        }
+        this.confirm_delete = false;
+        let message =
+          this.$t("Do you really want to remove location") + ` #${index + 1}?`;
+        this.$bvModal;
+        this.$bvModal
+          .msgBoxConfirm(message, {
+            size: "sm",
+            okTitle: this.$t("Delete"),
+            cancelTitle: this.$t("Cancel"),
+            centered: true,
+          })
+          .then((confirmed) => {
+            if (confirmed) {
+              let loc = this.locs.splice(index, 1)[0];
+              let fg = this.locationFGs.get(loc.id);
+              this.locationFGs.delete(loc.id);
+              this.bigmap.removeLayer(fg);
+              this.features_changed();
+            }
+          });
       },
       pointChange(lPo) {
         let hasMarker = false;
@@ -413,19 +427,40 @@
   .location-header {
     display: flex;
     align-items: center;
-    h3 {
-      margin: 0;
-    }
-    margin-bottom: 1em;
 
     .expand-toggle {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    h3 {
+      margin: 0;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    margin-bottom: 1em;
+
+    & .expand-toggle {
       margin-right: 0.5em;
     }
+  }
+
+  .location-body {
+    margin-bottom: 2em;
+  }
+
+  .fa-plus {
+    margin-right: 0.3em;
   }
 
   .trashbin {
     margin-left: 2em;
     color: $lm_orange;
+
     &:hover {
       cursor: pointer;
       color: lighten($lm_orange, 10%);
