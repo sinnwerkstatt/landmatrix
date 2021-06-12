@@ -233,6 +233,9 @@
       </b-tabs>
     </div>
   </div>
+  <div v-else>
+    <LoadingPulse></LoadingPulse>
+  </div>
 </template>
 
 <script>
@@ -250,6 +253,7 @@
   import { mapState } from "vuex";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import LoadingPulse from "$components/Data/LoadingPulse";
 
   function equalDealParams(from_params, to_params) {
     if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
@@ -265,6 +269,7 @@
   export default {
     name: "Detail",
     components: {
+      LoadingPulse,
       HeaderDates,
       DealComments,
       DealHistory,
@@ -285,6 +290,7 @@
     },
     beforeRouteUpdate(to, from, next) {
       console.log("Deal detail: Route update");
+      this.deal = null;
       this.updatePageContext(to);
       next();
     },

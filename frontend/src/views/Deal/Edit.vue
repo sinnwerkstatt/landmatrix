@@ -163,9 +163,7 @@
             >&nbsp;
             {{ $t("Save") }}
           </button>
-          <span>{{
-            dealId ? $t("Saves your edits") : $t("Saves the deal as draft")
-          }}</span>
+          <span>{{ get_save_description }}</span>
           <router-link
             v-if="dealId"
             class="btn btn-gray btn-sm mx-2"
@@ -237,6 +235,19 @@
     computed: {
       active_tab() {
         return location.hash ? location.hash : "#locations";
+      },
+      get_save_description() {
+        if (!this.dealId) {
+          // deal add
+          return this.$t("Saves the deal as draft");
+        } else {
+          if (this.deal && this.deal.draft_status === 1) {
+            // new drafts
+            return this.$t("Updates the existing draft version");
+          } else {
+            return this.$t("Saves a new draft version of the deal");
+          }
+        }
       },
     },
     created() {

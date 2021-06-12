@@ -105,24 +105,28 @@
         this.$nextTick(() => this.bigmap.invalidateSize());
       },
       refreshMap() {
-        if (this.layer) {
-          this.bigmap.removeLayer(this.layer);
-        }
-        this.layer = new GeoJSON(this.deal.geojson, this.geojson_options);
-        let mybounds = this.layer.getBounds();
-        let ne = mybounds.getNorthEast();
-        let sw = mybounds.getSouthWest();
-        if (ne && sw) {
-          if (ne.equals(sw)) {
-            ne.lat += 10;
-            ne.lng += 10;
-            sw.lat -= 10;
-            sw.lng -= 10;
-            this.bigmap.fitBounds(new LatLngBounds(ne, sw));
+        if (this.deal && this.deal.country && this.bigmap) {
+          console.log(this.deal.geojson);
+          if (this.layer) {
+            this.bigmap.removeLayer(this.layer);
           }
-          this.bigmap.fitBounds(mybounds.pad(1.2));
+          console.log(this.deal.geojson);
+          this.layer = new GeoJSON(this.deal.geojson, this.geojson_options);
+          let mybounds = this.layer.getBounds();
+          let ne = mybounds.getNorthEast();
+          let sw = mybounds.getSouthWest();
+          if (ne && sw) {
+            if (ne.equals(sw)) {
+              ne.lat += 10;
+              ne.lng += 10;
+              sw.lat -= 10;
+              sw.lng -= 10;
+              this.bigmap.fitBounds(new LatLngBounds(ne, sw), { animate: false });
+            }
+            this.bigmap.fitBounds(mybounds.pad(1.2), { animate: false });
+          }
+          this.bigmap.addLayer(this.layer);
         }
-        this.bigmap.addLayer(this.layer);
       },
       mapIsReady(map) {
         this.bigmap = map;

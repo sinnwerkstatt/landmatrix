@@ -17,7 +17,7 @@
       </div>-->
       <label>{{ $t("Please provide a comment explaining your request") }}</label>
       <textarea ref="comment" v-model="comment" required="required"></textarea>
-      <div if="to_user" class="assign-to-user">
+      <div v-if="to_user" class="assign-to-user">
         <label>{{ $t("Assign to user") }}</label>
         <multiselect
           :value="selected_user"

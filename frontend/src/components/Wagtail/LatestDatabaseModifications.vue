@@ -105,7 +105,7 @@
           3: "Updated",
           4: "Deleted",
           5: "Rejected",
-          6: "To Delete",
+          6: "Deleted",
         }[status];
       },
     },

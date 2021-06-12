@@ -10,10 +10,31 @@
                 <!-- only use left half, rest for comments -->
                 <div class="container">
                   <div class="row">
-                    <div class="col-sm-5">
+                    <div class="col-sm-5 title-col">
+                      <div class="version-nav-buttons">
+                        <router-link
+                          v-if="deal_is_draft_with_active"
+                          class="btn btn-gray"
+                          :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
+                        >
+                          {{ $t("Go to active version") }}
+                        </router-link>
+                        <router-link
+                          v-if="deal_has_newer_draft"
+                          class="btn btn-gray"
+                          :to="{
+                            name: 'deal_detail',
+                            params: { dealId: deal.id, dealVersion: last_revision.id },
+                          }"
+                        >
+                          {{ $t("Go to current draft") }}
+                        </router-link>
+                      </div>
                       <h1>
                         Deal #{{ deal.id }}
-                        <span class="headercountry">{{ deal.country.name }}</span>
+                        <span v-if="deal.country" class="headercountry">{{
+                          deal.country.name
+                        }}</span>
                       </h1>
                     </div>
                     <div class="col-sm-7 panel-container">
@@ -56,6 +77,7 @@
                     v-if="deal.draft_status === 1"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :title="$t('Submits the deal for review')"
                     @click="$emit('change_deal_status', { transition: 'TO_REVIEW' })"
                   >
                     {{ $t("Submit for review") }}
@@ -64,6 +86,11 @@
                     v-if="deal.draft_status === 2 || deal.draft_status === 3"
                     class="btn btn-primary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :title="
+                      $t(
+                        'Send a request of improvent and create a new draft version of the deal'
+                      )
+                    "
                     @click="
                       open_comment_overlay_for('TO_DRAFT', $t('Request improvement'))
                     "
@@ -76,6 +103,7 @@
                     v-if="deal.draft_status === 2"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :title="$t('Submits the deal for activation')"
                     @click="
                       $emit('change_deal_status', { transition: 'TO_ACTIVATION' })
                     "
@@ -88,6 +116,7 @@
                     v-if="deal.draft_status === 3"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :title="get_activate_description"
                     @click="$emit('change_deal_status', { transition: 'ACTIVATE' })"
                   >
                     {{ $t("Activate") }}
@@ -171,7 +200,9 @@
 
                       <li v-if="deal.datasources.length > 0">
                         <i class="fas fa-check fa-fw"></i>
-                        {{ $t("At least one data source") }}
+                        {{ $t("At least one data source") }} ({{
+                          deal.datasources.length
+                        }})
                       </li>
                       <li v-else>
                         <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
@@ -182,11 +213,35 @@
                         {{ $t("At least one investor") }}
                       </li>
                       <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("No investor") }}
+                        <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
                       </li>
                     </ul>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div v-if="deal_is_editable" class="row action-button">
+              <div class="col-sm-2">
+                <router-link
+                  class="btn btn-primary"
+                  :class="{ disabled: deal_is_old_draft }"
+                  :to="{
+                    name: 'deal_edit',
+                    params: { dealId: deal.id, dealVersion: dealVersion },
+                  }"
+                  >{{ $t("Edit") }}
+                </router-link>
+              </div>
+              <div class="col-sm-6 button-description">{{ get_edit_description }}</div>
+            </div>
+            <div v-if="deal_is_deletable" class="row action-button">
+              <div class="col-sm-2">
+                <button class="btn btn-danger" @click.prevent="handle_delete">
+                  {{ get_delete_text }}
+                </button>
+              </div>
+              <div class="col-sm-6 button-description">
+                {{ get_delete_description }}
               </div>
             </div>
           </div>
@@ -247,45 +302,6 @@
             ></div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="container edit-buttons">
-      <div class="links">
-        <router-link
-          v-if="deal_is_editable"
-          class="btn btn-primary"
-          :class="{ disabled: deal_is_old_draft }"
-          :to="{
-            name: 'deal_edit',
-            params: { dealId: deal.id, dealVersion: dealVersion },
-          }"
-        >
-          {{ $t("Edit") }}
-        </router-link>
-        <button
-          v-if="deal_is_deletable"
-          class="btn btn-danger btn-sm"
-          @click.prevent="handle_delete"
-        >
-          {{ deal_is_deleted ? $t("Undelete") : $t("Delete") }}
-        </button>
-        <router-link
-          v-if="deal_has_newer_draft"
-          class="btn btn-primary btn-sm"
-          :to="{
-            name: 'deal_detail',
-            params: { dealId: deal.id, dealVersion: last_revision.id },
-          }"
-        >
-          {{ $t("Go to current draft") }}
-        </router-link>
-        <router-link
-          v-if="deal_is_draft_with_active"
-          class="btn btn-primary btn-sm"
-          :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
-        >
-          {{ $t("Go to live version") }}
-        </router-link>
       </div>
     </div>
     <TransitionCommentOverlay
@@ -359,6 +375,7 @@
       deal_is_deleted() {
         // active and deleted
         if (!this.dealVersion && this.deal.status === 4) return true;
+        return false;
       },
       deal_is_active_with_draft() {
         return !this.dealVersion && this.deal.draft_status;
@@ -379,9 +396,50 @@
         // old with newer draft
         return this.deal_is_old_draft && this.latest_deal_version.draft_status;
       },
+      deal_has_active() {
+        return !!this.deal.status;
+      },
       latest_deal_version() {
         return this.deal.versions.find((v) => v.revision.id === this.last_revision.id)
           .deal;
+      },
+      get_edit_description() {
+        if (this.deal.draft_status === 1) {
+          if (!this.deal_has_active) {
+            // only for new drafts without active
+            return this.$t("Starts editing this deal");
+          } else {
+            // only for new drafts with active
+            return this.$t("Edits this draft version");
+          }
+        } else {
+          return this.$t("Creates a new draft version of this deal");
+        }
+      },
+      get_delete_text() {
+        if (this.deal_is_deleted) return this.$t("Undelete");
+        else if (!this.dealVersion && !this.deal.draft_status) {
+          // active without draft
+          return this.$t("Delete deal");
+        } else return this.$t("Delete");
+      },
+      get_delete_description() {
+        if (this.deal_is_deleted) return this.$t("Undelete this deal as active deal");
+        if (this.dealVersion && this.deal_has_active) {
+          // is draft and has active
+          return this.$t("Deletes this draft version of the deal");
+        } else {
+          return this.$t("Deletes this deal");
+        }
+      },
+      get_activate_description() {
+        if (this.deal_has_active) {
+          return this.$t(
+            "Activates submitted version replacing currently active version"
+          );
+        } else {
+          return this.$t("Sets the deal active");
+        }
       },
     },
     methods: {
@@ -536,7 +594,7 @@
     align-items: stretch;
     background-color: transparent;
     margin-bottom: 0;
-    height: 432px;
+    height: 482px;
 
     @include media-breakpoint-down(sm) {
       height: auto;
@@ -547,7 +605,7 @@
       margin: 1em 0;
       position: relative;
       padding-right: 0;
-      height: 400px;
+      height: 450px;
 
       @include media-breakpoint-down(sm) {
         margin-bottom: 0;
@@ -573,7 +631,7 @@
 
         .panel-container {
           padding-right: 0;
-          margin-top: 1em;
+          margin-top: 1.5em;
           text-align: right;
 
           .meta-panel {
@@ -584,6 +642,7 @@
 
       .status-wrapper {
         display: flex;
+        min-height: 120px;
       }
 
       $arrow-height: 33px;
@@ -592,7 +651,7 @@
       .fat-stati {
         display: flex;
         flex-flow: row wrap;
-        margin-top: 1em;
+        margin-top: 0;
         @media (max-width: 400px) {
           font-size: 0.9rem;
           line-height: 1.1;
@@ -760,7 +819,7 @@
           inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
         padding: 2px 4px;
         margin-left: -4px;
-        max-height: 300px;
+        max-height: 330px;
 
         .comment {
           font-size: 0.8em;
@@ -784,12 +843,41 @@
         }
       }
     }
+
+    .action-button {
+      &:not(:last-child) {
+        margin-bottom: 7px;
+      }
+
+      align-items: center;
+
+      .btn {
+        width: 100%;
+        &.btn-danger {
+          border: 1px dotted red;
+          color: red;
+          background: transparent;
+
+          &:hover {
+            border-color: red;
+            color: white;
+            background: lighten(red, 20);
+          }
+        }
+      }
+
+      .button-description {
+        margin-left: -15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-style: italic;
+      }
+    }
   }
 
-  .edit-buttons {
+  .links {
     position: relative;
 
-    .links {
+    .workflow-links {
       position: absolute;
       top: -2.3em;
 
@@ -910,11 +998,28 @@
     color: black;
     text-align: left;
     text-transform: none;
-    margin-top: 1em;
+    margin-top: 0.5em;
     margin-bottom: 0;
 
     &:before {
       content: none;
+    }
+  }
+
+  .title-col {
+    position: relative;
+    .version-nav-buttons {
+      position: absolute;
+      left: 90%;
+      top: -21px;
+      z-index: 1;
+      width: auto;
+      white-space: nowrap;
+      .btn {
+        &:not(:last-child) {
+          margin-right: 0.5em;
+        }
+      }
     }
   }
 
@@ -993,6 +1098,14 @@
       &:hover {
         cursor: pointer;
       }
+    }
+  }
+  .btn-gray {
+    background-color: #b1b1b1 !important;
+
+    &:hover {
+      color: white;
+      background-color: darken(#b1b1b1, 5%) !important;
     }
   }
 </style>

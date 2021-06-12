@@ -118,7 +118,7 @@ export const draft_status_map = {
   2: "Review",
   3: "Activation",
   4: "Rejected", // legacy
-  5: "To Delete", // legacy
+  5: "Deleted",
 };
 
 export const confidential_reason_choices = {
