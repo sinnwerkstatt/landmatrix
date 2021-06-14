@@ -1367,7 +1367,7 @@ class DealWorkflowInfo(models.Model):
     # when the workflow moves along. the payload will remain consistent though.
     deal = models.ForeignKey(Deal, on_delete=models.PROTECT)
     deal_version = models.ForeignKey(
-        DealVersion, on_delete=models.PROTECT, null=True, blank=True
+        DealVersion, on_delete=models.SET_NULL, null=True, blank=True
     )
 
     def to_dict(self) -> dict:

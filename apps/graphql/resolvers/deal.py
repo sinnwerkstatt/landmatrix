@@ -13,11 +13,7 @@ from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
-from .user_utils import (
-    has_authorization_for_country,
-    get_user_roles,
-    send_comment_to_user,
-)
+from .user_utils import send_comment_to_user, get_user_role
 
 storage = DefaultStorage()
 
@@ -45,6 +41,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
         #     return
         rev = Revision.objects.get(id=version)
         deal = rev.dealversion_set.get().fields
+        deal["created_at"] = rev.date_created
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
@@ -120,14 +117,6 @@ def resolve_deals(
     )
 
 
-def _resolve_field_dict_fetch(field_dict, revision):
-    field_dict["datasources_count"] = revision.version_set.filter(
-        content_type__model="datasource"
-    ).count()
-
-    return field_dict
-
-
 def resolve_dealversions(
     obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
 ):
@@ -165,8 +154,9 @@ def resolve_add_deal_comment(
     _, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
     user = info.context["request"].user
-    if not user.is_authenticated:
-        raise GraphQLError("not authorized")
+    role = get_user_role(user)
+    if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
+        raise GraphQLError("not allowed")
 
     deal = Deal.objects.get(id=id)
     deal_version = None
@@ -198,11 +188,12 @@ def resolve_change_deal_status(
     info,
     id: int,
     version: int,
-    transition: str = "",
+    transition: str,
     comment: str = None,
     to_user_id: int = None,
 ) -> dict:
     user = info.context["request"].user
+    role = get_user_role(user)
     if not user.is_authenticated:
         raise GraphQLError("not authorized")
 
@@ -213,8 +204,25 @@ def resolve_change_deal_status(
     deal_v_obj = deal_version.retrieve_object()
     old_draft_status = deal_v_obj.draft_status
 
-    # TODO: assure neccessary rights concerning user and updating the deal
-    if transition == "ACTIVATE":
+    if transition == "TO_REVIEW":
+        if not (
+            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+        draft_status = Deal.DRAFT_STATUS_REVIEW
+        deal_v_obj.draft_status = draft_status
+        deal_version.update_from_obj(deal_v_obj).save()
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
+    elif transition == "TO_ACTIVATION":
+        if role not in ["ADMINISTRATOR", "EDITOR"]:
+            raise GraphQLError("not authorized")
+        draft_status = Deal.DRAFT_STATUS_ACTIVATION
+        deal_v_obj.draft_status = draft_status
+        deal_version.update_from_obj(deal_v_obj).save()
+        Deal.objects.filter(id=id).update(draft_status=draft_status)
+    elif transition == "ACTIVATE":
+        if role != "ADMINISTRATOR":
+            raise GraphQLError("not allowed")
         draft_status = None
         deal_v_obj.status = (
             Deal.STATUS_LIVE
@@ -225,29 +233,14 @@ def resolve_change_deal_status(
         deal_v_obj.save()
         deal_version.update_from_obj(deal_v_obj).save()
     elif transition == "TO_DRAFT":
-        if not has_authorization_for_country(user, deal.country):
+        if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
         draft_status = Deal.DRAFT_STATUS_DRAFT
         deal_v_obj.draft_status = draft_status
         rev = deal_v_obj.save_revision(date_created=timezone.now(), user=user)
         Deal.objects.filter(id=id).update(draft_status=draft_status)
-    elif transition == "TO_REVIEW":
-        if not (
-            deal_version.revision.user == user
-            or ({"Administrator", "Editor"} & set(get_user_roles(user)))
-        ):
-            raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_REVIEW
-        deal_v_obj.draft_status = draft_status
-        deal_version.update_from_obj(deal_v_obj).save()
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
     else:
-        if not has_authorization_for_country(user, deal.country):
-            raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_ACTIVATION
-        deal_v_obj.draft_status = draft_status
-        deal_version.update_from_obj(deal_v_obj).save()
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
+        raise GraphQLError(f"unknown transition {transition}")
 
     DealWorkflowInfo.objects.create(
         deal=deal,
@@ -267,7 +260,8 @@ def resolve_change_deal_status(
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     user = info.context["request"].user
-    if not user.is_authenticated:
+    role = get_user_role(user)
+    if not role:
         raise GraphQLError("not authorized")
 
     # this is a new Deal
@@ -275,6 +269,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal = Deal()
         deal.update_from_dict(payload)
         deal.recalculate_fields()
+        deal.modified_at = timezone.now()
         deal.status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         deal.save()
         rev = Revision.objects.create(
@@ -288,6 +283,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     deal = Deal.objects.get(id=id)
     deal.update_from_dict(payload)
     deal.recalculate_fields()
+    deal.modified_at = timezone.now()
 
     # this is a live Deal for which we create a new Version
     if not version:
@@ -309,6 +305,11 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     else:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
+        if not (
+            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+
         deal_version.update_from_obj(deal)
         if deal.draft_status in [
             Deal.DRAFT_STATUS_REVIEW,
@@ -337,7 +338,8 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
 def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
     # TODO make sure user is allowed to edit this deal.
     user = info.context["request"].user
-    if not user.is_authenticated:
+    role = get_user_role(user)
+    if not role:
         raise GraphQLError("not authorized")
 
     deal = Deal.objects.get(id=id)
@@ -345,28 +347,29 @@ def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
     if version:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
+        if not (
+            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+        deal_v_obj = deal_version.retrieve_object()
+        old_draft_status = deal_v_obj.draft_status
         deal_version.delete()
         DealWorkflowInfo.objects.create(
             deal=deal,
             from_user=user,
-            draft_status_before=(
-                None
-                if deal.status == Deal.STATUS_DELETED
-                else Deal.DRAFT_STATUS_TO_DELETE
-            ),
-            draft_status_after=(
-                Deal.DRAFT_STATUS_TO_DELETE
-                if deal.status == Deal.STATUS_DELETED
-                else None
-            ),
+            draft_status_before=old_draft_status,
+            draft_status_after=deal.status == Deal.STATUS_DELETED,
             comment=comment,
         )
     else:
+        if role != "ADMINISTRATOR":
+            raise GraphQLError("not authorized")
         deal.status = (
             Deal.STATUS_UPDATED
             if deal.status == Deal.STATUS_DELETED
             else Deal.STATUS_DELETED
         )
+        deal.modified_at = timezone.now()
         deal.save()
         DealWorkflowInfo.objects.create(
             deal=deal,
@@ -391,22 +394,31 @@ def resolve_set_confidential(
 ) -> bool:
     # TODO make sure user is allowed to edit this deal.
     user = info.context["request"].user
-    if not user.is_authenticated:
+    role = get_user_role(user)
+    if not role:
         raise GraphQLError("not authorized")
 
     if version:
         rev = Revision.objects.get(id=version)
         deal_version = DealVersion.objects.get(revision=rev)
+        if not (
+            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
         deal_v_obj = deal_version.retrieve_object()
         deal_v_obj.confidential = confidential
         deal_v_obj.confidential_reason = reason
         deal_v_obj.confidential_comment = comment
+        deal_v_obj.modified_at = timezone.now()
         deal_version.update_from_obj(deal_v_obj).save()
 
     else:
+        if role != "ADMINISTRATOR":
+            raise GraphQLError("not authorized")
         deal = Deal.objects.get(id=id)
         deal.confidential = confidential
         deal.confidential_reason = reason
         deal.confidential_comment = comment
+        deal.modified_at = timezone.now()
         deal.save()
     return True

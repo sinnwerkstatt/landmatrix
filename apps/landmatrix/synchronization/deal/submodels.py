@@ -44,19 +44,18 @@ def create_locations(deal, groups, do_save, revision):
         if plat and plng:
             try:
                 point_lat = plat.replace(",", ".").replace(" ", "")
-                point_lat = round(float(point_lat), 8)
+                point_lat = round(float(point_lat), 5)
             except ValueError:
                 pass
             try:
                 point_lon = plng.replace(",", ".").replace("°", "")
-                point_lon = round(float(point_lon), 8)
+                point_lon = round(float(point_lon), 5)
             except ValueError:
                 pass
 
             try:
                 assert 90 >= point_lat >= -90
                 assert 180 >= point_lon >= -180
-                # TODO: throw out -90>lat>90, -180>lng>180
                 Point(point_lon, point_lat)
                 location["point"] = {"lat": point_lat, "lng": point_lon}
             except:

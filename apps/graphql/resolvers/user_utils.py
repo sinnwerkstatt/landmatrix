@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -8,6 +8,11 @@ from wagtail.core.models import Site
 from apps.landmatrix.models import Country
 
 User = get_user_model()
+
+
+def get_user_role(user: User) -> Optional[str]:
+    roles = get_user_roles(user)
+    return roles[0].upper() if roles else None
 
 
 def get_user_roles(user: User) -> list:

@@ -21,7 +21,6 @@
       :value-classes="['inlineval']"
       fieldname="fully_updated_at"
       :value="obj.fully_updated_at"
-      :visible="!!obj.fully_updated_at"
     />
   </div>
 </template>

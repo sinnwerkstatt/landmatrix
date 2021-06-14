@@ -12,11 +12,18 @@ type User {
   date_joined: DateTime
   userregionalinfo: UserRegionalInfo
   groups: [UserGroup]
+  role: UserRole
 }
 
 type UserGroup {
   id: Int!
   name: String!
+}
+
+enum UserRole {
+  ADMINISTRATOR
+  EDITOR
+  REPORTER
 }
 
 

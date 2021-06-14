@@ -5,6 +5,8 @@ from ariadne.exceptions import HttpError
 from django.contrib import auth
 from graphql import GraphQLResolveInfo
 
+from apps.graphql.resolvers.user_utils import get_user_role
+
 User = auth.get_user_model()
 
 
@@ -24,7 +26,8 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
 
 def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     current_user = info.context["request"].user
-    if not current_user.is_staff:
+    role = get_user_role(current_user)
+    if role not in ["ADMINISTRATOR", "EDITOR"]:
         raise HttpError(message="Not allowed")
 
     users = User.objects.exclude(id=current_user.id)

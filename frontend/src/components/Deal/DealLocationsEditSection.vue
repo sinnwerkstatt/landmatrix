@@ -23,7 +23,7 @@
             <i class="fas fa-trash"></i>
           </a>
         </div>
-        <div v-if="actLoc === loc" class="location-body">
+        <div :class="{ hidden: actLoc !== loc }" class="location-body">
           <EditField
             v-model="loc.level_of_accuracy"
             fieldname="level_of_accuracy"
