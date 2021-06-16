@@ -350,6 +350,8 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
             )
         else:
             deal_version.save()
+            if deal.status == Deal.STATUS_DRAFT:
+                deal.save()
 
     return {"dealId": id, "dealVersion": rev.id}
 

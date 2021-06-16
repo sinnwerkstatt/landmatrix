@@ -281,7 +281,7 @@
       features_changed() {
         this.locs.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
-          if (lfg) {
+          if (lfg && lfg.getLayers().length > 0) {
             let lfggeo = lfg.toGeoJSON();
 
             let pointIndex = lfggeo.features.findIndex(

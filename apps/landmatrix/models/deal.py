@@ -1123,11 +1123,13 @@ class Deal(models.Model, OldDealMixin):
             elif key == "point":
                 self.point = Point(value["lng"], value["lat"])
             elif key in ["locations", "datasources", "contracts"]:
-                # TODO: Throw out "empty" locations, datasources, contracts.. maybe
-                # if value:
-                #     if [list(x.keys()) == ['id'] for x in value]:
-                #         continue
-                self.__setattr__(key, value)
+                new_value = [
+                    val
+                    for val in value
+                    if any([v for k, v in val.items() if k != "id"])
+                ]
+                self.__setattr__(key, new_value)
+
             else:
                 self.__setattr__(key, value)
 
