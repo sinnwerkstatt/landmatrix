@@ -323,6 +323,7 @@
         update({ deal }) {
           if (!deal && !this.$store.getters.userAuthenticated)
             this.$router.push({ name: "login", query: { next: this.$route.fullPath } });
+          if (!deal) this.$router.push({ name: "list_deals" });
           if (deal.status === 1 && !this.dealVersion)
             this.$router.push({
               name: "deal_detail",
@@ -384,10 +385,10 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation(
+              mutation (
                 $id: Int!
                 $version: Int!
-                $transition: WorkflowTransition
+                $transition: WorkflowTransition!
                 $comment: String
                 $to_user_id: Int
               ) {
@@ -437,7 +438,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int, $comment: String) {
+              mutation ($id: Int!, $version: Int, $comment: String) {
                 deal_delete(id: $id, version: $version, comment: $comment)
               }
             `,
@@ -463,7 +464,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation(
+              mutation (
                 $id: Int!
                 $confidential: Boolean!
                 $version: Int

@@ -164,7 +164,7 @@
             <p class="navbar-text dropdown-header" style="line-height: 1.2em">
               {{ user.full_name }}
               <br />
-              <small>{{ $t(user.role) }}</small>
+              <small>{{ $t(user.bigrole) }}</small>
             </p>
           </li>
           <li v-if="user" class="nav-item dropdown">

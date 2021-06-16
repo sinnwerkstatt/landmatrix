@@ -36,10 +36,12 @@ const store = new Vuex.Store({
             query: gql`
               {
                 me {
+                  id
                   full_name
                   username
                   is_authenticated
                   is_impersonate
+                  role
                   userregionalinfo {
                     country {
                       id

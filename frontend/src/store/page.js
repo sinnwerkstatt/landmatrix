@@ -63,7 +63,7 @@ export const pageModule = {
           }
           role = ret;
         }
-        user.role = role;
+        user.bigrole = role;
       }
       state.user = user;
     },

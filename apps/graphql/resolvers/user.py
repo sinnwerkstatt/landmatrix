@@ -27,7 +27,7 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
 def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     current_user = info.context["request"].user
     role = get_user_role(current_user)
-    if role not in ["ADMINISTRATOR", "EDITOR"]:
+    if not role:
         raise HttpError(message="Not allowed")
 
     users = User.objects.exclude(id=current_user.id)
@@ -46,6 +46,11 @@ user_type = ObjectType("User")
 @user_type.field("groups")
 def get_user_groups(obj: User, info: GraphQLResolveInfo):
     return obj.groups.all()
+
+
+@user_type.field("role")
+def get_user_r(obj: User, info: GraphQLResolveInfo):
+    return get_user_role(obj)
 
 
 @user_type.field("full_name")

@@ -74,7 +74,7 @@
               <div class="row workflow-buttons">
                 <div class="col text-right">
                   <a
-                    v-if="deal.draft_status === 1"
+                    v-if="deal.draft_status === 1 && is_authorized('REPORTER')"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="$t('Submits the deal for review')"
@@ -83,7 +83,10 @@
                     {{ $t("Submit for review") }}
                   </a>
                   <a
-                    v-if="deal.draft_status === 2 || deal.draft_status === 3"
+                    v-if="
+                      is_authorized('EDITOR') &&
+                      (deal.draft_status === 2 || deal.draft_status === 3)
+                    "
                     class="btn btn-primary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="
@@ -100,7 +103,7 @@
                 </div>
                 <div class="col text-center">
                   <a
-                    v-if="deal.draft_status === 2"
+                    v-if="is_authorized('EDITOR') && deal.draft_status === 2"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="$t('Submits the deal for activation')"
@@ -321,7 +324,7 @@
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
   import {
-    confidential_reason_choices,
+    // confidential_reason_choices,
     draft_status_map,
     status_map,
   } from "$utils/choices";
@@ -358,14 +361,14 @@
       last_revision() {
         return this.deal?.versions[0]?.revision ?? "";
       },
-      get_confidential_reason() {
-        return this.$t(confidential_reason_choices[this.deal.confidential_reason]);
-      },
+      // get_confidential_reason() {
+      //   return this.$t(confidential_reason_choices[this.deal.confidential_reason]);
+      // },
       deal_is_editable() {
         // deal ist deleted
         if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.deal_is_active_with_draft) return false;
-        return true;
+        return this.is_authorized("REPORTER");
       },
       deal_is_deletable() {
         if (this.deal_is_active_with_draft) return false;
@@ -443,6 +446,23 @@
       },
     },
     methods: {
+      is_authorized(level) {
+        const u_role = this.$store.state.page.user.role;
+        switch (level) {
+          case "REPORTER": {
+            return (
+              (this.deal.revision &&
+                this.deal.revision.user.id === this.$store.state.page.user.id) ||
+              ["ADMINISTRATOR", "EDITOR"].includes(u_role)
+            );
+          }
+          case "EDITOR":
+            return ["ADMINISTRATOR", "EDITOR"].includes(u_role);
+          case "ADMINISTRATOR":
+            return u_role === "ADMINISTRATOR";
+        }
+        return false;
+      },
       get_draft_status(wfi) {
         let before = wfi.draft_status_before;
         let after = wfi.draft_status_after;
@@ -471,7 +491,7 @@
           this.$apollo
             .mutate({
               mutation: gql`
-                mutation(
+                mutation (
                   $id: Int!
                   $version: Int
                   $comment: String!

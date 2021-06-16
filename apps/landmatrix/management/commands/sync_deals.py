@@ -34,10 +34,7 @@ class Command(BaseCommand):
         for deal_id in deal_ids:
             if options["rewrite_deals"]:
                 print(f"  Removing Deal {deal_id}... ", end="", flush=True)
-                DealWorkflowInfo.objects.filter(deal_id=deal_id).delete()
                 Revision.objects.filter(dealversion__object_id=deal_id).delete()
-                DealTopInvestors.objects.filter(deal_id=deal_id).delete()
-                DealParentCompanies.objects.filter(deal_id=deal_id).delete()
                 Deal.objects.filter(id=deal_id).delete()
                 print("\033[92m" + "OK" + "\033[0m")
 

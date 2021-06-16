@@ -14,16 +14,8 @@ locations_schema_def = {
             "point": {
                 "type": ["object", "null"],
                 "properties": {
-                    "lat": {
-                        "type": "number",
-                        "minimum": -90,
-                        "maximum": 90,
-                    },
-                    "lng": {
-                        "type": "number",
-                        "minimum": -180,
-                        "maximum": 180,
-                    },
+                    "lat": {"type": "number", "minimum": -90, "maximum": 90},
+                    "lng": {"type": "number", "minimum": -180, "maximum": 180},
                 },
             },
             "facility_name": {"type": "string"},
@@ -57,11 +49,11 @@ contracts_schema_def = {
             "number": {"type": "string"},
             "date": {
                 "type": ["string", "null"],
-                "pattern": "^\d{4}(-(0[1-9]|1[012]))?(-(0[1-9]|[12][0-9]|3[01]))?$",
+                "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
             },
             "expiration_date": {
                 "type": ["string", "null"],
-                "pattern": "^\d{4}(-(0[1-9]|1[012]))?(-(0[1-9]|[12][0-9]|3[01]))?$",
+                "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
             },
             "agreement_duration": {"type": ["integer", "null"]},
             "comment": {"type": "string"},
@@ -108,7 +100,7 @@ datasources_schema_def = {
             # "date": {"type": ["string", "null"], "format": "date"},
             "date": {
                 "type": ["string", "null"],
-                "pattern": "^\d{4}(-(0[1-9]|1[012]))?(-(0[1-9]|[12][0-9]|3[01]))?$",
+                "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
             },
             "name": {"type": "string"},
             "company": {"type": "string"},
