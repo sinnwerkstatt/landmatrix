@@ -84,8 +84,8 @@
                   </a>
                   <a
                     v-if="
-                      is_authorized('EDITOR') &&
-                      (deal.draft_status === 2 || deal.draft_status === 3)
+                      (deal.draft_status === 2 && is_authorized('EDITOR')) ||
+                      (deal.draft_status === 3 && is_authorized('ADMINISTRATOR'))
                     "
                     class="btn btn-primary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col text-left">
                   <a
-                    v-if="deal.draft_status === 3"
+                    v-if="is_authorized('ADMINISTRATOR') && deal.draft_status === 3"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="get_activate_description"
@@ -368,12 +368,14 @@
         // deal ist deleted
         if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.deal_is_active_with_draft) return false;
-        return this.is_authorized("REPORTER");
+        let auth_level = { 1: "REPORTER", 2: "EDITOR", 3: "ADMINISTRATOR" };
+        return this.is_authorized(auth_level[this.deal.draft_status]);
       },
       deal_is_deletable() {
         if (this.deal_is_active_with_draft) return false;
         if (this.deal_is_old_draft) return false;
-        return true;
+        let auth_level = { 1: "REPORTER", 2: "EDITOR", 3: "ADMINISTRATOR" };
+        return this.is_authorized(auth_level[this.deal.draft_status]);
       },
       deal_is_deleted() {
         // active and deleted

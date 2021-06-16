@@ -22,6 +22,8 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
     user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
+    role = get_user_role(user)
+
     add_versions = False
     add_workflowinfos = False
     add_comments = False
@@ -39,8 +41,6 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             filtered_fields += [field]
 
     if version:
-        # if not user.is_authenticated:
-        #     return
         try:
             rev = Revision.objects.get(id=version)
         except Revision.DoesNotExist:
@@ -49,6 +49,8 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             deal = rev.dealversion_set.get().fields
         except DealVersion.DoesNotExist:
             return
+        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+            raise GraphQLError("not authorized")
         deal["created_at"] = rev.date_created
         deal["revision"] = rev
     else:
