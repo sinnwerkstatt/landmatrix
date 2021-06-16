@@ -164,7 +164,7 @@
                       <i class="fas fa-eye-slash fa-fw fa-lg"></i>
                       <span>{{ $t("Not publicly visible") }}</span>
                     </div>
-                    <div class="confidential-toggle">
+                    <div v-if="deal_is_editable" class="confidential-toggle">
                       <b-form-checkbox
                         :checked="deal.confidential"
                         :class="{ active: deal.confidential }"
@@ -174,12 +174,11 @@
                         :title="$t('Toggle deal confidentiality')"
                         @click.native.prevent="toggle_confidential"
                       >
-                        <template v-if="deal.confidential">
-                          {{ $t("Confidential") }}
-                        </template>
-                        <template v-else>
-                          {{ $t("Not confidential") }}
-                        </template>
+                        {{
+                          deal.confidential
+                            ? $t("Confidential")
+                            : $t("Not confidential")
+                        }}
                       </b-form-checkbox>
                       <a id="confidential-reason"
                         ><span v-if="deal.confidential">(reason)</span></a
@@ -192,6 +191,16 @@
                       </b-tooltip>
                     </div>
                     <ul>
+                      <template v-if="!deal_is_editable">
+                        <li v-if="!deal.confidential">
+                          <i class="fas fa-check fa-fw"></i>
+                          {{ $t("Not confidential") }}
+                        </li>
+                        <li v-else>
+                          <i class="fas fa-times fa-fw"></i>
+                          {{ $t("Confidential") }}
+                        </li>
+                      </template>
                       <li v-if="deal.country">
                         <i class="fas fa-check fa-fw"></i>
                         {{ $t("Target country is set") }}
@@ -570,6 +579,7 @@
         this.show_comment_overlay = false;
       },
       toggle_confidential() {
+        if (!this.deal_is_editable) return;
         if (this.deal.confidential) {
           // unset confidential
           this.$emit("set_confidential", {
