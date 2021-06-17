@@ -74,7 +74,7 @@
               <div class="row workflow-buttons">
                 <div class="col text-right">
                   <a
-                    v-if="deal.draft_status === 1 && is_authorized('REPORTER')"
+                    v-if="deal.draft_status === 1 && is_authorized()"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="$t('Submits the deal for review')"
@@ -84,8 +84,8 @@
                   </a>
                   <a
                     v-if="
-                      (deal.draft_status === 2 && is_authorized('EDITOR')) ||
-                      (deal.draft_status === 3 && is_authorized('ADMINISTRATOR'))
+                      (deal.draft_status === 2 || deal.draft_status === 3) &&
+                      is_authorized()
                     "
                     class="btn btn-primary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
@@ -103,7 +103,7 @@
                 </div>
                 <div class="col text-center">
                   <a
-                    v-if="is_authorized('EDITOR') && deal.draft_status === 2"
+                    v-if="deal.draft_status === 2 && is_authorized()"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="$t('Submits the deal for activation')"
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col text-left">
                   <a
-                    v-if="is_authorized('ADMINISTRATOR') && deal.draft_status === 3"
+                    v-if="deal.draft_status === 3 && is_authorized()"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="get_activate_description"
@@ -377,14 +377,12 @@
         // deal ist deleted
         if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.deal_is_active_with_draft) return false;
-        let auth_level = { 1: "REPORTER", 2: "EDITOR", 3: "ADMINISTRATOR" };
-        return this.is_authorized(auth_level[this.deal.draft_status]);
+        return this.is_authorized();
       },
       deal_is_deletable() {
         if (this.deal_is_active_with_draft) return false;
         if (this.deal_is_old_draft) return false;
-        let auth_level = { 1: "REPORTER", 2: "EDITOR", 3: "ADMINISTRATOR" };
-        return this.is_authorized(auth_level[this.deal.draft_status]);
+        return this.is_authorized();
       },
       deal_is_deleted() {
         // active and deleted
@@ -457,19 +455,20 @@
       },
     },
     methods: {
-      is_authorized(level) {
+      is_authorized() {
         const u_role = this.$store.state.page.user.role;
-        switch (level) {
-          case "REPORTER": {
+        switch (this.deal.draft_status) {
+          case 0: // anybody who has a ROLE
+            return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(u_role);
+          case 1: // the Reporter of the Deal or Editor,Administrator
             return (
               (this.deal.revision &&
                 this.deal.revision.user.id === this.$store.state.page.user.id) ||
               ["ADMINISTRATOR", "EDITOR"].includes(u_role)
             );
-          }
-          case "EDITOR":
+          case 2: // at least Editor
             return ["ADMINISTRATOR", "EDITOR"].includes(u_role);
-          case "ADMINISTRATOR":
+          case 3: // only Admins
             return u_role === "ADMINISTRATOR";
         }
         return false;
