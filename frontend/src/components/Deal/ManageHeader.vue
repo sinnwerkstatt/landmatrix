@@ -458,7 +458,7 @@
       is_authorized() {
         const u_role = this.$store.state.page.user.role;
         switch (this.deal.draft_status) {
-          case 0: // anybody who has a ROLE
+          case null: // anybody who has a ROLE
             return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(u_role);
           case 1: // the Reporter of the Deal or Editor,Administrator
             return (
@@ -470,8 +470,9 @@
             return ["ADMINISTRATOR", "EDITOR"].includes(u_role);
           case 3: // only Admins
             return u_role === "ADMINISTRATOR";
+          default:
+            return false;
         }
-        return false;
       },
       get_draft_status(wfi) {
         let before = wfi.draft_status_before;
