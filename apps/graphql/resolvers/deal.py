@@ -248,8 +248,7 @@ def resolve_change_deal_status(
             raise GraphQLError("not authorized")
         draft_status = Deal.DRAFT_STATUS_DRAFT
         deal_v_obj.draft_status = draft_status
-        # TODO TO DISCUSS user= original draft user?
-        rev = deal_v_obj.save_revision(date_created=timezone.now(), user=rev.user)
+        rev = deal_v_obj.save_revision(date_created=timezone.now(), user_id=to_user_id)
         Deal.objects.filter(id=id).update(draft_status=draft_status)
     else:
         raise GraphQLError(f"unknown transition {transition}")
