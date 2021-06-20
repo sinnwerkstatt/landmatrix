@@ -31,12 +31,12 @@
     contract_area: {
       dashArray: "5, 5",
       dashOffset: "0",
-      fillColor: "#ffec03",
+      fillColor: "#ff00ff",
     },
     intended_area: {
       dashArray: "5, 5",
       dashOffset: "0",
-      fillColor: "#ff8900",
+      fillColor: "#66ff33",
     },
     production_area: {
       fillColor: "#ff0000",

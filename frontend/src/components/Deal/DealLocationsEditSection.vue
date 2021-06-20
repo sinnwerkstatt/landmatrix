@@ -30,7 +30,7 @@
             model="location"
             :label-classes="['col-12', 'small']"
             :value-classes="['col-12']"
-            @input="features_changed"
+            @input="_features_changed"
           />
           <div class="form-field row">
             <div class="col-12 small">
@@ -60,7 +60,7 @@
               model="location"
               :label-classes="['col-12', 'small']"
               :value-classes="['col-12']"
-              @input="features_changed"
+              @input="_features_changed"
             />
           </div>
           <div class="row">
@@ -135,11 +135,10 @@
                 )[0];
               });
             } else {
-              this.addPropertiesPopup(layer, feature);
+              this._addPropertiesPopup(layer, feature);
             }
           },
         },
-        confirm_delete: false,
       };
     },
     watch: {
@@ -152,12 +151,10 @@
       actLoc(actLoc) {
         let drawMarker = true;
         if (actLoc) {
-          if (!this.locationFGs.get(actLoc.id)) this.addNewLayerGroup(actLoc.id);
+          if (!this.locationFGs.get(actLoc.id)) this._addNewLayerGroup(actLoc.id);
           this.actFG = this.locationFGs.get(actLoc.id);
           this.actFG.eachLayer((l) => {
-            if (l.feature.geometry.type === "Point") {
-              drawMarker = false;
-            }
+            if (l.feature.geometry.type === "Point") drawMarker = false;
           });
           // noinspection JSCheckFunctionSignatures
           this.bigmap.pm.setGlobalOptions({ layerGroup: this.actFG });
@@ -168,7 +165,7 @@
         this.locationFGs.forEach((value, key) => {
           value.eachLayer((l) => {
             // noinspection JSUnresolvedVariable
-            let relevant_element = l?._icon || l._renderer._container;
+            let relevant_element = l?._icon || l._path;
             if (actLoc && key !== actLoc.id)
               relevant_element.classList.add("leaflet-hidden");
             else relevant_element.classList.remove("leaflet-hidden");
@@ -178,7 +175,7 @@
       hoverLocID() {
         this.locationFGs.forEach((value, key) => {
           value.eachLayer((l) => {
-            let relevant_element = l?._icon || l._renderer._container;
+            let relevant_element = l?._icon || l._path;
             if (this.hoverLocID && key !== this.hoverLocID)
               relevant_element.classList.add("leaflet-unhighlight");
             else relevant_element.classList.remove("leaflet-unhighlight");
@@ -190,16 +187,32 @@
       this.locs = JSON.parse(JSON.stringify(this.locations));
     },
     methods: {
+      mapIsReady(map) {
+        this.bigmap = map;
+
+        this.locs.forEach((loc) => {
+          let fg = this._addNewLayerGroup(loc.id);
+          if (loc.areas) fg.addData(loc.areas);
+          if (loc.point) {
+            let pt = new Marker(loc.point).toGeoJSON();
+            pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
+            fg.addData(pt);
+          }
+        });
+        this._fit_bounds();
+        this.bigmap.on("pm:remove", this._features_changed);
+        this.bigmap.on("pm:create", this._on_pm_create);
+        if (this.locs.length === 1) this.actLoc = this.locs[0];
+      },
       addLocation() {
         let maxid = 0;
         this.locs.forEach((l) => (maxid = Math.max(l.id, maxid)));
         let newloc = new Object({ id: maxid + 1 });
         this.actLoc = newloc;
         this.locs.push(newloc);
-        this.features_changed();
+        this._features_changed();
       },
       removeLocation(index) {
-        this.confirm_delete = false;
         let message =
           this.$t("Do you really want to remove location") + ` #${index + 1}?`;
         this.$bvModal;
@@ -216,28 +229,9 @@
               let fg = this.locationFGs.get(loc.id);
               this.locationFGs.delete(loc.id);
               this.bigmap.removeLayer(fg);
-              this.features_changed();
+              this._features_changed();
             }
           });
-      },
-      pointChange(lPo) {
-        let hasMarker = false;
-        this.actFG.eachLayer((l) => {
-          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
-            hasMarker = true;
-            l.setLatLng(lPo);
-            // this.bigmap.setView(lPo);
-            // alternative approach to focussing
-            // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
-          }
-        });
-        if (!hasMarker) {
-          if (!lPo.lat || !lPo.lng) return;
-          let lpoint = new Marker(lPo).toGeoJSON();
-          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
-          this.actFG.addData(lpoint);
-        }
-        this.features_changed();
       },
       locationGoogleAutocomplete(lGA) {
         let hasMarker = false;
@@ -263,22 +257,78 @@
             this.bigmap.setView(lGA.latLng);
           }
         }
-        this.features_changed();
+        this._features_changed();
       },
-      fit_bounds() {
-        let bounds = new LatLngBounds([]);
-        this.locationFGs.forEach((value) => {
-          bounds.extend(value.getBounds());
+      pointChange(lPo) {
+        let hasMarker = false;
+        this.actFG.eachLayer((l) => {
+          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
+            hasMarker = true;
+            l.setLatLng(lPo);
+            // this.bigmap.setView(lPo);
+            // alternative approach to focussing
+            // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
+          }
         });
-        if (!bounds.isValid()) {
-          bounds = [
-            [this.country.point_lat_min, this.country.point_lon_min],
-            [this.country.point_lat_max, this.country.point_lon_max],
-          ];
+        if (!hasMarker) {
+          if (!lPo.lat || !lPo.lng) return;
+          let lpoint = new Marker(lPo).toGeoJSON();
+          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
+          this.actFG.addData(lpoint);
         }
-        this.bigmap.fitBounds(bounds);
+        this._features_changed();
       },
-      features_changed() {
+      uploadFiles(event) {
+        for (let file of event.target.files) {
+          const reader = new FileReader();
+          reader.addEventListener("load", (event) => {
+            this.actFG.addData(JSON.parse(event.target.result));
+            let bounds = this.bigmap.getBounds();
+            bounds.extend(this.actFG.getBounds());
+            this.bigmap.fitBounds(bounds);
+          });
+          reader.readAsText(file);
+        }
+        event.target.value = null;
+      },
+      _addNewLayerGroup(id) {
+        let fg = new GeoJSON(null, this.geojson_options);
+        fg.on("pm:update", this._features_changed);
+        fg.on("pm:dragend", this._features_changed);
+        fg.on("pm:rotateend", this._features_changed);
+        this.locationFGs.set(id, fg);
+        this.bigmap.addLayer(fg);
+        return fg;
+      },
+      _addPropertiesPopup(layer, feature) {
+        let colormap = {
+          contract_area: "#ff00ff",
+          intended_area: "#66ff33",
+          production_area: "#ff0000",
+          "": "#ffe600",
+        };
+
+        let select = document.createElement("select");
+        [
+          { value: "contract_area", innerHTML: this.$t("Contract area") },
+          { value: "intended_area", innerHTML: this.$t("Intended area") },
+          { value: "production_area", innerHTML: this.$t("Production area") },
+        ].forEach((optn) => {
+          let option = document.createElement("option");
+          option.value = optn.value;
+          option.innerHTML = optn.innerHTML;
+          select.appendChild(option);
+        });
+        select.addEventListener("change", ({ target }) => {
+          feature.properties.type = target.value;
+          layer.setStyle({ color: colormap[target.value] });
+          this._features_changed();
+        });
+        select.value = feature.properties.type;
+        layer.setStyle({ color: colormap[select.value] });
+        layer.bindPopup(select);
+      },
+      _features_changed() {
         this.locs.forEach((l) => {
           let lfg = this.locationFGs.get(l.id);
           if (lfg && lfg.getLayers().length > 0) {
@@ -299,102 +349,48 @@
           }
         });
         this.$emit("input", this.locs);
-        this.fit_bounds();
+        // this._fit_bounds();
       },
-      addNewLayerGroup(id) {
-        let fg = new GeoJSON(null, this.geojson_options);
-        fg.on("pm:update", this.features_changed);
-        fg.on("pm:dragend", this.features_changed);
-        fg.on("pm:rotateend", this.features_changed);
-
-        this.locationFGs.set(id, fg);
-        this.bigmap.addLayer(fg);
-        return fg;
-      },
-      mapIsReady(map) {
-        this.bigmap = map;
-
-        this.locs.forEach((loc) => {
-          let fg = this.addNewLayerGroup(loc.id);
-          if (loc.areas) fg.addData(loc.areas);
-          if (loc.point) {
-            let pt = new Marker(loc.point).toGeoJSON();
-            pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
-            fg.addData(pt);
-          }
+      _fit_bounds() {
+        let bounds = new LatLngBounds([]);
+        this.locationFGs.forEach((value) => {
+          bounds.extend(value.getBounds());
         });
-        this.fit_bounds();
-        this.bigmap.on("pm:remove", this.features_changed);
-        this.bigmap.on("pm:create", ({ layer, shape }) => {
-          // do a little three-card monte carlo:
-          // save the current id, remove it from existing layers and add it
-          // back in geojson style after giving it props. 🙄
-          const leafId = layer._leaflet_id;
-          const tmpfg = new GeoJSON().addLayer(layer).toGeoJSON();
-          this.actFG.eachLayer((lay) => {
-            if (lay._leaflet_id === leafId) this.actFG.removeLayer(lay);
-          });
-          tmpfg.features[0].properties = {
-            id: this.actLoc?.id,
-            name: this.actLoc.name,
-          };
-          this.actFG.addData(tmpfg);
-
-          // reset Marker
-          if (shape === "Marker") {
-            let [lng, lat] = tmpfg.features[0].geometry.coordinates;
-            this.actLoc.point = { lat, lng };
-
-            this.bigmap.pm.disableDraw();
-            this.bigmap.pm.removeControls();
-            this.bigmap.pm.addControls(this.geoman_opts);
-          }
-
-          this.features_changed();
-        });
-        if (this.locs.length === 1) this.actLoc = this.locs[0];
-      },
-      uploadFiles(event) {
-        for (let file of event.target.files) {
-          const reader = new FileReader();
-          reader.addEventListener("load", (event) => {
-            this.actFG.addData(JSON.parse(event.target.result));
-            let bounds = this.bigmap.getBounds();
-            bounds.extend(this.actFG.getBounds());
-            this.bigmap.fitBounds(bounds);
-          });
-          reader.readAsText(file);
+        if (!bounds.isValid()) {
+          bounds = [
+            [this.country.point_lat_min, this.country.point_lon_min],
+            [this.country.point_lat_max, this.country.point_lon_max],
+          ];
         }
-        event.target.value = null;
+        this.bigmap.fitBounds(bounds.pad(0.5));
       },
-      addPropertiesPopup(layer, feature) {
-        let colormap = {
-          contract_area: "yellow",
-          intended_area: "orange",
-          production_area: "red",
+      _on_pm_create({ layer, shape }) {
+        ////// do a little three-card monte carlo:
+        // save the current id, remove it from existing layers and add it
+        // back in geojson style after giving it props. 🙄
+        const leafId = layer._leaflet_id;
+        const tmpfg = new GeoJSON().addLayer(layer).toGeoJSON();
+        this.actFG.eachLayer((lay) => {
+          if (lay._leaflet_id === leafId) this.actFG.removeLayer(lay);
+        });
+        tmpfg.features[0].properties = {
+          id: this.actLoc?.id,
+          name: this.actLoc.name,
         };
+        this.actFG.addData(tmpfg);
+        ////// end of three-card monte carlo
 
-        let select = document.createElement("select");
-        const options = [
-          { value: "contract_area", innerHTML: "Contract area" },
-          { value: "intended_area", innerHTML: "Intended area" },
-          { value: "production_area", innerHTML: "Production area" },
-        ];
-        options.forEach((optn) => {
-          let option = document.createElement("option");
-          option.value = optn.value;
-          option.innerHTML = optn.innerHTML;
-          select.appendChild(option);
-        });
-        select.addEventListener("change", ({ target }) => {
-          feature.properties.type = target.value;
-          layer.setStyle({ color: colormap[target.value] });
-          this.features_changed();
-        });
-        select.value = feature.properties.type;
+        // reset Marker
+        if (shape === "Marker") {
+          let [lng, lat] = tmpfg.features[0].geometry.coordinates;
+          this.actLoc.point = { lat, lng };
 
-        layer.setStyle({ color: colormap[select.value] });
-        layer.bindPopup(select);
+          this.bigmap.pm.disableDraw();
+          this.bigmap.pm.removeControls();
+          this.bigmap.pm.addControls(this.geoman_opts);
+        }
+
+        this._features_changed();
       },
     },
   };
