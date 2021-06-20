@@ -229,7 +229,6 @@
         deal_sections,
         deal_submodel_sections,
         saving_in_progress: false,
-        confirm_delete: false,
         active_tab: "#locations",
       };
     },
@@ -286,7 +285,7 @@
         this.$apollo
           .mutate({
             mutation: gql`
-              mutation($id: Int!, $version: Int, $payload: Payload) {
+              mutation ($id: Int!, $version: Int, $payload: Payload) {
                 deal_edit(id: $id, version: $version, payload: $payload) {
                   dealId
                   dealVersion
@@ -323,7 +322,6 @@
         this.removeSubmodelEntry(this.deal.datasources, index, "data source");
       },
       removeSubmodelEntry(submodels, index, label) {
-        this.confirm_delete = false;
         let message =
           this.$t("Do you really want to remove " + label) + ` #${index + 1}?`;
         this.$bvModal

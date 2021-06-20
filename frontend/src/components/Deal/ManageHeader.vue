@@ -2,11 +2,11 @@
 <template>
   <div>
     <div class="jumbotron jumbotron-fluid manage-interface">
-      <div class="col-sm-12 col-md-8 main-info">
+      <div class="col-md-8 main-info">
         <div class="full-width-wrapper">
           <div class="container">
             <div class="row">
-              <div class="col-sm-12 col-md-8 content-area">
+              <div class="col-md-8 content-area">
                 <!-- only use left half, rest for comments -->
                 <div class="container">
                   <div class="row">
@@ -46,7 +46,7 @@
             </div>
           </div>
           <div v-if="deal.status !== 1 && !dealVersion" class="status-wrapper">
-            <div class="col-sm-12 col-md-8">
+            <div class="col-md-8">
               <div class="row fat-stati">
                 <div v-if="deal.status === 4" class="col deleted">
                   {{ $t("Deleted") }}
@@ -56,7 +56,7 @@
             </div>
           </div>
           <div v-else class="status-wrapper">
-            <div class="col-sm-12 col-md-8">
+            <div class="col-md-8">
               <div class="row fat-stati">
                 <div class="col" :class="{ active: deal.draft_status === 1 }">
                   <span>{{ $t("Draft") }}</span>
@@ -78,7 +78,7 @@
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +dealVersion }"
                     :title="$t('Submits the deal for review')"
-                    @click="$emit('change_deal_status', { transition: 'TO_REVIEW' })"
+                    @click="show_to_review_overlay = true"
                   >
                     {{ $t("Submit for review") }}
                   </a>
@@ -130,38 +130,63 @@
           </div>
           <div class="container">
             <div class="row">
-              <div class="col-sm-12 col-md-8 content-area">
-                <!-- only use left half, rest for comments -->
-
+              <div class="col-md-8 content-area">
                 <div class="row d-flex align-items-center">
-                  <div
-                    v-if="last_revision"
-                    class="col-sm-8 col-md-7 col-lg-8 last-changes"
-                  >
-                    Last changes by {{ last_revision.user.full_name }} on
-                    {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm")
-                    }}<br />
-                    <router-link
-                      v-if="deal.versions.length > 1"
-                      :to="{
-                        name: 'deal_compare',
-                        params: {
-                          dealId: deal.id,
-                          fromVersion: deal.versions[1].revision.id,
-                          toVersion: deal.versions[0].revision.id,
-                        },
-                      }"
-                    >
-                      Show latest changes
-                    </router-link>
+                  <div class="col-sm-8 col-md-7 col-lg-8">
+                    <div v-if="last_revision" class="last-changes">
+                      Last changes by {{ last_revision.user.full_name }} on
+                      {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm")
+                      }}<br />
+                      <router-link
+                        v-if="deal.versions.length > 1"
+                        :to="{
+                          name: 'deal_compare',
+                          params: {
+                            dealId: deal.id,
+                            fromVersion: deal.versions[1].revision.id,
+                            toVersion: deal.versions[0].revision.id,
+                          },
+                        }"
+                      >
+                        Show latest changes
+                      </router-link>
+                    </div>
+                    <div class="action-buttons">
+                      <div v-if="deal_is_editable" class="action-button">
+                        <div class="d-inline-block">
+                          <router-link
+                            class="btn btn-primary"
+                            :class="{ disabled: deal_is_old_draft }"
+                            :to="{
+                              name: 'deal_edit',
+                              params: { dealId: deal.id, dealVersion: dealVersion },
+                            }"
+                            >{{ $t("Edit") }}
+                          </router-link>
+                        </div>
+                        <div class="d-inline-block button-description">
+                          {{ get_edit_description }}
+                        </div>
+                      </div>
+                      <div v-if="deal_is_deletable" class="row action-button">
+                        <div class="col-sm-2">
+                          <button class="btn btn-danger" @click.prevent="handle_delete">
+                            {{ get_delete_text }}
+                          </button>
+                        </div>
+                        <div class="col-sm-6 button-description">
+                          {{ get_delete_description }}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
                     <div v-if="deal.is_public" class="visibility">
-                      <i class="fas fa-eye fa-fw fa-lg"></i>
+                      <i class="fas fa-eye fa-fw fa-lg orange"></i>
                       <span>{{ $t("Publicly visible") }}</span>
                     </div>
                     <div v-else class="visibility">
-                      <i class="fas fa-eye-slash fa-fw fa-lg"></i>
+                      <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
                       <span>{{ $t("Not publicly visible") }}</span>
                     </div>
                     <div v-if="deal_is_editable" class="confidential-toggle">
@@ -228,120 +253,77 @@
                         <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
                       </li>
                     </ul>
+
+                    <div v-if="deal.fully_updated" class="visibility">
+                      <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
+                      <span>{{ $t("Fully updated") }}</span>
+                    </div>
+                    <div v-else class="visibility" style="color: gray !important">
+                      <i class="fas fa-minus fa-fw fa-lg"></i>
+                      <span>{{ $t("Not fully updated") }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div v-if="deal_is_editable" class="row action-button">
-              <div class="col-sm-2">
-                <router-link
-                  class="btn btn-primary"
-                  :class="{ disabled: deal_is_old_draft }"
-                  :to="{
-                    name: 'deal_edit',
-                    params: { dealId: deal.id, dealVersion: dealVersion },
-                  }"
-                  >{{ $t("Edit") }}
-                </router-link>
-              </div>
-              <div class="col-sm-6 button-description">{{ get_edit_description }}</div>
-            </div>
-            <div v-if="deal_is_deletable" class="row action-button">
-              <div class="col-sm-2">
-                <button class="btn btn-danger" @click.prevent="handle_delete">
-                  {{ get_delete_text }}
-                </button>
-              </div>
-              <div class="col-sm-6 button-description">
-                {{ get_delete_description }}
-              </div>
-            </div>
           </div>
         </div>
       </div>
-      <div class="col-sm-12 col-md-4 comments">
-        <h3>Comments</h3>
-        <div class="new-comment">
-          <form action="." method="post">
-            <div>
-              <textarea
-                ref="comment"
-                v-model="comment"
-                rows="2"
-                required="required"
-              ></textarea>
-            </div>
-            <div class="send">
-              <span>{{ $t("Send to:") }}</span>
-              <multiselect
-                v-model="send_to_user"
-                :options="users"
-                :multiple="false"
-                :close-on-select="true"
-                :allow-empty="true"
-                placeholder="Send to"
-                track-by="id"
-                label="full_name"
-              />
-              <a class="btn btn-default" @click.prevent="add_deal_comment">
-                {{ $t("Send") }}
-              </a>
-            </div>
-          </form>
-        </div>
-        <div class="comments-list">
-          <div v-for="wfi in deal.workflowinfos" :key="wfi.timestamp" class="comment">
-            <div class="meta">
-              <span class="date">{{ wfi.timestamp | dayjs("YYYY-MM-DD HH:mm") }}</span>
-              <span class="from-to">
-                {{ $t("From") }} {{ wfi.from_user.full_name }}
-                <span v-if="wfi.to_user">
-                  {{ $t("to") }} {{ wfi.to_user.full_name }}
-                </span>
-              </span>
-            </div>
-
-            <div
-              v-if="get_draft_status(wfi)"
-              class="status-change"
-              v-html="get_draft_status(wfi)"
-            ></div>
-
-            <div
-              v-if="wfi.comment"
-              class="message"
-              v-html="linebreaks(wfi.comment)"
-            ></div>
-          </div>
-        </div>
-      </div>
+      <ManageHeader_Comments
+        :deal="deal"
+        :deal-version="dealVersion"
+        :users="users"
+        @reload_deal="$emit('reload_deal')"
+      />
     </div>
     <TransitionCommentOverlay
-      :show="show_comment_overlay"
+      v-if="show_comment_overlay"
       :transition="transition"
       :users="users"
-      :to_user="get_transition_to_user()"
+      :to-user="get_transition_to_user()"
       @cancel_transition="cancel_transition"
       @do_transition="do_transition"
       @do_set_confidential="do_set_confidential"
-    ></TransitionCommentOverlay>
+    />
+    <Overlay
+      v-if="show_to_review_overlay"
+      :title="$t('Submit for review')"
+      @cancel="show_to_review_overlay = false"
+      @submit="send_to_review"
+    >
+      <p>
+        Fully updated description text "Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+        aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
+        id est laborum."
+      </p>
+      <label>
+        <input v-model="deal.fully_updated" type="checkbox" />
+        {{ $t("I fully updated this deal.") }}
+      </label>
+    </Overlay>
   </div>
 </template>
 
 <script>
-  import { linebreaks } from "$utils/filters";
+  import ManageHeader_Comments from "$components/Deal/ManageHeader_Comments";
+  import Overlay from "$components/Overlay";
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
-  import {
-    // confidential_reason_choices,
-    draft_status_map,
-    status_map,
-  } from "$utils/choices";
+
   import TransitionCommentOverlay from "./TransitionCommentOverlay";
 
   export default {
     name: "ManageHeader",
-    components: { HeaderDates, TransitionCommentOverlay },
+    components: {
+      ManageHeader_Comments,
+      Overlay,
+      HeaderDates,
+      TransitionCommentOverlay,
+    },
     props: {
       deal: { type: Object, required: true },
       dealVersion: { type: [Number, String], default: null },
@@ -349,11 +331,9 @@
     data() {
       return {
         users: [],
-        comment: "",
-        send_to_user: null,
         show_comment_overlay: false,
+        show_to_review_overlay: false,
         transition: null,
-        linebreaks,
       };
     },
     apollo: {
@@ -474,67 +454,6 @@
             return false;
         }
       },
-      get_draft_status(wfi) {
-        let before = wfi.draft_status_before;
-        let after = wfi.draft_status_after;
-        if (before !== after) {
-          if (!before) {
-            return `<div class="status">${draft_status_map[after]}</div>`;
-          } else {
-            let before_status = draft_status_map[before];
-            let after_status;
-            if (!after) {
-              after_status = status_map[2];
-            } else {
-              after_status = draft_status_map[after];
-            }
-            let ret = `<div class="status">${before_status}</div>`;
-            ret += `→`;
-            ret += `<div class="status">${after_status}</div>`;
-            return ret;
-          }
-        } else {
-          return null;
-        }
-      },
-      add_deal_comment() {
-        if (this.$refs.comment.checkValidity()) {
-          this.$apollo
-            .mutate({
-              mutation: gql`
-                mutation (
-                  $id: Int!
-                  $version: Int
-                  $comment: String!
-                  $to_user_id: Int
-                ) {
-                  add_deal_comment(
-                    id: $id
-                    version: $version
-                    comment: $comment
-                    to_user_id: $to_user_id
-                  ) {
-                    dealId
-                    dealVersion
-                  }
-                }
-              `,
-              variables: {
-                id: +this.deal.id,
-                version: this.dealVersion ? +this.dealVersion : null,
-                comment: this.comment,
-                to_user_id: this.send_to_user ? +this.send_to_user.id : null,
-              },
-            })
-            .then(() => {
-              this.$emit("reload_deal");
-              this.comment = "";
-            })
-            .catch((error) => console.error(error));
-        } else {
-          this.$refs.comment.reportValidity();
-        }
-      },
       open_comment_overlay_for(key, title) {
         this.transition = {
           key,
@@ -556,6 +475,7 @@
         this.show_comment_overlay = false;
       },
       do_transition({ comment, to_user }) {
+        console.log(this.transition);
         if (["DELETE", "UNDELETE"].includes(this.transition.key)) {
           this.do_delete(comment);
         } else {
@@ -566,8 +486,12 @@
             to_user,
           });
         }
-        this.transition = null;
         this.show_comment_overlay = false;
+        this.transition = null;
+      },
+      send_to_review() {
+        this.show_to_review_overlay = false;
+        this.$emit("change_deal_status", { transition: "TO_REVIEW" });
       },
       do_set_confidential(data) {
         this.$emit("set_confidential", {
@@ -575,8 +499,11 @@
           reason: data.reason,
           comment: data.comment,
         });
-        this.transition = null;
         this.show_comment_overlay = false;
+        this.transition = null;
+      },
+      toggle_fully_updated(e) {
+        console.log(e.target.value);
       },
       toggle_confidential() {
         if (!this.deal_is_editable) return;
@@ -614,7 +541,7 @@
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
-  i {
+  .orange {
     color: var(--primary);
   }
 
@@ -770,109 +697,6 @@
 
       .last-changes {
         font-size: 0.9rem;
-      }
-    }
-
-    .comments {
-      background: #c4c4c4;
-      padding: 0.7rem;
-      color: rgba(black, 0.6);
-      max-height: 100%;
-      display: flex;
-      flex-direction: column;
-
-      h3 {
-        margin-top: 0;
-        font-weight: 600;
-        margin-bottom: 0.2em;
-        font-size: 1.2em;
-      }
-
-      .new-comment {
-        font-size: 0.9em;
-
-        textarea {
-          padding: 0.2em 0.5em;
-          width: 100%;
-          border: 1px solid lightgrey;
-          border-radius: 5px;
-          z-index: 1;
-          position: relative;
-          font-size: 0.9em;
-
-          &:focus {
-            border-color: transparent;
-            outline: none;
-          }
-        }
-
-        .send {
-          display: flex;
-          align-items: center;
-
-          span {
-            white-space: nowrap;
-            padding-right: 5px;
-          }
-
-          input {
-            flex: 1;
-            width: 100px;
-            margin: 0 2px 0 0.5em;
-            border: 1px solid lightgrey;
-            border-radius: 5px;
-          }
-
-          .btn {
-            margin-left: 7px;
-            background: $lm_investor;
-            padding: 0.38em 0.7em;
-            font-size: 0.9em;
-            border-radius: 5px;
-
-            &:hover {
-              background-color: lighten($lm_investor, 5%);
-            }
-
-            &:focus,
-            &:active {
-              outline: none;
-            }
-          }
-        }
-      }
-
-      .comments-list {
-        margin-top: 1em;
-        overflow-y: scroll;
-        margin-right: -0.7rem;
-        height: 100%;
-        box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),
-          inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
-        padding: 2px 4px;
-        margin-left: -4px;
-        max-height: 330px;
-
-        .comment {
-          font-size: 0.8em;
-          margin-bottom: 0.5em;
-
-          .meta {
-            .date {
-              font-weight: 600;
-            }
-          }
-
-          .status-change {
-            margin-bottom: 2px;
-          }
-
-          .message {
-            background: #e5e5e5;
-            padding: 0.3em 0.5em;
-            border-radius: 5px;
-          }
-        }
       }
     }
 
@@ -1061,23 +885,9 @@
     font-size: 1rem;
   }
 </style>
+
 <style lang="scss">
   @import "../../scss/colors";
-
-  .status-change .status {
-    display: inline-block;
-    padding: 2px 5px 3px;
-    line-height: 1;
-    background-color: darken(#e4e4e4, 8%);
-    color: #5e5e64;
-    border-radius: 8px;
-    filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.1));
-
-    &:last-child {
-      background-color: #93c7c8;
-      color: white;
-    }
-  }
 
   .send {
     .multiselect,

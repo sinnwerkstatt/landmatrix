@@ -1092,11 +1092,6 @@ class Deal(models.Model, OldDealMixin):
         self.recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save(*args, **kwargs)
 
-    def save_revision(self, date_created, user) -> Revision:
-        rev = Revision.objects.create(date_created=date_created, user=user, comment="")
-        Version.create_from_obj(self, revision_id=rev.id)
-        return rev
-
     def update_from_dict(self, d: dict):
         for key, value in d.items():
             if key in [

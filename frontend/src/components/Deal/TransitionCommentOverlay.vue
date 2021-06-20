@@ -1,8 +1,10 @@
 <template>
-  <div v-if="show" class="overlay-bg" @click.self="$emit('cancel_transition')">
-    <div class="overlay">
-      <h3>{{ transition.title }}</h3>
-      <!-- no reason, but keep if they redecide
+  <Overlay
+    :title="transition.title"
+    @cancel="$emit('cancel_transition')"
+    @submit="submit_comment"
+  >
+    <!-- no reason, but keep if they redecide
       <div v-if="is_set_confidential" class="reason">
         {{ $t("Reason") }}
         <select ref="reason" v-model="confidential_reason" required="required">
@@ -15,68 +17,59 @@
           </option>
         </select>
       </div>-->
-      <label>{{ $t("Please provide a comment explaining your request") }}</label>
-      <textarea ref="comment" v-model="comment" required="required"></textarea>
-      <div v-if="to_user" class="assign-to-user">
-        <label>{{ $t("Assign to user") }}</label>
-        <multiselect
-          :value="selected_user"
-          :options="users"
-          :multiple="false"
-          :close-on-select="true"
-          :allow-empty="false"
-          placeholder="Send to"
-          track-by="id"
-          label="full_name"
-          @select="select_user"
-        />
-      </div>
-      <div class="actions">
-        <a class="btn btn-primary" @click.prevent.stop="submit_comment">{{
-          transition.title
-        }}</a>
-        <a class="btn btn-secondary" @click.prevent.stop="$emit('cancel_transition')">{{
-          $t("Cancel")
-        }}</a>
-      </div>
+    <label>{{ $t("Please provide a comment explaining your request") }}</label>
+    <textarea ref="comment" v-model="comment" required="required"></textarea>
+    <div v-if="toUser" class="assign-to-user">
+      <label>{{ $t("Assign to user") }}</label>
+      <multiselect
+        :value="selected_user"
+        :options="users"
+        :multiple="false"
+        :close-on-select="true"
+        :allow-empty="false"
+        placeholder="Send to"
+        track-by="id"
+        label="full_name"
+        @select="select_user"
+      />
     </div>
-  </div>
+  </Overlay>
 </template>
 
 <script>
-  import { linebreaks } from "$utils/filters";
+  import Overlay from "$components/Overlay";
+
   import { confidential_reason_choices } from "$utils/choices";
 
   export default {
-    name: "RequiredMessageOverlay",
+    name: "TransitionCommentOverlay",
+    components: { Overlay },
     props: {
-      show: { type: Boolean, default: false },
-      transition: { type: Object, default: null },
+      transition: { type: Object, required: true },
       users: {
         type: Array,
         default() {
           return [];
         },
       },
-      to_user: { type: Object, default: null },
+      toUser: { type: Object, default: null },
     },
     data() {
       return {
         comment: "",
         confidential_reason: null,
         to_user_selected: null,
-        linebreaks,
       };
     },
     computed: {
       is_set_confidential() {
-        return this.transition.key === "SET_CONFIDENTIAL";
+        return this.transition && this.transition.key === "SET_CONFIDENTIAL";
       },
       confidential_reason_choices() {
         return confidential_reason_choices;
       },
       selected_user() {
-        return this.to_user_selected ? this.to_user_selected : this.to_user;
+        return this.to_user_selected ? this.to_user_selected : this.toUser;
       },
     },
     methods: {
@@ -123,72 +116,34 @@
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
-  .overlay-bg {
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 2000;
-    background-color: rgba(black, 0.3);
-    backdrop-filter: blur(3px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .reason {
+    margin-bottom: 1em;
+
+    select {
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid $lm_grey;
+    }
   }
 
-  .overlay {
-    width: 70vw;
-    max-width: 800px;
-    min-width: 300px;
+  textarea {
+    width: 100%;
+    border: 1px solid $lm_grey;
+    border-radius: 5px;
+    padding: 0.2em 0.5em;
 
-    @include media-breakpoint-down(sm) {
-      width: 85vw;
+    &:focus {
+      border: 1px solid $lm_grey;
+      outline: none;
     }
+  }
 
-    padding: 0.8em 1.8em 1.8em;
-    box-shadow: 0 0 15px rgba(black, 0.5);
-    color: $lm_dark;
-    border-color: $lm_orange;
-    background-color: $lm_light;
+  .assign-to-user {
+    margin-top: 1em;
 
-    .reason {
-      margin-bottom: 1em;
-
-      select {
-        background-color: white;
-        border-radius: 5px;
-        border: 1px solid $lm_grey;
-      }
-    }
-
-    textarea {
-      width: 100%;
+    .multiselect {
       border: 1px solid $lm_grey;
       border-radius: 5px;
-      padding: 0.2em 0.5em;
-
-      &:focus {
-        border: 1px solid $lm_grey;
-        outline: none;
-      }
-    }
-
-    .assign-to-user {
-      margin-top: 1em;
-
-      .multiselect {
-        border: 1px solid $lm_grey;
-        border-radius: 5px;
-      }
-    }
-
-    .actions {
-      margin-top: 1em;
-      text-align: right;
-
-      .btn {
-        margin-left: 0.5em;
-      }
     }
   }
 </style>

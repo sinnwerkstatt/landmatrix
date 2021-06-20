@@ -30,6 +30,7 @@ class Revision(models.Model):
 
     comment = models.TextField(
         blank=True,
+        default="",
         verbose_name=_("comment"),
         help_text="A text comment on this revision.",
     )
