@@ -168,13 +168,13 @@
                           {{ get_edit_description }}
                         </div>
                       </div>
-                      <div v-if="deal_is_deletable" class="row action-button">
-                        <div class="col-sm-2">
+                      <div v-if="deal_is_deletable" class="action-button">
+                        <div class="d-inline-block">
                           <button class="btn btn-danger" @click.prevent="handle_delete">
                             {{ get_delete_text }}
                           </button>
                         </div>
-                        <div class="col-sm-6 button-description">
+                        <div class="d-inline-block button-description">
                           {{ get_delete_description }}
                         </div>
                       </div>
@@ -723,7 +723,7 @@
       }
 
       .button-description {
-        margin-left: -15px;
+        margin-left: 1rem;
         color: rgba(0, 0, 0, 0.5);
         font-style: italic;
       }
