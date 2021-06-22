@@ -1,7 +1,7 @@
 <template>
   <div class="input-group">
     <input
-      id="location-input"
+      :id="`location-input-${randomhash}`"
       v-model="val"
       :placeholder="$t('Location')"
       :aria-label="$t('Location')"
@@ -25,7 +25,10 @@
       countryCode: { type: String, required: false, default: "" },
     },
     data() {
-      return { autocomplete: null };
+      return {
+        autocomplete: null,
+        randomhash: Math.random().toString(36).substring(2),
+      };
     },
     computed: {
       val: {
@@ -42,7 +45,9 @@
     },
     created() {
       this.$nextTick(() => {
-        const input_field = document.getElementById("location-input");
+        const input_field = document.getElementById(
+          `location-input-${this.randomhash}`
+        );
 
         let opts = { fields: ["geometry"], strictBounds: true };
         if (this.countryCode)

@@ -356,13 +356,14 @@
         this.locationFGs.forEach((value) => {
           bounds.extend(value.getBounds());
         });
-        if (!bounds.isValid()) {
+        if (bounds.isValid()) bounds = bounds.pad(0.5);
+        else {
           bounds = [
             [this.country.point_lat_min, this.country.point_lon_min],
             [this.country.point_lat_max, this.country.point_lon_max],
           ];
         }
-        this.bigmap.fitBounds(bounds.pad(0.5));
+        this.bigmap.fitBounds(bounds);
       },
       _on_pm_create({ layer, shape }) {
         ////// do a little three-card monte carlo:
