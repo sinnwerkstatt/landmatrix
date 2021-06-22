@@ -1,5 +1,4 @@
 import { arraysAreEqual } from "$utils";
-import Cookies from "js-cookie";
 
 const DEFAULT_FILTERS = {
   region_id: null,
@@ -271,7 +270,9 @@ export default {
   state: () => ({
     filters: (() => {
       // see if we have filters in a cookie, otherwise default Filters.
-      return JSON.parse(Cookies.get("filters") || JSON.stringify(DEFAULT_FILTERS));
+      return JSON.parse(
+        localStorage.getItem("filters") || JSON.stringify(DEFAULT_FILTERS)
+      );
     })(),
     default_filters: [
       {
@@ -281,8 +282,8 @@ export default {
         exclusion: true,
       },
     ],
-    isDefaultFilter: Cookies.get("filters")
-      ? isDefaultFilter(JSON.parse(Cookies.get("filters")))
+    isDefaultFilter: localStorage.getItem("filters")
+      ? isDefaultFilter(JSON.parse(localStorage.getItem("filters")))
       : true,
     publicOnly: true,
   }),
@@ -318,22 +319,22 @@ export default {
   actions: {
     setFilter(context, filter) {
       context.commit("setFilter", filter);
-      context.dispatch("setCookie");
+      context.dispatch("setStorage");
       // context.dispatch("fetchDeals");
     },
     resetFilters(context) {
       context.commit("resetFilters");
-      context.dispatch("setCookie");
+      context.dispatch("setStorage");
     },
     clearFilters(context) {
       context.commit("clearFilters");
-      context.dispatch("setCookie");
+      context.dispatch("setStorage");
     },
     setPublicOnly(context, value) {
       context.commit("setPublicOnly", value);
     },
-    setCookie(context) {
-      Cookies.set("filters", context.state.filters, { sameSite: "lax" });
+    setStorage(context) {
+      localStorage.setItem("filters", JSON.stringify(context.state.filters));
     },
   },
   getters: {

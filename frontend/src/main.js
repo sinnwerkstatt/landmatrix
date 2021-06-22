@@ -119,6 +119,13 @@ const i18n = new VueI18n({
 const apolloProvider = new VueApollo({ defaultClient: apolloClient });
 let vue_app;
 
+// transfer filters cookie to localstorage and remove it afterwards.
+let filters_cookie = Cookies.get("filters");
+if (filters_cookie) {
+  localStorage.filters = filters_cookie;
+  Cookies.remove("filters");
+}
+
 store.dispatch("fetchFields", locale);
 store.dispatch("fetchMessages");
 store.dispatch("fetchBasicData").then(() => {
