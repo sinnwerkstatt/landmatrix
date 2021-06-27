@@ -245,8 +245,7 @@ def resolve_change_deal_status(
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_DRAFT
-        deal_v_obj.draft_status = draft_status
+        draft_status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         rev = Revision.objects.create(date_created=timezone.now(), user_id=to_user_id)
         Version.create_from_obj(deal, revision_id=rev.id)
         Deal.objects.filter(id=id).update(draft_status=draft_status)
