@@ -2,7 +2,7 @@
   <div id="app">
     <Navbar />
     <Messages />
-    <BreadcrumbBar />
+    <BreadcrumbBar v-if="$store.state.page.showBreadcrumbs" />
     <main class="content">
       <router-view />
     </main>

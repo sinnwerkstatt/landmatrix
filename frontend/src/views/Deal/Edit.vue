@@ -1,48 +1,61 @@
 <template>
-  <form @submit.prevent="deal_save">
+  <div>
     <div v-if="deal" class="container deal-edit">
-      <h1 v-if="dealId">
-        Editing Deal #{{ dealId }} in {{ deal.country && deal.country.name }}
-      </h1>
-      <h1 v-else>
-        Adding new deal <span v-if="deal.country">in {{ deal.country.name }}</span>
-      </h1>
-      <div style="font-size: 0.8rem">
-        <div v-if="!dealId">{{ deal }}</div>
-        <!--        {{ deal.locations }}<br /><br />-->
-        <!--        {{ deal.geojson }}-->
-        <!--        {{ deal.datasources }}-->
+      <div class="deal-edit-heading">
+        <h1 v-if="dealId">
+          Editing Deal #{{ dealId }} in {{ deal.country && deal.country.name }}
+        </h1>
+        <h1 v-else>
+          Adding new deal <span v-if="deal.country">in {{ deal.country.name }}</span>
+        </h1>
+        <div class="savebar-container">
+          <router-link
+            v-if="dealId"
+            class="btn btn-primary btn-sm mx-2"
+            :to="{
+              name: 'deal_detail',
+              params: { dealId: deal.id, dealVersion: dealVersion },
+            }"
+          >
+            {{ $t("Close") }}
+          </router-link>
+          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
+          <span>{{ $t("Leaves edit mode") }}</span>
+        </div>
       </div>
       <b-tabs
         id="tabNav"
         :key="dealId ? dealId + dealVersion : -1"
-        content-class="mb-3"
         vertical
         pills
-        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
-        nav-class="sticky-nav"
+        class="deal-edit-b-tabs"
+        content-class="mb-3 deal-edit-content"
+        nav-wrapper-class="deal-edit-nav-wrapper"
+        @activate-tab="switchTabEvent"
       >
         <b-tab
           :title="$t('Locations')"
           :active="active_tab === '#locations'"
           @click="updateRoute('#locations')"
         >
-          <EditField
-            v-model="deal.country"
-            fieldname="country"
-            :wrapper-classes="['row', 'my-3']"
-            :label-classes="['col-md-3']"
-            :value-classes="['col-md-9']"
-            :disabled="deal.locations.length > 0"
-          />
-          <DealLocationsEditSection
-            v-if="deal.country"
-            :locations="deal.locations"
-            :country="deal.country"
-            :sections="deal_sections.general_info.subsections"
-            :fields="deal_submodel_sections.location"
-            @input="(newlocs) => (deal.locations = newlocs)"
-          />
+          <form>
+            <EditField
+              v-model="deal.country"
+              fieldname="country"
+              :wrapper-classes="['row', 'my-3']"
+              :label-classes="['col-md-3']"
+              :value-classes="['col-md-9']"
+              :disabled="deal.locations.length > 0"
+            />
+            <DealLocationsEditSection
+              v-if="deal.country"
+              :locations="deal.locations"
+              :country="deal.country"
+              :sections="deal_sections.general_info.subsections"
+              :fields="deal_submodel_sections.location"
+              @input="(newlocs) => (deal.locations = newlocs)"
+            />
+          </form>
         </b-tab>
         <DealEditSection
           :title="deal_sections.general_info.label"
@@ -147,42 +160,42 @@
         />
       </b-tabs>
 
-      <div class="savebar-container">
-        <div class="savebar">
-          <button
-            type="submit"
-            class="btn btn-primary btn-sm mx-2"
-            :disabled="saving_in_progress"
-          >
-            <span
-              v-if="saving_in_progress"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span
-            >&nbsp;
-            {{ $t("Save") }}
-          </button>
-          <span>{{ get_save_description }}</span>
-          <router-link
-            v-if="dealId"
-            class="btn btn-gray btn-sm mx-2"
-            :to="{
-              name: 'deal_detail',
-              params: { dealId: deal.id, dealVersion: dealVersion },
-            }"
-          >
-            {{ $t("Cancel save") }}
-          </router-link>
-          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
-          <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>
-        </div>
-      </div>
+      <!--      <div class="savebar-container">-->
+      <!--        <div class="savebar">-->
+      <!--          <button-->
+      <!--            type="submit"-->
+      <!--            class="btn btn-primary btn-sm mx-2"-->
+      <!--            :disabled="saving_in_progress"-->
+      <!--          >-->
+      <!--            <span-->
+      <!--              v-if="saving_in_progress"-->
+      <!--              class="spinner-border spinner-border-sm"-->
+      <!--              role="status"-->
+      <!--              aria-hidden="true"-->
+      <!--            ></span-->
+      <!--            >&nbsp;-->
+      <!--            {{ $t("Save") }}-->
+      <!--          </button>-->
+      <!--          <span>{{ get_save_description }}</span>-->
+      <!--          <router-link-->
+      <!--            v-if="dealId"-->
+      <!--            class="btn btn-gray btn-sm mx-2"-->
+      <!--            :to="{-->
+      <!--              name: 'deal_detail',-->
+      <!--              params: { dealId: deal.id, dealVersion: dealVersion },-->
+      <!--            }"-->
+      <!--          >-->
+      <!--            {{ $t("Cancel save") }}-->
+      <!--          </router-link>-->
+      <!--          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>-->
+      <!--          <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
     <div v-else>
       <LoadingPulse></LoadingPulse>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
@@ -271,6 +284,10 @@
       }
     },
     methods: {
+      switchTabEvent(newTabIndex, prewTabIndex, bvEvent) {
+        console.log({ newTabIndex, prewTabIndex });
+        bvEvent.preventDefault();
+      },
       updateRoute(emiter) {
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
@@ -345,74 +362,102 @@
   @import "../../scss/colors";
 
   .deal-edit {
-    h1 {
-      color: $lm_dark;
-      text-align: left;
-      text-transform: none;
+    overflow: hidden;
+    //height: 100vh;
+    height: calc(100vh - 60px - 35px - 39px);
+    width: 100vw;
+    display: grid;
+    grid-template-areas:
+      "head"
+      "main";
 
-      &:before {
-        display: none;
+    .deal-edit-heading {
+      display: flex;
+      h1 {
+        color: $lm_dark;
+        text-align: left;
+        text-transform: none;
+
+        &:before {
+          display: none;
+        }
       }
+      grid-area: head;
     }
 
-    .nav-pills {
-      .nav-item {
-        .nav-link {
-          padding-left: 0;
-          border-right: 1px solid $lm_orange;
-          color: $lm_orange;
-          border-radius: 0;
+    .deal-edit-b-tabs {
+      height: 100%;
+      grid-area: main;
+      overflow: hidden;
+    }
+    .deal-edit-nav-wrapper {
+      height: 100%;
+      //col-12 col-sm-5 col-md-3 position-relative
+      //position: relative;
+      overflow-y: auto;
 
-          &.active {
-            border-right-width: 3px;
-            background-color: inherit;
-            color: $lm_dark;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+
+      .nav-pills {
+        .nav-item {
+          .nav-link {
+            padding-left: 0;
+            border-right: 1px solid $lm_orange;
+            color: $lm_orange;
+            border-radius: 0;
+
+            &.active {
+              border-right-width: 3px;
+              background-color: inherit;
+              color: $lm_dark;
+            }
           }
         }
       }
     }
-
-    .sticky-top {
-      top: 5em;
-      z-index: 90;
+    .deal-edit-content {
+      height: 100%;
+      overflow-y: scroll;
     }
   }
 
-  .savebar-container {
-    padding: 3em;
-
-    .savebar {
-      width: clamp(300px, auto, 800px);
-      //height: 3rem;
-      padding: 0.5rem;
-      background-color: rgba(#dedede, 0.9);
-      filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
-      position: fixed;
-      right: 10px;
-      bottom: 45px;
-      display: grid;
-      grid-template-columns: 2fr 5fr;
-      gap: 5px 10px;
-      border-radius: 5px;
-      z-index: 1000;
-
-      .btn {
-        margin: 0 !important;
-        font-size: 1.15em;
-      }
-
-      > span {
-        align-self: center;
-      }
-    }
-  }
-
-  .btn-gray {
-    background-color: #b1b1b1 !important;
-
-    &:hover {
-      color: white;
-      background-color: darken(#b1b1b1, 5%);
-    }
-  }
+  //.savebar-container {
+  //  .savebar {
+  //    width: clamp(300px, auto, 800px);
+  //    //height: 3rem;
+  //    padding: 0.5rem;
+  //    background-color: rgba(#dedede, 0.9);
+  //    filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
+  //    position: fixed;
+  //    right: 10px;
+  //    bottom: 45px;
+  //    display: grid;
+  //    grid-template-columns: 2fr 5fr;
+  //    gap: 5px 10px;
+  //    border-radius: 5px;
+  //    z-index: 1000;
+  //
+  //    .btn {
+  //      margin: 0 !important;
+  //      font-size: 1.15em;
+  //    }
+  //
+  //    > span {
+  //      align-self: center;
+  //    }
+  //  }
+  //}
+  //
+  //.btn-gray {
+  //  background-color: #b1b1b1 !important;
+  //
+  //  &:hover {
+  //    color: white;
+  //    background-color: darken(#b1b1b1, 5%);
+  //  }
+  //}
 </style>
