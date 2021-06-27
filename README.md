@@ -1,5 +1,5 @@
-[comment]: <> ([![pipeline-status]&#40;https://git.sinntern.de/django/landmatrix/badges/master/pipeline.svg&#41;]&#40;https://git.sinntern.de/django/landmatrix/commits/master&#41;)
-[comment]: <> ([![coverage-report]&#40;https://git.sinntern.de/django/landmatrix/badges/master/coverage.svg&#41;]&#40;https://git.sinntern.de/django/landmatrix/commits/master&#41;)
+[comment]: <> ([![pipeline-status]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/pipeline.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
+[comment]: <> ([![coverage-report]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/coverage.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
 
 [![python version](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
