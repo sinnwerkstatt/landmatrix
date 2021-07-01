@@ -1,6 +1,6 @@
 <template>
-  <b-tab :title="$t(title)" :active="active" @click="$emit('activated')">
-    <form>
+  <section>
+    <form :id="id">
       <div v-for="section in sections" :key="section.name" class="panel-body">
         <h3>{{ $t(section.name) }}</h3>
         <EditField
@@ -12,7 +12,7 @@
       </div>
       <slot />
     </form>
-  </b-tab>
+  </section>
 </template>
 
 <script>
@@ -22,13 +22,12 @@
     name: "DealEditSection",
     components: { EditField },
     props: {
+      id: { type: String, required: true },
       title: { type: String, required: true },
       sections: { type: Array, required: true },
       deal: { type: Object, required: true },
       active: { type: Boolean, default: false },
     },
-    computed: {},
-    methods: {},
   };
 </script>
 
@@ -44,8 +43,8 @@
       rgba(200, 200, 200, 0.04),
       rgba(200, 200, 200, 0.1)
     );
-    margin-left: -15px;
-    margin-right: -15px;
+    //margin-left: -15px;
+    //margin-right: -15px;
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 0.5em;

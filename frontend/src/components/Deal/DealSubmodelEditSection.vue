@@ -1,45 +1,47 @@
 <template>
-  <b-tab :title="$t(title)" :active="active" @click="$emit('activated')">
-    <div class="row">
-      <div :class="wrapperClasses">
-        <div v-for="(entry, index) in entries" :key="index" class="panel-body">
-          <div class="submodel-header">
-            <i
-              class="expand-toggle fas fa-chevron-down"
-              :class="{
-                'fa-chevron-up': active_entry === entry,
-                'fa-chevron-down': active_entry !== entry,
-              }"
-              @click="active_entry = active_entry !== entry ? entry : null"
-            ></i>
-            <h3 @click="active_entry = active_entry !== entry ? entry : null">
-              {{ $t(modelName) }} <small>#{{ entry.id }}</small>
-            </h3>
-            <a class="trashbin" @click="$emit('removeEntry', index)">
-              <i class="fas fa-trash"></i>
-            </a>
-          </div>
-          <div v-if="active_entry === entry" class="submodel-body">
-            <EditField
-              v-for="fieldname in fields"
-              :key="fieldname"
-              v-model="entry[fieldname]"
-              :fieldname="fieldname"
-              :model="model"
-              :label-classes="labelClasses"
-              :value-classes="valueClasses"
-            />
+  <section>
+    <form :id="id">
+      <div class="row">
+        <div :class="wrapperClasses">
+          <div v-for="(entry, index) in entries" :key="index" class="panel-body">
+            <div class="submodel-header">
+              <i
+                class="expand-toggle fas fa-chevron-down"
+                :class="{
+                  'fa-chevron-up': active_entry === entry,
+                  'fa-chevron-down': active_entry !== entry,
+                }"
+                @click="active_entry = active_entry !== entry ? entry : null"
+              ></i>
+              <h3 @click="active_entry = active_entry !== entry ? entry : null">
+                {{ $t(modelName) }} <small>#{{ entry.id }}</small>
+              </h3>
+              <a class="trashbin" @click="$emit('removeEntry', index)">
+                <i class="fas fa-trash"></i>
+              </a>
+            </div>
+            <div v-if="active_entry === entry" class="submodel-body">
+              <EditField
+                v-for="fieldname in fields"
+                :key="fieldname"
+                v-model="entry[fieldname]"
+                :fieldname="fieldname"
+                :model="model"
+                :label-classes="labelClasses"
+                :value-classes="valueClasses"
+              />
+            </div>
           </div>
         </div>
+        <slot />
       </div>
-      <slot />
-    </div>
-    <div class="mt-3">
-      <button type="button" class="btn btn-secondary" @click="add_entry">
-        <i class="fa fa-plus"></i> {{ $t("Add " + modelName) }}
-      </button>
-    </div>
-  </b-tab>
+      <div class="mt-3">
+        <button type="button" class="btn btn-secondary" @click="add_entry">
+          <i class="fa fa-plus"></i> {{ $t("Add " + modelName) }}
+        </button>
+      </div>
+    </form>
+  </section>
 </template>
 
 <script>
@@ -48,6 +50,7 @@
   export default {
     components: { EditField },
     props: {
+      id: { type: String, required: true },
       title: { type: String, required: true },
       model: { type: String, required: true },
       modelName: { type: String, required: true },

@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
 from taggit.models import Tag
-from wagtail.core.rich_text import expand_db_html
 from wagtail.images.models import SourceImageIOError
 from wagtail.snippets.models import register_snippet
 

@@ -2,51 +2,66 @@
   <div>
     <div v-if="deal" class="container deal-edit">
       <div class="deal-edit-heading">
-        <h1 v-if="dealId">
-          Editing Deal #{{ dealId }} in {{ deal.country && deal.country.name }}
+        <h1>
+          {{ dealId ? $t("Editing Deal #") + dealId : $t("Adding new deal") }}
+          <span v-if="deal.country">{{ $t("in") }} {{ deal.country.name }}</span>
         </h1>
-        <h1 v-else>
-          Adding new deal <span v-if="deal.country">in {{ deal.country.name }}</span>
-        </h1>
+
         <div class="savebar-container">
-          <router-link
-            v-if="dealId"
+          <button
+            type="submit"
             class="btn btn-primary btn-sm mx-2"
-            :to="{
-              name: 'deal_detail',
-              params: { dealId: deal.id, dealVersion: dealVersion },
-            }"
+            :disabled="!form_changed || saving_in_progress"
+            @click="saveButtonPressed"
+          >
+            <span
+              v-if="saving_in_progress"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            &nbsp;
+            {{ $t("Save") }}
+          </button>
+          <button
+            v-if="dealId"
+            class="btn btn-secondary btn-sm mx-2"
+            @click="quitEditor(false)"
           >
             {{ $t("Close") }}
-          </router-link>
-          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>
+          </button>
+          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">
+            {{ $t("Cancel") }}
+          </a>
           <span>{{ $t("Leaves edit mode") }}</span>
         </div>
       </div>
-      <b-tabs
-        id="tabNav"
-        :key="dealId ? dealId + dealVersion : -1"
-        vertical
-        pills
-        class="deal-edit-b-tabs"
-        content-class="mb-3 deal-edit-content"
-        nav-wrapper-class="deal-edit-nav-wrapper"
-        @activate-tab="switchTabEvent"
-      >
-        <b-tab
-          :title="$t('Locations')"
-          :active="active_tab === '#locations'"
-          @click="updateRoute('#locations')"
-        >
-          <form>
-            <EditField
-              v-model="deal.country"
-              fieldname="country"
-              :wrapper-classes="['row', 'my-3']"
-              :label-classes="['col-md-3']"
-              :value-classes="['col-md-9']"
-              :disabled="deal.locations.length > 0"
-            />
+      <div class="deal-edit-nav">
+        <ul>
+          <li
+            v-for="(tabname, tabid) in tabs"
+            :key="tabid"
+            :class="{ active: active_tab === `#${tabid}` }"
+          >
+            <a :href="`#${tabid}`" @click.prevent="updateRoute(`#${tabid}`)">
+              {{ tabname }}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="deal-edit-content">
+        <section v-if="active_tab === '#locations'">
+          <form id="locations">
+            <div class="container">
+              <EditField
+                v-model="deal.country"
+                fieldname="country"
+                :wrapper-classes="['row', 'my-3']"
+                :label-classes="['col-md-3']"
+                :value-classes="['col-md-9']"
+                :disabled="deal.locations.length > 0"
+              />
+            </div>
             <DealLocationsEditSection
               v-if="deal.country"
               :locations="deal.locations"
@@ -56,145 +71,123 @@
               @input="(newlocs) => (deal.locations = newlocs)"
             />
           </form>
-        </b-tab>
+        </section>
+
         <DealEditSection
+          v-if="active_tab === '#general'"
+          id="general"
           :title="deal_sections.general_info.label"
           :deal="deal"
           :sections="deal_sections.general_info.subsections"
-          :active="active_tab === '#general'"
-          @activated="updateRoute('#general')"
         />
         <DealSubmodelEditSection
+          v-if="active_tab === '#contracts'"
+          id="contracts"
           title="Contracts"
           model-name="Contract"
           :entries="deal.contracts"
           :fields="deal_submodel_sections.contract"
           model="contract"
-          :active="active_tab === '#contracts'"
-          @activated="updateRoute('#contracts')"
           @addEntry="addContract"
           @removeEntry="removeContract"
         />
+
         <DealEditSection
+          v-if="active_tab === '#employment'"
+          id="employment"
           :title="deal_sections.employment.label"
           :deal="deal"
           :sections="deal_sections.employment.subsections"
-          :active="active_tab === '#employment'"
-          @activated="updateRoute('#employment')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#investor_info'"
+          id="investor_info"
           :title="deal_sections.investor_info.label"
           :deal="deal"
           :sections="deal_sections.investor_info.subsections"
-          :active="active_tab === '#investor_info'"
-          @activated="updateRoute('#investor_info')"
         />
 
         <DealSubmodelEditSection
+          v-if="active_tab === '#data_sources'"
+          id="data_sources"
           title="Data sources"
           model-name="Data source"
           :entries="deal.datasources"
           :fields="deal_submodel_sections.datasource"
           model="datasource"
-          :active="active_tab === '#data_sources'"
-          @activated="updateRoute('#data_sources')"
           @addEntry="addDataSource"
           @removeEntry="removeDataSource"
         />
 
         <DealEditSection
+          v-if="active_tab === '#local_communities'"
+          id="local_communities"
           :title="deal_sections.local_communities.label"
           :deal="deal"
           :sections="deal_sections.local_communities.subsections"
-          :active="active_tab === '#local_communities'"
-          @activated="updateRoute('#local_communities')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#former_use'"
+          id="former_use"
           :title="deal_sections.former_use.label"
           :deal="deal"
           :sections="deal_sections.former_use.subsections"
-          :active="active_tab === '#former_use'"
-          @activated="updateRoute('#former_use')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#produce_info'"
+          id="produce_info"
           :title="deal_sections.produce_info.label"
           :deal="deal"
           :sections="deal_sections.produce_info.subsections"
-          :active="active_tab === '#produce_info'"
-          @activated="updateRoute('#produce_info')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#water'"
+          id="water"
           :title="deal_sections.water.label"
           :deal="deal"
           :sections="deal_sections.water.subsections"
-          :active="active_tab === '#water'"
-          @activated="updateRoute('#water')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#gender_related_info'"
+          id="gender_related_info"
           :title="deal_sections.gender_related_info.label"
           :deal="deal"
           :sections="deal_sections.gender_related_info.subsections"
-          :active="active_tab === '#gender_related_info'"
-          @activated="updateRoute('#gender_related_info')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#guidelines_and_principles'"
+          id="guidelines_and_principles"
           :title="deal_sections.guidelines_and_principles.label"
           :deal="deal"
           :sections="deal_sections.guidelines_and_principles.subsections"
-          :active="active_tab === '#guidelines_and_principles'"
-          @activated="updateRoute('#guidelines_and_principles')"
         />
 
         <DealEditSection
+          v-if="active_tab === '#overall_comment'"
+          id="overall_comment"
           :title="deal_sections.overall_comment.label"
           :deal="deal"
           :sections="deal_sections.overall_comment.subsections"
-          :active="active_tab === '#overall_comment'"
-          @activated="updateRoute('#overall_comment')"
         />
-      </b-tabs>
-
-      <!--      <div class="savebar-container">-->
-      <!--        <div class="savebar">-->
-      <!--          <button-->
-      <!--            type="submit"-->
-      <!--            class="btn btn-primary btn-sm mx-2"-->
-      <!--            :disabled="saving_in_progress"-->
-      <!--          >-->
-      <!--            <span-->
-      <!--              v-if="saving_in_progress"-->
-      <!--              class="spinner-border spinner-border-sm"-->
-      <!--              role="status"-->
-      <!--              aria-hidden="true"-->
-      <!--            ></span-->
-      <!--            >&nbsp;-->
-      <!--            {{ $t("Save") }}-->
-      <!--          </button>-->
-      <!--          <span>{{ get_save_description }}</span>-->
-      <!--          <router-link-->
-      <!--            v-if="dealId"-->
-      <!--            class="btn btn-gray btn-sm mx-2"-->
-      <!--            :to="{-->
-      <!--              name: 'deal_detail',-->
-      <!--              params: { dealId: deal.id, dealVersion: dealVersion },-->
-      <!--            }"-->
-      <!--          >-->
-      <!--            {{ $t("Cancel save") }}-->
-      <!--          </router-link>-->
-      <!--          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">Cancel</a>-->
-      <!--          <span>{{ $t("Leaves edit mode and forgets edits made") }}</span>-->
-      <!--        </div>-->
-      <!--      </div>-->
+      </div>
     </div>
     <div v-else>
       <LoadingPulse></LoadingPulse>
     </div>
+    <Overlay
+      v-if="show_really_quit_overlay"
+      :title="$t('Quit edit mode')"
+      @cancel="show_really_quit_overlay = false"
+      @submit="quitEditor(true)"
+    >
+      You have unsaved changes. Are you sure you want to exit the edit mode?
+    </Overlay>
   </div>
 </template>
 
@@ -203,6 +196,7 @@
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
   import EditField from "$components/Fields/EditField";
+  import Overlay from "$components/Overlay";
   import { deal_gql_query } from "$store/queries";
   import gql from "graphql-tag";
 
@@ -212,6 +206,7 @@
   export default {
     name: "DealEdit",
     components: {
+      Overlay,
       LoadingPulse,
       DealLocationsEditSection,
       EditField,
@@ -238,11 +233,28 @@
     },
     data() {
       return {
+        orig_deal: null,
         deal: null,
         deal_sections,
         deal_submodel_sections,
         saving_in_progress: false,
+        show_really_quit_overlay: false,
         active_tab: "#locations",
+        tabs: {
+          locations: this.$t("Locations"),
+          general: this.$t("General info"),
+          contracts: this.$t("Contracts"),
+          employment: this.$t("Employment"),
+          investor_info: this.$t("Investor info"),
+          data_sources: this.$t("Data sources"),
+          local_communities: this.$t("Local communities / indigenous peoples"),
+          former_use: this.$t("Former use"),
+          produce_info: this.$t("Produce info"),
+          water: this.$t("Water"),
+          gender_related_info: this.$t("Gender-related info"),
+          guidelines_and_principles: this.$t("Guidelines & Principles"),
+          overall_comment: this.$t("Overall comment"),
+        },
       };
     },
     apollo: {
@@ -256,6 +268,7 @@
           };
         },
         update(data) {
+          this.orig_deal = JSON.stringify(data.deal);
           return data.deal;
         },
         skip() {
@@ -277,6 +290,12 @@
           }
         }
       },
+      current_form() {
+        return document.querySelector(this.active_tab);
+      },
+      form_changed() {
+        return JSON.stringify(this.deal) !== this.orig_deal;
+      },
     },
     created() {
       if (!this.dealId) {
@@ -284,13 +303,35 @@
       }
     },
     methods: {
-      switchTabEvent(newTabIndex, prewTabIndex, bvEvent) {
-        console.log({ newTabIndex, prewTabIndex });
-        bvEvent.preventDefault();
+      quitEditor(force) {
+        if (this.form_changed && !force) {
+          this.show_really_quit_overlay = true;
+        } else {
+          this.$router.push({
+            name: "deal_detail",
+            params: { dealId: this.dealId, dealVersion: this.dealVersion },
+          });
+        }
       },
-      updateRoute(emiter) {
-        if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      saveButtonPressed() {
+        this.deal_save().then(() => (this.saving_in_progress = false));
       },
+      updateRoute(hash) {
+        if (location.hash === hash) return;
+        if (!this.form_changed) {
+          this.$router.push({ hash });
+          return;
+        }
+
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else
+          this.deal_save().then(({ data: { deal_edit } }) => {
+            console.log({ deal_edit });
+            this.saving_in_progress = false;
+            this.$router.push({ name: "deal_edit", params: deal_edit, hash });
+          });
+      },
+
       updatePageContext(to) {
         if (to.hash) {
           // only update if hash is present (otherwise #locations are active by default)
@@ -299,28 +340,25 @@
       },
       deal_save() {
         this.saving_in_progress = true;
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: Int!, $version: Int, $payload: Payload) {
-                deal_edit(id: $id, version: $version, payload: $payload) {
-                  dealId
-                  dealVersion
-                }
+        return this.$apollo.mutate({
+          mutation: gql`
+            mutation ($id: Int!, $version: Int, $payload: Payload) {
+              deal_edit(id: $id, version: $version, payload: $payload) {
+                dealId
+                dealVersion
               }
-            `,
-            variables: {
-              id: this.dealId ? +this.dealId : -1,
-              version: this.dealVersion ? +this.dealVersion : null,
-              payload: { ...this.deal, versions: null, comments: null },
-            },
-          })
-          .then(({ data: { deal_edit } }) => {
-            this.$router.push({ name: "deal_detail", params: deal_edit });
-          })
-          .catch((e) => {
-            console.error({ e });
-          });
+            }
+          `,
+          variables: {
+            id: this.dealId ? +this.dealId : -1,
+            version: this.dealVersion ? +this.dealVersion : null,
+            payload: { ...this.deal, versions: null, comments: null },
+          },
+        });
+
+        // .catch((e) => {
+        //   console.error({ e });
+        // });
       },
       addContract() {
         let maxid = 0;
@@ -363,101 +401,64 @@
 
   .deal-edit {
     overflow: hidden;
-    //height: 100vh;
     height: calc(100vh - 60px - 35px - 39px);
     width: 100vw;
     display: grid;
-    grid-template-areas:
-      "head"
-      "main";
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 2.5rem auto;
+  }
 
-    .deal-edit-heading {
-      display: flex;
-      h1 {
-        color: $lm_dark;
-        text-align: left;
-        text-transform: none;
+  .deal-edit-heading {
+    grid-column: span 12;
+    display: flex;
 
-        &:before {
-          display: none;
-        }
-      }
-      grid-area: head;
-    }
-
-    .deal-edit-b-tabs {
-      height: 100%;
-      grid-area: main;
-      overflow: hidden;
-    }
-    .deal-edit-nav-wrapper {
-      height: 100%;
-      //col-12 col-sm-5 col-md-3 position-relative
-      //position: relative;
-      overflow-y: auto;
-
-      &::-webkit-scrollbar {
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+      &:before {
         display: none;
       }
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
+    }
+  }
+  .deal-edit-nav {
+    grid-column: span 3;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding: 0 1rem 0 0;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none; /* IE and Edge */
+    //noinspection CssUnknownProperty
+    scrollbar-width: none; /* Firefox */
 
-      .nav-pills {
-        .nav-item {
-          .nav-link {
-            padding-left: 0;
-            border-right: 1px solid $lm_orange;
-            color: $lm_orange;
-            border-radius: 0;
+    ul {
+      list-style: none;
+      padding-left: 0;
+      li {
+        cursor: pointer;
+        padding: 0.5rem 1rem 0.5rem 0;
+        border-right: 1px solid $lm_orange;
+        color: $lm_orange;
+        border-radius: 0;
 
-            &.active {
-              border-right-width: 3px;
-              background-color: inherit;
-              color: $lm_dark;
-            }
+        &.active {
+          border-right-width: 3px;
+          background-color: inherit;
+          color: $lm_dark;
+          a {
+            color: $lm_dark;
           }
         }
       }
     }
-    .deal-edit-content {
-      height: 100%;
-      overflow-y: scroll;
-    }
   }
 
-  //.savebar-container {
-  //  .savebar {
-  //    width: clamp(300px, auto, 800px);
-  //    //height: 3rem;
-  //    padding: 0.5rem;
-  //    background-color: rgba(#dedede, 0.9);
-  //    filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.3));
-  //    position: fixed;
-  //    right: 10px;
-  //    bottom: 45px;
-  //    display: grid;
-  //    grid-template-columns: 2fr 5fr;
-  //    gap: 5px 10px;
-  //    border-radius: 5px;
-  //    z-index: 1000;
-  //
-  //    .btn {
-  //      margin: 0 !important;
-  //      font-size: 1.15em;
-  //    }
-  //
-  //    > span {
-  //      align-self: center;
-  //    }
-  //  }
-  //}
-  //
-  //.btn-gray {
-  //  background-color: #b1b1b1 !important;
-  //
-  //  &:hover {
-  //    color: white;
-  //    background-color: darken(#b1b1b1, 5%);
-  //  }
-  //}
+  .deal-edit-content {
+    height: 100%;
+    grid-column: span 9;
+    overflow-y: auto;
+  }
 </style>
