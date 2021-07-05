@@ -185,65 +185,44 @@ export const investor_query = {
   },
 };
 
-export const investor_edit_query = {
-  query: gql`
-    query Investor($id: Int!, $version: Int) {
-      investor(id: $id, version: $version) {
+export const investor_edit_query = gql`
+  query Investor($id: Int!, $version: Int) {
+    investor(id: $id, version: $version, subset: UNFILTERED) {
+      id
+      name
+      country {
         id
         name
-        country {
+      }
+      classification
+      homepage
+      opencorporates
+      comment
+      status
+      created_at
+      modified_at
+      investors {
+        id
+        investor {
           id
           name
         }
-        classification
-        homepage
-        opencorporates
-        comment
-        status
-        created_at
-        modified_at
-        investors {
+        role
+        investment_type
+        percentage
+        loans_amount
+        loans_currency {
           id
-          investor {
-            id
-            name
-          }
-          role
-          investment_type
-          percentage
-          loans_amount
-          loans_currency {
-            id
-            code
-            name
-          }
-          loans_date
-          parent_relation
-          comment
+          code
+          name
         }
+        loans_date
+        parent_relation
+        comment
       }
     }
-  `,
-  variables() {
-    return {
-      id: +this.investorId,
-      version: +this.investorVersion,
-    };
-  },
-  update(data) {
-    if (!data.investor) {
-      this.$router.push({
-        name: "404",
-        params: [this.$router.currentRoute.path],
-        replace: true,
-      });
-    }
-    return data.investor;
-  },
-  skip() {
-    return !this.investorId;
-  },
-};
+  }
+`;
 
 export const markers_query = {
   query: gql`

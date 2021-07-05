@@ -16,4 +16,5 @@ class InvestorVentureInvolvementForm(VueForm):
         "investor": {"class": "InvestorForeignKey"},
         "venture": {"class": "InvestorForeignKey"},
         "percentage": {"unit": "%"},
+        "loans_date": {"class": "DateField"},
     }

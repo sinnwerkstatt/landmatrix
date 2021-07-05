@@ -87,7 +87,7 @@
       PointField,
       TextField,
       URLField,
-      OCIDField
+      OCIDField,
     },
     props: {
       fieldname: { type: String, required: true },
@@ -96,17 +96,13 @@
       showLabel: { type: Boolean, default: true },
       wrapperClasses: {
         type: Array,
-        default: () => ["display-field-wrapper", "form-field", "row"]
+        default: () => ["display-field-wrapper", "form-field", "row"],
       },
-      labelClasses: {
-        type: Array
-      },
-      valueClasses: {
-        type: Array
-      },
+      labelClasses: { type: Array },
+      valueClasses: { type: Array },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
-      disabled: { type: Boolean, default: false }
+      disabled: { type: Boolean, default: false },
     },
     computed: {
       _value: {
@@ -115,7 +111,7 @@
         },
         set(v) {
           this.$emit("input", v);
-        }
+        },
       },
       _visible() {
         if (!this.visible) return false;
@@ -127,7 +123,7 @@
       formfield() {
         return {
           name: this.fieldname,
-          ...this.$store.state.formfields[this.model][this.fieldname]
+          ...this.$store.state.formfields[this.model][this.fieldname],
         };
       },
       getLabelClasses() {
@@ -153,20 +149,21 @@
         }
       },
       isShortField() {
-        return [
-          "IntegerField",
-          "DecimalField",
-          "DateField",
-          "LowLevelDecimalField",
-          "BooleanField",
-          "NullBooleanField"
-        ].includes(this.formfield.class) || ([
-          "TextField", "CharField"
-        ].includes(this.formfield.class) && this.formfield.choices);
-      }
-
+        return (
+          [
+            "IntegerField",
+            "DecimalField",
+            "DateField",
+            "LowLevelDecimalField",
+            "BooleanField",
+            "NullBooleanField",
+          ].includes(this.formfield.class) ||
+          (["TextField", "CharField"].includes(this.formfield.class) &&
+            this.formfield.choices)
+        );
+      },
     },
-    methods: {}
+    methods: {},
   };
 </script>
 
@@ -236,7 +233,7 @@
 
     tr.is-current {
       td {
-        background: rgba($primary, 0.20);
+        background: rgba($primary, 0.2);
 
         $radius: 5px;
         &:first-child {
@@ -257,12 +254,11 @@
       -webkit-appearance: none;
 
       option:checked {
-        background-color: rgba($primary, 0.20);
+        background-color: rgba($primary, 0.2);
         // WTF: Only works when setting a gradient!!!
-        background: linear-gradient(#FFC894,#FFC894);
+        background: linear-gradient(#ffc894, #ffc894);
         color: black;
       }
-
     }
   }
 </style>

@@ -68,6 +68,9 @@ def resolve_investor(
         investor["involvements"] = InvolvementNetwork(
             involvements_include_ventures, max_depth=involvements_depth
         ).get_network(id)
+
+    if not investor.get("investors"):
+        investor["investors"] = []
     return investor
 
 

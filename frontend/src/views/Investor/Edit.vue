@@ -1,83 +1,145 @@
 <template>
-  <div class="container investor-edit">
-    <h1>
-      {{ investor.name }}
-    </h1>
+  <div>
     {{ investor }}
-    <form @submit.prevent="submitInvestor">
-      <b-tabs
-        id="tabNav"
-        :key="investorId ? investorId + investorVersion : -1"
-        content-class="mb-3"
-        vertical
-        pills
-        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
-        nav-class="sticky-nav"
-      >
-        <b-tab
-          :title="$t('General')"
-          :active="active_tab === '#general'"
-          @click="updateRoute('#general')"
-        >
-          <EditField
-            v-for="fieldname in general_fields"
-            :key="fieldname"
-            v-model="investor[fieldname]"
-            model="investor"
-            :fieldname="fieldname"
-            :label-classes="['display-field-value', 'col-md-3']"
-            :value-classes="['display-field-label', 'col-md-9']"
-          />
-        </b-tab>
-        <b-tab
-          :title="$t('Parent companies')"
-          :active="active_tab === '#parents'"
-          @click="updateRoute('#parents')"
-        >
-          <div v-for="(parent, i) in parents" :key="parent.id">
-            <h3>
-              {{ $t("Parent company") }} <small>#{{ i + 1 }}</small>
-            </h3>
-            <InvolvementEdit :involvement="parent"></InvolvementEdit>
-          </div>
-          <button type="button" class="btn btn-primary" @click="addInvestor('PARENT')">
-            <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
-          </button>
-        </b-tab>
+    <div v-if="investor" class="container investor-edit">
+      <div class="investor-edit-heading">
+        <h1>
+          {{
+            investorId
+              ? $t("Editing Investor #") + investorId
+              : $t("Adding new investor")
+          }}
+        </h1>
 
-        <b-tab
-          :title="$t('Tertiary investors/lenders')"
-          :active="active_tab === '#tertiary'"
-          @click="updateRoute('#tertiary')"
-        >
-          <div v-for="(lender, i) in lenders" :key="lender.id">
-            <h3>
-              {{ $t("Tertiary investor/lender") }} <small>#{{ i + 1 }}</small>
-            </h3>
-            <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
-          </div>
-          <button type="button" class="btn btn-primary" @click="addInvestor('LENDER')">
-            <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
+        <div class="savebar-container">
+          <button
+            type="submit"
+            class="btn btn-primary btn-sm mx-2"
+            :disabled="!form_changed || saving_in_progress"
+            @click="saveButtonPressed"
+          >
+            <span
+              v-if="saving_in_progress"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            &nbsp;
+            {{ $t("Save") }}
           </button>
-        </b-tab>
-      </b-tabs>
+          <button class="btn btn-secondary btn-sm mx-2" @click="quitEditor(false)">
+            {{ $t("Close") }}
+          </button>
 
-      <div class="savebar">
-        <button class="btn btn-primary">Save</button>
+          <span>{{ $t("Leave edit mode") }}</span>
+        </div>
       </div>
-    </form>
+
+      <div class="investor-edit-nav">
+        <ul>
+          <li
+            v-for="(tabname, tabid) in tabs"
+            :key="tabid"
+            :class="{ active: active_tab === `#${tabid}` }"
+          >
+            <a :href="`#${tabid}`" @click.prevent="updateRoute(`#${tabid}`)">
+              {{ tabname }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="investor-edit-content">
+        <section v-if="active_tab === '#general'">
+          <form id="general">
+            <div class="container">
+              <EditField
+                v-for="fieldname in general_fields"
+                :key="fieldname"
+                v-model="investor[fieldname]"
+                model="investor"
+                :fieldname="fieldname"
+                :wrapper-classes="['row', 'my-3']"
+                :label-classes="['col-md-3']"
+                :value-classes="['col-md-9']"
+              />
+            </div>
+          </form>
+        </section>
+        <section v-if="active_tab === '#parents'">
+          <form id="parents">
+            <div v-for="(parent, i) in parents" :key="parent.id">
+              <h3>
+                {{ $t("Parent company") }} <small>#{{ i + 1 }}</small>
+              </h3>
+              <InvolvementEdit :involvement="parent"></InvolvementEdit>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="addInvestor('PARENT')"
+            >
+              <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
+            </button>
+          </form>
+        </section>
+        <section v-if="active_tab === '#tertiaries'">
+          <form id="tertiaries">
+            <div v-for="(lender, i) in lenders" :key="lender.id">
+              <h3>
+                {{ $t("Tertiary investor/lender") }} <small>#{{ i + 1 }}</small>
+              </h3>
+              <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="addInvestor('LENDER')"
+            >
+              <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
+            </button>
+          </form>
+        </section>
+      </div>
+    </div>
+    <div v-else>
+      <LoadingPulse />
+    </div>
+    <Overlay
+      v-if="show_really_quit_overlay"
+      :title="$t('Quit edit mode')"
+      @cancel="show_really_quit_overlay = false"
+      @submit="quitEditor(true)"
+    >
+      You have unsaved changes. Are you sure you want to exit the edit mode?
+    </Overlay>
   </div>
 </template>
 
 <script>
+  import LoadingPulse from "$components/Data/LoadingPulse";
   import EditField from "$components/Fields/EditField";
   import InvolvementEdit from "$components/Investor/InvolvementEdit";
+  import Overlay from "$components/Overlay";
   import { investor_edit_query } from "$store/queries";
   import gql from "graphql-tag";
 
   export default {
     name: "InvestorEdit",
-    components: { InvolvementEdit, EditField },
+    components: { Overlay, LoadingPulse, InvolvementEdit, EditField },
+
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        console.log("Investor edit: Route enter");
+        vm.active_tab = to.hash || "#general";
+      });
+    },
+    beforeRouteUpdate(to, from, next) {
+      console.log("Investor edit: Route update");
+      if (to.hash) this.active_tab = to.hash;
+
+      next();
+    },
     props: {
       investorId: { type: [Number, String], required: false, default: null },
       investorVersion: { type: [Number, String], default: null },
@@ -85,6 +147,16 @@
     data() {
       return {
         investor: null,
+        orig_investor: null,
+        saving_in_progress: false,
+        show_really_quit_overlay: false,
+        active_tab: "#general",
+        tabs: {
+          general: this.$t("General"),
+          parents: this.$t("Parent companies"),
+          tertiaries: this.$t("Tertiary investors/lenders"),
+        },
+
         general_fields: [
           "name",
           "country",
@@ -95,77 +167,160 @@
         ],
       };
     },
-    apollo: { investor: investor_edit_query },
+    apollo: {
+      investor: {
+        query: investor_edit_query,
+        variables() {
+          return {
+            id: +this.investorId,
+            version: +this.investorVersion,
+          };
+        },
+        update({ investor }) {
+          this.orig_investor = JSON.stringify(investor);
+          return investor;
+        },
+        skip() {
+          return !this.investorId;
+        },
+      },
+    },
 
     computed: {
-      active_tab() {
-        return location.hash ? location.hash : "#general";
-      },
       parents() {
         return this.investor.investors
-          .filter((i) => i.role === "PARENT")
+          ?.filter((i) => i.role === "PARENT")
           .sort((a, b) => a.id - b.id);
       },
       lenders() {
         return this.investor.investors
-          .filter((i) => i.role === "LENDER")
+          ?.filter((i) => i.role === "LENDER")
           .sort((a, b) => a.id - b.id);
+      },
+      form_changed() {
+        return JSON.stringify(this.investor) !== this.orig_investor;
+      },
+      current_form() {
+        return document.querySelector(this.active_tab);
       },
     },
     created() {
       if (!this.investorId) {
         this.investor = { investors: [] };
+        this.orig_investor = JSON.stringify(this.investor);
       }
       if (this.$route.query.newName) {
         this.investor.name = this.$route.query.newName;
       }
     },
     methods: {
-      updateRoute(emiter) {
-        if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
+      quitEditor(force) {
+        if (this.form_changed && !force) this.show_really_quit_overlay = true;
+        else if (!this.investorId) this.$router.push("/");
+        else
+          this.$router.push({
+            name: "investor_detail",
+            params: {
+              investorId: this.investorId,
+              investorVersion: this.investorVersion,
+            },
+          });
       },
+      updateRoute(hash) {
+        if (location.hash === hash) return;
+        if (!this.form_changed) {
+          this.$router.push({ hash });
+          return;
+        }
+
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else
+          this.investor_save().then(({ data: { investor_edit } }) => {
+            console.log({ investor_edit });
+            this.saving_in_progress = false;
+            this.$router.push({ name: "investor_edit", params: investor_edit, hash });
+          });
+      },
+      saveButtonPressed() {
+        // this.investor_save().then(({ data: { investor_edit } }) => {
+        //   this.saving_in_progress = false;
+        //   this.$router.push({
+        //     name: "investor_edit",
+        //     params: investor_edit,
+        //     hash: location.hash,
+        //   });
+        // });
+      },
+
       addInvestor(role) {
         this.investor.investors.push({ role });
       },
-      submitInvestor() {
+      investor_save() {
         this.saving_in_progress = true;
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: Int!, $version: Int, $payload: Payload) {
-                investor_edit(id: $id, version: $version, payload: $payload) {
-                  investorId
-                  investorVersion
-                }
+        return this.$apollo.mutate({
+          mutation: gql`
+            mutation ($id: Int!, $version: Int, $payload: Payload) {
+              investor_edit(id: $id, version: $version, payload: $payload) {
+                investorId
+                investorVersion
               }
-            `,
-            variables: {
-              id: this.investorId ? +this.investorId : -1,
-              version: this.investorVersion ? +this.investorVersion : null,
-              payload: { ...this.investor, versions: null, comments: null },
-            },
-          })
-          .then(({ data: { investor_edit } }) => {
-            if (this.$route.query.newName) {
-              window.close();
             }
-            this.$router.push({ name: "investor_detail", params: investor_edit });
-          })
-          .catch((e) => {
-            console.error({ e });
-          });
+          `,
+          variables: {
+            id: this.investorId ? +this.investorId : -1,
+            version: this.investorVersion ? +this.investorVersion : null,
+            payload: { ...this.investor, versions: null, comments: null },
+          },
+        });
       },
     },
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../../scss/colors";
 
-  .nav-pills {
-    .nav-item {
-      .nav-link {
-        padding-left: 0;
+  .investor-edit {
+    overflow: hidden;
+    height: calc(100vh - 60px - 35px - 39px);
+    width: 100vw;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 2.5rem auto;
+  }
+
+  .investor-edit-heading {
+    grid-column: span 12;
+    display: flex;
+
+    h1 {
+      color: $lm_dark;
+      text-align: left;
+      text-transform: none;
+      &:before {
+        display: none;
+      }
+    }
+  }
+  .investor-edit-nav {
+    grid-column: span 3;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding: 0 1rem 0 0;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none; /* IE and Edge */
+    //noinspection CssUnknownProperty
+    scrollbar-width: none; /* Firefox */
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      li {
+        cursor: pointer;
+        padding: 0.5rem 1rem 0.5rem 0;
         border-right: 1px solid $lm_orange;
         color: $lm_orange;
         border-radius: 0;
@@ -174,8 +329,17 @@
           border-right-width: 3px;
           background-color: inherit;
           color: $lm_dark;
+          a {
+            color: $lm_dark;
+          }
         }
       }
     }
+  }
+
+  .investor-edit-content {
+    height: 100%;
+    grid-column: span 9;
+    overflow-y: auto;
   }
 </style>

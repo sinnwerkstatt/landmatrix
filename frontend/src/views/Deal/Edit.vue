@@ -304,14 +304,13 @@
     },
     methods: {
       quitEditor(force) {
-        if (this.form_changed && !force) {
-          this.show_really_quit_overlay = true;
-        } else {
+        if (this.form_changed && !force) this.show_really_quit_overlay = true;
+        else if (!this.dealId) this.$router.push("/");
+        else
           this.$router.push({
             name: "deal_detail",
             params: { dealId: this.dealId, dealVersion: this.dealVersion },
           });
-        }
       },
       saveButtonPressed() {
         this.deal_save().then(({ data: { deal_edit } }) => {
