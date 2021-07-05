@@ -19,6 +19,7 @@ stages:
 
 django formatting and linting:
   stage: test
+  interruptible: true
   script:
     - poetry config experimental.new-installer false
     - poetry install -E production
@@ -29,6 +30,7 @@ django formatting and linting:
 
 frontend formatting and linting:
   stage: test
+  interruptible: true
   script:
     - cd frontend
     - npm ci
@@ -36,6 +38,7 @@ frontend formatting and linting:
 
 tests and coverage:
   stage: test
+  interruptible: true
   services:
 #    - kartoza/postgis:12.1
     - mdillon/postgis:10
