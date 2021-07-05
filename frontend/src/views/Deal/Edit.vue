@@ -314,7 +314,14 @@
         }
       },
       saveButtonPressed() {
-        this.deal_save().then(() => (this.saving_in_progress = false));
+        this.deal_save().then(({ data: { deal_edit } }) => {
+          this.saving_in_progress = false;
+          this.$router.push({
+            name: "deal_edit",
+            params: deal_edit,
+            hash: location.hash,
+          });
+        });
       },
       updateRoute(hash) {
         if (location.hash === hash) return;
