@@ -3,7 +3,7 @@
     <div @mouseover="showHint = true" @mouseout="showHint = false">
       <multiselect
         v-model="val"
-        :options="$store.state.page.countries"
+        :options="target_countries"
         label="name"
         track-by="id"
         :allow-empty="!formfield.required"
@@ -35,7 +35,6 @@
           return this.value;
         },
         set(v) {
-          console.log(v);
           this.$emit("input", {
             id: v.id,
             name: v.name,
@@ -46,6 +45,9 @@
             point_lon_max: v.point_lon_max,
           });
         },
+      },
+      target_countries() {
+        return this.$store.state.page.countries.filter((c) => c.is_target_country);
       },
     },
   };
