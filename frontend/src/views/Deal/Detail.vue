@@ -391,6 +391,7 @@
                 $transition: WorkflowTransition!
                 $comment: String
                 $to_user_id: Int
+                $fully_updated: Boolean
               ) {
                 change_deal_status(
                   id: $id
@@ -398,6 +399,7 @@
                   transition: $transition
                   comment: $comment
                   to_user_id: $to_user_id
+                  fully_updated: $fully_updated
                 ) {
                   dealId
                   dealVersion
@@ -410,6 +412,7 @@
               transition,
               comment,
               to_user_id: to_user ? to_user.id : null,
+              fully_updated: this.deal.fully_updated,
             },
           })
           .then(({ data: { change_deal_status } }) => {

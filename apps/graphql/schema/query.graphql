@@ -60,11 +60,7 @@ type Query {
 
   chart_descriptions: ChartDescriptions
 
-  markers(
-    subset: Subset = PUBLIC
-    region_id: Int
-    country_id: Int
-  ): [Marker]
+  markers(subset: Subset = PUBLIC, region_id: Int, country_id: Int): [Marker]
 }
 
 type FormFieldSet {

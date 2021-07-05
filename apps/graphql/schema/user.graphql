@@ -26,8 +26,6 @@ enum UserRole {
   REPORTER
 }
 
-
-
 type UserRegionalInfo {
   user: User
   phone: String

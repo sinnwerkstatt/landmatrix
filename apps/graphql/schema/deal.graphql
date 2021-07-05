@@ -280,7 +280,7 @@ type DealWorkflowInfo {
   comment: String
   processed_by_receiver: Boolean!
   deal: Deal!
-#  deal_version: Deal
+  #  deal_version: Deal
 }
 
 type DealComment {

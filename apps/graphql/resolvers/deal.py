@@ -201,6 +201,7 @@ def resolve_change_deal_status(
     transition: str,
     comment: str = None,
     to_user_id: int = None,
+    fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> dict:
     user = info.context["request"].user
     role = get_user_role(user)
@@ -211,7 +212,7 @@ def resolve_change_deal_status(
     rev = Revision.objects.get(id=version)
     deal_version = DealVersion.objects.get(revision=rev)
 
-    deal_v_obj = deal_version.retrieve_object()
+    deal_v_obj: Deal = deal_version.retrieve_object()
     old_draft_status = deal_v_obj.draft_status
 
     if transition == "TO_REVIEW":
@@ -221,6 +222,7 @@ def resolve_change_deal_status(
             raise GraphQLError("not authorized")
         draft_status = Deal.DRAFT_STATUS_REVIEW
         deal_v_obj.draft_status = draft_status
+        deal_v_obj.fully_updated = fully_updated
         deal_version.update_from_obj(deal_v_obj).save()
         Deal.objects.filter(id=id).update(draft_status=draft_status)
     elif transition == "TO_ACTIVATION":

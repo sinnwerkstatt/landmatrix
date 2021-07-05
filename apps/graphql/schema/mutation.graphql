@@ -2,12 +2,35 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
 
-  add_deal_comment(id: Int!, version: Int, comment: String!, to_user_id: Int): DealEditReturn
-  change_deal_status(id: Int!, version: Int!, transition: WorkflowTransition!, comment: String, to_user_id: Int): DealEditReturn
+  add_deal_comment(
+    id: Int!
+    version: Int
+    comment: String!
+    to_user_id: Int
+  ): DealEditReturn
+
+  change_deal_status(
+    id: Int!
+    version: Int!
+    transition: WorkflowTransition!
+    comment: String
+    to_user_id: Int
+    fully_updated: Boolean
+  ): DealEditReturn
+
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditReturn
+
   deal_delete(id: Int!, version: Int, comment: String): Boolean
+
   upload_datasource_file(filename: String!, payload: String!): String
-  deal_set_confidential(id: Int!, confidential: Boolean!, version: Int, reason: ConfidentialReason, comment: String): Boolean
+
+  deal_set_confidential(
+    id: Int!
+    confidential: Boolean!
+    version: Int
+    reason: ConfidentialReason
+    comment: String
+  ): Boolean
 
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
 }
