@@ -358,6 +358,7 @@
           users {
             id
             full_name
+            username
           }
         }
       `,

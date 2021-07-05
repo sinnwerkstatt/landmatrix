@@ -21,7 +21,7 @@
             :allow-empty="true"
             placeholder="Send to"
             track-by="id"
-            label="full_name"
+            :custom-label="(u) => `${u.full_name} (${u.username})`"
           />
           <a class="btn btn-default" @click.prevent="add_deal_comment">
             {{ $t("Send") }}
