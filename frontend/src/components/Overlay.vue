@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="overlay-bg"
-    tabindex="0"
-    @keyup.esc="$emit('cancel')"
-    @click.self="$emit('cancel')"
-  >
+  <div class="overlay-bg" @click.self="$emit('cancel')">
     <div class="overlay">
       <h3 v-if="title">{{ title }}</h3>
       <slot></slot>
@@ -32,8 +27,16 @@
         to_user_selected: null,
       };
     },
-    computed: {},
+    created() {
+      document.addEventListener("keydown", this.cancel);
+    },
+    beforeDestroy() {
+      document.removeEventListener("keydown", this.cancel);
+    },
     methods: {
+      cancel(e) {
+        if (e.key === "Escape") this.$emit("cancel");
+      },
       submit() {
         this.$emit("submit");
       },

@@ -283,8 +283,23 @@
       :to-user="get_transition_to_user()"
       @cancel_transition="cancel_transition"
       @do_transition="do_transition"
-      @do_set_confidential="do_set_confidential"
+      @do_set_confidential="toggle_confidential"
     />
+    <Overlay
+      v-if="show_unconfidential_overlay"
+      :title="$t('Unset confidential')"
+      @cancel="show_unconfidential_overlay = false"
+      @submit="toggle_confidential({ force: true })"
+    >
+      <p>
+        Confidentiality on this deal will be unset. Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+        reprehenderit in voluptate velit esse cillum dolore e
+      </p>
+    </Overlay>
+
     <Overlay
       v-if="show_to_review_overlay"
       :title="$t('Submit for review')"
@@ -333,6 +348,7 @@
         users: [],
         show_comment_overlay: false,
         show_to_review_overlay: false,
+        show_unconfidential_overlay: false,
         transition: null,
       };
     },
@@ -455,10 +471,7 @@
         }
       },
       open_comment_overlay_for(key, title) {
-        this.transition = {
-          key,
-          title,
-        };
+        this.transition = { key, title };
         this.show_comment_overlay = true;
       },
       get_transition_to_user() {
@@ -493,32 +506,36 @@
         this.show_to_review_overlay = false;
         this.$emit("change_deal_status", { transition: "TO_REVIEW" });
       },
-      do_set_confidential(data) {
-        this.$emit("set_confidential", {
-          confidential: true,
-          reason: data.reason,
-          comment: data.comment,
-        });
-        this.show_comment_overlay = false;
-        this.transition = null;
-      },
-      toggle_fully_updated(e) {
-        console.log(e.target.value);
-      },
-      toggle_confidential() {
+      toggle_confidential(data) {
+        console.log({ data });
         if (!this.deal_is_editable) return;
         if (this.deal.confidential) {
           // unset confidential
-          this.$emit("set_confidential", {
-            confidential: false,
-            reason: null,
-          });
+          if (data.force) {
+            this.$emit("set_confidential", {
+              confidential: false,
+              reason: null,
+            });
+            this.show_unconfidential_overlay = false;
+          } else {
+            this.show_unconfidential_overlay = true;
+          }
         } else {
           // open overlay and ask for reason
-          this.open_comment_overlay_for(
-            "SET_CONFIDENTIAL",
-            this.$t("Set confidential")
-          );
+          if (data.force) {
+            this.$emit("set_confidential", {
+              confidential: true,
+              reason: data.reason,
+              comment: data.comment,
+            });
+            this.show_comment_overlay = false;
+            this.transition = null;
+          } else {
+            this.open_comment_overlay_for(
+              "SET_CONFIDENTIAL",
+              this.$t("Set confidential")
+            );
+          }
         }
       },
       handle_delete() {

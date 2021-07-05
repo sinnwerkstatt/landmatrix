@@ -81,6 +81,7 @@
           // if (this.$refs.comment.checkValidity() && this.$refs.reason.checkValidity()) {
           if (this.$refs.comment.checkValidity()) {
             this.$emit("do_set_confidential", {
+              force: true,
               comment: this.comment,
               reason: this.confidential_reason,
             });
