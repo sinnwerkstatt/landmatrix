@@ -11,9 +11,10 @@
           <multiselect
             v-model="userToImpersonate"
             :options="users"
-            label="full_name"
+            :custom-label="(u) => `${u.full_name} (${u.username})`"
           ></multiselect>
           <a
+            v-if="userToImpersonate"
             type="submit"
             class="btn btn-primary"
             :href="`/impersonate/${userToImpersonate.id}/?next=/`"
@@ -64,15 +65,11 @@
             <tbody>
               <tr class="update">
                 <td class="deal">
-                  <a href="/deal/6993/" class="label label-deal">
-                    6993
-                  </a>
+                  <a href="/deal/6993/" class="label label-deal">6993</a>
                 </td>
 
                 <td class="user">andreas.nuesslein (No role)</td>
-                <td class="state">
-                  Update
-                </td>
+                <td class="state">Update</td>
                 <td class="state">1&nbsp;week ago</td>
                 <td class="action">
                   <a href="/deal/edit/6993/" class="approve label label-deal"
@@ -102,21 +99,9 @@
 
 <script>
   import store from "$store";
-  import axios from "axios";
+  import gql from "graphql-tag";
 
   export default {
-    data: function () {
-      return {
-        users: [],
-        userToImpersonate: { id: -1 },
-      };
-    },
-    created() {
-      let query = `{ users(sort:"full_name") { id full_name } }`;
-      axios.post("/graphql/", { query: query }).then((response) => {
-        this.users = response.data.data.users;
-      });
-    },
     beforeRouteEnter(to, from, next) {
       let title = "Dashboard";
       store.dispatch("setPageContext", {
@@ -124,6 +109,26 @@
         breadcrumbs: [{ link: { name: "wagtail" }, name: "Home" }, { name: title }],
       });
       next();
+    },
+    metaInfo() {
+      return { title: this.$t("Dashboard") };
+    },
+    data: function () {
+      return {
+        users: [],
+        userToImpersonate: null,
+      };
+    },
+    apollo: {
+      users: gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
     },
   };
 </script>

@@ -29,7 +29,7 @@
         :allow-empty="false"
         placeholder="Send to"
         track-by="id"
-        label="full_name"
+        :custom-label="(u) => `${u.full_name} (${u.username})`"
         @select="select_user"
       />
     </div>
