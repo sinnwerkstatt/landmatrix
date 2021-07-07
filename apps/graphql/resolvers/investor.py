@@ -3,6 +3,7 @@ from typing import Any
 from django.utils import timezone
 from graphql import GraphQLResolveInfo, GraphQLError
 
+from apps.graphql.resolvers.user_utils import get_user_role
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
 from apps.landmatrix.models.gndinvestor import InvestorVersion
@@ -114,37 +115,78 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
 
 def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> dict:
     user = info.context["request"].user
-    if not user.is_authenticated:
+    role = get_user_role(user)
+    if not role:
         raise GraphQLError("not authorized")
 
     # this is a new Investor
     if id == -1:
         investor = Investor()
         investor.update_from_dict(payload)
+        investor.modified_at = timezone.now()
         investor.status = investor.draft_status = Investor.DRAFT_STATUS_DRAFT
         investor.save()
-        rev = Revision.objects.create(
-            date_created=timezone.now(), user=user, comment=""
-        )
-        Version.create_from_obj(investor, revision_id=rev.id)
+        rev = Revision.objects.create(date_created=timezone.now(), user=user)
+        inv_version = Version.create_from_obj(investor, revision_id=rev.id)
+        # DealWorkflowInfo.objects.create(
+        #     deal=deal,
+        #     deal_version=deal_version,
+        #     from_user=user,
+        #     draft_status_after=deal.draft_status,
+        # )
         return {"investorId": investor.id, "investorVersion": rev.id}
 
-    # TODO make sure user is allowed to edit this Investor.
+    investor = Investor.objects.get(id=id)
+    investor.update_from_dict(payload)
+    investor.modified_at = timezone.now()
 
-    # investor = Investor.objects.get(id=id)
-    # investor.update_from_dict(payload)
-    # investor.recalculate_fields()
-    #
-    # # this is a live Deal for which we create a new Version
-    # if not version:
-    #     investor.draft_status = Investor.DRAFT_STATUS_DRAFT
-    #     rev = investor.save_revision(date_created=timezone.now(), user=user)
-    #     investor.objects.filter(id=id).update(draft_status=Investor.DRAFT_STATUS_DRAFT)
-    # # we update the existing version.
-    # else:
-    #     rev = Revision.objects.get(id=version)
-    #     investor_version = InvestorVersion.objects.get(revision=rev)
-    #     investor_version.update_from_obj(investor)
-    #     investor_version.save()
-    #
-    # return {"investorId": id, "investorVersion": rev.id}
+    # this is a live Investor for which we create a new Version
+    if not version:
+        investor.draft_status = Investor.DRAFT_STATUS_DRAFT
+        rev = Revision.objects.create(date_created=timezone.now(), user=user)
+        Version.create_from_obj(investor, revision_id=rev.id)
+        Investor.objects.filter(id=id).update(draft_status=Investor.DRAFT_STATUS_DRAFT)
+
+        investor_version = InvestorVersion.objects.get(revision=rev)
+        investor_v_obj = investor_version.retrieve_object()
+        # InvestorWorkflowInfo.objects.create(
+        #     investor=investor,
+        #     investor_version=investor_version,
+        #     from_user=user,
+        #     draft_status_before=None,
+        #     draft_status_after=investor_v_obj.draft_status,
+        # )
+
+    # we update the existing version.
+    else:
+        rev = Revision.objects.get(id=version)
+        investor_version = InvestorVersion.objects.get(revision=rev)
+        if not (
+            investor_version.revision.user == user
+            or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+
+        investor_version.update_from_obj(investor)
+        if investor.draft_status in [
+            Investor.DRAFT_STATUS_REVIEW,
+            Investor.DRAFT_STATUS_ACTIVATION,
+        ]:
+            oldstatus = investor.draft_status
+            rev = Revision.objects.create(date_created=timezone.now(), user=user)
+            tmp_investor = investor_version.retrieve_object()
+            tmp_investor.draft_status = Investor.DRAFT_STATUS_DRAFT
+            dv = Version.create_from_obj(tmp_investor, revision_id=rev.id)
+            # InvestorWorkflowInfo.objects.create(
+            #     investor=investor,
+            #     investor_version=dv,
+            #     from_user=user,
+            #     draft_status_before=oldstatus,
+            #     draft_status_after=Investor.DRAFT_STATUS_DRAFT,
+            # )
+        else:
+            investor_version.save()
+            if investor.status == Investor.STATUS_DRAFT:
+                investor.save()
+
+    return {"investorId": id, "investorVersion": rev.id}

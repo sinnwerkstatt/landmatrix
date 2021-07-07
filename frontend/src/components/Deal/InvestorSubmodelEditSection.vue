@@ -14,22 +14,22 @@
                 @click="active_entry = active_entry !== entry ? entry : null"
               ></i>
               <h3 @click="active_entry = active_entry !== entry ? entry : null">
-                {{ $t(modelName) }} <small>#{{ entry.id }}</small>
+                {{ $t(modelName) }} <small>#{{ index + 1 }}</small>
               </h3>
               <a class="trashbin" @click="$emit('removeEntry', index)">
                 <i class="fas fa-trash"></i>
               </a>
             </div>
             <div v-if="active_entry === entry" class="submodel-body">
-              <EditField
-                v-for="fieldname in fields"
-                :key="fieldname"
-                v-model="entry[fieldname]"
-                :fieldname="fieldname"
-                :model="model"
-                label-classes="display-field-label col-md-5 col-lg-4"
-                value-classes="display-field-value col-md-7 col-lg-8"
-              />
+              <div v-for="fieldname in fields" :key="fieldname">
+                <EditField
+                  v-model="entry[fieldname]"
+                  :fieldname="fieldname"
+                  model="involvement"
+                  :label-classes="['display-field-value', 'col-md-3']"
+                  :value-classes="['display-field-label', 'col-md-9']"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -48,19 +48,30 @@
   import EditField from "$components/Fields/EditField";
 
   export default {
+    name: "InvestorSubmodelEditSection",
     components: { EditField },
     props: {
       id: { type: String, required: true },
       title: { type: String, required: true },
-      model: { type: String, required: true },
       modelName: { type: String, required: true },
       entries: { type: Array, required: true },
-      fields: { type: Array, required: true },
       active: { type: Boolean, default: false },
     },
     data() {
+      let fields = [
+        "investor",
+        "investment_type",
+        "percentage",
+        "loans_amount",
+        "loans_currency",
+        "loans_date",
+      ];
+      console.log(this.id);
+      if (this.id === "parents") fields.push("parent_relation");
+      fields.push("comment");
       return {
         active_entry: null,
+        fields,
       };
     },
     computed: {
@@ -72,7 +83,9 @@
     methods: {
       add_entry() {
         this.$emit("addEntry");
-        this.active_entry = this.entries[this.entries.length - 1];
+        this.$nextTick(() => {
+          this.active_entry = this.entries[this.entries.length - 1];
+        });
       },
     },
   };

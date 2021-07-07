@@ -292,11 +292,11 @@
       @submit="toggle_confidential({ force: true })"
     >
       <p>
-        Confidentiality on this deal will be unset. Lorem ipsum dolor sit amet,
-        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore e
+        {{
+          $t(
+            "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
+          )
+        }}
       </p>
     </Overlay>
 

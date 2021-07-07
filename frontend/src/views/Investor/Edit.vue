@@ -66,40 +66,26 @@
             </div>
           </form>
         </section>
-        <section v-if="active_tab === '#parents'">
-          <form id="parents">
-            <div v-for="(parent, i) in parents" :key="parent.id">
-              <h3>
-                {{ $t("Parent company") }} <small>#{{ i + 1 }}</small>
-              </h3>
-              <InvolvementEdit :involvement="parent"></InvolvementEdit>
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="addInvestor('PARENT')"
-            >
-              <i class="fa fa-plus"></i> {{ $t("Add parent company") }}
-            </button>
-          </form>
-        </section>
-        <section v-if="active_tab === '#tertiaries'">
-          <form id="tertiaries">
-            <div v-for="(lender, i) in lenders" :key="lender.id">
-              <h3>
-                {{ $t("Tertiary investor/lender") }} <small>#{{ i + 1 }}</small>
-              </h3>
-              <InvolvementEdit :involvement="lender" type="lender"></InvolvementEdit>
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="addInvestor('LENDER')"
-            >
-              <i class="fa fa-plus"></i> {{ $t("Add tertiary investor/lender") }}
-            </button>
-          </form>
-        </section>
+
+        <InvestorSubmodelEditSection
+          v-if="active_tab === '#parents'"
+          id="parents"
+          title="Parent companies"
+          model-name="Parent company"
+          :entries="parents"
+          @addEntry="addInvestor('PARENT')"
+          @removeEntry="removeInvestor"
+        />
+
+        <InvestorSubmodelEditSection
+          v-if="active_tab === '#tertiaries'"
+          id="tertiaries"
+          title="Tertiary investors/lenders"
+          model-name="Tertiary investor/lender"
+          :entries="lenders"
+          @addEntry="addInvestor('LENDER')"
+          @removeEntry="removeInvestor"
+        />
       </div>
     </div>
     <div v-else>
@@ -118,15 +104,20 @@
 
 <script>
   import LoadingPulse from "$components/Data/LoadingPulse";
+  import InvestorSubmodelEditSection from "$components/Deal/InvestorSubmodelEditSection";
   import EditField from "$components/Fields/EditField";
-  import InvolvementEdit from "$components/Investor/InvolvementEdit";
   import Overlay from "$components/Overlay";
   import { investor_edit_query } from "$store/queries";
   import gql from "graphql-tag";
 
   export default {
     name: "InvestorEdit",
-    components: { Overlay, LoadingPulse, InvolvementEdit, EditField },
+    components: {
+      InvestorSubmodelEditSection,
+      Overlay,
+      LoadingPulse,
+      EditField,
+    },
 
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -147,7 +138,7 @@
     data() {
       return {
         investor: null,
-        orig_investor: null,
+        original_investor: null,
         saving_in_progress: false,
         show_really_quit_overlay: false,
         active_tab: "#general",
@@ -156,7 +147,6 @@
           parents: this.$t("Parent companies"),
           tertiaries: this.$t("Tertiary investors/lenders"),
         },
-
         general_fields: [
           "name",
           "country",
@@ -171,13 +161,10 @@
       investor: {
         query: investor_edit_query,
         variables() {
-          return {
-            id: +this.investorId,
-            version: +this.investorVersion,
-          };
+          return { id: +this.investorId, version: +this.investorVersion };
         },
         update({ investor }) {
-          this.orig_investor = JSON.stringify(investor);
+          this.original_investor = JSON.stringify(investor);
           return investor;
         },
         skip() {
@@ -198,7 +185,7 @@
           .sort((a, b) => a.id - b.id);
       },
       form_changed() {
-        return JSON.stringify(this.investor) !== this.orig_investor;
+        return JSON.stringify(this.investor) !== this.original_investor;
       },
       current_form() {
         return document.querySelector(this.active_tab);
@@ -207,7 +194,7 @@
     created() {
       if (!this.investorId) {
         this.investor = { investors: [] };
-        this.orig_investor = JSON.stringify(this.investor);
+        this.original_investor = JSON.stringify(this.investor);
       }
       if (this.$route.query.newName) {
         this.investor.name = this.$route.query.newName;
@@ -234,44 +221,51 @@
         }
 
         if (!this.current_form.checkValidity()) this.current_form.reportValidity();
-        else
-          this.investor_save().then(({ data: { investor_edit } }) => {
-            console.log({ investor_edit });
-            this.saving_in_progress = false;
-            this.$router.push({ name: "investor_edit", params: investor_edit, hash });
-          });
+        else this.investor_save(hash);
       },
       saveButtonPressed() {
-        // this.investor_save().then(({ data: { investor_edit } }) => {
-        //   this.saving_in_progress = false;
-        //   this.$router.push({
-        //     name: "investor_edit",
-        //     params: investor_edit,
-        //     hash: location.hash,
-        //   });
-        // });
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else this.investor_save(location.hash);
       },
-
       addInvestor(role) {
         this.investor.investors.push({ role });
       },
-      investor_save() {
+      removeInvestor(index) {
+        let message = this.$t("Do you really want to remove ") + ` #${index + 1}?`;
+        this.$bvModal
+          .msgBoxConfirm(message, {
+            size: "sm",
+            okTitle: this.$t("Delete"),
+            cancelTitle: this.$t("Cancel"),
+            centered: true,
+          })
+          .then((confirmed) => {
+            // TODO !
+            if (confirmed) submodels.splice(index, 1);
+          });
+      },
+      investor_save(hash) {
         this.saving_in_progress = true;
-        return this.$apollo.mutate({
-          mutation: gql`
-            mutation ($id: Int!, $version: Int, $payload: Payload) {
-              investor_edit(id: $id, version: $version, payload: $payload) {
-                investorId
-                investorVersion
+        return this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!, $version: Int, $payload: Payload) {
+                investor_edit(id: $id, version: $version, payload: $payload) {
+                  investorId
+                  investorVersion
+                }
               }
-            }
-          `,
-          variables: {
-            id: this.investorId ? +this.investorId : -1,
-            version: this.investorVersion ? +this.investorVersion : null,
-            payload: { ...this.investor, versions: null, comments: null },
-          },
-        });
+            `,
+            variables: {
+              id: this.investorId ? +this.investorId : -1,
+              version: this.investorVersion ? +this.investorVersion : null,
+              payload: { ...this.investor, versions: null, comments: null },
+            },
+          })
+          .then(({ data: { investor_edit } }) => {
+            this.saving_in_progress = false;
+            this.$router.push({ name: "investor_edit", params: investor_edit, hash });
+          });
       },
     },
   };

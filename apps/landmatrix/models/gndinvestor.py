@@ -223,8 +223,28 @@ class Investor(models.Model):
             ]:
                 self.__setattr__(f"{key}_id", value["id"] if value else None)
             elif key == "investors":
-                ...
-                # TODO: IMPLEMENT THIS!
+                for entry in value:
+                    try:
+                        ivi = InvestorVentureInvolvement.objects.get(
+                            investor_id=entry["investor"]["id"],
+                            venture_id=self.id,
+                        )
+                    except InvestorVentureInvolvement.DoesNotExist:
+                        ivi = InvestorVentureInvolvement.objects.create(
+                            investor_id=entry["investor"]["id"],
+                            venture_id=self.id,
+                        )
+                    ivi.role = entry.get("role")
+                    ivi.investment_type = entry.get("investment_type")
+                    ivi.percentage = entry.get("percentage")
+                    ivi.loans_amount = entry.get("loans_amount")
+                    if entry.get("loans_currency"):
+                        ivi.loans_currency_id = entry["loans_currency"]["id"]
+                    ivi.loans_date = entry.get("loans_date", "")
+                    if entry.get("parent_relation"):
+                        ivi.parent_relation = entry.get("parent_relation")
+                    ivi.comment = entry.get("comment", "")
+                    ivi.save()
             else:
                 self.__setattr__(key, value)
 
@@ -337,7 +357,7 @@ class InvestorVentureInvolvement(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
-    loans_date = models.CharField(_("Loan date"), max_length=20, blank=True)
+    loans_date = models.CharField(_("Loan date"), max_length=20, blank=True, default="")
 
     PARENT_RELATION_CHOICES = (
         ("SUBSIDIARY", _("Subsidiary of parent company")),  # Subsidiary
@@ -351,7 +371,7 @@ class InvestorVentureInvolvement(models.Model):
         blank=True,
         null=True,
     )
-    comment = models.TextField(_("Comment"), blank=True)
+    comment = models.TextField(_("Comment"), blank=True, default="")
 
     old_id = models.IntegerField(null=True, blank=True)
 

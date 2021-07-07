@@ -233,7 +233,7 @@
     },
     data() {
       return {
-        orig_deal: null,
+        original_deal: null,
         deal: null,
         deal_sections,
         deal_submodel_sections,
@@ -268,7 +268,7 @@
           };
         },
         update(data) {
-          this.orig_deal = JSON.stringify(data.deal);
+          this.original_deal = JSON.stringify(data.deal);
           return data.deal;
         },
         skip() {
@@ -294,12 +294,13 @@
         return document.querySelector(this.active_tab);
       },
       form_changed() {
-        return JSON.stringify(this.deal) !== this.orig_deal;
+        return JSON.stringify(this.deal) !== this.original_deal;
       },
     },
     created() {
       if (!this.dealId) {
         this.deal = { country: null, locations: [], contracts: [], datasources: [] };
+        this.original_deal = JSON.stringify(this.deal);
       }
     },
     methods: {
@@ -313,14 +314,8 @@
           });
       },
       saveButtonPressed() {
-        this.deal_save().then(({ data: { deal_edit } }) => {
-          this.saving_in_progress = false;
-          this.$router.push({
-            name: "deal_edit",
-            params: deal_edit,
-            hash: location.hash,
-          });
-        });
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else this.deal_save(location.hash);
       },
       updateRoute(hash) {
         if (location.hash === hash) return;
@@ -330,12 +325,7 @@
         }
 
         if (!this.current_form.checkValidity()) this.current_form.reportValidity();
-        else
-          this.deal_save().then(({ data: { deal_edit } }) => {
-            console.log({ deal_edit });
-            this.saving_in_progress = false;
-            this.$router.push({ name: "deal_edit", params: deal_edit, hash });
-          });
+        else this.deal_save(hash);
       },
 
       updatePageContext(to) {
@@ -344,27 +334,28 @@
           this.active_tab = to.hash;
         }
       },
-      deal_save() {
+      deal_save(hash) {
         this.saving_in_progress = true;
-        return this.$apollo.mutate({
-          mutation: gql`
-            mutation ($id: Int!, $version: Int, $payload: Payload) {
-              deal_edit(id: $id, version: $version, payload: $payload) {
-                dealId
-                dealVersion
+        return this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!, $version: Int, $payload: Payload) {
+                deal_edit(id: $id, version: $version, payload: $payload) {
+                  dealId
+                  dealVersion
+                }
               }
-            }
-          `,
-          variables: {
-            id: this.dealId ? +this.dealId : -1,
-            version: this.dealVersion ? +this.dealVersion : null,
-            payload: { ...this.deal, versions: null, comments: null },
-          },
-        });
-
-        // .catch((e) => {
-        //   console.error({ e });
-        // });
+            `,
+            variables: {
+              id: this.dealId ? +this.dealId : -1,
+              version: this.dealVersion ? +this.dealVersion : null,
+              payload: { ...this.deal, versions: null, comments: null },
+            },
+          })
+          .then(({ data: { deal_edit } }) => {
+            this.saving_in_progress = false;
+            this.$router.push({ name: "deal_edit", params: deal_edit, hash });
+          });
       },
       addContract() {
         let maxid = 0;

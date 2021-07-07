@@ -1,6 +1,13 @@
 <template>
   <div>
     <div>
+      <input
+        v-if="formfield.required"
+        v-model="val"
+        required
+        type="text"
+        style="width: 0; height: 0; position: absolute; z-index: -10"
+      />
       <multiselect
         v-model="val"
         :options="investors"

@@ -295,8 +295,6 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
 
         return {"dealId": deal.id, "dealVersion": rev.id}
 
-    # TODO make sure user is allowed to edit this deal.
-
     deal = Deal.objects.get(id=id)
     deal.update_from_dict(payload)
     deal.recalculate_fields()
