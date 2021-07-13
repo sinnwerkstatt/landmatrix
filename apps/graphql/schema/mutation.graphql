@@ -8,7 +8,6 @@ type Mutation {
     comment: String!
     to_user_id: Int
   ): DealEditReturn
-
   change_deal_status(
     id: Int!
     version: Int!
@@ -17,13 +16,9 @@ type Mutation {
     to_user_id: Int
     fully_updated: Boolean
   ): DealEditReturn
-
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditReturn
-
   deal_delete(id: Int!, version: Int, comment: String): Boolean
-
   upload_datasource_file(filename: String!, payload: String!): String
-
   deal_set_confidential(
     id: Int!
     confidential: Boolean!
@@ -32,7 +27,21 @@ type Mutation {
     comment: String
   ): Boolean
 
+  add_investor_comment(
+    id: Int!
+    version: Int
+    comment: String!
+    to_user_id: Int
+  ): InvestorEditReturn
+  change_investor_status(
+    id: Int!
+    version: Int!
+    transition: WorkflowTransition!
+    comment: String
+    to_user_id: Int
+  ): InvestorEditReturn
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
+  investor_delete(id: Int!, version: Int, comment: String): Boolean
 }
 
 scalar Payload

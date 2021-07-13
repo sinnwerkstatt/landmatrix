@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from wagtail.core.models import Site
 
-from apps.landmatrix.models import Country
+from apps.landmatrix.models import Country, Deal
 
 User = get_user_model()
 
@@ -56,22 +56,31 @@ def has_authorization_for_country(user: User, country: Union[Country, int]) -> b
     return False
 
 
-def send_comment_to_user(deal, comment, from_user, to_user_id, version_id=None):
+def send_comment_to_user(obj, comment, from_user, to_user_id, version_id=None):
+
     receiver = User.objects.get(id=to_user_id)
     subject = "[Landmatrix] " + _("New comment")
+    full_name = from_user.get_full_name()
+
+    obj_desc = (
+        f"deal {obj.id}"
+        if isinstance(obj, Deal)
+        else f"investor {obj.name} (#{obj.id})"
+    )
+
     if comment:
-        message = _(
-            f"{from_user.get_full_name()} has addressed you in a comment on deal {deal.id}:"
-        )
+        message = _(f"{full_name} has addressed you in a comment on {obj_desc}:")
         message += "\n\n" + comment
     else:
-        message = _(f"{from_user.get_full_name()} has updated deal {deal.id}:")
+        message = _(f"{full_name} has updated {obj_desc}:")
 
     site = Site.objects.get(is_default_site=True)
-    url = f"http{'s' if site.port == 444 else ''}://{site.hostname}"
-    if site.port not in [80, 443]:
-        url += f":{site.port}"
-    url += f"/deal/{deal.id}"
+
+    port = f":{site.port}" if site.port not in [80, 443] else ""
+    url = f"http{'s' if site.port == 443 else ''}://{site.hostname}{port}"
+
+    is_deal = isinstance(obj, Deal)
+    url += f"/deal/{obj.id}" if is_deal else f"/investor/{obj.id}"
     if version_id:
         url += f"/{version_id}"
     message += "\n\n" + _(f"Please review at {url}")

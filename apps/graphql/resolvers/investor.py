@@ -3,10 +3,10 @@ from typing import Any
 from django.utils import timezone
 from graphql import GraphQLResolveInfo, GraphQLError
 
-from apps.graphql.resolvers.user_utils import get_user_role
+from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
-from apps.landmatrix.models.gndinvestor import InvestorVersion
+from apps.landmatrix.models.gndinvestor import InvestorVersion, InvestorWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict
@@ -25,11 +25,14 @@ def resolve_investor(
 
     add_versions = False
     add_deals = False
+    add_workflowinfos = False
     add_involvements = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
             add_versions = True
+        elif "workflowinfos" in field:
+            add_workflowinfos = True
         elif "deals" in field:
             add_deals = True
         elif "involvements" in field:
@@ -58,6 +61,13 @@ def resolve_investor(
     if add_versions:
         investor["versions"] = [
             dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
+        ]
+    if add_workflowinfos:
+        investor["workflowinfos"] = [
+            dwi.to_dict()
+            for dwi in InvestorWorkflowInfo.objects.filter(investor_id=id).order_by(
+                "-timestamp"
+            )
         ]
     if add_deals:
         investor["deals"] = (
@@ -113,6 +123,193 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     return [iv.to_dict() for iv in qs]
 
 
+def resolve_add_investor_comment(
+    _, info, id: int, version: int, comment: str, to_user_id=None
+) -> dict:
+    user = info.context["request"].user
+    role = get_user_role(user)
+    if not role:
+        raise GraphQLError("not allowed")
+
+    investor = Investor.objects.get(id=id)
+    investor_version = None
+    draft_status = None
+    if version:
+        investor_version = InvestorVersion.objects.get(revision_id=version)
+        investor_v_obj = investor_version.retrieve_object()
+        draft_status = investor_v_obj.draft_status
+
+    InvestorWorkflowInfo.objects.create(
+        investor=investor,
+        investor_version=investor_version,
+        from_user=user,
+        to_user_id=to_user_id,
+        draft_status_before=draft_status,
+        draft_status_after=draft_status,
+        comment=comment,
+    )
+
+    if to_user_id:
+        send_comment_to_user(
+            investor,
+            comment,
+            user,
+            to_user_id,
+            version,
+        )
+
+    return {"investorId": investor.id, "investorVersion": version}
+
+
+def resolve_change_investor_status(
+    _,
+    info,
+    id: int,
+    version: int,
+    transition: str,
+    comment: str = None,
+    to_user_id: int = None,
+) -> dict:
+    user = info.context["request"].user
+    role = get_user_role(user)
+    if not role:
+        raise GraphQLError("not allowed")
+
+    investor = Investor.objects.get(id=id)
+    rev = Revision.objects.get(id=version)
+    investor_version = InvestorVersion.objects.get(revision=rev)
+
+    investor_v_obj: Investor = investor_version.retrieve_object()
+    old_draft_status = investor_v_obj.draft_status
+
+    if transition == "TO_REVIEW":
+        if not (
+            investor_version.revision.user == user
+            or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+        draft_status = Investor.DRAFT_STATUS_REVIEW
+        investor_v_obj.draft_status = draft_status
+        investor_version.update_from_obj(investor_v_obj).save()
+        Investor.objects.filter(id=id).update(draft_status=draft_status)
+    elif transition == "TO_ACTIVATION":
+        if role not in ["ADMINISTRATOR", "EDITOR"]:
+            raise GraphQLError("not authorized")
+        draft_status = Investor.DRAFT_STATUS_ACTIVATION
+        investor_v_obj.draft_status = draft_status
+        investor_version.update_from_obj(investor_v_obj).save()
+        Investor.objects.filter(id=id).update(draft_status=draft_status)
+    elif transition == "ACTIVATE":
+        if role != "ADMINISTRATOR":
+            raise GraphQLError("not allowed")
+        draft_status = None
+        investor_v_obj.status = (
+            Investor.STATUS_LIVE
+            if investor.status == Investor.STATUS_DRAFT
+            else Investor.STATUS_UPDATED
+        )
+        investor_v_obj.draft_status = draft_status
+        investor_v_obj.save()
+        investor_version.update_from_obj(investor_v_obj).save()
+    elif transition == "TO_DRAFT":
+        if role not in ["ADMINISTRATOR", "EDITOR"]:
+            raise GraphQLError("not authorized")
+        draft_status = investor.draft_status = Investor.DRAFT_STATUS_DRAFT
+        rev = Revision.objects.create(date_created=timezone.now(), user_id=to_user_id)
+        Version.create_from_obj(investor, revision_id=rev.id)
+        Investor.objects.filter(id=id).update(draft_status=draft_status)
+    else:
+        raise GraphQLError(f"unknown transition {transition}")
+
+    InvestorWorkflowInfo.objects.create(
+        investor=investor,
+        investor_version=investor_version,
+        from_user=user,
+        to_user_id=to_user_id,
+        draft_status_before=old_draft_status,
+        draft_status_after=draft_status,
+        comment=comment,
+    )
+
+    if to_user_id:
+        send_comment_to_user(
+            investor,
+            comment,
+            user,
+            to_user_id,
+            version,
+        )
+
+    return {"investorId": investor.id, "investorVersion": rev.id}
+
+
+def resolve_investor_delete(_, info, id, version=None, comment=None) -> bool:
+    user = info.context["request"].user
+    role = get_user_role(user)
+    if not role:
+        raise GraphQLError("not authorized")
+
+    investor = Investor.objects.get(id=id)
+    # if it's just a draft,
+    if version:
+        investor_version = InvestorVersion.objects.get(revision_id=version)
+        if not (
+            investor_version.revision.user == user
+            or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
+            raise GraphQLError("not authorized")
+        investor_v_obj = investor_version.retrieve_object()
+        old_draft_status = investor_v_obj.draft_status
+        investor_version.delete()
+        InvestorWorkflowInfo.objects.create(
+            investor=investor,
+            from_user=user,
+            draft_status_before=old_draft_status,
+            draft_status_after=investor.status == Investor.STATUS_DELETED,
+            comment=comment,
+        )
+
+        if (
+            investor.versions.count()
+            and not investor.versions.order_by("-id")[0].serialized_data[0]["fields"][
+                "draft_status"
+            ]
+        ):
+            # reset the Live version to "not having a draft" if we delete it.
+            Investor.objects.filter(id=id).update(draft_status=None)
+
+        if investor.versions.count() == 0 and investor.status == Investor.STATUS_DRAFT:
+            Revision.objects.filter(investorversion__object_id=investor.id).delete()
+            investor.delete()
+
+    else:
+        if role != "ADMINISTRATOR":
+            raise GraphQLError("not authorized")
+        investor.status = (
+            Investor.STATUS_UPDATED
+            if investor.status == Investor.STATUS_DELETED
+            else Investor.STATUS_DELETED
+        )
+        investor.modified_at = timezone.now()
+        investor.save()
+        InvestorWorkflowInfo.objects.create(
+            investor=investor,
+            from_user=user,
+            draft_status_before=(
+                None
+                if investor.status == Investor.STATUS_DELETED
+                else Investor.DRAFT_STATUS_TO_DELETE
+            ),
+            draft_status_after=(
+                Investor.DRAFT_STATUS_TO_DELETE
+                if investor.status == Investor.STATUS_DELETED
+                else None
+            ),
+            comment=comment,
+        )
+    return True
+
+
 def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> dict:
     user = info.context["request"].user
     role = get_user_role(user)
@@ -127,13 +324,13 @@ def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> di
         investor.status = investor.draft_status = Investor.DRAFT_STATUS_DRAFT
         investor.save()
         rev = Revision.objects.create(date_created=timezone.now(), user=user)
-        inv_version = Version.create_from_obj(investor, revision_id=rev.id)
-        # DealWorkflowInfo.objects.create(
-        #     deal=deal,
-        #     deal_version=deal_version,
-        #     from_user=user,
-        #     draft_status_after=deal.draft_status,
-        # )
+        investor_version = Version.create_from_obj(investor, revision_id=rev.id)
+        InvestorWorkflowInfo.objects.create(
+            investor=investor,
+            investor_version=investor_version,
+            from_user=user,
+            draft_status_after=investor.draft_status,
+        )
         return {"investorId": investor.id, "investorVersion": rev.id}
 
     investor = Investor.objects.get(id=id)
@@ -149,13 +346,13 @@ def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> di
 
         investor_version = InvestorVersion.objects.get(revision=rev)
         investor_v_obj = investor_version.retrieve_object()
-        # InvestorWorkflowInfo.objects.create(
-        #     investor=investor,
-        #     investor_version=investor_version,
-        #     from_user=user,
-        #     draft_status_before=None,
-        #     draft_status_after=investor_v_obj.draft_status,
-        # )
+        InvestorWorkflowInfo.objects.create(
+            investor=investor,
+            investor_version=investor_version,
+            from_user=user,
+            draft_status_before=None,
+            draft_status_after=investor_v_obj.draft_status,
+        )
 
     # we update the existing version.
     else:
@@ -177,13 +374,13 @@ def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> di
             tmp_investor = investor_version.retrieve_object()
             tmp_investor.draft_status = Investor.DRAFT_STATUS_DRAFT
             dv = Version.create_from_obj(tmp_investor, revision_id=rev.id)
-            # InvestorWorkflowInfo.objects.create(
-            #     investor=investor,
-            #     investor_version=dv,
-            #     from_user=user,
-            #     draft_status_before=oldstatus,
-            #     draft_status_after=Investor.DRAFT_STATUS_DRAFT,
-            # )
+            InvestorWorkflowInfo.objects.create(
+                investor=investor,
+                investor_version=dv,
+                from_user=user,
+                draft_status_before=oldstatus,
+                draft_status_after=Investor.DRAFT_STATUS_DRAFT,
+            )
         else:
             investor_version.save()
             if investor.status == Investor.STATUS_DRAFT:

@@ -1,6 +1,7 @@
 import re
 from typing import Set
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -278,6 +279,47 @@ class Investor(models.Model):
                     "deal_size",
                 )
             ),
+        }
+
+
+class InvestorWorkflowInfo(models.Model):
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    draft_status_before = models.IntegerField(
+        choices=Investor.DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
+    draft_status_after = models.IntegerField(
+        choices=Investor.DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
+    timestamp = models.DateTimeField(default=timezone.now)
+    comment = models.TextField(blank=True, default="")
+    processed_by_receiver = models.BooleanField(default=False)
+    # watch out: ignore the draft_status within this DealVersion object, it will change
+    # when the workflow moves along. the payload will remain consistent though.
+    deal = models.ForeignKey(Investor, on_delete=models.CASCADE)
+    deal_version = models.ForeignKey(
+        InvestorVersion, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    def to_dict(self) -> dict:
+        return {
+            "from_user": self.from_user,
+            "to_user": self.to_user,
+            "draft_status_before": self.draft_status_before,
+            "draft_status_after": self.draft_status_after,
+            "timestamp": self.timestamp,
+            "comment": self.comment,
+            "processed_by_receiver": self.processed_by_receiver,
+            "deal": self.deal,
+            "deal_version": self.deal_version,
         }
 
 

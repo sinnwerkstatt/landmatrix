@@ -205,8 +205,8 @@ def resolve_change_deal_status(
 ) -> dict:
     user = info.context["request"].user
     role = get_user_role(user)
-    if not user.is_authenticated:
-        raise GraphQLError("not authorized")
+    if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
+        raise GraphQLError("not allowed")
 
     deal = Deal.objects.get(id=id)
     rev = Revision.objects.get(id=version)

@@ -37,6 +37,9 @@ from apps.graphql.resolvers.investor import (
     # resolve_involvements,
     resolve_investorversions,
     resolve_investor_edit,
+    resolve_add_investor_comment,
+    resolve_change_investor_status,
+    resolve_investor_delete,
 )
 from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
@@ -93,6 +96,7 @@ query.set_field("markers", resolve_markers)
 mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
+# deal
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
@@ -100,7 +104,11 @@ mutation.set_field("deal_delete", resolve_deal_delete)
 mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)
 mutation.set_field("deal_set_confidential", resolve_set_confidential)
 
+# investor
+mutation.set_field("add_investor_comment", resolve_add_investor_comment)
+mutation.set_field("change_investor_status", resolve_change_investor_status)
 mutation.set_field("investor_edit", resolve_investor_edit)
+mutation.set_field("investor_delete", resolve_investor_delete)
 
 schema = make_executable_schema(
     type_defs,
