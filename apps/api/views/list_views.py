@@ -385,7 +385,7 @@ class ElasticSearchMixin:
         return results
 
     def filter_deals(self, raw_result_list):
-        """ Additional filtering and exclusion of unwanted results """
+        """Additional filtering and exclusion of unwanted results"""
         result_list = []
         for raw_result in raw_result_list:
             result = raw_result["_source"]
@@ -412,7 +412,7 @@ class ElasticSearchMixin:
         return result_list
 
     def filter_investors(self, raw_result_list):
-        """ Additional filtering and exclusion of unwanted results """
+        """Additional filtering and exclusion of unwanted results"""
         result_list = []
         for raw_result in raw_result_list:
             result = raw_result["_source"]
@@ -439,7 +439,7 @@ class ElasticSearchMixin:
         return result_list
 
     def filter_involvements(self, raw_result_list, investors):
-        """ Additional filtering and exclusion of unwanted results """
+        """Additional filtering and exclusion of unwanted results"""
         result_list = []
         investor_ids = [int(i["id"]) for i in investors]
         involvements = {}
@@ -728,7 +728,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         return intentions
 
     def create_feature_from_result(self, result):
-        """ Create a GeoJSON-conform result. """
+        """Create a GeoJSON-conform result."""
 
         intended_size = result.get("intended_size", None)
         intended_size = (

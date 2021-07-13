@@ -120,7 +120,7 @@ class BlogTag(Tag):
 
 
 def get_blog_context(context):
-    """ Get context data useful on all blog related pages """
+    """Get context data useful on all blog related pages"""
     context["authors"] = (
         get_user_model()
         .objects.filter(

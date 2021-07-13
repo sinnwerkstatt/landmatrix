@@ -82,7 +82,7 @@ class DealVersion(Version):
 
 @register_version(DealVersion)
 class Deal(models.Model, OldDealMixin):
-    """ Deal """
+    """Deal"""
 
     """ Locations """
     locations = LocationsField(_("Locations"), default=list)

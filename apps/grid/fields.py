@@ -61,7 +61,7 @@ class YearBasedIntegerField(YearBasedField):
         return super(YearBasedIntegerField, self).clean(value)
 
     def compress(self, data_list):
-        """  """
+        """ """
         if data_list:
             yb_data = []
             for i in range(len(data_list) // 3):
@@ -116,7 +116,7 @@ class YearBasedFloatField(YearBasedField):
         return super(YearBasedFloatField, self).clean(value)
 
     def compress(self, data_list):
-        """  """
+        """ """
         if data_list:
             yb_data = []
             for i in range(len(data_list) // 3):

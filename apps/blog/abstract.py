@@ -102,7 +102,7 @@ class BlogPageTagAbstract(TaggedItemBase):
 
 
 def limit_author_choices():
-    """ Limit choices in blog author field based on config settings """
+    """Limit choices in blog author field based on config settings"""
     LIMIT_AUTHOR_CHOICES = getattr(settings, "BLOG_LIMIT_AUTHOR_CHOICES_GROUP", None)
     if LIMIT_AUTHOR_CHOICES:
         if isinstance(LIMIT_AUTHOR_CHOICES, str):

@@ -335,7 +335,7 @@ class MetaActivity:
                 "old_reliability_ranking",
                 "timestamp",
             ]:
-                """ Ignore these. We don't care for these anymore. """
+                """Ignore these. We don't care for these anymore."""
                 pass
             else:
                 # pass
