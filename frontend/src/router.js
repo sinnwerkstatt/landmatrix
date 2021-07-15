@@ -1,37 +1,27 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "./store";
-const DataMap = () => import("$views/Data/GlobalMap");
-const DynamicsOverview = () => import("$views/Data/Charts/DynamicsOverview");
-const ProduceInfoTreeMap = () => import("$views/Data/Charts/ProduceInfoTreeMap");
-const WebOfTransnationalDeals = () =>
-  import("$views/Data/Charts/WebOfTransnationalDeals");
-const DataList = () => import("$views/Data/List");
-const CaseStatistics = () => import("$views/Manager/CaseStatistics");
-const DealCompare = () => import("$views/Deal/Compare");
-const DealDetail = () => import("$views/Deal/Detail");
-const DealEdit = () => import("$views/Deal/Edit");
-const InvestorDetail = () => import("$views/Investor/Detail");
-const InvestorEdit = () => import("$views/Investor/Edit");
-const Login = () => import("$views/Login");
-const Dashboard = () => import("$views/Manager/Dashboard");
-const NotFound = () => import("$views/NotFound");
-const Wagtail = () => import("$views/Wagtail/WagtailSwitch");
 
 Vue.use(Router);
+
+const DataList = () => import("$views/Data/List");
+const DealEdit = () => import("$views/Deal/Edit");
+const InvestorEdit = () => import("$views/Investor/Edit");
 
 const router = new Router({
   mode: "history",
   base: "/",
   routes: [
+    // map
     {
       path: "/map/",
       name: "map",
-      component: DataMap,
+      component: () => import("$views/Data/GlobalMap"),
       meta: {
         hideBreadcrumbs: true,
       },
     },
+    // lists
     {
       path: "/list/deals/",
       name: "list_deals",
@@ -48,10 +38,16 @@ const router = new Router({
         hideBreadcrumbs: true,
       },
     },
+    // charts
+    {
+      path: "/charts/",
+      name: "charts",
+      redirect: { name: "web-of-transnational-deals" },
+    },
     {
       path: "/charts/web-of-transnational-deals/",
       name: "web-of-transnational-deals",
-      component: WebOfTransnationalDeals,
+      component: () => import("$views/Data/Charts/WebOfTransnationalDeals"),
       meta: {
         hideBreadcrumbs: true,
       },
@@ -59,7 +55,7 @@ const router = new Router({
     {
       path: "/charts/produce-info/",
       name: "produce-info",
-      component: ProduceInfoTreeMap,
+      component: () => import("$views/Data/Charts/ProduceInfoTreeMap"),
       meta: {
         hideBreadcrumbs: true,
       },
@@ -67,12 +63,12 @@ const router = new Router({
     {
       path: "/charts/dynamics-overview/",
       name: "dynamics-overview",
-      component: DynamicsOverview,
+      component: () => import("$views/Data/Charts/DynamicsOverview"),
       meta: {
         hideBreadcrumbs: true,
       },
     },
-
+    // deal
     {
       path: "/deal/add/",
       name: "deal_add",
@@ -89,20 +85,21 @@ const router = new Router({
     },
     {
       path: "/deal/manage/:dealId/:dealVersion?",
-      redirect: "/deal/:dealId/:dealVersion?"
+      redirect: "/deal/:dealId/:dealVersion?",
     },
     {
       path: "/deal/:dealId/:dealVersion?/",
       name: "deal_detail",
-      component: DealDetail,
+      component: () => import("$views/Deal/Detail"),
       props: true,
     },
     {
       path: "/deal/:dealId/compare/:fromVersion/:toVersion/",
       name: "deal_compare",
-      component: DealCompare,
+      component: () => import("$views/Deal/Compare"),
       props: true,
     },
+    // investor
     {
       path: "/investor/add/",
       name: "investor_add",
@@ -120,25 +117,27 @@ const router = new Router({
     {
       path: "/investor/:investorId/:investorVersion?/",
       name: "investor_detail",
-      component: InvestorDetail,
+      component: () => import("$views/Investor/Detail"),
       props: true,
     },
+    // manager
     {
-      path: "/dashboard/",
+      path: "/management/dashboard/",
       name: "dashboard",
-      component: Dashboard,
+      component: () => import("$views/Manager/Dashboard"),
       meta: { requiresAuth: true },
     },
     {
-      path: "/case_statistics/",
+      path: "/management/case_statistics/",
       name: "case_statistics",
-      component: CaseStatistics,
+      component: () => import("$views/Manager/CaseStatistics"),
       meta: { requiresAuth: true },
     },
+    //
     {
       path: "/login/",
       name: "login",
-      component: Login,
+      component: () => import("$views/Login"),
     },
 
     // redirects
@@ -156,22 +155,22 @@ const router = new Router({
     { path: "/region/:region", redirect: "/observatory/:region" },
     { path: "/country/:country", redirect: "/observatory/:country" },
     { path: "/global", redirect: "/observatory/global" },
-    {
-      path: "/charts/",
-      name: "charts",
-      redirect: { name: "web-of-transnational-deals" },
-    },
+
     {
       path: "/the-land-matrix-initiative",
       redirect: "/about/the-land-matrix-initiative",
     },
 
     // wagtail
-    { path: "*", name: "wagtail", component: Wagtail },
+    {
+      path: "*",
+      name: "wagtail",
+      component: () => import("$views/Wagtail/WagtailSwitch"),
+    },
     {
       path: "*",
       name: "404",
-      component: NotFound,
+      component: () => import("$views/NotFound"),
       beforeEnter(to, from, next) {
         store.dispatch("setPageContext", { breadcrumbs: [] }).then(next);
       },

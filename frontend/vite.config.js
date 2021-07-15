@@ -48,6 +48,7 @@ export default defineConfig({
       "/media": "http://localhost:8000",
       "/static": "http://localhost:8000",
       "/wagtailapi": "http://localhost:8000",
+      "/editor": "http://localhost:8000",
     },
   },
 });
