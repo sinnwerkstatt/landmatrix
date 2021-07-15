@@ -29,22 +29,8 @@
         </div>
       </div>
     </div>
+
     <div class="container deal-detail">
-      <!--    <div class="quicknav">-->
-      <!--      <div v-for="(version, i) in deal.versions">-->
-      <!--        <span v-if="(!deal_version && !i) || +deal_version === +version.revision.id"-->
-      <!--          >Current</span-->
-      <!--        >-->
-      <!--        <router-link-->
-      <!--          v-else-->
-      <!--          :to="{-->
-      <!--            name: 'deal_detail',-->
-      <!--            params: { deal_id, deal_version: version.revision.id },-->
-      <!--          }"-->
-      <!--          >{{ version.revision.date_created | defaultdate }}</router-link-->
-      <!--        >-->
-      <!--      </div>-->
-      <!--    </div>-->
       <b-tabs
         id="tabNav"
         :key="dealId + dealVersion"
@@ -540,15 +526,6 @@
     position: sticky;
     top: 8em;
     z-index: 99;
-  }
-
-  div.quicknav {
-    z-index: 100;
-    position: absolute;
-    right: 200px;
-    width: 200px;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.7);
   }
 
   .panel-body > h3 {

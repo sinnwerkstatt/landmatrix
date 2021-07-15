@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div>
     <div class="jumbotron jumbotron-fluid manage-interface">
@@ -12,42 +13,34 @@
                     <div class="col-sm-5 title-col">
                       <div class="version-nav-buttons">
                         <router-link
-                          v-if="deal_is_draft_with_active"
+                          v-if="is_draft_with_active"
                           class="btn btn-gray"
-                          :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
+                          :to="object_detail_path(object.id)"
                         >
                           {{ $t("Go to active version") }}
                         </router-link>
                         <router-link
-                          v-if="deal_has_newer_draft"
+                          v-if="has_newer_draft"
                           class="btn btn-gray"
-                          :to="{
-                            name: 'deal_detail',
-                            params: { dealId: deal.id, dealVersion: last_revision.id },
-                          }"
+                          :to="object_detail_path(object.id, last_revision.id)"
                         >
                           {{ $t("Go to current draft") }}
                         </router-link>
                       </div>
-                      <h1>
-                        Deal #{{ deal.id }}
-                        <span v-if="deal.country" class="headercountry">{{
-                          deal.country.name
-                        }}</span>
-                      </h1>
+                      <h1>Investor #{{ object.id }}</h1>
                     </div>
                     <div class="col-sm-7 panel-container">
-                      <HeaderDates :obj="deal" />
+                      <HeaderDates :obj="object" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="deal.status !== 1 && !dealVersion" class="status-wrapper">
+          <div v-if="object.status !== 1 && !objectVersion" class="status-wrapper">
             <div class="col-md-8">
               <div class="row fat-stati">
-                <div v-if="deal.status === 4" class="col deleted">
+                <div v-if="object.status === 4" class="col deleted">
                   {{ $t("Deleted") }}
                 </div>
                 <div v-else class="col active">{{ $t("Activated") }}</div>
@@ -57,25 +50,25 @@
           <div v-else class="status-wrapper">
             <div class="col-md-8">
               <div class="row fat-stati">
-                <div class="col" :class="{ active: deal.draft_status === 1 }">
+                <div class="col" :class="{ active: object.draft_status === 1 }">
                   <span>{{ $t("Draft") }}</span>
                 </div>
-                <div class="col" :class="{ active: deal.draft_status === 2 }">
+                <div class="col" :class="{ active: object.draft_status === 2 }">
                   <span>{{ $t("Submitted for review") }}</span>
                 </div>
-                <div class="col" :class="{ active: deal.draft_status === 3 }">
+                <div class="col" :class="{ active: object.draft_status === 3 }">
                   <span>{{ $t("Submitted for activation") }}</span>
                 </div>
-                <div class="col" :class="{ active: deal.draft_status === null }">
+                <div class="col" :class="{ active: object.draft_status === null }">
                   <span>{{ $t("Activated") }}</span>
                 </div>
               </div>
               <div class="row workflow-buttons">
                 <div class="col text-right">
                   <a
-                    v-if="deal.draft_status === 1 && is_authorized(deal)"
+                    v-if="object.draft_status === 1 && is_authorized(object)"
                     class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :class="{ disabled: last_revision.id !== +objectVersion }"
                     :title="$t('Submits the deal for review')"
                     @click="show_to_review_overlay = true"
                   >
@@ -83,11 +76,11 @@
                   </a>
                   <a
                     v-if="
-                      (deal.draft_status === 2 || deal.draft_status === 3) &&
-                      is_authorized(deal)
+                      (object.draft_status === 2 || object.draft_status === 3) &&
+                      is_authorized(object)
                     "
                     class="btn btn-primary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :class="{ disabled: last_revision.id !== +objectVersion }"
                     :title="
                       $t(
                         'Send a request of improvent and create a new draft version of the deal'
@@ -102,24 +95,22 @@
                 </div>
                 <div class="col text-center">
                   <a
-                    v-if="deal.draft_status === 2 && is_authorized(deal)"
+                    v-if="object.draft_status === 2 && is_authorized(object)"
                     class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :class="{ disabled: last_revision.id !== +objectVersion }"
                     :title="$t('Submits the deal for activation')"
-                    @click="
-                      $emit('change_deal_status', { transition: 'TO_ACTIVATION' })
-                    "
+                    @click="$emit('change_status', { transition: 'TO_ACTIVATION' })"
                   >
                     {{ $t("Submit for activation") }}
                   </a>
                 </div>
                 <div class="col text-left">
                   <a
-                    v-if="deal.draft_status === 3 && is_authorized(deal)"
+                    v-if="object.draft_status === 3 && is_authorized(object)"
                     class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
+                    :class="{ disabled: last_revision.id !== +objectVersion }"
                     :title="get_activate_description"
-                    @click="$emit('change_deal_status', { transition: 'ACTIVATE' })"
+                    @click="$emit('change_status', { transition: 'ACTIVATE' })"
                   >
                     {{ $t("Activate") }}
                   </a>
@@ -137,13 +128,13 @@
                       {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm")
                       }}<br />
                       <router-link
-                        v-if="deal.versions.length > 1"
+                        v-if="object.versions.length > 1"
                         :to="{
-                          name: 'deal_compare',
+                          name: 'investor_compare',
                           params: {
-                            dealId: deal.id,
-                            fromVersion: deal.versions[1].revision.id,
-                            toVersion: deal.versions[0].revision.id,
+                            investorId: object.id,
+                            fromVersion: object.versions[1].revision.id,
+                            toVersion: object.versions[0].revision.id,
                           },
                         }"
                       >
@@ -151,15 +142,12 @@
                       </router-link>
                     </div>
                     <div class="action-buttons">
-                      <div v-if="deal_is_editable" class="action-button">
+                      <div v-if="is_editable" class="action-button">
                         <div class="d-inline-block">
                           <router-link
                             class="btn btn-primary"
-                            :class="{ disabled: deal_is_old_draft }"
-                            :to="{
-                              name: 'deal_edit',
-                              params: { dealId: deal.id, dealVersion: dealVersion },
-                            }"
+                            :class="{ disabled: is_old_draft }"
+                            :to="object_edit_path(object.id, objectVersion)"
                             >{{ $t("Edit") }}
                           </router-link>
                         </div>
@@ -167,7 +155,7 @@
                           {{ get_edit_description }}
                         </div>
                       </div>
-                      <div v-if="deal_is_deletable" class="action-button">
+                      <div v-if="is_deletable" class="action-button">
                         <div class="d-inline-block">
                           <button class="btn btn-danger" @click.prevent="handle_delete">
                             {{ get_delete_text }}
@@ -179,89 +167,6 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
-                    <div v-if="deal.is_public" class="visibility">
-                      <i class="fas fa-eye fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Publicly visible") }}</span>
-                    </div>
-                    <div v-else class="visibility">
-                      <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Not publicly visible") }}</span>
-                    </div>
-                    <div v-if="deal_is_editable" class="confidential-toggle">
-                      <b-form-checkbox
-                        :checked="deal.confidential"
-                        :class="{ active: deal.confidential }"
-                        class="confidential-switch"
-                        name="check-button"
-                        switch
-                        :title="$t('Toggle deal confidentiality')"
-                        @click.native.prevent="toggle_confidential"
-                      >
-                        {{
-                          deal.confidential
-                            ? $t("Confidential")
-                            : $t("Not confidential")
-                        }}
-                      </b-form-checkbox>
-                      <a id="confidential-reason"
-                        ><span v-if="deal.confidential">(reason)</span></a
-                      >
-                      <b-tooltip target="confidential-reason" triggers="click">
-                        <!--
-                        <strong>{{ get_confidential_reason }}</strong>
-                        <br />-->
-                        {{ deal.confidential_comment }}
-                      </b-tooltip>
-                    </div>
-                    <ul>
-                      <template v-if="!deal_is_editable">
-                        <li v-if="!deal.confidential">
-                          <i class="fas fa-check fa-fw"></i>
-                          {{ $t("Not confidential") }}
-                        </li>
-                        <li v-else>
-                          <i class="fas fa-times fa-fw"></i>
-                          {{ $t("Confidential") }}
-                        </li>
-                      </template>
-                      <li v-if="deal.country">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("Target country is set") }}
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i>
-                        {{ $t("Target country is NOT set") }}
-                      </li>
-
-                      <li v-if="deal.datasources.length > 0">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("At least one data source") }} ({{
-                          deal.datasources.length
-                        }})
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
-                      </li>
-
-                      <li v-if="deal.has_known_investor">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("At least one investor") }}
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
-                      </li>
-                    </ul>
-
-                    <div v-if="deal.fully_updated" class="visibility">
-                      <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Fully updated") }}</span>
-                    </div>
-                    <div v-else class="visibility" style="color: gray !important">
-                      <i class="fas fa-minus fa-fw fa-lg"></i>
-                      <span>{{ $t("Not fully updated") }}</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -269,21 +174,21 @@
         </div>
       </div>
       <ManageHeader_Comments
-        :object="deal"
-        :object-version="dealVersion"
+        :object="object"
+        :object-version="objectVersion"
         :users="users"
         @add_comment="add_comment"
       />
     </div>
-    <TransitionCommentOverlay
-      v-if="show_comment_overlay"
-      :transition="transition"
-      :users="users"
-      :to-user="get_transition_to_user()"
-      @cancel_transition="cancel_transition"
-      @do_transition="do_transition"
-      @do_set_confidential="toggle_confidential"
-    />
+    <!--    <TransitionCommentOverlay-->
+    <!--      v-if="show_comment_overlay"-->
+    <!--      :transition="transition"-->
+    <!--      :users="users"-->
+    <!--      :to-user="get_transition_to_user()"-->
+    <!--      @cancel_transition="cancel_transition"-->
+    <!--      @do_transition="do_transition"-->
+    <!--      @do_set_confidential="toggle_confidential"-->
+    <!--    />-->
     <Overlay
       v-if="show_unconfidential_overlay"
       :title="$t('Unset confidential')"
@@ -327,21 +232,20 @@
   import Overlay from "$components/Overlay";
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
-
-  import TransitionCommentOverlay from "./TransitionCommentOverlay";
   import { is_authorized } from "$utils/user";
+  // import TransitionCommentOverlay from "./TransitionCommentOverlay";
 
   export default {
-    name: "ManageHeader",
+    name: "InvestorManageHeader",
     components: {
       ManageHeader_Comments,
       Overlay,
       HeaderDates,
-      TransitionCommentOverlay,
+      // TransitionCommentOverlay,
     },
     props: {
-      deal: { type: Object, required: true },
-      dealVersion: { type: [Number, String], default: null },
+      object: { type: Object, required: true },
+      objectVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
@@ -366,56 +270,58 @@
     },
     computed: {
       last_revision() {
-        return this.deal?.versions[0]?.revision ?? "";
+        return this.object?.versions[0]?.revision ?? "";
       },
       // get_confidential_reason() {
-      //   return this.$t(confidential_reason_choices[this.deal.confidential_reason]);
+      //   return this.$t(confidential_reason_choices[this.object.confidential_reason]);
       // },
-      deal_is_editable() {
-        // deal ist deleted
-        if (!this.dealVersion && this.deal.status === 4) return false;
-        if (this.deal_is_active_with_draft) return false;
-        return this.is_authorized(this.deal);
+      is_editable() {
+        // object ist deleted
+        console.log(this.objectVersion);
+        console.log(this.object);
+        if (!this.objectVersion && this.object.status === 4) return false;
+        if (this.is_active_with_draft) return false;
+        return this.is_authorized(this.object);
       },
-      deal_is_deletable() {
-        if (this.deal_is_active_with_draft) return false;
-        if (this.deal_is_old_draft) return false;
-        return this.is_authorized(this.deal);
+      is_deletable() {
+        if (this.is_active_with_draft) return false;
+        if (this.is_old_draft) return false;
+        return this.is_authorized(this.object);
       },
-      deal_is_deleted() {
+      is_deleted() {
         // active and deleted
-        if (!this.dealVersion && this.deal.status === 4) return true;
+        if (!this.objectVersion && this.object.status === 4) return true;
         return false;
       },
-      deal_is_active_with_draft() {
-        return !this.dealVersion && this.deal.draft_status;
+      is_active_with_draft() {
+        return !this.objectVersion && this.object.draft_status;
       },
-      deal_is_draft_with_active() {
-        // current draft with active deal
-        if (this.dealVersion && [2, 3].includes(this.deal.status)) return true;
-        // old draft with activated deal
-        return (
-          this.deal_is_old_draft && [2, 3].includes(this.latest_deal_version.status)
-        );
+      is_draft_with_active() {
+        // current draft with active object
+        if (this.objectVersion && [2, 3].includes(this.object.status)) return true;
+        // old draft with activated object
+        return this.is_old_draft && [2, 3].includes(this.latest_object_version.status);
       },
-      deal_is_old_draft() {
-        return this.dealVersion && this.last_revision.id !== +this.dealVersion;
+      is_old_draft() {
+        return this.objectVersion && this.last_revision.id !== +this.objectVersion;
       },
-      deal_has_newer_draft() {
-        if (this.deal_is_active_with_draft) return true;
+      has_newer_draft() {
+        if (this.is_active_with_draft) return true;
         // old with newer draft
-        return this.deal_is_old_draft && this.latest_deal_version.draft_status;
+        return this.is_old_draft && this.latest_object_version.draft_status;
       },
-      deal_has_active() {
-        return !!this.deal.status;
+      has_active() {
+        return !!this.object.status;
       },
-      latest_deal_version() {
-        return this.deal.versions.find((v) => v.revision.id === this.last_revision.id)
+      latest_object_version() {
+        console.log(this.object.versions);
+        console.log("VERS");
+        return this.object.versions.find((v) => v.revision.id === this.last_revision.id)
           .deal;
       },
       get_edit_description() {
-        if (this.deal.draft_status === 1) {
-          if (!this.deal_has_active) {
+        if (this.object.draft_status === 1) {
+          if (!this.has_active) {
             // only for new drafts without active
             return this.$t("Starts editing this deal");
           } else {
@@ -427,15 +333,15 @@
         }
       },
       get_delete_text() {
-        if (this.deal_is_deleted) return this.$t("Undelete");
-        else if (!this.dealVersion && !this.deal.draft_status) {
+        if (this.is_deleted) return this.$t("Undelete");
+        else if (!this.objectVersion && !this.object.draft_status) {
           // active without draft
           return this.$t("Delete deal");
         } else return this.$t("Delete");
       },
       get_delete_description() {
-        if (this.deal_is_deleted) return this.$t("Undelete this deal as active deal");
-        if (this.dealVersion && this.deal_has_active) {
+        if (this.is_deleted) return this.$t("Undelete this deal as active deal");
+        if (this.objectVersion && this.has_active) {
           // is draft and has active
           return this.$t("Deletes this draft version of the deal");
         } else {
@@ -443,7 +349,7 @@
         }
       },
       get_activate_description() {
-        if (this.deal_has_active) {
+        if (this.has_active) {
           return this.$t(
             "Activates submitted version replacing currently active version"
           );
@@ -453,13 +359,26 @@
       },
     },
     methods: {
+      object_detail_path(obID, obV) {
+        return {
+          name: "investor_detail",
+          params: { investorId: obID, investorVersion: obV },
+        };
+      },
+      object_edit_path(obID, obV) {
+        return {
+          name: "investor_edit",
+          params: { investorId: obID, investorVersion: obV },
+        };
+      },
+
       open_comment_overlay_for(key, title) {
         this.transition = { key, title };
         this.show_comment_overlay = true;
       },
       get_transition_to_user() {
         if (this.transition && this.transition.key === "TO_DRAFT") {
-          let latest_draft_creation = this.deal.workflowinfos.find((v) => {
+          let latest_draft_creation = this.object.workflowinfos.find((v) => {
             return !v.draft_status_before && v.draft_status_after === 1;
           });
           return latest_draft_creation.from_user;
@@ -476,7 +395,7 @@
           this.do_delete(comment);
         } else {
           // status change
-          this.$emit("change_deal_status", {
+          this.$emit("change_status", {
             transition: this.transition.key,
             comment,
             to_user,
@@ -487,70 +406,38 @@
       },
       send_to_review() {
         this.show_to_review_overlay = false;
-        this.$emit("change_deal_status", { transition: "TO_REVIEW" });
+        this.$emit("change_status", { transition: "TO_REVIEW" });
       },
       add_comment({ comment, send_to_user }) {
         this.$apollo
           .mutate({
             mutation: gql`
               mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
-                add_deal_comment(
+                add_investor_comment(
                   id: $id
                   version: $version
                   comment: $comment
                   to_user_id: $to_user_id
                 ) {
-                  dealId
-                  dealVersion
+                  investorId
+                  investorVersion
                 }
               }
             `,
             variables: {
-              id: +this.deal.id,
-              version: this.dealVersion ? +this.dealVersion : null,
+              id: +this.object.id,
+              version: this.objectVersion ? +this.objectVersion : null,
               comment: comment,
               to_user_id: send_to_user ? +send_to_user.id : null,
             },
           })
           .then(() => {
-            this.$emit("reload_deal");
+            this.$emit("reload_investor");
           })
           .catch((error) => console.error(error));
       },
-      toggle_confidential(data) {
-        console.log({ data });
-        if (!this.deal_is_editable) return;
-        if (this.deal.confidential) {
-          // unset confidential
-          if (data.force) {
-            this.$emit("set_confidential", {
-              confidential: false,
-              reason: null,
-            });
-            this.show_unconfidential_overlay = false;
-          } else {
-            this.show_unconfidential_overlay = true;
-          }
-        } else {
-          // open overlay and ask for reason
-          if (data.force) {
-            this.$emit("set_confidential", {
-              confidential: true,
-              reason: data.reason,
-              comment: data.comment,
-            });
-            this.show_comment_overlay = false;
-            this.transition = null;
-          } else {
-            this.open_comment_overlay_for(
-              "SET_CONFIDENTIAL",
-              this.$t("Set confidential")
-            );
-          }
-        }
-      },
       handle_delete() {
-        if (!this.dealVersion && this.deal.status === 4) {
+        if (!this.objectVersion && this.object.status === 4) {
           this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
         } else {
           this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));

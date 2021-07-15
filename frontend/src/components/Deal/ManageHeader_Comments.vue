@@ -23,14 +23,14 @@
             track-by="id"
             :custom-label="(u) => `${u.full_name} (${u.username})`"
           />
-          <a class="btn btn-default" @click.prevent="add_deal_comment">
+          <a class="btn btn-default" @click.prevent="add_comment">
             {{ $t("Send") }}
           </a>
         </div>
       </form>
     </div>
     <div class="comments-list">
-      <div v-for="wfi in deal.workflowinfos" :key="wfi.timestamp" class="comment">
+      <div v-for="wfi in object.workflowinfos" :key="wfi.timestamp" class="comment">
         <div class="meta">
           <span class="date">{{ wfi.timestamp | dayjs("YYYY-MM-DD HH:mm") }}</span>
           <span class="from-to">
@@ -53,14 +53,13 @@
 
 <script>
   import { draft_status_map, status_map } from "$utils/choices";
-  import gql from "graphql-tag";
   import { linebreaks } from "$utils/filters";
 
   export default {
     name: "ManageHeaderComments",
     props: {
-      deal: { type: Object, required: true },
-      dealVersion: { type: [Number, String], default: null },
+      object: { type: Object, required: true },
+      objectVersion: { type: [Number, String], default: null },
       users: { type: Array, required: true },
     },
     data() {
@@ -95,42 +94,14 @@
           return null;
         }
       },
-      add_deal_comment() {
-        if (this.$refs.comment.checkValidity()) {
-          this.$apollo
-            .mutate({
-              mutation: gql`
-                mutation (
-                  $id: Int!
-                  $version: Int
-                  $comment: String!
-                  $to_user_id: Int
-                ) {
-                  add_deal_comment(
-                    id: $id
-                    version: $version
-                    comment: $comment
-                    to_user_id: $to_user_id
-                  ) {
-                    dealId
-                    dealVersion
-                  }
-                }
-              `,
-              variables: {
-                id: +this.deal.id,
-                version: this.dealVersion ? +this.dealVersion : null,
-                comment: this.comment,
-                to_user_id: this.send_to_user ? +this.send_to_user.id : null,
-              },
-            })
-            .then(() => {
-              this.$emit("reload_deal");
-              this.comment = "";
-            })
-            .catch((error) => console.error(error));
-        } else {
-          this.$refs.comment.reportValidity();
+      add_comment() {
+        if (!this.$refs.comment.checkValidity()) this.$refs.comment.reportValidity();
+        else {
+          this.$emit("add_comment", {
+            comment: this.comment,
+            send_to_user: this.send_to_user,
+          });
+          this.comment = "";
         }
       },
     },

@@ -125,6 +125,7 @@ export const investor_query = {
         opencorporates
         comment
         status
+        draft_status
         created_at
         modified_at
         deals @include(if: $includeDeals) {
@@ -144,6 +145,22 @@ export const investor_query = {
           deal_size
         }
         involvements
+        workflowinfos {
+          from_user {
+            id
+            username
+            full_name
+          }
+          to_user {
+            username
+            full_name
+          }
+          draft_status_before
+          draft_status_after
+          timestamp
+          comment
+          processed_by_receiver
+        }
         versions {
           id
           investor {

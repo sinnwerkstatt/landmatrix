@@ -302,10 +302,10 @@ class InvestorWorkflowInfo(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True, default="")
     processed_by_receiver = models.BooleanField(default=False)
-    # watch out: ignore the draft_status within this DealVersion object, it will change
+    # watch out: ignore the draft_status within this InvestorVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
-    deal = models.ForeignKey(Investor, on_delete=models.CASCADE)
-    deal_version = models.ForeignKey(
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
+    investor_version = models.ForeignKey(
         InvestorVersion, on_delete=models.SET_NULL, null=True, blank=True
     )
 
@@ -318,8 +318,8 @@ class InvestorWorkflowInfo(models.Model):
             "timestamp": self.timestamp,
             "comment": self.comment,
             "processed_by_receiver": self.processed_by_receiver,
-            "deal": self.deal,
-            "deal_version": self.deal_version,
+            "investor": self.investor,
+            "investor_version": self.investor_version,
         }
 
 
