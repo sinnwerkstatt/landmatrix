@@ -198,6 +198,7 @@
   import EditField from "$components/Fields/EditField";
   import Overlay from "$components/Overlay";
   import { deal_gql_query } from "$store/queries";
+  import { removeEmptyEntries } from "$utils";
   import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
@@ -274,6 +275,7 @@
         skip() {
           return !this.dealId;
         },
+        fetchPolicy: "no-cache",
       },
     },
     computed: {
@@ -336,6 +338,9 @@
       },
       deal_save(hash) {
         this.saving_in_progress = true;
+        this.deal.locations = removeEmptyEntries(this.deal.locations);
+        this.deal.contracts = removeEmptyEntries(this.deal.contracts);
+        this.deal.datasources = removeEmptyEntries(this.deal.datasources);
         return this.$apollo
           .mutate({
             mutation: gql`
@@ -353,8 +358,10 @@
             },
           })
           .then(({ data: { deal_edit } }) => {
+            this.original_deal = JSON.stringify(this.deal);
             this.saving_in_progress = false;
-            this.$router.push({ name: "deal_edit", params: deal_edit, hash });
+            if (location.hash !== hash)
+              this.$router.push({ name: "deal_edit", params: deal_edit, hash });
           });
       },
       addContract() {

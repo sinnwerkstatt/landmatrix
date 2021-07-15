@@ -189,20 +189,6 @@
     <!--      @do_transition="do_transition"-->
     <!--      @do_set_confidential="toggle_confidential"-->
     <!--    />-->
-    <Overlay
-      v-if="show_unconfidential_overlay"
-      :title="$t('Unset confidential')"
-      @cancel="show_unconfidential_overlay = false"
-      @submit="toggle_confidential({ force: true })"
-    >
-      <p>
-        {{
-          $t(
-            "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
-          )
-        }}
-      </p>
-    </Overlay>
 
     <Overlay
       v-if="show_to_review_overlay"
@@ -252,7 +238,6 @@
         users: [],
         show_comment_overlay: false,
         show_to_review_overlay: false,
-        show_unconfidential_overlay: false,
         transition: null,
         is_authorized,
       };
@@ -272,9 +257,6 @@
       last_revision() {
         return this.object?.versions[0]?.revision ?? "";
       },
-      // get_confidential_reason() {
-      //   return this.$t(confidential_reason_choices[this.object.confidential_reason]);
-      // },
       is_editable() {
         // object ist deleted
         console.log(this.objectVersion);
@@ -703,30 +685,6 @@
       }
     }
 
-    .confidential-toggle {
-      margin-left: -1.5em;
-      margin-bottom: -3px;
-      display: flex;
-      align-items: center;
-
-      .confidential-switch {
-        padding-left: 2rem;
-        font-size: 0.8em;
-        display: flex;
-        align-items: center;
-      }
-
-      a#confidential-reason {
-        font-size: 0.8em;
-        padding-left: 0.3em;
-        text-decoration: underline;
-
-        &:hover {
-          cursor: pointer;
-        }
-      }
-    }
-
     ul {
       font-size: 0.8em;
       list-style: none;
@@ -847,16 +805,6 @@
     margin-bottom: 0;
   }
 
-  .confidential-switch {
-    label {
-      font-weight: normal;
-      line-height: 1.9em;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
   .btn-gray {
     background-color: #b1b1b1 !important;
 

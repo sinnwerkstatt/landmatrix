@@ -61,3 +61,12 @@ export function arraysAreEqual(array1, array2) {
   }
   return true;
 }
+
+export function removeEmptyEntries(objectlist) {
+  // this function throws out any entries that have only an ID field and otherwise empty values.
+  return objectlist.filter((con) => {
+    return Object.entries(con)
+      .filter(([k, v]) => (k === "id" ? false : !!v))
+      .some((x) => !!x);
+  });
+}

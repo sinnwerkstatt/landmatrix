@@ -27,8 +27,8 @@
                 v-model="entry[fieldname]"
                 :fieldname="fieldname"
                 :model="model"
-                label-classes="display-field-label col-md-5 col-lg-4"
-                value-classes="display-field-value col-md-7 col-lg-8"
+                :label-classes="['display-field-label', 'col-md-5', 'col-lg-4']"
+                :value-classes="['display-field-value', 'col-md-7', 'col-lg-8']"
               />
             </div>
           </div>

@@ -320,7 +320,7 @@
             });
           return deal;
         },
-        fetchPolicy: "network-only",
+        fetchPolicy: "no-cache",
       },
       investor: {
         query: gql`
