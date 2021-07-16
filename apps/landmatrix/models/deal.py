@@ -937,11 +937,6 @@ class Deal(models.Model, OldDealMixin):
         _("Comment why this deal is private"), blank=True, null=True
     )
 
-    # Meta info
-    "previous_identifier"
-    "assign_to_user"
-    "tg_feedback_comment"
-
     """ # CALCULATED FIELDS # """
     is_public = models.BooleanField(default=False)
     has_known_investor = models.BooleanField(default=False)
@@ -1033,6 +1028,9 @@ class Deal(models.Model, OldDealMixin):
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
+    )
+    current_draft = models.ForeignKey(
+        DealVersion, null=True, blank=True, on_delete=models.SET_NULL
     )
 
     """ # Timestamps """

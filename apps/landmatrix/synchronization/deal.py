@@ -1,3 +1,10 @@
+import json
+import re
+
+from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Point
+from geojson_rewind import rewind
+
 from apps.landmatrix.models import Deal
 from apps.landmatrix.models import (
     HistoricalActivity,
@@ -7,17 +14,22 @@ from apps.landmatrix.models import (
     Mineral,
 )
 from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import DealWorkflowInfo
+from apps.landmatrix.models.versions import Revision, Version
+from apps.landmatrix.synchronization.helpers import MetaActivity, calculate_new_stati
 from apps.landmatrix.synchronization.helpers import (
     _extras_to_json,
     _extras_to_list,
-    _to_nullbool,
     set_current,
     _lease_logic,
     _jobs_merge,
 )
+from apps.landmatrix.synchronization.helpers import _to_nullbool, date_year_field
+
+User = get_user_model()
 
 
-def parse_general(deal, attrs):
+def _parse_general(deal, attrs):
     deal.country_id = (
         int(attrs.get("target_country"))
         if attrs.get("target_country")
@@ -160,7 +172,7 @@ def parse_general(deal, attrs):
     deal.contract_farming_comment = attrs.get("tg_contract_farming_comment") or ""
 
 
-def parse_employment(deal, attrs):
+def _parse_employment(deal, attrs):
     deal.total_jobs_created = _to_nullbool(attrs.get("total_jobs_created"))
     deal.total_jobs_planned = attrs.get("total_jobs_planned")
     deal.total_jobs_planned_employees = attrs.get("total_jobs_planned_employees")
@@ -195,7 +207,7 @@ def parse_employment(deal, attrs):
     )
 
 
-def connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
+def _connect_investor_to_deal(deal: Deal, act_version: HistoricalActivity):
     involvements = HistoricalInvestorActivityInvolvement.objects.filter(
         fk_activity=act_version
     ).order_by("-id")
@@ -217,7 +229,7 @@ actors_map = {
 }
 
 
-def parse_investor_info(deal, attrs):
+def _parse_investor_info(deal, attrs):
     # deal.operating_company see above "_connect_investor_to_deal"
     involved_actors = _extras_to_json(attrs, "actors", val1name="name", val2name="role")
     if involved_actors:
@@ -232,7 +244,7 @@ def parse_investor_info(deal, attrs):
     )
 
 
-def parse_local_communities(deal, attrs):
+def _parse_local_communities(deal, attrs):
     deal.name_of_community = (
         attrs.get("name_of_community").split("#")
         if attrs.get("name_of_community")
@@ -359,7 +371,7 @@ def parse_local_communities(deal, attrs):
     deal.presence_of_organizations = attrs.get("presence_of_organizations") or ""
 
 
-def parse_former_use(deal, attrs):
+def _parse_former_use(deal, attrs):
     FORMER_LAND_OWNER_MAP = {
         "State": "STATE",
         "Estado": "STATE",
@@ -482,7 +494,7 @@ def _merge_area_yield_export(attrs, name, fieldmap):
     return areas
 
 
-def parse_produce_info(deal, attrs):
+def _parse_produce_info(deal, attrs):
     CROP_MAP = dict(
         [(str(x[0]), x[1]) for x in Crop.objects.all().values_list("id", "code")]
     )
@@ -609,7 +621,7 @@ def parse_produce_info(deal, attrs):
     deal.in_country_end_products = attrs.get("in_country_end_products") or ""
 
 
-def parse_water(deal, attrs):
+def _parse_water(deal, attrs):
     WATER_SOURCE_MAP = {
         "Groundwater": "GROUNDWATER",
         "Aguas subterráneas": "GROUNDWATER",
@@ -675,7 +687,7 @@ def parse_water(deal, attrs):
     deal.water_footprint = attrs.get("water_footprint") or ""
 
 
-def parse_remaining(deal, attrs):
+def _parse_remaining(deal, attrs):
     YPN_MAP = {v: k for k, v in Deal.YPN_CHOICES}
 
     deal.gender_related_information = attrs.get("tg_gender_specific_info_comment") or ""
@@ -700,3 +712,309 @@ def parse_remaining(deal, attrs):
     }
     deal.confidential_reason = CONFIDENTIAL_REASON_MAP[attrs.get("not_public_reason")]
     deal.confidential_comment = attrs.get("tg_not_public_comment") or ""
+
+
+def _create_locations(deal, groups):
+    ACCURACY_MAP = {
+        None: "",
+        "Country": "COUNTRY",
+        "Administrative region": "ADMINISTRATIVE_REGION",
+        "Región administrativa": "ADMINISTRATIVE_REGION",
+        "Approximate location": "APPROXIMATE_LOCATION",
+        "Ubicación aproximada": "APPROXIMATE_LOCATION",
+        "Exact location": "EXACT_LOCATION",
+        "Ubicación exacta": "EXACT_LOCATION",
+        "Coordinates": "COORDINATES",
+        "Coordenadas": "COORDINATES",
+    }
+    locations = []
+    i = 0
+    for group_id, attrs in sorted(groups.items()):
+        i += 1
+        location = {
+            "id": i,
+            "old_group_id": group_id,
+            "name": attrs.get("location") or "",
+            "description": attrs.get("location_description") or "",
+            "comment": attrs.get("tg_location_comment") or "",
+            "facility_name": attrs.get("facility_name") or "",
+            "level_of_accuracy": ACCURACY_MAP[attrs.get("level_of_accuracy")],
+        }
+
+        # location.point
+
+        plat = attrs.get("point_lat")
+        plng = attrs.get("point_lon")
+        if plng == "-3.0001328124999426666666cro":
+            plng = "-3.00013281249994266"
+
+        if plat and plng:
+            try:
+                point_lat = plat.replace(",", ".").replace(" ", "")
+                point_lat = round(float(point_lat), 5)
+            except ValueError:
+                pass
+            try:
+                point_lon = plng.replace(",", ".").replace("°", "")
+                point_lon = round(float(point_lon), 5)
+            except ValueError:
+                pass
+
+            try:
+                assert 90 >= point_lat >= -90
+                assert 180 >= point_lon >= -180
+                Point(point_lon, point_lat)
+                location["point"] = {"lat": point_lat, "lng": point_lon}
+            except:
+                print(plat, plng)
+                location["comment"] += (
+                    f"\n\nWas unable to parse location.\n"
+                    f"The values are: lat:{point_lat} lon:{point_lon}"
+                )
+                location["point"] = None
+        else:
+            location["point"] = None
+
+        features = []
+        contract_area = attrs.get("contract_area", "polygon")
+        intended_area = attrs.get("intended_area", "polygon")
+        production_area = attrs.get("production_area", "polygon")
+        if contract_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(contract_area.geojson)),
+                "properties": {"type": "contract_area"},
+            }
+            features += [rewind(area_feature)]
+        if intended_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(intended_area.geojson)),
+                "properties": {"type": "intended_area"},
+            }
+            features += [rewind(area_feature)]
+        if production_area:
+            area_feature = {
+                "type": "Feature",
+                "geometry": (json.loads(production_area.geojson)),
+                "properties": {"type": "production_area"},
+            }
+            features += [rewind(area_feature)]
+
+        location["areas"] = (
+            {"type": "FeatureCollection", "features": features} if features else None
+        )
+        locations += [location]
+
+    deal.locations = locations
+
+
+def _create_contracts(deal, groups):
+    # track former contracts, throw out the ones that still exist now, delete the rest
+    # all_contracts = set(c.id for c in deal.contracts.all())
+    contracts = []
+    i = 0
+    for group_id, attrs in sorted(groups.items()):
+        i += 1
+        contract = {
+            "id": i,
+            "old_group_id": group_id,
+            "number": attrs.get("contract_number") or "",
+            "comment": attrs.get("tg_contract_comment") or "",
+        }
+        cdate = attrs.get("contract_date")
+        if cdate:
+            if date_year_field(cdate):
+                contract["date"] = cdate
+            else:
+                raise Exception("!!")
+        else:
+            contract["date"] = None
+        expdate = attrs.get("contract_expiration_date")
+        if expdate:
+            if expdate == "2035-09-31":
+                expdate = "2035-09-30"
+            if date_year_field(expdate):
+                contract["expiration_date"] = expdate
+            else:
+                print(expdate)
+                raise Exception("!!")
+        else:
+            contract["expiration_date"] = None
+        agreement_duration = attrs.get("agreement_duration")
+        if agreement_duration == "99 years":
+            agreement_duration = 99
+        contract["agreement_duration"] = (
+            int(agreement_duration) if agreement_duration else None
+        )
+        contracts += [contract]
+    deal.contracts = contracts
+
+
+def _create_data_sources(deal, groups):
+    TYPE_MAP = {
+        None: "",
+        "Media report": "MEDIA_REPORT",
+        "Informe de prensa": "MEDIA_REPORT",
+        "Research Paper / Policy Report": "RESEARCH_PAPER_OR_POLICY_REPORT",
+        "Informe de Investigación/Informe de Políticas": "RESEARCH_PAPER_OR_POLICY_REPORT",
+        "Government sources": "GOVERNMENT_SOURCES",
+        "Fuentes gubernamentales": "GOVERNMENT_SOURCES",
+        "Company sources": "COMPANY_SOURCES",
+        "Fuentes empresariales": "COMPANY_SOURCES",
+        "Contract": "CONTRACT",
+        "Contract (contract farming agreement)": "CONTRACT_FARMING_AGREEMENT",
+        "Personal information": "PERSONAL_INFORMATION",
+        "Crowdsourcing": "CROWDSOURCING",
+        "Other (Please specify in comment field)": "OTHER",
+        "Otro (por favor, especifique en el campo para comentarios)": "OTHER",
+        "Other": "OTHER",
+        "Otro": "OTHER",
+    }
+    i = 0
+    datasources = []
+    for group_id, attrs in sorted(groups.items()):
+        i += 1
+        url = attrs.get("url") or ""
+        if url == "http%3A%2F%2Ffarmlandgrab.org%2F2510":
+            url = "http://farmlandgrab.org/2510"
+
+        ds = {
+            "id": i,
+            "old_group_id": group_id,
+            "type": TYPE_MAP[attrs.get("type")],
+            "url": url,
+            "file": f"uploads/{attrs.get('file')}" if attrs.get("file") else None,
+            "file_not_public": attrs.get("file_not_public") == "True",
+            "publication_title": attrs.get("publication_title") or "",
+            "comment": attrs.get("tg_data_source_comment") or "",
+            "name": attrs.get("name") or "",
+            "company": attrs.get("company") or "",
+            "email": attrs.get("email") or "",
+            "phone": attrs.get("phone") or "",
+            "includes_in_country_verified_information": _to_nullbool(
+                attrs.get("includes_in_country_verified_information"),
+            ),
+            "open_land_contracts_id": attrs.get("open_land_contracts_id") or "",
+        }
+
+        ds_date = attrs.get("date")
+        if ds_date:
+            # NOTE Fixes for broken data
+            if ":" in ds_date:
+                ds_date = re.sub(
+                    r"([0-9]{2}):([0-9]{2}):([0-9]{4})", r"\1.\2.\3", ds_date
+                )
+            broken_ds_dates = {
+                "2019-18-02": "2019-02-18",
+                "2014-29-09": "2014-09-29",
+                "2017-02-29": "2017-02-28",
+                "2018-11-31": "2018-11-30",
+                "2019-28-05": "2019-05-28",
+                "2019-04-31": "2019-04-30",
+                "2018-17-04": "2018-04-17",
+                "2020-15-11": "2020-11-15",
+                "2017-17-01": "2017-01-17",
+            }
+            try:
+                ds_date = broken_ds_dates[ds_date]
+            except KeyError:
+                pass
+
+            if date_year_field(ds_date):
+                ds["date"] = ds_date
+            else:
+                ds["comment"] += f"\n\nOld Date value: {ds_date}"
+        else:
+            ds["date"] = None
+        datasources += [ds]
+    deal.datasources = datasources
+
+
+def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
+    if activity_pk and activity_identifier:
+        raise AttributeError("just specify one")
+    elif activity_pk:
+        activity_versions = HistoricalActivity.objects.filter(pk=activity_pk)
+        activity_identifier = activity_versions[0].activity_identifier
+    elif activity_identifier:
+        activity_versions = HistoricalActivity.objects.filter(
+            activity_identifier=activity_identifier
+        ).order_by("pk")
+    else:
+        raise AttributeError("specify activity_pk or activity_identifier")
+
+    if not activity_versions:
+        return
+
+    for histivity in activity_versions:
+        deal, created = Deal.objects.get_or_create(id=activity_identifier)
+
+        meta_activity = MetaActivity(histivity)
+        _create_locations(deal, meta_activity.loc_groups)
+        _parse_general(deal, meta_activity.group_general)
+        _create_contracts(deal, meta_activity.con_groups)
+        _parse_employment(deal, meta_activity.group_employment)
+        _connect_investor_to_deal(deal, histivity)
+        _parse_investor_info(deal, meta_activity.group_investor_info)
+        _create_data_sources(deal, meta_activity.ds_groups)
+        _parse_local_communities(deal, meta_activity.group_local_communities)
+        _parse_former_use(deal, meta_activity.group_former_use)
+        _parse_produce_info(deal, meta_activity.group_produce_info)
+        _parse_water(deal, meta_activity.group_water)
+        _parse_remaining(deal, meta_activity.group_remaining)
+
+        if created:
+            deal.created_at = histivity.history_date
+        deal.modified_at = histivity.history_date
+        deal.fully_updated = histivity.fully_updated
+        if deal.fully_updated:
+            deal.fully_updated_at = deal.modified_at
+
+        new_status = histivity.fk_status_id
+
+        do_save = deal.status == 1 or new_status in [2, 3, 4]
+
+        old_deal_draft_status = deal.draft_status
+        deal.status, deal.draft_status = calculate_new_stati(deal, new_status)
+
+        deal.recalculate_fields()
+
+        user = User.objects.filter(id=histivity.history_user_id).first()
+        rev1 = Revision.objects.create(date_created=histivity.history_date, user=user)
+        deal_version = Version.create_from_obj(deal, rev1.id)
+
+        deal.current_draft = None if new_status in [2, 3, 4] else deal_version
+
+        if do_save:
+            # save the actual model
+            # if: there is not a current_model
+            # or: there is a current model but it's a draft
+            # or: the new status is Live, Updated or Deleted
+            deal.save()
+        else:
+            Deal.objects.filter(pk=deal.pk).update(
+                draft_status=deal.draft_status, current_draft=deal_version
+            )
+
+        assign_user = meta_activity.group_remaining.get("assign_to_user")
+        assuser = User.objects.get(id=assign_user) if assign_user else None
+
+        feedback_comment = (
+            meta_activity.group_remaining.get("tg_feedback_comment") or ""
+        )
+        comment = f"{histivity.comment or ''}" + (
+            f"\n\n{feedback_comment}" if feedback_comment else ""
+        )
+
+        dwi = DealWorkflowInfo.objects.create(
+            from_user=user or User.objects.get(id=1),
+            to_user=assuser,
+            draft_status_before=old_deal_draft_status,
+            draft_status_after=deal.draft_status,
+            timestamp=histivity.history_date,
+            comment=comment,
+            processed_by_receiver=True,
+            deal=deal,
+            deal_version=deal_version,
+        )

@@ -242,6 +242,7 @@ def resolve_change_deal_status(
             else Deal.STATUS_UPDATED
         )
         deal_v_obj.draft_status = draft_status
+        deal_v_obj.current_draft = None
         deal_v_obj.save()
         deal_version.update_from_obj(deal_v_obj).save()
     elif transition == "TO_DRAFT":
@@ -286,6 +287,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal.save()
         rev = Revision.objects.create(date_created=timezone.now(), user=user)
         deal_version = Version.create_from_obj(deal, revision_id=rev.id)
+        Deal.objects.filter(id=deal.id).update(current_draft=deal_version)
         DealWorkflowInfo.objects.create(
             deal=deal,
             deal_version=deal_version,
@@ -305,10 +307,10 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         deal.fully_updated = False
         rev = Revision.objects.create(date_created=timezone.now(), user=user)
-        Version.create_from_obj(deal, revision_id=rev.id)
-        Deal.objects.filter(id=id).update(draft_status=Deal.DRAFT_STATUS_DRAFT)
-
-        deal_version = DealVersion.objects.get(revision=rev)
+        deal_version = Version.create_from_obj(deal, revision_id=rev.id)
+        Deal.objects.filter(id=id).update(
+            draft_status=Deal.DRAFT_STATUS_DRAFT, current_draft=deal_version
+        )
         deal_v_obj = deal_version.retrieve_object()
         DealWorkflowInfo.objects.create(
             deal=deal,
