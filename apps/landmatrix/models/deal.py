@@ -1104,6 +1104,7 @@ class Deal(models.Model, OldDealMixin):
                 "comments",
                 "status",
                 "draft_status",
+                "workflowinfos",
                 "__typename",
             ]:
                 continue  # ignore these fields
@@ -1360,7 +1361,9 @@ class DealWorkflowInfo(models.Model):
     processed_by_receiver = models.BooleanField(default=False)
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    deal = models.ForeignKey(
+        Deal, on_delete=models.CASCADE, related_name="workflowinfos"
+    )
     deal_version = models.ForeignKey(
         DealVersion, on_delete=models.SET_NULL, null=True, blank=True
     )

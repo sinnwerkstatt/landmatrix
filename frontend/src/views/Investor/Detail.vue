@@ -413,15 +413,16 @@
       },
       detect_role(/** @type {Involvement} */ involvement) {
         if (involvement.role === "PARENT") {
-          if (involvement.involvement_type === "INVESTOR") return "Parent company";
+          if (involvement.involvement_type === "INVESTOR")
+            return this.$t("Parent company");
           if (involvement.involvement_type === "VENTURE")
-            return "Involved in as Parent Company";
+            return this.$t("Involved in as Parent Company");
         }
         if (involvement.role === "LENDER") {
           if (involvement.involvement_type === "INVESTOR")
-            return "Tertiary investor/lender";
+            return this.$t("Tertiary investor/lender");
           if (involvement.involvement_type === "VENTURE")
-            return "Involved in as Tertiary investor/lender";
+            return this.$t("Involved in as Tertiary investor/lender");
         }
       },
       onNewDepth(value) {
@@ -433,7 +434,7 @@
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .investor-detail {
     h1 {
       color: var(--color-lm-dark);

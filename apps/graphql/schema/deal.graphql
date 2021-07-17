@@ -272,6 +272,7 @@ type DealVersion {
 }
 
 type DealWorkflowInfo {
+  id: Int!
   from_user: User!
   to_user: User
   draft_status_before: Int

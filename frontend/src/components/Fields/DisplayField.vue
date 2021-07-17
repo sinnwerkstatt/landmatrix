@@ -33,6 +33,7 @@
   import ForeignKey from "./Display/ForeignKeyField";
   import CountryForeignKey from "./Display/ForeignKeyField";
   import InvestorForeignKey from "./Display/ForeignKeyField";
+  import WorkflowInfosField from "./Display/WorkflowInfosField";
 
   import JSONActorsField from "./Display/JSONActorsField";
   import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
@@ -85,6 +86,7 @@
       TextField,
       URLField,
       OCIDField,
+      WorkflowInfosField,
     },
     props: {
       fieldname: { type: String, required: true },

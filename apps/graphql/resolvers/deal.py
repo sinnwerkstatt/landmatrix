@@ -103,9 +103,9 @@ def resolve_deals(
     subset="PUBLIC",
     filters=None,
 ):
-    qs = Deal.objects.visible(
-        user=info.context["request"].user, subset=subset
-    ).order_by(sort)
+    user = info.context["request"].user
+
+    qs = Deal.objects.visible(user=user, subset=subset).order_by(sort)
 
     if filters:
         qs = qs.filter(parse_filters(filters))
@@ -124,7 +124,7 @@ def resolve_deals(
     return qs_values_to_dict(
         qs,
         fields,
-        ["top_investors", "parent_companies"],
+        ["top_investors", "parent_companies", "workflowinfos"],
     )
 
 

@@ -119,3 +119,80 @@ a {
     background-color: darken(#b1b1b1, 5%);
   }
 }
+
+.bigtable {
+  width: 100%;
+  max-height: 100%;
+
+  input {
+    min-width: 100px;
+    width: 100%;
+  }
+  thead {
+    tr {
+      th {
+        padding: 0.5em;
+        position: sticky;
+        top: 0;
+        background: #525252;
+        color: white;
+        vertical-align: bottom;
+        min-width: 60px;
+        font-weight: normal;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &.selected {
+          font-weight: normal;
+          color: var(--color-lm-orange);
+
+          &.asc:before {
+            font-weight: 600;
+            content: "\f077";
+            //noinspection CssNoGenericFontName
+            font-family: "Font Awesome 5 Free";
+          }
+
+          &:not(.asc):before {
+            font-weight: 600;
+            content: "\f078";
+            //noinspection CssNoGenericFontName
+            font-family: "Font Awesome 5 Free";
+          }
+        }
+      }
+    }
+  }
+  tr {
+    td {
+      padding: 0.3em 0.3em;
+      border-bottom: 1px solid #c9c9c9;
+    }
+
+    &:nth-child(even) {
+      background-color: white;
+    }
+
+    &:nth-child(odd) {
+      background-color: darken(white, 3);
+    }
+  }
+  &.investor {
+    th.selected {
+      color: var(--color-lm-investor);
+    }
+  }
+}
+
+.ioi-label {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  padding: 0.15em 0.35em;
+  white-space: nowrap;
+  margin: 0.2em 0.05em 0 0;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  color: rgba(black, 0.7);
+}

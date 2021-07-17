@@ -38,7 +38,7 @@
       </div>
     </div>
     <div v-if="rowData.length > 0" class="table-wrap">
-      <table class="sticky-header" :class="[targetModel]">
+      <table class="bigtable" :class="targetModel">
         <thead>
           <tr>
             <th
@@ -79,7 +79,6 @@
         :loader-disable="disableScrollLoader"
       >
       </scroll-loader>
-      <div class="spacer"></div>
     </div>
   </div>
 </template>
@@ -124,7 +123,9 @@
   export default {
     name: "Table",
     components: { FieldLabel, DisplayField, LoadingPulse },
-    props: ["targetModel"],
+    props: {
+      targetModel: { type: String, required: true },
+    },
     data() {
       return {
         deals: [],
@@ -452,133 +453,53 @@
 
     .table-wrap {
       padding: 0 15px 2em 27px;
-      overflow-x: hidden;
-      overflow: auto; // just setting overflow-y gives different result (table not scrollable)
+      overflow: auto;
       max-height: calc(100% - 50px);
-      height: calc(100% - 50px);
+      height: calc(100% - 50px - 25px);
       position: relative;
-    }
-
-    table.sticky-header {
-      width: 100%;
-      overflow-y: auto;
-
-      thead {
-        tr {
-          th {
-            padding: 0.5em;
-            position: sticky;
-            top: 0;
-            background: #525252;
-            color: white;
-            vertical-align: bottom;
-            min-width: 60px;
-            font-weight: normal;
-
-            &:hover {
-              cursor: pointer;
-            }
-
-            &.selected {
-              font-weight: normal;
-              color: var(--color-lm-orange);
-
-              &.asc:before {
-                font-weight: 600;
-                content: "\f077";
-                //noinspection CssNoGenericFontName
-                font-family: "Font Awesome 5 Free";
-              }
-
-              &:not(.asc):before {
-                font-weight: 600;
-                content: "\f078";
-                //noinspection CssNoGenericFontName
-                font-family: "Font Awesome 5 Free";
-              }
-            }
-          }
-        }
-      }
-
-      tr {
-        td {
-          padding: 0.3em 0.3em;
-          border-bottom: 1px solid #c9c9c9;
-        }
-
-        &:nth-child(even) {
-          background-color: white;
-        }
-
-        &:nth-child(odd) {
-          background-color: darken(white, 3);
-        }
-      }
-    }
-
-    table.investor {
-      th.selected {
-        color: var(--color-lm-investor);
-      }
-    }
-
-    .spacer {
-      height: 25px;
     }
   }
 </style>
 <style lang="scss">
-  .data-table {
-    .label {
-      display: inline;
-      padding: 0.2em 0.6em 0.3em;
-      font-size: 75%;
-      font-weight: 700;
-      line-height: 1;
-      color: #fff;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: baseline;
-      border-radius: 0.25em;
-
-      &:hover {
-        text-decoration: none;
-        color: #fff;
-      }
-
-      &.label-deal {
-        background-color: var(--color-lm-orange);
-
-        &:hover {
-          background-color: var(--color-lm-orange-dark);
-        }
-      }
-
-      &.label-investor {
-        background-color: var(--color-lm-investor);
-
-        &:hover {
-          background-color: var(--color-lm-investor-dark);
-        }
-      }
-    }
-
-    .ioi-label {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 5px;
-      padding: 0.15em 0.35em;
-      white-space: nowrap;
-      margin: 0.2em 0.05em 0 0;
-      display: inline-block;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      color: rgba(black, 0.7);
-    }
-
-    .loader {
-      color: transparent;
-    }
-  }
+  //.data-table {
+  //  .label {
+  //    display: inline;
+  //    padding: 0.2em 0.6em 0.3em;
+  //    font-size: 75%;
+  //    font-weight: 700;
+  //    line-height: 1;
+  //    color: #fff;
+  //    text-align: center;
+  //    white-space: nowrap;
+  //    vertical-align: baseline;
+  //    border-radius: 0.25em;
+  //
+  //    &:hover {
+  //      text-decoration: none;
+  //      color: #fff;
+  //    }
+  //
+  //    &.label-deal {
+  //      background-color: var(--color-lm-orange);
+  //
+  //      &:hover {
+  //        background-color: var(--color-lm-orange-dark);
+  //      }
+  //    }
+  //
+  //    &.label-investor {
+  //      background-color: var(--color-lm-investor);
+  //
+  //      &:hover {
+  //        background-color: var(--color-lm-investor-dark);
+  //      }
+  //    }
+  //  }
+  //
+  //  .loader {
+  //    color: transparent;
+  //  }
+  //}
 
   #modal-select-fields {
     .modal-body {

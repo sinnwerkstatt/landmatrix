@@ -8,6 +8,9 @@
   </div>
 </template>
 
+<script>
+  export default { name: "LoadingPulse" };
+</script>
 <style lang="scss">
   .lm-loading-container {
     z-index: 100;

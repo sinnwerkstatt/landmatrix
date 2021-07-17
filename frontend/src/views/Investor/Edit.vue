@@ -259,7 +259,12 @@
             variables: {
               id: this.investorId ? +this.investorId : -1,
               version: this.investorVersion ? +this.investorVersion : null,
-              payload: { ...this.investor, versions: null, comments: null },
+              payload: {
+                ...this.investor,
+                versions: null,
+                comments: null,
+                workflowinfos: null,
+              },
             },
           })
           .then(({ data: { investor_edit } }) => {

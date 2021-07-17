@@ -122,6 +122,12 @@ const router = new Router({
     },
     // manager
     {
+      path: "/management/",
+      name: "manager",
+      component: () => import("$views/Manager/Manager"),
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/management/dashboard/",
       name: "dashboard",
       component: () => import("$views/Manager/Dashboard"),

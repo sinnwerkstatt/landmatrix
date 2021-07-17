@@ -1,9 +1,16 @@
 from apps.landmatrix.forms import VueForm
 from apps.landmatrix.models import Deal, Crop, Animal, Mineral
+from django.utils.translation import ugettext as _
 
 
 class DealForm(VueForm):
     model = Deal
+    extra_display_fields = {
+        "workflowinfos": {
+            "class": "WorkflowInfosField",
+            "label": _("Comments / History"),
+        }
+    }
 
     @property
     def attributes(self):
@@ -34,21 +41,11 @@ class DealForm(VueForm):
                 },
             },
             "implementation_status": {"class": "JSONDateChoiceField"},
-            "on_the_lease": {
-                "class": "JSONLeaseField",
-            },
-            "off_the_lease": {
-                "class": "JSONLeaseField",
-            },
-            "total_jobs_current": {
-                "class": "JSONJobsField",
-            },
-            "foreign_jobs_current": {
-                "class": "JSONJobsField",
-            },
-            "domestic_jobs_current": {
-                "class": "JSONJobsField",
-            },
+            "on_the_lease": {"class": "JSONLeaseField"},
+            "off_the_lease": {"class": "JSONLeaseField"},
+            "total_jobs_current": {"class": "JSONJobsField"},
+            "foreign_jobs_current": {"class": "JSONJobsField"},
+            "domestic_jobs_current": {"class": "JSONJobsField"},
             "involved_actors": {"class": "JSONActorsField"},
             "crops": {
                 "class": "JSONExportsField",

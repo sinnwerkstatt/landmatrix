@@ -354,7 +354,12 @@
             variables: {
               id: this.dealId ? +this.dealId : -1,
               version: this.dealVersion ? +this.dealVersion : null,
-              payload: { ...this.deal, versions: null, comments: null },
+              payload: {
+                ...this.deal,
+                versions: null,
+                comments: null,
+                workflowinfos: null,
+              },
             },
           })
           .then(({ data: { deal_edit } }) => {

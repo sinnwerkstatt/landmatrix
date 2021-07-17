@@ -48,7 +48,10 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
                 if mtm_add and mtm_add["id"] not in seen_mtms[mtm]:
                     richdeal[mtm] += [mtm_add]
                     seen_mtms[mtm].add(mtm_add["id"])
-
+            for mtm in many_to_many_relations:
+                richdeal[mtm] = sorted(
+                    richdeal[mtm], key=lambda x: x["id"], reverse=True
+                )
         results += [richdeal]
     return results
 
