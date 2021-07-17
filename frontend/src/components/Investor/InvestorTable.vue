@@ -124,10 +124,8 @@
 </script>
 
 <style scoped lang="scss">
-  @import "../../scss/colors";
-
   a.page-link:not([href]) {
-    color: $lm_investor;
+    color: var(--color-lm-investor);
   }
   .page-item.disabled .page-link {
     color: #6c757d;
@@ -135,7 +133,7 @@
 
   th.selected {
     font-weight: 600;
-    color: $lm_investor;
+    color: var(--color-lm-investor);
 
     &.asc:before {
       content: "\f078";

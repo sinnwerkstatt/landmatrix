@@ -109,8 +109,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   .comments {
     background: #c4c4c4;
     padding: 0.7rem;
@@ -163,13 +161,13 @@
 
         .btn {
           margin-left: 7px;
-          background: $lm_investor;
+          background: var(--color-lm-investor);
           padding: 0.38em 0.7em;
           font-size: 0.9em;
           border-radius: 5px;
 
           &:hover {
-            background-color: lighten($lm_investor, 5%);
+            background-color: var(--color-lm-investor-light);
           }
 
           &:focus,

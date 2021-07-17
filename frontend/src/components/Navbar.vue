@@ -349,8 +349,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../scss/colors";
-
   .bg-light {
     background-color: white !important;
   }
@@ -363,20 +361,20 @@
     padding: 0.5rem 1.1rem;
 
     &:hover {
-      color: $primary;
+      color: var(--color-lm-orange);
     }
 
     &.active {
-      background: $primary;
+      background: var(--color-lm-orange);
     }
   }
 
   .navbar {
-    border-bottom: 10px solid $lm_orange;
+    border-bottom: 10px solid var(--color-lm-orange);
     padding: 0;
 
     .dropdown-menu {
-      border: 1px solid $lm_orange;
+      border: 1px solid var(--color-lm-orange);
       border-radius: 0;
       padding: 0;
 

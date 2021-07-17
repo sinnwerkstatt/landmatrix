@@ -20,8 +20,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../scss/colors";
-
   .breadcrumb {
     clear: both;
     background: none;
@@ -34,7 +32,7 @@
     > li {
       text-shadow: none !important;
       display: inline-block;
-      color: $lm_dark;
+      color: var(--color-lm-dark);
       font-weight: 400;
 
       & ~ li:before {
@@ -50,11 +48,11 @@
       padding: 2px 5px;
       border-radius: 4px;
       display: inline-block;
-      color: $lm_dark;
+      color: var(--color-lm-dark);
     }
     .router-link-active {
-      color: $lm_offwhite;
-      background-color: $lm_dark;
+      color: #fcfcfc;
+      background-color: var(--color-lm-dark);
       border-radius: 4px;
     }
   }

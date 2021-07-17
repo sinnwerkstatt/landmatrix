@@ -164,13 +164,11 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/colors";
-
   .investor-ranking {
-    color: $primary;
+    color: var(--color-lm-orange);
   }
   .deal-ranking {
-    color: $lm_investor;
+    color: var(--color-lm-investor);
   }
 
   .hint-box {

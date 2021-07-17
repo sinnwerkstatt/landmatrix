@@ -112,7 +112,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
@@ -123,18 +122,18 @@
     select {
       background-color: white;
       border-radius: 5px;
-      border: 1px solid $lm_grey;
+      border: 1px solid var(--color-lm-light);
     }
   }
 
   textarea {
     width: 100%;
-    border: 1px solid $lm_grey;
+    border: 1px solid var(--color-lm-light);
     border-radius: 5px;
     padding: 0.2em 0.5em;
 
     &:focus {
-      border: 1px solid $lm_grey;
+      border: 1px solid var(--color-lm-light);
       outline: none;
     }
   }
@@ -143,7 +142,7 @@
     margin-top: 1em;
 
     .multiselect {
-      border: 1px solid $lm_grey;
+      border: 1px solid var(--color-lm-light);
       border-radius: 5px;
     }
   }

@@ -38,10 +38,8 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .context-bar-container {
-    //border-left: 1px dotted $lm_dark;
+    //border-left: 1px dotted var(--color-lm-dark);
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
     top: 0;

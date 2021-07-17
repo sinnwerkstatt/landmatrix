@@ -10,7 +10,18 @@ $fa-font-path: "/static/assets";
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/bootstrap-vue/src/index.scss";
 
-@import "colors";
+:root {
+  --color-lm-orange: hsl(32, 97%, 55%); // #fc941f
+  --color-lm-orange-dark: hsl(32, 97%, 45%);
+  --color-lm-orange-light: hsl(32, 97%, 65%);
+  --color-lm-investor: hsl(179, 46%, 49%); // #44b7b6
+  --color-lm-investor-dark: hsl(179, 46%, 39%);
+  --color-lm-investor-light: hsl(179, 46%, 59%);
+  --color-lm-dark: #4a4a4a;
+  --color-lm-light: #ebebeb;
+  --primary: var(--color-lm-orange);
+}
+
 @import "headings";
 @import "landmatrix_icons";
 
@@ -19,29 +30,25 @@ $fa-font-path: "/static/assets";
 @import "loadingscreen";
 @import "wagtail";
 
-:root {
-  --color-lm-orange: $lm_orange;
-}
-
 body {
   font-family: "Open Sans", Arial, sans-serif;
 }
 
 a {
-  color: $lm_orange;
+  color: var(--color-lm-orange);
 
   &:hover {
-    color: var(--primary);
+    color: var(--color-lm-orange-light);
   }
 
   &.lm-underline:hover {
     text-decoration: none;
-    color: $lm_dark;
-    border-bottom: 3px solid var(--primary);
+    color: var(--color-lm-dark);
+    border-bottom: 3px solid var(--color-lm-orange);
   }
 
   &.investor {
-    color: $lm_investor;
+    color: var(--color-lm-investor);
   }
 }
 
@@ -58,14 +65,16 @@ a {
   //width: auto;
 }
 
-.form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+.form-control::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: rgba(252, 148, 31, 0.5);
   //opacity: 1; /* Firefox */
   color: lightgrey;
   font-style: italic;
 }
 
-.form-control::-ms-input-placeholder { /* Microsoft Edge */
+.form-control::-ms-input-placeholder {
+  /* Microsoft Edge */
   color: rgba(252, 148, 31, 0.5);
 }
 
@@ -87,18 +96,18 @@ a {
 }
 
 .investor-id-display {
-  background-color: $lm_investor;
+  background: var(--color-lm-investor);
 
   &:hover {
-    background-color: darken($lm_investor, 10%);
+    background: var(--color-lm-investor-dark);
   }
 }
 
 .deal-id-display {
-  background-color: $lm_orange;
+  background: var(--color-lm-orange);
 
   &:hover {
-    background-color: darken($lm_orange, 10%);
+    background: var(--color-lm-orange-dark);
   }
 }
 

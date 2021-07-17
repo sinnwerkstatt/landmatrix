@@ -51,7 +51,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
   .articles {
     margin-top: 2em;
     margin-bottom: 2em;
@@ -62,7 +61,7 @@
     h5 {
       font-size: 18px;
       a {
-        color: $lm_orange;
+        color: var(--color-lm-orange);
       }
     }
     .article {

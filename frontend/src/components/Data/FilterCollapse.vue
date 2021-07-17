@@ -53,8 +53,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .filter-collapse {
     margin-left: -0.5em;
     margin-right: -0.5em;
@@ -68,7 +66,7 @@
       padding-bottom: 5px;
       position: relative;
       &.active {
-        color: $lm_orange;
+        color: var(--color-lm-orange);
       }
       .title {
         padding-right: 0;
@@ -99,7 +97,7 @@
       top: -3px;
       right: -4px;
       opacity: 0.5;
-      color: lighten($lm_orange, 5%);
+      color: var(--color-lm-orange-light);
       .fa-circle,
       .fa-minus {
         left: 8px;
@@ -115,7 +113,7 @@
         font-size: 0.5em;
       }
       &:hover {
-        color: $lm_orange;
+        color: var(--color-lm-orange);
         opacity: 1;
       }
     }

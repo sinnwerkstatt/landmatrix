@@ -412,8 +412,6 @@
   };
 </script>
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   .data-table {
     height: 100%;
     max-height: 100%;
@@ -445,7 +443,7 @@
             display: inline-block;
 
             &:hover {
-              color: $lm_orange;
+              color: var(--color-lm-orange);
             }
           }
         }
@@ -483,7 +481,7 @@
 
             &.selected {
               font-weight: normal;
-              color: $lm_orange;
+              color: var(--color-lm-orange);
 
               &.asc:before {
                 font-weight: 600;
@@ -521,7 +519,7 @@
 
     table.investor {
       th.selected {
-        color: $lm_investor;
+        color: var(--color-lm-investor);
       }
     }
 
@@ -531,8 +529,6 @@
   }
 </style>
 <style lang="scss">
-  @import "../../scss/colors";
-
   .data-table {
     .label {
       display: inline;
@@ -552,18 +548,18 @@
       }
 
       &.label-deal {
-        background-color: $lm_orange;
+        background-color: var(--color-lm-orange);
 
         &:hover {
-          background-color: darken($lm_orange, 10%);
+          background-color: var(--color-lm-orange-dark);
         }
       }
 
       &.label-investor {
-        background-color: $lm-investor;
+        background-color: var(--color-lm-investor);
 
         &:hover {
-          background-color: darken($lm-investor, 10%);
+          background-color: var(--color-lm-investor-dark);
         }
       }
     }

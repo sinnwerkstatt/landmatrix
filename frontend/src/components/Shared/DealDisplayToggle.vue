@@ -32,8 +32,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   .toggle-buttons {
     margin-top: 1.5em;
     margin-bottom: 5px;
@@ -45,13 +43,13 @@
     a {
       padding: 0.3em 0.5em;
       background-color: white;
-      border: 1px solid $lm_light;
+      border: 1px solid var(--color-lm-light);
       color: black;
       font-weight: bold;
       font-size: 14px;
 
       &.active {
-        background-color: $primary;
+        background-color: var(--color-lm-orange);
         color: white;
       }
     }

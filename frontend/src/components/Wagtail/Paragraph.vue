@@ -16,11 +16,9 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .paragraph {
     a {
-      color: $primary;
+      color: var(--color-lm-orange);
     }
   }
 </style>

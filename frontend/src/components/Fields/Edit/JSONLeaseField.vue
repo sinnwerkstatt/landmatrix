@@ -91,8 +91,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../scss/colors";
-
   th {
     text-align: center;
   }

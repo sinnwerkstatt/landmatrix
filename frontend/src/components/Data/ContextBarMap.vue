@@ -245,8 +245,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   .total {
     width: 100%;
     text-align: center;

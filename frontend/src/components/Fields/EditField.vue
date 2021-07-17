@@ -168,8 +168,6 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/colors";
-
   .display-field-wrapper {
     margin-bottom: 0.7em;
     line-height: 1.2;
@@ -178,7 +176,7 @@
   .display-field-label {
     font-weight: 500;
     align-self: center;
-    color: #4a4a4a;
+    color: var(--color-lm-dark);
 
     &.col-12 {
       margin-bottom: 0.5em;
@@ -187,7 +185,7 @@
 
   .display-field-value {
     line-height: 1.2;
-    color: $lm_dark;
+    color: var(--color-lm-dark);
 
     .select {
       width: 100%;
@@ -233,7 +231,7 @@
 
     tr.is-current {
       td {
-        background: rgba($primary, 0.2);
+        background: rgba(var(--color-lm-orange), 0.2);
 
         $radius: 5px;
         &:first-child {
@@ -254,7 +252,7 @@
       -webkit-appearance: none;
 
       option:checked {
-        background-color: rgba($primary, 0.2);
+        background-color: rgba(var(--color-lm-orange), 0.2);
         // WTF: Only works when setting a gradient!!!
         background: linear-gradient(#ffc894, #ffc894);
         color: black;

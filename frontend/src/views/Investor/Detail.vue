@@ -434,11 +434,9 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/colors";
-
   .investor-detail {
     h1 {
-      color: $lm_dark;
+      color: var(--color-lm-dark);
       text-align: left;
       text-transform: none;
 

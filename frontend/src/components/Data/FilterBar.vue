@@ -11,7 +11,7 @@
     <div class="overlay-content">
       <div class="main-pane">
         <h3>{{ $t("Filter") }}</h3>
-        <span style="font-size: 0.8em;">
+        <span style="font-size: 0.8em">
           <b-form-checkbox
             v-model="isDefaultFilter"
             :class="{ active: isDefaultFilter }"
@@ -25,7 +25,7 @@
         </span>
         <span
           v-if="$store.getters.userInGroup(['Administrators', 'Editors'])"
-          style="font-size: 0.8em;"
+          style="font-size: 0.8em"
         >
           <b-form-checkbox
             v-model="publicOnly"
@@ -596,21 +596,21 @@
         return [
           {
             type: this.$t("Crop"),
-            options: Object.entries(
-              this.dealFormfields.crops.choices
-            ).map(([k, v]) => ({ name: v, id: `crop_${k}`, value: k })),
+            options: Object.entries(this.dealFormfields.crops.choices).map(
+              ([k, v]) => ({ name: v, id: `crop_${k}`, value: k })
+            ),
           },
           {
             type: this.$t("Livestock"),
-            options: Object.entries(
-              this.dealFormfields.animals.choices
-            ).map(([k, v]) => ({ name: v, id: `animal_${k}`, value: k })),
+            options: Object.entries(this.dealFormfields.animals.choices).map(
+              ([k, v]) => ({ name: v, id: `animal_${k}`, value: k })
+            ),
           },
           {
             type: this.$t("Minerals"),
-            options: Object.entries(
-              this.dealFormfields.mineral_resources.choices
-            ).map(([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })),
+            options: Object.entries(this.dealFormfields.mineral_resources.choices).map(
+              ([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })
+            ),
           },
         ];
       },
@@ -625,8 +625,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .filter-overlay {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
@@ -685,7 +683,7 @@
 
     .default-filter-switch {
       &.active {
-        color: $lm_orange;
+        color: var(--color-lm-orange);
       }
 
       label.custom-control-label {
@@ -719,12 +717,12 @@
 
     .custom-switch .custom-control-input:checked ~ .custom-control-label {
       &:before {
-        background-color: rgba($lm_orange, 0.1);
+        background-color: rgba(var(--color-lm-orange), 0.1);
       }
 
       &:after {
-        background-color: $lm_orange;
-        box-shadow: 0 0 0 1px rgba($lm_orange, 0.7);
+        background-color: var(--color-lm-orange);
+        box-shadow: 0 0 0 1px rgba(var(--color-lm-orange), 0.7);
       }
     }
 
@@ -764,7 +762,7 @@
 
       .custom-control-input:checked ~ .custom-control-label {
         &:before {
-          background-color: rgba($lm_orange, 1);
+          background-color: rgba(var(--color-lm-orange), 1);
           border-color: transparent;
         }
       }
@@ -789,7 +787,7 @@
       color: black;
 
       path {
-        fill: $primary;
+        fill: var(--color-lm-orange);
       }
 
       text {

@@ -33,7 +33,7 @@
       position: absolute;
       left: 8px;
       width: 16px;
-      background: #fc941f;
+      background: var(--color-lm-orange);
       animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 
       &:nth-child(1) {

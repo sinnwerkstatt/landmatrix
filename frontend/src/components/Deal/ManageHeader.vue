@@ -564,13 +564,12 @@
 </script>
 
 <style scoped lang="scss">
-  @import "../../scss/colors";
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
   .orange {
-    color: var(--primary);
+    color: var(--color-lm-orange);
   }
 
   .manage-interface {
@@ -865,12 +864,12 @@
     color: white;
 
     &.btn-secondary {
-      background: rgba($lm_investor, 0.8);
-      border-color: $lm_investor;
+      background: rgba(var(--color-lm-investor), 0.8);
+      border-color: var(--color-lm-investor);
 
       &:hover,
       &:active {
-        background: rgba($lm_investor, 1);
+        background: rgba(var(--color-lm-investor), 1);
         color: white;
       }
     }
@@ -915,8 +914,6 @@
 </style>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .send {
     .multiselect,
     .multiselect__tags {

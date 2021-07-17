@@ -30,8 +30,6 @@
   };
 </script>
 <style lang="scss" scoped>
-  @import "../../../scss/colors";
-
   .input-group {
     padding: 0.4em;
   }

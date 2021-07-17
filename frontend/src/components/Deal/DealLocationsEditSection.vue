@@ -398,10 +398,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   h3.highlighted {
-    color: $lm_orange;
+    color: var(--color-lm-orange);
     //color: var(--color-lm-orange);
   }
 
@@ -456,11 +454,11 @@
 
   .trashbin {
     margin-left: 2em;
-    color: $lm_orange;
+    color: var(--color-lm-orange);
 
     &:hover {
       cursor: pointer;
-      color: lighten($lm_orange, 10%);
+      color: var(--color-lm-orange-light);
       text-decoration: none;
     }
   }

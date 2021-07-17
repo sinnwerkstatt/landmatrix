@@ -85,8 +85,6 @@
   };
 </script>
 <style lang="scss">
-  @import "src/scss/colors";
-
   #svg-container {
     max-height: 100%;
     width: 100%;
@@ -97,11 +95,11 @@
       height: 100%;
 
       #incoming-marker {
-        fill: $primary;
+        fill: var(--color-lm-orange);
       }
 
       #outgoing-marker {
-        fill: $lm_investor;
+        fill: var(--color-lm-investor);
       }
 
       text {
@@ -110,36 +108,36 @@
 
         &.incoming-highlighted {
           font-weight: bold;
-          fill: $primary;
+          fill: var(--color-lm-orange);
         }
 
         &.outgoing-highlighted {
           font-weight: bold;
-          fill: $lm_investor;
+          fill: var(--color-lm-investor);
         }
       }
 
       path {
         &.incoming-highlighted {
-          stroke: $primary;
+          stroke: var(--color-lm-orange);
           stroke-width: 2;
           marker-start: url(#incoming-marker);
         }
 
         &.outgoing-highlighted {
-          stroke: $lm_investor;
+          stroke: var(--color-lm-investor);
           stroke-width: 2;
           marker-start: url(#outgoing-marker);
         }
 
         &.incoming-permahighlight {
-          stroke: $primary;
+          stroke: var(--color-lm-orange);
           stroke-width: 2.5;
           marker-start: url(#incoming-marker);
         }
 
         &.outgoing-permahighlight {
-          stroke: $lm_investor;
+          stroke: var(--color-lm-investor);
           stroke-width: 2.5;
           marker-start: url(#outgoing-marker);
         }

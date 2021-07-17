@@ -173,21 +173,19 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/colors";
-
   .static-map {
     width: 100%;
     min-height: 300px;
     height: 30vh;
     position: relative;
-    border: 1px solid $lm_orange;
+    border: 1px solid var(--color-lm-orange);
     border-radius: 3px;
     box-shadow: 3px 3px 5px rgba(black, 0.3);
 
     &:hover {
       cursor: pointer;
       box-shadow: 5px 5px 5px rgba(black, 0.3);
-      border-color: rgba($lm_orange, 0.7);
+      border-color: rgba(var(--color-lm-orange), 0.7);
     }
 
     .shield {
@@ -217,7 +215,7 @@
       }
 
       &:hover {
-        background-color: rgba($lm_orange, 0.5);
+        background-color: rgba(var(--color-lm-orange), 0.5);
 
         .hover-text {
           display: block;

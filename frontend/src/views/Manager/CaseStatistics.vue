@@ -547,8 +547,6 @@
 </script>
 
 <style scoped lang="scss">
-  @import "../../scss/colors";
-
   .input-group {
     width: 100%;
   }
@@ -592,10 +590,8 @@
 </style>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .nav-link.active.teal-background {
-    background: $lm_investor !important;
+    background: var(--color-lm-investor) !important;
   }
 
   .tab-content {

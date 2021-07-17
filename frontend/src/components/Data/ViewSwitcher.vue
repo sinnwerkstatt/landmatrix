@@ -115,8 +115,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../scss/colors";
-
   .viewswitcher {
     position: absolute;
     margin-left: auto;
@@ -146,23 +144,23 @@
           font-size: 14px;
           font-weight: bold;
           &.router-link-active {
-            background-color: $primary;
+            background-color: var(--color-lm-orange);
             color: white;
             &.investors {
-              background-color: $lm_investor;
+              background-color: var(--color-lm-investor);
             }
             &:hover {
               color: black;
             }
           }
           &:hover {
-            color: $lm_orange;
+            color: var(--color-lm-orange);
           }
         }
         &.dropdown {
           &.show {
             .nav-link:not(.router-link-active) {
-              color: $lm_orange;
+              color: var(--color-lm-orange);
             }
           }
           .dropdown-menu {
@@ -177,20 +175,20 @@
               padding: 0.35em 1em;
               font-weight: normal;
               &.router-link-exact-active {
-                background-color: $primary;
+                background-color: var(--color-lm-orange);
                 color: white;
                 &.investors {
-                  background-color: $lm_investor;
+                  background-color: var(--color-lm-investor);
                 }
                 &:hover {
                   color: black;
                 }
               }
               &:hover {
-                color: $lm_orange;
+                color: var(--color-lm-orange);
               }
               &.investors:hover {
-                color: $lm_investor;
+                color: var(--color-lm-investor);
               }
             }
             &.charts {
@@ -209,7 +207,7 @@
         font-size: 14px;
         font-weight: bold;
         &.router-link-active {
-          background-color: $primary;
+          background-color: var(--color-lm-orange);
           color: white;
         }
       }

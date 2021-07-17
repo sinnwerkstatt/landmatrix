@@ -124,10 +124,8 @@
 </script>
 
 <style scoped lang="scss">
-  @import "../../scss/colors";
-
   a.page-link:not([href]) {
-    color: var(--primary);
+    color: var(--color-lm-orange);
   }
   .page-item.disabled .page-link {
     color: #6c757d;
@@ -135,7 +133,7 @@
 
   th.selected {
     font-weight: 600;
-    color: var(--primary);
+    color: var(--color-lm-orange);
 
     &.asc:before {
       content: "\f078";

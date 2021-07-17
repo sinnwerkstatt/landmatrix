@@ -45,7 +45,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../scss/colors";
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
@@ -74,9 +73,9 @@
 
     padding: 0.8em 1.8em 1.8em;
     box-shadow: 0 0 15px rgba(black, 0.5);
-    color: $lm_dark;
-    border-color: $lm_orange;
-    background-color: $lm_light;
+    color: var(--color-lm-dark);
+    border-color: var(--color-lm-orange);
+    background-color: var(--color-lm-light);
 
     .actions {
       margin-top: 1em;

@@ -254,8 +254,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../scss/colors";
-
   .grid-wrapper {
     padding-top: 4em;
     padding-bottom: 2em;

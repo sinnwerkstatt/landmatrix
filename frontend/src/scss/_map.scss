@@ -1,4 +1,3 @@
-@import "colors";
 
 .active .leaflet-buttons-control-button {
   box-shadow: none !important;
@@ -58,9 +57,9 @@
 
 .deal-popup {
   .deal-summary {
-    color: $lm_dark;
+    color: var(--color-lm-dark);
     a {
-      color: $lm_investor;
+      color: var(--color-lm-investor);
     }
   }
   a.btn-primary {

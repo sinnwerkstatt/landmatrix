@@ -35,8 +35,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .layerSwitcher {
     position: absolute;
     top: 5px;
@@ -44,7 +42,7 @@
     z-index: 200;
     padding: 15px 15px 12px;
     background: white;
-    color: $primary;
+    color: var(--color-lm-orange);
     border-radius: 5px;
 
     .layerSwitcherIcon {

@@ -96,7 +96,6 @@
   };
 </script>
 <style lang="scss" scoped>
-  @import "../scss/colors";
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
@@ -157,38 +156,38 @@
 
           &:hover {
             background-color: transparent;
-            color: $lm_orange;
-            border-color: $lm_orange;
+            color: var(--color-lm-orange);
+            border-color: var(--color-lm-orange);
             opacity: 1;
           }
         }
       }
 
       &.alert-info {
-        color: $lm_dark;
-        border-color: $lm_orange;
+        color: var(--color-lm-dark);
+        border-color: var(--color-lm-orange);
         background-color: white;
 
         button.close {
-          color: $lm_dark;
+          color: var(--color-lm-dark);
         }
       }
       &.alert-danger {
         color: black;
-        border-color: $lm_orange;
+        border-color: var(--color-lm-orange);
         background-color: theme-color-level("primary", -9);
 
         h1 {
-          color: $lm_orange;
+          color: var(--color-lm-orange);
         }
 
         button.close {
-          color: $lm_orange;
+          color: var(--color-lm-orange);
         }
       }
       &.alert-warning {
         background-color: theme-color-level("primary", -11);
-        color: $lm_dark;
+        color: var(--color-lm-dark);
       }
     }
   }

@@ -39,10 +39,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../scss/colors";
-
   footer {
-    background: $lm_dark;
+    background: var(--color-lm-dark);
     padding: 0 10px;
     font-size: 14px;
     color: white;

@@ -272,8 +272,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .investor-edit {
     overflow: hidden;
     height: calc(100vh - 60px - 35px - 39px);
@@ -288,7 +286,7 @@
     display: flex;
 
     h1 {
-      color: $lm_dark;
+      color: var(--color-lm-dark);
       text-align: left;
       text-transform: none;
       &:before {
@@ -315,16 +313,16 @@
       li {
         cursor: pointer;
         padding: 0.5rem 1rem 0.5rem 0;
-        border-right: 1px solid $lm_orange;
-        color: $lm_orange;
+        border-right: 1px solid var(--color-lm-orange);
+        color: var(--color-lm-orange);
         border-radius: 0;
 
         &.active {
           border-right-width: 3px;
           background-color: inherit;
-          color: $lm_dark;
+          color: var(--color-lm-dark);
           a {
-            color: $lm_dark;
+            color: var(--color-lm-dark);
           }
         }
       }

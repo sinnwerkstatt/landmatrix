@@ -300,8 +300,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/colors";
-
   .observatory {
     margin-bottom: 5em;
     h1 {
@@ -330,7 +328,7 @@
       margin-top: 0;
 
       label {
-        color: $lm_orange;
+        color: var(--color-lm-orange);
         font-weight: bold;
         font-size: 15px;
         margin-bottom: 0;

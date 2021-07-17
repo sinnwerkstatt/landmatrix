@@ -519,8 +519,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;
@@ -539,7 +537,7 @@
 
   .deal-detail {
     h1 {
-      color: $lm_dark;
+      color: var(--color-lm-dark);
       text-align: left;
       text-transform: none;
 
@@ -552,14 +550,14 @@
       .nav-item {
         .nav-link {
           padding-left: 0;
-          border-right: 1px solid $lm_orange;
-          color: $lm_orange;
+          border-right: 1px solid var(--color-lm-orange);
+          color: var(--color-lm-orange);
           border-radius: 0;
 
           &.active {
             border-right-width: 3px;
             background-color: inherit;
-            color: $lm_dark;
+            color: var(--color-lm-dark);
           }
         }
       }

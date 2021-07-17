@@ -136,8 +136,6 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/colors";
-
   .display-field-wrapper {
     margin-bottom: 0.7em;
     line-height: 1.2;
@@ -147,6 +145,6 @@
   }
   .display-field-value {
     line-height: 1.2;
-    color: $lm_dark;
+    color: var(--color-lm-dark);
   }
 </style>

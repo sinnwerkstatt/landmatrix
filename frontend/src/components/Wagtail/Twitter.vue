@@ -65,8 +65,8 @@
   }
 
   .tweets-by-btn {
-    color: #fc941f;
-    border-color: #fc941f;
+    color: var(--color-lm-orange);
+    border-color: var(--color-lm-orange);
     border-width: 2px;
     background: #fcfcfc;
     font-weight: bold;

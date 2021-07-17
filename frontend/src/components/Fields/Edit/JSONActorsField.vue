@@ -56,8 +56,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../scss/colors";
-
   .row {
     margin-bottom: 1em;
     &:last-child {

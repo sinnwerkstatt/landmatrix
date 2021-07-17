@@ -331,8 +331,6 @@
 </script>
 
 <style lang="scss">
-  @import "../../scss/colors";
-
   .investor-graph {
     max-width: 1000px;
   }
@@ -406,7 +404,7 @@
       &::-webkit-slider-thumb,
       &::-moz-range-thumb,
       &::-ms-thumb {
-        background: $lm-orange;
+        background: var(--color-lm-orange);
       }
     }
 
@@ -429,7 +427,7 @@
     .legend-icon.deal {
       border-style: none;
       border-width: 0;
-      background-color: #fc941f;
+      background-color: var(--color-lm-orange);
       margin-left: 0;
       margin-right: 0.5em;
       top: -0.3em;
@@ -484,7 +482,7 @@
   }
 
   .g-tooltip {
-    background-color: $lm_investor;
+    background-color: var(--color-lm-investor);
     color: white;
     border-radius: 3px;
     padding: 3px 7px;
@@ -497,7 +495,7 @@
     }
 
     &.deal {
-      background-color: $lm_orange;
+      background-color: var(--color-lm-orange);
     }
   }
 </style>
