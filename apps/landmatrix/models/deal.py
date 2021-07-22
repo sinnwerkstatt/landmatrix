@@ -1035,7 +1035,21 @@ class Deal(models.Model, OldDealMixin):
 
     """ # Timestamps """
     created_at = models.DateTimeField(_("Created"), default=timezone.now)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     fully_updated_at = models.DateTimeField(
         _("Last full update"), blank=True, null=True
     )
@@ -1365,7 +1379,11 @@ class DealWorkflowInfo(models.Model):
         Deal, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     deal_version = models.ForeignKey(
-        DealVersion, on_delete=models.SET_NULL, null=True, blank=True
+        DealVersion,
+        on_delete=models.SET_NULL,
+        related_name="workflowinfos",
+        null=True,
+        blank=True,
     )
 
     def to_dict(self) -> dict:

@@ -282,7 +282,9 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
         deal = Deal()
         deal.update_from_dict(payload)
         deal.recalculate_fields()
+        deal.created_by = user
         deal.modified_at = timezone.now()
+        deal.modified_by = user
         deal.status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
         deal.save()
         rev = Revision.objects.create(date_created=timezone.now(), user=user)
@@ -301,6 +303,7 @@ def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
     deal.update_from_dict(payload)
     deal.recalculate_fields()
     deal.modified_at = timezone.now()
+    deal.modified_by = user
 
     # this is a live Deal for which we create a new Version
     if not version:
@@ -401,6 +404,7 @@ def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
             else Deal.STATUS_DELETED
         )
         deal.modified_at = timezone.now()
+        deal.modified_by = user
         deal.save()
         DealWorkflowInfo.objects.create(
             deal=deal,
@@ -439,6 +443,7 @@ def resolve_set_confidential(
         deal_v_obj.confidential_reason = reason
         deal_v_obj.confidential_comment = comment
         deal_v_obj.modified_at = timezone.now()
+        deal_v_obj.modified_by = user
         deal_version.update_from_obj(deal_v_obj).save()
 
     else:
@@ -449,5 +454,6 @@ def resolve_set_confidential(
         deal.confidential_reason = reason
         deal.confidential_comment = comment
         deal.modified_at = timezone.now()
+        deal.modified_by = user
         deal.save()
     return True

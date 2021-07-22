@@ -964,9 +964,13 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         _parse_water(deal, meta_activity.group_water)
         _parse_remaining(deal, meta_activity.group_remaining)
 
+        user = User.objects.filter(id=histivity.history_user_id).first()
+
         if created:
             deal.created_at = histivity.history_date
+            deal.created_by = user
         deal.modified_at = histivity.history_date
+        deal.modified_by = user
         deal.fully_updated = histivity.fully_updated
         if deal.fully_updated:
             deal.fully_updated_at = deal.modified_at
@@ -980,7 +984,6 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
 
         deal.recalculate_fields()
 
-        user = User.objects.filter(id=histivity.history_user_id).first()
         rev1 = Revision.objects.create(date_created=histivity.history_date, user=user)
         deal_version = Version.create_from_obj(deal, rev1.id)
 

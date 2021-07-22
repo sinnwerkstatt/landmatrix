@@ -22,20 +22,27 @@
           <tr>
             <th>ID</th>
             <th>
-              <input placeholder="Filter country" /><br />
-              <input placeholder="Filter region" /><br />
+              <input placeholder="Country" /><br />
+              <input placeholder="Region" /><br />
               Target country (region)
             </th>
 
-            <th>Deal size</th>
+            <th>
+              <input placeholder="From size" /><br />
+              <input placeholder="To size" /><br />
+              Deal size
+            </th>
             <th>Created</th>
             <th>Last modified</th>
             <th>Comments / History</th>
-            <th>Status</th>
+            <th>
+              <input placeholder="Status" /><br />
+              Status
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="deal in mydrafts" :key="deal.id">
+          <tr v-for="deal in deals" :key="deal.id">
             <td v-for="fieldName in fields" :key="`${deal.id}-${fieldName}`">
               <DisplayField
                 :fieldname="fieldName"
@@ -64,15 +71,15 @@
     data() {
       return {
         showDeals: true,
-        mydrafts: [],
+        deals: [],
         selectedTab: "my_drafts",
       };
     },
     apollo: {
-      mydrafts: {
+      deals: {
         query: gql`
-          query mydrafts($filters: [Filter]) {
-            mydrafts: deals(limit: 0, filters: $filters, subset: UNFILTERED) {
+          query deals($filters: [Filter]) {
+            deals(limit: 0, filters: $filters, subset: UNFILTERED) {
               id
               deal_size
               created_at
@@ -114,10 +121,31 @@
           { name: "Todo: Review", id: "todo_review" },
           { name: "Todo: Activation", id: "todo_activation" },
           { name: "My drafts", id: "my_drafts" },
+          { name: "Created by me", id: "created_by_me" },
+          { name: "Reviewed by me", id: "reviewed_by_me" },
+          { name: "Activated by me", id: "activated_by_me" },
+          { name: "All drafts", id: "all_drafts" },
+          { name: "All deleted", id: "all_deleted" },
+          { name: "All not public", id: "all_not_public" },
         ];
       },
       currentFilters() {
         switch (this.selectedTab) {
+          case "todo_improve":
+            return [
+              { field: "draft_status", operation: "EQ", value: "1" },
+              // this does not work
+              {
+                field: "current_draft.workflowinfos.draft_status_before",
+                operation: "EQ",
+                value: "2",
+              },
+              {
+                field: "current_draft.workflowinfos.draft_status_before",
+                operation: "EQ",
+                value: "1",
+              },
+            ];
           case "todo_review":
             return [{ field: "draft_status", operation: "EQ", value: "2" }];
           case "todo_activation":
@@ -130,6 +158,58 @@
                 value: this.$store.state.page.user.id.toString(),
               },
             ];
+          case "created_by_me":
+            return [
+              {
+                field: "created_by_id",
+                operation: "EQ",
+                value: this.$store.state.page.user.id.toString(),
+              },
+            ];
+          case "reviewed_by_me":
+            return [
+              {
+                field: "workflowinfos.draft_status_before",
+                value: "2",
+              },
+              {
+                field: "workflowinfos.draft_status_after",
+                value: "3",
+              },
+              {
+                field: "workflowinfos.from_user_id",
+                value: this.$store.state.page.user.id.toString(),
+              },
+            ];
+          case "activated_by_me":
+            return [
+              {
+                field: "workflowinfos.draft_status_before",
+                value: "3",
+              },
+              {
+                field: "workflowinfos.from_user_id",
+                value: this.$store.state.page.user.id.toString(),
+              },
+            ];
+          case "all_drafts":
+            return [
+              {
+                field: "draft_status",
+                operation: "IN",
+                value: ["1", "2", "3"],
+              },
+            ];
+          case "all_deleted":
+            return [
+              {
+                field: "status",
+                operation: "EQ",
+                value: "4",
+              },
+            ];
+          case "all_not_public":
+            return [{ field: "is_public", operation: "EQ", value: "False" }];
         }
         return [{ field: "draft_status", operation: "EQ", value: "-1" }];
       },

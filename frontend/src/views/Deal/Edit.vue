@@ -365,7 +365,7 @@
           .then(({ data: { deal_edit } }) => {
             this.original_deal = JSON.stringify(this.deal);
             this.saving_in_progress = false;
-            if (location.hash !== hash)
+            if (location.hash !== hash || this.dealId !== deal_edit.dealId)
               this.$router.push({ name: "deal_edit", params: deal_edit, hash });
           });
       },
