@@ -124,8 +124,26 @@ class Investor(models.Model):
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
+    current_draft = models.ForeignKey(
+        InvestorVersion, null=True, blank=True, on_delete=models.SET_NULL
+    )
+
     created_at = models.DateTimeField(_("Created"), default=timezone.now)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
     old_id = models.IntegerField(null=True, blank=True)
 
@@ -136,13 +154,13 @@ class Investor(models.Model):
     # FIXME This should be replaced by an option to _NOT_ specify the investor name.
     is_actually_unknown = models.BooleanField(default=False)
 
-    def calculate_actually_unknown(self):
+    def recalculate_fields(self):
         self.is_actually_unknown = bool(
             re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
         )
 
     def save(self, *args, **kwargs):
-        self.calculate_actually_unknown()
+        self.recalculate_fields()
         super().save(*args, **kwargs)
 
     def __str__(self):

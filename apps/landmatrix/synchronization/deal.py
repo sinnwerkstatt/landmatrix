@@ -979,14 +979,13 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
 
         do_save = deal.status == 1 or new_status in [2, 3, 4]
 
-        old_deal_draft_status = deal.draft_status
+        old_draft_status = deal.draft_status
         deal.status, deal.draft_status = calculate_new_stati(deal, new_status)
 
         deal.recalculate_fields()
 
         rev1 = Revision.objects.create(date_created=histivity.history_date, user=user)
         deal_version = Version.create_from_obj(deal, rev1.id)
-
         deal.current_draft = None if new_status in [2, 3, 4] else deal_version
 
         if do_save:
@@ -1010,10 +1009,10 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             f"\n\n{feedback_comment}" if feedback_comment else ""
         )
 
-        dwi = DealWorkflowInfo.objects.create(
+        DealWorkflowInfo.objects.create(
             from_user=user or User.objects.get(id=1),
             to_user=assuser,
-            draft_status_before=old_deal_draft_status,
+            draft_status_before=old_draft_status,
             draft_status_after=deal.draft_status,
             timestamp=histivity.history_date,
             comment=comment,

@@ -1,12 +1,17 @@
 from typing import Union
 
+from django.contrib.auth import get_user_model
+
 from apps.landmatrix.models import (
     HistoricalInvestorVentureInvolvement,
     HistoricalInvestor,
 )
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.gndinvestor import InvestorWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.landmatrix.synchronization.helpers import calculate_new_stati
+
+User = get_user_model()
 
 CLASSIFICATIONS_MAP = {
     "10": "PRIVATE_COMPANY",
@@ -28,6 +33,14 @@ CLASSIFICATIONS_MAP = {
     "200": "ASSET_MANAGEMENT_FIRM",
     "210": "NON_PROFIT",
 }
+ROLE_MAP = {"ST": "PARENT", "IN": "LENDER"}
+INVESTMENT_MAP = {"10": "EQUITY", "20": "DEBT_FINANCING"}
+PARENTAL_RELATION_MAP = {
+    None: None,
+    "Subsidiary": "SUBSIDIARY",
+    "Local branch": "LOCAL_BRANCH",
+    "Joint venture": "JOINT_VENTURE",
+}
 
 
 def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
@@ -36,7 +49,6 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
 
     investor, created = Investor.objects.get_or_create(
         id=histvestor.investor_identifier,
-        defaults={"created_at": histvestor.history_date},
     )
 
     investor.name = histvestor.name
@@ -49,29 +61,37 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
     investor.homepage = histvestor.homepage or ""
     investor.opencorporates = histvestor.opencorporates_link or ""
     investor.comment = histvestor.comment or ""
+
+    if created:
+        investor.created_at = histvestor.history_date
+        investor.created_by = histvestor.history_user
     investor.modified_at = histvestor.history_date
+    investor.modified_by = histvestor.history_user
     investor.old_id = histvestor.id
 
-    status = histvestor.fk_status_id
+    new_status = histvestor.fk_status_id
 
     # check involvements
     for involve in HistoricalInvestorVentureInvolvement.objects.filter(
         fk_venture=histvestor
     ):
-        try:
-            Investor.objects.get(id=involve.fk_investor.investor_identifier)
-        except Investor.DoesNotExist:
+        if not Investor.objects.filter(
+            id=involve.fk_investor.investor_identifier
+        ).exists():
             histvestor_to_investor(involve.fk_investor)
+
+    do_save = investor.status == 1 or new_status in [2, 3, 4]
+
+    old_draft_status = investor.draft_status
+    investor.status, investor.draft_status = calculate_new_stati(investor, new_status)
+    investor.recalculate_fields()
 
     rev1 = Revision.objects.create(
         date_created=histvestor.history_date,
         user=histvestor.history_user,
-        comment=histvestor.action_comment or "",
     )
-
-    do_save = investor.status == 1 or status in [2, 3, 4]
-
-    investor.status, investor.draft_status = calculate_new_stati(investor, status)
+    investor_version = Version.create_from_obj(investor, rev1.id)
+    investor.current_draft = None if new_status in [2, 3, 4] else investor_version
 
     if do_save:
         # save the actual model
@@ -79,19 +99,26 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
         # or: there is a current model but it's a draft
         # or: the new status is Live, Updated or Deleted
         investor.save()
-
-    Version.create_from_obj(investor, rev1.id)
-
-    if not do_save:
-        # otherwise update the draft_status of the current_model
+    else:
         Investor.objects.filter(pk=investor.pk).update(
-            draft_status=investor.draft_status
+            draft_status=investor.draft_status, current_draft=investor_version
         )
 
-    if status == 4:
+    if new_status == 4:
         InvestorVentureInvolvement.objects.filter(venture=investor).delete()
     else:
         _create_involvements_for_investor(investor, histvestor, do_save, rev1)
+
+    InvestorWorkflowInfo.objects.create(
+        from_user=histvestor.history_user or User.objects.get(id=1),
+        draft_status_before=old_draft_status,
+        draft_status_after=investor.draft_status,
+        timestamp=histvestor.history_date,
+        comment=histvestor.action_comment or "",
+        processed_by_receiver=True,
+        investor=investor,
+        investor_version=investor_version,
+    )
 
 
 def _create_involvements_for_investor(investor, histvestor, do_save, revision):
@@ -123,13 +150,3 @@ def _create_involvements_for_investor(investor, histvestor, do_save, revision):
         if do_save:
             ivi.save()
         Version.create_from_obj(ivi, revision.id)
-
-
-ROLE_MAP = {"ST": "PARENT", "IN": "LENDER"}
-INVESTMENT_MAP = {"10": "EQUITY", "20": "DEBT_FINANCING"}
-PARENTAL_RELATION_MAP = {
-    None: None,
-    "Subsidiary": "SUBSIDIARY",
-    "Local branch": "LOCAL_BRANCH",
-    "Joint venture": "JOINT_VENTURE",
-}

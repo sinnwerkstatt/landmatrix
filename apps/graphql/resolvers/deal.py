@@ -11,9 +11,14 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
-from apps.landmatrix.models.versions import Revision, Version
+from apps.landmatrix.models.versions import Revision
 from apps.utils import qs_values_to_dict
-from .generics import add_object_comment, change_obj_status
+from .generics import (
+    add_object_comment,
+    change_object_status,
+    object_edit,
+    object_delete,
+)
 from .user_utils import get_user_role
 
 storage = DefaultStorage()
@@ -165,7 +170,6 @@ def resolve_upload_datasource_file(_, info, filename, payload) -> str:
 def resolve_add_deal_comment(
     _, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
-
     add_object_comment(
         "deal", info.context["request"].user, id, version, comment, to_user_id
     )
@@ -183,7 +187,7 @@ def resolve_change_deal_status(
     to_user_id: int = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> dict:
-    dealId, dealVersion = change_obj_status(
+    dealId, dealVersion = change_object_status(
         otype="deal",
         user=info.context["request"].user,
         obj_id=id,
@@ -197,156 +201,26 @@ def resolve_change_deal_status(
 
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if not role:
-        raise GraphQLError("not authorized")
-
-    # this is a new Deal
-    if id == -1:
-        deal = Deal()
-        deal.update_from_dict(payload)
-        deal.recalculate_fields()
-        deal.created_by = user
-        deal.modified_at = timezone.now()
-        deal.modified_by = user
-        deal.status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-        deal.save()
-        rev = Revision.objects.create(date_created=timezone.now(), user=user)
-        deal_version = Version.create_from_obj(deal, revision_id=rev.id)
-        Deal.objects.filter(id=deal.id).update(current_draft=deal_version)
-        DealWorkflowInfo.objects.create(
-            deal=deal,
-            deal_version=deal_version,
-            from_user=user,
-            draft_status_after=deal.draft_status,
-        )
-
-        return {"dealId": deal.id, "dealVersion": rev.id}
-
-    deal = Deal.objects.get(id=id)
-    deal.update_from_dict(payload)
-    deal.recalculate_fields()
-    deal.modified_at = timezone.now()
-    deal.modified_by = user
-
-    # this is a live Deal for which we create a new Version
-    if not version:
-        deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-        deal.fully_updated = False
-        rev = Revision.objects.create(date_created=timezone.now(), user=user)
-        deal_version = Version.create_from_obj(deal, revision_id=rev.id)
-        Deal.objects.filter(id=id).update(
-            draft_status=Deal.DRAFT_STATUS_DRAFT, current_draft=deal_version
-        )
-        deal_v_obj = deal_version.retrieve_object()
-        DealWorkflowInfo.objects.create(
-            deal=deal,
-            deal_version=deal_version,
-            from_user=user,
-            draft_status_before=None,
-            draft_status_after=deal_v_obj.draft_status,
-        )
-
-    # we update the existing version.
-    else:
-        rev = Revision.objects.get(id=version)
-        deal_version = DealVersion.objects.get(revision=rev)
-        if not (
-            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
-            raise GraphQLError("not authorized")
-
-        deal_version.update_from_obj(deal)
-        if deal.draft_status in [
-            Deal.DRAFT_STATUS_REVIEW,
-            Deal.DRAFT_STATUS_ACTIVATION,
-        ]:
-            oldstatus = deal.draft_status
-            rev = Revision.objects.create(date_created=timezone.now(), user=user)
-            tmp_deal = deal_version.retrieve_object()
-            tmp_deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-            dv = Version.create_from_obj(tmp_deal, revision_id=rev.id)
-            DealWorkflowInfo.objects.create(
-                deal=deal,
-                deal_version=dv,
-                from_user=user,
-                draft_status_before=oldstatus,
-                draft_status_after=Deal.DRAFT_STATUS_DRAFT,
-            )
-        else:
-            deal_version.save()
-            if deal.status == Deal.STATUS_DRAFT:
-                deal.save()
-
-    return {"dealId": id, "dealVersion": rev.id}
+    dealId, dealVersion = object_edit(
+        otype="deal",
+        user=info.context["request"].user,
+        obj_id=id,
+        obj_version_id=version,
+        payload=payload,
+    )
+    return {"dealId": dealId, "dealVersion": dealVersion}
 
 
-def resolve_deal_delete(_, info, id, version=None, comment=None) -> bool:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if not role:
-        raise GraphQLError("not authorized")
-
-    deal = Deal.objects.get(id=id)
-    # if it's just a draft,
-    if version:
-        deal_version = DealVersion.objects.get(revision_id=version)
-        if not (
-            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
-            raise GraphQLError("not authorized")
-        deal_v_obj = deal_version.retrieve_object()
-        old_draft_status = deal_v_obj.draft_status
-        deal_version.delete()
-        DealWorkflowInfo.objects.create(
-            deal=deal,
-            from_user=user,
-            draft_status_before=old_draft_status,
-            draft_status_after=deal.status == Deal.STATUS_DELETED,
-            comment=comment,
-        )
-
-        if (
-            deal.versions.count()
-            and not deal.versions.order_by("-id")[0].serialized_data[0]["fields"][
-                "draft_status"
-            ]
-        ):
-            # reset the Live version to "not having a draft" if we delete it.
-            Deal.objects.filter(id=id).update(draft_status=None)
-
-        if deal.versions.count() == 0 and deal.status == Deal.STATUS_DRAFT:
-            Revision.objects.filter(dealversion__object_id=deal.id).delete()
-            deal.delete()
-
-    else:
-        if role != "ADMINISTRATOR":
-            raise GraphQLError("not authorized")
-        deal.status = (
-            Deal.STATUS_UPDATED
-            if deal.status == Deal.STATUS_DELETED
-            else Deal.STATUS_DELETED
-        )
-        deal.modified_at = timezone.now()
-        deal.modified_by = user
-        deal.save()
-        DealWorkflowInfo.objects.create(
-            deal=deal,
-            from_user=user,
-            draft_status_before=(
-                None
-                if deal.status == Deal.STATUS_DELETED
-                else Deal.DRAFT_STATUS_TO_DELETE
-            ),
-            draft_status_after=(
-                Deal.DRAFT_STATUS_TO_DELETE
-                if deal.status == Deal.STATUS_DELETED
-                else None
-            ),
-            comment=comment,
-        )
-    return True
+def resolve_deal_delete(
+    _, info, id: int, version: int = None, comment: str = None
+) -> bool:
+    return object_delete(
+        otype="deal",
+        user=info.context["request"].user,
+        obj_id=id,
+        obj_version_id=version,
+        comment=comment,
+    )
 
 
 def resolve_set_confidential(
