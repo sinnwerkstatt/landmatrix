@@ -133,9 +133,13 @@
                 <div class="row d-flex align-items-center">
                   <div class="col-sm-8 col-md-7 col-lg-8">
                     <div v-if="last_revision" class="last-changes">
-                      Last changes by {{ last_revision.user.full_name }} on
-                      {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm")
-                      }}<br />
+                      Last changes
+                      <span v-if="last_revision.user">
+                        by {{ last_revision.user.full_name }}
+                      </span>
+                      on
+                      {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm") }}
+                      <br />
                       <router-link
                         v-if="deal.versions.length > 1"
                         :to="{
