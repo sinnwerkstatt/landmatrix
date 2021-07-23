@@ -96,7 +96,7 @@ def change_object_status(
         if otype == "deal":
             obj_version_object.fully_updated = fully_updated
         obj_version.update_from_obj(obj_version_object).save()
-        Object.objects.filter(id=id).update(draft_status=draft_status)
+        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
     elif transition == "TO_ACTIVATION":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
@@ -104,7 +104,7 @@ def change_object_status(
         draft_status = Deal.DRAFT_STATUS_ACTIVATION
         obj_version_object.draft_status = draft_status
         obj_version.update_from_obj(obj_version_object).save()
-        Object.objects.filter(id=id).update(draft_status=draft_status)
+        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
     elif transition == "ACTIVATE":
         if role != "ADMINISTRATOR":
             raise GraphQLError("not allowed")
@@ -122,7 +122,7 @@ def change_object_status(
         draft_status = obj.draft_status = Deal.DRAFT_STATUS_DRAFT
         rev = Revision.objects.create(date_created=timezone.now(), user_id=to_user_id)
         Version.create_from_obj(obj, revision_id=rev.id)
-        Object.objects.filter(id=id).update(draft_status=draft_status)
+        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
     else:
         raise GraphQLError(f"unknown transition {transition}")
 
@@ -153,7 +153,7 @@ def object_edit(
     Object = Deal if otype == "deal" else Investor
 
     # this is a new Object
-    if id == -1:
+    if obj_id == -1:
         obj = Object()
         obj.update_from_dict(payload)
         obj.recalculate_fields()
@@ -176,7 +176,7 @@ def object_edit(
 
         return [obj.id, rev.id]
 
-    obj = Object.objects.get(id=id)
+    obj = Object.objects.get(id=obj_id)
     obj.update_from_dict(payload)
     obj.recalculate_fields()
     obj.modified_at = timezone.now()
@@ -189,7 +189,7 @@ def object_edit(
             obj.fully_updated = False
         rev = Revision.objects.create(date_created=timezone.now(), user=user)
         obj_version = Version.create_from_obj(obj, revision_id=rev.id)
-        Object.objects.filter(id=id).update(
+        Object.objects.filter(id=obj_id).update(
             draft_status=Deal.DRAFT_STATUS_DRAFT, current_draft=obj_version
         )
 
@@ -250,7 +250,7 @@ def object_delete(
 
     Object = Deal if otype == "deal" else Investor
 
-    obj = Object.objects.get(id=id)
+    obj = Object.objects.get(id=obj_id)
 
     # if it's just a draft,
     if obj_version_id:
@@ -280,7 +280,7 @@ def object_delete(
             ]
         ):
             # reset the Live version to "not having a draft" if we delete it.
-            Object.objects.filter(id=id).update(draft_status=None)
+            Object.objects.filter(id=obj_id).update(draft_status=None)
 
         if obj.versions.count() == 0 and obj.status == Deal.STATUS_DRAFT:
             if otype == "deal":

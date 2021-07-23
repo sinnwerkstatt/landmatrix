@@ -2,14 +2,26 @@
   <div class="overlay-bg" @click.self="$emit('cancel')">
     <div class="overlay">
       <h3 v-if="title">{{ title }}</h3>
-      <slot></slot>
+      <form @submit.stop.prevent="submit">
+        <slot></slot>
 
-      <div class="actions">
-        <a class="btn btn-primary" @click.stop="submit">{{ title || $t("Submit") }}</a>
-        <a class="btn btn-secondary" @click.stop="$emit('cancel')">
-          {{ $t("Cancel") }}
-        </a>
-      </div>
+        <template v-if="commentInput">
+          <label>{{ $t("Please provide a comment explaining your request") }}</label>
+          <textarea
+            ref="comment"
+            v-model="comment"
+            :required="commentRequired"
+          ></textarea>
+        </template>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">
+            {{ title || $t("Submit") }}
+          </button>
+          <button class="btn btn-secondary" @click.stop="$emit('cancel')">
+            {{ $t("Cancel") }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -19,6 +31,8 @@
     name: "Overlay",
     props: {
       title: { type: String, default: "" },
+      commentInput: { type: Boolean, default: false },
+      commentRequired: { type: Boolean, default: false },
     },
     data() {
       return {
@@ -37,8 +51,12 @@
       cancel(e) {
         if (e.key === "Escape") this.$emit("cancel");
       },
-      submit() {
-        this.$emit("submit");
+      submit(e) {
+        if (e.target.checkValidity()) {
+          this.$emit("submit", { comment: this.comment });
+        } else {
+          e.target.reportValidity();
+        }
       },
     },
   };
@@ -48,6 +66,18 @@
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
+
+  textarea {
+    width: 100%;
+    border: 1px solid var(--color-lm-light);
+    border-radius: 5px;
+    padding: 0.2em 0.5em;
+
+    &:focus {
+      border: 1px solid var(--color-lm-light);
+      outline: none;
+    }
+  }
 
   .overlay-bg {
     position: fixed;

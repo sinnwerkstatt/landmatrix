@@ -7,7 +7,9 @@
       @change_status="change_investor_status"
       @reload="reload_investor"
       @delete="delete_investor"
-    />
+    >
+      <template #heading>Investor #{{ investor.id }}</template>
+    </InvestorManageHeader>
     <div v-else class="container investor-detail">
       <div class="row">
         <div>

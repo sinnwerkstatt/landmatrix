@@ -1,497 +1,181 @@
 <template>
   <div>
-    <div class="jumbotron jumbotron-fluid manage-interface">
-      <div class="col-md-8 main-info">
-        <div class="full-width-wrapper">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-8 content-area">
-                <!-- only use left half, rest for comments -->
-                <div class="container">
-                  <div class="row">
-                    <div class="col-sm-5 title-col">
-                      <div class="version-nav-buttons">
-                        <router-link
-                          v-if="deal_is_draft_with_active"
-                          class="btn btn-gray"
-                          :to="{ name: 'deal_detail', params: { dealId: deal.id } }"
-                        >
-                          {{ $t("Go to active version") }}
-                        </router-link>
-                        <router-link
-                          v-if="deal_has_newer_draft"
-                          class="btn btn-gray"
-                          :to="{
-                            name: 'deal_detail',
-                            params: { dealId: deal.id, dealVersion: last_revision.id },
-                          }"
-                        >
-                          {{ $t("Go to current draft") }}
-                        </router-link>
-                      </div>
-                      <h1>
-                        Deal #{{ deal.id }}
-                        <span v-if="deal.country" class="headercountry">{{
-                          deal.country.name
-                        }}</span>
-                      </h1>
-                    </div>
-                    <div class="col-sm-7 panel-container">
-                      <HeaderDates :obj="deal" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <GenericManageHeader
+      :object="object"
+      :object-version="objectVersion"
+      @add_comment="add_comment"
+      @change_status="$emit('change_status', $event)"
+      @delete="$emit('delete', $event)"
+      @send_to_review="show_send_to_review_overlay = true"
+    >
+      <template #visibility>
+        <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
+          <div v-if="object.is_public" class="visibility">
+            <i class="fas fa-eye fa-fw fa-lg orange"></i>
+            <span>{{ $t("Publicly visible") }}</span>
           </div>
-          <div v-if="deal.status !== 1 && !dealVersion" class="status-wrapper">
-            <div class="col-md-8">
-              <div class="row fat-stati">
-                <div v-if="deal.status === 4" class="col deleted">
-                  {{ $t("Deleted") }}
-                </div>
-                <div v-else class="col active">{{ $t("Activated") }}</div>
-              </div>
-            </div>
+          <div v-else class="visibility">
+            <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
+            <span>{{ $t("Not publicly visible") }}</span>
           </div>
-          <div v-else class="status-wrapper">
-            <div class="col-md-8">
-              <div class="row fat-stati">
-                <div class="col" :class="{ active: deal.draft_status === 1 }">
-                  <span>{{ $t("Draft") }}</span>
-                </div>
-                <div class="col" :class="{ active: deal.draft_status === 2 }">
-                  <span>{{ $t("Submitted for review") }}</span>
-                </div>
-                <div class="col" :class="{ active: deal.draft_status === 3 }">
-                  <span>{{ $t("Submitted for activation") }}</span>
-                </div>
-                <div class="col" :class="{ active: deal.draft_status === null }">
-                  <span>{{ $t("Activated") }}</span>
-                </div>
-              </div>
-              <div class="row workflow-buttons">
-                <div class="col text-right">
-                  <a
-                    v-if="deal.draft_status === 1 && is_authorized(deal)"
-                    class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
-                    :title="$t('Submits the deal for review')"
-                    @click="show_to_review_overlay = true"
-                  >
-                    {{ $t("Submit for review") }}
-                  </a>
-                  <a
-                    v-if="
-                      (deal.draft_status === 2 || deal.draft_status === 3) &&
-                      is_authorized(deal)
-                    "
-                    class="btn btn-primary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
-                    :title="
-                      $t(
-                        'Send a request of improvent and create a new draft version of the deal'
-                      )
-                    "
-                    @click="
-                      open_comment_overlay_for('TO_DRAFT', $t('Request improvement'))
-                    "
-                  >
-                    {{ $t("Request improvement") }}
-                  </a>
-                </div>
-                <div class="col text-center">
-                  <a
-                    v-if="deal.draft_status === 2 && is_authorized(deal)"
-                    class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
-                    :title="$t('Submits the deal for activation')"
-                    @click="
-                      $emit('change_deal_status', { transition: 'TO_ACTIVATION' })
-                    "
-                  >
-                    {{ $t("Submit for activation") }}
-                  </a>
-                </div>
-                <div class="col text-left">
-                  <a
-                    v-if="deal.draft_status === 3 && is_authorized(deal)"
-                    class="btn btn-secondary"
-                    :class="{ disabled: last_revision.id !== +dealVersion }"
-                    :title="get_activate_description"
-                    @click="$emit('change_deal_status', { transition: 'ACTIVATE' })"
-                  >
-                    {{ $t("Activate") }}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="container">
-            <div class="row">
-              <div class="col-md-8 content-area">
-                <div class="row d-flex align-items-center">
-                  <div class="col-sm-8 col-md-7 col-lg-8">
-                    <div v-if="last_revision" class="last-changes">
-                      Last changes
-                      <span v-if="last_revision.user">
-                        by {{ last_revision.user.full_name }}
-                      </span>
-                      on
-                      {{ last_revision.date_created | dayjs("dddd YYYY-MM-DD HH:mm") }}
-                      <br />
-                      <router-link
-                        v-if="deal.versions.length > 1"
-                        :to="{
-                          name: 'deal_compare',
-                          params: {
-                            dealId: deal.id,
-                            fromVersion: deal.versions[1].revision.id,
-                            toVersion: deal.versions[0].revision.id,
-                          },
-                        }"
-                      >
-                        Show latest changes
-                      </router-link>
-                    </div>
-                    <div class="action-buttons">
-                      <div v-if="deal_is_editable" class="action-button">
-                        <div class="d-inline-block">
-                          <router-link
-                            class="btn btn-primary"
-                            :class="{ disabled: deal_is_old_draft }"
-                            :to="{
-                              name: 'deal_edit',
-                              params: { dealId: deal.id, dealVersion: dealVersion },
-                            }"
-                            >{{ $t("Edit") }}
-                          </router-link>
-                        </div>
-                        <div class="d-inline-block button-description">
-                          {{ get_edit_description }}
-                        </div>
-                      </div>
-                      <div v-if="deal_is_deletable" class="action-button">
-                        <div class="d-inline-block">
-                          <button class="btn btn-danger" @click.prevent="handle_delete">
-                            {{ get_delete_text }}
-                          </button>
-                        </div>
-                        <div class="d-inline-block button-description">
-                          {{ get_delete_description }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
-                    <div v-if="deal.is_public" class="visibility">
-                      <i class="fas fa-eye fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Publicly visible") }}</span>
-                    </div>
-                    <div v-else class="visibility">
-                      <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Not publicly visible") }}</span>
-                    </div>
-                    <div v-if="deal_is_editable" class="confidential-toggle">
-                      <b-form-checkbox
-                        :checked="deal.confidential"
-                        :class="{ active: deal.confidential }"
-                        class="confidential-switch"
-                        name="check-button"
-                        switch
-                        :title="$t('Toggle deal confidentiality')"
-                        @click.native.prevent="toggle_confidential"
-                      >
-                        {{
-                          deal.confidential
-                            ? $t("Confidential")
-                            : $t("Not confidential")
-                        }}
-                      </b-form-checkbox>
-                      <a id="confidential-reason"
-                        ><span v-if="deal.confidential">(reason)</span></a
-                      >
-                      <b-tooltip target="confidential-reason" triggers="click">
-                        <!--
+          <div v-if="is_editable" class="confidential-toggle">
+            <b-form-checkbox
+              :checked="object.confidential"
+              :class="{ active: object.confidential }"
+              class="confidential-switch"
+              name="check-button"
+              switch
+              :title="$t('Toggle deal confidentiality')"
+              @click.native.prevent="toggle_confidential({ force: false })"
+            >
+              {{ object.confidential ? $t("Confidential") : $t("Not confidential") }}
+            </b-form-checkbox>
+            <a id="confidential-reason"
+              ><span v-if="object.confidential">(reason)</span></a
+            >
+            <b-tooltip target="confidential-reason" triggers="click">
+              <!--
                         <strong>{{ get_confidential_reason }}</strong>
                         <br />-->
-                        {{ deal.confidential_comment }}
-                      </b-tooltip>
-                    </div>
-                    <ul>
-                      <template v-if="!deal_is_editable">
-                        <li v-if="!deal.confidential">
-                          <i class="fas fa-check fa-fw"></i>
-                          {{ $t("Not confidential") }}
-                        </li>
-                        <li v-else>
-                          <i class="fas fa-times fa-fw"></i>
-                          {{ $t("Confidential") }}
-                        </li>
-                      </template>
-                      <li v-if="deal.country">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("Target country is set") }}
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i>
-                        {{ $t("Target country is NOT set") }}
-                      </li>
+              {{ object.confidential_comment }}
+            </b-tooltip>
+          </div>
+          <ul>
+            <template v-if="!is_editable">
+              <li v-if="!object.confidential">
+                <i class="fas fa-check fa-fw"></i>
+                {{ $t("Not confidential") }}
+              </li>
+              <li v-else>
+                <i class="fas fa-times fa-fw"></i>
+                {{ $t("Confidential") }}
+              </li>
+            </template>
+            <li v-if="object.country">
+              <i class="fas fa-check fa-fw"></i>
+              {{ $t("Target country is set") }}
+            </li>
+            <li v-else>
+              <i class="fas fa-times fa-fw"></i>
+              {{ $t("Target country is NOT set") }}
+            </li>
 
-                      <li v-if="deal.datasources.length > 0">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("At least one data source") }} ({{
-                          deal.datasources.length
-                        }})
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
-                      </li>
+            <li v-if="object.datasources.length > 0">
+              <i class="fas fa-check fa-fw"></i>
+              {{ $t("At least one data source") }} ({{ object.datasources.length }})
+            </li>
+            <li v-else>
+              <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
+            </li>
 
-                      <li v-if="deal.has_known_investor">
-                        <i class="fas fa-check fa-fw"></i>
-                        {{ $t("At least one investor") }}
-                      </li>
-                      <li v-else>
-                        <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
-                      </li>
-                    </ul>
+            <li v-if="object.has_known_investor">
+              <i class="fas fa-check fa-fw"></i>
+              {{ $t("At least one investor") }}
+            </li>
+            <li v-else>
+              <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
+            </li>
+          </ul>
+          ly decided to get to the bottom of this matter.
 
-                    <div v-if="deal.fully_updated" class="visibility">
-                      <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
-                      <span>{{ $t("Fully updated") }}</span>
-                    </div>
-                    <div v-else class="visibility" style="color: gray !important">
-                      <i class="fas fa-minus fa-fw fa-lg"></i>
-                      <span>{{ $t("Not fully updated") }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div v-if="object.fully_updated" class="visibility">
+            <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
+            <span>{{ $t("Fully updated") }}</span>
+          </div>
+          <div v-else class="visibility" style="color: gray !important">
+            <i class="fas fa-minus fa-fw fa-lg"></i>
+            <span>{{ $t("Not fully updated") }}</span>
           </div>
         </div>
-      </div>
-      <ManageHeader_Comments
-        :object="deal"
-        :object-version="dealVersion"
-        :users="users"
-        @add_comment="add_comment"
-      />
-    </div>
-    <TransitionCommentOverlay
-      v-if="show_comment_overlay"
-      :transition="transition"
-      :users="users"
-      :to-user="get_transition_to_user()"
-      @cancel_transition="cancel_transition"
-      @do_transition="do_transition"
-      @do_set_confidential="toggle_confidential"
-    />
-    <Overlay
-      v-if="show_unconfidential_overlay"
-      :title="$t('Unset confidential')"
-      @cancel="show_unconfidential_overlay = false"
-      @submit="toggle_confidential({ force: true })"
-    >
-      <p>
-        {{
-          $t(
-            "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
-          )
-        }}
-      </p>
-    </Overlay>
-
-    <Overlay
-      v-if="show_to_review_overlay"
-      :title="$t('Submit for review')"
-      @cancel="show_to_review_overlay = false"
-      @submit="send_to_review"
-    >
-      <p>
-        Fully updated description text "Lorem ipsum dolor sit amet, consectetur
-        adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-        aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-        id est laborum."
-      </p>
-      <label>
-        <input v-model="deal.fully_updated" type="checkbox" />
-        {{ $t("I fully updated this deal.") }}
-      </label>
-    </Overlay>
+      </template>
+      <template #overlays>
+        <Overlay
+          v-if="show_send_to_review_overlay"
+          :title="$t('Submit for review')"
+          @cancel="show_send_to_review_overlay = false"
+          @submit="send_to_review"
+        >
+          <p>
+            Fully updated description text "Lorem ipsum dolor sit amet, consectetur
+            adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+            officia deserunt mollit anim id est laborum."
+          </p>
+          <label>
+            <input v-model="object.fully_updated" type="checkbox" />
+            {{ $t("I fully updated this deal.") }}
+          </label>
+        </Overlay>
+        <Overlay
+          v-if="show_confidential_overlay"
+          :title="$t(object.confidential ? 'Unset confidential' : 'Set confidential')"
+          :comment-input="!object.confidential"
+          :comment-required="!object.confidential"
+          @cancel="show_confidential_overlay = false"
+          @submit="toggle_confidential({ force: true })"
+        >
+          <p v-if="object.confidential">
+            {{
+              $t(
+                "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
+              )
+            }}
+          </p>
+          <p v-else>
+            {{
+              $t(
+                "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
+              )
+            }}
+          </p>
+        </Overlay>
+      </template>
+    </GenericManageHeader>
   </div>
 </template>
 
 <script>
-  import ManageHeader_Comments from "$components/Deal/ManageHeader_Comments";
   import Overlay from "$components/Overlay";
   import gql from "graphql-tag";
-  import HeaderDates from "../HeaderDates";
-
-  import TransitionCommentOverlay from "./TransitionCommentOverlay";
   import { is_authorized } from "$utils/user";
-
+  import GenericManageHeader from "../Management/ManageHeader";
   export default {
     name: "ManageHeader",
     components: {
-      ManageHeader_Comments,
+      GenericManageHeader,
       Overlay,
-      HeaderDates,
-      TransitionCommentOverlay,
     },
     props: {
-      deal: { type: Object, required: true },
-      dealVersion: { type: [Number, String], default: null },
+      object: { type: Object, required: true },
+      objectVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
-        users: [],
-        show_comment_overlay: false,
-        show_to_review_overlay: false,
-        show_unconfidential_overlay: false,
-        transition: null,
+        show_confidential_overlay: false,
+        show_send_to_review_overlay: false,
         is_authorized,
       };
     },
-    apollo: {
-      users: gql`
-        {
-          users {
-            id
-            full_name
-            username
-          }
-        }
-      `,
-    },
     computed: {
-      last_revision() {
-        return this.deal?.versions[0]?.revision ?? "";
+      is_active_with_draft() {
+        return !this.objectVersion && this.object.draft_status;
       },
-      // get_confidential_reason() {
-      //   return this.$t(confidential_reason_choices[this.deal.confidential_reason]);
-      // },
-      deal_is_editable() {
-        // deal ist deleted
-        if (!this.dealVersion && this.deal.status === 4) return false;
-        if (this.deal_is_active_with_draft) return false;
-        return this.is_authorized(this.deal);
-      },
-      deal_is_deletable() {
-        if (this.deal_is_active_with_draft) return false;
-        if (this.deal_is_old_draft) return false;
-        return this.is_authorized(this.deal);
-      },
-      deal_is_deleted() {
-        // active and deleted
-        if (!this.dealVersion && this.deal.status === 4) return true;
-        return false;
-      },
-      deal_is_active_with_draft() {
-        return !this.dealVersion && this.deal.draft_status;
-      },
-      deal_is_draft_with_active() {
-        // current draft with active deal
-        if (this.dealVersion && [2, 3].includes(this.deal.status)) return true;
-        // old draft with activated deal
-        return (
-          this.deal_is_old_draft && [2, 3].includes(this.latest_deal_version.status)
-        );
-      },
-      deal_is_old_draft() {
-        return this.dealVersion && this.last_revision.id !== +this.dealVersion;
-      },
-      deal_has_newer_draft() {
-        if (this.deal_is_active_with_draft) return true;
-        // old with newer draft
-        return this.deal_is_old_draft && this.latest_deal_version.draft_status;
-      },
-      deal_has_active() {
-        return !!this.deal.status;
-      },
-      latest_deal_version() {
-        return this.deal.versions.find((v) => v.revision.id === this.last_revision.id)
-          .deal;
-      },
-      get_edit_description() {
-        if (this.deal.draft_status === 1) {
-          if (!this.deal_has_active) {
-            // only for new drafts without active
-            return this.$t("Starts editing this deal");
-          } else {
-            // only for new drafts with active
-            return this.$t("Edits this draft version");
-          }
-        } else {
-          return this.$t("Creates a new draft version of this deal");
-        }
-      },
-      get_delete_text() {
-        if (this.deal_is_deleted) return this.$t("Undelete");
-        else if (!this.dealVersion && !this.deal.draft_status) {
-          // active without draft
-          return this.$t("Delete deal");
-        } else return this.$t("Delete");
-      },
-      get_delete_description() {
-        if (this.deal_is_deleted) return this.$t("Undelete this deal as active deal");
-        if (this.dealVersion && this.deal_has_active) {
-          // is draft and has active
-          return this.$t("Deletes this draft version of the deal");
-        } else {
-          return this.$t("Deletes this deal");
-        }
-      },
-      get_activate_description() {
-        if (this.deal_has_active) {
-          return this.$t(
-            "Activates submitted version replacing currently active version"
-          );
-        } else {
-          return this.$t("Sets the deal active");
-        }
+      is_editable() {
+        // object ist deleted
+        console.log(this.objectVersion);
+        console.log(this.object);
+        if (!this.objectVersion && this.object.status === 4) return false;
+        if (this.is_active_with_draft) return false;
+        return this.is_authorized(this.object);
       },
     },
     methods: {
-      open_comment_overlay_for(key, title) {
-        this.transition = { key, title };
-        this.show_comment_overlay = true;
-      },
-      get_transition_to_user() {
-        if (this.transition && this.transition.key === "TO_DRAFT") {
-          let latest_draft_creation = this.deal.workflowinfos.find((v) => {
-            return !v.draft_status_before && v.draft_status_after === 1;
-          });
-          return latest_draft_creation.from_user;
-        }
-        return null;
-      },
-      cancel_transition() {
-        this.transition = null;
-        this.show_comment_overlay = false;
-      },
-      do_transition({ comment, to_user }) {
-        console.log(this.transition);
-        if (["DELETE", "UNDELETE"].includes(this.transition.key)) {
-          this.do_delete(comment);
-        } else {
-          // status change
-          this.$emit("change_deal_status", {
-            transition: this.transition.key,
-            comment,
-            to_user,
-          });
-        }
-        this.show_comment_overlay = false;
-        this.transition = null;
-      },
       send_to_review() {
-        this.show_to_review_overlay = false;
-        this.$emit("change_deal_status", { transition: "TO_REVIEW" });
+        this.$emit("change_status", { transition: "TO_REVIEW" });
+        this.show_send_to_review_overlay = false;
       },
       add_comment({ comment, send_to_user }) {
         this.$apollo
@@ -510,8 +194,8 @@
               }
             `,
             variables: {
-              id: +this.deal.id,
-              version: this.dealVersion ? +this.dealVersion : null,
+              id: +this.object.id,
+              version: this.objectVersion ? +this.objectVersion : null,
               comment: comment,
               to_user_id: send_to_user ? +send_to_user.id : null,
             },
@@ -522,285 +206,27 @@
           .catch((error) => console.error(error));
       },
       toggle_confidential(data) {
-        console.log({ data });
-        if (!this.deal_is_editable) return;
-        if (this.deal.confidential) {
-          // unset confidential
-          if (data.force) {
-            this.$emit("set_confidential", {
-              confidential: false,
-              reason: null,
-            });
-            this.show_unconfidential_overlay = false;
+        if (!this.is_editable) return;
+        if (data.force) {
+          if (this.object.confidential) {
+            this.$emit("set_confidential", { confidential: false });
+            this.show_confidential_overlay = false;
           } else {
-            this.show_unconfidential_overlay = true;
-          }
-        } else {
-          // open overlay and ask for reason
-          if (data.force) {
             this.$emit("set_confidential", {
               confidential: true,
-              reason: data.reason,
               comment: data.comment,
             });
-            this.show_comment_overlay = false;
-            this.transition = null;
-          } else {
-            this.open_comment_overlay_for(
-              "SET_CONFIDENTIAL",
-              this.$t("Set confidential")
-            );
+            this.show_confidential_overlay = false;
           }
-        }
-      },
-      handle_delete() {
-        if (!this.dealVersion && this.deal.status === 4) {
-          this.open_comment_overlay_for("UNDELETE", this.$t("Undelete deal"));
         } else {
-          this.open_comment_overlay_for("DELETE", this.$t("Delete deal"));
+          this.show_confidential_overlay = true;
         }
-      },
-      do_delete(comment = null) {
-        this.$emit("delete", comment);
       },
     },
   };
 </script>
 
 <style scoped lang="scss">
-  @import "node_modules/bootstrap/scss/functions";
-  @import "node_modules/bootstrap/scss/variables";
-  @import "node_modules/bootstrap/scss/mixins/_breakpoints";
-
-  .orange {
-    color: var(--color-lm-orange);
-  }
-
-  .manage-interface {
-    margin-top: -10px;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    background-color: transparent;
-    margin-bottom: 0;
-    height: 482px;
-
-    @include media-breakpoint-down(sm) {
-      height: auto;
-    }
-
-    .main-info {
-      background: #e5e5e5;
-      margin: 1em 0;
-      position: relative;
-      padding-right: 0;
-      height: 450px;
-
-      @include media-breakpoint-down(sm) {
-        margin-bottom: 0;
-      }
-
-      .full-width-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: calc(100vw - 15px); // arghh, compensate for scrollbar
-
-        > .container > .row {
-          margin-right: -30px;
-        }
-
-        .content-area {
-          padding-right: 0;
-
-          .container {
-            padding: 0;
-          }
-        }
-
-        .panel-container {
-          padding-right: 0;
-          margin-top: 1.5em;
-          text-align: right;
-
-          .meta-panel {
-            background: rgba(white, 0.2);
-          }
-        }
-      }
-
-      .status-wrapper {
-        display: flex;
-        min-height: 120px;
-      }
-
-      $arrow-height: 33px;
-      $max-z-index: 10;
-
-      .fat-stati {
-        display: flex;
-        flex-flow: row wrap;
-        margin-top: 0;
-        @media (max-width: 400px) {
-          font-size: 0.9rem;
-          line-height: 1.1;
-        }
-
-        & > .col {
-          margin: 0.5rem 0.3rem;
-          padding: 0.5rem 0 0.5rem 1.3rem;
-          background: #dbdbdb;
-          flex-grow: 1;
-          text-align: center;
-          height: $arrow-height * 2;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0.7;
-
-          &.active {
-            background: #93c7c8;
-            color: white;
-
-            &:after {
-              border-left-color: #93c7c8;
-            }
-          }
-
-          &.deleted {
-            background: hsl(0, 33%, 68%);
-            color: white;
-          }
-
-          @for $i from 0 to $max-z-index {
-            &:nth-child(#{$i + 1}) {
-              z-index: ($max-z-index - $i);
-            }
-          }
-
-          &:before {
-            // arrow to the right
-            content: "";
-            border-left: $arrow-height/2 solid #e5e5e5;
-            border-top: $arrow-height solid transparent;
-            border-bottom: $arrow-height solid transparent;
-            height: 0;
-            width: 0;
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-          }
-
-          &:after {
-            // arrow to the right
-            content: "";
-            border-left: $arrow-height/2 solid #dbdbdb;
-            border-top: $arrow-height solid transparent;
-            border-bottom: $arrow-height solid transparent;
-            height: 0;
-            width: 0;
-            position: absolute;
-            right: -($arrow-height - 1)/2;
-            top: 0;
-            bottom: 0;
-          }
-
-          &:first-child {
-            margin-left: 0;
-            padding-left: 0.2rem;
-
-            &:before {
-              display: none;
-            }
-          }
-
-          &:last-child {
-            margin-right: 0;
-
-            &:after {
-              display: none;
-            }
-          }
-        }
-      }
-
-      .last-changes {
-        font-size: 0.9rem;
-      }
-    }
-
-    .action-button {
-      &:not(:last-child) {
-        margin-bottom: 7px;
-      }
-
-      align-items: center;
-
-      .btn {
-        width: 100%;
-        &.btn-danger {
-          border: 1px dotted red;
-          color: red;
-          background: transparent;
-
-          &:hover {
-            border-color: red;
-            color: white;
-            background: lighten(red, 20);
-          }
-        }
-      }
-
-      .button-description {
-        margin-left: 1rem;
-        color: rgba(0, 0, 0, 0.5);
-        font-style: italic;
-      }
-    }
-  }
-
-  .links {
-    position: relative;
-
-    .workflow-links {
-      position: absolute;
-      top: -2.3em;
-
-      @include media-breakpoint-down(sm) {
-        position: relative;
-        top: 0;
-        margin-top: 2em;
-        margin-bottom: 1em;
-      }
-
-      .btn {
-        border-radius: 0;
-        color: white;
-
-        &.btn-primary {
-          padding: 0.3em 2.5em;
-          margin-right: 1.5em;
-        }
-
-        &.btn-danger {
-          border-color: red;
-          color: red;
-          background: white;
-          margin-right: 1.5em;
-          font-size: 0.8em;
-
-          &:hover {
-            border-color: red;
-            color: white;
-            background: lighten(red, 20);
-          }
-        }
-      }
-    }
-  }
-
   .visibility-container {
     .visibility {
       margin-left: -2.2em;
@@ -816,30 +242,6 @@
         font-size: 1.1em;
         font-weight: bold;
         padding-left: 0.5em;
-      }
-    }
-
-    .confidential-toggle {
-      margin-left: -1.5em;
-      margin-bottom: -3px;
-      display: flex;
-      align-items: center;
-
-      .confidential-switch {
-        padding-left: 2rem;
-        font-size: 0.8em;
-        display: flex;
-        align-items: center;
-      }
-
-      a#confidential-reason {
-        font-size: 0.8em;
-        padding-left: 0.3em;
-        text-decoration: underline;
-
-        &:hover {
-          cursor: pointer;
-        }
       }
     }
 
@@ -862,121 +264,38 @@
       }
     }
   }
-
-  .btn {
-    border-radius: 0;
-    color: white;
-
-    &.btn-secondary {
-      background: rgba(var(--color-lm-investor), 0.8);
-      border-color: var(--color-lm-investor);
-
-      &:hover,
-      &:active {
-        background: rgba(var(--color-lm-investor), 1);
-        color: white;
-      }
-    }
-  }
-
-  h1 {
-    font-size: 30px;
-    font-weight: normal !important;
-    color: black;
-    text-align: left;
-    text-transform: none;
-    margin-top: 0.5em;
-    margin-bottom: 0;
-
-    &:before {
-      content: none;
-    }
-  }
-
-  .title-col {
-    position: relative;
-    .version-nav-buttons {
-      position: absolute;
-      left: 90%;
-      top: -21px;
-      z-index: 1;
-      width: auto;
-      white-space: nowrap;
-      .btn {
-        &:not(:last-child) {
-          margin-right: 0.5em;
-        }
-      }
-    }
-  }
-
-  .headercountry {
-    white-space: nowrap;
-    display: block;
-    font-size: 1rem;
-  }
 </style>
 
 <style lang="scss">
-  .send {
-    .multiselect,
-    .multiselect__tags {
-      min-height: 30px;
+  .confidential-toggle {
+    margin-left: -1.5em;
+    margin-bottom: -3px;
+    display: flex;
+    align-items: center;
+
+    .confidential-switch {
+      padding-left: 2rem;
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+      label {
+        font-weight: normal;
+        line-height: 1.9em;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
     }
 
-    .multiselect {
-      min-width: auto;
-    }
-
-    .multiselect__tags {
-      padding-top: 4px;
-      padding-left: 2px;
-      padding-right: 25px;
-    }
-
-    .multiselect__select {
-      height: 32px;
-      width: 32px;
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    .multiselect__placeholder,
-    .multiselect__single {
-      margin-bottom: 0 !important;
-    }
-
-    .multiselect__placeholder {
-      padding-top: 0;
-      padding-left: 5px;
-    }
-
-    .multiselect__input {
-      font-size: 1em;
-      margin-bottom: 2px;
-    }
-  }
-
-  .comment .message p:last-child {
-    margin-bottom: 0;
-  }
-
-  .confidential-switch {
-    label {
-      font-weight: normal;
-      line-height: 1.9em;
+    a#confidential-reason {
+      font-size: 0.8em;
+      padding-left: 0.3em;
+      text-decoration: underline;
 
       &:hover {
         cursor: pointer;
       }
-    }
-  }
-  .btn-gray {
-    background-color: #b1b1b1 !important;
-
-    &:hover {
-      color: white;
-      background-color: darken(#b1b1b1, 5%) !important;
     }
   }
 </style>

@@ -2,13 +2,18 @@
   <div v-if="deal">
     <ManageHeader
       v-if="manage"
-      :deal="deal"
-      :deal-version="dealVersion"
-      @change_deal_status="change_deal_status"
+      :object="deal"
+      :object-version="dealVersion"
+      @change_status="change_deal_status"
       @reload_deal="reload_deal"
       @delete="deleteDeal"
       @set_confidential="setConfidential"
-    />
+    >
+      <template #heading>
+        Deal #{{ deal.id }}
+        <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
+      </template>
+    </ManageHeader>
     <div v-else class="container deal-detail">
       <div class="row">
         <div>
@@ -519,6 +524,11 @@
 </script>
 
 <style lang="scss">
+  .headercountry {
+    white-space: nowrap;
+    display: block;
+    font-size: 1rem;
+  }
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;

@@ -214,6 +214,48 @@
 </style>
 
 <style lang="scss">
+  .comment .message p:last-child {
+    margin-bottom: 0;
+  }
+
+  .send {
+    .multiselect,
+    .multiselect__tags {
+      min-height: 30px;
+    }
+
+    .multiselect {
+      min-width: auto;
+    }
+
+    .multiselect__tags {
+      padding-top: 4px;
+      padding-left: 2px;
+      padding-right: 25px;
+    }
+
+    .multiselect__select {
+      height: 32px;
+      width: 32px;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .multiselect__placeholder,
+    .multiselect__single {
+      margin-bottom: 0 !important;
+    }
+
+    .multiselect__placeholder {
+      padding-top: 0;
+      padding-left: 5px;
+    }
+
+    .multiselect__input {
+      font-size: 1em;
+      margin-bottom: 2px;
+    }
+  }
   .status-change .status {
     display: inline-block;
     padding: 2px 5px 3px;

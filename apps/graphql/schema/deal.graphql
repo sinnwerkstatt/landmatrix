@@ -194,8 +194,11 @@ type Deal {
   #    status_display: String
   draft_status: Int
   #    draft_status_display: String
+  current_draft: DealVersion
   created_at: DateTime
+  created_by: User
   modified_at: DateTime
+  modified_by: User
   fully_updated_at: DateTime
 
   versions: [DealVersion]
