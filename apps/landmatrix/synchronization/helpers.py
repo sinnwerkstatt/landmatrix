@@ -375,6 +375,7 @@ def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
             new_status = current_model.status
         else:
             new_status = obj.STATUS_DRAFT
+        # TODO: Really rejected?
         new_draft_status = obj.DRAFT_STATUS_REJECTED
 
     # "To Delete"

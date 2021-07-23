@@ -13,7 +13,8 @@ from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision, Version
 from apps.utils import qs_values_to_dict
-from .user_utils import send_comment_to_user, get_user_role
+from .generics import add_object_comment, change_obj_status
+from .user_utils import get_user_role
 
 storage = DefaultStorage()
 
@@ -164,33 +165,12 @@ def resolve_upload_datasource_file(_, info, filename, payload) -> str:
 def resolve_add_deal_comment(
     _, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
-        raise GraphQLError("not allowed")
 
-    deal = Deal.objects.get(id=id)
-    deal_version = None
-    draft_status = None
-    if version:
-        deal_version = DealVersion.objects.get(revision_id=version)
-        deal_v_obj = deal_version.retrieve_object()
-        draft_status = deal_v_obj.draft_status
-
-    DealWorkflowInfo.objects.create(
-        deal=deal,
-        deal_version=deal_version,
-        from_user=user,
-        to_user_id=to_user_id,
-        draft_status_before=draft_status,
-        draft_status_after=draft_status,
-        comment=comment,
+    add_object_comment(
+        "deal", info.context["request"].user, id, version, comment, to_user_id
     )
 
-    if to_user_id:
-        send_comment_to_user(deal, comment, user, to_user_id, version)
-
-    return {"dealId": deal.id, "dealVersion": version}
+    return {"dealId": id, "dealVersion": version}
 
 
 def resolve_change_deal_status(
@@ -203,72 +183,17 @@ def resolve_change_deal_status(
     to_user_id: int = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> dict:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
-        raise GraphQLError("not allowed")
-
-    deal = Deal.objects.get(id=id)
-    rev = Revision.objects.get(id=version)
-    deal_version = DealVersion.objects.get(revision=rev)
-
-    deal_v_obj: Deal = deal_version.retrieve_object()
-    old_draft_status = deal_v_obj.draft_status
-
-    if transition == "TO_REVIEW":
-        if not (
-            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
-            raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_REVIEW
-        deal_v_obj.draft_status = draft_status
-        deal_v_obj.fully_updated = fully_updated
-        deal_version.update_from_obj(deal_v_obj).save()
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
-    elif transition == "TO_ACTIVATION":
-        if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_ACTIVATION
-        deal_v_obj.draft_status = draft_status
-        deal_version.update_from_obj(deal_v_obj).save()
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
-    elif transition == "ACTIVATE":
-        if role != "ADMINISTRATOR":
-            raise GraphQLError("not allowed")
-        draft_status = None
-        deal_v_obj.status = (
-            Deal.STATUS_LIVE
-            if deal.status == Deal.STATUS_DRAFT
-            else Deal.STATUS_UPDATED
-        )
-        deal_v_obj.draft_status = draft_status
-        deal_v_obj.current_draft = None
-        deal_v_obj.save()
-        deal_version.update_from_obj(deal_v_obj).save()
-    elif transition == "TO_DRAFT":
-        if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
-        draft_status = deal.draft_status = Deal.DRAFT_STATUS_DRAFT
-        rev = Revision.objects.create(date_created=timezone.now(), user_id=to_user_id)
-        Version.create_from_obj(deal, revision_id=rev.id)
-        Deal.objects.filter(id=id).update(draft_status=draft_status)
-    else:
-        raise GraphQLError(f"unknown transition {transition}")
-
-    DealWorkflowInfo.objects.create(
-        deal=deal,
-        deal_version=deal_version,
-        from_user=user,
-        to_user_id=to_user_id,
-        draft_status_before=old_draft_status,
-        draft_status_after=draft_status,
+    dealId, dealVersion = change_obj_status(
+        otype="deal",
+        user=info.context["request"].user,
+        obj_id=id,
+        obj_version_id=version,
+        transition=transition,
         comment=comment,
+        to_user_id=to_user_id,
+        fully_updated=fully_updated,
     )
-
-    if to_user_id:
-        send_comment_to_user(deal, comment, user, to_user_id, version)
-
-    return {"dealId": deal.id, "dealVersion": rev.id}
+    return {"dealId": dealId, "dealVersion": dealVersion}
 
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:

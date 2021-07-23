@@ -3,7 +3,8 @@ from typing import Any
 from django.utils import timezone
 from graphql import GraphQLResolveInfo, GraphQLError
 
-from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
+from .generics import add_object_comment, change_obj_status
+from apps.graphql.resolvers.user_utils import get_user_role
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
 from apps.landmatrix.models.gndinvestor import InvestorVersion, InvestorWorkflowInfo
@@ -126,39 +127,11 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
 def resolve_add_investor_comment(
     _, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if not role:
-        raise GraphQLError("not allowed")
-
-    investor = Investor.objects.get(id=id)
-    investor_version = None
-    draft_status = None
-    if version:
-        investor_version = InvestorVersion.objects.get(revision_id=version)
-        investor_v_obj = investor_version.retrieve_object()
-        draft_status = investor_v_obj.draft_status
-
-    InvestorWorkflowInfo.objects.create(
-        investor=investor,
-        investor_version=investor_version,
-        from_user=user,
-        to_user_id=to_user_id,
-        draft_status_before=draft_status,
-        draft_status_after=draft_status,
-        comment=comment,
+    add_object_comment(
+        "investor", info.context["request"].user, id, version, comment, to_user_id
     )
 
-    if to_user_id:
-        send_comment_to_user(
-            investor,
-            comment,
-            user,
-            to_user_id,
-            version,
-        )
-
-    return {"investorId": investor.id, "investorVersion": version}
+    return {"investorId": id, "investorVersion": version}
 
 
 def resolve_change_investor_status(
@@ -170,77 +143,16 @@ def resolve_change_investor_status(
     comment: str = None,
     to_user_id: int = None,
 ) -> dict:
-    user = info.context["request"].user
-    role = get_user_role(user)
-    if not role:
-        raise GraphQLError("not allowed")
-
-    investor = Investor.objects.get(id=id)
-    rev = Revision.objects.get(id=version)
-    investor_version = InvestorVersion.objects.get(revision=rev)
-
-    investor_v_obj: Investor = investor_version.retrieve_object()
-    old_draft_status = investor_v_obj.draft_status
-
-    if transition == "TO_REVIEW":
-        if not (
-            investor_version.revision.user == user
-            or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
-            raise GraphQLError("not authorized")
-        draft_status = Investor.DRAFT_STATUS_REVIEW
-        investor_v_obj.draft_status = draft_status
-        investor_version.update_from_obj(investor_v_obj).save()
-        Investor.objects.filter(id=id).update(draft_status=draft_status)
-    elif transition == "TO_ACTIVATION":
-        if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
-        draft_status = Investor.DRAFT_STATUS_ACTIVATION
-        investor_v_obj.draft_status = draft_status
-        investor_version.update_from_obj(investor_v_obj).save()
-        Investor.objects.filter(id=id).update(draft_status=draft_status)
-    elif transition == "ACTIVATE":
-        if role != "ADMINISTRATOR":
-            raise GraphQLError("not allowed")
-        draft_status = None
-        investor_v_obj.status = (
-            Investor.STATUS_LIVE
-            if investor.status == Investor.STATUS_DRAFT
-            else Investor.STATUS_UPDATED
-        )
-        investor_v_obj.draft_status = draft_status
-        investor_v_obj.save()
-        investor_version.update_from_obj(investor_v_obj).save()
-    elif transition == "TO_DRAFT":
-        if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
-        draft_status = investor.draft_status = Investor.DRAFT_STATUS_DRAFT
-        rev = Revision.objects.create(date_created=timezone.now(), user_id=to_user_id)
-        Version.create_from_obj(investor, revision_id=rev.id)
-        Investor.objects.filter(id=id).update(draft_status=draft_status)
-    else:
-        raise GraphQLError(f"unknown transition {transition}")
-
-    InvestorWorkflowInfo.objects.create(
-        investor=investor,
-        investor_version=investor_version,
-        from_user=user,
-        to_user_id=to_user_id,
-        draft_status_before=old_draft_status,
-        draft_status_after=draft_status,
+    investorId, investorVersion = change_obj_status(
+        otype="investor",
+        user=info.context["request"].user,
+        obj_id=id,
+        obj_version_id=version,
+        transition=transition,
         comment=comment,
+        to_user_id=to_user_id,
     )
-
-    if to_user_id:
-        send_comment_to_user(
-            investor,
-            comment,
-            user,
-            to_user_id,
-            version,
-        )
-
-    return {"investorId": investor.id, "investorVersion": rev.id}
+    return {"investorId": investorId, "investorVersion": investorVersion}
 
 
 def resolve_investor_delete(_, info, id, version=None, comment=None) -> bool:
