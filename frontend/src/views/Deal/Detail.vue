@@ -2,8 +2,8 @@
   <div v-if="deal">
     <ManageHeader
       v-if="manage"
-      :object="deal"
-      :object-version="dealVersion"
+      :deal="deal"
+      :deal-version="dealVersion"
       @change_status="change_deal_status"
       @reload_deal="reload_deal"
       @delete="deleteDeal"

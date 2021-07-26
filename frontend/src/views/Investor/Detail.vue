@@ -2,8 +2,8 @@
   <div v-if="investor">
     <InvestorManageHeader
       v-if="manage"
-      :object="investor"
-      :object-version="investorVersion"
+      :investor="investor"
+      :investor-version="investorVersion"
       @change_status="change_investor_status"
       @reload="reload_investor"
       @delete="delete_investor"

@@ -13,6 +13,22 @@
             :required="commentRequired"
           ></textarea>
         </template>
+
+        <div v-if="assignToUserInput" class="assign-to-user">
+          <label>{{ $t("Assign to user") }}</label>
+          <multiselect
+            :value="selected_user"
+            :options="users"
+            :multiple="false"
+            :close-on-select="true"
+            :allow-empty="false"
+            placeholder="Send to"
+            track-by="id"
+            :custom-label="(u) => `${u.full_name} (${u.username})`"
+            @select="to_user_selected = $event"
+          />
+        </div>
+
         <div class="actions">
           <button type="submit" class="btn btn-primary">
             {{ title || $t("Submit") }}
@@ -27,19 +43,40 @@
 </template>
 
 <script>
+  import gql from "graphql-tag";
+
   export default {
     name: "Overlay",
     props: {
       title: { type: String, default: "" },
       commentInput: { type: Boolean, default: false },
       commentRequired: { type: Boolean, default: false },
+      assignToUserInput: { type: Boolean, default: false },
+      toUser: { type: Object, default: null },
     },
     data() {
       return {
         comment: "",
         confidential_reason: null,
         to_user_selected: null,
+        users: [],
       };
+    },
+    apollo: {
+      users: gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
+    },
+    computed: {
+      selected_user() {
+        return this.to_user_selected ? this.to_user_selected : this.toUser;
+      },
     },
     created() {
       document.addEventListener("keydown", this.cancel);
@@ -53,7 +90,11 @@
       },
       submit(e) {
         if (e.target.checkValidity()) {
-          this.$emit("submit", { comment: this.comment });
+          let args = { comment: this.comment };
+          if (this.assignToUserInput) {
+            args.to_user = this.selected_user;
+          }
+          this.$emit("submit", args);
         } else {
           e.target.reportValidity();
         }

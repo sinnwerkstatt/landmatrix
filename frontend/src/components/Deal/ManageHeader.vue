@@ -1,8 +1,8 @@
 <template>
   <div>
     <GenericManageHeader
-      :object="object"
-      :object-version="objectVersion"
+      :object="deal"
+      :object-version="dealVersion"
       @add_comment="add_comment"
       @change_status="$emit('change_status', $event)"
       @delete="$emit('delete', $event)"
@@ -10,7 +10,7 @@
     >
       <template #visibility>
         <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
-          <div v-if="object.is_public" class="visibility">
+          <div v-if="deal.is_public" class="visibility">
             <i class="fas fa-eye fa-fw fa-lg orange"></i>
             <span>{{ $t("Publicly visible") }}</span>
           </div>
@@ -20,29 +20,29 @@
           </div>
           <div v-if="is_editable" class="confidential-toggle">
             <b-form-checkbox
-              :checked="object.confidential"
-              :class="{ active: object.confidential }"
+              :checked="deal.confidential"
+              :class="{ active: deal.confidential }"
               class="confidential-switch"
               name="check-button"
               switch
               :title="$t('Toggle deal confidentiality')"
               @click.native.prevent="toggle_confidential({ force: false })"
             >
-              {{ object.confidential ? $t("Confidential") : $t("Not confidential") }}
+              {{ deal.confidential ? $t("Confidential") : $t("Not confidential") }}
             </b-form-checkbox>
             <a id="confidential-reason"
-              ><span v-if="object.confidential">(reason)</span></a
+              ><span v-if="deal.confidential">(reason)</span></a
             >
             <b-tooltip target="confidential-reason" triggers="click">
               <!--
                         <strong>{{ get_confidential_reason }}</strong>
                         <br />-->
-              {{ object.confidential_comment }}
+              {{ deal.confidential_comment }}
             </b-tooltip>
           </div>
           <ul>
             <template v-if="!is_editable">
-              <li v-if="!object.confidential">
+              <li v-if="!deal.confidential">
                 <i class="fas fa-check fa-fw"></i>
                 {{ $t("Not confidential") }}
               </li>
@@ -51,7 +51,7 @@
                 {{ $t("Confidential") }}
               </li>
             </template>
-            <li v-if="object.country">
+            <li v-if="deal.country">
               <i class="fas fa-check fa-fw"></i>
               {{ $t("Target country is set") }}
             </li>
@@ -60,15 +60,15 @@
               {{ $t("Target country is NOT set") }}
             </li>
 
-            <li v-if="object.datasources.length > 0">
+            <li v-if="deal.datasources.length > 0">
               <i class="fas fa-check fa-fw"></i>
-              {{ $t("At least one data source") }} ({{ object.datasources.length }})
+              {{ $t("At least one data source") }} ({{ deal.datasources.length }})
             </li>
             <li v-else>
               <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
             </li>
 
-            <li v-if="object.has_known_investor">
+            <li v-if="deal.has_known_investor">
               <i class="fas fa-check fa-fw"></i>
               {{ $t("At least one investor") }}
             </li>
@@ -76,9 +76,8 @@
               <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
             </li>
           </ul>
-          ly decided to get to the bottom of this matter.
 
-          <div v-if="object.fully_updated" class="visibility">
+          <div v-if="deal.fully_updated" class="visibility">
             <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
             <span>{{ $t("Fully updated") }}</span>
           </div>
@@ -105,19 +104,19 @@
             officia deserunt mollit anim id est laborum."
           </p>
           <label>
-            <input v-model="object.fully_updated" type="checkbox" />
+            <input v-model="deal.fully_updated" type="checkbox" />
             {{ $t("I fully updated this deal.") }}
           </label>
         </Overlay>
         <Overlay
           v-if="show_confidential_overlay"
-          :title="$t(object.confidential ? 'Unset confidential' : 'Set confidential')"
-          :comment-input="!object.confidential"
-          :comment-required="!object.confidential"
+          :title="$t(deal.confidential ? 'Unset confidential' : 'Set confidential')"
+          :comment-input="!deal.confidential"
+          :comment-required="!deal.confidential"
           @cancel="show_confidential_overlay = false"
           @submit="toggle_confidential({ force: true })"
         >
-          <p v-if="object.confidential">
+          <p v-if="deal.confidential">
             {{
               $t(
                 "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
@@ -149,8 +148,8 @@
       Overlay,
     },
     props: {
-      object: { type: Object, required: true },
-      objectVersion: { type: [Number, String], default: null },
+      deal: { type: Object, required: true },
+      dealVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
@@ -161,15 +160,15 @@
     },
     computed: {
       is_active_with_draft() {
-        return !this.objectVersion && this.object.draft_status;
+        return !this.dealVersion && this.deal.draft_status;
       },
       is_editable() {
-        // object ist deleted
-        console.log(this.objectVersion);
-        console.log(this.object);
-        if (!this.objectVersion && this.object.status === 4) return false;
+        // deal ist deleted
+        console.log(this.dealVersion);
+        console.log(this.deal);
+        if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.is_active_with_draft) return false;
-        return this.is_authorized(this.object);
+        return this.is_authorized(this.deal);
       },
     },
     methods: {
@@ -194,8 +193,8 @@
               }
             `,
             variables: {
-              id: +this.object.id,
-              version: this.objectVersion ? +this.objectVersion : null,
+              id: +this.deal.id,
+              version: this.dealVersion ? +this.dealVersion : null,
               comment: comment,
               to_user_id: send_to_user ? +send_to_user.id : null,
             },
@@ -208,7 +207,7 @@
       toggle_confidential(data) {
         if (!this.is_editable) return;
         if (data.force) {
-          if (this.object.confidential) {
+          if (this.deal.confidential) {
             this.$emit("set_confidential", { confidential: false });
             this.show_confidential_overlay = false;
           } else {

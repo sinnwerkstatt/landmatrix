@@ -2,8 +2,8 @@
 <template>
   <div>
     <GenericManageHeader
-      :object="object"
-      :object-version="objectVersion"
+      :object="investor"
+      :object-version="investorVersion"
       otype="investor"
       @add_comment="add_comment"
       @change_status="$emit('change_status', $event)"
@@ -36,8 +36,8 @@
       GenericManageHeader,
     },
     props: {
-      object: { type: Object, required: true },
-      objectVersion: { type: [Number, String], default: null },
+      investor: { type: Object, required: true },
+      investorVersion: { type: [Number, String], default: null },
     },
     data() {
       return {
@@ -66,8 +66,8 @@
               }
             `,
             variables: {
-              id: +this.object.id,
-              version: this.objectVersion ? +this.objectVersion : null,
+              id: +this.investor.id,
+              version: this.investorVersion ? +this.investorVersion : null,
               comment: comment,
               to_user_id: send_to_user ? +send_to_user.id : null,
             },

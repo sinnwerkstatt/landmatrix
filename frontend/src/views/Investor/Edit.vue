@@ -269,7 +269,11 @@
           })
           .then(({ data: { investor_edit } }) => {
             this.saving_in_progress = false;
-            this.$router.push({ name: "investor_edit", params: investor_edit, hash });
+            if (
+              location.hash !== hash ||
+              this.investorVersion !== investor_edit.investorVersion
+            )
+              this.$router.push({ name: "investor_edit", params: investor_edit, hash });
           });
       },
     },

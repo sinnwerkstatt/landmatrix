@@ -189,11 +189,12 @@
       v-if="show_to_draft_overlay"
       :title="$t('Request improvement')"
       :comment-input="true"
+      :comment-required="true"
+      :assign-to-user-input="true"
+      :to-user="transition_to_user"
       @cancel="show_to_draft_overlay = false"
-      @submit="to_draft($event)"
-    >
-      <p>hall owelt</p>
-    </Overlay>
+      @submit="do_to_draft($event)"
+    />
     <Overlay
       v-if="show_to_delete_overlay"
       :title="
@@ -202,9 +203,7 @@
       :comment-input="true"
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
-    >
-      <p>delete_Text</p>
-    </Overlay>
+    />
   </div>
 </template>
 
@@ -253,8 +252,6 @@
       },
       is_editable() {
         // object ist deleted
-        console.log(this.objectVersion);
-        console.log(this.object);
         if (!this.objectVersion && this.object.status === 4) return false;
         if (this.is_active_with_draft) return false;
         return this.is_authorized(this.object);
@@ -290,8 +287,6 @@
         return !!this.object.status;
       },
       latest_object_version() {
-        console.log(this.object.versions);
-        console.log("VERS");
         return this.object.versions.find(
           (v) => v.revision.id === this.last_revision.id
         )[this.otype];
@@ -305,9 +300,7 @@
             // only for new drafts with active
             return this.$t("Edits this draft version");
           }
-        } else {
-          return this.$t("Creates a new draft version of this deal");
-        }
+        } else return this.$t("Creates a new draft version of this deal");
       },
       get_delete_text() {
         if (this.is_deleted) return this.$t("Undelete");
@@ -321,83 +314,61 @@
         if (this.objectVersion && this.has_active) {
           // is draft and has active
           return this.$t("Deletes this draft version of the deal");
-        } else {
-          return this.$t("Deletes this deal");
-        }
+        } else return this.$t("Deletes this deal");
       },
       get_activate_description() {
-        if (this.has_active) {
-          return this.$t(
-            "Activates submitted version replacing currently active version"
-          );
-        } else {
-          return this.$t("Sets the deal active");
-        }
+        return this.has_active
+          ? this.$t("Activates submitted version replacing currently active version")
+          : this.$t("Sets the deal active");
+      },
+      transition_to_user() {
+        let latest_draft_creation = this.object.workflowinfos.find((v) => {
+          return !v.draft_status_before && v.draft_status_after === 1;
+        });
+        return latest_draft_creation.from_user;
       },
     },
     methods: {
       object_detail_path(obID, obV) {
-        if (this.otype === "deal") {
-          return {
-            name: "deal_detail",
-            params: { dealId: obID, objectVersion: obV },
-          };
-        } else {
-          return {
-            name: "investor_detail",
-            params: { investorId: obID, investorVersion: obV },
-          };
-        }
+        return this.otype === "deal"
+          ? {
+              name: "deal_detail",
+              params: { dealId: obID, dealVersion: obV },
+            }
+          : {
+              name: "investor_detail",
+              params: { investorId: obID, investorVersion: obV },
+            };
       },
       object_edit_path(obID, obV) {
-        if (this.otype === "deal") {
-          return {
-            name: "deal_edit",
-            params: { dealId: obID, dealVersion: obV },
-          };
-        } else {
-          return {
-            name: "investor_edit",
-            params: { investorId: obID, investorVersion: obV },
-          };
-        }
+        return this.otype === "deal"
+          ? {
+              name: "deal_edit",
+              params: { dealId: obID, dealVersion: obV },
+            }
+          : {
+              name: "investor_edit",
+              params: { investorId: obID, investorVersion: obV },
+            };
       },
       object_compare_path(oID, fromVersion, toVersion) {
-        if (this.otype === "deal") {
-          return {
-            name: "deal_compare",
-            params: { dealId: oID, fromVersion, toVersion },
-          };
-        } else {
-          return {
-            name: "investor_compare",
-            params: { investorId: oID, fromVersion, toVersion },
-          };
-        }
+        return this.otype === "deal"
+          ? {
+              name: "deal_compare",
+              params: { dealId: oID, fromVersion, toVersion },
+            }
+          : {
+              name: "investor_compare",
+              params: { investorId: oID, fromVersion, toVersion },
+            };
       },
-      get_transition_to_user() {
-        if (this.transition && this.transition.key === "TO_DRAFT") {
-          let latest_draft_creation = this.object.workflowinfos.find((v) => {
-            return !v.draft_status_before && v.draft_status_after === 1;
-          });
-          return latest_draft_creation.from_user;
-        }
-        return null;
-      },
-
       do_delete({ comment }) {
         this.$emit("delete", comment);
         this.show_to_delete_overlay = false;
       },
-      do_transition({ comment, to_user }) {
-        console.log(this.transition);
-
-        // status change
-        this.$emit("change_status", {
-          transition: this.transition.key,
-          comment,
-          to_user,
-        });
+      do_to_draft({ comment, to_user }) {
+        this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
+        this.show_to_draft_overlay = false;
       },
     },
   };
