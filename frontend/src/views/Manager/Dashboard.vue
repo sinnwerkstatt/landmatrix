@@ -72,12 +72,12 @@
                 <td class="state">Update</td>
                 <td class="state">1&nbsp;week ago</td>
                 <td class="action">
-                  <a href="/deal/edit/6993/" class="approve label label-deal"
-                    ><i class="lm lm-thumbs-up"></i>Approve</a
-                  >
-                  <a href="/deal/edit/6993/" class="reject label label-deal"
-                    ><i class="lm lm-thumbs-down"></i>Reject</a
-                  >
+                  <a href="/deal/edit/6993/" class="approve label label-deal">
+                    <i class="lm lm-thumbs-up"></i>Approve
+                  </a>
+                  <a href="/deal/edit/6993/" class="reject label label-deal">
+                    <i class="lm lm-thumbs-down"></i>Reject
+                  </a>
                 </td>
               </tr>
             </tbody>

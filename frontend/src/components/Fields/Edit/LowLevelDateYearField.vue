@@ -1,13 +1,13 @@
 <template>
   <div class="nowrap input-group">
     <input
+      ref="inputfield"
       v-model="val"
       type="text"
       class="form-control"
       :class="valid_state"
       placeholder="YYYY-MM-DD"
       :required="required"
-      ref="inputfield"
     />
   </div>
 </template>

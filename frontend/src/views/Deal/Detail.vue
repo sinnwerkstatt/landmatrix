@@ -246,16 +246,16 @@
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import LoadingPulse from "$components/Data/LoadingPulse";
 
-  function equalDealParams(from_params, to_params) {
-    if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
-    if ("dealVersion" in from_params && "dealVersion" in to_params) {
-      if (parseInt(from_params.dealVersion) !== parseInt(to_params.dealVersion))
-        return false;
-    } else {
-      return false;
-    }
-    return true;
-  }
+  // function equalDealParams(from_params, to_params) {
+  //   if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
+  //   if ("dealVersion" in from_params && "dealVersion" in to_params) {
+  //     if (parseInt(from_params.dealVersion) !== parseInt(to_params.dealVersion))
+  //       return false;
+  //   } else {
+  //     return false;
+  //   }
+  //   return true;
+  // }
 
   export default {
     name: "Detail",
