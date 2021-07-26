@@ -29,34 +29,16 @@
         </div>
       </form>
     </div>
-    <div class="comments-list">
-      <div v-for="wfi in object.workflowinfos" :key="wfi.timestamp" class="comment">
-        <div class="meta">
-          <span class="date">{{ wfi.timestamp | dayjs("YYYY-MM-DD HH:mm") }}</span>
-          <span class="from-to">
-            {{ $t("From") }} {{ wfi.from_user.full_name }}
-            <span v-if="wfi.to_user"> {{ $t("to") }} {{ wfi.to_user.full_name }} </span>
-          </span>
-        </div>
-
-        <div
-          v-if="get_draft_status(wfi)"
-          class="status-change"
-          v-html="get_draft_status(wfi)"
-        />
-
-        <div v-if="wfi.comment" class="message" v-html="linebreaks(wfi.comment)"></div>
-      </div>
-    </div>
+    <ManageHeaderCommentsList :workflowinfos="object.workflowinfos" />
   </div>
 </template>
 
 <script>
-  import { draft_status_map, status_map } from "$utils/choices";
-  import { linebreaks } from "$utils/filters";
+  import ManageHeaderCommentsList from "$components/Management/ManageHeaderCommentsList";
 
   export default {
     name: "ManageHeaderComments",
+    components: { ManageHeaderCommentsList },
     props: {
       object: { type: Object, required: true },
       objectVersion: { type: [Number, String], default: null },
@@ -66,34 +48,10 @@
       return {
         comment: "",
         send_to_user: null,
-        linebreaks,
       };
     },
 
     methods: {
-      get_draft_status(wfi) {
-        let before = wfi.draft_status_before;
-        let after = wfi.draft_status_after;
-        if (before !== after) {
-          if (!before) {
-            return `<div class="status">${draft_status_map[after]}</div>`;
-          } else {
-            let before_status = draft_status_map[before];
-            let after_status;
-            if (!after) {
-              after_status = status_map[2];
-            } else {
-              after_status = draft_status_map[after];
-            }
-            let ret = `<div class="status">${before_status}</div>`;
-            ret += `→`;
-            ret += `<div class="status">${after_status}</div>`;
-            return ret;
-          }
-        } else {
-          return null;
-        }
-      },
       add_comment() {
         if (!this.$refs.comment.checkValidity()) this.$refs.comment.reportValidity();
         else {
@@ -126,6 +84,7 @@
 
     .new-comment {
       font-size: 0.9em;
+      margin-bottom: 1em;
 
       textarea {
         padding: 0.2em 0.5em;
@@ -177,39 +136,6 @@
         }
       }
     }
-
-    .comments-list {
-      margin-top: 1em;
-      overflow-y: scroll;
-      margin-right: -0.7rem;
-      height: 100%;
-      box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),
-        inset 0px -2px 5px -2px rgba(0, 0, 0, 0.1);
-      padding: 2px 4px;
-      margin-left: -4px;
-      max-height: 330px;
-
-      .comment {
-        font-size: 0.8em;
-        margin-bottom: 0.5em;
-
-        .meta {
-          .date {
-            font-weight: 600;
-          }
-        }
-
-        //.status-change {
-        //  margin-bottom: 2px;
-        //}
-
-        .message {
-          background: #e5e5e5;
-          padding: 0.3em 0.5em;
-          border-radius: 5px;
-        }
-      }
-    }
   }
 </style>
 
@@ -254,20 +180,6 @@
     .multiselect__input {
       font-size: 1em;
       margin-bottom: 2px;
-    }
-  }
-  .status-change .status {
-    display: inline-block;
-    padding: 2px 5px 3px;
-    line-height: 1;
-    background-color: darken(#e4e4e4, 8%);
-    color: #5e5e64;
-    border-radius: 8px;
-    filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.1));
-
-    &:last-child {
-      background-color: #93c7c8;
-      color: white;
     }
   }
 </style>

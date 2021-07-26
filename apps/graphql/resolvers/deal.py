@@ -110,22 +110,19 @@ def resolve_deals(
     filters=None,
 ):
     user = info.context["request"].user
-
     qs = Deal.objects.visible(user=user, subset=subset).order_by(sort)
 
-    if filters:
-        qs = qs.filter(parse_filters(filters))
-
     fields = get_fields(info, recursive=True, exclude=["__typename"])
-
     if any(["involvements" in field for field in fields]):
         raise GraphQLError(
             "Querying involvements via multiple operating companies is too"
             " resource intensive. Please use single investor queries for this."
         )
 
-    if limit != 0:
-        qs = qs[:limit]
+    if filters:
+        qs = qs.filter(parse_filters(filters))
+
+    qs = qs[:limit] if limit != 0 else qs
 
     return qs_values_to_dict(
         qs,

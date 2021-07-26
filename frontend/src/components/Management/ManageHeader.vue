@@ -177,7 +177,7 @@
           </div>
         </div>
       </div>
-      <ManageHeader_Comments
+      <ManageHeaderComments
         :object="object"
         :object-version="objectVersion"
         :users="users"
@@ -209,8 +209,7 @@
 
 <script>
   import Overlay from "$components/Overlay";
-
-  import ManageHeader_Comments from "$components/Deal/ManageHeader_Comments";
+  import ManageHeaderComments from "./ManageHeaderComments";
   import gql from "graphql-tag";
   import HeaderDates from "../HeaderDates";
   import { is_authorized } from "$utils/user";
@@ -218,7 +217,7 @@
   export default {
     name: "GenericManageHeader",
     components: {
-      ManageHeader_Comments,
+      ManageHeaderComments,
       HeaderDates,
       Overlay,
     },

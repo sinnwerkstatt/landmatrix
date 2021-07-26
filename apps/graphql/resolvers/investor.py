@@ -97,12 +97,10 @@ def resolve_investors(
     subset="PUBLIC",
     filters=None,
 ):
-    qs = Investor.objects.visible(
-        user=info.context["request"].user, subset=subset
-    ).order_by(sort)
+    user = info.context["request"].user
+    qs = Investor.objects.visible(user=user, subset=subset).order_by(sort)
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
-
     if any(["involvements" in field for field in fields]):
         raise GraphQLError(
             "Querying involvements via multiple operating companies is too"
@@ -112,11 +110,10 @@ def resolve_investors(
     if filters:
         qs = qs.filter(parse_filters(filters))
 
-    if limit != 0:
-        qs = qs[:limit]
+    qs = qs[:limit] if limit != 0 else qs
 
     return qs_values_to_dict(
-        qs, fields, ["involvements", "ventures", "investors", "deals"]
+        qs, fields, ["involvements", "ventures", "investors", "deals", "workflowinfos"]
     )
 
 

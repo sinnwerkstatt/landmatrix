@@ -322,9 +322,15 @@ class InvestorWorkflowInfo(models.Model):
     processed_by_receiver = models.BooleanField(default=False)
     # watch out: ignore the draft_status within this InvestorVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
-    investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
+    investor = models.ForeignKey(
+        Investor, on_delete=models.CASCADE, related_name="workflowinfos"
+    )
     investor_version = models.ForeignKey(
-        InvestorVersion, on_delete=models.SET_NULL, null=True, blank=True
+        InvestorVersion,
+        on_delete=models.SET_NULL,
+        related_name="workflowinfos",
+        null=True,
+        blank=True,
     )
 
     def to_dict(self) -> dict:

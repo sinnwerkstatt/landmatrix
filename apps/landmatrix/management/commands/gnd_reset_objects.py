@@ -24,6 +24,8 @@ x = """
     alter sequence landmatrix_investor_id_seq restart;
     alter sequence landmatrix_investorversion_id_seq restart;
 
+    -- SELECT setval('landmatrix_investor_id_seq', COALESCE((SELECT MAX(id)+1 FROM landmatrix_investor), 1), false);
+
     -- delete from landmatrix_revision;
     -- alter sequence landmatrix_revision_id_seq restart;
 

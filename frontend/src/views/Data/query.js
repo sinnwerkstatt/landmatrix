@@ -49,6 +49,7 @@ export const data_deal_query = {
         : "PUBLIC",
     };
   },
+  debounce: 200,
 };
 
 export const data_deal_produce_query = {

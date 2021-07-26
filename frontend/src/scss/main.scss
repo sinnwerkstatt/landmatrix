@@ -127,6 +127,9 @@ a {
   input {
     min-width: 100px;
     width: 100%;
+    border: 0;
+    margin: 0.1em;
+    border-radius: 3px;
   }
   thead {
     tr {
@@ -197,6 +200,38 @@ a {
   color: rgba(black, 0.7);
 }
 
-  .orange {
+.orange {
+  color: var(--color-lm-orange);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+ul.lm-nav {
+  list-style: none;
+  padding-left: 0;
+  li {
+    cursor: pointer;
+    padding: 0.5rem 1rem 0.5rem 0;
+    border-right: 1px solid var(--color-lm-orange);
     color: var(--color-lm-orange);
+    border-radius: 0;
+
+    &.active {
+      border-right-width: 3px;
+      background-color: inherit;
+      color: var(--color-lm-dark) !important;
+      a {
+        color: var(--color-lm-dark) !important;
+      }
+    }
   }
+
+  &.clr-investor {
+    li {
+      border-right: 1px solid var(--color-lm-investor);
+      color: var(--color-lm-investor);
+    }
+  }
+}

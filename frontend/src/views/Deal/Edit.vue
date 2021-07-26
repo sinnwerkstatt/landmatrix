@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="deal-edit-nav">
-        <ul>
+        <ul class="lm-nav">
           <li
             v-for="(tabname, tabid) in tabs"
             :key="tabid"
@@ -440,27 +440,6 @@
     -ms-overflow-style: none; /* IE and Edge */
     //noinspection CssUnknownProperty
     scrollbar-width: none; /* Firefox */
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-      li {
-        cursor: pointer;
-        padding: 0.5rem 1rem 0.5rem 0;
-        border-right: 1px solid var(--color-lm-orange);
-        color: var(--color-lm-orange);
-        border-radius: 0;
-
-        &.active {
-          border-right-width: 3px;
-          background-color: inherit;
-          color: var(--color-lm-dark);
-          a {
-            color: var(--color-lm-dark);
-          }
-        }
-      }
-    }
   }
 
   .deal-edit-content {

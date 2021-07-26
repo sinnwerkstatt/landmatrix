@@ -49,6 +49,7 @@ type Involvement {
 scalar InvolvementsNetwork
 
 type InvestorWorkflowInfo {
+  id: Int!
   from_user: User!
   to_user: User
   draft_status_before: Int

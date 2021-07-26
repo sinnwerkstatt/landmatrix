@@ -8,8 +8,8 @@
   font-style: normal;
 }
 
-[class^="lm-"],
-[class*=" lm-"] {
+i[class^="lm-"],
+i[class*=" lm-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   //noinspection CssNoGenericFontName
   font-family: "landmatrix" !important;
