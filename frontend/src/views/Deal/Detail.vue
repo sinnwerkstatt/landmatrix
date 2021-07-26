@@ -225,7 +225,13 @@
     </div>
   </div>
   <div v-else>
-    <LoadingPulse></LoadingPulse>
+    <div v-if="$apollo.loading">
+      <LoadingPulse></LoadingPulse>
+    </div>
+    <div v-else class="container">
+      <div>{{ $t("Could not load this deal") }}</div>
+      <span class="small">{{ $t("Maybe you forgot to login?") }}</span>
+    </div>
   </div>
 </template>
 
@@ -324,6 +330,9 @@
               },
             });
           return deal;
+        },
+        error(e) {
+          console.log({ e });
         },
         fetchPolicy: "no-cache",
       },

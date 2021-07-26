@@ -97,7 +97,7 @@ class Version(models.Model):
     # TODO: Replace this ASAP with functools.cached_property (Python 3.8!)
     @property
     def fields(self):
-        fields = self.serialized_data[0]["fields"]
+        fields = self.serialized_data[0]["fields"].copy()
         fields["id"] = self.object_id
         for field in self.model._meta.fields:
             if fields.get(field.name) is None:
