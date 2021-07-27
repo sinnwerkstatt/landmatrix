@@ -68,7 +68,7 @@
                     v-if="object.draft_status === 1 && is_authorized(object)"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +objectVersion }"
-                    :title="$t('Submits the deal for review')"
+                    :title="submit_for_review_link_title"
                     @click="$emit('send_to_review')"
                   >
                     {{ $t("Submit for review") }}
@@ -80,11 +80,7 @@
                     "
                     class="btn btn-primary"
                     :class="{ disabled: last_revision.id !== +objectVersion }"
-                    :title="
-                      $t(
-                        'Send a request of improvent and create a new draft version of the deal'
-                      )
-                    "
+                    :title="request_improvement_link_title"
                     @click="show_to_draft_overlay = true"
                   >
                     {{ $t("Request improvement") }}
@@ -95,7 +91,7 @@
                     v-if="object.draft_status === 2 && is_authorized(object)"
                     class="btn btn-secondary"
                     :class="{ disabled: last_revision.id !== +objectVersion }"
-                    :title="$t('Submits the deal for activation')"
+                    :title="submit_for_activation_link_title"
                     @click="$emit('change_status', { transition: 'TO_ACTIVATION' })"
                   >
                     {{ $t("Submit for activation") }}
@@ -197,9 +193,7 @@
     />
     <Overlay
       v-if="show_to_delete_overlay"
-      :title="
-        $t(!objectVersion && object.status === 4 ? 'Undelete deal' : 'Delete deal')
-      "
+      :title="submit_to_delete_title"
       :comment-input="true"
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
@@ -208,11 +202,10 @@
 </template>
 
 <script>
+  import HeaderDates from "$components/HeaderDates";
+  import ManageHeaderComments from "$components/Management/ManageHeaderComments";
+  import ManageHeaderMixin from "$components/Management/ManageHeaderMixin";
   import Overlay from "$components/Overlay";
-  import ManageHeaderComments from "./ManageHeaderComments";
-  import gql from "graphql-tag";
-  import HeaderDates from "../HeaderDates";
-  import { is_authorized } from "$utils/user";
 
   export default {
     name: "GenericManageHeader",
@@ -221,155 +214,7 @@
       HeaderDates,
       Overlay,
     },
-    props: {
-      object: { type: Object, required: true },
-      objectVersion: { type: [Number, String], default: null },
-      otype: { type: String, default: "deal" },
-    },
-    data() {
-      return {
-        users: [],
-        show_to_draft_overlay: false,
-        show_to_delete_overlay: false,
-        is_authorized,
-      };
-    },
-    apollo: {
-      users: gql`
-        {
-          users {
-            id
-            full_name
-            username
-          }
-        }
-      `,
-    },
-    computed: {
-      last_revision() {
-        return this.object?.versions[0]?.revision ?? "";
-      },
-      is_editable() {
-        // object ist deleted
-        if (!this.objectVersion && this.object.status === 4) return false;
-        if (this.is_active_with_draft) return false;
-        return this.is_authorized(this.object);
-      },
-      is_deletable() {
-        if (this.is_active_with_draft) return false;
-        if (this.is_old_draft) return false;
-        return this.is_authorized(this.object);
-      },
-      is_deleted() {
-        // active and deleted
-        if (!this.objectVersion && this.object.status === 4) return true;
-        return false;
-      },
-      is_active_with_draft() {
-        return !this.objectVersion && this.object.draft_status;
-      },
-      is_draft_with_active() {
-        // current draft with active object
-        if (this.objectVersion && [2, 3].includes(this.object.status)) return true;
-        // old draft with activated object
-        return this.is_old_draft && [2, 3].includes(this.latest_object_version.status);
-      },
-      is_old_draft() {
-        return this.objectVersion && this.last_revision.id !== +this.objectVersion;
-      },
-      has_newer_draft() {
-        if (this.is_active_with_draft) return true;
-        // old with newer draft
-        return this.is_old_draft && this.latest_object_version.draft_status;
-      },
-      has_active() {
-        return !!this.object.status;
-      },
-      latest_object_version() {
-        return this.object.versions.find(
-          (v) => v.revision.id === this.last_revision.id
-        )[this.otype];
-      },
-      get_edit_description() {
-        if (this.object.draft_status === 1) {
-          if (!this.has_active) {
-            // only for new drafts without active
-            return this.$t("Starts editing this deal");
-          } else {
-            // only for new drafts with active
-            return this.$t("Edits this draft version");
-          }
-        } else return this.$t("Creates a new draft version of this deal");
-      },
-      get_delete_text() {
-        if (this.is_deleted) return this.$t("Undelete");
-        else if (!this.objectVersion && !this.object.draft_status) {
-          // active without draft
-          return this.$t("Delete deal");
-        } else return this.$t("Delete");
-      },
-      get_delete_description() {
-        if (this.is_deleted) return this.$t("Undelete this deal as active deal");
-        if (this.objectVersion && this.has_active) {
-          // is draft and has active
-          return this.$t("Deletes this draft version of the deal");
-        } else return this.$t("Deletes this deal");
-      },
-      get_activate_description() {
-        return this.has_active
-          ? this.$t("Activates submitted version replacing currently active version")
-          : this.$t("Sets the deal active");
-      },
-      transition_to_user() {
-        let latest_draft_creation = this.object.workflowinfos.find((v) => {
-          return !v.draft_status_before && v.draft_status_after === 1;
-        });
-        return latest_draft_creation.from_user;
-      },
-    },
-    methods: {
-      object_detail_path(obID, obV) {
-        return this.otype === "deal"
-          ? {
-              name: "deal_detail",
-              params: { dealId: obID, dealVersion: obV },
-            }
-          : {
-              name: "investor_detail",
-              params: { investorId: obID, investorVersion: obV },
-            };
-      },
-      object_edit_path(obID, obV) {
-        return this.otype === "deal"
-          ? {
-              name: "deal_edit",
-              params: { dealId: obID, dealVersion: obV },
-            }
-          : {
-              name: "investor_edit",
-              params: { investorId: obID, investorVersion: obV },
-            };
-      },
-      object_compare_path(oID, fromVersion, toVersion) {
-        return this.otype === "deal"
-          ? {
-              name: "deal_compare",
-              params: { dealId: oID, fromVersion, toVersion },
-            }
-          : {
-              name: "investor_compare",
-              params: { investorId: oID, fromVersion, toVersion },
-            };
-      },
-      do_delete({ comment }) {
-        this.$emit("delete", comment);
-        this.show_to_delete_overlay = false;
-      },
-      do_to_draft({ comment, to_user }) {
-        this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
-        this.show_to_draft_overlay = false;
-      },
-    },
+    mixins: [ManageHeaderMixin],
   };
 </script>
 

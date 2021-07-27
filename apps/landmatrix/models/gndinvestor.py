@@ -232,6 +232,7 @@ class Investor(models.Model):
                 "comments",
                 "status",
                 "draft_status",
+                "workflowinfos",
                 "__typename",
             ]:
                 continue  # ignore these fields

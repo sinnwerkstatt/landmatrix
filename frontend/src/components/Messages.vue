@@ -96,10 +96,6 @@
   };
 </script>
 <style lang="scss" scoped>
-  @import "node_modules/bootstrap/scss/functions";
-  @import "node_modules/bootstrap/scss/variables";
-  @import "node_modules/bootstrap/scss/mixins/_breakpoints";
-
   .messages-overlay {
     position: fixed;
     top: 0;
@@ -114,11 +110,12 @@
   }
 
   .message-container {
+    background: white;
     width: 70vw;
     max-width: 800px;
     min-width: 300px;
 
-    @include media-breakpoint-down(sm) {
+    @media screen and (max-width: 768px) {
       width: 85vw;
     }
 
@@ -175,7 +172,7 @@
       &.alert-danger {
         color: black;
         border-color: var(--color-lm-orange);
-        background-color: theme-color-level("primary", -9);
+        background-color: #fff;
 
         h1 {
           color: var(--color-lm-orange);
@@ -186,7 +183,7 @@
         }
       }
       &.alert-warning {
-        background-color: theme-color-level("primary", -11);
+        background-color: #fff;
         color: var(--color-lm-dark);
       }
     }
