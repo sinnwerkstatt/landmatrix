@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-17 16:16+0200\n"
+"POT-Creation-Date: 2021-07-27 12:18+0200\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -566,6 +566,21 @@ msgstr "Historique %(deal_id)s transaction"
 #, python-format
 msgid "A list of changes made to deal %(deal_id)s"
 msgstr "Liste de modifications apportées à la transaction %(deal_id)s"
+
+msgid "New comment"
+msgstr ""
+
+#, python-brace-format
+msgid "{full_name} has addressed you in a comment on {obj_desc}:"
+msgstr ""
+
+#, python-brace-format
+msgid "{full_name} has updated {obj_desc}:"
+msgstr ""
+
+#, python-brace-format
+msgid "Please review at {url}"
+msgstr ""
 
 msgid "ha"
 msgstr "ha"
@@ -1613,8 +1628,8 @@ msgstr "Il n'y a encore aucun commentaire sur cette transaction."
 msgid "Add a comment"
 msgstr "Ajouter un commentaire"
 
-msgid "I've read and agree to the <a href=\"/data-policy\" target=\"_blank\">Data Policy</a>."
-msgstr "Je déclare voir lu et approuvé la <a href=\"/data-policy\" target=\"_blank\">Data Policy</a>."
+msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
+msgstr "Je déclare voir lu et approuvé la <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
 
 msgid "Add comment"
 msgstr "Ajouter un commentaire"
@@ -2103,6 +2118,9 @@ msgstr "Masquer la superficie"
 msgid "Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)"
 msgstr "Téléchargement du fichier Shapefile (sélectionner tous les fichiers, formats exigés : .shp, .shx, .dbf et .prj)"
 
+msgid "Comments / History"
+msgstr ""
+
 msgid "Involvement type"
 msgstr "Type d'implication"
 
@@ -2289,6 +2307,9 @@ msgstr "Revenu élevé"
 msgid "Is target country"
 msgstr "Est un pays cible"
 
+msgid "Locations"
+msgstr ""
+
 msgid "Timber plantation"
 msgstr "Plantation d’arbres"
 
@@ -2375,9 +2396,6 @@ msgstr "Dernière mise à jour"
 
 msgid "Last full update"
 msgstr "Dernière mise à jour complète"
-
-msgid "Company"
-msgstr "Entreprise"
 
 msgid "Value"
 msgstr "Valeur"
@@ -2889,6 +2907,12 @@ msgstr "Incluses"
 msgid "Investor history"
 msgstr "Historique de l’investisseur"
 
+msgid "I've read and agree to the"
+msgstr ""
+
+msgid "Data policy"
+msgstr ""
+
 msgid "Latest tweets"
 msgstr "Derniers tweets"
 
@@ -3160,6 +3184,9 @@ msgstr "Réinitialiser le mot de passe"
 
 msgid "Share"
 msgstr "Partager"
+
+#~ msgid "Company"
+#~ msgstr "Entreprise"
 
 #~ msgid "Resources area/yield/export"
 #~ msgstr "Superficie/rendement/données d’exportation des ressources"

@@ -195,6 +195,7 @@
       v-if="show_to_delete_overlay"
       :title="submit_to_delete_title"
       :comment-input="true"
+      :comment-required="true"
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
     />

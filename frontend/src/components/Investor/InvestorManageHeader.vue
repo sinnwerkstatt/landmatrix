@@ -17,7 +17,14 @@
           @cancel="show_send_to_review_overlay = false"
           @submit="send_to_review"
         >
-          <p>Normal text, requiring accept button.</p>
+          <div class="mt-2" style="font-weight: bold">
+            <label>
+              <input required type="checkbox" />
+              {{ $t("I've read and agree to the") }}
+              <a href="/about/data-policy/" target="_blank">{{ $t("Data policy") }} </a
+              >.
+            </label>
+          </div>
         </Overlay>
       </template>
     </GenericManageHeader>

@@ -1,6 +1,6 @@
 <template>
   <div v-if="deal">
-    <ManageHeader
+    <DealManageHeader
       v-if="manage"
       :deal="deal"
       :deal-version="dealVersion"
@@ -13,7 +13,7 @@
         Deal #{{ deal.id }}
         <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
       </template>
-    </ManageHeader>
+    </DealManageHeader>
     <div v-else class="container deal-detail">
       <div class="row">
         <div>
@@ -241,7 +241,7 @@
   import DealLocationsSection from "$components/Deal/DealLocationsSection";
   import DealSection from "$components/Deal/DealSection";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
-  import ManageHeader from "$components/Deal/ManageHeader";
+  import DealManageHeader from "$components/Deal/DealManageHeader";
   import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
   import { deal_gql_query } from "$store/queries";
@@ -274,7 +274,7 @@
       DealSection,
       DealSubmodelSection,
       InvestorGraph,
-      ManageHeader,
+      DealManageHeader,
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {

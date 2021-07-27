@@ -107,6 +107,14 @@
             <input v-model="deal.fully_updated" type="checkbox" />
             {{ $t("I fully updated this deal.") }}
           </label>
+          <div class="mt-2" style="font-weight: bold">
+            <label>
+              <input required type="checkbox" />
+              {{ $t("I've read and agree to the") }}
+              <a href="/about/data-policy/" target="_blank">{{ $t("Data policy") }}</a
+              >.
+            </label>
+          </div>
         </Overlay>
         <Overlay
           v-if="show_confidential_overlay"
@@ -142,7 +150,7 @@
   import { is_authorized } from "$utils/user";
   import GenericManageHeader from "../Management/ManageHeader";
   export default {
-    name: "ManageHeader",
+    name: "DealManageHeader",
     components: {
       GenericManageHeader,
       Overlay,
