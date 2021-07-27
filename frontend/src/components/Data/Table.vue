@@ -47,11 +47,13 @@
               :class="{ selected: sortField === fieldName, asc: sortAscending }"
               @click="setSort(fieldName)"
             >
-              <FieldLabel
-                :fieldname="fieldName"
-                :label-classes="[]"
-                :model="targetModel"
-              />
+              <span>
+                <FieldLabel
+                  :fieldname="fieldName"
+                  :label-classes="['inline']"
+                  :model="targetModel"
+                />
+              </span>
             </th>
           </tr>
         </thead>

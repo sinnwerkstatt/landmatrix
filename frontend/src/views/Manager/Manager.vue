@@ -14,7 +14,8 @@
             class="sidebar-option"
             :class="{ active: opt.id === selectedTab }"
           >
-            <div @click="selectedTab = opt.id">{{ opt.name }}</div>
+            <div v-if="opt.space" />
+            <a v-else @click="selectedTab = opt.id">{{ opt.name }}</a>
           </li>
         </ul>
       </div>
@@ -23,57 +24,105 @@
       <table class="bigtable" :class="{ 'clr-investor': !showDeals }">
         <thead>
           <tr>
-            <th>{{ $t("ID") }}</th>
-            <th v-if="!showDeals">{{ $t("Name") }}</th>
-            <th>
+            <th :class="{ selected: sortField === 'id', asc: sortAscending }">
+              <span @click="setSort('id')">
+                {{ $t("ID") }}
+              </span>
+            </th>
+            <th
+              v-if="!showDeals"
+              :class="{ selected: sortField === 'name', asc: sortAscending }"
+            >
+              <span @click="setSort('name')">
+                {{ $t("Name") }}
+              </span>
+            </th>
+            <th :class="{ selected: sortField === 'country', asc: sortAscending }">
               <multiselect
                 v-model="selected_country"
                 :options="$store.state.page.countries"
                 label="name"
                 placeholder="Country"
               />
-              <input placeholder="Region" /><br />
-
-              {{ $t("Target country (region)") }}
+              <multiselect
+                v-model="selected_region"
+                :options="$store.state.page.regions"
+                label="name"
+                placeholder="Region"
+              />
+              <span @click="setSort('country')">
+                {{ $t("Target country (region)") }}
+              </span>
             </th>
 
-            <th v-if="showDeals">
+            <th
+              v-if="showDeals"
+              :class="{ selected: sortField === 'deal_size', asc: sortAscending }"
+            >
               <input v-model="selected_from_size" placeholder="From size" /><br />
               <input v-model="selected_to_size" placeholder="To size" /><br />
-              {{ $t("Deal size") }}
+              <span @click="setSort('deal_size')">{{ $t("Deal size") }}</span>
             </th>
-            <th>
-              <input placeholder="Daterange" /><br />
+            <th :class="{ selected: sortField === 'created_at', asc: sortAscending }">
+              <v-date-picker
+                v-model="created_daterange"
+                mode="range"
+                :max-date="new Date()"
+                :input-props="{ style: 'width: 100%' }"
+              /><br />
               <input placeholder="User" /><br />
-              {{ $t("Created") }}
+              <span @click="setSort('created_at')">{{ $t("Created") }}</span>
             </th>
-            <th>
-              <input placeholder="Daterange" /><br />
+            <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
+              <v-date-picker
+                v-model="modified_daterange"
+                mode="range"
+                :max-date="new Date()"
+                :input-props="{ style: 'width: 100%' }"
+              /><br />
               <input placeholder="User" /><br />
-              {{ $t("Last modified") }}
+              <span @click="setSort('modified_at')">{{ $t("Last modified") }}</span>
             </th>
-            <th v-if="showDeals">
-              <input placeholder="Daterange" /><br />
+            <th
+              v-if="showDeals"
+              :class="{
+                selected: sortField === 'fully_updated_at',
+                asc: sortAscending,
+              }"
+            >
+              <v-date-picker
+                v-model="fully_updated_daterange"
+                mode="range"
+                :max-date="new Date()"
+                :input-props="{ style: 'width: 100%' }"
+              /><br />
               <input placeholder="User" /><br />
-              {{ $t("Fully updated") }}
+              <span @click="setSort('fully_updated_at')">
+                {{ $t("Fully updated") }}
+              </span>
             </th>
-            <th>{{ $t("Comments / History") }}</th>
-            <th>
+            <th class="comments_header">{{ $t("Comments / History") }}</th>
+            <th
+              :class="{
+                selected: sortField === 'status',
+                asc: sortAscending,
+              }"
+            >
               <input placeholder="Status" /><br />
-              {{ $t("Status") }}
+              <span @click="setSort('status')">{{ $t("Status") }}</span>
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="deal in showDeals ? deals : investors" :key="deal.id">
+          <tr v-for="obj in objects" :key="obj.id">
             <td
               v-for="fieldName in fields"
-              :key="`${deal.id}-${fieldName}`"
+              :key="`${obj.id}-${fieldName}`"
               :class="`field-${fieldName}`"
             >
               <DisplayField
                 :fieldname="fieldName"
-                :value="deal[fieldName]"
+                :value="obj[fieldName]"
                 :model="showDeals ? 'deal' : 'investor'"
                 :show-label="false"
                 :value-classes="[]"
@@ -90,6 +139,8 @@
 <script>
   import LoadingPulse from "$components/Data/LoadingPulse";
   import DisplayField from "$components/Fields/DisplayField";
+  import { sortAnything } from "$utils";
+  import dayjs from "dayjs";
   import gql from "graphql-tag";
 
   export default {
@@ -100,10 +151,16 @@
         showDeals: true,
         deals: [],
         investors: [],
+        sortField: "id",
+        sortAscending: false,
         selectedTab: "my_drafts",
+        selected_region: null,
         selected_country: null,
         selected_from_size: null,
         selected_to_size: null,
+        created_daterange: null,
+        modified_daterange: null,
+        fully_updated_daterange: null,
       };
     },
     apollo: {
@@ -202,20 +259,36 @@
       },
     },
     computed: {
+      objects() {
+        return sortAnything(
+          this.showDeals ? this.deals : this.investors,
+          this.sortField,
+          this.sortAscending
+        );
+      },
       sidebarOptions() {
-        return [
+        const all_opts = [
           { name: "Todo: Clarification", id: "todo_clarification" },
           { name: "Todo: Improve", id: "todo_improve" },
-          { name: "Todo: Review", id: "todo_review" },
-          { name: "Todo: Activation", id: "todo_activation" },
+          { name: "Todo: Review", id: "todo_review", staff: true },
+          { name: "Todo: Activation", id: "todo_activation", staff: true },
+          { name: "New public comment", id: "new_public_comment", staff: true },
+          { space: true, staff: true },
+          { name: "Requested improvement", id: "requested_improvement", staff: true },
+          { name: "Requested feedback", id: "requested_feedback", staff: true },
+          { space: true },
           { name: "My drafts", id: "my_drafts" },
           { name: "Created by me", id: "created_by_me" },
-          { name: "Reviewed by me", id: "reviewed_by_me" },
-          { name: "Activated by me", id: "activated_by_me" },
-          { name: "All drafts", id: "all_drafts" },
-          { name: "All deleted", id: "all_deleted" },
-          { name: "All not public", id: "all_not_public" },
+          { name: "Reviewed by me", id: "reviewed_by_me", staff: true },
+          { name: "Activated by me", id: "activated_by_me", staff: true },
+          { space: true, staff: true },
+          { name: "All drafts", id: "all_drafts", staff: true },
+          { name: "All deleted", id: "all_deleted", staff: true },
+          { name: "All not public", id: "all_not_public", staff: true },
         ];
+        let is_staff = this.$store.getters.userInGroup(["Administrators", "Editors"]);
+
+        return all_opts.filter((o) => is_staff || o.staff !== true);
       },
       currentFilters() {
         let retfilters = [];
@@ -223,6 +296,12 @@
           retfilters.push({
             field: "country_id",
             value: this.selected_country.id.toString(),
+          });
+
+        if (this.selected_region)
+          retfilters.push({
+            field: "country.fk_region_id",
+            value: this.selected_region.id.toString(),
           });
 
         if (this.showDeals && this.selected_from_size) {
@@ -240,13 +319,55 @@
           });
         }
 
+        if (this.created_daterange) {
+          retfilters.push(
+            {
+              field: "created_at",
+              operation: "GE",
+              value: dayjs(this.created_daterange.start).format("YYYY-MM-DD"),
+            },
+            {
+              field: "created_at",
+              operation: "LE",
+              value: dayjs(this.created_daterange.end).format("YYYY-MM-DD"),
+            }
+          );
+        }
+        if (this.modified_daterange) {
+          retfilters.push(
+            {
+              field: "modified_at",
+              operation: "GE",
+              value: dayjs(this.modified_daterange.start).format("YYYY-MM-DD"),
+            },
+            {
+              field: "modified_at",
+              operation: "LE",
+              value: dayjs(this.modified_daterange.end).format("YYYY-MM-DD"),
+            }
+          );
+        }
+        if (this.fully_updated_daterange) {
+          retfilters.push(
+            {
+              field: "fully_updated_at",
+              operation: "GE",
+              value: dayjs(this.fully_updated_daterange.start).format("YYYY-MM-DD"),
+            },
+            {
+              field: "fully_updated_at",
+              operation: "LE",
+              value: dayjs(this.fully_updated_daterange.end).format("YYYY-MM-DD"),
+            }
+          );
+        }
+
         switch (this.selectedTab) {
           case "todo_clarification":
             // TODO
             retfilters.push({ field: "status", value: "7" });
             break;
           case "todo_improve":
-            console.log("imrpv");
             retfilters.push(
               ...[
                 // { field: "draft_status", value: "1" },
@@ -267,6 +388,18 @@
             break;
           case "todo_activation":
             retfilters.push({ field: "draft_status", operation: "EQ", value: "3" });
+            break;
+          case "new_public_comment":
+            // TODO
+            retfilters.push({ field: "status", value: "7" });
+            break;
+          case "requested_improvement":
+            // TODO
+            retfilters.push({ field: "status", value: "7" });
+            break;
+          case "requested_feedback":
+            // TODO
+            retfilters.push({ field: "status", value: "7" });
             break;
           case "my_drafts":
             retfilters.push({
@@ -353,7 +486,12 @@
             ];
       },
     },
-    methods: {},
+    methods: {
+      setSort(field) {
+        if (this.sortField === field) this.sortAscending = !this.sortAscending;
+        this.sortField = field;
+      },
+    },
   };
 </script>
 <style scoped lang="scss">
@@ -408,6 +546,9 @@
       //border-collapse: separate;
       tr th {
         white-space: nowrap;
+      }
+      .comments_header {
+        cursor: default;
       }
     }
     &.clr-investor {

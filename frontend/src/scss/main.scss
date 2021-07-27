@@ -36,6 +36,7 @@ body {
 
 a {
   color: var(--color-lm-orange);
+  cursor: pointer;
 
   &:hover {
     color: var(--color-lm-orange-light);
@@ -143,7 +144,7 @@ a {
         min-width: 60px;
         font-weight: normal;
 
-        &:hover {
+        > span {
           cursor: pointer;
         }
 
@@ -151,14 +152,14 @@ a {
           font-weight: normal;
           color: var(--color-lm-orange);
 
-          &.asc:before {
+          &.asc:after {
             font-weight: 600;
             content: "\f077";
             //noinspection CssNoGenericFontName
             font-family: "Font Awesome 5 Free";
           }
 
-          &:not(.asc):before {
+          &:not(.asc):after {
             font-weight: 600;
             content: "\f078";
             //noinspection CssNoGenericFontName
@@ -212,7 +213,6 @@ ul.lm-nav {
   list-style: none;
   padding-left: 0;
   li {
-    cursor: pointer;
     padding: 0.5rem 1rem 0.5rem 0;
     border-right: 1px solid var(--color-lm-orange);
     color: var(--color-lm-orange);

@@ -5,11 +5,9 @@
       :investor="investor"
       :investor-version="investorVersion"
       @change_status="change_investor_status"
-      @reload="reload_investor"
+      @reload="reloadInvestor"
       @delete="delete_investor"
-    >
-      <template #heading>Investor #{{ investor.id }}</template>
-    </InvestorManageHeader>
+    />
     <div v-else class="container investor-detail">
       <div class="row">
         <div>
@@ -249,16 +247,19 @@
   export default {
     name: "InvestorDetail",
     components: {
-      InvestorManageHeader,
-      HeaderDates,
-      InvestorHistory,
-      LoadingPulse,
-      InvestorGraph,
       DisplayField,
+      HeaderDates,
+      InvestorGraph,
+      InvestorHistory,
+      InvestorManageHeader,
+      LoadingPulse,
     },
     props: {
       investorId: { type: [Number, String], required: true },
       investorVersion: { type: [Number, String], default: null },
+    },
+    metaInfo() {
+      return { title: this.title };
     },
     data() {
       return {
@@ -275,9 +276,6 @@
         includeDealsInQuery: false,
         title: "Investor",
       };
-    },
-    metaInfo() {
-      return { title: this.title };
     },
     apollo: { investor: investor_query },
     computed: {
@@ -327,7 +325,7 @@
       },
     },
     methods: {
-      change_investor_status({ transition, comment = null, to_user = null }) {
+      change_investor_status({ transition, comment = "", to_user = null }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -377,7 +375,7 @@
                   },
                 });
               } else {
-                this.reload_investor();
+                this.reloadInvestor();
               }
             }
           })
@@ -404,12 +402,12 @@
                   name: "investor_detail",
                   params: { investorId: this.investorId.toString() },
                 })
-                .then(this.reload_investor);
+                .then(this.reloadInvestor);
             }
-            this.reload_investor();
+            this.reloadInvestor();
           });
       },
-      reload_investor() {
+      reloadInvestor() {
         console.log("Investor detail: reload");
         this.$apollo.queries.investor.refetch();
       },

@@ -24,4 +24,7 @@
   .label {
     font-weight: 500;
   }
+  .inline {
+    display: inline-block;
+  }
 </style>

@@ -5,15 +5,10 @@
       :deal="deal"
       :deal-version="dealVersion"
       @change_status="change_deal_status"
-      @reload_deal="reload_deal"
+      @reload_deal="reloadDeal"
       @delete="deleteDeal"
       @set_confidential="setConfidential"
-    >
-      <template #heading>
-        Deal #{{ deal.id }}
-        <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
-      </template>
-    </DealManageHeader>
+    />
     <div v-else class="container deal-detail">
       <div class="row">
         <div>
@@ -28,7 +23,7 @@
             :href="`/legacy/deal/edit/${deal.id}/`"
             target="_blank"
           >
-            <i class="fas fa-edit"></i> {{ $t("Edit") }}
+            <i class="fas fa-edit" /> {{ $t("Edit") }}
           </a>
           <HeaderDates :obj="deal" />
         </div>
@@ -266,15 +261,15 @@
   export default {
     name: "Detail",
     components: {
-      LoadingPulse,
-      HeaderDates,
       DealComments,
       DealHistory,
       DealLocationsSection,
+      DealManageHeader,
       DealSection,
       DealSubmodelSection,
+      HeaderDates,
       InvestorGraph,
-      DealManageHeader,
+      LoadingPulse,
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -381,7 +376,7 @@
       }),
     },
     methods: {
-      change_deal_status({ transition, comment = null, to_user = null }) {
+      change_deal_status({ transition, comment = "", to_user = null }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -524,7 +519,7 @@
       download_link(format) {
         return `/api/legacy_export/?deal_id=${this.deal.id}&subset=UNFILTERED&format=${format}`;
       },
-      reload_deal() {
+      reloadDeal() {
         console.log("Deal detail: reload");
         this.$apollo.queries.deal.refetch();
       },

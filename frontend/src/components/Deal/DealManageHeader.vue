@@ -8,6 +8,10 @@
       @delete="$emit('delete', $event)"
       @send_to_review="show_send_to_review_overlay = true"
     >
+      <template #heading>
+        Deal #{{ deal.id }}
+        <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
+      </template>
       <template #visibility>
         <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
           <div v-if="deal.is_public" class="visibility">

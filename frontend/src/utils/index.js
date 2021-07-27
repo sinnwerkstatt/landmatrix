@@ -28,12 +28,13 @@ export function sortAnything(list, sortField, sortAscending) {
       case "string":
         return fieldx.localeCompare(fieldy);
       case "object": {
-        if (Array.isArray(fieldx)) {
-          return fieldx.length - fieldy.length;
-        }
-        for (let key of ["name", "id"]) {
-          if (key in fieldx && key in fieldy) return fieldy[key] - fieldx[key];
-        }
+        if (Array.isArray(fieldx)) return fieldx.length - fieldy.length;
+
+        if ("name" in fieldx && "name" in fieldy)
+          return fieldy.name.localeCompare(fieldx.name);
+
+        if ("id" in fieldx && "id" in fieldy) return fieldy.id - fieldx.id;
+
         return Object.keys(fieldx).length - Object.keys(fieldy).length;
       }
     }
