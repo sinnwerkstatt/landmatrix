@@ -66,7 +66,7 @@
                           </option>
                         </select>
                       </div>
-                      <v-date-picker
+                      <DatePicker
                         v-model="daterange"
                         mode="range"
                         :max-date="new Date()"
@@ -116,6 +116,7 @@
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
   import StatisticsTable from "./Statistics/StatisticsTable.vue";
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
 
   function uniq(a, keepLatest = false) {
     if (keepLatest) {
@@ -173,7 +174,7 @@
 
   export default {
     name: "CaseStatistics",
-    components: { LocationFilter, GoalsTable, StatisticsTable },
+    components: { LocationFilter, GoalsTable, StatisticsTable, DatePicker },
     data: function () {
       return {
         loading: false,

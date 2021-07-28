@@ -64,23 +64,43 @@
               <span @click="setSort('deal_size')">{{ $t("Deal size") }}</span>
             </th>
             <th :class="{ selected: sortField === 'created_at', asc: sortAscending }">
-              <v-date-picker
+              <DatePicker
                 v-model="created_daterange"
                 mode="range"
                 :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
               /><br />
-              <input placeholder="User" /><br />
+              <!--              <multiselect-->
+              <!--                v-if="user_is_staff"-->
+              <!--                v-model="created_by"-->
+              <!--                :options="users"-->
+              <!--                :multiple="false"-->
+              <!--                :close-on-select="true"-->
+              <!--                :allow-empty="true"-->
+              <!--                placeholder="User"-->
+              <!--                track-by="id"-->
+              <!--                label="username"-->
+              <!--              />-->
               <span @click="setSort('created_at')">{{ $t("Created") }}</span>
             </th>
             <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
-              <v-date-picker
+              <DatePicker
                 v-model="modified_daterange"
                 mode="range"
                 :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
               /><br />
-              <input placeholder="User" /><br />
+              <!--              <multiselect-->
+              <!--                v-if="user_is_staff"-->
+              <!--                v-model="modified_by"-->
+              <!--                :options="users"-->
+              <!--                :multiple="false"-->
+              <!--                :close-on-select="true"-->
+              <!--                :allow-empty="true"-->
+              <!--                placeholder="User"-->
+              <!--                track-by="id"-->
+              <!--                label="username"-->
+              <!--              />-->
               <span @click="setSort('modified_at')">{{ $t("Last modified") }}</span>
             </th>
             <th
@@ -90,13 +110,12 @@
                 asc: sortAscending,
               }"
             >
-              <v-date-picker
+              <DatePicker
                 v-model="fully_updated_daterange"
                 mode="range"
                 :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
               /><br />
-              <input placeholder="User" /><br />
               <span @click="setSort('fully_updated_at')">
                 {{ $t("Fully updated") }}
               </span>
@@ -142,13 +161,19 @@
   import { sortAnything } from "$utils";
   import dayjs from "dayjs";
   import gql from "graphql-tag";
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
+
+  // // Register components in your 'main.js'
+  // Vue.component('calendar', Calendar)
+  // Vue.component('date-picker', DatePicker)
 
   export default {
     name: "Manager",
-    components: { LoadingPulse, DisplayField },
+    components: { LoadingPulse, DisplayField, DatePicker },
     data() {
       return {
         showDeals: true,
+        users: [],
         deals: [],
         investors: [],
         sortField: "id",
@@ -159,11 +184,23 @@
         selected_from_size: null,
         selected_to_size: null,
         created_daterange: null,
+        created_by: null,
         modified_daterange: null,
+        modified_by: null,
         fully_updated_daterange: null,
       };
     },
     apollo: {
+      users: gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
+
       deals: {
         query: gql`
           query deals($filters: [Filter]) {
@@ -259,6 +296,9 @@
       },
     },
     computed: {
+      user_is_staff() {
+        return this.$store.getters.userInGroup(["Administrators", "Editors"]);
+      },
       objects() {
         return sortAnything(
           this.showDeals ? this.deals : this.investors,
@@ -286,9 +326,7 @@
           { name: "All deleted", id: "all_deleted", staff: true },
           { name: "All not public", id: "all_not_public", staff: true },
         ];
-        let is_staff = this.$store.getters.userInGroup(["Administrators", "Editors"]);
-
-        return all_opts.filter((o) => is_staff || o.staff !== true);
+        return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
       },
       currentFilters() {
         let retfilters = [];
@@ -333,6 +371,15 @@
             }
           );
         }
+        if (this.created_by) {
+          retfilters.push({
+            field: "created_by",
+            value: this.created_by.id.toString(),
+          });
+        }
+
+        // modified_by: null,
+
         if (this.modified_daterange) {
           retfilters.push(
             {
@@ -364,20 +411,33 @@
 
         switch (this.selectedTab) {
           case "todo_clarification":
+            retfilters.push(
+              ...[
+                // TODO
+                {
+                  field: "workflowinfos.draft_status_after",
+                  value: "15",
+                },
+                {
+                  field: "workflowinfos.to_user_id",
+                  value: this.$store.state.page.user.id.toString(),
+                },
+              ]
+            );
             // TODO
             retfilters.push({ field: "status", value: "7" });
             break;
           case "todo_improve":
             retfilters.push(
               ...[
-                // { field: "draft_status", value: "1" },
+                { field: "draft_status", value: "1" },
                 // TODO this does not work
                 {
                   field: "current_draft.workflowinfos.draft_status_before",
                   value: "2",
                 },
                 {
-                  field: "current_draft.workflowinfos.draft_status_before",
+                  field: "current_draft.workflowinfos.draft_status_after",
                   value: "1",
                 },
               ]

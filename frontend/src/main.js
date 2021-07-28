@@ -5,7 +5,6 @@ import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import Multiselect from "vue-multiselect";
 import ScrollLoader from "vue-scroll-loader";
-import VCalendar from "v-calendar";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
@@ -49,7 +48,6 @@ import RawHTML from "$components/Wagtail/RawHTML";
 
 Vue.use(BootstrapVue);
 Vue.use(VueMeta);
-Vue.use(VCalendar);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
 Vue.use(ScrollLoader);
