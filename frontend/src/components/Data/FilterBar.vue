@@ -717,12 +717,12 @@
 
     .custom-switch .custom-control-input:checked ~ .custom-control-label {
       &:before {
-        background-color: rgba(var(--color-lm-orange), 0.1);
+        background-color: var(--color-lm-orange-light-10);
       }
 
       &:after {
         background-color: var(--color-lm-orange);
-        box-shadow: 0 0 0 1px rgba(var(--color-lm-orange), 0.7);
+        box-shadow: 0 0 0 1px var(--color-lm-orange-light);
       }
     }
 
@@ -762,7 +762,7 @@
 
       .custom-control-input:checked ~ .custom-control-label {
         &:before {
-          background-color: rgba(var(--color-lm-orange), 1);
+          background-color: var(--color-lm-orange-light);
           border-color: transparent;
         }
       }

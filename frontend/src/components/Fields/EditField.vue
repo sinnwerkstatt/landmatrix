@@ -231,7 +231,7 @@
 
     tr.is-current {
       td {
-        background: rgba(var(--color-lm-orange), 0.2);
+        background: var(--color-lm-orange-light-10);
 
         $radius: 5px;
         &:first-child {
@@ -252,10 +252,12 @@
       -webkit-appearance: none;
 
       option:checked {
-        background-color: rgba(var(--color-lm-orange), 0.2);
+        background: var(--color-lm-orange-light);
         // WTF: Only works when setting a gradient!!!
-        background: linear-gradient(#ffc894, #ffc894);
-        color: black;
+        background: linear-gradient(
+          var(--color-lm-orange-light),
+          var(--color-lm-orange-light)
+        );
       }
     }
   }

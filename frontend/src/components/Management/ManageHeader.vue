@@ -414,12 +414,12 @@
     color: white;
 
     &.btn-secondary {
-      background: rgba(var(--color-lm-investor), 0.8);
+      background: var(--color-lm-investor-light);
       border-color: var(--color-lm-investor);
 
       &:hover,
       &:active {
-        background: rgba(var(--color-lm-investor), 1);
+        background: var(--color-lm-investor);
         color: white;
       }
     }

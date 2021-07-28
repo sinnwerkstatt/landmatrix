@@ -11,12 +11,13 @@ $fa-font-path: "/static/assets";
 @import "node_modules/bootstrap-vue/src/index.scss";
 
 :root {
-  --color-lm-orange: hsl(32, 97%, 55%); // #fc941f
-  --color-lm-orange-dark: hsl(32, 97%, 45%);
-  --color-lm-orange-light: hsl(32, 97%, 65%);
-  --color-lm-investor: hsl(179, 46%, 49%); // #44b7b6
-  --color-lm-investor-dark: hsl(179, 46%, 39%);
-  --color-lm-investor-light: hsl(179, 46%, 59%);
+  --color-lm-orange: hsl(32, 97%, 55%); // #fc941f  // tree poppy
+  --color-lm-orange-dark: hsl(32, 97%, 45%);  // mango tango
+  --color-lm-orange-light: hsl(32, 97%, 65%); // texas rose
+  --color-lm-orange-light-10: hsl(32, 97%, 95%);
+  --color-lm-investor: hsl(179, 46%, 49%); // #44b7b6 // pelorous
+  --color-lm-investor-dark: hsl(179, 46%, 39%);  // paradiso
+  --color-lm-investor-light: hsl(179, 46%, 59%);  // downy
   --color-lm-dark: #4a4a4a;
   --color-lm-light: #ebebeb;
   --primary: var(--color-lm-orange);

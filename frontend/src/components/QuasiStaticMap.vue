@@ -185,7 +185,8 @@
     &:hover {
       cursor: pointer;
       box-shadow: 5px 5px 5px rgba(black, 0.3);
-      border-color: rgba(var(--color-lm-orange), 0.7);
+      border-color: var(--color-lm-orange-light);
+      transition: box-shadow 300ms;
     }
 
     .shield {
@@ -195,6 +196,7 @@
       z-index: 1000;
       background-color: transparent;
       display: flex;
+      transition: background-color 600ms;
 
       &:before {
         content: "";
@@ -204,7 +206,9 @@
       }
 
       .hover-text {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        transition: 600ms;
         color: white;
         font-weight: bold;
         font-size: 4rem;
@@ -215,10 +219,13 @@
       }
 
       &:hover {
-        background-color: rgba(var(--color-lm-orange), 0.5);
+        transition: 300ms;
+        background-color: hsla(32, 97%, 55%, 0.2);
 
         .hover-text {
-          display: block;
+          transition: 300ms;
+          opacity: 1;
+          visibility: visible;
         }
       }
     }
