@@ -367,7 +367,6 @@
       },
     },
     computed: {
-      current_deal_query_vars() {},
       manage() {
         return (
           this.$store.state.page.user && this.$store.state.page.user.is_authenticated

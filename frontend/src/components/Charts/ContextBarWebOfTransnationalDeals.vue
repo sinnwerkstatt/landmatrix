@@ -139,26 +139,26 @@
           return { country_name, ...x };
         });
       },
-      global_ranking_deals() {
-        if (!this.global_rankings) return;
-        if (this.$store.state.page.countries.length === 0) return;
-        return this.global_rankings.ranking_deal.map((x) => {
-          let country_name = this.getCountryOrRegion({
-            id: +x.country_id,
-          }).name;
-          return { country_name, ...x };
-        });
-      },
-      global_ranking_investors() {
-        if (!this.global_rankings) return;
-        if (this.$store.state.page.countries.length === 0) return;
-        return this.global_rankings.ranking_investor.map((x) => {
-          let country_name = this.getCountryOrRegion({
-            id: +x.country_id,
-          }).name;
-          return { country_name, ...x };
-        });
-      },
+      // global_ranking_deals() {
+      //   if (!this.global_rankings) return;
+      //   if (this.$store.state.page.countries.length === 0) return;
+      //   return this.global_rankings.ranking_deal.map((x) => {
+      //     let country_name = this.getCountryOrRegion({
+      //       id: +x.country_id,
+      //     }).name;
+      //     return { country_name, ...x };
+      //   });
+      // },
+      // global_ranking_investors() {
+      //   if (!this.global_rankings) return;
+      //   if (this.$store.state.page.countries.length === 0) return;
+      //   return this.global_rankings.ranking_investor.map((x) => {
+      //     let country_name = this.getCountryOrRegion({
+      //       id: +x.country_id,
+      //     }).name;
+      //     return { country_name, ...x };
+      //   });
+      // },
     },
   };
 </script>

@@ -11,26 +11,26 @@ export const mapModule = {
     layers: [
       {
         name: "Satellite",
-        attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="http://developer.here.com">HERE</a>`,
+        attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
         url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
       },
       {
         name: "Map",
         attribution:
-          'Maps &copy; <a href="http://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+          'Maps &copy; <a href="https://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         url: "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
       },
     ],
     contextLayers: [
       {
         name: "Land Cover",
-        layer: new TileLayer.WMS("http://sdi.cde.unibe.ch/geoserver/lo/wms", {
+        layer: new TileLayer.WMS("https://sdi.cde.unibe.ch/geoserver/lo/wms", {
           layers: "globcover_2009",
           format: "image/png",
           transparent: true,
           opacity: 0.7,
           attribution:
-            'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
+            'Source: <a href="https://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
         }),
         legendUrlFunction() {
           let imgParams = {
@@ -55,7 +55,7 @@ export const mapModule = {
           transparent: true,
           opacity: 0.7,
           attribution:
-            'Source: <a href="http://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
+            'Source: <a href="https://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
         }),
         legendUrlFunction() {
           let imgParams = {
@@ -80,7 +80,7 @@ export const mapModule = {
           transparent: true,
           opacity: 0.7,
           attribution:
-            'Source: <a href="http://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>',
+            'Source: <a href="https://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>',
         }),
         legendUrlFunction() {
           let imgParams = {

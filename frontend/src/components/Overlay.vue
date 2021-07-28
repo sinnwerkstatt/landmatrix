@@ -57,7 +57,6 @@
     data() {
       return {
         comment: "",
-        confidential_reason: null,
         to_user_selected: null,
         users: [],
       };
@@ -104,10 +103,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "node_modules/bootstrap/scss/functions";
-  @import "node_modules/bootstrap/scss/variables";
-  @import "node_modules/bootstrap/scss/mixins/_breakpoints";
-
   textarea {
     width: 100%;
     border: 1px solid var(--color-lm-light);
@@ -138,7 +133,7 @@
     max-width: 800px;
     min-width: 300px;
 
-    @include media-breakpoint-down(sm) {
+    @media screen and (max-width: 768px) {
       width: 85vw;
     }
 

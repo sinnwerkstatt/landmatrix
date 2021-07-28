@@ -95,7 +95,7 @@
 
   import { DivIcon, FeatureGroup, LayerGroup, Marker, Popup } from "leaflet";
   import { MarkerClusterGroup } from "leaflet.markercluster/src";
-  import { groupBy } from "lodash";
+  import { groupBy } from "lodash-es";
   import Vue from "vue";
   import { mapState } from "vuex";
   import { data_deal_query } from "./query";

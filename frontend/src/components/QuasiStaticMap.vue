@@ -132,6 +132,7 @@
         }
       },
       _drawCountryMarkers() {
+        // noinspection JSCheckFunctionSignatures
         let mcluster = new MarkerClusterGroup({ maxClusterRadius: 20 });
         for (let mark of this.markers) {
           let circle = new Marker(mark.coordinates);

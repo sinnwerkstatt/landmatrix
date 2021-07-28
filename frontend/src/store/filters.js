@@ -1,4 +1,4 @@
-import { arraysAreEqual } from "$utils";
+import { isEqual } from "lodash-es";
 
 const DEFAULT_FILTERS = {
   region_id: null,
@@ -71,7 +71,7 @@ const isDefaultFilter = (filters) => {
     if (DEFAULT_FILTER_IGNORED_KEYS.includes(key)) continue;
     else if (defaultKeys.includes(key)) {
       if (Array.isArray(DEFAULT_FILTERS[key])) {
-        if (!arraysAreEqual(DEFAULT_FILTERS[key], filters[key])) return false;
+        if (!isEqual(DEFAULT_FILTERS[key], filters[key])) return false;
       } else {
         if (DEFAULT_FILTERS[key] !== filters[key]) return false;
       }

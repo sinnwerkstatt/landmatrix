@@ -143,7 +143,7 @@
           ];
           for (const [key, label] of Object.entries(implementation_status_choices)) {
             let filteredDeals = this.deals.filter((d) => {
-              return d.current_implementation_status == key;
+              return d.current_implementation_status === key;
             });
             data.push({
               label: label,

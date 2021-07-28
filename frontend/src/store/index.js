@@ -3,7 +3,6 @@ import axios from "axios";
 import gql from "graphql-tag";
 import Vue from "vue";
 import Vuex from "vuex";
-import { dataModule } from "./data";
 import filtersModule from "./filters";
 import { mapModule } from "./map";
 import { pageModule } from "./page";
@@ -14,7 +13,6 @@ const store = new Vuex.Store({
   modules: {
     page: pageModule,
     filters: filtersModule,
-    data: dataModule,
     map: mapModule,
   },
   state: {
@@ -92,11 +90,11 @@ const store = new Vuex.Store({
               }
             `,
           })
-          .then((data) => {
-            context.commit("setUser", data.data.me);
-            context.commit("setCountries", data.data.countries);
-            context.commit("setRegions", data.data.regions);
-            context.commit("setChartDescriptions", data.data.chart_descriptions);
+          .then(({ data }) => {
+            context.commit("setUser", data.me);
+            context.commit("setCountries", data.countries);
+            context.commit("setRegions", data.regions);
+            context.commit("setChartDescriptions", data.chart_descriptions);
             resolve();
           })
           .catch((error) => {

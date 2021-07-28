@@ -37,6 +37,7 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^7.12.1",
+    "eslint-plugin-vue-scoped-css": "^1.2.2",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
     "jquery": "~2.2.4",
@@ -44,7 +45,7 @@
     "leaflet": "^1.7.1",
     "leaflet-gesture-handling": "^1.2.1",
     "leaflet.markercluster": "^1.5.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "numeral": "^2.0.6",
     "popper.js": "^1.16.1",
     "prettier": "^2.3.2",
@@ -89,6 +90,7 @@
     "extends": [
       "eslint:recommended",
       "plugin:vue/recommended",
+      "plugin:vue-scoped-css/vue3-recommended",
       "prettier"
     ],
     "rules": {

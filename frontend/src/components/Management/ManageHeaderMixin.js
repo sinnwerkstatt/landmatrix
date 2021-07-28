@@ -67,8 +67,7 @@ const ManageHeaderMixin = {
     },
     is_deleted() {
       // active and deleted
-      if (!this.objectVersion && this.object.status === 4) return true;
-      return false;
+      return !this.objectVersion && this.object.status === 4;
     },
     is_active_with_draft() {
       return !this.objectVersion && this.object.draft_status;

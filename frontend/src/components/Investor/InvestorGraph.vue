@@ -74,7 +74,7 @@
   import cytoscape from "cytoscape";
   import coseBilkent from "cytoscape-cose-bilkent";
   import popper from "cytoscape-popper";
-  import { pick } from "lodash";
+  import { pick } from "lodash-es";
   import tippy from "tippy.js";
 
   import InvestorDetailDealModal from "./InvestorDetailDealModal";
