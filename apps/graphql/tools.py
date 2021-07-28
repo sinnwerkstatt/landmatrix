@@ -51,7 +51,11 @@ def parse_filters(filters):
         field = filtr["field"].replace(".", "__")
         op = filtr.get("operation") or "EQ"
         val = filtr["value"]
-        if op in ["EQ", "LT", "LE", "GE", "GT"] and len(val) == 1:
+        if (
+            isinstance(val, list)
+            and len(val) == 1
+            and op in ["EQ", "LT", "LE", "GE", "GT"]
+        ):
             val = val[0]
         operation = filter_ops[op]
 

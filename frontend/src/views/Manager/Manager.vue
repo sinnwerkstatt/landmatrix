@@ -298,6 +298,9 @@
       },
     },
     computed: {
+      user() {
+        return this.$store.state.page.user;
+      },
       user_is_staff() {
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
@@ -333,29 +336,26 @@
       currentFilters() {
         let retfilters = [];
         if (this.selected_country)
-          retfilters.push({
-            field: "country_id",
-            value: this.selected_country.id.toString(),
-          });
+          retfilters.push({ field: "country_id", value: this.selected_country.id });
 
         if (this.selected_region)
           retfilters.push({
             field: "country.fk_region_id",
-            value: this.selected_region.id.toString(),
+            value: this.selected_region.id,
           });
 
         if (this.showDeals && this.selected_from_size) {
           retfilters.push({
             field: "deal_size",
             operation: "GE",
-            value: this.selected_from_size.toString(),
+            value: this.selected_from_size,
           });
         }
         if (this.showDeals && this.selected_to_size) {
           retfilters.push({
             field: "deal_size",
             operation: "LE",
-            value: this.selected_to_size.toString(),
+            value: this.selected_to_size,
           });
         }
 
@@ -373,14 +373,8 @@
             }
           );
         }
-        if (this.created_by) {
-          retfilters.push({
-            field: "created_by",
-            value: this.created_by.id.toString(),
-          });
-        }
-
-        // modified_by: null,
+        if (this.created_by)
+          retfilters.push({ field: "created_by", value: this.created_by.id });
 
         if (this.modified_daterange) {
           retfilters.push(
@@ -396,6 +390,9 @@
             }
           );
         }
+        if (this.modified_by)
+          retfilters.push({ field: "modified_by", value: this.modified_by.id });
+
         if (this.fully_updated_daterange) {
           retfilters.push(
             {
@@ -411,116 +408,92 @@
           );
         }
 
+        // selected Tab
         switch (this.selectedTab) {
           case "todo_clarification":
             retfilters.push(
               ...[
-                // TODO
-                {
-                  field: "workflowinfos.draft_status_after",
-                  value: "15",
-                },
-                {
-                  field: "workflowinfos.to_user_id",
-                  value: this.$store.state.page.user.id.toString(),
-                },
+                // { field: "workflowinfos.processed_by_receiver", value: false },
+                { field: "workflowinfos.draft_status_before", value: null },
+                { field: "workflowinfos.draft_status_after", value: null },
+                { field: "workflowinfos.to_user_id", value: this.user.id },
               ]
             );
-            // TODO
-            retfilters.push({ field: "status", value: "7" });
             break;
           case "todo_improve":
             retfilters.push(
               ...[
-                { field: "draft_status", value: "1" },
-                // TODO this does not work
-                {
-                  field: "current_draft.workflowinfos.draft_status_before",
-                  value: "2",
-                },
-                {
-                  field: "current_draft.workflowinfos.draft_status_after",
-                  value: "1",
-                },
+                { field: "draft_status", value: 1 },
+                { field: "current_draft.workflowinfos.draft_status_before", value: 2 },
+                { field: "current_draft.workflowinfos.draft_status_after", value: 1 },
+                { field: "workflowinfos.to_user_id", value: this.user.id },
               ]
             );
             break;
           case "todo_review":
-            retfilters.push({ field: "draft_status", operation: "EQ", value: "2" });
+            retfilters.push({ field: "draft_status", value: 2 });
             break;
           case "todo_activation":
-            retfilters.push({ field: "draft_status", operation: "EQ", value: "3" });
+            retfilters.push({ field: "draft_status", value: 3 });
             break;
           case "new_public_comment":
             // TODO
             retfilters.push({ field: "status", value: "7" });
             break;
           case "requested_improvement":
-            // TODO
-            retfilters.push({ field: "status", value: "7" });
+            retfilters.push(
+              ...[
+                // { field: "workflowinfos.processed_by_receiver", value: false },
+                { field: "workflowinfos.draft_status_before", value: 2 },
+                { field: "workflowinfos.draft_status_after", value: 1 },
+                { field: "workflowinfos.from_user_id", value: this.user.id },
+              ]
+            );
             break;
           case "requested_feedback":
-            // TODO
-            retfilters.push({ field: "status", value: "7" });
+            retfilters.push(
+              ...[
+                // { field: "workflowinfos.processed_by_receiver", value: false },
+                { field: "workflowinfos.draft_status_before", value: null },
+                { field: "workflowinfos.draft_status_after", value: null },
+                { field: "workflowinfos.from_user_id", value: this.user.id },
+              ]
+            );
             break;
           case "my_drafts":
             retfilters.push({
               field: "current_draft.revision.user_id",
-              operation: "EQ",
-              value: this.$store.state.page.user.id.toString(),
+              value: this.user.id,
             });
             break;
           case "created_by_me":
-            retfilters.push({
-              field: "created_by_id",
-              operation: "EQ",
-              value: this.$store.state.page.user.id.toString(),
-            });
+            retfilters.push({ field: "created_by_id", value: this.user.id });
             break;
           case "reviewed_by_me":
             retfilters.push(
               ...[
-                {
-                  field: "workflowinfos.draft_status_before",
-                  value: "2",
-                },
-                {
-                  field: "workflowinfos.draft_status_after",
-                  value: "3",
-                },
-                {
-                  field: "workflowinfos.from_user_id",
-                  value: this.$store.state.page.user.id.toString(),
-                },
+                { field: "workflowinfos.draft_status_before", value: 2 },
+                { field: "workflowinfos.draft_status_after", value: 3 },
+                { field: "workflowinfos.from_user_id", value: this.user.id },
               ]
             );
             break;
           case "activated_by_me":
             retfilters.push(
               ...[
-                {
-                  field: "workflowinfos.draft_status_before",
-                  value: "3",
-                },
-                {
-                  field: "workflowinfos.from_user_id",
-                  value: this.$store.state.page.user.id.toString(),
-                },
+                { field: "workflowinfos.draft_status_before", value: 3 },
+                { field: "workflowinfos.from_user_id", value: this.user.id },
               ]
             );
             break;
           case "all_drafts":
-            retfilters.push({
-              field: "draft_status",
-              operation: "IN",
-              value: ["1", "2", "3"],
-            });
+            retfilters.push({ field: "draft_status", exclusion: true, value: null });
             break;
           case "all_deleted":
-            retfilters.push({ field: "status", operation: "EQ", value: "4" });
+            retfilters.push({ field: "status", value: 4 });
             break;
           case "all_not_public":
-            retfilters.push({ field: "is_public", operation: "EQ", value: "False" });
+            retfilters.push({ field: "is_public", value: false });
             break;
         }
         return retfilters;

@@ -62,7 +62,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
-            return
+            raise GraphQLError("deal not found")
 
         deal = qs_values_to_dict(
             visible_deals,

@@ -4,10 +4,12 @@ input Filter {
   "The default operation is the check on equality"
   operation: FilterOperation = EQ
   "The value can be a string or a list of strings"
-  value: [String!]
+  value: [Value!]
   exclusion: Boolean = false
   allow_null: Boolean = false
 }
+
+scalar Value
 
 enum FilterOperation {
   "Equal"
