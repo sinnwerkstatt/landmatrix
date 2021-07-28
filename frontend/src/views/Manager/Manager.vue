@@ -43,12 +43,14 @@
                 :options="$store.state.page.countries"
                 label="name"
                 placeholder="Country"
+                @input="selected_region = null"
               />
               <multiselect
                 v-model="selected_region"
                 :options="$store.state.page.regions"
                 label="name"
                 placeholder="Region"
+                @input="selected_country = null"
               />
               <span @click="setSort('country')">
                 {{ $t("Target country (region)") }}
