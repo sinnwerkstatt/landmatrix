@@ -25,11 +25,12 @@
           @keydown="searchKeyboardEvent"
         />
       </form>
-      <ul v-if="searchResult.length > 0">
+      <ul v-if="searchResult.length > 0" ref="ulle">
         <li
           v-for="(d, i) in searchResult"
-          :key="d.id"
-          :class="{ selected: selectedSearchIndex === i }"
+          :id="`${d.id}${d.investor}`"
+          :key="`${d.id}${d.investor}`"
+          :class="{ investor: d.investor, selected: selectedSearchIndex === i }"
         >
           <router-link :class="{ not_public: !d.is_public }" :to="d.url">
             {{ d.name }}
@@ -40,7 +41,6 @@
   </li>
 </template>
 <script>
-  import { blogcategories_query } from "$store/queries";
   import gql from "graphql-tag";
 
   export default {
@@ -51,13 +51,13 @@
         showSearch: false,
         selectedSearchIndex: 0,
         deals: [],
+        investors: [],
       };
     },
     apollo: {
-      blogcategories: blogcategories_query,
       deals: {
         query: gql`
-          query Deals($subset: Subset) {
+          query SDeals($subset: Subset) {
             deals(limit: 0, subset: $subset) {
               id
               country {
@@ -73,22 +73,49 @@
           };
         },
       },
+      investors: {
+        query: gql`
+          query SInvestors($subset: Subset) {
+            investors(limit: 0, subset: $subset) {
+              id
+              name
+            }
+          }
+        `,
+        variables() {
+          return {
+            subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
+          };
+        },
+      },
     },
     computed: {
       searchResult() {
         if (this.search.length >= 2) {
-          return this.deals
-            .filter((d) => d.id.toString().includes(this.search))
-            .map((d) => {
-              let name = `#${d.id}`;
-              if (d.country) name += ` in ${d.country?.name}`;
-              return {
-                id: d.id,
-                name,
-                is_public: d.is_public,
-                url: `/deal/${d.id}/`,
-              };
-            });
+          return [
+            ...this.deals
+              .filter((d) => d.id.toString().includes(this.search))
+              .map((d) => {
+                let name = `#${d.id}`;
+                if (d.country) name += ` in ${d.country?.name}`;
+                return {
+                  id: d.id,
+                  name,
+                  is_public: d.is_public,
+                  url: `/deal/${d.id}/`,
+                };
+              }),
+            ...this.investors
+              .filter((i) => i.id.toString().includes(this.search))
+              .map((i) => {
+                return {
+                  id: i.id,
+                  name: `${i.name} #${i.id}`,
+                  url: `/investor/${i.id}/`,
+                  investor: true,
+                };
+              }),
+          ];
         }
         return [];
       },
@@ -100,19 +127,25 @@
     },
     methods: {
       searchKeyboardEvent(e) {
-        if (e.code === "ArrowDown") {
-          this.selectedSearchIndex =
-            (this.selectedSearchIndex + 1) % this.searchResult.length;
+        if (["ArrowDown", "ArrowUp"].includes(e.code)) {
           e.preventDefault();
-        }
-        if (e.code === "ArrowUp") {
-          if (this.selectedSearchIndex === 0)
-            this.selectedSearchIndex = this.searchResult.length - 1;
-          else
+
+          if (e.code === "ArrowDown") {
             this.selectedSearchIndex =
-              (this.selectedSearchIndex - 1) % this.searchResult.length;
-          e.preventDefault();
+              (this.selectedSearchIndex + 1) % this.searchResult.length;
+          } else {
+            if (this.selectedSearchIndex === 0)
+              this.selectedSearchIndex = this.searchResult.length - 1;
+            else
+              this.selectedSearchIndex =
+                (this.selectedSearchIndex - 1) % this.searchResult.length;
+          }
+
+          let getEl = this.searchResult[this.selectedSearchIndex];
+          let offi = document.getElementById(`${getEl.id}${getEl.investor}`).offsetTop;
+          this.$refs.ulle.scrollTop = offi - 100;
         }
+
         if (e.code === "Enter") {
           this.$router.push(this.searchResult[this.selectedSearchIndex].url);
           e.preventDefault();
@@ -128,16 +161,30 @@
     //max-height: 60vh;
 
     ul {
+      position: relative;
       max-height: 55vh;
       overflow-y: auto;
       margin: 1em 0 0;
       border-top: 1px solid var(--color-lm-orange);
       list-style: none;
       padding: 0.5em 0 0;
-      li.selected {
-        background: var(--color-lm-orange);
-        a {
-          color: white !important;
+      li {
+        &.selected {
+          background: var(--color-lm-orange);
+          a {
+            color: white !important;
+          }
+        }
+        &.investor {
+          a {
+            color: var(--color-lm-investor);
+          }
+        }
+        &.investor.selected {
+          background: var(--color-lm-investor);
+          a {
+            color: white !important;
+          }
         }
       }
     }
