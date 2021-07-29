@@ -334,6 +334,7 @@
         return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
       },
       currentFilters() {
+        /** @type GQLFilter[] */
         let retfilters = [];
         if (this.selected_country)
           retfilters.push({ field: "country_id", value: this.selected_country.id });

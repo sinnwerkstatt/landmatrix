@@ -164,12 +164,12 @@
 </script>
 
 <style lang="scss">
-  .investor-ranking {
-    color: var(--color-lm-orange);
-  }
-  .deal-ranking {
-    color: var(--color-lm-investor);
-  }
+  //.investor-ranking {
+  //  color: var(--color-lm-orange);
+  //}
+  //.deal-ranking {
+  //  color: var(--color-lm-investor);
+  //}
 
   .hint-box {
     padding: 1em;

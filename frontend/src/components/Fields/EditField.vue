@@ -254,10 +254,7 @@
       option:checked {
         background: var(--color-lm-orange-light);
         // WTF: Only works when setting a gradient!!!
-        background: linear-gradient(
-          var(--color-lm-orange-light),
-          var(--color-lm-orange-light)
-        );
+        background: linear-gradient(hsl(32, 97%, 65%), hsl(32, 97%, 65%));
       }
     }
   }

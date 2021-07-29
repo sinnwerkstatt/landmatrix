@@ -259,6 +259,7 @@
         if (this.fetchAllInvestors) {
           return [];
         } else {
+          /** @type GQLFilter[] */
           let filters = [
             {
               field: "child_deals.id",
@@ -437,8 +438,8 @@
 
         .table-config {
           float: right;
-          display: inline-block;
           z-index: 1;
+          //display: inline-block;
           display: none; // TODO: decide how change column settings
 
           a {

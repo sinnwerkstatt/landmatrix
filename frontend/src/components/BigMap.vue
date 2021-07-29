@@ -96,7 +96,7 @@
     }
   }
 
-  .leaflet-container {
-    background-color: rgba(255, 0, 0, 0);
-  }
+  //.leaflet-container {
+  //  background-color: rgba(255, 0, 0, 0);
+  //}
 </style>

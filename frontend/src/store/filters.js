@@ -81,31 +81,27 @@ const isDefaultFilter = (filters) => {
 };
 
 function prepareFilters(filters) {
+  /** @type GQLFilter[] */
   let filterArray = [];
-  if (filters.region_id) {
-    filterArray.push({
-      field: "country.fk_region_id",
-      value: filters.region_id.toString(),
-    });
-  }
-  if (filters.country_id) {
-    filterArray.push({
-      field: "country_id",
-      value: filters.country_id.toString(),
-    });
-  }
-  if (filters.deal_size_min) {
+
+  if (filters.region_id)
+    filterArray.push({ field: "country.fk_region_id", value: filters.region_id });
+
+  if (filters.country_id)
+    filterArray.push({ field: "country_id", value: filters.country_id });
+
+  if (filters.deal_size_min)
     filterArray.push({
       field: "deal_size",
       operation: "GE",
-      value: filters.deal_size_min.toString(),
+      value: filters.deal_size_min,
     });
-  }
+
   if (filters.deal_size_max) {
     filterArray.push({
       field: "deal_size",
       operation: "LE",
-      value: filters.deal_size_max.toString(),
+      value: filters.deal_size_max,
     });
   }
   if (filters.negotiation_status.length > 0) {
@@ -135,16 +131,13 @@ function prepareFilters(filters) {
     });
   }
 
-  if (filters.investor) {
-    filterArray.push({
-      field: "parent_companies",
-      value: filters.investor.id.toString(),
-    });
-  }
+  if (filters.investor)
+    filterArray.push({ field: "parent_companies", value: filters.investor.id });
+
   if (filters.investor_country_id) {
     filterArray.push({
       field: "parent_companies.country_id",
-      value: filters.investor_country_id.toString(),
+      value: filters.investor_country_id,
     });
   }
   if (filters.nature_of_deal.length > 0) {
@@ -173,7 +166,7 @@ function prepareFilters(filters) {
     filterArray.push({
       field: "initiation_year",
       operation: "GE",
-      value: filters.initiation_year_min.toString(),
+      value: filters.initiation_year_min,
       allow_null: filters.initiation_year_unknown,
     });
   }
@@ -181,7 +174,7 @@ function prepareFilters(filters) {
     filterArray.push({
       field: "initiation_year",
       operation: "LE",
-      value: filters.initiation_year_max.toString(),
+      value: filters.initiation_year_max,
       allow_null: filters.initiation_year_unknown,
     });
   }
@@ -229,11 +222,7 @@ function prepareFilters(filters) {
       if (prod.id.startsWith("mineral_")) minerals.push(prod.value);
     }
     if (crops.length > 0) {
-      filterArray.push({
-        field: "current_crops",
-        operation: "CONTAINS",
-        value: crops,
-      });
+      filterArray.push({ field: "current_crops", operation: "CONTAINS", value: crops });
     }
     if (animals.length > 0) {
       filterArray.push({
@@ -250,18 +239,11 @@ function prepareFilters(filters) {
       });
     }
   }
-  if (!(filters.transnational === null)) {
-    filterArray.push({
-      field: "transnational",
-      value: filters.transnational ? "True" : "False",
-    });
-  }
-  if (filters.forest_concession) {
-    filterArray.push({
-      field: "forest_concession",
-      value: filters.forest_concession ? "True" : "False",
-    });
-  }
+  if (filters.transnational !== null)
+    filterArray.push({ field: "transnational", value: filters.transnational });
+
+  if (filters.forest_concession !== null)
+    filterArray.push({ field: "forest_concession", value: filters.forest_concession });
 
   return filterArray;
 }
