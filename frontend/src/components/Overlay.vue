@@ -89,7 +89,7 @@
       },
       submit(e) {
         if (e.target.checkValidity()) {
-          let args = { comment: this.comment };
+          let args = { comment: this.comment, force: true };
           if (this.assignToUserInput) {
             args.to_user = this.selected_user;
           }

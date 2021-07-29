@@ -38,9 +38,7 @@
               <span v-if="deal.confidential">(reason)</span>
             </a>
             <b-tooltip target="confidential-reason" triggers="click">
-              <!--
-                        <strong>{{ get_confidential_reason }}</strong>
-                        <br />-->
+              <!-- <strong>{{ get_confidential_reason }}</strong> <br /> -->
               {{ deal.confidential_comment }}
             </b-tooltip>
           </div>
@@ -126,7 +124,7 @@
           :comment-input="!deal.confidential"
           :comment-required="!deal.confidential"
           @cancel="show_confidential_overlay = false"
-          @submit="toggle_confidential({ force: true })"
+          @submit="toggle_confidential"
         >
           <p v-if="deal.confidential">
             {{
