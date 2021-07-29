@@ -258,7 +258,15 @@ def _parse_local_communities(deal, attrs):
     )
     deal.people_affected_comment = attrs.get("tg_affected_comment") or ""
 
-    RECOGNITION_STATUS_MAP = {v: k for k, v in Deal.RECOGNITION_STATUS_CHOICES}
+    RECOGNITION_STATUS_MAP = {
+        "Indigenous Peoples traditional or customary rights recognized by government": "INDIGENOUS_RIGHTS_RECOGNIZED",
+        "Derechos consuetudinarios o tradicionales de Pueblos Indígenas reconocidos por el gobierno": "INDIGENOUS_RIGHTS_RECOGNIZED",
+        "Indigenous Peoples traditional or customary rights not recognized by government": "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
+        "Community traditional or customary rights recognized by government": "COMMUNITY_RIGHTS_RECOGNIZED",
+        "Derechos consuetudinarios o tradicionales de comunidad reconocidos por el gobierno": "COMMUNITY_RIGHTS_RECOGNIZED",
+        "Community traditional or customary rights not recognized by government": "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+    }
+
     deal.recognition_status = _extras_to_list(
         attrs, "recognition_status", RECOGNITION_STATUS_MAP
     )
@@ -398,6 +406,7 @@ def _parse_former_use(deal, attrs):
 
     FORMER_LAND_USE_MAP = {
         "Commercial (large-scale) agriculture": "COMMERCIAL_AGRICULTURE",
+        "Agricultura comercial (a gran escala)": "COMMERCIAL_AGRICULTURE",
         "Smallholder agriculture": "SMALLHOLDER_AGRICULTURE",
         "Agricultura minifundista": "SMALLHOLDER_AGRICULTURE",
         "Shifting cultivation": "SHIFTING_CULTIVATION",
@@ -834,9 +843,18 @@ def _create_contracts(deal, groups):
         }
         cdate = attrs.get("contract_date")
         if cdate:
+            if cdate == "2008-15-08":
+                cdate = "2008-08-15"
+            if cdate == "2011-19-05":
+                cdate = "2011-05-19"
+            if cdate == "2008-24-09":
+                cdate = "2008-09-24"
+            if cdate == "2007-15":
+                cdate = "2007"
             if date_year_field(cdate):
                 contract["date"] = cdate
             else:
+                print(f"cdate = '{cdate}'")
                 raise Exception("!!")
         else:
             contract["date"] = None
@@ -844,10 +862,18 @@ def _create_contracts(deal, groups):
         if expdate:
             if expdate == "2035-09-31":
                 expdate = "2035-09-30"
+            if expdate == "2057-15-08":
+                expdate = "2057-08-15"
+            if expdate == "2060-19-05":
+                expdate = "2060-05-19"
+            if expdate == "2057-24-09":
+                expdate = "2057-09-24"
+            if expdate == "2056-15":
+                expdate = "2056"
             if date_year_field(expdate):
                 contract["expiration_date"] = expdate
             else:
-                print(expdate)
+                print(f"expdate = '{expdate}'")
                 raise Exception("!!")
         else:
             contract["expiration_date"] = None

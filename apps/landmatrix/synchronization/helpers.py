@@ -31,7 +31,7 @@ def _extras_to_json(
         return None
 
     # NOTE Fixes for broken data
-    if expected_type == float and adict["value"] in ("7,8", "101171,5"):
+    if expected_type == float and adict["value"] in ("7,8", "101171,5", "2743,7"):
         adict["value"] = adict["value"].replace(",", ".")
 
     if fieldmap:
@@ -406,6 +406,7 @@ def date_year_field(data: str) -> bool:
         try:
             datetime.strptime(data, "%Y-%m-%d")
             return True
-        except ValueError:
+        except ValueError as e:
+            print(e)
             return False
     return False
