@@ -4,6 +4,7 @@ type User {
   first_name: String
   last_name: String
   full_name: String
+  initials: String
   email: String
   is_active: Boolean
   is_authenticated: Boolean

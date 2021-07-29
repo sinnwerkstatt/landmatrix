@@ -37,6 +37,7 @@ const store = new Vuex.Store({
                   id
                   full_name
                   username
+                  initials
                   is_authenticated
                   is_impersonate
                   role

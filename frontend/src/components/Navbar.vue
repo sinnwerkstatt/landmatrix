@@ -1,8 +1,8 @@
 <template>
-  <nav class="navbar sticky-top navbar-expand-xl navbar-light bg-light">
+  <nav class="navbar navbar-expand-xl navbar-light">
     <div class="container-fluid">
-      <router-link class="navbar-brand" :to="'/'">
-        <img :src="lm_logo" alt="Landmatrix Logo" />
+      <router-link class="navbar-brand" to="/">
+        <img :src="lm_logo" alt="Land Matrix" />
       </router-link>
       <button
         class="navbar-toggler"
@@ -138,14 +138,13 @@
           <li class="nav-item dropdown">
             <a
               id="languageDropdown"
-              href="#"
               role="button"
               class="nav-link dropdown-toggle"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <i class="fa fa-language" aria-hidden="true" style="display: inline"></i>
+              <i class="fa fa-language" aria-hidden="true"></i>
               {{ languages[language] }}
             </a>
             <div class="dropdown-menu">
@@ -160,13 +159,6 @@
               </div>
             </div>
           </li>
-          <li v-if="user" class="nav-item">
-            <p class="navbar-text dropdown-header" style="line-height: 1.2em">
-              {{ user.full_name }}
-              <br />
-              <small>{{ $t(user.bigrole) }}</small>
-            </p>
-          </li>
           <li v-if="user" class="nav-item dropdown">
             <a
               id="navbarDropdown"
@@ -177,16 +169,22 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <i
-                class="fa"
-                :class="user.is_impersonate ? 'fa-user-secret' : 'fa-user'"
-              ></i>
+              {{ user.initials }}
+              <i v-if="user.role === 'ADMINISTRATOR'" class="fas fa-user-astronaut"></i>
+              <i v-else-if="user.role === 'EDITOR'" class="fas fa-user-nurse"></i>
+              <i v-else-if="user.is_impersonate" class="fa fa-user-secret"></i>
+              <i v-else class="fa fa-user"></i>
             </a>
             <div
               ref="userMenu"
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="#navbarDropdown"
             >
+              <p class="name-emblem">
+                {{ user.full_name }}
+                <br />
+                <small>{{ $t(user.bigrole) }}</small>
+              </p>
               <!--suppress HtmlUnknownTarget -->
               <a
                 v-if="user.is_impersonate"
@@ -220,7 +218,7 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <i class="fa fa-user"></i>
+              <i class="far fa-user"></i>
             </a>
             <div
               class="dropdown-menu dropdown-menu-right"
@@ -349,7 +347,10 @@
 </script>
 
 <style lang="scss" scoped>
-  .bg-light {
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
     background-color: white !important;
   }
 
@@ -407,5 +408,10 @@
       min-width: 144px;
       max-width: 144px;
     }
+  }
+  .name-emblem {
+    padding: 0.5rem 0 0 1rem;
+    line-height: 1.2em;
+    color: gray;
   }
 </style>

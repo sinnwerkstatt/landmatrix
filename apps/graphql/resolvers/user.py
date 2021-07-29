@@ -21,6 +21,11 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
         if (user.first_name or user.last_name)
         else user.username
     )
+    user.initials = (
+        f"{user.first_name[0]}{user.last_name[0]}"
+        if user.first_name and user.last_name
+        else user.username[:2]
+    )
     return user
 
 

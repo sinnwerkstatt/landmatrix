@@ -11,20 +11,25 @@ x = """
     -- ALTER SEQUENCE landmatrix_deal_id_seq RESTART;
     -- ALTER SEQUENCE landmatrix_deal_top_investors_id_seq RESTART;
     -- ALTER SEQUENCE landmatrix_dealversion_id_seq RESTART;
-
-
+"""
+y = """
     delete from landmatrix_investorworkflowinfo;
     alter sequence landmatrix_investorworkflowinfo_id_seq restart;
     delete from landmatrix_investorventureinvolvement;
     delete from landmatrix_investorventureinvolvementversion;
     alter sequence landmatrix_investorventureinvolvement_id_seq restart;
     alter sequence landmatrix_investorventureinvolvementversion_id_seq restart;
+
+    -- Investor.objects.all().delete()
+
     delete from landmatrix_investor;
     delete from landmatrix_investorversion;
     alter sequence landmatrix_investor_id_seq restart;
     alter sequence landmatrix_investorversion_id_seq restart;
 
-    -- SELECT setval('landmatrix_investor_id_seq', COALESCE((SELECT MAX(id)+1 FROM landmatrix_investor), 1), false);
+    -- ./manage.py sync_investors
+
+    SELECT setval('landmatrix_investor_id_seq', COALESCE((SELECT MAX(id)+1 FROM landmatrix_investor), 1), false);
 
     -- delete from landmatrix_revision;
     -- alter sequence landmatrix_revision_id_seq restart;
