@@ -135,6 +135,7 @@
           </li>
         </ul>
         <ul class="navbar-nav ml-auto align-items-center">
+          <NavbarSearch />
           <li class="nav-item dropdown">
             <a
               id="languageDropdown"
@@ -265,11 +266,13 @@
   </nav>
 </template>
 <script>
+  import NavbarSearch from "$components/NavbarSearch";
   import { blogcategories_query } from "$store/queries";
   import Cookies from "js-cookie";
   import lm_logo from "$static/images/lm-logo.png";
 
   export default {
+    components: { NavbarSearch },
     data() {
       return {
         lm_logo,
@@ -387,13 +390,6 @@
       .dropdown-item {
         padding: 0.5rem 1rem;
       }
-    }
-  }
-
-  .navbar-nav {
-    .navbar-text {
-      padding-top: 0.2rem;
-      padding-bottom: 0.2rem;
     }
   }
 
