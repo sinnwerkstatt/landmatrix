@@ -7,32 +7,32 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      @click="focusSearch"
     >
       <i class="fa fa-search"></i>
     </a>
     <div class="dropdown-menu search-menu" style="padding: 0.5rem 1rem">
       <form class="input-group">
-        <label for="search" style="white-space: nowrap">
-          Search for deals and investors
+        <label for="search" class="nowrap">
+          {{ $t("Search deals and investors") }}
+          <input
+            id="search"
+            v-model="search"
+            type="text"
+            class="form-control"
+            :placeholder="$t('ID or Name')"
+            @keydown="searchKeyboardEvent"
+          />
         </label>
-        <input
-          id="search"
-          ref="searchInput"
-          v-model="search"
-          type="text"
-          class="form-control"
-          placeholder="ID or Name"
-          @keydown="searchKeyboardEvent"
-        />
       </form>
-      <ul v-if="searchResult.length > 0" ref="ulle">
+      <ul v-if="searchResult.length > 0" id="ulle">
         <li
           v-for="(d, i) in searchResult"
           :id="`${d.id}${d.investor}`"
           :key="`${d.id}${d.investor}`"
           :class="{ investor: d.investor, selected: selectedSearchIndex === i }"
         >
-          <router-link :class="{ not_public: !d.is_public }" :to="d.url">
+          <router-link :class="{ not_public: d.is_public === false }" :to="d.url">
             {{ d.name }}
           </router-link>
         </li>
@@ -126,6 +126,9 @@
       },
     },
     methods: {
+      focusSearch() {
+        setTimeout(() => document.getElementById("search").focus(), 100);
+      },
       searchKeyboardEvent(e) {
         if (["ArrowDown", "ArrowUp"].includes(e.code)) {
           e.preventDefault();
@@ -141,9 +144,9 @@
                 (this.selectedSearchIndex - 1) % this.searchResult.length;
           }
 
-          let getEl = this.searchResult[this.selectedSearchIndex];
-          let offi = document.getElementById(`${getEl.id}${getEl.investor}`).offsetTop;
-          this.$refs.ulle.scrollTop = offi - 100;
+          let liel = this.searchResult[this.selectedSearchIndex];
+          let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop;
+          document.getElementById("ulle").scrollTop = offset - 100;
         }
 
         if (e.code === "Enter") {

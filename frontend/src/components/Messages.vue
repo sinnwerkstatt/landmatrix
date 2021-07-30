@@ -120,6 +120,7 @@
     }
 
     .alert {
+      margin: 0;
       padding: 1.8em;
       box-shadow: 0 0 15px rgba(black, 0.5);
 
