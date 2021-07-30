@@ -52,53 +52,6 @@ export const blogcategories_query = gql`
   }
 `;
 
-export const global_rankings_query = {
-  query: gql`
-    query GlobalRankings($filters: [Filter]) {
-      global_rankings(filters: $filters)
-    }
-  `,
-  variables() {
-    return {
-      filters: this.$store.getters.defaultFiltersForGQL,
-    };
-  },
-};
-
-export const country_investments_and_rankings_query = {
-  query: gql`
-    query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
-      country_investments_and_rankings(id: $id, filters: $filters)
-    }
-  `,
-  variables() {
-    return {
-      id: +this.country_id,
-      filters: this.filters,
-    };
-  },
-  skip() {
-    return !this.country_id;
-  },
-};
-
-export const investors_query = {
-  query: gql`
-    query Investors($limit: Int!, $subset: Subset) {
-      investors(limit: $limit, subset: $subset) {
-        id
-        name
-      }
-    }
-  `,
-  variables() {
-    return {
-      limit: 0,
-      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
-    };
-  },
-};
-
 export const investor_query = {
   query: gql`
     query Investor(

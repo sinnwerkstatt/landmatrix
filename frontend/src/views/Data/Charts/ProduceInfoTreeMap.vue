@@ -1,9 +1,12 @@
 <template>
-  <ChartsContainer>
+  <ChartsContainer
+    @filterbar-toggle="toggleContextContainer"
+    @contextbar-toggle="toggleContextContainer"
+  >
     <template #default>
       <LoadingPulse v-if="$apollo.loading" />
       <div id="produce-info" ref="container">
-        <svg :style="svgStyle"></svg>
+        <svg></svg>
       </div>
     </template>
     <template #ContextBar>
@@ -18,6 +21,7 @@
 <script>
   import Legend from "$components/Charts/Legend";
   import LoadingPulse from "$components/Data/LoadingPulse";
+  import { thousandsep } from "$utils/filters";
 
   import { format } from "d3-format";
   import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
@@ -27,34 +31,17 @@
 
   import ChartsContainer from "./ChartsContainer";
 
-  let count = 0;
-
-  function domUid(name) {
-    return new Id("O-" + (name == null ? "" : name + "-") + ++count);
-  }
-
-  function Id(id) {
-    this.id = id;
-  }
-
-  // FIXME: commented out because variable location doesnt exist
-  // function Id(id) {
-  //   this.id = id;
-  //   this.href = new URL(`#${id}`, location) + "";
-  // }
-  //
-  // Id.prototype.toString = function () {
-  //   return "url(" + this.href + ")";
-  // };
-
   function buildTreeChart(treeData) {
+    if (!treeData) return;
+    let count = 0;
+    const domUid = (name) => `O-${name}-${++count}`;
     let myformat = format(",d");
 
     let elemx = document.getElementById("produce-info");
     if (!elemx) return;
 
     let width = elemx.offsetWidth;
-    let height = (width / 4) * 3;
+    let height = elemx.offsetHeight;
 
     // reset first!
     selectAll("#produce-info > svg > *").remove();
@@ -65,9 +52,7 @@
       .attr("transform", "translate(.5,.5)");
 
     // format data
-    let root = hierarchy(treeData).sum(function (d) {
-      return d.value;
-    });
+    let root = hierarchy(treeData).sum((d) => d.value);
 
     // initialize graph
     let mytreemap = treemap()
@@ -106,6 +91,7 @@
       .append("clipPath")
       .attr("id", (d) => (d.clipUid = domUid("clip")).id)
       .append("use")
+
       .attr("xlink:href", (d) => d.leafUid.href);
 
     // text that is masked (to avoid text overflow)
@@ -114,10 +100,12 @@
       .attr("clip-path", (d) => d.clipUid)
       .selectAll("tspan")
       .data((d) =>
-        d.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(myformat(d.data.value) + " ha")
+        d.data.name
+          .split(/(?=[A-Z][a-z]\(\) )\s+/g)
+          .concat(thousandsep(d.data.value) + " ha")
       )
       .join("tspan")
-      .attr("x", 3)
+      .attr("x", 2)
       .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
       .attr("fill-opacity", (d, i, nodes) => (i === nodes.length - 1 ? 0.7 : null))
       .text((d) => d);
@@ -130,15 +118,12 @@
       return { title: this.$t("Produce info map") };
     },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", true));
     },
     data() {
       return {
         deals: [],
         dealsWithProduceInfo: [],
-        svgStyle: {},
       };
     },
     apollo: {
@@ -147,62 +132,58 @@
     },
     computed: {
       chart_desc() {
-        if (!this.$store.state.page.chartDescriptions) return null;
-        return this.$store.state.page.chartDescriptions.produce_info_map;
+        return this.$store.state.page.chartDescriptions?.produce_info_map;
       },
       legendItems() {
         if (this.treeData) {
-          return this.treeData.children.map((l) => {
-            return {
-              label: l.name,
-              color: l.color,
-            };
-          });
+          return this.treeData.children.map((l) => ({ label: l.name, color: l.color }));
         }
         return [];
       },
       treeData() {
-        if (this.produceData) {
-          return {
-            name: "",
-            children: [
-              {
-                name: this.$t("Livestock"),
-                color: "#7D4A0F",
-                children: this.produceData.animals,
-              },
-              {
-                name: this.$t("Mineral resources"),
-                color: "black",
-                children: this.produceData.mineral_resources,
-              },
-              {
-                name: this.$t("Crops"),
-                color: "#FC941F",
-                children: this.produceData.crops,
-              },
-            ],
-          };
-        } else {
-          return null;
+        if (!this.produceData) return null;
+        let ret = { name: "", children: [] };
+        if (this.produceData.animals.length > 0) {
+          ret.children.push({
+            name: this.$t("Livestock"),
+            color: "#7D4A0F",
+            children: this.produceData.animals,
+          });
         }
+        if (this.produceData.mineral_resources.length > 0) {
+          console.log("minres", this.produceData.mineral_resources);
+          ret.children.push({
+            name: this.$t("Mineral resources"),
+            color: "black",
+            children: this.produceData.mineral_resources,
+          });
+        }
+        if (this.produceData.crops.length > 0) {
+          ret.children.push({
+            name: this.$t("Crops"),
+            color: "#FC941F",
+            children: this.produceData.crops,
+          });
+        }
+
+        return ret;
       },
       produceData() {
         let data = null;
         let areaTotals = {};
         let fields = ["crops", "animals", "mineral_resources"];
         let totalSize = 0;
+        console.log(this.dealsWithProduceInfo);
         if (
-          this.deals.length &&
+          this.deals.length > 0 &&
           this.deals.length === this.dealsWithProduceInfo.length &&
           !this.$apollo.loading
         ) {
           data = {};
           // map deals for faster access
           let dealMap = {};
-          for (let deal of this.deals) {
-            dealMap[deal.id] = deal;
-          }
+          for (let deal of this.deals) dealMap[deal.id] = deal;
+
           // sum area for each produce
           for (let deal of this.dealsWithProduceInfo) {
             for (let field of fields) {
@@ -250,10 +231,14 @@
     },
     watch: {
       treeData() {
-        this.drawChart();
+        // console.log("tree data changed.", this.treeData);
+        buildTreeChart(this.treeData);
       },
     },
     methods: {
+      toggleContextContainer() {
+        buildTreeChart(this.treeData);
+      },
       getLabel(field, key) {
         let map = this.$store.state.formfields.deal;
         if (map && field in map) {
@@ -264,11 +249,6 @@
         }
         return key;
       },
-      drawChart() {
-        if (this.treeData) {
-          buildTreeChart(this.treeData);
-        }
-      },
     },
   };
 </script>
@@ -276,17 +256,13 @@
 <style lang="scss" scoped>
   #produce-info {
     width: 100%;
-    margin: 4em 2em 2em 2em;
-    padding-top: 75%; // aspect ratio 4:3
-    position: relative;
+    height: 100%;
+    padding: 3em;
     align-self: safe center;
-    max-height: 100%;
 
     > svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      max-height: 100%;
+      max-width: 100%;
     }
   }
 </style>

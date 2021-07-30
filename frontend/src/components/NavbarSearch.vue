@@ -61,6 +61,7 @@
             deals(limit: 0, subset: $subset) {
               id
               country {
+                id
                 name
               }
               is_public

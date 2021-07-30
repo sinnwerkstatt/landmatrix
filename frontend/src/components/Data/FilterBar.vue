@@ -344,19 +344,36 @@
 </template>
 
 <script>
-  import { investors_query } from "$store/queries";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
   } from "$utils/choices";
+  import gql from "graphql-tag";
   import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse";
 
   export default {
     name: "FilterBar",
     components: { FilterCollapse },
-    apollo: { investors: investors_query },
+    apollo: {
+      investors: {
+        query: gql`
+          query Investors($limit: Int!, $subset: Subset) {
+            investors(limit: $limit, subset: $subset) {
+              id
+              name
+            }
+          }
+        `,
+        variables() {
+          return {
+            limit: 0,
+            subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
+          };
+        },
+      },
+    },
     data() {
       return {
         year: new Date().getFullYear(),
@@ -613,6 +630,11 @@
             ),
           },
         ];
+      },
+    },
+    watch: {
+      showFilterBar(state) {
+        this.$emit("visibility-changed", state);
       },
     },
     methods: {

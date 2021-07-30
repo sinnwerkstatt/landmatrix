@@ -2,7 +2,7 @@
   <div>
     <h2 class="bar-title">Web of transnational deals</h2>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-html="chart_desc" />
+    <div v-html="chart_description" />
     <div v-if="country" class="hint-box">
       <h4>{{ country.name }}</h4>
       <!--      <div class="mx-3">-->
@@ -82,20 +82,43 @@
 </template>
 
 <script>
-  import {
-    country_investments_and_rankings_query,
-    global_rankings_query,
-  } from "$store/queries";
+  import gql from "graphql-tag";
   import { mapGetters } from "vuex";
 
   export default {
     name: "ContextBarWebOfTransnationalDeals",
     props: {
-      filters: { type: Object, required: true },
+      filters: { type: Array, required: true },
     },
     apollo: {
-      global_rankings: global_rankings_query,
-      country_investments_and_rankings: country_investments_and_rankings_query,
+      global_rankings: {
+        query: gql`
+          query GlobalRankings($filters: [Filter]) {
+            global_rankings(filters: $filters)
+          }
+        `,
+        variables() {
+          return {
+            filters: this.$store.getters.defaultFiltersForGQL,
+          };
+        },
+      },
+      country_investments_and_rankings: {
+        query: gql`
+          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
+            country_investments_and_rankings(id: $id, filters: $filters)
+          }
+        `,
+        variables() {
+          return {
+            id: +this.country_id,
+            filters: this.filters,
+          };
+        },
+        skip() {
+          return !this.country_id;
+        },
+      },
     },
     data() {
       return {
@@ -113,8 +136,9 @@
       country_id() {
         return this.$store.state.filters.filters.country_id;
       },
-      chart_desc() {
+      chart_description() {
         if (!this.$store.state.page.chartDescriptions) return null;
+        // noinspection JSUnresolvedVariable
         return this.$store.state.page.chartDescriptions.web_of_transnational_deals;
       },
       country() {

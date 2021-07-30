@@ -1,12 +1,11 @@
 <template>
   <div class="datacontainer">
     <ViewSwitcher />
-    <FilterBar />
-    <ContextBarContainer>
+    <FilterBar @visibility-changed="$emit('filterbar-toggle', $event)" />
+    <ContextBarContainer @visibility-changed="$emit('contextbar-toggle', $event)">
       <slot name="ContextBar"></slot>
     </ContextBarContainer>
     <div class="main-content">
-      <!--      <LoadingPulse v-if="$apollo.loading" />-->
       <div class="h-100">
         <div
           class="sideBuffer float-left"
@@ -31,11 +30,7 @@
 
   export default {
     name: "ChartsContainer",
-    components: {
-      ContextBarContainer,
-      FilterBar,
-      ViewSwitcher,
-    },
+    components: { ContextBarContainer, FilterBar, ViewSwitcher },
     computed: {},
   };
 </script>

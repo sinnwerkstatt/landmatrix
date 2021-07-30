@@ -34,6 +34,11 @@
         },
       },
     },
+    watch: {
+      showContextBar(state) {
+        this.$emit("visibility-changed", state);
+      },
+    },
   };
 </script>
 

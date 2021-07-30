@@ -67,7 +67,11 @@ export const data_deal_produce_query = {
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
-      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
+      subset: this.$store.getters.userAuthenticated
+        ? this.$store.state.filters.publicOnly
+          ? "PUBLIC"
+          : "ACTIVE"
+        : "PUBLIC",
     };
   },
 };
