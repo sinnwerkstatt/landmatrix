@@ -2,6 +2,7 @@ enum role {
   PARENT,
   LENDER,
 }
+
 export type Involvement = {
   id: number;
   role: role;

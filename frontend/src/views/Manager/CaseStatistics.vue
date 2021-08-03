@@ -14,12 +14,12 @@
               <div class="row my-3">
                 <div class="col-md-6">
                   <LocationFilter
-                    :regions="regions"
                     :countries="countries"
-                    :selected-region="selectedRegion"
+                    :regions="regions"
                     :selected-country="selectedCountry"
-                    @updateRegion="updateRegion"
+                    :selected-region="selectedRegion"
                     @updateCountry="updateCountry"
+                    @updateRegion="updateRegion"
                   ></LocationFilter>
                 </div>
               </div>
@@ -34,11 +34,11 @@
               <h3 class="mt-5">Indicator listings</h3>
               <hr />
               <StatisticsTable
+                :countries="countries"
                 :deal_statistics="current_deal_statistics"
                 :investor_statistics="current_investor_statistics"
-                :countries="countries"
-                :selected-region="selectedRegion"
                 :selected-country="selectedCountry"
+                :selected-region="selectedRegion"
               ></StatisticsTable>
             </b-card-text>
           </b-tab>
@@ -68,9 +68,9 @@
                       </div>
                       <DatePicker
                         v-model="daterange"
-                        mode="range"
-                        :max-date="new Date()"
                         :input-props="{ style: 'width: 100%' }"
+                        :max-date="new Date()"
+                        mode="range"
                         @input="selectedDateOption = null"
                       />
                     </div>
@@ -78,12 +78,12 @@
                 </div>
                 <div class="col-md-6">
                   <LocationFilter
-                    :regions="regions"
                     :countries="countries"
-                    :selected-region="selectedRegion"
+                    :regions="regions"
                     :selected-country="selectedCountry"
-                    @updateRegion="updateRegion"
+                    :selected-region="selectedRegion"
                     @updateCountry="updateCountry"
+                    @updateRegion="updateRegion"
                   ></LocationFilter>
                 </div>
               </div>
@@ -94,11 +94,11 @@
               </div>
               <div class="my-5" />
               <StatisticsTable
+                :countries="countries"
                 :deal_statistics="historic_deal_statistics"
                 :investor_statistics="historic_investor_statistics"
-                :countries="countries"
-                :selected-region="selectedRegion"
                 :selected-country="selectedCountry"
+                :selected-region="selectedRegion"
               >
               </StatisticsTable>
             </b-card-text>
@@ -112,11 +112,11 @@
 <script>
   import axios from "axios";
   import dayjs from "dayjs";
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
   import { mapState } from "vuex";
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
   import StatisticsTable from "./Statistics/StatisticsTable.vue";
-  import DatePicker from "v-calendar/lib/components/date-picker.umd";
 
   function uniq(a, keepLatest = false) {
     if (keepLatest) {
@@ -547,7 +547,7 @@
   };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
   .input-group {
     width: 100%;
   }
@@ -582,8 +582,10 @@
       margin-bottom: 0;
     }
   }
+
   .loadingscreen {
     position: fixed;
+
     .loader {
       margin-top: calc(50vh - 100px);
     }

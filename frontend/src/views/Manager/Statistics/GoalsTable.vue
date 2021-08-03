@@ -93,19 +93,22 @@
   };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
   table.goals {
     th,
     td {
       padding: 0.3em;
     }
+
     th {
       text-align: center;
       white-space: nowrap;
+
       &.label {
         text-align: left;
       }
     }
+
     td {
       text-align: right;
       padding: 0.3em 1.5em;

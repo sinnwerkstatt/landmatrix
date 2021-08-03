@@ -12,16 +12,16 @@
 
         <div class="savebar-container">
           <button
-            type="submit"
-            class="btn btn-primary btn-sm mx-2"
             :disabled="!form_changed || saving_in_progress"
+            class="btn btn-primary btn-sm mx-2"
+            type="submit"
             @click="saveButtonPressed"
           >
             <span
               v-if="saving_in_progress"
+              aria-hidden="true"
               class="spinner-border spinner-border-sm"
               role="status"
-              aria-hidden="true"
             ></span>
             &nbsp;
             {{ $t("Save") }}
@@ -56,11 +56,11 @@
                 v-for="fieldname in general_fields"
                 :key="fieldname"
                 v-model="investor[fieldname]"
-                model="investor"
                 :fieldname="fieldname"
-                :wrapper-classes="['row', 'my-3']"
                 :label-classes="['col-md-3']"
                 :value-classes="['col-md-9']"
+                :wrapper-classes="['row', 'my-3']"
+                model="investor"
               />
             </div>
           </form>
@@ -69,9 +69,9 @@
         <InvestorSubmodelEditSection
           v-if="active_tab === '#parents'"
           id="parents"
-          title="Parent companies"
-          model-name="Parent company"
           :entries="parents"
+          model-name="Parent company"
+          title="Parent companies"
           @addEntry="addInvestor('PARENT')"
           @removeEntry="removeInvestor"
         />
@@ -79,9 +79,9 @@
         <InvestorSubmodelEditSection
           v-if="active_tab === '#tertiaries'"
           id="tertiaries"
-          title="Tertiary investors/lenders"
-          model-name="Tertiary investor/lender"
           :entries="lenders"
+          model-name="Tertiary investor/lender"
+          title="Tertiary investors/lenders"
           @addEntry="addInvestor('LENDER')"
           @removeEntry="removeInvestor"
         />
@@ -297,20 +297,24 @@
       color: var(--color-lm-dark);
       text-align: left;
       text-transform: none;
+
       &:before {
         display: none;
       }
     }
   }
+
   .investor-edit-nav {
     grid-column: span 3;
     height: 100%;
     width: 100%;
     overflow-y: auto;
     padding: 0 1rem 0 0;
+
     &::-webkit-scrollbar {
       display: none;
     }
+
     -ms-overflow-style: none; /* IE and Edge */
     //noinspection CssUnknownProperty
     scrollbar-width: none; /* Firefox */
@@ -318,6 +322,7 @@
     ul {
       list-style: none;
       padding-left: 0;
+
       li {
         cursor: pointer;
         padding: 0.5rem 1rem 0.5rem 0;
@@ -329,6 +334,7 @@
           border-right-width: 3px;
           background-color: inherit;
           color: var(--color-lm-dark);
+
           a {
             color: var(--color-lm-dark);
           }

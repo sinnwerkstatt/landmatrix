@@ -17,11 +17,11 @@
           </template>
 
           <b-tabs
-            pills
             card
-            vertical
-            nav-wrapper-class="col-lg-3 col-md-12"
             content-class="col-lg-9 col-md-12"
+            nav-wrapper-class="col-lg-3 col-md-12"
+            pills
+            vertical
           >
             <b-tab v-for="(stats, i) in deal_statistics" :key="i">
               <template #title>
@@ -54,11 +54,11 @@
           </template>
 
           <b-tabs
-            pills
             card
-            vertical
-            nav-wrapper-class="col-lg-3 col-md-12"
             content-class="col-lg-9 col-md-12"
+            nav-wrapper-class="col-lg-3 col-md-12"
+            pills
+            vertical
           >
             <b-tab v-for="(stats, i) in investor_statistics" :key="i">
               <template #title>
@@ -76,8 +76,8 @@
                 </div>
                 <div class="scroll-container">
                   <InvestorTable
-                    :investors="prepareInvestors(stats.investors)"
                     :fields="investorFields"
+                    :investors="prepareInvestors(stats.investors)"
                     :page-size="10"
                   />
                 </div>
@@ -196,7 +196,7 @@
   };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
   .actions {
     margin-bottom: -0.7em;
     text-align: right;

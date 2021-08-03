@@ -4,7 +4,7 @@
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
           <h1>{{ page.title }}</h1>
-          <QuasiStaticMap :region-id="region_id" :country-id="country_id" />
+          <QuasiStaticMap :country-id="country_id" :region-id="region_id" />
         </div>
       </div>
       <div class="row justify-content-center">
@@ -35,11 +35,11 @@
                     <label>Size</label>
                     <div class="total">{{ totalSize }} ha</div>
                     <StatusPieChart
+                      :aspect-ratio="1"
                       :deal-data="negotiationStatusBuckets"
                       :display-legend="true"
-                      :aspect-ratio="1"
-                      value-field="size"
                       unit="ha"
+                      value-field="size"
                     />
                   </div>
                   <div class="col-6 text-center">
@@ -48,9 +48,9 @@
                       {{ totalCount }}
                     </div>
                     <StatusPieChart
+                      :aspect-ratio="1"
                       :deal-data="negotiationStatusBuckets"
                       :display-legend="true"
-                      :aspect-ratio="1"
                       value-field="count"
                     />
                   </div>
@@ -69,8 +69,8 @@
       </div>
     </div>
     <ArticleList
-      :articles-label="$t('Country profiles')"
       :articles="filteredCountryProfiles"
+      :articles-label="$t('Country profiles')"
     >
       <div class="description">
         <p>
@@ -95,8 +95,8 @@
       </div>
     </ArticleList>
     <ArticleList
-      :articles-label="$t('News & publications')"
       :articles="filteredNewsPubs"
+      :articles-label="$t('News & publications')"
     />
     <div v-if="page.twitter_feed" class="container tweets">
       <div class="row justify-content-center">
@@ -302,6 +302,7 @@
 <style lang="scss" scoped>
   .observatory {
     margin-bottom: 5em;
+
     h1 {
       font-size: 48px;
       font-weight: normal !important;
@@ -317,6 +318,7 @@
     .intro-text {
       padding-top: 1.5em;
       padding-bottom: 0.8em;
+
       .readmore {
         margin-top: 1.5em;
       }

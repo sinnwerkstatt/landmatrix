@@ -8,12 +8,12 @@
     <div class="main-content">
       <div class="h-100">
         <div
-          class="sideBuffer float-left"
           :class="{ collapsed: !$store.state.map.showFilterBar }"
+          class="sideBuffer float-left"
         ></div>
         <div
-          class="sideBuffer float-right"
           :class="{ collapsed: !$store.state.map.showContextBar }"
+          class="sideBuffer float-right"
         ></div>
         <div class="charts-container">
           <slot></slot>
@@ -41,11 +41,13 @@
     padding: 0;
     width: 100%;
     height: calc(100vh - 60px - 31px);
+
     .main-content {
       width: 100%;
       height: 100%;
     }
   }
+
   .charts-container {
     text-align: center;
     height: 100%;
@@ -53,6 +55,7 @@
     justify-content: center;
     overflow-y: scroll;
   }
+
   .sideBuffer {
     min-width: 220px;
     max-width: 300px;

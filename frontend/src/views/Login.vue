@@ -9,23 +9,23 @@
           Username
           <input
             v-model="username"
-            class="form-control"
-            type="text"
             autocomplete="username"
+            class="form-control"
             placeholder="Username"
+            type="text"
           />
         </label>
         <label>
           Password
           <input
             v-model="password"
-            class="form-control"
-            type="password"
             autocomplete="current-password"
+            class="form-control"
             placeholder="Password"
+            type="password"
           />
         </label>
-        <button type="submit" class="btn btn-primary">
+        <button class="btn btn-primary" type="submit">
           {{ $t("Login") }}
         </button>
         <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
@@ -71,6 +71,7 @@
     align-items: center;
     height: 60vh;
   }
+
   .login-container {
     width: 350px;
 
@@ -79,10 +80,12 @@
     padding: 1rem;
     border-radius: 3px;
   }
+
   label {
     display: block;
     margin-bottom: 1rem;
   }
+
   input {
     display: block;
   }

@@ -5,8 +5,8 @@
       :deal="deal"
       :deal-version="dealVersion"
       @change_status="changeStatus"
-      @reload_deal="reloadDeal"
       @delete="deleteDeal"
+      @reload_deal="reloadDeal"
       @set_confidential="setConfidential"
     />
     <div v-else class="container deal-detail">
@@ -35,59 +35,59 @@
         id="tabNav"
         :key="dealId + dealVersion"
         content-class="mb-3 col-sm-7 col-md-9"
-        vertical
-        pills
-        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
         nav-class="sticky-nav"
+        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
+        pills
+        vertical
       >
         <DealLocationsSection
           key="1"
+          :active="active_tab === '#locations'"
           :deal="deal"
           :fields="deal_submodel_sections.location"
-          :active="active_tab === '#locations'"
           @activated="updateRoute('#locations')"
         />
         <DealSection
           key="2"
-          :title="deal_sections.general_info.label"
+          :active="active_tab === '#general'"
           :deal="deal"
           :sections="deal_sections.general_info.subsections"
-          :active="active_tab === '#general'"
+          :title="deal_sections.general_info.label"
           @activated="updateRoute('#general')"
         />
 
         <DealSubmodelSection
           key="3"
-          title="Contracts"
-          model-name="Contract"
+          :active="active_tab === '#contracts'"
           :entries="deal.contracts"
           :fields="deal_submodel_sections.contract"
           model="contract"
-          :active="active_tab === '#contracts'"
+          model-name="Contract"
+          title="Contracts"
           @activated="updateRoute('#contracts')"
         />
 
         <DealSection
           key="4"
-          :title="deal_sections.employment.label"
+          :active="active_tab === '#employment'"
           :deal="deal"
           :sections="deal_sections.employment.subsections"
-          :active="active_tab === '#employment'"
+          :title="deal_sections.employment.label"
           @activated="updateRoute('#employment')"
         />
 
         <DealSection
           key="5"
-          :title="deal_sections.investor_info.label"
+          :active="active_tab === '#investor_info'"
           :deal="deal"
           :sections="deal_sections.investor_info.subsections"
-          :active="active_tab === '#investor_info'"
+          :title="deal_sections.investor_info.label"
           @activated="triggerInvestorGraphRefresh"
         >
           <div class="row">
             <div
-              class="col-md-12 col-lg-10 col-xl-9"
               :class="{ loading_wrapper: $apollo.queries.investor.loading }"
+              class="col-md-12 col-lg-10 col-xl-9"
             >
               <div
                 v-if="investor && investor.involvements && investor.involvements.length"
@@ -97,10 +97,10 @@
                 </h3>
                 <InvestorGraph
                   ref="investorGraph"
-                  :investor="investor"
-                  :show-deals-on-load="false"
                   :controls="false"
                   :init-depth="4"
+                  :investor="investor"
+                  :show-deals-on-load="false"
                 />
               </div>
               <div v-else class="loader"></div>
@@ -110,75 +110,75 @@
 
         <DealSubmodelSection
           key="6"
-          title="Data sources"
-          model-name="Data source"
+          :active="active_tab === '#data_sources'"
           :entries="deal.datasources"
           :fields="deal_submodel_sections.datasource"
           model="datasource"
-          :active="active_tab === '#data_sources'"
+          model-name="Data source"
+          title="Data sources"
           @activated="updateRoute('#data_sources')"
         />
 
         <DealSection
           key="7"
-          :title="deal_sections.local_communities.label"
+          :active="active_tab === '#local_communities'"
           :deal="deal"
           :sections="deal_sections.local_communities.subsections"
-          :active="active_tab === '#local_communities'"
+          :title="deal_sections.local_communities.label"
           @activated="updateRoute('#local_communities')"
         />
 
         <DealSection
           key="8"
-          :title="deal_sections.former_use.label"
+          :active="active_tab === '#former_use'"
           :deal="deal"
           :sections="deal_sections.former_use.subsections"
-          :active="active_tab === '#former_use'"
+          :title="deal_sections.former_use.label"
           @activated="updateRoute('#former_use')"
         />
 
         <DealSection
           key="9"
-          :title="deal_sections.produce_info.label"
+          :active="active_tab === '#produce_info'"
           :deal="deal"
           :sections="deal_sections.produce_info.subsections"
-          :active="active_tab === '#produce_info'"
+          :title="deal_sections.produce_info.label"
           @activated="updateRoute('#produce_info')"
         />
 
         <DealSection
           key="10"
-          :title="deal_sections.water.label"
+          :active="active_tab === '#water'"
           :deal="deal"
           :sections="deal_sections.water.subsections"
-          :active="active_tab === '#water'"
+          :title="deal_sections.water.label"
           @activated="updateRoute('#water')"
         />
 
         <DealSection
           key="11"
-          :title="deal_sections.gender_related_info.label"
+          :active="active_tab === '#gender_related_info'"
           :deal="deal"
           :sections="deal_sections.gender_related_info.subsections"
-          :active="active_tab === '#gender_related_info'"
+          :title="deal_sections.gender_related_info.label"
           @activated="updateRoute('#gender_related_info')"
         />
 
         <DealSection
           key="12"
-          :title="deal_sections.guidelines_and_principles.label"
+          :active="active_tab === '#guidelines_and_principles'"
           :deal="deal"
           :sections="deal_sections.guidelines_and_principles.subsections"
-          :active="active_tab === '#guidelines_and_principles'"
+          :title="deal_sections.guidelines_and_principles.label"
           @activated="updateRoute('#guidelines_and_principles')"
         />
 
         <DealSection
           key="13"
-          :title="deal_sections.overall_comment.label"
+          :active="active_tab === '#overall_comment'"
           :deal="deal"
           :sections="deal_sections.overall_comment.subsections"
-          :active="active_tab === '#overall_comment'"
+          :title="deal_sections.overall_comment.label"
           @activated="updateRoute('#overall_comment')"
         />
 
@@ -190,8 +190,8 @@
 
         <b-tab
           key="15"
-          :title="$t('Deal history')"
           :active="active_tab === '#history'"
+          :title="$t('Deal history')"
           @click="updateRoute('#history')"
         >
           <DealHistory :deal="deal" :deal-id="dealId" :deal-version="dealVersion" />
@@ -199,8 +199,8 @@
 
         <b-tab
           key="16"
-          :title="$t('Comments')"
           :active="active_tab === '#comments'"
+          :title="$t('Comments')"
           @click="updateRoute('#comments')"
         >
           <DealComments :comments="deal.comments"></DealComments>
@@ -208,8 +208,8 @@
 
         <b-tab
           key="17"
-          :title="$t('Actions')"
           :active="active_tab === '#actions'"
+          :title="$t('Actions')"
           @click="updateRoute('#actions')"
         >
           <h4><i class="fa fa-download"></i> Download</h4>
@@ -231,21 +231,18 @@
 </template>
 
 <script>
+  import LoadingPulse from "$components/Data/LoadingPulse";
   import DealComments from "$components/Deal/DealComments";
   import DealHistory from "$components/Deal/DealHistory";
   import DealLocationsSection from "$components/Deal/DealLocationsSection";
+  import DealManageHeader from "$components/Deal/DealManageHeader";
   import DealSection from "$components/Deal/DealSection";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
-  import DealManageHeader from "$components/Deal/DealManageHeader";
   import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
   import { deal_gql_query } from "$store/queries";
-
   import gql from "graphql-tag";
-  import { mapState } from "vuex";
-
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import LoadingPulse from "$components/Data/LoadingPulse";
 
   // function equalDealParams(from_params, to_params) {
   //   if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
@@ -527,6 +524,7 @@
     display: block;
     font-size: 1rem;
   }
+
   .sticky-nav {
     position: -webkit-sticky;
     position: sticky;

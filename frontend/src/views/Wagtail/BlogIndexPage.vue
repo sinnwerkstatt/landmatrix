@@ -13,9 +13,9 @@
           <ul class="nav nav-pills d-flex justify-content-center">
             <li v-for="cat in blogcategories_with_all" :key="cat.slug" class="nav-item">
               <router-link
-                class="nav-link"
                 :class="{ active: category === cat.slug }"
                 :to="cat.slug ? `?category=${cat.slug}` : './'"
+                class="nav-link"
               >
                 {{ $t(cat.name) }}
               </router-link>
@@ -33,8 +33,8 @@
             <img
               v-if="article.header_image"
               :src="article.header_image"
-              class="card-img-top"
               alt="Card image cap"
+              class="card-img-top"
             />
             <div class="card-body">
               <h5 class="card-title">
