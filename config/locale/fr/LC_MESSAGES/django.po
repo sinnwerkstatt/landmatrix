@@ -1613,8 +1613,8 @@ msgstr "Il n'y a encore aucun commentaire sur cette transaction."
 msgid "Add a comment"
 msgstr "Ajouter un commentaire"
 
-msgid "I've read and agree to the <a href=\"/data-policy\" target=\"_blank\">Data Policy</a>."
-msgstr "Je déclare voir lu et approuvé la <a href=\"/data-policy\" target=\"_blank\">Data Policy</a>."
+msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
+msgstr "Je déclare voir lu et approuvé la <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
 
 msgid "Add comment"
 msgstr "Ajouter un commentaire"
