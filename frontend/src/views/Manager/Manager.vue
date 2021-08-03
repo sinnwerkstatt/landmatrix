@@ -148,6 +148,7 @@
                 :show-label="false"
                 :value-classes="[]"
                 :wrapper-classes="[]"
+                :target-blank="true"
               />
             </td>
           </tr>
@@ -172,6 +173,9 @@
   export default {
     name: "Manager",
     components: { LoadingPulse, DisplayField, DatePicker },
+    metaInfo() {
+      return { title: this.$t("Management") };
+    },
     data() {
       return {
         showDeals: true,

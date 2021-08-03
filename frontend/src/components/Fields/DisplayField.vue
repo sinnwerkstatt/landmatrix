@@ -14,6 +14,7 @@
         :formfield="formfield"
         :model="model"
         :file-not-public="fileNotPublic"
+        :target-blank="targetBlank"
       />
     </div>
   </div>
@@ -107,6 +108,7 @@
       },
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
+      targetBlank: { type: Boolean, default: false },
     },
     computed: {
       _visible() {

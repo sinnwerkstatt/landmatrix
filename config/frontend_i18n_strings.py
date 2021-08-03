@@ -60,3 +60,7 @@ _("Livestock")
 _("Mineral resources")
 _("Crops")
 _("Countries investing in {country}")
+_(
+    "The investor network diagram is only visible for live versions of an investor."
+    " I.e. https://landmatrix.org/investor/:id/"
+)

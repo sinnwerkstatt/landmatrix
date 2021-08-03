@@ -14,6 +14,7 @@ from .generics import (
     object_edit,
     object_delete,
 )
+from .user_utils import get_user_role
 
 
 def resolve_investor(
@@ -25,6 +26,9 @@ def resolve_investor(
     involvements_depth: int = 4,
     involvements_include_ventures: bool = True,
 ):
+    user = info.context["request"].user
+    role = get_user_role(user)
+
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
     add_versions = False
@@ -45,21 +49,30 @@ def resolve_investor(
             filtered_fields += [field]
 
     if version:
-        rev = Revision.objects.get(id=version)
-        investor = rev.investorversion_set.get().fields
+        try:
+            rev = Revision.objects.get(id=version)
+        except Revision.DoesNotExist:
+            return
+        try:
+            investor = rev.investorversion_set.get().fields
+        except InvestorVersion.DoesNotExist:
+            return
+        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+            raise GraphQLError("not authorized")
+        investor["created_at"] = rev.date_created
+        investor["revision"] = rev
         # investor["involvements"] = [
         #     v.fields for v in rev.investorventureinvolvementversion_set.all()
         # ]
     else:
-        visible_investors = Investor.objects.visible(
-            info.context["request"].user, subset
-        ).filter(id=id)
+        visible_investors = Investor.objects.visible(user, subset).filter(id=id)
         if not visible_investors:
-            return
+            raise GraphQLError("not found")
+
         investor = qs_values_to_dict(
             visible_investors,
             filtered_fields,
-            ["involvements", "investors", "ventures"],
+            ["involvements", "investors", "ventures", "workflowinfos"],
         )[0]
 
     if add_versions:
@@ -84,8 +97,9 @@ def resolve_investor(
             involvements_include_ventures, max_depth=involvements_depth
         ).get_network(id)
 
-    if not investor.get("investors"):
+    if investor.get("investors") is None:
         investor["investors"] = []
+
     return investor
 
 
@@ -107,8 +121,7 @@ def resolve_investors(
             " resource intensive. Please use single investor queries for this."
         )
 
-    if filters:
-        qs = qs.filter(parse_filters(filters))
+    qs = qs.filter(parse_filters(filters)) if filters else qs
 
     qs = qs[:limit] if limit != 0 else qs
 

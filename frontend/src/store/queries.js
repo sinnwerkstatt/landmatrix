@@ -52,108 +52,88 @@ export const blogcategories_query = gql`
   }
 `;
 
-export const investor_query = {
-  query: gql`
-    query Investor(
-      $id: Int!
-      $version: Int
-      $depth: Int
-      $includeDeals: Boolean!
-      $involvements_include_ventures: Boolean
+export const investor_gql_query = gql`
+  query Investor(
+    $id: Int!
+    $version: Int
+    $subset: Subset
+    $depth: Int
+    $includeDeals: Boolean!
+  ) {
+    investor(
+      id: $id
+      version: $version
+      subset: $subset
+      involvements_depth: $depth
+      involvements_include_ventures: false
     ) {
-      investor(
-        id: $id
-        version: $version
-        involvements_depth: $depth
-        involvements_include_ventures: $involvements_include_ventures
-      ) {
+      id
+      name
+      country {
         id
         name
+      }
+      classification
+      homepage
+      opencorporates
+      comment
+      status
+      draft_status
+      created_at
+      modified_at
+      deals @include(if: $includeDeals) {
+        id
         country {
           id
           name
         }
-        classification
-        homepage
-        opencorporates
+        recognition_status
+        nature_of_deal
+        intention_of_investment
+        negotiation_status
+        implementation_status
+        current_intention_of_investment
+        current_negotiation_status
+        current_implementation_status
+        deal_size
+      }
+      involvements
+      workflowinfos {
+        from_user {
+          id
+          username
+          full_name
+        }
+        to_user {
+          username
+          full_name
+        }
+        draft_status_before
+        draft_status_after
+        timestamp
         comment
-        status
-        draft_status
-        created_at
-        modified_at
-        deals @include(if: $includeDeals) {
-          id
-          country {
-            id
-            name
-          }
-          recognition_status
-          nature_of_deal
-          intention_of_investment
-          negotiation_status
-          implementation_status
-          current_intention_of_investment
-          current_negotiation_status
-          current_implementation_status
-          deal_size
+        processed_by_receiver
+      }
+      versions {
+        id
+        investor {
+          status
+          draft_status
         }
-        involvements
-        workflowinfos {
-          from_user {
+        revision {
+          id
+          date_created
+          user {
             id
-            username
             full_name
           }
-          to_user {
-            username
-            full_name
-          }
-          draft_status_before
-          draft_status_after
-          timestamp
           comment
-          processed_by_receiver
         }
-        versions {
-          id
-          investor {
-            status
-            draft_status
-          }
-          revision {
-            id
-            date_created
-            user {
-              id
-              full_name
-            }
-            comment
-          }
-          object_id
-        }
+        object_id
       }
     }
-  `,
-  variables() {
-    return {
-      id: +this.investorId,
-      version: +this.investorVersion,
-      depth: this.depth,
-      includeDeals: this.includeDealsInQuery,
-      involvements_include_ventures: this.involvementsIncludeVentures,
-    };
-  },
-  update(data) {
-    if (!data.investor) {
-      this.$router.push({
-        name: "404",
-        params: [this.$router.currentRoute.path],
-        replace: true,
-      });
-    }
-    return data.investor;
-  },
-};
+  }
+`;
 
 export const investor_edit_query = gql`
   query Investor($id: Int!, $version: Int) {

@@ -1,12 +1,12 @@
 <template>
   <div v-if="investor">
     <InvestorManageHeader
-      v-if="manage"
+      v-if="userAuthenticated"
       :investor="investor"
       :investor-version="investorVersion"
-      @change_status="change_investor_status"
+      @change_status="changeStatus"
       @reload="reloadInvestor"
-      @delete="delete_investor"
+      @delete="deleteInvestor"
     />
     <div v-else class="container investor-detail">
       <div class="row">
@@ -62,7 +62,7 @@
         >
           {{
             $t(
-              "You're viewing an old version of this Investor, for which we don't have this diagram. To avoid confusion, it is deactivated here."
+              "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
             )
           }}
         </div>
@@ -233,205 +233,228 @@
 </template>
 
 <script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import DisplayField from "$components/Fields/DisplayField";
-  import HeaderDates from "$components/HeaderDates";
-  import InvestorGraph from "$components/Investor/InvestorGraph";
-  import InvestorHistory from "$components/Investor/InvestorHistory";
-  import InvestorManageHeader from "$components/Investor/InvestorManageHeader";
-  import store from "$store";
-  import { investor_query } from "$store/queries";
-  import gql from "graphql-tag";
-  import { mapState } from "vuex";
+    import LoadingPulse from "$components/Data/LoadingPulse";
+    import DisplayField from "$components/Fields/DisplayField";
+    import HeaderDates from "$components/HeaderDates";
+    import InvestorGraph from "$components/Investor/InvestorGraph";
+    import InvestorHistory from "$components/Investor/InvestorHistory";
+    import InvestorManageHeader from "$components/Investor/InvestorManageHeader";
+    import store from "$store";
+    import { investor_gql_query } from "$store/queries";
+    import gql from "graphql-tag";
+    import { mapState } from "vuex";
 
-  export default {
-    name: "InvestorDetail",
-    components: {
-      DisplayField,
-      HeaderDates,
-      InvestorGraph,
-      InvestorHistory,
-      InvestorManageHeader,
-      LoadingPulse,
-    },
-    props: {
-      investorId: { type: [Number, String], required: true },
-      investorVersion: { type: [Number, String], default: null },
-    },
-    metaInfo() {
-      return { title: this.title };
-    },
-    data() {
-      return {
-        investor: null,
-        fields: [
-          "name",
-          "country",
-          "classification",
-          "homepage",
-          "opencorporates",
-          "comment",
-        ],
-        depth: 0,
-        includeDealsInQuery: false,
-        title: "Investor",
-      };
-    },
-    apollo: { investor: investor_query },
-    computed: {
-      manage() {
-        return (
-          this.$store.state.page.user && this.$store.state.page.user.is_authenticated
-        );
+    export default {
+      name: "InvestorDetail",
+      components: {
+        DisplayField,
+        HeaderDates,
+        InvestorGraph,
+        InvestorHistory,
+        InvestorManageHeader,
+        LoadingPulse,
       },
-      ...mapState({
-        formFields: (state) => state.formfields,
-      }),
-      involvements() {
-        return this.investor.involvements || [];
+      props: {
+        investorId: { type: [Number, String], required: true },
+        investorVersion: { type: [Number, String], default: null },
       },
-      deals() {
-        return this.investor?.deals ?? [];
+      metaInfo() {
+        return { title: this.title };
       },
-      graphDataIsReady() {
-        return (
-          this.investor &&
-          "involvements" in this.investor &&
-          "deals" in this.investor &&
-          !this.$apollo.queries.investor.loading
-        );
-      },
-    },
-    watch: {
-      investorId(investorId, oldInvestorId) {
-        if (investorId !== oldInvestorId) {
-          this.includeDealsInQuery = false;
-        }
-      },
-      investor(investor, oldInvestor) {
-        if (!oldInvestor) {
-          // initial load complete, also load deals
-          this.includeDealsInQuery = true;
-          this.depth = 1;
-        }
-        this.title = `${investor.name} (#${investor.id})`;
-        store.dispatch("setPageContext", {
-          breadcrumbs: [
-            { link: { name: "wagtail" }, name: "Home" },
-            { link: { name: "list_investors" }, name: "Data" },
-            { name: this.title },
+      data() {
+        return {
+          investor: null,
+          fields: [
+            "name",
+            "country",
+            "classification",
+            "homepage",
+            "opencorporates",
+            "comment",
           ],
-        });
+          depth: 0,
+          includeDealsInQuery: false,
+          title: "Investor",
+        };
       },
-    },
-    methods: {
-      change_investor_status({ transition, comment = "", to_user = null }) {
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation (
-                $id: Int!
-                $version: Int!
-                $transition: WorkflowTransition!
-                $comment: String
-                $to_user_id: Int
-              ) {
-                change_investor_status(
-                  id: $id
-                  version: $version
-                  transition: $transition
-                  comment: $comment
-                  to_user_id: $to_user_id
-                ) {
-                  investorId
-                  investorVersion
-                }
-              }
-            `,
-            variables: {
+      apollo: {
+        investor: {
+          query: investor_gql_query,
+          variables() {
+            return {
               id: +this.investorId,
-              version: this.investorVersion ? +this.investorVersion : null,
-              transition,
-              comment,
-              to_user_id: to_user ? to_user.id : null,
-            },
-          })
-          .then(({ data: { change_investor_status } }) => {
-            if (transition === "ACTIVATE") {
+              version: +this.investorVersion,
+              subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
+              depth: this.depth,
+              includeDeals: this.includeDealsInQuery,
+            };
+          },
+          update({ investor }) {
+            if (!investor) this.$router.push({ name: "list_investors" });
+            if (investor.status === 1 && !investor.dealVersion)
               this.$router.push({
                 name: "investor_detail",
-                params: { investorId: change_investor_status.investorId.toString() },
+                params: {
+                  investorId: this.investorId,
+                  investorVersion: investor.versions[0].revision.id,
+                },
               });
-            } else {
-              if (
-                parseInt(this.investorVersion) !==
-                change_investor_status.investorVersion
-              ) {
+
+            return investor;
+          },
+          fetchPolicy: "no-cache",
+        },
+      },
+      computed: {
+              userAuthenticated() {
+          return this.$store.state.page.user?.is_authenticated
+        }
+  involvements() {
+          return this.investor.involvements || [];
+        },
+        deals() {
+          return this.investor?.deals ?? [];
+        },
+        graphDataIsReady() {
+          return (
+            this.investor &&
+            "involvements" in this.investor &&
+            "deals" in this.investor &&
+            !this.$apollo.queries.investor.loading
+          );
+        },
+      },
+      watch: {
+        investorId(investorId, oldInvestorId) {
+          if (investorId !== oldInvestorId) {
+            this.includeDealsInQuery = false;
+          }
+        },
+        investor(investor, oldInvestor) {
+          if (!oldInvestor) {
+            // initial load complete, also load deals
+            this.includeDealsInQuery = true;
+            this.depth = 1;
+          }
+          this.title = `${investor.name} (#${investor.id})`;
+          store.dispatch("setPageContext", {
+            breadcrumbs: [
+              { link: { name: "wagtail" }, name: "Home" },
+              { link: { name: "list_investors" }, name: "Data" },
+              { name: this.title },
+            ],
+          });
+        },
+      },
+      methods: {
+        changeStatus({ transition, comment = "", to_user = null }) {
+          this.$apollo
+            .mutate({
+              mutation: gql`
+                mutation (
+                  $id: Int!
+                  $version: Int!
+                  $transition: WorkflowTransition!
+                  $comment: String
+                  $to_user_id: Int
+                ) {
+                  change_investor_status(
+                    id: $id
+                    version: $version
+                    transition: $transition
+                    comment: $comment
+                    to_user_id: $to_user_id
+                  ) {
+                    investorId
+                    investorVersion
+                  }
+                }
+              `,
+              variables: {
+                id: +this.investorId,
+                version: this.investorVersion ? +this.investorVersion : null,
+                transition,
+                comment,
+                to_user_id: to_user ? to_user.id : null,
+              },
+            })
+            .then(({ data: { change_investor_status } }) => {
+              if (transition === "ACTIVATE") {
                 this.$router.push({
                   name: "investor_detail",
-                  params: {
-                    investorId: change_investor_status.investorId.toString(),
-                    investorVersion: change_investor_status.investorVersion.toString(),
-                  },
+                  params: { investorId: change_investor_status.investorId.toString() },
                 });
               } else {
-                this.reloadInvestor();
+                if (
+                  parseInt(this.investorVersion) !==
+                  change_investor_status.investorVersion
+                ) {
+                  this.$router.push({
+                    name: "investor_detail",
+                    params: {
+                      investorId: change_investor_status.investorId.toString(),
+                      investorVersion: change_investor_status.investorVersion.toString(),
+                    },
+                  });
+                } else {
+                  console.log("Investor detail: reload");
+                  this.reloadInvestor();
+                }
               }
-            }
-          })
-          .catch((error) => console.error(error));
-      },
-      delete_investor(comment) {
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: Int!, $version: Int, $comment: String) {
-                investor_delete(id: $id, version: $version, comment: $comment)
+            })
+            .catch((error) => console.error(error));
+        },
+        deleteInvestor(comment) {
+          this.$apollo
+            .mutate({
+              mutation: gql`
+                mutation ($id: Int!, $version: Int, $comment: String) {
+                  investor_delete(id: $id, version: $version, comment: $comment)
+                }
+              `,
+              variables: {
+                id: +this.investorId,
+                version: this.investorVersion ? +this.investorVersion : null,
+                comment,
+              },
+            })
+            .then(() => {
+              if (this.investorVersion) {
+                this.$router
+                  .push({
+                    name: "investor_detail",
+                    params: { investorId: this.investorId.toString() },
+                  })
+                  .then(this.reloadInvestor);
               }
-            `,
-            variables: {
-              id: +this.investorId,
-              version: this.investorVersion ? +this.investorVersion : null,
-              comment,
-            },
-          })
-          .then(() => {
-            if (this.investorVersion) {
-              this.$router
-                .push({
-                  name: "investor_detail",
-                  params: { investorId: this.investorId.toString() },
-                })
-                .then(this.reloadInvestor);
-            }
-            this.reloadInvestor();
-          });
+              this.reloadInvestor();
+            });
+        },
+        reloadInvestor() {
+          console.log("Investor detail: reload");
+          this.$apollo.queries.investor.refetch();
+        },
+        detect_role(/** @type {Involvement} */ involvement) {
+          if (involvement.role === "PARENT") {
+            if (involvement.involvement_type === "INVESTOR")
+              return this.$t("Parent company");
+            if (involvement.involvement_type === "VENTURE")
+              return this.$t("Involved in as Parent Company");
+          }
+          if (involvement.role === "LENDER") {
+            if (involvement.involvement_type === "INVESTOR")
+              return this.$t("Tertiary investor/lender");
+            if (involvement.involvement_type === "VENTURE")
+              return this.$t("Involved in as Tertiary investor/lender");
+          }
+        },
+        onNewDepth(value) {
+          if (value > this.depth) {
+            this.depth = +value;
+          }
+        },
       },
-      reloadInvestor() {
-        console.log("Investor detail: reload");
-        this.$apollo.queries.investor.refetch();
-      },
-      detect_role(/** @type {Involvement} */ involvement) {
-        if (involvement.role === "PARENT") {
-          if (involvement.involvement_type === "INVESTOR")
-            return this.$t("Parent company");
-          if (involvement.involvement_type === "VENTURE")
-            return this.$t("Involved in as Parent Company");
-        }
-        if (involvement.role === "LENDER") {
-          if (involvement.involvement_type === "INVESTOR")
-            return this.$t("Tertiary investor/lender");
-          if (involvement.involvement_type === "VENTURE")
-            return this.$t("Involved in as Tertiary investor/lender");
-        }
-      },
-      onNewDepth(value) {
-        if (value > this.depth) {
-          this.depth = +value;
-        }
-      },
-    },
-  };
+    };
 </script>
 
 <style lang="scss" scoped>

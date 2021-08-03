@@ -1,10 +1,10 @@
 <template>
   <div v-if="deal">
     <DealManageHeader
-      v-if="manage"
+      v-if="userAuthenticated"
       :deal="deal"
       :deal-version="dealVersion"
-      @change_status="change_deal_status"
+      @change_status="changeStatus"
       @reload_deal="reloadDeal"
       @delete="deleteDeal"
       @set_confidential="setConfidential"
@@ -367,17 +367,12 @@
       },
     },
     computed: {
-      manage() {
-        return (
-          this.$store.state.page.user && this.$store.state.page.user.is_authenticated
-        );
+      userAuthenticated() {
+        return this.$store.state.page.user?.is_authenticated;
       },
-      ...mapState({
-        formFields: (state) => state.formfields,
-      }),
     },
     methods: {
-      change_deal_status({ transition, comment = "", to_user = null }) {
+      changeStatus({ transition, comment = "", to_user = null }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -427,7 +422,7 @@
                   },
                 });
               } else {
-                this.$apollo.queries.deal.refetch();
+                this.reloadDeal();
               }
             }
           })
@@ -454,9 +449,9 @@
                   name: "deal_detail",
                   params: { dealId: this.dealId.toString() },
                 })
-                .then(this.$apollo.queries.deal.refetch);
+                .then(this.reloadDeal);
             }
-            this.$apollo.queries.deal.refetch();
+            this.reloadDeal();
           });
       },
       setConfidential(data) {
@@ -487,9 +482,7 @@
               comment: data.comment,
             },
           })
-          .then(() => {
-            this.$apollo.queries.deal.refetch();
-          });
+          .then(this.reloadDeal);
       },
       updateRoute(emiter) {
         console.log("Deal detail: update route");
