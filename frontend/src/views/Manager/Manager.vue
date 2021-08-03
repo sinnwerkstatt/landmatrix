@@ -224,8 +224,10 @@
               status
               draft_status
               country {
+                id
                 name
                 fk_region {
+                  id
                   name
                 }
               }
@@ -267,8 +269,10 @@
               status
               draft_status
               country {
+                id
                 name
                 fk_region {
+                  id
                   name
                 }
               }
@@ -277,9 +281,11 @@
                 comment
                 timestamp
                 from_user {
+                  id
                   username
                 }
                 to_user {
+                  id
                   username
                 }
               }
