@@ -547,7 +547,7 @@
   .management {
     display: flex;
     width: 100%;
-    height: calc(100vh - 60px - 35px - 39px);
+    height: calc(100vh - 60px - 31px);
     padding-left: 1em;
     padding-right: 1em;
   }

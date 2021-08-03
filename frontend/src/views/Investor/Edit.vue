@@ -282,7 +282,7 @@
 <style lang="scss">
   .investor-edit {
     overflow: hidden;
-    height: calc(100vh - 60px - 35px - 39px);
+    height: calc(100vh - 60px - 31px);
     width: 100vw;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
