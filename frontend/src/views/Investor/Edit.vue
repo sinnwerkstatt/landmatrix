@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ investor }}
     <div v-if="investor" class="container investor-edit">
       <div class="investor-edit-heading">
         <h1>
