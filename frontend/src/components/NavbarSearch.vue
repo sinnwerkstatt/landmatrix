@@ -107,7 +107,11 @@
                 };
               }),
             ...this.investors
-              .filter((i) => i.id.toString().includes(this.search))
+              .filter(
+                (i) =>
+                  i.id.toString().includes(this.search) ||
+                  i.name.toLowerCase().includes(this.search.toLowerCase())
+              )
               .map((i) => {
                 return {
                   id: i.id,
