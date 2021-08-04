@@ -20,7 +20,7 @@
                     :selected-region="selectedRegion"
                     @updateCountry="updateCountry"
                     @updateRegion="updateRegion"
-                  ></LocationFilter>
+                  />
                 </div>
               </div>
               <div class="row">
@@ -39,7 +39,7 @@
                 :investor_statistics="current_investor_statistics"
                 :selected-country="selectedCountry"
                 :selected-region="selectedRegion"
-              ></StatisticsTable>
+              />
             </b-card-text>
           </b-tab>
           <b-tab>
@@ -84,7 +84,7 @@
                     :selected-region="selectedRegion"
                     @updateCountry="updateCountry"
                     @updateRegion="updateRegion"
-                  ></LocationFilter>
+                  />
                 </div>
               </div>
               <div class="row">

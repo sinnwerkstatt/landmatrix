@@ -21,13 +21,12 @@
       </div>
     </div>
 
-    <div v-if="info.comment" class="message" v-html="linebreaks(info.comment)"></div>
+    <div v-if="info.comment" class="message">{{ info.comment }}</div>
   </div>
 </template>
 
 <script>
   import { draft_status_map, status_map } from "$utils/choices";
-  import { linebreaks } from "$utils/filters";
 
   export default {
     name: "ManageHeaderWorkflowInfo",
@@ -38,7 +37,6 @@
       return {
         draft_status_map,
         status_map,
-        linebreaks,
       };
     },
     methods: {},
@@ -64,6 +62,7 @@
       background: #e5e5e5;
       padding: 0.3em 0.5em;
       border-radius: 5px;
+      white-space: pre-line;
     }
   }
 

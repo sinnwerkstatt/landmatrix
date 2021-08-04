@@ -3,16 +3,14 @@
     <h3>{{ $t("Comments") }}</h3>
     <div id="comments">
       <ul>
-        <li v-for="comm in comments">
+        <li v-for="comm in comments" :key="comm.id">
           <dl class="comment">
             <dt>
-              <small>
-                {{ dayjs(comm.submit_date).tz("UTC").format("MMM DD, YYYY HH:mm UTC") }}
-                by {{ comm.userinfo.name }}
-              </small>
+              {{ dayjs(comm.submit_date).tz("UTC").format("YYYY-MM-DD HH:mm UTC") }}
+              by {{ comm.userinfo.name }}
             </dt>
             <dd>
-              <p v-html="comm.comment" />
+              <p>{{ comm.comment }}</p>
             </dd>
           </dl>
         </li>
@@ -24,21 +22,33 @@
 <script>
   import dayjs from "dayjs";
 
-  // NOTE this does not build at the moment with vite/rollup. some stupid bug.
-  // let utc = require("dayjs/plugin/utc"); // dependent on utc plugin
-  // let timezone = require("dayjs/plugin/timezone");
-  // import * as timezone from "dayjs/plugin/timezone";
-  // import * as utc from "dayjs/plugin/utc";
-  //
-  // dayjs.extend(utc);
-  // dayjs.extend(timezone);
+  import utc from "dayjs/plugin/utc";
+  import timezone from "dayjs/plugin/timezone";
+
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
 
   export default {
-    props: {
-      comments: { type: Array, required: true },
-    },
-    methods: {
-      dayjs,
-    },
+    props: { comments: { type: Array, required: true } },
+    methods: { dayjs },
   };
 </script>
+
+<style lang="scss" scoped>
+  p {
+    white-space: pre-line;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  li {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--color-lm-light);
+  }
+  dt {
+    font-weight: normal;
+    font-size: 0.7125rem;
+    padding-bottom: 0.5rem;
+  }
+</style>

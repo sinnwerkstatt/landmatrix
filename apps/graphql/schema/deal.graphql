@@ -299,5 +299,11 @@ type DealComment {
   ip_address: String
   is_public: Boolean!
   is_removed: Boolean!
+  title: String
+  parent: DealComment
+  last_child: DealComment
+  tree_path: String
+  newest_activity: DateTime
 }
+
 scalar Dict
