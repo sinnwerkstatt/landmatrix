@@ -169,6 +169,7 @@
         skip() {
           return !this.investorId;
         },
+        fetchPolicy: "no-cache",
       },
     },
 

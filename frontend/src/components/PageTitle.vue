@@ -1,10 +1,8 @@
 <template>
   <div v-if="title" class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <h1 v-html="title" />
-      </div>
-    </div>
+    <h1>
+      <span>{{ title }}</span>
+    </h1>
   </div>
 </template>
 
@@ -18,17 +16,28 @@
 
 <style lang="scss" scoped>
   h1 {
-    font-size: 48px;
-    font-weight: normal !important;
-    color: black;
-    text-align: left;
-    text-transform: none;
+    margin-top: 1.25rem;
+    font-size: 1.75rem;
+    text-align: center;
+    color: var(--color-lm-orange);
 
     &:before {
-      content: none;
+      background: #c1c1c1;
+      content: "";
+      display: block;
+      height: 1px;
+      position: absolute;
+      top: 50%;
+      width: 100%;
     }
-    span.small {
-      font-size: 1rem;
+    span {
+      font-family: "Unit", sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: #ffffff;
+      padding: 0 1em;
+      position: relative;
+      z-index: 1;
     }
   }
 </style>

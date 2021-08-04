@@ -15,6 +15,7 @@
         :model="model"
         :file-not-public="fileNotPublic"
         :target-blank="targetBlank"
+        :object-id="objectId"
       />
     </div>
   </div>
@@ -109,6 +110,7 @@
       fileNotPublic: { type: Boolean, default: false },
       visible: { type: Boolean, default: true },
       targetBlank: { type: Boolean, default: false },
+      objectId: { type: Number, default: null, required: false },
     },
     computed: {
       _visible() {

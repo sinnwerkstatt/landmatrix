@@ -1,31 +1,31 @@
 <template>
   <div class="workflowinfo-field" @click="showMore">
-    {{ value[0].timestamp | dayjs("YYYY-MM-DD") }}<br />
-    <div>
-      <span> From {{ value[0].from_user.username }}</span>
-      <span v-if="value[0].to_user"> to {{ value[0].to_user.username }}</span>
-    </div>
-    {{ value[0].comment }}
-    <div v-if="moreInfos" class="more-infos">
+    <WorkflowInfo :info="value[0]" />
+    <div v-if="showMoreInfos" class="more-infos">
       <div class="close-x" @mouseup.prevent="closeShowMoreEsc">
         <i class="lm lm-close"></i>
       </div>
-      <ManageHeaderCommentsList :workflowinfos="value"></ManageHeaderCommentsList>
+      <ManageHeaderCommentsList :workflowinfos="moreInfos" />
     </div>
   </div>
 </template>
 
 <script>
   import ManageHeaderCommentsList from "$components/Management/ManageHeaderCommentsList";
+  import WorkflowInfo from "$components/Management/WorkflowInfo";
+  import { apolloClient } from "$utils/apolloclient";
+  import gql from "graphql-tag";
+
   export default {
-    components: { ManageHeaderCommentsList },
+    components: { WorkflowInfo, ManageHeaderCommentsList },
     props: {
       formfield: { type: Object, required: true },
       value: { type: Array, required: true },
       model: { type: String, required: true },
+      objectId: { type: Number, default: null, required: false },
     },
     data() {
-      return { moreInfos: false };
+      return { showMoreInfos: false, moreInfos: [] };
     },
     beforeDestroy() {
       document.removeEventListener("keydown", this.closeShowMoreEsc);
@@ -36,32 +36,56 @@
           e instanceof MouseEvent ||
           (e instanceof KeyboardEvent && e.key === "Escape")
         ) {
-          this.moreInfos = false;
+          this.showMoreInfos = false;
           document.removeEventListener("keydown", this.closeShowMoreEsc);
         }
       },
       showMore() {
-        if (!this.moreInfos) {
-          this.moreInfos = true;
+        if (!this.showMoreInfos) {
+          apolloClient
+            .query({
+              query: gql`
+                query DealWFInfo($id: Int!) {
+                  ${this.model} (id: $id, subset: UNFILTERED) {
+                    id
+                    workflowinfos {
+                      id
+                      comment
+                      timestamp
+                      from_user {
+                        id
+                        username
+                      }
+                      to_user {
+                        id
+                        username
+                      }
+                      draft_status_after
+                      draft_status_before
+                    }
+                  }
+                }
+              `,
+              variables: { id: this.objectId },
+            })
+            .then(({ data }) => (this.moreInfos = data[this.model].workflowinfos));
+          this.showMoreInfos = true;
           document.addEventListener("keydown", this.closeShowMoreEsc);
         } else {
-          this.moreInfos = false;
+          this.showMoreInfos = false;
           document.removeEventListener("keydown", this.closeShowMoreEsc);
         }
       },
     },
   };
 </script>
-<style scoped lang="scss">
-  .close-x {
-    padding-inline-end: 0.5rem;
-    text-align: end;
-  }
+<style lang="scss" scoped>
   .workflowinfo-field {
     cursor: pointer;
     font-size: 0.8rem;
     position: relative;
   }
+
   .more-infos {
     font-size: 1rem;
     z-index: 1000;
@@ -71,7 +95,12 @@
     top: 100%;
     right: 0;
     width: 20em;
-    height: 20em;
+    max-height: 20em;
     //display: none;
+
+    .close-x {
+      padding-inline-end: 0.5rem;
+      text-align: end;
+    }
   }
 </style>

@@ -435,6 +435,12 @@ export const deal_gql_query = gql`
         userinfo
         comment
         submit_date
+        title
+        parent {
+          id
+        }
+        tree_path
+        newest_activity
       }
       status
       draft_status

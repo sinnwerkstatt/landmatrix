@@ -1,17 +1,16 @@
 import base64
 import os
-from typing import Any
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.storage import DefaultStorage
 from django.utils import timezone
-from django.utils.html import linebreaks
-from django_comments.models import Comment
 from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.versions import Revision
+from apps.public_comments.models import ThreadedComment
 from apps.utils import qs_values_to_dict
 from .generics import (
     add_object_comment,
@@ -82,14 +81,22 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             )
         ]
     if add_comments:
+        deal_ct = ContentType.objects.get(app_label="landmatrix", model="deal")
         deal["comments"] = [
             {
                 "id": comm.id,
-                "comment": linebreaks(comm.comment),
+                "title": comm.title,
+                "parent": comm.parent,
+                "last_child": comm.last_child,
+                "tree_path": comm.tree_path,
+                "newest_activity": comm.newest_activity,
+                "comment": comm.comment,
                 "submit_date": comm.submit_date,
                 "userinfo": comm._get_userinfo(),
             }
-            for comm in Comment.objects.filter(content_type_id=125, object_pk=id)
+            for comm in ThreadedComment.objects.filter(
+                content_type=deal_ct, object_pk=id, is_public=True, is_removed=False
+            )
         ]
 
     if deal.get("locations") is None:

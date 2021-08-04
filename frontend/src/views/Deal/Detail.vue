@@ -203,7 +203,7 @@
           :title="$t('Comments')"
           @click="updateRoute('#comments')"
         >
-          <DealComments :comments="deal.comments"></DealComments>
+          <DealComments :comments="deal.comments" />
         </b-tab>
 
         <b-tab

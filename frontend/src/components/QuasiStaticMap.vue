@@ -1,6 +1,6 @@
 <template>
   <div class="static-map" @click="goToGlobalMap">
-    <LoadingPulse v-if="!markersReady"></LoadingPulse>
+    <LoadingPulse v-if="!markersReady" />
     <div class="shield">
       <span class="hover-text">Go to map</span>
     </div>
