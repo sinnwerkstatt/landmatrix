@@ -1388,6 +1388,7 @@ class DealWorkflowInfo(models.Model):
 
     def to_dict(self) -> dict:
         return {
+            "id": self.id,
             "from_user": self.from_user,
             "to_user": self.to_user,
             "draft_status_before": self.draft_status_before,

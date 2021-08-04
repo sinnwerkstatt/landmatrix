@@ -147,6 +147,7 @@
               <DisplayField
                 :fieldname="fieldName"
                 :model="showDeals ? 'deal' : 'investor'"
+                :object-id="obj.id"
                 :show-label="false"
                 :target-blank="true"
                 :value="obj[fieldName]"
@@ -209,7 +210,6 @@
           }
         }
       `,
-
       deals: {
         query: gql`
           query deals($filters: [Filter]) {
@@ -242,6 +242,8 @@
                 id
                 comment
                 timestamp
+                draft_status_after
+                draft_status_before
                 from_user {
                   id
                   username
@@ -262,6 +264,7 @@
         skip() {
           return !this.showDeals;
         },
+        fetchPolicy: "no-cache",
         debounce: 300,
       },
       investors: {
@@ -307,6 +310,7 @@
         skip() {
           return this.showDeals;
         },
+        fetchPolicy: "no-cache",
         debounce: 300,
       },
     },
