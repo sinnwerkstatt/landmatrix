@@ -411,12 +411,20 @@
   }
 
   .locationlist {
-    padding-right: 1em;
     grid-column: span 4;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
+      order: 2;
+    }
   }
 
   .mapview {
     grid-column: span 8;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
+      order: 1;
+      margin-bottom: 1rem;
+    }
   }
 
   .location-header {
@@ -462,6 +470,11 @@
       text-decoration: none;
     }
   }
+
+  input[type="file"] {
+    width: 100%;
+    min-width: 100%;
+  }
 </style>
 
 <!--suppress CssUnusedSymbol -->
@@ -482,5 +495,11 @@
     opacity: 0.6;
     filter: saturate(0);
     /*filter: grayscale(100%);*/
+  }
+
+
+  .locationlist .row {
+    margin-left: 0;
+    margin-right: 0;
   }
 </style>

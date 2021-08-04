@@ -67,3 +67,10 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  input {
+    width: 100%;
+    max-width: 100%;
+  }
+</style>
