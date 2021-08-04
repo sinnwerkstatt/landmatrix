@@ -29,7 +29,7 @@
                       <h1><slot name="heading"></slot></h1>
                     </div>
                     <div class="col-sm-7 panel-container">
-                      <HeaderDates :obj="object" />
+                      <HeaderDates :obj="object" :is-version="!!objectVersion" />
                     </div>
                   </div>
                 </div>

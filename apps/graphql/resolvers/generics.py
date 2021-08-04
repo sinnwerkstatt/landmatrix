@@ -95,6 +95,8 @@ def change_object_status(
         obj_version_object.draft_status = draft_status
         if otype == "deal":
             obj_version_object.fully_updated = fully_updated
+            if fully_updated:
+                obj_version_object.fully_updated_at = obj_version_object.modified_at
         obj_version.update_from_obj(obj_version_object).save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 

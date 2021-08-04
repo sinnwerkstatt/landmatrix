@@ -1,12 +1,12 @@
 <template>
   <div v-if="investor">
     <InvestorManageHeader
-      v-if="manage"
+      v-if="userAuthenticated"
       :investor="investor"
       :investor-version="investorVersion"
-      @change_status="change_investor_status"
+      @change_status="changeStatus"
+      @delete="deleteInvestor"
       @reload="reloadInvestor"
-      @delete="delete_investor"
     />
     <div v-else class="container investor-detail">
       <div class="row">
@@ -42,16 +42,16 @@
         </div>
         <div
           v-if="!investorVersion"
-          class="col-lg-8 col-xl-6 mb-3"
           :class="{ loading_wrapper: !graphDataIsReady }"
+          class="col-lg-8 col-xl-6 mb-3"
         >
           <div v-if="!graphDataIsReady" style="height: 400px">
             <LoadingPulse />
           </div>
           <InvestorGraph
             v-else
-            :investor="investor"
             :init-depth="depth"
+            :investor="investor"
             @newDepth="onNewDepth"
           />
         </div>
@@ -62,7 +62,7 @@
         >
           {{
             $t(
-              "You're viewing an old version of this Investor, for which we don't have this diagram. To avoid confusion, it is deactivated here."
+              "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
             )
           }}
         </div>
@@ -88,42 +88,42 @@
               <tr v-for="involvement in involvements" :key="involvement.id">
                 <td>
                   <DisplayField
-                    :wrapper-classes="['text-center']"
-                    :value-classes="[]"
-                    fieldname="id"
+                    :show-label="false"
                     :value="involvement.investor.id"
+                    :value-classes="[]"
+                    :wrapper-classes="['text-center']"
+                    fieldname="id"
                     model="investor"
-                    :show-label="false"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="name"
+                    :show-label="false"
                     :value="involvement.investor.name"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="name"
                     model="investor"
-                    :show-label="false"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="country"
+                    :show-label="false"
                     :value="involvement.investor.country"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="country"
                     model="investor"
-                    :show-label="false"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="classification"
-                    :value="involvement.investor.classification"
-                    model="investor"
                     :show-label="false"
+                    :value="involvement.investor.classification"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="classification"
+                    model="investor"
                   />
                 </td>
                 <td>{{ detect_role(involvement) }}</td>
@@ -158,56 +158,56 @@
               <tr v-for="deal in deals" :key="deal.id">
                 <td>
                   <DisplayField
-                    :wrapper-classes="['text-center']"
-                    :value-classes="[]"
-                    fieldname="id"
+                    :show-label="false"
                     :value="deal.id"
-                    :show-label="false"
+                    :value-classes="[]"
+                    :wrapper-classes="['text-center']"
+                    fieldname="id"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="country"
+                    :show-label="false"
                     :value="deal.country"
-                    :show-label="false"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="country"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="current_intention_of_investment"
+                    :show-label="false"
                     :value="deal.current_intention_of_investment"
-                    :show-label="false"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="current_intention_of_investment"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="current_negotiation_status"
+                    :show-label="false"
                     :value="deal.current_negotiation_status"
-                    :show-label="false"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="current_negotiation_status"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="current_implementation_status"
+                    :show-label="false"
                     :value="deal.current_implementation_status"
-                    :show-label="false"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="current_implementation_status"
                   />
                 </td>
                 <td>
                   <DisplayField
-                    :wrapper-classes="[]"
-                    :value-classes="[]"
-                    fieldname="deal_size"
-                    :value="deal.deal_size"
                     :show-label="false"
+                    :value="deal.deal_size"
+                    :value-classes="[]"
+                    :wrapper-classes="[]"
+                    fieldname="deal_size"
                   />
                 </td>
               </tr>
@@ -240,9 +240,8 @@
   import InvestorHistory from "$components/Investor/InvestorHistory";
   import InvestorManageHeader from "$components/Investor/InvestorManageHeader";
   import store from "$store";
-  import { investor_query } from "$store/queries";
+  import { investor_gql_query } from "$store/queries";
   import gql from "graphql-tag";
-  import { mapState } from "vuex";
 
   export default {
     name: "InvestorDetail",
@@ -277,16 +276,38 @@
         title: "Investor",
       };
     },
-    apollo: { investor: investor_query },
-    computed: {
-      manage() {
-        return (
-          this.$store.state.page.user && this.$store.state.page.user.is_authenticated
-        );
+    apollo: {
+      investor: {
+        query: investor_gql_query,
+        variables() {
+          return {
+            id: +this.investorId,
+            version: +this.investorVersion,
+            subset: this.$store.getters.userAuthenticated ? "UNFILTERED" : "PUBLIC",
+            depth: this.depth,
+            includeDeals: this.includeDealsInQuery,
+          };
+        },
+        update({ investor }) {
+          if (!investor) this.$router.push({ name: "list_investors" });
+          if (investor.status === 1 && !investor.dealVersion)
+            this.$router.push({
+              name: "investor_detail",
+              params: {
+                investorId: this.investorId,
+                investorVersion: investor.versions[0].revision.id,
+              },
+            });
+
+          return investor;
+        },
+        fetchPolicy: "no-cache",
       },
-      ...mapState({
-        formFields: (state) => state.formfields,
-      }),
+    },
+    computed: {
+      userAuthenticated() {
+        return this.$store.state.page.user?.is_authenticated;
+      },
       involvements() {
         return this.investor.involvements || [];
       },
@@ -325,7 +346,7 @@
       },
     },
     methods: {
-      change_investor_status({ transition, comment = "", to_user = null }) {
+      changeStatus({ transition, comment = "", to_user = null }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -375,13 +396,14 @@
                   },
                 });
               } else {
+                console.log("Investor detail: reload");
                 this.reloadInvestor();
               }
             }
           })
           .catch((error) => console.error(error));
       },
-      delete_investor(comment) {
+      deleteInvestor(comment) {
         this.$apollo
           .mutate({
             mutation: gql`

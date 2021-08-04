@@ -6,45 +6,45 @@
           <div class="chart-item left top">
             <h2>{{ $t("Intention of investment") }}</h2>
             <StatusPieChart
+              :aspect-ratio="aspectRatio"
               :deal-data="intentionData"
               :display-legend="true"
-              :aspect-ratio="aspectRatio"
-              max-width="auto"
               :legends="intentionLegend"
               :unit="displayDealsCount ? 'deals' : 'ha'"
+              max-width="auto"
             ></StatusPieChart>
           </div>
 
           <div class="chart-item right top">
             <h2>{{ $t("Investment in agriculture") }}</h2>
             <StatusPieChart
+              :aspect-ratio="aspectRatio"
               :deal-data="intentionAgricultureData"
               :display-legend="true"
-              :aspect-ratio="aspectRatio"
-              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
+              max-width="auto"
             ></StatusPieChart>
           </div>
 
           <div class="chart-item left bottom">
             <h2>{{ $t("Implementation status") }}</h2>
             <StatusPieChart
+              :aspect-ratio="aspectRatio"
               :deal-data="implementationStatusData"
               :display-legend="true"
-              :aspect-ratio="aspectRatio"
-              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
+              max-width="auto"
             ></StatusPieChart>
           </div>
 
           <div class="chart-item right bottom">
             <h2>{{ $t("Negotiation status") }}</h2>
             <StatusPieChart
+              :aspect-ratio="aspectRatio"
               :deal-data="negotiationStatusData"
               :display-legend="true"
-              :aspect-ratio="aspectRatio"
-              max-width="auto"
               :unit="displayDealsCount ? 'deals' : 'ha'"
+              max-width="auto"
             ></StatusPieChart>
           </div>
         </div>

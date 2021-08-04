@@ -41,28 +41,22 @@
 <style lang="scss" scoped>
   footer {
     background: var(--color-lm-dark);
-    padding: 0 10px;
-    font-size: 14px;
     color: white;
+    font-size: 0.875rem;
     font-weight: 400 !important;
-    margin-top: 0;
     position: relative;
 
     .container {
-      padding-top: 5px;
-      padding-bottom: 5px;
-    }
-    hr {
-      border-top: 1px solid #9b9b9b;
+      padding: 0.3125rem 1rem;
     }
 
-    .lm-footer {
-      font-size: 20px;
-    }
     .social-buttons {
+      .lm-footer {
+        font-size: 1.25rem;
+      }
       position: absolute;
-      right: 15px;
-      bottom: 1px;
+      right: 1rem;
+      bottom: 0;
       a {
         margin-left: 1em;
         &:hover {

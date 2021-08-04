@@ -4,8 +4,8 @@
     <div class="input-group">
       <div class="multiselect-div">
         <multiselect
-          :value="selectedRegion"
           :options="regions"
+          :value="selectedRegion"
           label="name"
           placeholder="Region"
           @input="(r) => $emit('updateRegion', r)"
@@ -13,8 +13,8 @@
       </div>
       <div class="multiselect-div">
         <multiselect
-          :value="selectedCountry"
           :options="countries"
+          :value="selectedCountry"
           label="name"
           placeholder="Country"
           @input="(c) => $emit('updateCountry', c)"

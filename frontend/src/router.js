@@ -81,7 +81,7 @@ const router = new Router({
       name: "deal_edit",
       component: DealEdit,
       props: true,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
     {
       path: "/deal/manage/:dealId/:dealVersion?",
@@ -112,7 +112,7 @@ const router = new Router({
       name: "investor_edit",
       component: InvestorEdit,
       props: true,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
     {
       path: "/investor/:investorId/:investorVersion?/",
@@ -125,7 +125,7 @@ const router = new Router({
       path: "/management/",
       name: "manager",
       component: () => import("$views/Manager/Manager"),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
     {
       path: "/management/dashboard/",

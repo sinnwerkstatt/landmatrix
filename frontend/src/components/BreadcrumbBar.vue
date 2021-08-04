@@ -1,5 +1,5 @@
 <template>
-  <div class="container mb-2">
+  <div class="breadcrumb-bar container">
     <div class="row">
       <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
@@ -20,6 +20,9 @@
 </script>
 
 <style lang="scss" scoped>
+  .breadcrumb-bar {
+    margin-bottom: 0.5rem;
+  }
   .breadcrumb {
     clear: both;
     background: none;

@@ -67,15 +67,8 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
         deal = qs_values_to_dict(
             visible_deals,
             filtered_fields,
-            ["top_investors", "parent_companies"],
+            ["top_investors", "parent_companies", "workflowinfos"],
         )[0]
-
-    if deal.get("locations") is None:
-        deal["locations"] = []
-    if deal.get("contracts") is None:
-        deal["contracts"] = []
-    if deal.get("datasources") is None:
-        deal["datasources"] = []
 
     if add_versions:
         deal["versions"] = [
@@ -98,11 +91,19 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             }
             for comm in Comment.objects.filter(content_type_id=125, object_pk=id)
         ]
+
+    if deal.get("locations") is None:
+        deal["locations"] = []
+    if deal.get("contracts") is None:
+        deal["contracts"] = []
+    if deal.get("datasources") is None:
+        deal["datasources"] = []
+
     return deal
 
 
 def resolve_deals(
-    obj: Any,
+    _,
     info: GraphQLResolveInfo,
     sort="id",
     limit=20,
@@ -119,8 +120,7 @@ def resolve_deals(
             " resource intensive. Please use single investor queries for this."
         )
 
-    if filters:
-        qs = qs.filter(parse_filters(filters))
+    qs = qs.filter(parse_filters(filters)) if filters else qs
 
     qs = qs[:limit] if limit != 0 else qs
 

@@ -5,41 +5,41 @@
         <LoadingPulse v-if="$apollo.queries.deals.loading" />
         <BigMap
           :center="[12, 30]"
-          :options="bigmap_options"
           :container-style="{ height: '100%' }"
           :hide-layer-switcher="true"
+          :options="bigmap_options"
           @ready="bigMapIsReady"
         >
         </BigMap>
       </template>
       <template #FilterBar>
         <h4>{{ $t("Map settings") }}</h4>
-        <FilterCollapse title="Displayed data" :init-expanded="true">
+        <FilterCollapse :init-expanded="true" :title="$t('Displayed data')">
           <b-form-group>
             <b-form-radio
               v-model="displayDealsCount"
-              name="displayDealsCountRadio"
               :value="true"
+              name="displayDealsCountRadio"
             >
               {{ $t("Number of deal locations") }}
             </b-form-radio>
             <b-form-radio
               v-model="displayDealsCount"
-              name="displayDealsCountRadio"
               :value="false"
+              name="displayDealsCountRadio"
             >
               {{ $t("Area (ha)") }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>
-        <FilterCollapse title="Base layer" :init-expanded="true">
+        <FilterCollapse :init-expanded="true" title="Base layer">
           <b-form-group>
             <b-form-radio
               v-for="layer in tileLayers"
               :key="layer.name"
               v-model="visibleLayer"
-              name="layerSelectRadio"
               :value="layer.name"
+              name="layerSelectRadio"
             >
               {{ $t(layer.name) }}
             </b-form-radio>
@@ -51,16 +51,16 @@
               v-for="layer in contextLayers"
               :key="layer.name"
               v-model="visibleContextLayers"
-              name="contextLayerSelect"
               :value="layer"
+              name="contextLayerSelect"
             >
               <!-- TODO For some reason some are not shown here... -->
               <!-- {{ $t(layer.name) }}-->
               {{ layer.name }}
               <img
                 v-if="visibleContextLayers.includes(layer)"
-                :src="layer.legendUrlFunction()"
                 :alt="`Legend for ${layer.name}`"
+                :src="layer.legendUrlFunction()"
                 class="context-layer-legend-image"
               />
             </b-form-checkbox>

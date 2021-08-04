@@ -17,9 +17,9 @@
             >
             <span
               v-if="saving_in_progress"
+              aria-hidden="true"
               class="spinner-border spinner-border-sm"
               role="status"
-              aria-hidden="true"
             ></span>
               &nbsp;
               {{ $t("Save") }}
@@ -44,135 +44,135 @@
             @updateRoute="updateRoute($event)"
           ></SideTabsMenu>
         </div>
-        <div class="deal-edit-content">
-          <section v-if="active_tab === '#locations'">
-            <form id="locations">
-              <div class="container">
-                <EditField
-                  v-model="deal.country"
-                  fieldname="country"
-                  :wrapper-classes="['row', 'my-3']"
-                  :label-classes="['col-md-3']"
-                  :value-classes="['col-md-9']"
-                  :disabled="deal.locations.length > 0"
-                />
-              </div>
-              <DealLocationsEditSection
-                v-if="deal.country"
-                :locations="deal.locations"
-                :country="deal.country"
-                :sections="deal_sections.general_info.subsections"
-                :fields="deal_submodel_sections.location"
-                @input="(newlocs) => (deal.locations = newlocs)"
+      <div class="deal-edit-content">
+        <section v-if="active_tab === '#locations'">
+          <form id="locations">
+            <div class="container">
+              <EditField
+                v-model="deal.country"
+                :disabled="deal.locations.length > 0"
+                :label-classes="['col-md-3']"
+                :value-classes="['col-md-9']"
+                :wrapper-classes="['row', 'my-3']"
+                fieldname="country"
               />
-            </form>
-          </section>
+            </div>
+            <DealLocationsEditSection
+              v-if="deal.country"
+              :country="deal.country"
+              :fields="deal_submodel_sections.location"
+              :locations="deal.locations"
+              :sections="deal_sections.general_info.subsections"
+              @input="(newlocs) => (deal.locations = newlocs)"
+            />
+          </form>
+        </section>
 
-          <DealEditSection
-            v-if="active_tab === '#general'"
-            id="general"
-            :title="deal_sections.general_info.label"
-            :deal="deal"
-            :sections="deal_sections.general_info.subsections"
-          />
-          <DealSubmodelEditSection
-            v-if="active_tab === '#contracts'"
-            id="contracts"
-            title="Contracts"
-            model-name="Contract"
-            :entries="deal.contracts"
-            :fields="deal_submodel_sections.contract"
-            model="contract"
-            @addEntry="addContract"
-            @removeEntry="removeContract"
-          />
+        <DealEditSection
+          v-if="active_tab === '#general'"
+          id="general"
+          :deal="deal"
+          :sections="deal_sections.general_info.subsections"
+          :title="deal_sections.general_info.label"
+        />
+        <DealSubmodelEditSection
+          v-if="active_tab === '#contracts'"
+          id="contracts"
+          :entries="deal.contracts"
+          :fields="deal_submodel_sections.contract"
+          model="contract"
+          model-name="Contract"
+          title="Contracts"
+          @addEntry="addContract"
+          @removeEntry="removeContract"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#employment'"
-            id="employment"
-            :title="deal_sections.employment.label"
-            :deal="deal"
-            :sections="deal_sections.employment.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#employment'"
+          id="employment"
+          :deal="deal"
+          :sections="deal_sections.employment.subsections"
+          :title="deal_sections.employment.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#investor_info'"
-            id="investor_info"
-            :title="deal_sections.investor_info.label"
-            :deal="deal"
-            :sections="deal_sections.investor_info.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#investor_info'"
+          id="investor_info"
+          :deal="deal"
+          :sections="deal_sections.investor_info.subsections"
+          :title="deal_sections.investor_info.label"
+        />
 
-          <DealSubmodelEditSection
-            v-if="active_tab === '#data_sources'"
-            id="data_sources"
-            title="Data sources"
-            model-name="Data source"
-            :entries="deal.datasources"
-            :fields="deal_submodel_sections.datasource"
-            model="datasource"
-            @addEntry="addDataSource"
-            @removeEntry="removeDataSource"
-          />
+        <DealSubmodelEditSection
+          v-if="active_tab === '#data_sources'"
+          id="data_sources"
+          :entries="deal.datasources"
+          :fields="deal_submodel_sections.datasource"
+          model="datasource"
+          model-name="Data source"
+          title="Data sources"
+          @addEntry="addDataSource"
+          @removeEntry="removeDataSource"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#local_communities'"
-            id="local_communities"
-            :title="deal_sections.local_communities.label"
-            :deal="deal"
-            :sections="deal_sections.local_communities.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#local_communities'"
+          id="local_communities"
+          :deal="deal"
+          :sections="deal_sections.local_communities.subsections"
+          :title="deal_sections.local_communities.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#former_use'"
-            id="former_use"
-            :title="deal_sections.former_use.label"
-            :deal="deal"
-            :sections="deal_sections.former_use.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#former_use'"
+          id="former_use"
+          :deal="deal"
+          :sections="deal_sections.former_use.subsections"
+          :title="deal_sections.former_use.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#produce_info'"
-            id="produce_info"
-            :title="deal_sections.produce_info.label"
-            :deal="deal"
-            :sections="deal_sections.produce_info.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#produce_info'"
+          id="produce_info"
+          :deal="deal"
+          :sections="deal_sections.produce_info.subsections"
+          :title="deal_sections.produce_info.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#water'"
-            id="water"
-            :title="deal_sections.water.label"
-            :deal="deal"
-            :sections="deal_sections.water.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#water'"
+          id="water"
+          :deal="deal"
+          :sections="deal_sections.water.subsections"
+          :title="deal_sections.water.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#gender_related_info'"
-            id="gender_related_info"
-            :title="deal_sections.gender_related_info.label"
-            :deal="deal"
-            :sections="deal_sections.gender_related_info.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#gender_related_info'"
+          id="gender_related_info"
+          :deal="deal"
+          :sections="deal_sections.gender_related_info.subsections"
+          :title="deal_sections.gender_related_info.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#guidelines_and_principles'"
-            id="guidelines_and_principles"
-            :title="deal_sections.guidelines_and_principles.label"
-            :deal="deal"
-            :sections="deal_sections.guidelines_and_principles.subsections"
-          />
+        <DealEditSection
+          v-if="active_tab === '#guidelines_and_principles'"
+          id="guidelines_and_principles"
+          :deal="deal"
+          :sections="deal_sections.guidelines_and_principles.subsections"
+          :title="deal_sections.guidelines_and_principles.label"
+        />
 
-          <DealEditSection
-            v-if="active_tab === '#overall_comment'"
-            id="overall_comment"
-            :title="deal_sections.overall_comment.label"
-            :deal="deal"
-            :sections="deal_sections.overall_comment.subsections"
-          />
-        </div>
+        <DealEditSection
+          v-if="active_tab === '#overall_comment'"
+          id="overall_comment"
+          :deal="deal"
+          :sections="deal_sections.overall_comment.subsections"
+          :title="deal_sections.overall_comment.label"
+        />
       </div>
     </div>
+      </div>
     <div v-else>
       <LoadingPulse></LoadingPulse>
     </div>
@@ -188,6 +188,7 @@
 </template>
 
 <script>
+  import LoadingPulse from "$components/Data/LoadingPulse";
   import DealEditSection from "$components/Deal/DealEditSection";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
@@ -198,7 +199,6 @@
   import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import LoadingPulse from "$components/Data/LoadingPulse";
   import SideTabsMenu from "$components/Shared/SideTabsMenu";
 
   export default {
@@ -408,6 +408,7 @@
     overflow: hidden;
     height: calc(100vh - 60px - 35px - 39px);
     overflow-y: auto;
+    // height: calc(100vh - 60px - 31px);
     width: 100vw;
   }
   .deal-edit {

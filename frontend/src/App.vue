@@ -28,6 +28,7 @@
 
 <style lang="scss" scoped>
   .content {
-    min-height: calc(100vh - 60px - 35px - 39px);
+    // 60px navbar, 56px breadcrumbs, 31px footer
+    min-height: calc(100vh - 60px - 56px - 31px);
   }
 </style>

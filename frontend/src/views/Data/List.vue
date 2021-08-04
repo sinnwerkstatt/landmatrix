@@ -5,19 +5,19 @@
         <LoadingPulse v-if="$apollo.loading" />
         <div class="h-100">
           <div
-            class="sideBuffer float-left"
             :class="{ collapsed: !$store.state.map.showFilterBar }"
+            class="sideBuffer float-left"
           ></div>
           <div
-            class="sideBuffer float-right"
             :class="{ collapsed: !$store.state.map.showContextBar }"
+            class="sideBuffer float-right"
           ></div>
           <Table :target-model="targetModel"></Table>
         </div>
       </template>
       <template #FilterBar>
         <h4>{{ $t("Data") }}</h4>
-        <FilterCollapse title="Download" :init-expanded="true">
+        <FilterCollapse :init-expanded="true" :title="$('Download')">
           <ul>
             <li>
               <a :href="download_link('xlsx')">

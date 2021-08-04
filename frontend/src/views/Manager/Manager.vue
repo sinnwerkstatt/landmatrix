@@ -7,12 +7,12 @@
         <div :class="{ active: !showDeals }" @click="showDeals = false">Investors</div>
       </div>
       <div class="sidebar-options">
-        <ul class="lm-nav" :class="{ 'clr-investor': !showDeals }">
+        <ul :class="{ 'clr-investor': !showDeals }" class="lm-nav">
           <li
             v-for="opt in sidebarOptions"
             :key="opt.id"
-            class="sidebar-option"
             :class="{ active: opt.id === selectedTab }"
+            class="sidebar-option"
           >
             <div v-if="opt.space" />
             <a v-else @click="selectedTab = opt.id">{{ opt.name }}</a>
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="management-main">
-      <table class="bigtable" :class="{ 'clr-investor': !showDeals }">
+      <table :class="{ 'clr-investor': !showDeals }" class="bigtable">
         <thead>
           <tr>
             <th :class="{ selected: sortField === 'id', asc: sortAscending }">
@@ -68,10 +68,11 @@
             <th :class="{ selected: sortField === 'created_at', asc: sortAscending }">
               <DatePicker
                 v-model="created_daterange"
-                mode="range"
-                :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
-              /><br />
+                :max-date="new Date()"
+                mode="range"
+              />
+              <br />
               <!--              <multiselect-->
               <!--                v-if="user_is_staff"-->
               <!--                v-model="created_by"-->
@@ -88,10 +89,11 @@
             <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
               <DatePicker
                 v-model="modified_daterange"
-                mode="range"
-                :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
-              /><br />
+                :max-date="new Date()"
+                mode="range"
+              />
+              <br />
               <!--              <multiselect-->
               <!--                v-if="user_is_staff"-->
               <!--                v-model="modified_by"-->
@@ -114,10 +116,11 @@
             >
               <DatePicker
                 v-model="fully_updated_daterange"
-                mode="range"
-                :max-date="new Date()"
                 :input-props="{ style: 'width: 100%' }"
-              /><br />
+                :max-date="new Date()"
+                mode="range"
+              />
+              <br />
               <span @click="setSort('fully_updated_at')">
                 {{ $t("Fully updated") }}
               </span>
@@ -143,9 +146,10 @@
             >
               <DisplayField
                 :fieldname="fieldName"
-                :value="obj[fieldName]"
                 :model="showDeals ? 'deal' : 'investor'"
                 :show-label="false"
+                :target-blank="true"
+                :value="obj[fieldName]"
                 :value-classes="[]"
                 :wrapper-classes="[]"
               />
@@ -172,6 +176,9 @@
   export default {
     name: "Manager",
     components: { LoadingPulse, DisplayField, DatePicker },
+    metaInfo() {
+      return { title: this.$t("Management") };
+    },
     data() {
       return {
         showDeals: true,
@@ -539,20 +546,22 @@
     },
   };
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
   .management {
     display: flex;
     width: 100%;
-    height: calc(100vh - 60px - 35px - 39px);
+    height: calc(100vh - 60px - 31px);
     padding-left: 1em;
     padding-right: 1em;
   }
+
   .sidebar {
     width: 11rem;
     min-width: 11rem;
     padding: 0.2rem;
     overflow-y: auto;
     max-height: 100%;
+
     .sidebar-header {
       border-bottom: 1px solid #dee2e6;
       padding: 0.2rem;
@@ -574,10 +583,12 @@
         }
       }
     }
+
     .active {
       font-weight: bold;
     }
   }
+
   .management-main {
     overflow-y: auto;
     max-height: 100%;
@@ -592,15 +603,18 @@
       tr th {
         white-space: nowrap;
       }
+
       .comments_header {
         cursor: default;
       }
     }
+
     &.clr-investor {
       thead {
         border-bottom: 3px solid var(--color-lm-investor);
       }
     }
+
     td.field-workflowinfos {
       max-width: 100px;
     }

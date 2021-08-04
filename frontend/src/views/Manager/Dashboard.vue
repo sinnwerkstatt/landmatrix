@@ -10,14 +10,14 @@
           <label>Impersonate</label>
           <multiselect
             v-model="userToImpersonate"
-            :options="users"
             :custom-label="(u) => `${u.full_name} (${u.username})`"
+            :options="users"
           ></multiselect>
           <a
             v-if="userToImpersonate"
-            type="submit"
-            class="btn btn-primary"
             :href="`/impersonate/${userToImpersonate.id}/?next=/`"
+            class="btn btn-primary"
+            type="submit"
           >
             Impersonate
           </a>
@@ -65,17 +65,17 @@
             <tbody>
               <tr class="update">
                 <td class="deal">
-                  <a href="/deal/6993/" class="label label-deal">6993</a>
+                  <a class="label label-deal" href="/deal/6993/">6993</a>
                 </td>
 
                 <td class="user">andreas.nuesslein (No role)</td>
                 <td class="state">Update</td>
                 <td class="state">1&nbsp;week ago</td>
                 <td class="action">
-                  <a href="/deal/edit/6993/" class="approve label label-deal">
+                  <a class="approve label label-deal" href="/deal/edit/6993/">
                     <i class="lm lm-thumbs-up"></i>Approve
                   </a>
-                  <a href="/deal/edit/6993/" class="reject label label-deal">
+                  <a class="reject label label-deal" href="/deal/edit/6993/">
                     <i class="lm lm-thumbs-down"></i>Reject
                   </a>
                 </td>

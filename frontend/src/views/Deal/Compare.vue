@@ -41,15 +41,15 @@
               </th>
               <td class="col-5">
                 <DisplayField
-                  :show-label="false"
                   :fieldname="field"
+                  :show-label="false"
                   :value="from_deal[field]"
                 />
               </td>
               <td class="col-5">
                 <DisplayField
-                  :show-label="false"
                   :fieldname="field"
+                  :show-label="false"
                   :value="to_deal[field]"
                 />
               </td>
@@ -71,24 +71,24 @@
             </tr>
             <tr v-for="jfield in deal_submodel_sections.location">
               <th class="col-2">
-                <FieldLabel :fieldname="jfield" model="location" :label-classes="[]" />
+                <FieldLabel :fieldname="jfield" :label-classes="[]" model="location" />
               </th>
               <td class="col-5">
                 <DisplayField
                   v-if="from_deal.locations[field]"
-                  :show-label="false"
-                  model="location"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="from_deal.locations[field][jfield]"
+                  model="location"
                 />
               </td>
               <td class="col-5">
                 <DisplayField
                   v-if="to_deal.locations[field]"
-                  :show-label="false"
-                  model="location"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="to_deal.locations[field][jfield]"
+                  model="location"
                 />
               </td>
             </tr>
@@ -111,26 +111,26 @@
               <th class="col-2">
                 <FieldLabel
                   :fieldname="jfield"
-                  model="datasource"
                   :label-classes="[]"
+                  model="datasource"
                 />
               </th>
               <td class="col-5">
                 <DisplayField
                   v-if="from_deal.datasources[field]"
-                  :show-label="false"
-                  model="datasource"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="from_deal.datasources[field][jfield]"
+                  model="datasource"
                 />
               </td>
               <td class="col-5">
                 <DisplayField
                   v-if="to_deal.datasources[field]"
-                  :show-label="false"
-                  model="datasource"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="to_deal.datasources[field][jfield]"
+                  model="datasource"
                 />
               </td>
             </tr>
@@ -151,24 +151,24 @@
             </tr>
             <tr v-for="jfield in deal_submodel_sections.contract">
               <th class="col-2">
-                <FieldLabel :fieldname="jfield" model="contract" :label-classes="[]" />
+                <FieldLabel :fieldname="jfield" :label-classes="[]" model="contract" />
               </th>
               <td class="col-5">
                 <DisplayField
                   v-if="from_deal.contracts[field]"
-                  :show-label="false"
-                  model="contract"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="from_deal.contracts[field][jfield]"
+                  model="contract"
                 />
               </td>
               <td class="col-5">
                 <DisplayField
                   v-if="to_deal.contracts[field]"
-                  :show-label="false"
-                  model="contract"
                   :fieldname="jfield"
+                  :show-label="false"
                   :value="to_deal.contracts[field][jfield]"
+                  model="contract"
                 />
               </td>
             </tr>

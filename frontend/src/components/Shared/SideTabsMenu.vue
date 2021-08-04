@@ -1,7 +1,7 @@
 <template>
   <div class="side-tabs-menu" :class="{'expanded': expanded}">
-    <div class="toggle">
-      <a class="burger" @click.prevent="expanded=!expanded">
+    <div class="toggle" @click="expanded=!expanded">
+      <a class="burger" @click.prevent="">
         <i class="fas fa-bars" :class="{'fa-bars': !expanded, 'fa-times': expanded}"></i>
       </a>
       <h3>{{ activeTabName }}</h3>
@@ -50,7 +50,7 @@
 </script>
 
 
-<style type="scss" scoped>
+<style lang="scss" scoped>
   .side-tabs-menu {
     grid-column: span 3;
     height: 100%;
@@ -75,6 +75,10 @@
   .toggle {
     font-size: 2rem;
     display: none;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .burger {

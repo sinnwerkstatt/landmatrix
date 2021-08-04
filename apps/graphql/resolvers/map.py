@@ -35,16 +35,21 @@ def resolve_markers(
             for x in markers
         ]
         return markers
+
     if country_id:
-        markers = list(
+        all_geojson = list(
             deals.filter(country_id=country_id)
-            .exclude(locations__point=None)
-            .values("locations__point")
+            .exclude(geojson=None)
+            .values_list("geojson", flat=True)
         )
-        return [
-            {"coordinates": [x["locations__point"].y, x["locations__point"].x]}
-            for x in markers
-        ]
+        markers = []
+        for deal_geojson in all_geojson:
+            markers += [
+                {"coordinates": list(reversed(feature["geometry"]["coordinates"]))}
+                for feature in deal_geojson.get("features", [])
+                if feature["geometry"]["type"] == "Point"
+            ]
+        return markers
 
     # global
     markers = (

@@ -186,6 +186,7 @@
                 <br />
                 <small>{{ $t(user.bigrole) }}</small>
               </p>
+              <div class="dropdown-divider"></div>
               <!--suppress HtmlUnknownTarget -->
               <a
                 v-if="user.is_impersonate"
@@ -195,14 +196,23 @@
                 {{ $t("Stop impersonation") }}
               </a>
               <div v-if="user.is_impersonate" class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/editor/">{{ $t("Dashboard") }}</a>
-              <a class="dropdown-item" href="/editor/manage/">{{ $t("Manage") }}</a>
-              <a class="dropdown-item" href="/legacy/deal/add/">
-                {{ $t("Add a deal") }}
-              </a>
+
+              <router-link class="dropdown-item" :to="{ name: 'manager' }">
+                {{ $t("new Manage") }}
+              </router-link>
               <router-link class="dropdown-item" :to="{ name: 'case_statistics' }">
                 {{ $t("Case statistics") }}
               </router-link>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/editor/">{{ $t("legacy Dashboard") }}</a>
+              <a class="dropdown-item" href="/editor/manage/">{{
+                $t("legacy Manage")
+              }}</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/legacy/deal/add/">
+                {{ $t("Add a deal") }}
+              </a>
+
               <a class="dropdown-item" @click.prevent="dispatchLogout">
                 {{ $t("Logout") }}
               </a>
@@ -409,5 +419,13 @@
     padding: 0.5rem 0 0 1rem;
     line-height: 1.2em;
     color: gray;
+  }
+
+  .router-link-exact-active {
+    pointer-events: none;
+    &:hover {
+      background: inherit;
+      cursor: default;
+    }
   }
 </style>
