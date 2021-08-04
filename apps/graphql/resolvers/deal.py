@@ -22,8 +22,6 @@ from .user_utils import get_user_role
 
 storage = DefaultStorage()
 
-deal_ct = ContentType.objects.get(app_label="landmatrix", model="deal")
-
 
 def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
@@ -83,6 +81,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             )
         ]
     if add_comments:
+        deal_ct = ContentType.objects.get(app_label="landmatrix", model="deal")
         deal["comments"] = [
             {
                 "id": comm.id,
