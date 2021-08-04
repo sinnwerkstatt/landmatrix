@@ -17,7 +17,7 @@
       </template>
       <template #FilterBar>
         <h4>{{ $t("Data") }}</h4>
-        <FilterCollapse :init-expanded="true" :title="$('Download')">
+        <FilterCollapse :init-expanded="true" :title="$t('Download')">
           <ul>
             <li>
               <a :href="download_link('xlsx')">
