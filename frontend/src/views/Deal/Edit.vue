@@ -406,9 +406,8 @@
 <style lang="scss">
   .deal-edit-container {
     overflow: hidden;
-    height: calc(100vh - 60px - 35px - 39px);
     overflow-y: auto;
-    // height: calc(100vh - 60px - 31px);
+    height: calc(100vh - 60px - 31px);
     width: 100vw;
   }
   .deal-edit {
