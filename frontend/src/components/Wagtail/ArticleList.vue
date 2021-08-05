@@ -22,7 +22,7 @@
           </div>
         </div>
         <button v-if="limit && limit < articles.length" @click.prevent="limit = 0">
-          Show all {{ articles.length }} {{ articlesLabel.toLowerCase() }}
+          {{ $t("Show all") }} {{ articles.length }} {{ articlesLabel.toLowerCase() }}
         </button>
       </div>
     </div>

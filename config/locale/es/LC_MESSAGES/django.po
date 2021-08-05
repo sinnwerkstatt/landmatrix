@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-27 12:18+0200\n"
+"POT-Creation-Date: 2021-08-05 11:18+0200\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2958,7 +2958,7 @@ msgid "Dynamics overview charts"
 msgstr ""
 
 msgid "Country profiles"
-msgstr ""
+msgstr "Perfiles de país"
 
 msgid "News & publications"
 msgstr "Noticias & publicaciones"
@@ -2966,6 +2966,39 @@ msgstr "Noticias & publicaciones"
 #, python-brace-format
 msgid "Countries investing in {country}"
 msgstr ""
+
+msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+msgstr ""
+
+msgid "Displayed data"
+msgstr ""
+
+msgid "Go to map"
+msgstr "Ir al mapa"
+
+msgid "Explore the map for information about land deals from global down to regional and country level."
+msgstr ""
+
+msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+msgstr ""
+
+msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+msgstr ""
+
+msgid "Analytical reports"
+msgstr ""
+
+msgid "Events"
+msgstr "Eventos"
+
+msgid "Learning opportunities"
+msgstr ""
+
+msgid "News"
+msgstr "Noticias"
+
+msgid "Publications"
+msgstr "Publicaciones"
 
 msgid "Page not found"
 msgstr "Página no encontrada"

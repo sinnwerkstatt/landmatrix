@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle v-if="blogpage" :title="blogpage.title" />
+    <PageTitle>{{ blogpage.title }}</PageTitle>
 
     <div v-if="blogpage" class="container">
       <div class="meta mb-3">

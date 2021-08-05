@@ -91,7 +91,7 @@
                 :to="`/resources/?category=${cat.slug}`"
                 @click.native="closeMenu"
               >
-                {{ cat.name }}
+                {{ $t(cat.name) }}
               </router-link>
             </div>
           </li>

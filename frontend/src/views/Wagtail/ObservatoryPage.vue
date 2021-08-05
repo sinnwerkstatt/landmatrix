@@ -1,20 +1,19 @@
 <template>
   <div class="observatory">
+    <PageTitle>{{ $t(page.title) }}</PageTitle>
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <h1>{{ page.title }}</h1>
           <QuasiStaticMap :country-id="country_id" :region-id="region_id" />
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+
           <div v-if="page.introduction_text" class="intro-text">
             <div class="intro">
               {{ page.introduction_text }}
             </div>
             <div v-if="!readMore" class="readmore">
-              <p><a href="" @click.prevent="readMore = true">Read more</a></p>
+              <p>
+                <a href="" @click.prevent="readMore = true">{{ $t("Read more") }}</a>
+              </p>
             </div>
             <div class="row">
               <Streamfield v-if="readMore" :content="content" />
@@ -29,7 +28,7 @@
           <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
             <div class="row">
               <div class="col-12">
-                <h3>We currently have information about:</h3>
+                <h3>{{ $t("We currently have information about:") }}</h3>
                 <div class="row">
                   <div class="col-6 text-center">
                     <label>Size</label>
@@ -43,7 +42,7 @@
                     />
                   </div>
                   <div class="col-6 text-center">
-                    <label>Number of deals</label>
+                    <label>{{ $t("Number of deals") }}</label>
                     <div class="total">
                       {{ totalCount }}
                     </div>
@@ -111,6 +110,7 @@
 
 <script>
   import StatusPieChart from "$components/Charts/StatusPieChart";
+  import PageTitle from "$components/PageTitle";
   import QuasiStaticMap from "$components/QuasiStaticMap";
   import Streamfield from "$components/Streamfield";
   import ArticleList from "$components/Wagtail/ArticleList";
@@ -122,6 +122,7 @@
   export default {
     name: "ObservatoryPage",
     components: {
+      PageTitle,
       QuasiStaticMap,
       StatusPieChart,
       Streamfield,

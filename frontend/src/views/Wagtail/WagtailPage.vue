@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle :title="page.title" />
+    <PageTitle>{{ page.title }}</PageTitle>
     <Streamfield :content="content" />
   </div>
 </template>
@@ -16,7 +16,7 @@
         return this.$store.state.page.wagtailPage;
       },
       content() {
-        return this.page ? this.page.body : [];
+        return this.page?.body || [];
       },
     },
   };

@@ -1,7 +1,7 @@
 <template>
-  <div v-if="title" class="container">
+  <div v-if="$slots.default" class="container">
     <h1>
-      <span>{{ title }}</span>
+      <span><slot /></span>
     </h1>
   </div>
 </template>

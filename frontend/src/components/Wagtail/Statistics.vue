@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-sm-12">
           <h3>
-            We currently have information about:
+            {{ $t("We currently have information about:") }}
             <a
               class="toggle-tooltip bottom"
               href="/faq/#what-is-a-land-deal"

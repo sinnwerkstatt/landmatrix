@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle :title="pageTitle" />
+    <PageTitle>{{ $t(pageTitle) }}</PageTitle>
     <div class="container">
       <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
       <!--    <div class="row " v-if="tag">-->

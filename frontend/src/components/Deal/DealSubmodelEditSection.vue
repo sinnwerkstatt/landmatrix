@@ -1,7 +1,7 @@
 <template>
   <section>
     <form :id="id">
-      <div class="row">
+      <div class="flexwrap">
         <div :class="wrapperClasses">
           <div v-for="(entry, index) in entries" :key="index" class="panel-body">
             <div class="submodel-header">
@@ -79,9 +79,12 @@
 </script>
 
 <style lang="scss" scoped>
-  h3 small {
-    font-size: 70%;
-    color: #777;
+  section {
+    margin-top: 2rem;
+  }
+  .flexwrap {
+    display: flex;
+    flex-wrap: wrap;
   }
 
   .submodel-header {
@@ -99,6 +102,11 @@
 
       &:hover {
         cursor: pointer;
+      }
+
+      small {
+        font-size: 70%;
+        color: #777;
       }
     }
 

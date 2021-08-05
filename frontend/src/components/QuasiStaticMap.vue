@@ -2,7 +2,7 @@
   <div class="static-map" @click="goToGlobalMap">
     <LoadingPulse v-if="!markersReady" />
     <div class="shield">
-      <span class="hover-text">Go to map</span>
+      <span class="hover-text">{{ $t("Go to map") }}</span>
     </div>
     <BigMap
       :options="{

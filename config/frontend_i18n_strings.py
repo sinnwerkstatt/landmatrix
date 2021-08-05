@@ -1,6 +1,5 @@
 from django.utils.translation import ugettext as _
 
-
 _("About")
 _("All rights reserved")
 _("Areas (as geojson)")
@@ -65,3 +64,24 @@ _(
     " I.e. https://landmatrix.org/investor/:id/"
 )
 _("Displayed data")
+_("Go to map")
+_(
+    "Explore the map for information about land deals from global down to regional and country level."
+)
+_(
+    "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+)
+_(
+    "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+)
+_("Country profiles")
+_("Download country profiles for")
+_("Number of deals")
+_("Country profiles")
+_("Show all")
+_("Analytical reports")
+_("Country profiles")
+_("Events")
+_("Learning opportunities")
+_("News")
+_("Publications")
