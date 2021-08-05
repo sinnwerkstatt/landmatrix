@@ -1,72 +1,64 @@
 <template>
   <div class="observatory">
     <PageTitle>{{ $t(page.title) }}</PageTitle>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <QuasiStaticMap :country-id="country_id" :region-id="region_id" />
 
-          <div v-if="page.introduction_text" class="intro-text">
-            <div class="intro">
-              {{ page.introduction_text }}
-            </div>
-            <div v-if="!readMore" class="readmore">
-              <p>
-                <a href="" @click.prevent="readMore = true">{{ $t("Read more") }}</a>
-              </p>
-            </div>
-            <div class="row">
-              <Streamfield v-if="readMore" :content="content" />
-            </div>
-          </div>
+    <div class="clamp-20-75p-56">
+      <QuasiStaticMap :country-id="country_id" :region-id="region_id" />
+
+      <div v-if="page.introduction_text" class="intro-text">
+        <div class="intro">
+          {{ page.introduction_text }}
+        </div>
+        <div v-if="!readMore" class="readmore">
+          <p>
+            <a href="" @click.prevent="readMore = true">{{ $t("Read more") }}</a>
+          </p>
+        </div>
+        <div class="row">
+          <Streamfield v-if="readMore" :content="content" />
         </div>
       </div>
     </div>
-    <div class="jumbotron jumbotron-fluid charts">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+
+    <div class="charts">
+      <div class="clamp-20-75p-56">
+        <div class="row">
+          <div class="col-12">
+            <h3>{{ $t("We currently have information about:") }}</h3>
             <div class="row">
-              <div class="col-12">
-                <h3>{{ $t("We currently have information about:") }}</h3>
-                <div class="row">
-                  <div class="col-6 text-center">
-                    <label>Size</label>
-                    <div class="total">{{ totalSize }} ha</div>
-                    <StatusPieChart
-                      :aspect-ratio="1"
-                      :deal-data="negotiationStatusBuckets"
-                      :display-legend="true"
-                      unit="ha"
-                      value-field="size"
-                    />
-                  </div>
-                  <div class="col-6 text-center">
-                    <label>{{ $t("Number of deals") }}</label>
-                    <div class="total">
-                      {{ totalCount }}
-                    </div>
-                    <StatusPieChart
-                      :aspect-ratio="1"
-                      :deal-data="negotiationStatusBuckets"
-                      :display-legend="true"
-                      value-field="count"
-                    />
-                  </div>
+              <div class="col-6 text-center">
+                <label>Size</label>
+                <div class="total">{{ totalSize }} ha</div>
+                <StatusPieChart
+                  :aspect-ratio="1"
+                  :deal-data="negotiationStatusBuckets"
+                  :display-legend="true"
+                  unit="ha"
+                  value-field="size"
+                />
+              </div>
+              <div class="col-6 text-center">
+                <label>{{ $t("Number of deals") }}</label>
+                <div class="total">
+                  {{ totalCount }}
                 </div>
+                <StatusPieChart
+                  :aspect-ratio="1"
+                  :deal-data="negotiationStatusBuckets"
+                  :display-legend="true"
+                  value-field="count"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-11 col-lg-9 col-xl-7">
-          <MapDataCharts @click.native="setGlobalLocationFilter" />
-        </div>
-      </div>
+
+    <div class="clamp-20-75p-56">
+      <MapDataCharts @click.native="setGlobalLocationFilter" />
     </div>
+
     <ArticleList
       :articles="filteredCountryProfiles"
       :articles-label="$t('Country profiles')"
@@ -85,9 +77,7 @@
               "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
             )
           }}
-          <router-link :to="`/get-involved/`">
-            {{ $t("here") }}
-          </router-link>
+          <router-link to="/contribute">{{ $t("here") }}</router-link>
           .
         </p>
         <h4>{{ $t("Download country profiles for") }}:</h4>
@@ -97,13 +87,9 @@
       :articles="filteredNewsPubs"
       :articles-label="$t('News & publications')"
     />
-    <div v-if="page.twitter_feed" class="container tweets">
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-          <h3>{{ $t("Latest tweets") }}</h3>
-          <Twitter :value="page.twitter_feed" />
-        </div>
-      </div>
+    <div v-if="page.twitter_feed" class="clamp-20-75p-56 tweets">
+      <h3>{{ $t("Latest tweets") }}</h3>
+      <Twitter :value="page.twitter_feed" />
     </div>
   </div>
 </template>
@@ -304,16 +290,8 @@
   .observatory {
     margin-bottom: 5em;
 
-    h1 {
-      font-size: 48px;
-      font-weight: normal !important;
-      color: black;
-      text-align: left;
-      text-transform: none;
-
-      &:before {
-        content: none;
-      }
+    h3 {
+      font-size: 1.5rem;
     }
 
     .intro-text {
@@ -329,6 +307,7 @@
       background-color: #f9f9f9;
       padding: 0 0 1.5em;
       margin-top: 0;
+      margin-bottom: 2rem;
 
       label {
         color: var(--color-lm-orange);
@@ -346,38 +325,6 @@
 
     .tweets {
       margin-bottom: 2em;
-    }
-  }
-</style>
-<style lang="scss">
-  .observatory {
-    h3 {
-      font-size: 24px;
-    }
-
-    .static-map {
-      margin-top: 1.5em;
-    }
-
-    .streamfield {
-      .container {
-        padding-top: 1.5em;
-        padding-bottom: 0;
-      }
-    }
-
-    .charts {
-      .legend {
-        text-align: center;
-        margin-top: 1em;
-
-        .legend-item {
-          .colored-area {
-            width: 0.8em;
-            height: 0.8em;
-          }
-        }
-      }
     }
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="streamfield">
-    <div class="container">
+    <div class="clamp-20-75p-56">
       <div v-for="block in content" :key="block.id">
         <component :is="`wagtail-${block.type}`" :value="block.value" />
       </div>
@@ -20,5 +20,9 @@
 <style scoped>
   h3 {
     text-align: center;
+  }
+  .streamfield {
+    padding-top: 1.5em;
+    padding-bottom: 0;
   }
 </style>

@@ -175,6 +175,8 @@
 
 <style lang="scss">
   .static-map {
+    margin-top: 1.5em;
+
     width: 100%;
     min-height: 300px;
     height: 30vh;

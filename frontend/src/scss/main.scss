@@ -236,3 +236,8 @@ ul.lm-nav {
     }
   }
 }
+
+.clamp-20-75p-56 {
+  margin: 0 auto;
+  width: clamp(20rem, 75%, 56rem);
+}

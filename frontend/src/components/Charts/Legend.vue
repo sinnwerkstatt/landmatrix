@@ -1,8 +1,8 @@
 <template>
   <ul class="legend">
     <li v-for="item in items" :key="item.label" class="legend-item">
-      <span class="colored-area" :style="getStyle(item)"></span>
-      <span class="label">{{ item.label }}</span>
+      <span class="colored-area" :style="getStyle(item)" />
+      <span class="label"> {{ item.label }}</span>
     </li>
   </ul>
 </template>
@@ -26,22 +26,17 @@
   .legend {
     list-style: none;
     padding: 0;
-    margin: 0;
-    font-size: 11px;
-    text-align: left;
+    margin: 1em 3em 0;
+    font-size: 0.7rem;
+    display: flex;
+    justify-content: space-evenly;
+
     .legend-item {
-      display: inline-block;
-      margin-right: 0.5em;
-      &:last-child {
-        margin-right: 0;
-      }
       .colored-area {
         display: inline-block;
         width: 0.6em;
         height: 0.8em;
-      }
-      .label {
-        margin-left: 0;
+        margin-right: 0.2em;
       }
     }
   }

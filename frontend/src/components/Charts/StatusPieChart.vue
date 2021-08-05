@@ -3,10 +3,7 @@
     <div class="chart-container" :style="containerStyle">
       <canvas ref="chart-canvas"></canvas>
     </div>
-    <Legend
-      v-if="legendItems && (displayLegend || legends)"
-      :items="legendItems"
-    ></Legend>
+    <Legend v-if="legendItems && (displayLegend || legends)" :items="legendItems" />
   </div>
 </template>
 
