@@ -60,6 +60,9 @@
         color: var(--color-lm-orange);
       }
     }
+    img {
+      max-width: 100%;
+    }
     .article {
       img {
         height: auto;
