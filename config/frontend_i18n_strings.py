@@ -66,13 +66,16 @@ _(
 _("Displayed data")
 _("Go to map")
 _(
-    "Explore the map for information about land deals from global down to regional and country level."
+    "Explore the map for information about land deals from global down to regional"
+    " and country level."
 )
 _(
-    "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+    "Search and filter the dataset through pre-configured entry points or drill down"
+    " to single deals."
 )
 _(
-    "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+    "Generate your own infographics using a wide selection of charts to illustrate"
+    " information about deals."
 )
 _("Country profiles")
 _("Download country profiles for")
