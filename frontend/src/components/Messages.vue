@@ -1,38 +1,40 @@
 <template>
   <div v-if="msg" class="messages-overlay" @click="removeMessage(msg)">
-    <div class="message-container" @click.stop>
-      <div role="alert" class="alert" :class="map_level(msg)">
-        <button
-          type="button"
-          class="close"
-          aria-label="Close"
-          @click="removeMessage(msg)"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h1 class="title">
-          {{ msg.title }}
-        </h1>
-        <div v-html="msg.text"></div>
-        <div v-if="msg.allow_users_to_hide" class="actions">
-          <div class="custom-control custom-checkbox">
-            <input
-              id="acc-checkbox"
-              ref="acc-checkbox"
-              type="checkbox"
-              class="form-check-input custom-control-input"
-            />
-            <label for="acc-checkbox" class="form-check-label custom-control-label">
-              Don't show this message again
-            </label>
-          </div>
+    <div class="scroll-container">
+      <div class="message-container" @click.stop>
+        <div role="alert" class="alert" :class="map_level(msg)">
           <button
             type="button"
-            class="btn btn-primary acknowledge"
-            @click="acknowledgeMessage(msg)"
+            class="close"
+            aria-label="Close"
+            @click="removeMessage(msg)"
           >
-            Ok
+            <span aria-hidden="true">&times;</span>
           </button>
+          <h1 class="title">
+            {{ msg.title }}
+          </h1>
+          <div v-html="msg.text"></div>
+          <div v-if="msg.allow_users_to_hide" class="actions">
+            <div class="custom-control custom-checkbox">
+              <input
+                id="acc-checkbox"
+                ref="acc-checkbox"
+                type="checkbox"
+                class="form-check-input custom-control-input"
+              />
+              <label for="acc-checkbox" class="form-check-label custom-control-label">
+                Don't show this message again
+              </label>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary acknowledge"
+              @click="acknowledgeMessage(msg)"
+            >
+              Ok
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -45,7 +47,7 @@
     name: "Messages",
     data() {
       return {
-        acknowledgedMessages: JSON.parse(Cookies.get("acknowledgedMessages") || "[]"),
+        acknowledgedMessages: JSON.parse(Cookies.get("acknowledgedMessages") || "[]")
       };
     },
     computed: {
@@ -66,7 +68,7 @@
       },
       msg() {
         return this.messages.length > 0 ? this.messages[0] : null;
-      },
+      }
     },
     methods: {
       map_level(msg) {
@@ -86,13 +88,13 @@
           this.acknowledgedMessages.push(msg.id);
           Cookies.set("acknowledgedMessages", this.acknowledgedMessages, {
             sameSite: "lax",
-            expires: 365,
+            expires: 365
           });
         } else {
           this.removeMessage(msg);
         }
-      },
-    },
+      }
+    }
   };
 </script>
 <style lang="scss" scoped>
@@ -101,9 +103,15 @@
     top: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 2000;
+    z-index: 9999;
     background-color: rgba(black, 0.3);
     backdrop-filter: blur(3px);
+    overflow-y: auto;
+  }
+
+  .scroll-container {
+    min-height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -114,9 +122,13 @@
     width: 70vw;
     max-width: 800px;
     min-width: 300px;
+    top: 0;
 
     @media screen and (max-width: 768px) {
       width: 85vw;
+    }
+    @media screen and (max-width: 600px) {
+      width: 100vw;
     }
 
     .alert {
@@ -170,6 +182,7 @@
           color: var(--color-lm-dark);
         }
       }
+
       &.alert-danger {
         color: black;
         border-color: var(--color-lm-orange);
@@ -183,6 +196,7 @@
           color: var(--color-lm-orange);
         }
       }
+
       &.alert-warning {
         background-color: #fff;
         color: var(--color-lm-dark);

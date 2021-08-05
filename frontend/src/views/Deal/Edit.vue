@@ -1,54 +1,49 @@
 <template>
   <div>
-    <div v-if="deal" class="container deal-edit">
-      <div class="deal-edit-heading">
-        <h1>
-          {{ dealId ? $t("Editing Deal #") + dealId : $t("Adding new deal") }}
-          <span v-if="deal.country">{{ $t("in") }} {{ deal.country.name }}</span>
-        </h1>
+    <div v-if="deal" class="container deal-edit-container">
+      <div class="deal-edit">
+        <div class="deal-edit-heading">
+          <h1>
+            {{ dealId ? $t("Editing Deal #") + dealId : $t("Adding new deal") }}
+            <span v-if="deal.country">{{ $t("in") }} {{ deal.country.name }}</span>
+          </h1>
 
-        <div class="savebar-container">
-          <button
-            :disabled="!form_changed || saving_in_progress"
-            class="btn btn-primary btn-sm mx-2"
-            type="submit"
-            @click="saveButtonPressed"
-          >
+          <div class="savebar-container">
+            <button
+              type="submit"
+              class="btn btn-primary btn-sm mx-2"
+              :disabled="!form_changed || saving_in_progress"
+              @click="saveButtonPressed"
+            >
             <span
               v-if="saving_in_progress"
               aria-hidden="true"
               class="spinner-border spinner-border-sm"
               role="status"
             ></span>
-            &nbsp;
-            {{ $t("Save") }}
-          </button>
-          <button
-            v-if="dealId"
-            class="btn btn-secondary btn-sm mx-2"
-            @click="quitEditor(false)"
-          >
-            {{ $t("Close") }}
-          </button>
-          <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">
-            {{ $t("Cancel") }}
-          </a>
-          <span>{{ $t("Leaves edit mode") }}</span>
-        </div>
-      </div>
-      <div class="deal-edit-nav">
-        <ul class="lm-nav">
-          <li
-            v-for="(tabname, tabid) in tabs"
-            :key="tabid"
-            :class="{ active: active_tab === `#${tabid}` }"
-          >
-            <a :href="`#${tabid}`" @click.prevent="updateRoute(`#${tabid}`)">
-              {{ tabname }}
+              &nbsp;
+              {{ $t("Save") }}
+            </button>
+            <button
+              v-if="dealId"
+              class="btn btn-secondary btn-sm mx-2"
+              @click="quitEditor(false)"
+            >
+              {{ $t("Close") }}
+            </button>
+            <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">
+              {{ $t("Cancel") }}
             </a>
-          </li>
-        </ul>
-      </div>
+            <span>{{ $t("Leaves edit mode") }}</span>
+          </div>
+        </div>
+        <div class="deal-edit-nav">
+          <SideTabsMenu
+            :tabs="tabs"
+            :active_tab="active_tab"
+            @updateRoute="updateRoute($event)"
+          ></SideTabsMenu>
+        </div>
       <div class="deal-edit-content">
         <section v-if="active_tab === '#locations'">
           <form id="locations">
@@ -177,6 +172,7 @@
         />
       </div>
     </div>
+      </div>
     <div v-else>
       <LoadingPulse></LoadingPulse>
     </div>
@@ -203,16 +199,18 @@
   import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import SideTabsMenu from "$components/Shared/SideTabsMenu";
 
   export default {
     name: "DealEdit",
     components: {
+      SideTabsMenu,
       Overlay,
       LoadingPulse,
       DealLocationsEditSection,
       EditField,
       DealSubmodelEditSection,
-      DealEditSection,
+      DealEditSection
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -230,7 +228,7 @@
     },
     props: {
       dealId: { type: [Number, String], required: false, default: null },
-      dealVersion: { type: [Number, String], default: null },
+      dealVersion: { type: [Number, String], default: null }
     },
     data() {
       return {
@@ -254,8 +252,8 @@
           water: this.$t("Water"),
           gender_related_info: this.$t("Gender-related info"),
           guidelines_and_principles: this.$t("Guidelines & Principles"),
-          overall_comment: this.$t("Overall comment"),
-        },
+          overall_comment: this.$t("Overall comment")
+        }
       };
     },
     apollo: {
@@ -265,7 +263,7 @@
           return {
             id: +this.dealId,
             version: +this.dealVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC"
           };
         },
         update(data) {
@@ -275,8 +273,8 @@
         skip() {
           return !this.dealId;
         },
-        fetchPolicy: "no-cache",
-      },
+        fetchPolicy: "no-cache"
+      }
     },
     computed: {
       get_save_description() {
@@ -297,7 +295,7 @@
       },
       form_changed() {
         return JSON.stringify(this.deal) !== this.original_deal;
-      },
+      }
     },
     created() {
       if (!this.dealId) {
@@ -312,7 +310,7 @@
         else
           this.$router.push({
             name: "deal_detail",
-            params: { dealId: this.dealId, dealVersion: this.dealVersion },
+            params: { dealId: this.dealId, dealVersion: this.dealVersion }
           });
       },
       saveButtonPressed() {
@@ -358,9 +356,9 @@
                 ...this.deal,
                 versions: null,
                 comments: null,
-                workflowinfos: null,
-              },
-            },
+                workflowinfos: null
+              }
+            }
           })
           .then(({ data: { deal_edit } }) => {
             this.original_deal = JSON.stringify(this.deal);
@@ -393,26 +391,31 @@
             size: "sm",
             okTitle: this.$t("Delete"),
             cancelTitle: this.$t("Cancel"),
-            centered: true,
+            centered: true
           })
           .then((confirmed) => {
             if (confirmed) {
               submodels.splice(index, 1);
             }
           });
-      },
-    },
+      }
+    }
   };
 </script>
 
 <style lang="scss">
-  .deal-edit {
+  .deal-edit-container {
     overflow: hidden;
+    overflow-y: auto;
     height: calc(100vh - 60px - 31px);
     width: 100vw;
+  }
+  .deal-edit {
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: 2.5rem auto;
+    overflow: hidden;
   }
 
   .deal-edit-heading {
@@ -432,23 +435,17 @@
 
   .deal-edit-nav {
     grid-column: span 3;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    padding: 0 1rem 0 0;
-
-    &::-webkit-scrollbar {
-      display: none;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
     }
-
-    -ms-overflow-style: none; /* IE and Edge */
-    //noinspection CssUnknownProperty
-    scrollbar-width: none; /* Firefox */
   }
 
   .deal-edit-content {
     height: 100%;
     grid-column: span 9;
     overflow-y: auto;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
+    }
   }
 </style>

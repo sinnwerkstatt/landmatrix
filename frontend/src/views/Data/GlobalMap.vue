@@ -125,7 +125,7 @@
     beforeRouteEnter(to, from, next) {
       next((vm) => {
         // vm.$store.dispatch("fetchDeals");
-        vm.$store.dispatch("showContextBar", true);
+        vm.$store.dispatch("showContextBar", "!isMobile");
       });
     },
     data() {

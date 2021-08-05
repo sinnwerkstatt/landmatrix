@@ -18,10 +18,15 @@ function SDILegend(layer, folder = "lm") {
   return `https://sdi.cde.unibe.ch/geoserver/${folder}/wms?${sparams.toString()}`;
 }
 
+function isMobile() {
+  return window.innerWidth < 768;
+}
+
+
 export const mapModule = {
   state: () => ({
-    showFilterBar: true,
-    showContextBar: true,
+    showFilterBar: !isMobile(),
+    showContextBar: !isMobile(),
     displayDealsCount: true,
     visibleLayer: "Map",
     layers: [
@@ -127,7 +132,13 @@ export const mapModule = {
   mutations: {
     setCurrentLayer: (state, layer) => (state.visibleLayer = layer),
     showFilterBar: (state, payload) => (state.showFilterBar = payload),
-    showContextBar: (state, payload) => (state.showContextBar = payload),
+    showContextBar: (state, payload) => {
+      if (payload === "!isMobile") {
+        state.showContextBar = !isMobile();
+      } else {
+        state.showContextBar = payload;
+      }
+    },
     setDisplayDealsCount: (state, payload) => (state.displayDealsCount = payload),
   },
   actions: {
