@@ -1,6 +1,6 @@
 <template>
-  <div class="widget-columns-3 row">
-    <div class="col-md-4">
+  <div class="widget-columns-3">
+    <div>
       <component
         :is="`wagtail-${x.type}`"
         v-for="x in value.left_column"
@@ -8,7 +8,7 @@
         :value="x.value"
       />
     </div>
-    <div class="col-md-4">
+    <div>
       <component
         :is="`wagtail-${x.type}`"
         v-for="x in value.middle_column"
@@ -16,7 +16,7 @@
         :value="x.value"
       />
     </div>
-    <div class="col-md-4">
+    <div>
       <component
         :is="`wagtail-${x.type}`"
         v-for="x in value.right_column"
@@ -34,3 +34,20 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  .widget-columns-3 {
+    display: flex;
+    flex-flow: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    > * {
+      flex-basis: 100%;
+    }
+
+    @media screen and (min-width: 45rem) {
+      flex-flow: row;
+    }
+  }
+</style>

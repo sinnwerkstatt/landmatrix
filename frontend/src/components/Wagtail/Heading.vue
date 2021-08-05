@@ -1,9 +1,5 @@
 <template>
-  <div class="row">
-    <div class="col-12">
-      <h3>{{ value }}</h3>
-    </div>
-  </div>
+  <h3>{{ value }}</h3>
 </template>
 
 <script>

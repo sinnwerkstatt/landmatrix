@@ -304,7 +304,7 @@
     }
 
     .charts {
-      background-color: #f9f9f9;
+      background-color: var(--color-lm-light);
       padding: 0 0 1.5em;
       margin-top: 0;
       margin-bottom: 2rem;
