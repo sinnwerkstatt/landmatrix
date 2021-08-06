@@ -12,8 +12,9 @@
         Deal #{{ deal.id }}
         <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
       </template>
+
       <template #visibility>
-        <div class="col-sm-4 col-md-5 col-lg-4 visibility-container">
+        <div class="visibility-container">
           <div v-if="deal.is_public" class="visibility">
             <i class="fas fa-eye fa-fw fa-lg orange"></i>
             <span>{{ $t("Publicly visible") }}</span>
@@ -173,9 +174,8 @@
         return !this.dealVersion && this.deal.draft_status;
       },
       is_editable() {
+        if (import.meta.env.VITE_ALLOW_EDITING.toLowerCase() !== "true") return false;
         // deal ist deleted
-        console.log(this.dealVersion);
-        console.log(this.deal);
         if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.is_active_with_draft) return false;
         return this.is_authorized(this.deal);
@@ -237,11 +237,10 @@
 
 <style scoped lang="scss">
   .visibility-container {
+    flex-grow: 1;
+    width: 100%;
     .visibility {
-      margin-left: -2.2em;
       font-size: 0.9em;
-      display: flex;
-      align-items: center;
 
       i {
         font-size: 1.8em;
@@ -260,7 +259,7 @@
       padding: 0;
 
       li {
-        margin-left: -1.5em;
+        margin-left: 0.8em;
 
         i {
           font-size: 0.8em;
@@ -277,7 +276,7 @@
 
 <style lang="scss">
   .confidential-toggle {
-    margin-left: -1.5em;
+    margin-left: 0.45em;
     margin-bottom: -3px;
     display: flex;
     align-items: center;

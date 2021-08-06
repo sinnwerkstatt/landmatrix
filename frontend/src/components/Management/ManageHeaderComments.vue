@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-4 comments">
+  <div class="comments">
     <h3>Comments</h3>
     <div class="new-comment">
       <form action="." method="post">
@@ -72,6 +72,7 @@
     padding: 0.7rem;
     color: rgba(black, 0.6);
     max-height: 100%;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 

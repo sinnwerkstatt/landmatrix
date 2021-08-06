@@ -47,7 +47,7 @@
     padding: 0.5em 1em;
     border-radius: 5px;
     font-size: 0.9rem;
-    color: rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.5);
 
     .inlinefield {
       display: inline-block;
@@ -57,7 +57,7 @@
 
       .inlinelabel {
         display: inline-block;
-        color: rgba(0, 0, 0, 0.3);
+        color: rgba(0, 0, 0, 0.5);
       }
 
       .inlineval {
@@ -66,7 +66,12 @@
     }
 
     &.draft {
-      //background-color: white !important;
+      min-width: 15rem;
+
+      color: rgba(0, 0, 0, 0.7);
+      .inlinelabel {
+        color: rgba(0, 0, 0, 0.7);
+      }
       &:after {
         content: "DRAFT";
         position: absolute;

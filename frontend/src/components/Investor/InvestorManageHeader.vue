@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div>
     <GenericManageHeader
@@ -10,8 +9,8 @@
       @delete="$emit('delete', $event)"
       @send_to_review="show_send_to_review_overlay = true"
     >
-      <template #heading
-        >{{ investor.name }} <small>#{{ investor.id }}</small>
+      <template #heading>
+        {{ investor.name }} <small>#{{ investor.id }}</small>
       </template>
       <template #overlays>
         <Overlay

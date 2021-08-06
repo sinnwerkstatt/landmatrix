@@ -9,6 +9,7 @@ const ManageHeaderMixin = {
   },
   data() {
     return {
+      allow_editing: import.meta.env.VITE_ALLOW_EDITING.toLowerCase() === "true",
       users: [],
       show_to_draft_overlay: false,
       show_to_delete_overlay: false,

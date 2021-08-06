@@ -74,18 +74,14 @@ const router = new Router({
       name: "deal_add",
       component: DealEdit,
       props: true,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresEditPerms: true },
     },
     {
       path: "/deal/edit/:dealId/:dealVersion?/",
       name: "deal_edit",
       component: DealEdit,
       props: true,
-      meta: { requiresAuth: true, hideBreadcrumbs: true },
-    },
-    {
-      path: "/deal/manage/:dealId/:dealVersion?",
-      redirect: "/deal/:dealId/:dealVersion?",
+      meta: { requiresAuth: true, requiresEditPerms: true, hideBreadcrumbs: true },
     },
     {
       path: "/deal/:dealId/:dealVersion?/",
@@ -105,14 +101,14 @@ const router = new Router({
       name: "investor_add",
       component: InvestorEdit,
       props: true,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresEditPerms: true },
     },
     {
       path: "/investor/edit/:investorId/:investorVersion?/",
       name: "investor_edit",
       component: InvestorEdit,
       props: true,
-      meta: { requiresAuth: true, hideBreadcrumbs: true },
+      meta: { requiresAuth: true, requiresEditPerms: true, hideBreadcrumbs: true },
     },
     {
       path: "/investor/:investorId/:investorVersion?/",
@@ -185,6 +181,10 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresEditPerms)) {
+    if (import.meta.env.VITE_ALLOW_EDITING?.toLowerCase() !== "true") next("/");
+  }
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getters.userAuthenticated) {
       next({ name: "login", query: { next: to.fullPath } });
