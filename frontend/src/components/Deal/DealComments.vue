@@ -33,6 +33,7 @@
       <vue-hcaptcha
         sitekey="ee77472a-0484-49a2-9e80-bcb765c774b1"
         re-captcha-compat="false"
+        @verify="captchaVerified"
       />
       <div>
         <button disabled type="submit" class="btn btn-primary">
@@ -56,7 +57,12 @@
   export default {
     components: { VueHcaptcha },
     props: { comments: { type: Array, required: true } },
-    methods: { dayjs },
+    methods: {
+      dayjs,
+      captchaVerified(token, eKey) {
+        console.log({ token, eKey });
+      },
+    },
   };
 </script>
 
