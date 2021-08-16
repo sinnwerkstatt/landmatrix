@@ -47,7 +47,7 @@
     name: "Messages",
     data() {
       return {
-        acknowledgedMessages: JSON.parse(Cookies.get("acknowledgedMessages") || "[]")
+        acknowledgedMessages: JSON.parse(Cookies.get("acknowledgedMessages") || "[]"),
       };
     },
     computed: {
@@ -68,7 +68,7 @@
       },
       msg() {
         return this.messages.length > 0 ? this.messages[0] : null;
-      }
+      },
     },
     methods: {
       map_level(msg) {
@@ -88,13 +88,13 @@
           this.acknowledgedMessages.push(msg.id);
           Cookies.set("acknowledgedMessages", this.acknowledgedMessages, {
             sameSite: "lax",
-            expires: 365
+            expires: 365,
           });
         } else {
           this.removeMessage(msg);
         }
-      }
-    }
+      },
+    },
   };
 </script>
 <style lang="scss" scoped>
@@ -115,10 +115,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: transparent;
   }
 
   .message-container {
-    background: white;
+    background-color: transparent;
     width: 70vw;
     max-width: 800px;
     min-width: 300px;
