@@ -47,7 +47,10 @@
         },
       },
       target_countries() {
-        return this.$store.state.page.countries.filter((c) => c.is_target_country);
+        let countries = this.$store.state.page.countries;
+        if (this.model !== "investor")
+          countries = countries.filter((c) => c.is_target_country);
+        return countries;
       },
     },
   };
