@@ -42,7 +42,7 @@ class FilterPresetGroupAdmin(admin.ModelAdmin):
 
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
-    list_display = ["name", "is_target_country", "high_income"]
+    list_display = ["name", "high_income"]
 
 
 admin.site.register(models.Region)

@@ -74,7 +74,6 @@ class Country(models.Model):
         null=True,
     )
     high_income = models.BooleanField(_("High income"), default=False)
-    is_target_country = models.BooleanField(_("Is target country"), default=False)
     geom = models.MultiPolygonField(null=True)
 
     objects = CountryManager()

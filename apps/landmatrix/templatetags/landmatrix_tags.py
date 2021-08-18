@@ -28,7 +28,7 @@ def nav_countries():
         live=True, country__isnull=False
     ).order_by("title")
     other_countries = (
-        Country.objects.filter(is_target_country=True, high_income=False)
+        Country.objects.filter(high_income=False)
         .exclude(id__in=[c.country.id for c in observatories if c.country])
         .only("id", "slug", "name")
         .order_by("name")

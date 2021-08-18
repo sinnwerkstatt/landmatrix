@@ -68,7 +68,7 @@ const store = new Vuex.Store({
                   point_lat_max
                   point_lon_max
                   observatory_page_id
-                  is_target_country
+                  high_income
                   deals {
                     id
                   }
