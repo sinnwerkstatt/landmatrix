@@ -262,6 +262,7 @@ def _parse_local_communities(deal, attrs):
         "Indigenous Peoples traditional or customary rights recognized by government": "INDIGENOUS_RIGHTS_RECOGNIZED",
         "Derechos consuetudinarios o tradicionales de Pueblos Indígenas reconocidos por el gobierno": "INDIGENOUS_RIGHTS_RECOGNIZED",
         "Indigenous Peoples traditional or customary rights not recognized by government": "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
+        "Derechos consuetudinarios o tradicionales de Pueblos Indígenas no reconocidos por el gobierno": "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
         "Community traditional or customary rights recognized by government": "COMMUNITY_RIGHTS_RECOGNIZED",
         "Derechos consuetudinarios o tradicionales de comunidad reconocidos por el gobierno": "COMMUNITY_RIGHTS_RECOGNIZED",
         "Community traditional or customary rights not recognized by government": "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
