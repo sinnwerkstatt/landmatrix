@@ -228,10 +228,15 @@
         else this.investor_save(location.hash);
       },
       addInvestor(role) {
-        this.investor.investors.push({ role });
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else
+          this.investor.investors.push({
+            role,
+            id: +Math.random().toString().substring(2),
+          });
       },
-      removeInvestor(index) {
-        let message = this.$t("Do you really want to remove ") + ` #${index + 1}?`;
+      removeInvestor(id) {
+        let message = this.$t("Do you really want to remove the involvement?");
         this.$bvModal
           .msgBoxConfirm(message, {
             size: "sm",
@@ -240,8 +245,10 @@
             centered: true,
           })
           .then((confirmed) => {
-            // TODO !
-            if (confirmed) submodels.splice(index, 1);
+            if (confirmed)
+              this.investor.investors = this.investor.investors.filter(
+                (i) => i.id !== id
+              );
           });
       },
       investor_save(hash) {
