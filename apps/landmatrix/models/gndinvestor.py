@@ -9,14 +9,15 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models import Country, Currency
-from apps.landmatrix.models.versions import Version, register_version
+from apps.landmatrix.models.versions import Version
+from apps.utils import ecma262
 
 
 class InvestorQuerySet(models.QuerySet):
     def active(self):
         return self.filter(status__in=(2, 3))
 
-    # at the moment the only thing we filter on is the "status".
+    # NOTE at the moment the only thing we filter on is the "status".
     # the following is an idea:
     # def public(self):
     #     return self.active().filter(is_actually_unknown=False)
@@ -33,17 +34,60 @@ class InvestorQuerySet(models.QuerySet):
 
 
 class InvestorVersion(Version):
-    def to_dict(self, use_object=False):
-        investor = self.retrieve_object() if use_object else self.fields
+    object = models.ForeignKey(
+        "Investor",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="versions",
+    )
+
+    @classmethod
+    def from_object(cls, investor, involvements, created_at=None, created_by=None):
+        version, _ = cls.objects.get_or_create(
+            created_at=created_at,
+            created_by=created_by,
+            object_id=investor.pk,
+            serialized_data={
+                "name": investor.name,
+                "country": investor.country_id,
+                "classification": investor.classification,
+                "homepage": investor.homepage,
+                "opencorporates": investor.opencorporates,
+                "comment": investor.comment,
+                "involvements": [ivi.serialize() for ivi in involvements],
+                "status": investor.status,
+                "draft_status": investor.draft_status,
+                "created_at": ecma262(investor.created_at),
+                "created_by": investor.created_by_id,
+                "modified_at": ecma262(investor.modified_at),
+                "modified_by": investor.modified_by_id,
+                "is_actually_unknown": investor.is_actually_unknown,
+            },
+        )
+        return version
+
+    def enriched_dict(self) -> dict:
+        edict = self.serialized_data
+        edict["id"] = self.object_id
+        for x in Investor._meta.fields:
+            if x.__class__.__name__ == "ForeignKey":
+                if edict.get(x.name):
+                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+        edict["created_at"] = self.created_at
+        edict["created_by"] = self.created_by
+        return edict
+
+    def new_to_dict(self):
         return {
             "id": self.id,
-            "investor": investor,
-            "revision": self.revision,
             "object_id": self.object_id,
+            "created_at": self.created_at,
+            "created_by": self.created_by,
+            "investor": self.serialized_data,
         }
 
 
-@register_version(InvestorVersion)
 class Investor(models.Model):
     name = models.CharField(_("Name"), max_length=1024)
     country = models.ForeignKey(
@@ -222,6 +266,7 @@ class Investor(models.Model):
             deals.update(involvements.venture.get_affected_deals(seen_investors))
         return deals
 
+    # TODO This is not working yet.
     def update_from_dict(self, d: dict):
         for key, value in d.items():
             if key in [
@@ -250,7 +295,7 @@ class Investor(models.Model):
                             venture_id=self.id,
                         )
                     except InvestorVentureInvolvement.DoesNotExist:
-                        ivi = InvestorVentureInvolvement.objects.create(
+                        ivi = InvestorVentureInvolvement(
                             investor_id=entry["investor"]["id"],
                             venture_id=self.id,
                         )
@@ -371,11 +416,11 @@ class InvestorVentureInvolvementQuerySet(models.QuerySet):
         return self
 
 
-class InvestorVentureInvolvementVersion(Version):
-    pass
-
-
-@register_version(InvestorVentureInvolvementVersion)
+# class InvestorVentureInvolvementVersion(Version):
+#     pass
+#
+#
+# @register_version(InvestorVentureInvolvementVersion)
 class InvestorVentureInvolvement(models.Model):
     investor = models.ForeignKey(
         Investor,
@@ -460,6 +505,20 @@ class InvestorVentureInvolvement(models.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "role": self.role,
+            "investment_type": self.investment_type,
+            "percentage": self.percentage,
+            "loans_amount": self.loans_amount,
+            "loans_currency": self.loans_currency,
+            "loans_date": self.loans_date,
+            "parent_relation": self.parent_relation,
+            "comment": self.comment,
+        }
+
+    def serialize(self):
+        return {
+            "investor": self.investor_id,
+            "venture": self.venture_id,
             "role": self.role,
             "investment_type": self.investment_type,
             "percentage": self.percentage,

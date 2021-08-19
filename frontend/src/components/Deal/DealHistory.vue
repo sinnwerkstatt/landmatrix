@@ -15,9 +15,9 @@
       </thead>
       <tbody>
         <tr v-for="(version, i) in enriched_versions" :key="i">
-          <td>{{ version.revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}</td>
+          <td>{{ version.created_at | dayjs("YYYY-MM-DD HH:mm") }}</td>
           <td v-if="$store.getters.userAuthenticated">
-            {{ version.revision.user && version.revision.user.full_name }}
+            {{ version.created_by && version.created_by.full_name }}
           </td>
           <td>
             <b-button
@@ -45,15 +45,15 @@
               <input
                 v-model="compare_from"
                 type="radio"
-                :value="version.revision.id"
-                :disabled="version.revision.id >= compare_to"
+                :value="version.id"
+                :disabled="version.id >= compare_to"
               />
 
               <input
                 v-model="compare_to"
                 type="radio"
-                :value="version.revision.id"
-                :disabled="version.revision.id <= compare_from"
+                :value="version.id"
+                :disabled="version.id <= compare_from"
               />
             </span>
           </td>
@@ -112,7 +112,7 @@
           } else
             v.link = {
               name: "deal_detail",
-              params: { dealId: this.dealId, dealVersion: v.revision.id },
+              params: { dealId: this.dealId, dealVersion: v.id },
             };
           return v;
         });
@@ -120,9 +120,7 @@
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
         if (this.dealVersion) {
-          return this.deal.versions.findIndex(
-            (v) => +v.revision.id === +this.dealVersion
-          );
+          return this.deal.versions.findIndex((v) => +v.id === +this.dealVersion);
         }
         for (const [i, v] of this.deal.versions.entries()) {
           if (v.deal.draft_status === null) return i;
@@ -132,8 +130,8 @@
     },
     mounted() {
       if (this.deal.versions.length >= 2) {
-        this.compare_to = this.deal.versions[0].revision.id;
-        this.compare_from = this.deal.versions[1].revision.id;
+        this.compare_to = this.deal.versions[0].id;
+        this.compare_from = this.deal.versions[1].id;
       }
     },
     methods: {

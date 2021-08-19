@@ -411,7 +411,7 @@
            }`;
           filterByDealLocation = `country_id:${this.selectedCountry.id}`;
           filterByEditorLocation = `{
-              field:"revision.user.userregionalinfo.country.id",
+              field:"created_by.userregionalinfo.country.id",
               operation:EQ,
               value:"${this.selectedCountry.id}"
            },`;
@@ -424,7 +424,7 @@
            }`;
           filterByDealLocation = `region_id:${this.selectedRegion.id}`;
           filterByEditorLocation = `{
-              field:"revision.user.userregionalinfo.region.id",
+              field:"created_by.userregionalinfo.region.id",
               operation:EQ,
               value:"${this.selectedRegion.id}"
            },`;
@@ -435,8 +435,8 @@
 
         const query = `query {
         deals: dealversions(filters:[
-            {field:"revision.date_created",operation:GE,value:"${dr_start}"},
-            {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+            {field:"created_at",operation:GE,value:"${dr_start}"},
+            {field:"created_at",operation:LE,value:"${dr_end}"},
           ]
           ${filterByDealLocation}
         )
@@ -446,8 +446,8 @@
           }
         }
         investors: investorversions(filters:[
-            {field:"revision.date_created",operation:GE,value:"${dr_start}"},
-            {field:"revision.date_created",operation:LE,value:"${dr_end}"},
+            {field:"created_at",operation:GE,value:"${dr_start}"},
+            {field:"created_at",operation:LE,value:"${dr_end}"},
             ${filterByEditorLocation}
           ]
         )

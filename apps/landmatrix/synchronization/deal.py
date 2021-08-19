@@ -14,8 +14,7 @@ from apps.landmatrix.models import (
     Mineral,
 )
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealWorkflowInfo
-from apps.landmatrix.models.versions import Revision, Version
+from apps.landmatrix.models.deal import DealWorkflowInfo, DealVersion
 from apps.landmatrix.synchronization.helpers import MetaActivity, calculate_new_stati
 from apps.landmatrix.synchronization.helpers import (
     _extras_to_json,
@@ -920,6 +919,7 @@ def _create_data_sources(deal, groups):
         i += 1
         url = attrs.get("url") or ""
         if url == "http%3A%2F%2Ffarmlandgrab.org%2F2510":
+            # noinspection HttpUrlsUsage
             url = "http://farmlandgrab.org/2510"
 
         ds = {
@@ -1027,8 +1027,9 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
 
         deal.recalculate_fields()
 
-        rev1 = Revision.objects.create(date_created=histivity.history_date, user=user)
-        deal_version = Version.create_from_obj(deal, rev1.id)
+        deal_version = DealVersion.from_object(
+            deal, created_at=histivity.history_date, created_by=user
+        )
         deal.current_draft = None if new_status in [2, 3, 4] else deal_version
 
         if do_save:

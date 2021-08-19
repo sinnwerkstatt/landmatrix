@@ -5,7 +5,6 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
 from apps.landmatrix.models.gndinvestor import InvestorVersion, InvestorWorkflowInfo
-from apps.landmatrix.models.versions import Revision
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict
 from .generics import (
@@ -50,17 +49,15 @@ def resolve_investor(
 
     if version:
         try:
-            rev = Revision.objects.get(id=version)
-        except Revision.DoesNotExist:
-            return
-        try:
-            investor = rev.investorversion_set.get().fields
+            investor_version = InvestorVersion.objects.get(id=version)
+            investor = investor_version.enriched_dict()
         except InvestorVersion.DoesNotExist:
             return
-        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+
+        if not (
+            investor_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
             raise GraphQLError("not authorized")
-        investor["created_at"] = rev.date_created
-        investor["revision"] = rev
         # investor["involvements"] = [
         #     v.fields for v in rev.investorventureinvolvementversion_set.all()
         # ]
@@ -77,7 +74,7 @@ def resolve_investor(
 
     if add_versions:
         investor["versions"] = [
-            dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
+            dv.new_to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         investor["workflowinfos"] = [

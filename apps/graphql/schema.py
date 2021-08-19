@@ -5,7 +5,7 @@ from ariadne import (
     load_schema_from_path,
     make_executable_schema,
 )
-from ariadne.contrib.django.scalars import datetime_scalar, date_scalar
+from ariadne.contrib.django.scalars import date_scalar
 
 from apps.graphql.resolvers.blog import (
     resolve_blogpages,
@@ -60,7 +60,7 @@ from apps.graphql.resolvers.user import (
     user_regional_info_type,
     user_type,
 )
-from apps.graphql.scalars import geopoint_scalar
+from apps.graphql.scalars import geopoint_scalar, datetime_scalar
 
 schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
 type_defs = load_schema_from_path(schema_folder)

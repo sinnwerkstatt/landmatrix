@@ -99,6 +99,7 @@ export const investor_gql_query = gql`
       }
       involvements
       workflowinfos {
+        id
         from_user {
           id
           username
@@ -120,14 +121,10 @@ export const investor_gql_query = gql`
           status
           draft_status
         }
-        revision {
+        created_at
+        created_by {
           id
-          date_created
-          user {
-            id
-            full_name
-          }
-          comment
+          full_name
         }
         object_id
       }
@@ -403,18 +400,15 @@ export const deal_gql_query = gql`
           status
           draft_status
         }
-        revision {
+        created_at
+        created_by {
           id
-          date_created
-          user {
-            id
-            full_name
-          }
-          comment
+          full_name
         }
         object_id
       }
       workflowinfos {
+        id
         from_user {
           id
           username
@@ -444,12 +438,6 @@ export const deal_gql_query = gql`
       }
       status
       draft_status
-      revision {
-        id
-        user {
-          id
-        }
-      }
     }
   }
 `;

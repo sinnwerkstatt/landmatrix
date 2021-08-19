@@ -4,6 +4,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import JSONField
+from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Sum, F
@@ -19,7 +20,7 @@ from apps.landmatrix.models.fields import (
 from apps.landmatrix.models import Investor
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version, register_version, Revision
+from apps.landmatrix.models.versions import Version
 
 
 class DealQuerySet(models.QuerySet):
@@ -70,17 +71,48 @@ class DealQuerySet(models.QuerySet):
 
 
 class DealVersion(Version):
-    def to_dict(self, use_object=False):
-        deal = self.retrieve_object() if use_object else self.fields
+    object = models.ForeignKey(
+        "Deal",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="versions",
+    )
+
+    @classmethod
+    def from_object(cls, deal, created_at=None, created_by=None):
+        serialized_json = serializers.serialize("json", (deal,))
+        serialized_data = json.loads(serialized_json)[0]["fields"]
+
+        version, _ = cls.objects.get_or_create(
+            created_at=created_at,
+            created_by=created_by,
+            object_id=deal.pk,
+            serialized_data=serialized_data,
+        )
+        return version
+
+    def enriched_dict(self) -> dict:
+        edict = self.serialized_data
+        edict["id"] = self.object_id
+        for x in Deal._meta.fields:
+            if x.__class__.__name__ == "ForeignKey":
+                if edict.get(x.name):
+                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+        edict["created_at"] = self.created_at
+        edict["created_by"] = self.created_by
+        return edict
+
+    def new_to_dict(self):
         return {
             "id": self.id,
-            "deal": deal,
-            "revision": self.revision,
             "object_id": self.object_id,
+            "created_at": self.created_at,
+            "created_by": self.created_by,
+            "deal": self.serialized_data,
         }
 
 
-@register_version(DealVersion)
 class Deal(models.Model, OldDealMixin):
     """Deal"""
 

@@ -9,7 +9,6 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
-from apps.landmatrix.models.versions import Revision
 from apps.public_comments.models import ThreadedComment
 from apps.utils import qs_values_to_dict
 from .generics import (
@@ -40,24 +39,18 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             add_workflowinfos = True
         elif "comments" in field:
             add_comments = True
-        elif "revision" in field:
-            pass  # ignore this field on "Deal", just set it on DealVersion
         else:
             filtered_fields += [field]
 
     if version:
         try:
-            rev = Revision.objects.get(id=version)
-        except Revision.DoesNotExist:
-            return
-        try:
-            deal = rev.dealversion_set.get().fields
+            deal_version = DealVersion.objects.get(id=version)
+            deal = deal_version.enriched_dict()
         except DealVersion.DoesNotExist:
             return
-        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+
+        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
-        deal["created_at"] = rev.date_created
-        deal["revision"] = rev
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
@@ -71,7 +64,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
     if add_versions:
         deal["versions"] = [
-            dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
+            dv.new_to_dict() for dv in DealVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         deal["workflowinfos"] = [
@@ -236,10 +229,8 @@ def resolve_set_confidential(
         raise GraphQLError("not authorized")
 
     if version:
-        deal_version = DealVersion.objects.get(revision_id=version)
-        if not (
-            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
+        deal_version = DealVersion.objects.get(id=version)
+        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
         deal_v_obj = deal_version.retrieve_object()
         deal_v_obj.confidential = confidential

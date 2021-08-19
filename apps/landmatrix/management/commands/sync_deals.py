@@ -4,7 +4,7 @@ from apps.landmatrix.models import (
     HistoricalActivity,
     Deal,
 )
-from apps.landmatrix.models.versions import Revision
+from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.synchronization.deal import histivity_to_deal
 
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         for deal_id in deal_ids:
             if options["rewrite_deals"]:
                 print(f"  Removing Deal {deal_id}... ", end="", flush=True)
-                Revision.objects.filter(dealversion__object_id=deal_id).delete()
+                DealVersion.objects.filter(object_id=deal_id).delete()
                 Deal.objects.filter(id=deal_id).delete()
                 print("\033[92m" + "OK" + "\033[0m")
 

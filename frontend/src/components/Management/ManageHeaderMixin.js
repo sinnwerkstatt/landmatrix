@@ -52,8 +52,8 @@ const ManageHeaderMixin = {
     `,
   },
   computed: {
-    last_revision() {
-      return this.object?.versions[0]?.revision ?? "";
+    last_version() {
+      return this.object?.versions[0] ?? {};
     },
     is_editable() {
       // object ist deleted
@@ -80,7 +80,7 @@ const ManageHeaderMixin = {
       return this.is_old_draft && [2, 3].includes(this.latest_object_version.status);
     },
     is_old_draft() {
-      return this.objectVersion && this.last_revision.id !== +this.objectVersion;
+      return this.objectVersion && this.last_version.id !== +this.objectVersion;
     },
     has_newer_draft() {
       if (this.is_active_with_draft) return true;
@@ -91,7 +91,7 @@ const ManageHeaderMixin = {
       return !!this.object.status;
     },
     latest_object_version() {
-      return this.object.versions.find((v) => v.revision.id === this.last_revision.id)[
+      return this.object.versions.find((v) => v.id === this.last_version.id)[
         this.otype
       ];
     },

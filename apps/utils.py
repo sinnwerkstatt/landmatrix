@@ -1,4 +1,8 @@
+import datetime
 import itertools
+
+from django.utils.duration import duration_iso_string
+from django.utils.timezone import is_aware
 
 
 def qs_values_to_dict(qs, fields, many_to_many_relations=None):
@@ -64,3 +68,24 @@ def arrayfield_choices_display(field, choices: tuple) -> list:
     for value in field:
         ret += [str(choices_dict.get(value, value))]
     return ret
+
+
+def ecma262(o: datetime) -> str:
+    if isinstance(o, datetime.datetime):
+        r = o.isoformat()
+        if o.microsecond:
+            r = r[:23] + r[26:]
+        if r.endswith("+00:00"):
+            r = r[:-6] + "Z"
+        return r
+    elif isinstance(o, datetime.date):
+        return o.isoformat()
+    elif isinstance(o, datetime.time):
+        if is_aware(o):
+            raise ValueError("JSON can't represent timezone-aware times.")
+        r = o.isoformat()
+        if o.microsecond:
+            r = r[:12]
+        return r
+    elif isinstance(o, datetime.timedelta):
+        return duration_iso_string(o)

@@ -16,9 +16,7 @@ y = """
     delete from landmatrix_investorworkflowinfo;
     alter sequence landmatrix_investorworkflowinfo_id_seq restart;
     delete from landmatrix_investorventureinvolvement;
-    delete from landmatrix_investorventureinvolvementversion;
     alter sequence landmatrix_investorventureinvolvement_id_seq restart;
-    alter sequence landmatrix_investorventureinvolvementversion_id_seq restart;
 
     -- Investor.objects.all().delete()
 

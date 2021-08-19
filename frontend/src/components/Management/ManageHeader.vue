@@ -13,7 +13,7 @@
           <router-link
             v-if="has_newer_draft"
             class="btn btn-gray"
-            :to="object_detail_path(object.id, last_revision.id)"
+            :to="object_detail_path(object.id, last_version.id)"
           >
             {{ $t("Go to current draft") }}
           </router-link>
@@ -60,7 +60,7 @@
               <a
                 v-if="object.draft_status === 1 && is_authorized(object)"
                 class="btn btn-pelorous"
-                :class="{ disabled: last_revision.id !== +objectVersion }"
+                :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="submit_for_review_link_title"
                 @click="$emit('send_to_review')"
               >
@@ -72,7 +72,7 @@
                   is_authorized(object)
                 "
                 class="btn btn-primary"
-                :class="{ disabled: last_revision.id !== +objectVersion }"
+                :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="request_improvement_link_title"
                 @click="show_to_draft_overlay = true"
               >
@@ -83,7 +83,7 @@
               <a
                 v-if="object.draft_status === 2 && is_authorized(object)"
                 class="btn btn-pelorous"
-                :class="{ disabled: last_revision.id !== +objectVersion }"
+                :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="submit_for_activation_link_title"
                 @click="$emit('change_status', { transition: 'TO_ACTIVATION' })"
               >
@@ -94,7 +94,7 @@
               <a
                 v-if="object.draft_status === 3 && is_authorized(object)"
                 class="btn btn-pelorous"
-                :class="{ disabled: last_revision.id !== +objectVersion }"
+                :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="get_activate_description"
                 @click="$emit('change_status', { transition: 'ACTIVATE' })"
               >
@@ -106,21 +106,21 @@
 
         <div class="bottom-row">
           <div class="left-side">
-            <div v-if="last_revision" class="last-changes">
+            <div v-if="last_version" class="last-changes">
               Last changes
-              <span v-if="last_revision.user">
-                by {{ last_revision.user.full_name }}
+              <span v-if="last_version.created_by">
+                by {{ last_version.created_by.full_name }}
               </span>
               on
-              {{ last_revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}
+              {{ last_version.created_at | dayjs("YYYY-MM-DD HH:mm") }}
               <br />
               <router-link
                 v-if="object.versions.length > 1"
                 :to="
                   object_compare_path(
                     object.id,
-                    object.versions[1].revision.id,
-                    object.versions[0].revision.id
+                    object.versions[1].id,
+                    object.versions[0].id
                   )
                 "
               >
