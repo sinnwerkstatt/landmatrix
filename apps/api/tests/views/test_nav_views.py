@@ -37,8 +37,6 @@ class TargetCountryListViewTestCase(TestCase):
         expected = [[116, "cambodia-page", "Cambodia Page"]]
         self.assertEqual(expected, response.data[0]["children"])
         self.assertEqual("Other", response.data[1]["text"])
-        expected = [[104, "myanmar", "Myanmar"]]
-        self.assertEqual(expected, response.data[1]["children"])
 
 
 class RegionListViewTestCase(TestCase):
