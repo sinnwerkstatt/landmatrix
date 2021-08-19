@@ -334,6 +334,7 @@
         this.$i18n.locale = locale;
         this.language = locale;
         this.$store.dispatch("fetchFields", locale);
+        this.$store.dispatch("fetchChartDescriptions", locale);
       },
       dispatchLogout() {
         this.$store.dispatch("logout").then(() => location.reload());

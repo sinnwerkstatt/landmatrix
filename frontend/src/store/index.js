@@ -24,9 +24,28 @@ const store = new Vuex.Store({
     },
   },
   actions: {
-    fetchBasicData(context) {
+    fetchChartDescriptions(context, language = "en") {
+      apolloClient
+        .query({
+          query: gql`
+            query chart_descriptions($language: String) {
+              chart_descriptions(language: $language) {
+                web_of_transnational_deals
+                dynamics_overview
+                produce_info_map
+              }
+            }
+          `,
+          variables: { language },
+        })
+        .then(({ data }) => {
+          context.commit("setChartDescriptions", data.chart_descriptions);
+        });
+    },
+    fetchBasicData(context, language = "en") {
       let about_promise = context.dispatch("fetchAboutPages");
       let obs_promise = context.dispatch("fetchObservatoryPages");
+      let cd_promise = context.dispatch("fetchChartDescriptions", language);
 
       let rest_promise = new Promise(function (resolve, reject) {
         apolloClient
@@ -83,11 +102,6 @@ const store = new Vuex.Store({
                   point_lon_max
                   observatory_page_id
                 }
-                chart_descriptions {
-                  web_of_transnational_deals
-                  dynamics_overview
-                  produce_info_map
-                }
               }
             `,
           })
@@ -95,14 +109,13 @@ const store = new Vuex.Store({
             context.commit("setUser", data.me);
             context.commit("setCountries", data.countries);
             context.commit("setRegions", data.regions);
-            context.commit("setChartDescriptions", data.chart_descriptions);
             resolve();
           })
           .catch((error) => {
             reject(error);
           });
       });
-      return Promise.all([about_promise, obs_promise, rest_promise]);
+      return Promise.all([about_promise, obs_promise, cd_promise, rest_promise]);
     },
     fetchFields(context, language = "en") {
       apolloClient
