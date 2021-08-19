@@ -183,7 +183,7 @@ class CountryFieldTestCase(TestCase):
 
     def test(self):
         field = CountryField()
-        self.assertEqual(71, field.queryset.count())
+        self.assertEqual(170, field.queryset.count())
 
 
 class ActorsFieldTestCase(YearBasedFieldTestCaseMixin, TestCase):

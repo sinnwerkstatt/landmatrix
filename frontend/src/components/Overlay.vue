@@ -129,13 +129,7 @@
   }
 
   .overlay {
-    width: 70vw;
-    max-width: 800px;
-    min-width: 300px;
-
-    @media screen and (max-width: 768px) {
-      width: 85vw;
-    }
+    width: clamp(300px, 70vw, 800px);
 
     padding: 0.8em 1.8em 1.8em;
     box-shadow: 0 0 15px rgba(black, 0.5);

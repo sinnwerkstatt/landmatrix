@@ -126,7 +126,7 @@ if (filters_cookie) {
 
 store.dispatch("fetchFields", locale);
 store.dispatch("fetchMessages");
-store.dispatch("fetchBasicData").then(() => {
+store.dispatch("fetchBasicData", locale).then(() => {
   vue_app = new Vue({ router, store, i18n, apolloProvider, render: (h) => h(App) });
   vue_app.$mount("#app");
 });

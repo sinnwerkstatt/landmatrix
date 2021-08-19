@@ -2,6 +2,15 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
 
+  add_public_deal_comment(
+    id: Int!
+    title: String
+    comment: String!
+    token: String!
+    name: String
+    email: String
+  ): Boolean
+
   add_deal_comment(
     id: Int!
     version: Int

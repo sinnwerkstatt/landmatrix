@@ -30,6 +30,11 @@ RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 LANDMATRIX_INVESTOR_GRAPH_ENABLED = True
 
+# hCaptcha spam protection for comments
+HCAPTCHA_SITEKEY = "10000000-ffff-ffff-ffff-000000000001"
+HCAPTCHA_SECRETKEY = "0x0000000000000000000000000000000000000000"
+
+
 # CACHES["default"] = {
 #     "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
 #     "LOCATION": "127.0.0.1:11211",

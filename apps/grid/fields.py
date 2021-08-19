@@ -415,9 +415,7 @@ class CountryField(forms.ModelChoiceField):
 
     def __init__(self, *args, **kwargs):
         queryset = (
-            Country.objects.defer("geom")
-            .filter(is_target_country=True)
-            .order_by("name")
+            Country.objects.defer("geom").filter(high_income=False).order_by("name")
         )
         kwargs["queryset"] = queryset
 

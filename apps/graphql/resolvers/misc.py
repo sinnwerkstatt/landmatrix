@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.utils import translation
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import get_fields
@@ -35,5 +36,8 @@ def resolve_crops(obj: Any, info: GraphQLResolveInfo):
     return Crop.objects.all()
 
 
-def resolve_chart_descriptions(obj, info):
-    return ChartDescriptionsSettings.for_site(info.context["request"].site).to_dict()
+def resolve_chart_descriptions(obj: Any, info: GraphQLResolveInfo, language="en"):
+    with translation.override(language):
+        return ChartDescriptionsSettings.for_site(
+            info.context["request"].site
+        ).to_dict()

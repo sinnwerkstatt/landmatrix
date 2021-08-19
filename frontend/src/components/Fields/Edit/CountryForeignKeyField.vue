@@ -49,7 +49,7 @@
       target_countries() {
         let countries = this.$store.state.page.countries;
         if (this.model !== "investor")
-          countries = countries.filter((c) => c.is_target_country);
+          countries = countries.filter((c) => !c.high_income);
         return countries;
       },
     },

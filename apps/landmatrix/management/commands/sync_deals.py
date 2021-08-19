@@ -4,11 +4,6 @@ from apps.landmatrix.models import (
     HistoricalActivity,
     Deal,
 )
-from apps.landmatrix.models.deal import (
-    DealTopInvestors,
-    DealParentCompanies,
-    DealWorkflowInfo,
-)
 from apps.landmatrix.models.versions import Revision
 from apps.landmatrix.synchronization.deal import histivity_to_deal
 

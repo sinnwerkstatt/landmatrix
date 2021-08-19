@@ -17,7 +17,7 @@
         :taggable="true"
         :tag-placeholder="$t('Press enter to create a new Investor')"
         :allow-empty="!formfield.required"
-        @tag="addInvestor"
+        @tag="openNewInvestorDialog"
       />
     </div>
     <div v-if="value" class="investor">
@@ -36,6 +36,23 @@
         {{ value.name }}
       </router-link>
     </div>
+    <div v-if="show_new_investor_form" class="investor">
+      <form id="new_investor" @submit.prevent="addNewInvestor">
+        <div class="container">
+          <EditField
+            v-for="fieldname in general_fields"
+            :key="fieldname"
+            v-model="new_investor[fieldname]"
+            :fieldname="fieldname"
+            :label-classes="['col-md-3']"
+            :value-classes="['col-md-9']"
+            :wrapper-classes="['row', 'my-3']"
+            model="investor"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">{{ $t("Submit") }}</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -43,6 +60,7 @@
   import gql from "graphql-tag";
 
   export default {
+    components: { EditField: () => import("$components/Fields/EditField") },
     props: {
       formfield: { type: Object, required: true },
       value: { type: Object, required: false, default: null },
@@ -50,7 +68,17 @@
     },
     data() {
       return {
+        show_new_investor_form: false,
         investors: [],
+        new_investor: {},
+        general_fields: [
+          "name",
+          "country",
+          "classification",
+          "homepage",
+          "opencorporates",
+          "comment",
+        ],
       };
     },
     apollo: {
@@ -74,22 +102,38 @@
       },
     },
     methods: {
-      addInvestor(newInv) {
-        let props = this.$router.resolve({
-          name: "investor_add",
-        });
-        let new_investor_window = window.open(
-          `${props.href}?newName=${newInv}`,
-          "_blank",
-          "menubar=no"
-        );
-        new_investor_window.onbeforeunload = () => {
-          this.$apollo.queries.investors.refetch().then(() => {
-            this.val = this.investors.filter(
-              (i) => i.name.lower() === newInv.lower()
-            )[0];
+      openNewInvestorDialog(newInv) {
+        this.$emit("input", null);
+        this.new_investor.name = newInv;
+        this.show_new_investor_form = true;
+      },
+      addNewInvestor() {
+        let form = document.querySelector("#new_investor");
+        if (!form.checkValidity()) form.reportValidity();
+        else this.investor_save();
+      },
+      investor_save() {
+        this.saving_in_progress = true;
+        return this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($payload: Payload) {
+                investor_edit(id: -1, payload: $payload) {
+                  investorId
+                  investorVersion
+                }
+              }
+            `,
+            variables: { payload: this.new_investor },
+          })
+          .then(({ data: { investor_edit } }) => {
+            this.saving_in_progress = false;
+            let new_i = { id: investor_edit.investorId, name: this.new_investor.name };
+            this.investors.push(new_i);
+            this.$emit("input", new_i);
+            this.new_investor = {};
+            this.show_new_investor_form = false;
           });
-        };
       },
     },
   };

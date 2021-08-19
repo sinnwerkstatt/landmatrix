@@ -58,7 +58,7 @@ type Query {
   blogpages(category: String): [BlogPage]
   blogcategories: [BlogCategory]
 
-  chart_descriptions: ChartDescriptions
+  chart_descriptions(language: String = "en"): ChartDescriptions
 
   markers(subset: Subset = PUBLIC, region_id: Int, country_id: Int): [Marker]
 }

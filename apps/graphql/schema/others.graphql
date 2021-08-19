@@ -5,7 +5,6 @@ type Country {
   code_alpha2: String
   code_alpha3: String
   high_income: Boolean
-  is_target_country: Boolean
   fk_region: Region
   point_lat: Float
   point_lat_min: Float
