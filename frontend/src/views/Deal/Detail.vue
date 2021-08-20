@@ -6,7 +6,7 @@
       :deal-version="dealVersion"
       @change_status="changeStatus"
       @delete="deleteDeal"
-      @reload_deal="reloadDeal"
+      @reload="reloadDeal"
       @set_confidential="setConfidential"
     />
     <div v-else class="container deal-detail">
@@ -225,7 +225,7 @@
 
 <script>
   import LoadingPulse from "$components/Data/LoadingPulse";
-  import DealComments from "$components/Deal/DealComments";
+
   import DealHistory from "$components/Deal/DealHistory";
   import DealLocationsSection from "$components/Deal/DealLocationsSection";
   import DealManageHeader from "$components/Deal/DealManageHeader";
@@ -251,7 +251,7 @@
   export default {
     name: "Detail",
     components: {
-      DealComments,
+      DealComments: () => import("$components/Deal/DealComments"),
       DealHistory,
       DealLocationsSection,
       DealManageHeader,

@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from wagtail.core.models import Site
 
-from apps.landmatrix.models import Country, Deal
+from apps.landmatrix.models import Country, Deal, Investor
 
 User = get_user_model()
 
@@ -56,7 +56,13 @@ def has_authorization_for_country(user: User, country: Union[Country, int]) -> b
     return False
 
 
-def send_comment_to_user(obj, comment, from_user, to_user_id, version_id=None):
+def send_comment_to_user(
+    obj: Union[Deal, Investor],
+    comment: str,
+    from_user: User,
+    to_user_id: int,
+    version_id: int = None,
+) -> None:
 
     receiver = User.objects.get(id=to_user_id)
     subject = "[Landmatrix] " + _("New comment")

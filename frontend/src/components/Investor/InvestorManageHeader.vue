@@ -82,7 +82,7 @@
             },
           })
           .then(() => {
-            this.$emit("reload_investor");
+            this.$emit("reload");
           })
           .catch((error) => console.error(error));
       },

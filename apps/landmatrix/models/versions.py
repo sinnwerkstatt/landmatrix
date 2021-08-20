@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 
 
 class Version(models.Model):
@@ -27,6 +26,31 @@ class Version(models.Model):
             self.created_at = timezone.now()
         super().save(*args, **kwargs)
 
+    @classmethod
+    def from_object(cls, obj, created_at=None, created_by=None):
+        version, _ = cls.objects.get_or_create(
+            created_at=created_at,
+            created_by=created_by,
+            object_id=obj.pk,
+            serialized_data=obj.serialize_for_version(),
+        )
+        return version
+
+    def enriched_dict(self) -> dict:
+        edict = self.serialized_data
+        edict["id"] = self.object_id
+        for x in self.object._meta.fields:
+            if x.__class__.__name__ == "ForeignKey":
+                if edict.get(x.name):
+                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+        edict["created_at"] = self.created_at
+        edict["created_by"] = self.created_by
+        return edict
+
+
+#     def retrieve_object(self):
+#         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]
+#         return obj.object
 
 #     @classmethod
 #     def create_from_obj(cls, obj, revision_id):
@@ -41,15 +65,6 @@ class Version(models.Model):
 #         version.save()
 #         return version
 #
-#     def update_from_obj(self, obj) -> "Version":
-#         serialized_json = serializers.serialize("json", (obj,))
-#         serialized_fields = json.loads(serialized_json)
-#         self.serialized_data = serialized_fields
-#         return self
-#
-#     def retrieve_object(self):
-#         obj = list(serializers.deserialize("json", json.dumps(self.serialized_data)))[0]
-#         return obj.object
 #
 #     # TODO: Replace this ASAP with functools.cached_property (Python 3.8!)
 #     @property

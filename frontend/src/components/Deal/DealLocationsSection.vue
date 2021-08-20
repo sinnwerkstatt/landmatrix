@@ -106,11 +106,9 @@
       },
       refreshMap() {
         if (this.deal && this.deal.country && this.bigmap) {
-          console.log(this.deal.geojson);
           if (this.layer) {
             this.bigmap.removeLayer(this.layer);
           }
-          console.log(this.deal.geojson);
           this.layer = new GeoJSON(this.deal.geojson, this.geojson_options);
           let mybounds = this.layer.getBounds();
           let ne = mybounds.getNorthEast();

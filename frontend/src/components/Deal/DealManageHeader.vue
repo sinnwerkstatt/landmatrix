@@ -210,7 +210,7 @@
             },
           })
           .then(() => {
-            this.$emit("reload_deal");
+            this.$emit("reload");
           })
           .catch((error) => console.error(error));
       },

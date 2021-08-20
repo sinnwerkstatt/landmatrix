@@ -85,15 +85,12 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
     investor.status, investor.draft_status = calculate_new_stati(investor, new_status)
     investor.recalculate_fields()
 
-    involvements = _create_involvements_for_investor(investor, histvestor)
+    investor._investors = _create_involvements_for_investor(investor, histvestor)
 
     investor_version = InvestorVersion.from_object(
-        investor,
-        involvements,
-        created_at=histvestor.history_date,
-        created_by=histvestor.history_user,
+        investor, created_at=histvestor.history_date, created_by=histvestor.history_user
     )
-    print(investor_version)
+
     investor.current_draft = None if new_status in [2, 3, 4] else investor_version
 
     if do_save:
@@ -102,15 +99,14 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
         # or: there is a current model but it's a draft
         # or: the new status is Live, Updated or Deleted
         investor.save()
+
+        # TODO-3 we could probablu save the ones that remain
         InvestorVentureInvolvement.objects.filter(venture=investor).delete()
-        InvestorVentureInvolvement.objects.bulk_create(involvements)
+        InvestorVentureInvolvement.objects.bulk_create(investor._investors)
     else:
         Investor.objects.filter(pk=investor.pk).update(
             draft_status=investor.draft_status, current_draft=investor_version
         )
-
-    if new_status == 4:
-        InvestorVentureInvolvement.objects.filter(venture=investor).delete()
 
     InvestorWorkflowInfo.objects.create(
         from_user=histvestor.history_user or User.objects.get(id=1),

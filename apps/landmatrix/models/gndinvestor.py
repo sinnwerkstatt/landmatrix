@@ -42,42 +42,6 @@ class InvestorVersion(Version):
         related_name="versions",
     )
 
-    @classmethod
-    def from_object(cls, investor, involvements, created_at=None, created_by=None):
-        version, _ = cls.objects.get_or_create(
-            created_at=created_at,
-            created_by=created_by,
-            object_id=investor.pk,
-            serialized_data={
-                "name": investor.name,
-                "country": investor.country_id,
-                "classification": investor.classification,
-                "homepage": investor.homepage,
-                "opencorporates": investor.opencorporates,
-                "comment": investor.comment,
-                "involvements": [ivi.serialize() for ivi in involvements],
-                "status": investor.status,
-                "draft_status": investor.draft_status,
-                "created_at": ecma262(investor.created_at),
-                "created_by": investor.created_by_id,
-                "modified_at": ecma262(investor.modified_at),
-                "modified_by": investor.modified_by_id,
-                "is_actually_unknown": investor.is_actually_unknown,
-            },
-        )
-        return version
-
-    def enriched_dict(self) -> dict:
-        edict = self.serialized_data
-        edict["id"] = self.object_id
-        for x in Investor._meta.fields:
-            if x.__class__.__name__ == "ForeignKey":
-                if edict.get(x.name):
-                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
-        edict["created_at"] = self.created_at
-        edict["created_by"] = self.created_by
-        return edict
-
     def new_to_dict(self):
         return {
             "id": self.id,
@@ -135,6 +99,7 @@ class Investor(models.Model):
 
     comment = models.TextField(_("Comment"), blank=True)
 
+    # NOTE maybe toss this out; seems to confuse more.
     involvements = models.ManyToManyField(
         "self",
         through="InvestorVentureInvolvement",
@@ -206,6 +171,45 @@ class Investor(models.Model):
     def save(self, *args, **kwargs):
         self.recalculate_fields()
         super().save(*args, **kwargs)
+
+    def serialize_for_version(self) -> dict:
+        investors = self.__getattribute__("_investors") or []
+
+        return {
+            "name": self.name,
+            "country": self.country_id,
+            "classification": self.classification,
+            "homepage": self.homepage,
+            "opencorporates": self.opencorporates,
+            "comment": self.comment,
+            "investors": [ivi.serialize() for ivi in investors],
+            "status": self.status,
+            "draft_status": self.draft_status,
+            "created_at": ecma262(self.created_at),
+            "created_by": self.created_by_id,
+            "modified_at": ecma262(self.modified_at),
+            "modified_by": self.modified_by_id,
+            "is_actually_unknown": self.is_actually_unknown,
+        }
+
+    def deserialize_from_version(self, version: InvestorVersion):
+        self.name = version.serialized_data["name"]
+        self.country_id = version.serialized_data["country"]
+        self.classification = version.serialized_data["classification"]
+        self.homepage = version.serialized_data["homepage"]
+        self.opencorporates = version.serialized_data["opencorporates"]
+        self.comment = version.serialized_data["comment"]
+        self.status = version.serialized_data["status"]
+        self.draft_status = version.serialized_data["draft_status"]
+        self.created_at = version.serialized_data["created_at"]
+        self.created_by_id = version.serialized_data["created_by"]
+        self.modified_at = version.serialized_data["modified_at"]
+        self.modified_by_id = version.serialized_data["modified_by"]
+        self.is_actually_unknown = version.serialized_data["is_actually_unknown"]
+
+        # TODO
+        # self.investors.set([InvestorVentureInvolvement().deserialize(ivi) for ivi in version.serialized_data["investors"]])
+        return self
 
     def __str__(self):
         if self.name:
@@ -515,7 +519,7 @@ class InvestorVentureInvolvement(models.Model):
             "comment": self.comment,
         }
 
-    def serialize(self):
+    def serialize(self) -> dict:
         return {
             "investor": self.investor_id,
             "venture": self.venture_id,
@@ -528,3 +532,16 @@ class InvestorVentureInvolvement(models.Model):
             "parent_relation": self.parent_relation,
             "comment": self.comment,
         }
+
+    def deserialize(self, version: dict):
+        self.investor_id = version["investor"]
+        self.venture_id = version["venture"]
+        self.role = version["role"]
+        self.investment_type = version["investment_type"]
+        self.percentage = version["percentage"]
+        self.loans_amount = version["loans_amount"]
+        self.loans_currency = version["loans_currency"]
+        self.loans_date = version["loans_date"]
+        self.parent_relation = version["parent_relation"]
+        self.comment = version["comment"]
+        return self

@@ -4,7 +4,7 @@ version = "0.1.0"
 license = "AGPL-3.0+"
 authors = [
   "Simon Liedtke <simon.liedtke@gmail.com>",
-  "Andreas Nüßlein <andreas@nuessle.in>"
+  "Andreas Nüßlein <andreas@nuessle.in>",
 ]
 readme = 'README.md'
 description = "LandMatrix"

@@ -148,7 +148,9 @@ def resolve_dealversions(
         )
         qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
 
-    return [dv.to_dict() for dv in qs]
+    print("haeh?!")
+    # TODO-1
+    return [dv.new_to_dict() for dv in qs]
 
 
 def resolve_upload_datasource_file(_, info, filename, payload) -> str:
@@ -198,6 +200,7 @@ def resolve_change_deal_status(
 
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
+    print(payload)
     dealId, dealVersion = object_edit(
         otype="deal",
         user=info.context["request"].user,

@@ -79,30 +79,6 @@ class DealVersion(Version):
         related_name="versions",
     )
 
-    @classmethod
-    def from_object(cls, deal, created_at=None, created_by=None):
-        serialized_json = serializers.serialize("json", (deal,))
-        serialized_data = json.loads(serialized_json)[0]["fields"]
-
-        version, _ = cls.objects.get_or_create(
-            created_at=created_at,
-            created_by=created_by,
-            object_id=deal.pk,
-            serialized_data=serialized_data,
-        )
-        return version
-
-    def enriched_dict(self) -> dict:
-        edict = self.serialized_data
-        edict["id"] = self.object_id
-        for x in Deal._meta.fields:
-            if x.__class__.__name__ == "ForeignKey":
-                if edict.get(x.name):
-                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
-        edict["created_at"] = self.created_at
-        edict["created_by"] = self.created_by
-        return edict
-
     def new_to_dict(self):
         return {
             "id": self.id,
@@ -1118,8 +1094,7 @@ class Deal(models.Model, OldDealMixin):
             self.forest_concession = self._calculate_forest_concession()
         if dependent:
             # With the help of signals these fields are recalculated on changes to:
-            # Location, Contract, DataSource
-            # as well as Investor and InvestorVentureInvolvement
+            # Investor and InvestorVentureInvolvement
             self.has_known_investor = not self._has_no_known_investor()
             self.not_public_reason = self._calculate_public_state()
             self.is_public = self.not_public_reason == ""
@@ -1172,6 +1147,20 @@ class Deal(models.Model, OldDealMixin):
 
             else:
                 self.__setattr__(key, value)
+
+    def serialize_for_version(self) -> dict:
+        serialized_json = serializers.serialize("json", (self,))
+        return json.loads(serialized_json)[0]["fields"]
+
+    @staticmethod
+    def deserialize_from_version(version: DealVersion) -> "Deal":
+        daty = {
+            "pk": version.object_id,
+            "model": "landmatrix.deal",
+            "fields": version.serialized_data,
+        }
+        obj = list(serializers.deserialize("json", json.dumps([daty])))[0]
+        return obj.object
 
     def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)
