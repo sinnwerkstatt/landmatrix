@@ -18,13 +18,6 @@
           </h1>
         </div>
         <div class="ml-auto">
-          <a
-            v-if="$store.getters.userAuthenticated"
-            :href="`/legacy/deal/edit/${deal.id}/`"
-            target="_blank"
-          >
-            <i class="fas fa-edit" /> {{ $t("Edit") }}
-          </a>
           <HeaderDates :obj="deal" />
         </div>
       </div>

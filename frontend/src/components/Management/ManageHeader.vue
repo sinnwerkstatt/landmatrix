@@ -155,6 +155,18 @@
                 </div>
               </div>
             </div>
+            <div
+              v-if="show_legacy_edit_link && $store.getters.userAuthenticated"
+              class="action-buttons"
+            >
+              <a
+                class="btn btn-primary"
+                :href="`/legacy/${otype}/edit/${object.id}/`"
+                target="_blank"
+              >
+                {{ $t("Edit") }}
+              </a>
+            </div>
           </div>
           <slot name="visibility" />
         </div>
