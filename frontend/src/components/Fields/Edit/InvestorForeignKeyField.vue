@@ -50,7 +50,7 @@
             model="investor"
           />
         </div>
-        <button type="submit" class="btn btn-primary">{{ $t("Submit") }}</button>
+        <button type="submit" class="btn btn-primary">{{ $t("Save") }}</button>
       </form>
     </div>
   </div>

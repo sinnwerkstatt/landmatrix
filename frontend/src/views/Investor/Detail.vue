@@ -16,13 +16,6 @@
           </h1>
         </div>
         <div class="panel-container ml-auto">
-          <a
-            v-if="$store.getters.userAuthenticated"
-            :href="`/legacy/investor/edit/${investor.id}/`"
-            target="_blank"
-          >
-            <i class="fas fa-edit" /> {{ $t("Edit") }}
-          </a>
           <HeaderDates :obj="investor" />
         </div>
       </div>
