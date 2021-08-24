@@ -5,6 +5,7 @@ from django.utils import timezone
 from graphql import GraphQLError
 
 from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
+from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
 from apps.landmatrix.models.gndinvestor import (
     InvestorWorkflowInfo,
@@ -94,7 +95,7 @@ def change_object_status(
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
 
-        draft_status = Deal.DRAFT_STATUS_REVIEW
+        draft_status = DRAFT_STATUS["REVIEW"]
         obj_version.serialized_data["draft_status"] = draft_status
         if otype == "deal":
             obj_version.serialized_data["fully_updated"] = fully_updated
@@ -108,7 +109,7 @@ def change_object_status(
     elif transition == "TO_ACTIVATION":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_ACTIVATION
+        draft_status = DRAFT_STATUS["ACTIVATION"]
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
@@ -117,18 +118,18 @@ def change_object_status(
             raise GraphQLError("not allowed")
         draft_status = None
         obj_version.serialized_data["status"] = (
-            Deal.STATUS_LIVE if obj.status == Deal.STATUS_DRAFT else Deal.STATUS_UPDATED
+            STATUS["LIVE"] if obj.status == STATUS["DRAFT"] else STATUS["UPDATED"]
         )
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.serialized_data["current_draft"] = None
-        # TODO-1 SAVE THE THING!
-        obj.deserialize_from_version(obj_version)
-        # obj.save()
+
+        obj = Object.deserialize_from_version(obj_version)
+        obj.save()
         obj_version.save()
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
-        draft_status = Deal.DRAFT_STATUS_DRAFT
+        draft_status = DRAFT_STATUS["DRAFT"]
 
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.id = None
@@ -165,7 +166,6 @@ def object_edit(
     role = get_user_role(user)
     if not role:
         raise GraphQLError("not authorized")
-
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
     # this is a new Object
@@ -176,7 +176,7 @@ def object_edit(
         obj.created_by = user
         obj.modified_at = timezone.now()
         obj.modified_by = user
-        obj.status = obj.draft_status = Deal.DRAFT_STATUS_DRAFT
+        obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
         obj.save()
 
         obj_version = ObjectVersion.from_object(obj, created_by=user)
@@ -190,7 +190,6 @@ def object_edit(
         )
 
         return [obj.id, obj_version.id]
-
     obj = Object.objects.get(id=obj_id)
     obj.update_from_dict(payload)
     obj.recalculate_fields()
@@ -199,14 +198,14 @@ def object_edit(
 
     # this is a live Object for which we create a new Version
     if not obj_version_id:
-        obj.draft_status = Deal.DRAFT_STATUS_DRAFT
+        obj.draft_status = DRAFT_STATUS["DRAFT"]
         if otype == "deal":
             obj.fully_updated = False
 
         # TODO-1 handle involvements
         obj_version = ObjectVersion.from_object(obj, created_by=user)
         Object.objects.filter(id=obj_id).update(
-            draft_status=Deal.DRAFT_STATUS_DRAFT, current_draft=obj_version
+            draft_status=DRAFT_STATUS["DRAFT"], current_draft=obj_version
         )
 
         add_workflow_info(
@@ -215,7 +214,7 @@ def object_edit(
             obj_version=obj_version,
             from_user=user,
             draft_status_before=None,
-            draft_status_after=Deal.DRAFT_STATUS_DRAFT,
+            draft_status_after=DRAFT_STATUS["DRAFT"],
         )
 
     # we update the existing version.
@@ -230,15 +229,12 @@ def object_edit(
         # add involvements here!
         obj_version.serialized_data = obj.serialize_for_version()
 
-        if obj.draft_status in [
-            Deal.DRAFT_STATUS_REVIEW,
-            Deal.DRAFT_STATUS_ACTIVATION,
-        ]:
+        if obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]:
             oldstatus = obj.draft_status
 
             obj_version.id = None
             obj_version.created_by = user
-            obj_version.serialized_data["draft_status"] = Deal.DRAFT_STATUS_DRAFT
+            obj_version.serialized_data["draft_status"] = DRAFT_STATUS["DRAFT"]
             obj_version.save()
 
             add_workflow_info(
@@ -247,18 +243,22 @@ def object_edit(
                 obj_version=obj_version,
                 from_user=user,
                 draft_status_before=oldstatus,
-                draft_status_after=Deal.DRAFT_STATUS_DRAFT,
+                draft_status_after=DRAFT_STATUS["DRAFT"],
             )
         else:
             obj_version.save()
-            if obj.status == Deal.STATUS_DRAFT:
+            if obj.status == STATUS["DRAFT"]:
                 obj.save()
 
     return [obj_id, obj_version.id]
 
 
 def object_delete(
-    otype: OType, user: User, obj_id: int, obj_version_id: int, comment: str = None
+    otype: OType,
+    user: User,
+    obj_id: int,
+    obj_version_id: int = None,
+    comment: str = None,
 ) -> bool:
     role = get_user_role(user)
     if not role:
@@ -280,7 +280,7 @@ def object_delete(
             obj,
             from_user=user,
             draft_status_before=old_draft_status,
-            draft_status_after=Deal.STATUS_DELETED,
+            draft_status_after=STATUS["DELETED"],
             comment=comment,
         )
 
@@ -298,9 +298,7 @@ def object_delete(
         if role != "ADMINISTRATOR":
             raise GraphQLError("not authorized")
         obj.status = (
-            Deal.STATUS_UPDATED
-            if obj.status == Deal.STATUS_DELETED
-            else Deal.STATUS_DELETED
+            STATUS["UPDATED"] if obj.status == STATUS["DELETED"] else STATUS["DELETED"]
         )
         obj.modified_at = timezone.now()
         obj.modified_by = user
@@ -310,14 +308,10 @@ def object_delete(
             obj,
             from_user=user,
             draft_status_before=(
-                None
-                if obj.status == Deal.STATUS_DELETED
-                else Deal.DRAFT_STATUS_TO_DELETE
+                None if obj.status == STATUS["DELETED"] else DRAFT_STATUS["TO_DELETE"]
             ),
             draft_status_after=(
-                Deal.DRAFT_STATUS_TO_DELETE
-                if obj.status == Deal.STATUS_DELETED
-                else None
+                DRAFT_STATUS["TO_DELETE"] if obj.status == STATUS["DELETED"] else None
             ),
             comment=comment,
         )

@@ -13,6 +13,7 @@ from apps.landmatrix.models import (
 #  deal: rolle zurueck zu altem deal? brauchen wir das?
 #  loesche deal: stelle sicher, dass die revisionen erhalten bleiben?
 #    also vermutlich nur als geloescht markieren
+from apps.landmatrix.models.abstracts import STATUS, DRAFT_STATUS
 from apps.landmatrix.models.deal import DealVersion
 
 
@@ -25,13 +26,13 @@ def test_all_status_options():
     assert HistoricalActivity.objects.filter(activity_identifier=1).count() == 1
 
     deal_draft_only = Deal.objects.get(id=1)
-    assert deal_draft_only.status == deal_draft_only.STATUS_DRAFT
-    assert deal_draft_only.draft_status == deal_draft_only.DRAFT_STATUS_DRAFT
+    assert deal_draft_only.status == STATUS["DRAFT"]
+    assert deal_draft_only.draft_status == DRAFT_STATUS["DRAFT"]
     versions = DealVersion.objects.filter(object_id=1)
     assert len(versions) == 1
     assert versions[0].fields["id"] == 1
-    assert versions[0].fields["status"] == deal_draft_only.STATUS_DRAFT
-    assert versions[0].fields["draft_status"] == deal_draft_only.DRAFT_STATUS_DRAFT
+    assert versions[0].fields["status"] == STATUS["DRAFT"]
+    assert versions[0].fields["draft_status"] == DRAFT_STATUS["DRAFT"]
 
     # Live (Active)
     hact = HistoricalActivity(activity_identifier=2, fk_status_id=2)
@@ -67,7 +68,7 @@ def test_all_status_options():
     live_historical_activity.trigger_gnd()
 
     deal = Deal.objects.get(id=2)
-    assert deal.status == deal.STATUS_DELETED
+    assert deal.status == DRAFT_STATUS["DELETED"]
     versions = DealVersion.objects.filter(object_id=2)
     assert len(versions) == 2
     assert versions[0].fields["id"] == 2
@@ -88,29 +89,29 @@ def test_updated_activity():
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 2
 
     deal = Deal.objects.get(id=ID)
-    assert deal.status == deal.STATUS_LIVE
+    assert deal.status == DRAFT_STATUS["LIVE"]
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 2
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_LIVE
+    assert versions[0].fields["status"] == DRAFT_STATUS["LIVE"]
     assert versions[0].fields["draft_status"] is None
     assert versions[1].fields["id"] == ID
-    assert versions[1].fields["status"] == deal.STATUS_DRAFT
-    assert versions[1].fields["draft_status"] == deal.STATUS_DRAFT
+    assert versions[1].fields["status"] == DRAFT_STATUS["DRAFT"]
+    assert versions[1].fields["draft_status"] == DRAFT_STATUS["DRAFT"]
 
     # create another draft
     hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
     hact.save(update_elasticsearch=False)
     hact.trigger_gnd()
     deal.refresh_from_db()
-    assert deal.status == deal.STATUS_LIVE
-    assert deal.draft_status == deal.DRAFT_STATUS_DRAFT
+    assert deal.status == STATUS["LIVE"]
+    assert deal.draft_status == DRAFT_STATUS["DRAFT"]
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 3
-    assert versions[0].fields["status"] == deal.STATUS_LIVE
-    assert versions[0].fields["draft_status"] == deal.DRAFT_STATUS_DRAFT
-    assert versions[1].fields["status"] == deal.STATUS_LIVE
-    assert versions[2].fields["status"] == deal.STATUS_DRAFT
+    assert versions[0].fields["status"] == DRAFT_STATUS["LIVE"]
+    assert versions[0].fields["draft_status"] == DRAFT_STATUS["DRAFT"]
+    assert versions[1].fields["status"] == DRAFT_STATUS["LIVE"]
+    assert versions[2].fields["status"] == DRAFT_STATUS["DRAFT"]
 
     # and set it live again
     hact = HistoricalActivity(
@@ -121,15 +122,15 @@ def test_updated_activity():
     assert HistoricalActivity.objects.filter(activity_identifier=ID).count() == 4
 
     deal.refresh_from_db()
-    assert deal.status == deal.STATUS_UPDATED
+    assert deal.status == DRAFT_STATUS["UPDATED"]
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 4
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_UPDATED
+    assert versions[0].fields["status"] == DRAFT_STATUS["UPDATED"]
     assert not versions[0].fields["draft_status"]
     assert versions[1].fields["id"] == ID
-    assert versions[1].fields["status"] == deal.STATUS_LIVE
-    assert versions[1].fields["draft_status"] == deal.DRAFT_STATUS_DRAFT
+    assert versions[1].fields["status"] == DRAFT_STATUS["LIVE"]
+    assert versions[1].fields["draft_status"] == DRAFT_STATUS["DRAFT"]
 
     # and create draft and reject it
     hact = HistoricalActivity(activity_identifier=ID, fk_status_id=1)
@@ -139,8 +140,8 @@ def test_updated_activity():
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 5
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_UPDATED
-    assert versions[0].fields["draft_status"] == deal.DRAFT_STATUS_DRAFT
+    assert versions[0].fields["status"] == DRAFT_STATUS["UPDATED"]
+    assert versions[0].fields["draft_status"] == DRAFT_STATUS["DRAFT"]
     hact = HistoricalActivity(activity_identifier=ID, fk_status_id=5)
     hact.save(update_elasticsearch=False)
     hact.trigger_gnd()
@@ -148,8 +149,8 @@ def test_updated_activity():
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 6
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_UPDATED
-    assert versions[0].fields["draft_status"] == deal.DRAFT_STATUS_REJECTED
+    assert versions[0].fields["status"] == DRAFT_STATUS["UPDATED"]
+    assert versions[0].fields["draft_status"] == DRAFT_STATUS["REJECTED"]
 
     # mark hact as "to delete"
     hact = HistoricalActivity(activity_identifier=ID, fk_status_id=6)
@@ -158,10 +159,10 @@ def test_updated_activity():
     deal.refresh_from_db()
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 7
-    assert deal.status == deal.STATUS_UPDATED
+    assert deal.status == DRAFT_STATUS["UPDATED"]
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_UPDATED
-    assert versions[0].fields["draft_status"] == deal.DRAFT_STATUS_TO_DELETE
+    assert versions[0].fields["status"] == DRAFT_STATUS["UPDATED"]
+    assert versions[0].fields["draft_status"] == DRAFT_STATUS["TO_DELETE"]
 
     # and delete it
     hact = HistoricalActivity(activity_identifier=ID, fk_status_id=4)
@@ -170,9 +171,9 @@ def test_updated_activity():
     deal.refresh_from_db()
     versions = DealVersion.objects.filter(object_id=ID)
     assert len(versions) == 8
-    assert deal.status == deal.STATUS_DELETED
+    assert deal.status == DRAFT_STATUS["DELETED"]
     assert versions[0].fields["id"] == ID
-    assert versions[0].fields["status"] == deal.STATUS_DELETED
+    assert versions[0].fields["status"] == DRAFT_STATUS["DELETED"]
     assert versions[0].fields["draft_status"] is None
 
 

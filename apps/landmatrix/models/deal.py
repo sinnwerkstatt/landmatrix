@@ -11,16 +11,22 @@ from django.db.models import Sum, F
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from apps.landmatrix.models import Investor
+from apps.landmatrix.models.abstracts import (
+    STATUS_CHOICES,
+    DRAFT_STATUS_CHOICES,
+    WorkflowInfo,
+    STATUS,
+    Version,
+)
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.fields import (
     LocationsField,
     ArrayField,
     ContractsField,
     DatasourcesField,
 )
-from apps.landmatrix.models import Investor
-from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version
 
 
 class DealQuerySet(models.QuerySet):
@@ -1011,28 +1017,6 @@ class Deal(models.Model, OldDealMixin):
     geojson = JSONField(blank=True, null=True)
 
     """ # Status """
-    STATUS_DRAFT = 1
-    STATUS_LIVE = 2
-    STATUS_UPDATED = 3
-    STATUS_DELETED = 4
-    STATUS_CHOICES = (
-        (STATUS_DRAFT, _("Draft")),
-        (STATUS_LIVE, _("Live")),
-        (STATUS_UPDATED, _("Updated")),
-        (STATUS_DELETED, _("Deleted")),
-    )
-    DRAFT_STATUS_DRAFT = 1
-    DRAFT_STATUS_REVIEW = 2
-    DRAFT_STATUS_ACTIVATION = 3
-    DRAFT_STATUS_REJECTED = 4
-    DRAFT_STATUS_TO_DELETE = 5
-    DRAFT_STATUS_CHOICES = (
-        (DRAFT_STATUS_DRAFT, _("Draft")),
-        (DRAFT_STATUS_REVIEW, _("Review")),
-        (DRAFT_STATUS_ACTIVATION, _("Activation")),
-        (DRAFT_STATUS_REJECTED, _("Rejected")),
-        (DRAFT_STATUS_TO_DELETE, _("To Delete")),
-    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
@@ -1270,7 +1254,7 @@ class Deal(models.Model, OldDealMixin):
         if not self.operating_company_id:
             return True
         oc = Investor.objects.get(id=self.operating_company_id)
-        if oc.status == Investor.STATUS_DELETED:
+        if oc.status == STATUS["DELETED"]:
             return True
 
         investors_countries = self.parent_companies.exclude(
@@ -1325,7 +1309,7 @@ class Deal(models.Model, OldDealMixin):
         if self.operating_company_id:
             oc = Investor.objects.filter(
                 id=self.operating_company_id,
-                status__in=[Investor.STATUS_LIVE, Investor.STATUS_UPDATED],
+                status__in=[STATUS["LIVE"], STATUS["UPDATED"]],
             ).first()
             if oc:
                 parent_companies = oc.get_parent_companies()
@@ -1374,28 +1358,7 @@ class Deal(models.Model, OldDealMixin):
         return not oc.investors.filter(investor__is_actually_unknown=False).exists()
 
 
-class DealWorkflowInfo(models.Model):
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
-    draft_status_before = models.IntegerField(
-        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    draft_status_after = models.IntegerField(
-        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True, null=True)
-    processed_by_receiver = models.BooleanField(default=False)
-    # watch out: ignore the draft_status within this DealVersion object, it will change
-    # when the workflow moves along. the payload will remain consistent though.
+class DealWorkflowInfo(WorkflowInfo):
     deal = models.ForeignKey(
         Deal, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -1408,18 +1371,9 @@ class DealWorkflowInfo(models.Model):
     )
 
     def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user": self.from_user,
-            "to_user": self.to_user,
-            "draft_status_before": self.draft_status_before,
-            "draft_status_after": self.draft_status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "processed_by_receiver": self.processed_by_receiver,
-            "deal": self.deal,
-            "deal_version": self.deal_version,
-        }
+        d = super().to_dict()
+        d.update({"deal": self.deal, "deal_version": self.deal_version})
+        return d
 
 
 class DealParentCompanies(models.Model):

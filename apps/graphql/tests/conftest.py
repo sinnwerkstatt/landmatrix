@@ -23,6 +23,11 @@ def django_db_setup(django_db_setup, django_db_blocker):
         )
         u_rep.groups.add(Group.objects.get(name="Reporters"))
 
+        u_rep, _ = User.objects.get_or_create(
+            first_name="Land", last_name="Reporter2", username="land_reporter2"
+        )
+        u_rep.groups.add(Group.objects.get(name="Reporters"))
+
         u_edit, _ = User.objects.get_or_create(
             first_name="Land", last_name="Editor", username="land_editor"
         )

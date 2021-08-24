@@ -22,8 +22,8 @@ from apps.landmatrix.models.investor import (
     HistoricalInvestorVentureInvolvement,
 )
 from .currency import Currency
-from .gndinvestor import Investor, InvestorVentureInvolvement
-from .deal import Deal
+from .gndinvestor import Investor, InvestorVersion, InvestorVentureInvolvement
+from .deal import Deal, DealVersion
 
 
 class AgriculturalProduce(models.Model):

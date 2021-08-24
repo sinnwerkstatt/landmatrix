@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from apps.landmatrix.models import Deal, Investor
+from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.mixins import (
     OldContractMixin,
     OldLocationMixin,
@@ -20,7 +21,7 @@ def _extras_to_json(
     field,
     val1name: str = "value",
     val2name: str = None,
-    expected_type=str,
+    expected_type: type = str,
     fieldmap=None,
     multi_value=False,
     expected_type2=str,
@@ -353,20 +354,20 @@ def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
         if current_model:
             new_status = current_model.status
         else:
-            new_status = obj.STATUS_DRAFT
-        new_draft_status = obj.DRAFT_STATUS_DRAFT
+            new_status = STATUS["DRAFT"]
+        new_draft_status = DRAFT_STATUS["DRAFT"]
 
     # "Active" and "Overwritten"
     elif status in [2, 3]:
-        if current_model and current_model.status != obj.STATUS_DRAFT:
-            new_status = obj.STATUS_UPDATED
+        if current_model and current_model.status != STATUS["DRAFT"]:
+            new_status = STATUS["UPDATED"]
         else:
-            new_status = obj.STATUS_LIVE
+            new_status = STATUS["LIVE"]
         new_draft_status = None
 
     # "Deleted"
     elif status == 4:
-        new_status = obj.STATUS_DELETED
+        new_status = STATUS["DELETED"]
         new_draft_status = None
 
     # "Rejected"
@@ -374,17 +375,17 @@ def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
         if current_model:
             new_status = current_model.status
         else:
-            new_status = obj.STATUS_DRAFT
+            new_status = STATUS["DRAFT"]
         # TODO: Really rejected?
-        new_draft_status = obj.DRAFT_STATUS_REJECTED
+        new_draft_status = DRAFT_STATUS["REJECTED"]
 
     # "To Delete"
     elif status == 6:
         if current_model:
             new_status = current_model.status
         else:
-            new_status = obj.STATUS_DRAFT
-        new_draft_status = obj.DRAFT_STATUS_TO_DELETE
+            new_status = STATUS["DRAFT"]
+        new_draft_status = DRAFT_STATUS["TO_DELETE"]
 
     else:
         raise Exception("status must be between 1 and 6")

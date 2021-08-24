@@ -9,7 +9,13 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.landmatrix.models import Country, Currency
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.abstracts import (
+    STATUS_CHOICES,
+    DRAFT_STATUS_CHOICES,
+    Version,
+    WorkflowInfo,
+)
+
 from apps.utils import ecma262
 
 
@@ -107,28 +113,6 @@ class Investor(models.Model):
         symmetrical=False,
     )
 
-    STATUS_DRAFT = 1
-    STATUS_LIVE = 2
-    STATUS_UPDATED = 3
-    STATUS_DELETED = 4
-    STATUS_CHOICES = (
-        (STATUS_DRAFT, _("Draft")),
-        (STATUS_LIVE, _("Live")),
-        (STATUS_UPDATED, _("Updated")),
-        (STATUS_DELETED, _("Deleted")),
-    )
-    DRAFT_STATUS_DRAFT = 1
-    DRAFT_STATUS_REVIEW = 2
-    DRAFT_STATUS_ACTIVATION = 3
-    DRAFT_STATUS_REJECTED = 4
-    DRAFT_STATUS_TO_DELETE = 5
-    DRAFT_STATUS_CHOICES = (
-        (DRAFT_STATUS_DRAFT, _("Draft")),
-        (DRAFT_STATUS_REVIEW, _("Review")),
-        (DRAFT_STATUS_ACTIVATION, _("Activation")),
-        (DRAFT_STATUS_REJECTED, _("Rejected")),
-        (DRAFT_STATUS_TO_DELETE, _("To Delete")),
-    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
@@ -173,7 +157,7 @@ class Investor(models.Model):
         super().save(*args, **kwargs)
 
     def serialize_for_version(self) -> dict:
-        investors = self.__getattribute__("_investors") or []
+        investors = self._investors if hasattr(self, "_investors") else []
 
         return {
             "name": self.name,
@@ -192,20 +176,8 @@ class Investor(models.Model):
             "is_actually_unknown": self.is_actually_unknown,
         }
 
-    def deserialize_from_version(self, version: InvestorVersion):
-        self.name = version.serialized_data["name"]
-        self.country_id = version.serialized_data["country"]
-        self.classification = version.serialized_data["classification"]
-        self.homepage = version.serialized_data["homepage"]
-        self.opencorporates = version.serialized_data["opencorporates"]
-        self.comment = version.serialized_data["comment"]
-        self.status = version.serialized_data["status"]
-        self.draft_status = version.serialized_data["draft_status"]
-        self.created_at = version.serialized_data["created_at"]
-        self.created_by_id = version.serialized_data["created_by"]
-        self.modified_at = version.serialized_data["modified_at"]
-        self.modified_by_id = version.serialized_data["modified_by"]
-        self.is_actually_unknown = version.serialized_data["is_actually_unknown"]
+    @classmethod
+    def deserialize_from_version(cls, version: InvestorVersion):
 
         # TODO
         # self.investors.set([InvestorVentureInvolvement().deserialize(ivi) for ivi in version.serialized_data["investors"]])
@@ -271,8 +243,8 @@ class Investor(models.Model):
         return deals
 
     # TODO This is not working yet.
-    def update_from_dict(self, d: dict):
-        for key, value in d.items():
+    def update_from_dict(self, payload: dict):
+        for key, value in payload.items():
             if key in [
                 "id",
                 "created_at",
@@ -292,11 +264,21 @@ class Investor(models.Model):
             ]:
                 self.__setattr__(f"{key}_id", value["id"] if value else None)
             elif key == "investors":
+                print("INVESTORS", value)
+                _ivis = []
                 for entry in value:
-                    try:
-                        ivi = InvestorVentureInvolvement.objects.get(
+                    _ivis += [
+                        InvestorVentureInvolvement(
                             investor_id=entry["investor"]["id"],
                             venture_id=self.id,
+                            role=entry["role"],
+                            investment_type=entry.get("investment_type"),
+                            percentage=entry.get("percentage"),
+                            loans_amount=entry.get("loans_amount"),
+                            loans_currency_id=entry.get("loans_currency_id"),
+                            loans_date=entry.get("loans_date"),
+                            parent_relation=entry.get("parent_relation"),
+                            comment=entry.get("comment"),
                         )
                     except InvestorVentureInvolvement.DoesNotExist:
                         ivi = InvestorVentureInvolvement(
@@ -350,28 +332,7 @@ class Investor(models.Model):
         }
 
 
-class InvestorWorkflowInfo(models.Model):
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
-    draft_status_before = models.IntegerField(
-        choices=Investor.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    draft_status_after = models.IntegerField(
-        choices=Investor.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True, default="")
-    processed_by_receiver = models.BooleanField(default=False)
-    # watch out: ignore the draft_status within this InvestorVersion object, it will change
-    # when the workflow moves along. the payload will remain consistent though.
+class InvestorWorkflowInfo(WorkflowInfo):
     investor = models.ForeignKey(
         Investor, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -384,18 +345,9 @@ class InvestorWorkflowInfo(models.Model):
     )
 
     def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user": self.from_user,
-            "to_user": self.to_user,
-            "draft_status_before": self.draft_status_before,
-            "draft_status_after": self.draft_status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "processed_by_receiver": self.processed_by_receiver,
-            "investor": self.investor,
-            "investor_version": self.investor_version,
-        }
+        d = super().to_dict()
+        d.update({"investor": self.investor, "investor_version": self.investor_version})
+        return d
 
 
 class InvestorVentureInvolvementQuerySet(models.QuerySet):
