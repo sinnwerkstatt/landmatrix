@@ -48,7 +48,7 @@ tests and coverage:
     - poetry install -E production
     - npm ci
     - poetry run doit -n 4 update
-    - poetry run pytest
+    - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 deploy to staging:

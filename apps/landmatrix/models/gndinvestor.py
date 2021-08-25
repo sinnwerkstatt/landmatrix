@@ -52,14 +52,18 @@ class InvestorVersion(Version):
         edict = super().enriched_dict()
         if edict.get("investors"):
             imap = {
-                i[0]: i[1]
+                i["id"]: i
                 for i in Investor.objects.filter(
                     id__in=[ivs["investor"] for ivs in edict["investors"]]
-                ).values_list("id", "name")
+                ).values("id", "name", "country_id")
             }
             for inv in edict["investors"]:
                 iid = inv["investor"]
-                inv["investor"] = {"id": iid, "name": imap[iid]}
+                inv["investor"] = {
+                    "id": iid,
+                    "name": imap[iid]["name"],
+                    "country": {"id": imap[iid]["country_id"]},
+                }
         return edict
 
     def new_to_dict(self):

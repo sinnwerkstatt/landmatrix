@@ -21,22 +21,26 @@ def django_db_setup(django_db_setup, django_db_blocker):
         u_rep, _ = User.objects.get_or_create(
             first_name="Land", last_name="Reporter", username="land_reporter"
         )
-        u_rep.groups.add(Group.objects.get(name="Reporters"))
+        if not u_rep.groups.filter(name="Reporters"):
+            u_rep.groups.add(Group.objects.get(name="Reporters"))
 
-        u_rep, _ = User.objects.get_or_create(
+        u_rep2, _ = User.objects.get_or_create(
             first_name="Land", last_name="Reporter2", username="land_reporter2"
         )
-        u_rep.groups.add(Group.objects.get(name="Reporters"))
+        if not u_rep2.groups.filter(name="Reporters"):
+            u_rep2.groups.add(Group.objects.get(name="Reporters"))
 
         u_edit, _ = User.objects.get_or_create(
             first_name="Land", last_name="Editor", username="land_editor"
         )
-        u_edit.groups.add(Group.objects.get(name="Editors"))
+        if not u_edit.groups.filter(name="Editors"):
+            u_edit.groups.add(Group.objects.get(name="Editors"))
 
         u_adm, _ = User.objects.get_or_create(
             first_name="Land", last_name="Admin", username="land_admin"
         )
-        u_adm.groups.add(Group.objects.get(name="Administrators"))
+        if not u_adm.groups.filter(name="Administrators"):
+            u_adm.groups.add(Group.objects.get(name="Administrators"))
 
 
 # @pytest.fixture(scope='session')

@@ -96,6 +96,8 @@ def resolve_investor(
 
     if investor.get("investors") is None:
         investor["investors"] = []
+    if investor.get("ventures") is None:
+        investor["ventures"] = []
 
     return investor
 

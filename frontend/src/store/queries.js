@@ -81,6 +81,36 @@ export const investor_gql_query = gql`
       draft_status
       created_at
       modified_at
+      investors {
+        id
+        investment_type
+        role
+        parent_relation
+        percentage
+        investor {
+          id
+          name
+          classification
+          country {
+            id
+          }
+        }
+      }
+      ventures {
+        id
+        investment_type
+        role
+        parent_relation
+        percentage
+        venture {
+          id
+          name
+          classification
+          country {
+            id
+          }
+        }
+      }
       deals @include(if: $includeDeals) {
         id
         country {

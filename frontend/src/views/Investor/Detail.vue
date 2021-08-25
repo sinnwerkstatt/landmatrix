@@ -61,163 +61,176 @@
         </div>
       </div>
 
-      <b-tabs v-if="graphDataIsReady" content-class="mb-3">
-        <b-tab>
-          <template #title>
-            <h5>{{ $t("Involvements") }} ({{ involvements.length }})</h5>
-          </template>
-          <table class="table data-table">
-            <thead>
-              <tr>
-                <th>Investor ID</th>
-                <th>Name</th>
-                <th>Country of registration</th>
-                <th>Classification</th>
-                <th>Relationship</th>
-                <th>Ownership share</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="involvement in involvements" :key="involvement.id">
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="involvement.investor.id"
-                    :value-classes="[]"
-                    :wrapper-classes="['text-center']"
-                    fieldname="id"
-                    model="investor"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="involvement.investor.name"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="name"
-                    model="investor"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="involvement.investor.country"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="country"
-                    model="investor"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="involvement.investor.classification"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="classification"
-                    model="investor"
-                  />
-                </td>
-                <td>{{ detect_role(involvement) }}</td>
-                <td>
-                  <span v-if="involvement.percentage">
-                    {{ involvement.percentage }} %
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </b-tab>
-        <b-tab v-if="'deals' in investor">
-          <template #title>
-            <h5>
-              {{ $t("Deals (Involvements as Operating company)") }}
-              ({{ investor.deals.length }})
-            </h5>
-          </template>
-          <table class="table data-table">
-            <thead>
-              <tr>
-                <th>Deal ID</th>
-                <th>Target country</th>
-                <th>Intention of investment</th>
-                <th>Current negotiation status</th>
-                <th>Current implementation status</th>
-                <th>Deal size</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="deal in deals" :key="deal.id">
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.id"
-                    :value-classes="[]"
-                    :wrapper-classes="['text-center']"
-                    fieldname="id"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.country"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="country"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.current_intention_of_investment"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="current_intention_of_investment"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.current_negotiation_status"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="current_negotiation_status"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.current_implementation_status"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="current_implementation_status"
-                  />
-                </td>
-                <td>
-                  <DisplayField
-                    :show-label="false"
-                    :value="deal.deal_size"
-                    :value-classes="[]"
-                    :wrapper-classes="[]"
-                    fieldname="deal_size"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </b-tab>
-        <b-tab>
-          <template #title>
-            <h5>{{ $t("Investor history") }}</h5>
-          </template>
-          <InvestorHistory
-            :investor="investor"
-            :investor-id="investorId"
-            :investor-version="investorVersion"
-          />
-        </b-tab>
-      </b-tabs>
+      <h3>{{ $t("Involvements") }} ({{ simple_involvements.length }})</h3>
+      <table class="bigtable">
+        <thead>
+          <tr>
+            <th>{{ $t("Investor ID") }}</th>
+            <th>{{ $t("Name") }}</th>
+            <th>{{ $t("Country of registration") }}</th>
+            <th>{{ $t("Classification") }}</th>
+            <th>{{ $t("Relationship") }}</th>
+            <th>{{ $t("Ownership share") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="involvement in simple_involvements" :key="involvement.id">
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="involvement.investor.id"
+                :value-classes="[]"
+                :wrapper-classes="['text-center']"
+                fieldname="id"
+                model="investor"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="involvement.investor.name"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="name"
+                model="investor"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="involvement.investor.country"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="country"
+                model="investor"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="involvement.investor.classification"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="classification"
+                model="investor"
+              />
+            </td>
+            <td>{{ detect_role(involvement) }}</td>
+            <td>
+              <span v-if="involvement.percentage">
+                {{ involvement.percentage }} %
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 v-if="investor.deals">
+        {{ $t("Deals (Involvements as Operating company)") }} ({{
+          investor.deals.length
+        }})
+      </h3>
+
+      <table v-if="investor.deals" class="bigtable">
+        <thead>
+          <tr>
+            <th>{{ $t("Deal ID") }}</th>
+            <th>{{ $t("Target country") }}</th>
+            <th>{{ $t("Intention of investment") }}</th>
+            <th>{{ $t("Current negotiation status") }}</th>
+            <th>{{ $t("Current implementation status") }}</th>
+            <th>{{ $t("Deal size") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="deal in investor.deals" :key="deal.id">
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.id"
+                :value-classes="[]"
+                :wrapper-classes="['text-center']"
+                fieldname="id"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.country"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="country"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.current_intention_of_investment"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="current_intention_of_investment"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.current_negotiation_status"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="current_negotiation_status"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.current_implementation_status"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="current_implementation_status"
+              />
+            </td>
+            <td>
+              <DisplayField
+                :show-label="false"
+                :value="deal.deal_size"
+                :value-classes="[]"
+                :wrapper-classes="[]"
+                fieldname="deal_size"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!--      <b-tabs v-if="graphDataIsReady" content-class="mb-3">-->
+
+      <!--        <b-tab v-if="'deals' in investor">-->
+      <!--          <template #title>-->
+      <!--            <h5>-->
+      <!--              -->
+      <!--              ({{ investor.deals.length }})-->
+      <!--            </h5>-->
+      <!--          </template>-->
+      <!--          <table class="table data-table">-->
+
+      <!--            <tbody>-->
+      <!--              <tr v-for="deal in deals" :key="deal.id">-->
+      <!--                -->
+      <!--              </tr>-->
+      <!--            </tbody>-->
+      <!--          </table>-->
+      <!--        </b-tab>-->
+      <!--        <b-tab>-->
+      <!--          <template #title>-->
+      <!--            <h5>{{ $t("Investor history") }}</h5>-->
+      <!--          </template>-->
+      <!--          <InvestorHistory-->
+      <!--            :investor="investor"-->
+      <!--            :investor-id="investorId"-->
+      <!--            :investor-version="investorVersion"-->
+      <!--          />-->
+      <!--        </b-tab>-->
+      <!--      </b-tabs>-->
     </div>
   </div>
   <div v-else class="row" style="height: 100%">
@@ -283,7 +296,7 @@
         },
         update({ investor }) {
           if (!investor) this.$router.push({ name: "list_investors" });
-          if (investor.status === 1 && !investor.dealVersion)
+          if (investor.status === 1 && !this.investorVersion)
             this.$router.push({
               name: "investor_detail",
               params: {
@@ -298,15 +311,26 @@
       },
     },
     computed: {
+      simple_involvements() {
+        return [
+          ...this.investor.investors.map((i) => ({
+            ...i,
+            involvement_type: "INVESTOR",
+          })),
+          ...this.investor.ventures.map((i) => ({
+            ...i,
+            investor: i.venture,
+            involvement_type: "VENTURE",
+          })),
+        ];
+      },
       userAuthenticated() {
         return this.$store.state.page.user?.is_authenticated;
       },
       involvements() {
         return this.investor.involvements || [];
       },
-      deals() {
-        return this.investor?.deals ?? [];
-      },
+
       graphDataIsReady() {
         return (
           this.investor &&

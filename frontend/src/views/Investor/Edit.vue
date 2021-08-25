@@ -261,7 +261,7 @@
           workflowinfos: null,
         };
         payload.investors = payload.investors.map((i) => {
-          if (i.id.toString().startsWith("new")) delete i.id;
+          if (i.id?.toString().startsWith("new")) delete i.id;
           return i;
         });
         return this.$apollo
