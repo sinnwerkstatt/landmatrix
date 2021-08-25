@@ -1,5 +1,6 @@
-from django.contrib.postgres.fields import ArrayField as _ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.exceptions import ValidationError
+from django.db.models import JSONField
 from fastjsonschema import JsonSchemaException
 
 from apps.landmatrix.models.schemas import (

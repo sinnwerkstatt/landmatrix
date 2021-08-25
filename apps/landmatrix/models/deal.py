@@ -3,7 +3,6 @@ from typing import Optional
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.contrib.postgres.fields import JSONField
 from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -119,13 +118,13 @@ class Deal(models.Model, OldDealMixin):
         blank=True,
         null=True,
     )
-    contract_size = JSONField(
+    contract_size = models.JSONField(
         _("Size under contract (leased or purchased area, in ha)"),
         help_text=_("ha"),
         blank=True,
         null=True,
     )
-    production_size = JSONField(
+    production_size = models.JSONField(
         _("Size in operation (production, in ha)"),
         help_text=_("ha"),
         blank=True,
@@ -169,7 +168,7 @@ class Deal(models.Model, OldDealMixin):
             ),
         ),
     )
-    intention_of_investment = JSONField(
+    intention_of_investment = models.JSONField(
         _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
     )
     intention_of_investment_comment = models.TextField(
@@ -225,7 +224,7 @@ class Deal(models.Model, OldDealMixin):
         ("CONTRACT_EXPIRED", "Contract expired"),
         ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
     )
-    negotiation_status = JSONField(
+    negotiation_status = models.JSONField(
         _("Negotiation status"),
         choices=NEGOTIATION_STATUS_CHOICES,
         blank=True,
@@ -242,7 +241,7 @@ class Deal(models.Model, OldDealMixin):
         ("IN_OPERATION", "In operation (production)"),
         ("PROJECT_ABANDONED", "Project abandoned"),
     )
-    implementation_status = JSONField(
+    implementation_status = models.JSONField(
         _("Implementation status"),
         choices=IMPLEMENTATION_STATUS_CHOICES,
         blank=True,
@@ -325,19 +324,19 @@ class Deal(models.Model, OldDealMixin):
     #     ("NO", _("No")),
     # )
     # contract_farming = models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
-    contract_farming = models.NullBooleanField()
+    contract_farming = models.BooleanField(null=True)
 
-    on_the_lease_state = models.NullBooleanField(_("On leased / purchased"))
-    on_the_lease = JSONField(
+    on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
+    on_the_lease = models.JSONField(
         _("On leased area/farmers/households"),
         blank=True,
         null=True,
     )
 
-    off_the_lease_state = models.NullBooleanField(
-        _("Not on leased / purchased (out-grower)")
+    off_the_lease_state = models.BooleanField(
+        _("Not on leased / purchased (out-grower)"), null=True
     )
-    off_the_lease = JSONField(
+    off_the_lease = models.JSONField(
         _("Not on leased area/farmers/households (out-grower)"),
         help_text=_("ha"),
         blank=True,
@@ -352,7 +351,7 @@ class Deal(models.Model, OldDealMixin):
     contracts = ContractsField(_("Contracts"), default=list)
 
     """ Employment """
-    total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
+    total_jobs_created = models.BooleanField(_("Jobs created (total)"), null=True)
     total_jobs_planned = models.IntegerField(
         _("Planned number of jobs (total)"),
         help_text=_("jobs"),
@@ -374,7 +373,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    total_jobs_current = JSONField(
+    total_jobs_current = models.JSONField(
         _("Current total number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -383,7 +382,7 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on jobs created (total)"), blank=True
     )
 
-    foreign_jobs_created = models.NullBooleanField(_("Jobs created (foreign)"))
+    foreign_jobs_created = models.BooleanField(_("Jobs created (foreign)"), null=True)
     foreign_jobs_planned = models.IntegerField(
         _("Planned number of jobs (foreign)"),
         help_text=_("jobs"),
@@ -405,7 +404,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    foreign_jobs_current = JSONField(
+    foreign_jobs_current = models.JSONField(
         _("Current foreign number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -414,7 +413,7 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on jobs created (foreign)"), blank=True
     )
 
-    domestic_jobs_created = models.NullBooleanField(_("Jobs created (domestic)"))
+    domestic_jobs_created = models.BooleanField(_("Jobs created (domestic)"), null=True)
     domestic_jobs_planned = models.IntegerField(
         _("Planned number of jobs (domestic)"),
         help_text=_("jobs"),
@@ -436,7 +435,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    domestic_jobs_current = JSONField(
+    domestic_jobs_current = models.JSONField(
         _("Current domestic number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -472,7 +471,7 @@ class Deal(models.Model, OldDealMixin):
         ("INTERMEDIARY", _("Intermediary")),
         ("OTHER", _("Other (please specify)")),
     )
-    involved_actors = JSONField(
+    involved_actors = models.JSONField(
         _("Actors involved in the negotiation / admission process"),
         choices=ACTOR_MAP,
         blank=True,
@@ -568,12 +567,12 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on community reaction"), blank=True
     )
 
-    land_conflicts = models.NullBooleanField(_("Presence of land conflicts"))
+    land_conflicts = models.BooleanField(_("Presence of land conflicts"), null=True)
     land_conflicts_comment = models.TextField(
         _("Comment on presence of land conflicts"), blank=True
     )
 
-    displacement_of_people = models.NullBooleanField(_("Displacement of people"))
+    displacement_of_people = models.BooleanField(_("Displacement of people"), null=True)
     displaced_people = models.IntegerField(
         _("Number of people actually displaced"),
         blank=True,
@@ -750,33 +749,33 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ Produce info """
-    crops = JSONField(_("Crops area/yield/export"), blank=True, null=True)
+    crops = models.JSONField(_("Crops area/yield/export"), blank=True, null=True)
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = JSONField(_("Livestock area/yield/export"), blank=True, null=True)
+    animals = models.JSONField(_("Livestock area/yield/export"), blank=True, null=True)
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    mineral_resources = JSONField(
+    mineral_resources = models.JSONField(
         _("Mineral resources area/yield/export"), blank=True, null=True
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
-    contract_farming_crops = JSONField(
+    contract_farming_crops = models.JSONField(
         _("Contract farming crops"), help_text=_("ha"), blank=True, null=True
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
-    contract_farming_animals = JSONField(
+    contract_farming_animals = models.JSONField(
         _("Contract farming livestock"), help_text=_("ha"), blank=True, null=True
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
-    has_domestic_use = models.NullBooleanField(_("Has domestic use"))
+    has_domestic_use = models.BooleanField(_("Has domestic use"), null=True)
     domestic_use = models.FloatField(
         _("Domestic use"),
         help_text="%",
@@ -784,7 +783,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    has_export = models.NullBooleanField(_("Has export"))
+    has_export = models.BooleanField(_("Has export"), null=True)
 
     export = models.FloatField(
         _("Export"),
@@ -844,8 +843,8 @@ class Deal(models.Model, OldDealMixin):
         verbose_name=_("Comment on use of produce"), blank=True
     )
 
-    in_country_processing = models.NullBooleanField(
-        _("In country processing of produce")
+    in_country_processing = models.BooleanField(
+        _("In country processing of produce"), null=True
     )
     in_country_processing_comment = models.TextField(
         _("Comment on in country processing of produce"), blank=True
@@ -862,8 +861,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """Water"""
-    water_extraction_envisaged = models.NullBooleanField(
-        _("Water extraction envisaged")
+    water_extraction_envisaged = models.BooleanField(
+        _("Water extraction envisaged"), null=True
     )
     water_extraction_envisaged_comment = models.TextField(
         _("Comment on water extraction envisaged"), blank=True
@@ -895,8 +894,8 @@ class Deal(models.Model, OldDealMixin):
     water_extraction_amount_comment = models.TextField(
         _("Comment on how much water is extracted"), blank=True
     )
-    use_of_irrigation_infrastructure = models.NullBooleanField(
-        _("Use of irrigation infrastructure")
+    use_of_irrigation_infrastructure = models.BooleanField(
+        _("Use of irrigation infrastructure"), null=True
     )
     use_of_irrigation_infrastructure_comment = models.TextField(
         _("Comment on use of irrigation infrastructure"), blank=True
@@ -1013,8 +1012,8 @@ class Deal(models.Model, OldDealMixin):
         blank=True, null=True, validators=[MinValueValidator(1970)]
     )
     forest_concession = models.BooleanField(default=False)
-    transnational = models.NullBooleanField()
-    geojson = JSONField(blank=True, null=True)
+    transnational = models.BooleanField(null=True)
+    geojson = models.JSONField(blank=True, null=True)
 
     """ # Status """
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)

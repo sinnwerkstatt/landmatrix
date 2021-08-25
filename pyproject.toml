@@ -11,9 +11,9 @@ description = "LandMatrix"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-Django = "<2.3"
-wagtail = "<2.8"
-psycopg2-binary = "<2.9"
+Django = "<4"
+wagtail = "<2.14"
+psycopg2-binary = "*"
 
 fastjsonschema = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }

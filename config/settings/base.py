@@ -108,11 +108,12 @@ MIDDLEWARE = [
     # populate the history user automatically
     "simple_history.middleware.HistoryRequestMiddleware",
     # wagtail and dependencies
-    "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
     # "django.middleware.cache.FetchFromCacheMiddleware",
 ]
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 TEMPLATES = [
     {

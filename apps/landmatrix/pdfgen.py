@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile, TemporaryFile
 from django.conf import settings
 from django.http import FileResponse
 from django.urls import reverse
-from django.utils import six
 
 
 def update_querystring(url, params):
@@ -121,7 +120,7 @@ def _options_to_args(**options):
         flags.append(formatted_flag)
         if accepts_no_arguments:
             continue
-        flags.append(six.text_type(value))
+        flags.append(str(value))
     return flags
 
 

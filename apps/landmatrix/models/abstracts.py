@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -36,7 +35,7 @@ class Version(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
-    serialized_data = JSONField()
+    serialized_data = models.JSONField()
 
     class Meta:
         abstract = True

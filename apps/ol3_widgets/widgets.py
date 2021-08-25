@@ -5,7 +5,7 @@ from django.contrib.gis import gdal
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.forms.widgets import TextInput, Widget
 from django.template import loader
-from django.utils import six, translation
+from django.utils import translation
 
 logger = logging.getLogger("django.contrib.gis")
 
@@ -49,7 +49,7 @@ class BaseGeometryWidget(Widget):
     def get_context(self, name, value, attrs=None):
         # If a string reaches here (via a validation error on another
         # field) then just reconstruct the Geometry.
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = self.deserialize(value)
 
         if value:
