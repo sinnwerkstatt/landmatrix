@@ -10,37 +10,38 @@ User = get_user_model()
 def django_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         call_command("loaddata", "apps/landmatrix/fixtures/countries_and_regions.json")
+        call_command("loaddata", "apps/landmatrix/fixtures/users_and_groups.json")
 
 
-@pytest.fixture(scope="module")
-def django_db_setup(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        for gname in ["Reporters", "Editors", "Administrators"]:
-            Group.objects.get_or_create(name=gname)
-
-        u_rep, _ = User.objects.get_or_create(
-            first_name="Land", last_name="Reporter", username="land_reporter"
-        )
-        if not u_rep.groups.filter(name="Reporters"):
-            u_rep.groups.add(Group.objects.get(name="Reporters"))
-
-        u_rep2, _ = User.objects.get_or_create(
-            first_name="Land", last_name="Reporter2", username="land_reporter2"
-        )
-        if not u_rep2.groups.filter(name="Reporters"):
-            u_rep2.groups.add(Group.objects.get(name="Reporters"))
-
-        u_edit, _ = User.objects.get_or_create(
-            first_name="Land", last_name="Editor", username="land_editor"
-        )
-        if not u_edit.groups.filter(name="Editors"):
-            u_edit.groups.add(Group.objects.get(name="Editors"))
-
-        u_adm, _ = User.objects.get_or_create(
-            first_name="Land", last_name="Admin", username="land_admin"
-        )
-        if not u_adm.groups.filter(name="Administrators"):
-            u_adm.groups.add(Group.objects.get(name="Administrators"))
+# @pytest.fixture(scope="module")
+# def django_db_setup(django_db_setup, django_db_blocker):
+#     with django_db_blocker.unblock():
+#         for gname in ["Reporters", "Editors", "Administrators"]:
+#             Group.objects.get_or_create(name=gname)
+#
+#         u_rep, _ = User.objects.get_or_create(
+#             first_name="Land", last_name="Reporter", username="land_reporter"
+#         )
+#         if not u_rep.groups.filter(name="Reporters"):
+#             u_rep.groups.add(Group.objects.get(name="Reporters"))
+#
+#         u_rep2, _ = User.objects.get_or_create(
+#             first_name="Land", last_name="Reporter2", username="land_reporter2"
+#         )
+#         if not u_rep2.groups.filter(name="Reporters"):
+#             u_rep2.groups.add(Group.objects.get(name="Reporters"))
+#
+#         u_edit, _ = User.objects.get_or_create(
+#             first_name="Land", last_name="Editor", username="land_editor"
+#         )
+#         if not u_edit.groups.filter(name="Editors"):
+#             u_edit.groups.add(Group.objects.get(name="Editors"))
+#
+#         u_adm, _ = User.objects.get_or_create(
+#             first_name="Land", last_name="Admin", username="land_admin"
+#         )
+#         if not u_adm.groups.filter(name="Administrators"):
+#             u_adm.groups.add(Group.objects.get(name="Administrators"))
 
 
 # @pytest.fixture(scope='session')

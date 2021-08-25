@@ -35,7 +35,7 @@ def deal_draft(db) -> List[int]:
     # new draft
     return object_edit(
         otype="deal",
-        user=(User.objects.get(username="land_reporter")),
+        user=(User.objects.get(username="reporter")),
         obj_id=-1,
         obj_version_id=None,
         payload=payload,
@@ -48,7 +48,7 @@ def test_delete_deal_draft(deal_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
-            user=User.objects.get(username="land_reporter2"),
+            user=User.objects.get(username="reporter-2"),
             obj_id=dealId,
             obj_version_id=dealVersion,
             comment="weg mit dem schmutz",
@@ -57,7 +57,7 @@ def test_delete_deal_draft(deal_draft):
 
     object_delete(
         otype="deal",
-        user=User.objects.get(username="land_reporter"),
+        user=User.objects.get(username="reporter"),
         obj_id=dealId,
         obj_version_id=dealVersion,
         comment="weg mit dem schmutz",
@@ -68,10 +68,6 @@ def test_delete_deal_draft(deal_draft):
 @pytest.fixture()
 def test_edit_deal_draft(deal_draft):
     dealId, dealVersion = deal_draft
-
-    land_reporter = User.objects.get(username="land_reporter")
-    land_editor = User.objects.get(username="land_editor")
-    land_admin = User.objects.get(username="land_admin")
 
     # verify new draft
     d1 = Deal.objects.get(id=dealId)
@@ -106,7 +102,7 @@ def test_edit_deal_draft(deal_draft):
 
     newDealId, newDealVersion = object_edit(
         otype="deal",
-        user=User.objects.get(username="land_reporter"),
+        user=User.objects.get(username="reporter"),
         obj_id=d1.id,
         obj_version_id=d1.versions.get().id,
         payload=pl2,
@@ -123,7 +119,7 @@ def test_edit_deal_draft(deal_draft):
     # change draft status TO_REVIEW
     dealId, dealVersion = change_object_status(
         otype="deal",
-        user=land_reporter,
+        user=User.objects.get(username="reporter"),
         obj_id=dealId,
         obj_version_id=dealVersion,
         transition="TO_REVIEW",
@@ -137,7 +133,7 @@ def test_edit_deal_draft(deal_draft):
     with pytest.raises(GraphQLError):
         change_object_status(
             otype="deal",
-            user=land_reporter,
+            user=User.objects.get(username="reporter"),
             obj_id=dealId,
             obj_version_id=dealVersion,
             transition="TO_ACTIVATION",
@@ -145,7 +141,7 @@ def test_edit_deal_draft(deal_draft):
         )
     change_object_status(
         otype="deal",
-        user=land_editor,
+        user=User.objects.get(username="editor"),
         obj_id=dealId,
         obj_version_id=dealVersion,
         transition="TO_ACTIVATION",
@@ -155,7 +151,7 @@ def test_edit_deal_draft(deal_draft):
     with pytest.raises(GraphQLError):
         change_object_status(
             otype="deal",
-            user=land_editor,
+            user=User.objects.get(username="editor"),
             obj_id=dealId,
             obj_version_id=dealVersion,
             transition="ACTIVATE",
@@ -163,7 +159,7 @@ def test_edit_deal_draft(deal_draft):
         )
     change_object_status(
         otype="deal",
-        user=land_admin,
+        user=User.objects.get(username="administrator"),
         obj_id=dealId,
         obj_version_id=dealVersion,
         transition="ACTIVATE",
@@ -183,7 +179,7 @@ def test_delete_deal(test_edit_deal_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
-            user=User.objects.get(username="land_reporter"),
+            user=User.objects.get(username="reporter"),
             obj_id=dealId,
             comment="weg mit dem schmutz",
         )
@@ -191,14 +187,14 @@ def test_delete_deal(test_edit_deal_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
-            user=User.objects.get(username="land_editor"),
+            user=User.objects.get(username="editor"),
             obj_id=dealId,
             comment="weg mit dem schmutz",
         )
     assert Deal.objects.filter(id=dealId).count() == 1
     object_delete(
         otype="deal",
-        user=User.objects.get(username="land_admin"),
+        user=User.objects.get(username="administrator"),
         obj_id=dealId,
         comment="weg mit dem schmutz",
     )
@@ -208,12 +204,11 @@ def test_delete_deal(test_edit_deal_draft):
 
 
 def test_edit_deal(test_edit_deal_draft):
-    land_reporter = User.objects.get(username="land_reporter")
     d1 = Deal.objects.get()
     payload.update({"intended_size": 1000})
     dealId, dealVersion = object_edit(
         otype="deal",
-        user=land_reporter,
+        user=User.objects.get(username="reporter"),
         obj_id=d1.id,
         payload=payload,
     )
@@ -232,7 +227,7 @@ def test_edit_deal(test_edit_deal_draft):
     payload.update({"land_area_comment": "too large"})
     object_edit(
         otype="deal",
-        user=land_reporter,
+        user=User.objects.get(username="reporter"),
         obj_id=d1.id,
         obj_version_id=d1v.id,
         payload=payload,

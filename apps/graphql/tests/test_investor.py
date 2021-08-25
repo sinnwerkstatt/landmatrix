@@ -28,7 +28,7 @@ def investor_draft(db) -> List[int]:
     # new draft
     return object_edit(
         otype="investor",
-        user=(User.objects.get(username="land_reporter")),
+        user=(User.objects.get(username="reporter")),
         obj_id=-1,
         obj_version_id=None,
         payload=payload,
@@ -41,7 +41,7 @@ def test_delete_investor_draft(investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="land_reporter2"),
+            user=User.objects.get(username="reporter-2"),
             obj_id=investorId,
             obj_version_id=investorVersion,
             comment="weg mit dem schmutz",
@@ -50,7 +50,7 @@ def test_delete_investor_draft(investor_draft):
 
     object_delete(
         otype="investor",
-        user=User.objects.get(username="land_reporter"),
+        user=User.objects.get(username="reporter"),
         obj_id=investorId,
         obj_version_id=investorVersion,
         comment="weg mit dem schmutz",
@@ -65,9 +65,9 @@ def test_edit_investor_draft(investor_draft):
     """
     investorId, investorVersion = investor_draft
 
-    land_reporter = User.objects.get(username="land_reporter")
-    land_editor = User.objects.get(username="land_editor")
-    land_admin = User.objects.get(username="land_admin")
+    land_reporter = User.objects.get(username="reporter")
+    land_editor = User.objects.get(username="editor")
+    land_admin = User.objects.get(username="administrator")
 
     # verify new draft
     i1 = Investor.objects.get(id=investorId)
@@ -83,7 +83,7 @@ def test_edit_investor_draft(investor_draft):
 
     newInvestorId, newInvestorVersion = object_edit(
         otype="investor",
-        user=User.objects.get(username="land_reporter"),
+        user=User.objects.get(username="reporter"),
         obj_id=i1.id,
         obj_version_id=i1.versions.get().id,
         payload=pl2,
@@ -160,7 +160,7 @@ def test_delete_investor(test_edit_investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="land_reporter"),
+            user=User.objects.get(username="reporter"),
             obj_id=investorId,
             comment="weg mit dem schmutz",
         )
@@ -168,14 +168,14 @@ def test_delete_investor(test_edit_investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="land_editor"),
+            user=User.objects.get(username="editor"),
             obj_id=investorId,
             comment="weg mit dem schmutz",
         )
     assert Investor.objects.filter(id=investorId).count() == 1
     object_delete(
         otype="investor",
-        user=User.objects.get(username="land_admin"),
+        user=User.objects.get(username="administrator"),
         obj_id=investorId,
         comment="weg mit dem schmutz",
     )
@@ -186,7 +186,7 @@ def test_delete_investor(test_edit_investor_draft):
 
 # noinspection PyUnusedLocal
 def test_edit_investor(test_edit_investor_draft):
-    land_reporter = User.objects.get(username="land_reporter")
+    land_reporter = User.objects.get(username="reporter")
     i1 = Investor.objects.get()
     payload.update({"comment": "cool company"})
     investorId, investorVersion = object_edit(
@@ -237,8 +237,8 @@ def test_add_involvements(test_edit_investor_draft):
     i2 = Investor.objects.create(name="Parent investor")
     i3 = Investor.objects.create(name="Parent investor2")
 
-    land_reporter = User.objects.get(username="land_reporter")
-    land_admin = User.objects.get(username="land_admin")
+    land_reporter = User.objects.get(username="reporter")
+    land_admin = User.objects.get(username="administrator")
 
     involvement1 = {
         "role": "PARENT",
