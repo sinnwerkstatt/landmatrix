@@ -85,9 +85,9 @@ def test_investor_draft_to_live(histvestor_draft_live):
     assert inv1.draft_status is None
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
-    assert versions[0].fields["status"] == STATUS["LIVE"]
+    assert versions[0].serialized_data["status"] == STATUS["LIVE"]
     # assert versions[0].revision.comment == "Approved"
-    assert versions[1].fields["status"] == STATUS["DRAFT"]
+    assert versions[1].serialized_data["status"] == STATUS["DRAFT"]
 
 
 def test_investor_live_and_draft(histvestor_draft_live):
@@ -104,8 +104,8 @@ def test_investor_live_and_draft(histvestor_draft_live):
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     # assert versions[0].revision.comment == "Some more changes draft"
-    assert versions[0].fields["status"] == STATUS["LIVE"]
-    assert versions[0].fields["name"] == new_name
+    assert versions[0].serialized_data["status"] == STATUS["LIVE"]
+    assert versions[0].serialized_data["name"] == new_name
 
     histvestor_draft_live.fk_status_id = 2
     # histvestor_draft_live.action_comment = "Approve changes"
@@ -118,8 +118,8 @@ def test_investor_live_and_draft(histvestor_draft_live):
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 4
     # assert versions[0].revision.comment == "Approve changes"
-    assert versions[0].fields["status"] == STATUS["UPDATED"]
-    assert versions[0].fields["name"] == new_name
+    assert versions[0].serialized_data["status"] == STATUS["UPDATED"]
+    assert versions[0].serialized_data["name"] == new_name
 
 
 @pytest.mark.django_db
@@ -163,8 +163,8 @@ def test_new_investor_live_directly():
     assert inv1.draft_status is STATUS["DRAFT"]
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
-    # assert versions[0].fields["comment"] == "XXCF"
-    # assert versions[1].fields["comment"] == "regular blabla comment"
+    # assert versions[0].serialized_data["comment"] == "XXCF"
+    # assert versions[1].serialized_data["comment"] == "regular blabla comment"
 
 
 @pytest.mark.django_db
@@ -204,4 +204,4 @@ def test_investor_live_then_delete(histvestor_draft_live):
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     # assert versions[0].revision.comment == "Delete this!"
-    assert versions[0].fields["status"] == STATUS["DELETED"]
+    assert versions[0].serialized_data["status"] == STATUS["DELETED"]
