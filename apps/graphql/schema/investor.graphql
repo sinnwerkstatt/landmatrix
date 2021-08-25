@@ -34,7 +34,7 @@ type InvestorVersion {
 }
 
 type Involvement {
-  id: Int!
+  id: Int
   investor: Investor
   venture: Investor
   role: String

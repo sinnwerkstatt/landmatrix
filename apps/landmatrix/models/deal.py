@@ -1143,8 +1143,9 @@ class Deal(models.Model, OldDealMixin):
             "model": "landmatrix.deal",
             "fields": version.serialized_data,
         }
-        obj = list(serializers.deserialize("json", json.dumps([daty])))[0]
-        return obj.object
+        obj = list(serializers.deserialize("json", json.dumps([daty])))[0].object
+        obj.save()
+        return obj
 
     def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)

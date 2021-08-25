@@ -232,7 +232,8 @@
         else
           this.investor.investors.push({
             role,
-            id: +Math.random().toString().substring(2),
+            // this is a somewhat dirty hack to add more investors and still list them correctly
+            id: `new` + Math.random().toString().substring(10),
           });
       },
       removeInvestor(id) {
@@ -253,6 +254,16 @@
       },
       investor_save(hash) {
         this.saving_in_progress = true;
+        let payload = {
+          ...this.investor,
+          versions: null,
+          comments: null,
+          workflowinfos: null,
+        };
+        payload.investors = payload.investors.map((i) => {
+          if (i.id.toString().startsWith("new")) delete i.id;
+          return i;
+        });
         return this.$apollo
           .mutate({
             mutation: gql`
@@ -266,12 +277,7 @@
             variables: {
               id: this.investorId ? +this.investorId : -1,
               version: this.investorVersion ? +this.investorVersion : null,
-              payload: {
-                ...this.investor,
-                versions: null,
-                comments: null,
-                workflowinfos: null,
-              },
+              payload,
             },
           })
           .then(({ data: { investor_edit } }) => {

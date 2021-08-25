@@ -2,7 +2,6 @@ from typing import List, Dict
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from graphql import GraphQLError
 
 from apps.graphql.resolvers.generics import (
@@ -61,6 +60,9 @@ def test_delete_investor_draft(investor_draft):
 
 @pytest.fixture()
 def test_edit_investor_draft(investor_draft):
+    """
+    :return: active investor
+    """
     investorId, investorVersion = investor_draft
 
     land_reporter = User.objects.get(username="land_reporter")
@@ -122,6 +124,13 @@ def test_edit_investor_draft(investor_draft):
         obj_version_id=investorVersion,
         transition="TO_ACTIVATION",
     )
+    i1.refresh_from_db()
+
+    assert i1.draft_status == DRAFT_STATUS["ACTIVATION"]
+    assert (
+        i1.versions.get().serialized_data["draft_status"] == DRAFT_STATUS["ACTIVATION"]
+    )
+
     # change draft status TO_ACTIVATE
     with pytest.raises(GraphQLError):
         change_object_status(
@@ -140,7 +149,6 @@ def test_edit_investor_draft(investor_draft):
     )
 
     i1.refresh_from_db()
-    print(i1)
     assert i1.status == 2
     assert i1.draft_status is None
 
@@ -224,29 +232,90 @@ def test_edit_investor(test_edit_investor_draft):
     )
 
 
-# noinspection PyUnusedLocal
 def test_add_involvements(test_edit_investor_draft):
+    investorId = test_edit_investor_draft
+    i2 = Investor.objects.create(name="Parent investor")
+    i3 = Investor.objects.create(name="Parent investor2")
+
     land_reporter = User.objects.get(username="land_reporter")
+    land_admin = User.objects.get(username="land_admin")
 
-    pl = dict(
-        payload,
-        investors=[
-            {
-                "role": "PARENT",
-                "id": 8024965410194944,
-                "investor": {"id": 1525, "name": "16 foreign companies"},
-                "investment_type": ["EQUITY"],
-                "percentage": 12,
-            }
-        ],
-    )
+    involvement1 = {
+        "role": "PARENT",
+        "investor": {"id": i2.id, "name": "Parent investor"},
+        "investment_type": ["EQUITY"],
+        "percentage": 12,
+    }
 
-    i1 = Investor.objects.get()
-    object_edit(
-        otype="investor",
-        user=land_reporter,
-        obj_id=i1.id,
-        payload=pl,
-    )
-    i1v: InvestorVersion = i1.versions.first()
-    assert i1v.serialized_data["investors"] == [33]
+    # this "dict" hack is here because of weird race conditions in pytest apparently
+    pl = dict(payload, investors=[involvement1])
+
+    invId, invV = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
+    assert invId == investorId
+
+    i1 = Investor.objects.get(id=investorId)
+    assert i1.versions.count() == 2
+    assert i1.investors.all().count() == 0
+
+    i1v: InvestorVersion = i1.versions.first()  # newest version
+    assert i1v.id == invV
+    invs = i1v.serialized_data["investors"]  # involvements in version
+    assert [(i["venture"], i["investor"]) for i in invs] == [(i1.id, i2.id)]
+    assert invs[0]["id"] is None  # involvement should not have id yet.
+
+    change_object_status("investor", land_admin, invId, invV, "TO_REVIEW")
+    change_object_status("investor", land_admin, invId, invV, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, invId, invV, "ACTIVATE")
+
+    invo1 = i1.investors.all()[0]
+    assert invo1.id
+    involvement1["id"] = invo1.id
+    assert invo1.role == "PARENT"
+    assert invo1.investment_type == ["EQUITY"]
+
+    # add an investor
+    involvement2 = {
+        "role": "PARENT",
+        "investor": {"id": i3.id},
+        "investment_type": ["EQUITY"],
+        "percentage": 23,
+    }
+    pl["investors"] += [involvement2]
+
+    invId, invV2 = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
+
+    change_object_status("investor", land_admin, invId, invV2, "TO_REVIEW")
+    change_object_status("investor", land_admin, invId, invV2, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, invId, invV2, "ACTIVATE")
+    i1.refresh_from_db()
+    invs = i1.versions.all().first().serialized_data["investors"]
+
+    assert [(i["venture"], i["investor"]) for i in invs] == [
+        (i1.id, i2.id),
+        (i1.id, i3.id),
+    ]
+    invos = i1.investors.all()
+    assert invs[0]["id"] == invos[1].id
+    assert [(i.venture_id, i.investor_id) for i in invos] == [
+        (i1.id, i3.id),
+        (i1.id, i2.id),
+    ]
+
+    involvement2["id"] = invos[0].id
+    assert involvement1["id"] == invos[1].id
+
+    # remove an investor
+    pl["investors"] = [involvement2]
+    invId, invV3 = object_edit("investor", land_reporter, obj_id=i1.id, payload=pl)
+    assert invV3 >= invV2
+    change_object_status("investor", land_admin, invId, invV3, "TO_REVIEW")
+    change_object_status("investor", land_admin, invId, invV3, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, invId, invV3, "ACTIVATE")
+    i1.refresh_from_db()
+    invs = i1.versions.all().first().serialized_data["investors"]
+    assert [(i["venture"], i["investor"]) for i in invs] == [(i1.id, i3.id)]
+
+    invos = i1.investors.all()
+    assert [(i.venture_id, i.investor_id) for i in invos] == [
+        (i1.id, i3.id),
+    ]

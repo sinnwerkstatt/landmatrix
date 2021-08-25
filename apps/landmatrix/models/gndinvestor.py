@@ -48,6 +48,20 @@ class InvestorVersion(Version):
         related_name="versions",
     )
 
+    def enriched_dict(self) -> dict:
+        edict = super().enriched_dict()
+        if edict.get("investors"):
+            imap = {
+                i[0]: i[1]
+                for i in Investor.objects.filter(
+                    id__in=[ivs["investor"] for ivs in edict["investors"]]
+                ).values_list("id", "name")
+            }
+            for inv in edict["investors"]:
+                iid = inv["investor"]
+                inv["investor"] = {"id": iid, "name": imap[iid]}
+        return edict
+
     def new_to_dict(self):
         return {
             "id": self.id,
@@ -178,10 +192,48 @@ class Investor(models.Model):
 
     @classmethod
     def deserialize_from_version(cls, version: InvestorVersion):
+        inv = cls(
+            id=version.object_id,
+            name=version.serialized_data["name"],
+            country_id=version.serialized_data["country"],
+            classification=version.serialized_data["classification"],
+            homepage=version.serialized_data["homepage"],
+            opencorporates=version.serialized_data["opencorporates"],
+            comment=version.serialized_data["comment"],
+            status=version.serialized_data["status"],
+            draft_status=version.serialized_data["draft_status"],
+            created_at=version.serialized_data["created_at"],
+            created_by_id=version.serialized_data["created_by"],
+            modified_at=version.serialized_data["modified_at"],
+            modified_by_id=version.serialized_data["modified_by"],
+            is_actually_unknown=version.serialized_data["is_actually_unknown"],
+        )
+        inv.save()
 
-        # TODO
-        # self.investors.set([InvestorVentureInvolvement().deserialize(ivi) for ivi in version.serialized_data["investors"]])
-        return self
+        current_invs = set(
+            InvestorVentureInvolvement.objects.filter(venture_id=inv.id).values_list(
+                "id", flat=True
+            )
+        )
+        for ivi in version.serialized_data["investors"]:
+            ix, created = InvestorVentureInvolvement.objects.get_or_create(
+                id=ivi["id"],
+                investor_id=ivi["investor"],
+                venture_id=ivi["venture"],
+            )
+            ix.role = ivi["role"]
+            ix.investment_type = ivi["investment_type"]
+            ix.percentage = ivi["percentage"]
+            ix.loans_amount = ivi["loans_amount"]
+            ix.loans_currency = ivi["loans_currency"]
+            ix.loans_date = ivi["loans_date"]
+            ix.parent_relation = ivi["parent_relation"]
+            ix.comment = ivi["comment"]
+            ix.save()
+            current_invs.discard(ix.id)
+
+        InvestorVentureInvolvement.objects.filter(id__in=current_invs).delete()
+        return inv
 
     def __str__(self):
         if self.name:
@@ -264,38 +316,27 @@ class Investor(models.Model):
             ]:
                 self.__setattr__(f"{key}_id", value["id"] if value else None)
             elif key == "investors":
-                print("INVESTORS", value)
                 _ivis = []
                 for entry in value:
-                    _ivis += [
-                        InvestorVentureInvolvement(
-                            investor_id=entry["investor"]["id"],
-                            venture_id=self.id,
-                            role=entry["role"],
-                            investment_type=entry.get("investment_type"),
-                            percentage=entry.get("percentage"),
-                            loans_amount=entry.get("loans_amount"),
-                            loans_currency_id=entry.get("loans_currency_id"),
-                            loans_date=entry.get("loans_date"),
-                            parent_relation=entry.get("parent_relation"),
-                            comment=entry.get("comment"),
-                        )
-                    except InvestorVentureInvolvement.DoesNotExist:
-                        ivi = InvestorVentureInvolvement(
-                            investor_id=entry["investor"]["id"],
-                            venture_id=self.id,
-                        )
-                    ivi.role = entry.get("role")
-                    ivi.investment_type = entry.get("investment_type")
-                    ivi.percentage = entry.get("percentage")
-                    ivi.loans_amount = entry.get("loans_amount")
-                    if entry.get("loans_currency"):
-                        ivi.loans_currency_id = entry["loans_currency"]["id"]
-                    ivi.loans_date = entry.get("loans_date", "")
-                    if entry.get("parent_relation"):
-                        ivi.parent_relation = entry.get("parent_relation")
-                    ivi.comment = entry.get("comment", "")
-                    ivi.save()
+                    _ivi = InvestorVentureInvolvement()
+                    if entry.get("id"):
+                        _ivi.id = entry["id"]
+                    _ivi.venture_id = self.id
+                    _ivi.investor_id = entry["investor"]["id"]
+                    _ivi.role = entry["role"]
+                    _ivi.investment_type = entry.get("investment_type")
+                    _ivi.percentage = entry.get("percentage")
+                    _ivi.loans_amount = entry.get("loans_amount")
+                    _ivi.loans_currency_id = (
+                        entry["loans_currency"]["id"]
+                        if entry.get("loans_currency")
+                        else None
+                    )
+                    _ivi.loans_date = entry.get("loans_date", "")
+                    _ivi.parent_relation = entry.get("parent_relation")
+                    _ivi.comment = entry.get("comment", "")
+                    _ivis += [_ivi]
+                self._investors = _ivis
             else:
                 self.__setattr__(key, value)
 
@@ -372,11 +413,6 @@ class InvestorVentureInvolvementQuerySet(models.QuerySet):
         return self
 
 
-# class InvestorVentureInvolvementVersion(Version):
-#     pass
-#
-#
-# @register_version(InvestorVentureInvolvementVersion)
 class InvestorVentureInvolvement(models.Model):
     investor = models.ForeignKey(
         Investor,
@@ -473,27 +509,15 @@ class InvestorVentureInvolvement(models.Model):
 
     def serialize(self) -> dict:
         return {
+            "id": self.id,
             "investor": self.investor_id,
             "venture": self.venture_id,
             "role": self.role,
             "investment_type": self.investment_type,
             "percentage": self.percentage,
             "loans_amount": self.loans_amount,
-            "loans_currency": self.loans_currency,
+            "loans_currency": self.loans_currency_id,
             "loans_date": self.loans_date,
             "parent_relation": self.parent_relation,
             "comment": self.comment,
         }
-
-    def deserialize(self, version: dict):
-        self.investor_id = version["investor"]
-        self.venture_id = version["venture"]
-        self.role = version["role"]
-        self.investment_type = version["investment_type"]
-        self.percentage = version["percentage"]
-        self.loans_amount = version["loans_amount"]
-        self.loans_currency = version["loans_currency"]
-        self.loans_date = version["loans_date"]
-        self.parent_relation = version["parent_relation"]
-        self.comment = version["comment"]
-        return self

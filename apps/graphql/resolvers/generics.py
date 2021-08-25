@@ -124,7 +124,6 @@ def change_object_status(
         obj_version.serialized_data["current_draft"] = None
 
         obj = Object.deserialize_from_version(obj_version)
-        obj.save()
         obj_version.save()
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
@@ -201,8 +200,6 @@ def object_edit(
         obj.draft_status = DRAFT_STATUS["DRAFT"]
         if otype == "deal":
             obj.fully_updated = False
-
-        # TODO-1 handle involvements
         obj_version = ObjectVersion.from_object(obj, created_by=user)
         Object.objects.filter(id=obj_id).update(
             draft_status=DRAFT_STATUS["DRAFT"], current_draft=obj_version
@@ -225,8 +222,6 @@ def object_edit(
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
 
-        # TODO-1 OHNOES
-        # add involvements here!
         obj_version.serialized_data = obj.serialize_for_version()
 
         if obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]:
@@ -245,6 +240,7 @@ def object_edit(
                 draft_status_before=oldstatus,
                 draft_status_after=DRAFT_STATUS["DRAFT"],
             )
+            Object.objects.filter(id=obj.id).update(current_draft=obj_version)
         else:
             obj_version.save()
             if obj.status == STATUS["DRAFT"]:
@@ -284,15 +280,12 @@ def object_delete(
             comment=comment,
         )
 
-        if (
-            obj.versions.count()
-            and not obj.versions.order_by("-id")[0].serialized_data["draft_status"]
-        ):
+        if obj.versions.count() == 0 and obj.status == STATUS["DRAFT"]:
+            Object.objects.get(id=obj.id).delete()
+
+        if obj.versions.count() and not obj.versions[0].serialized_data["draft_status"]:
             # reset the Live version to "not having a draft" if we delete the draft.
             Object.objects.filter(id=obj_id).update(draft_status=None)
-
-        if obj.versions.count() == 0 and obj.status == Deal.STATUS_DRAFT:
-            ObjectVersion.objects.filter(object_id=obj.id).delete()
 
     else:
         if role != "ADMINISTRATOR":
