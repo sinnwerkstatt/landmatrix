@@ -606,14 +606,14 @@ six = "*"
 
 [[package]]
 name = "djangorestframework"
-version = "3.11.2"
+version = "3.12.4"
 description = "Web APIs for Django, made easy."
 category = "main"
 optional = false
 python-versions = ">=3.5"
 
 [package.dependencies]
-django = ">=1.11"
+django = ">=2.2"
 
 [[package]]
 name = "djangorestframework-gis"
@@ -772,7 +772,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.6.4"
+version = "4.7.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -1888,7 +1888,7 @@ production = ["gunicorn", "sentry_sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "cae643a068f0c4f53b4a7c47a29d6497c33b3095297fd86b658cffa607d0098a"
+content-hash = "23d053c30563e9de3b525733f193814e85a388ecde85f3375009f2b9a69e193a"
 
 [metadata.files]
 amqp = [
@@ -2143,8 +2143,8 @@ django-wkhtmltopdf = [
     {file = "django_wkhtmltopdf-3.3.0-py2.py3-none-any.whl", hash = "sha256:add8cbf6266a28bcc3691775dbe2f2eff7934f2c7fe9995b320270f3679f12b4"},
 ]
 djangorestframework = [
-    {file = "djangorestframework-3.11.2-py3-none-any.whl", hash = "sha256:5cc724dc4b076463497837269107e1995b1fbc917468d1b92d188fd1af9ea789"},
-    {file = "djangorestframework-3.11.2.tar.gz", hash = "sha256:a5967b68a04e0d97d10f4df228e30f5a2d82ba63b9d03e1759f84993b7bf1b53"},
+    {file = "djangorestframework-3.12.4-py3-none-any.whl", hash = "sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf"},
+    {file = "djangorestframework-3.12.4.tar.gz", hash = "sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2"},
 ]
 djangorestframework-gis = [
     {file = "djangorestframework-gis-0.15.tar.gz", hash = "sha256:f388c159ab42ee2549c88de20655dc6020d01f0220b74c250a98735a26835f72"},
@@ -2198,8 +2198,8 @@ idna = [
     {file = "idna-3.2.tar.gz", hash = "sha256:467fbad99067910785144ce333826c71fb0e63a425657295239737f7ecd125f3"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.6.4-py3-none-any.whl", hash = "sha256:ed5157fef23a4bc4594615a0dd8eba94b2bb36bf2a343fa3d8bb2fa0a62a99d5"},
-    {file = "importlib_metadata-4.6.4.tar.gz", hash = "sha256:7b30a78db2922d78a6f47fb30683156a14f3c6aa5cc23f77cc8967e9ab2d002f"},
+    {file = "importlib_metadata-4.7.0-py3-none-any.whl", hash = "sha256:a69df6d94f8ac09cd46fdf79a955c153164b312442f7594a3eeeec46f230fe2b"},
+    {file = "importlib_metadata-4.7.0.tar.gz", hash = "sha256:1be82867064622fe56c7046bb5280063949f56c0abcdfc3cd33875efd4fc5498"},
 ]
 inflection = [
     {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},

@@ -1,6 +1,6 @@
 from apps.landmatrix.forms import VueForm
 from apps.landmatrix.models import Deal, Crop, Animal, Mineral
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class DealForm(VueForm):

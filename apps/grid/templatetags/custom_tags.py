@@ -8,7 +8,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma, naturaltime
 from django.forms.fields import BooleanField, ChoiceField, MultiValueField
 from django.template.defaultfilters import title
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 # from apps.editor.views import get_display_value_by_field
 from apps.grid.fields import NestedMultipleChoiceField

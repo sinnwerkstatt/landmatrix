@@ -3,7 +3,7 @@ from django.contrib.gis.forms import MultiPolygonField
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.widgets import *
 from apps.ol3_widgets.widgets import OpenLayersWidget

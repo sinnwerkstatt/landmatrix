@@ -5,7 +5,7 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import (
     ActorsField,

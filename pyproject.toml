@@ -12,6 +12,7 @@ description = "LandMatrix"
 [tool.poetry.dependencies]
 python = "^3.6"
 Django = "<4"
+djangorestframework = "<4"
 wagtail = "<2.14"
 psycopg2-binary = "*"
 
@@ -22,13 +23,13 @@ pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", bra
 geojson-rewind = "^0.2.0"
 ariadne = ">=0.12"
 django-redis = "^4.12.1"
-wagtail-orderable = "^1.0.3"
+wagtail-orderable = ">=1.0.3"
 
 
 redis = "*"
 python-memcached = "*"
 
-djangorestframework = "<3.12"
+
 djangorestframework-gis = "<0.16"
 drf-yasg = "*"
 packaging = "*"

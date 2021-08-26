@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from wagtail.core.models import Site
 
 from apps.landmatrix.models import Country, Deal, Investor

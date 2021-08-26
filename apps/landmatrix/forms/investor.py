@@ -1,6 +1,6 @@
 from apps.landmatrix.forms import VueForm
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class InvestorForm(VueForm):

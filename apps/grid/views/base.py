@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from django.http import Http404
 from django.template.defaultfilters import urlencode
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from apps.api.views import ElasticSearchMixin

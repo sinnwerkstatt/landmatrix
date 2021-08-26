@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.models import formset_factory
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import TitleField, YearMonthDateField
 from apps.grid.widgets import CommentInput

@@ -8,7 +8,7 @@ from xml.dom.minidom import parseString
 
 import unicodecsv as csv
 from django.http.response import HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
