@@ -36,7 +36,7 @@
               {{ deal.confidential ? $t("Confidential") : $t("Not confidential") }}
             </b-form-checkbox>
             <a id="confidential-reason">
-              <span v-if="deal.confidential">(reason)</span>
+              <span v-if="deal.confidential">({{ $t("reason") }})</span>
             </a>
             <b-tooltip target="confidential-reason" triggers="click">
               <!-- <strong>{{ get_confidential_reason }}</strong> <br /> -->

@@ -224,12 +224,15 @@ def resolve_deal_delete(
 
 
 def resolve_set_confidential(
-    _, info, id, confidential, version=None, reason=None, comment=None
+    _, info, id, confidential, version=None, reason=None, comment=""
 ) -> bool:
     user = info.context["request"].user
     role = get_user_role(user)
     if not role:
         raise GraphQLError("not authorized")
+
+    confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
+    obj_comment = f"[{confidential_str}] {comment}"
 
     if version:
         deal_version = DealVersion.objects.get(id=version)
@@ -241,6 +244,8 @@ def resolve_set_confidential(
         deal_version.serialized_data["modified_at"] = ecma262(timezone.now())
         deal_version.serialized_data["modified_by"] = user.id
         deal_version.save()
+
+        add_object_comment("deal", user, id, version, obj_comment)
 
     else:
         if role != "ADMINISTRATOR":
@@ -262,4 +267,6 @@ def resolve_set_confidential(
             # TODO-2 set new owner?
             # deal.current_draft.serialized_data["modified_at"] = ecma262(timezone.now())
             # deal.current_draft.serialized_data["modified_by"] = user.id
+
+        add_object_comment("deal", user, id, deal.current_draft_id, obj_comment)
     return True
