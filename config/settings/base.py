@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     "taggit",
     "bootstrap3_datetime",
     # 'treebeard',
-    "jstemplate",
     "simple_history",
     "crispy_forms",
     "wkhtmltopdf",

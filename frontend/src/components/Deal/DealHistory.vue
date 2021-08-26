@@ -7,7 +7,7 @@
           <th>{{ $t("Created") }}</th>
           <th v-if="$store.getters.userAuthenticated">{{ $t("User") }}</th>
           <th>{{ $t("Fully updated") }}</th>
-          <th>{{ $t("Status") }}</th>
+          <th v-if="$store.getters.userAuthenticated">{{ $t("Status") }}</th>
           <th style="text-align: right">
             {{ $t("Show") }} / <a @click="compareVersions">{{ $t("Compare") }}</a>
           </th>
@@ -30,7 +30,7 @@
               ]"
             />
           </td>
-          <td>
+          <td v-if="$store.getters.userAuthenticated">
             {{ $t(derive_status(version.deal.status, version.deal.draft_status)) }}
           </td>
           <td style="white-space: nowrap; text-align: right">
@@ -62,9 +62,9 @@
       <tfoot>
         <tr>
           <td></td>
+          <td v-if="$store.getters.userAuthenticated"></td>
           <td></td>
-          <td></td>
-          <td></td>
+          <td v-if="$store.getters.userAuthenticated"></td>
           <td v-if="compare_from && compare_to">
             <router-link
               :to="{
@@ -105,7 +105,13 @@
     computed: {
       enriched_versions() {
         let current_active = false;
-        return this.deal.versions.map((v) => {
+        let versions = this.deal.versions;
+        if (!this.$store.getters.userAuthenticated) {
+          versions = versions.filter(
+            (v) => !(v.deal.confidential || v.deal.draft_status)
+          );
+        }
+        return versions.map((v) => {
           if (!v.deal.draft_status && !current_active) {
             v.link = { name: "deal_detail", params: { dealId: this.dealId } };
             current_active = true;

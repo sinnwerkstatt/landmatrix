@@ -396,7 +396,9 @@ class CountrySelect(forms.Select):
         )
         code = ""
         if value:
-            code = Country.objects.defer("geom").get(pk=value.value).code_alpha2
+            if not isinstance(value, int):
+                value = value.value
+            code = Country.objects.defer("geom").get(pk=value).code_alpha2
         option["attrs"].update({"title": code})
         return option
 

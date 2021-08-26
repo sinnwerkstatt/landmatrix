@@ -10,7 +10,7 @@ from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
 from apps.public_comments.models import ThreadedComment
-from apps.utils import qs_values_to_dict
+from apps.utils import qs_values_to_dict, ecma262
 from .generics import (
     add_object_comment,
     change_object_status,
@@ -235,13 +235,12 @@ def resolve_set_confidential(
         deal_version = DealVersion.objects.get(id=version)
         if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
-        deal_v_obj = deal_version.retrieve_object()
-        deal_v_obj.confidential = confidential
-        deal_v_obj.confidential_reason = reason
-        deal_v_obj.confidential_comment = comment
-        deal_v_obj.modified_at = timezone.now()
-        deal_v_obj.modified_by = user
-        deal_version.update_from_obj(deal_v_obj).save()
+        deal_version.serialized_data["confidential"] = confidential
+        deal_version.serialized_data["confidential_reason"] = reason
+        deal_version.serialized_data["confidential_comment"] = comment
+        deal_version.serialized_data["modified_at"] = ecma262(timezone.now())
+        deal_version.serialized_data["modified_by"] = user.id
+        deal_version.save()
 
     else:
         if role != "ADMINISTRATOR":
@@ -253,4 +252,14 @@ def resolve_set_confidential(
         deal.modified_at = timezone.now()
         deal.modified_by = user
         deal.save()
+
+        if deal.current_draft:
+            deal.current_draft.serialized_data["confidential"] = confidential
+            deal.current_draft.serialized_data["confidential"] = confidential
+            deal.current_draft.serialized_data["confidential_reason"] = reason
+            deal.current_draft.serialized_data["confidential_comment"] = comment
+            deal.current_draft.save()
+            # TODO-2 set new owner?
+            # deal.current_draft.serialized_data["modified_at"] = ecma262(timezone.now())
+            # deal.current_draft.serialized_data["modified_by"] = user.id
     return True

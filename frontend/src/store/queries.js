@@ -429,6 +429,7 @@ export const deal_gql_query = gql`
           fully_updated
           status
           draft_status
+          confidential
         }
         created_at
         created_by {

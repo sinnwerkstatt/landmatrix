@@ -1030,7 +1030,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
         deal_version = DealVersion.from_object(
             deal, created_at=histivity.history_date, created_by=user
         )
-        deal.current_draft = None if new_status in [2, 3, 4] else deal_version
+        deal.current_draft = deal_version
 
         if do_save:
             # save the actual model
