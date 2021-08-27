@@ -20,5 +20,8 @@
     a {
       color: var(--color-lm-orange);
     }
+    p {
+      margin-bottom: 1rem;
+    }
   }
 </style>

@@ -16,7 +16,9 @@
         track-by="id"
         :taggable="true"
         :tag-placeholder="$t('Press enter to create a new Investor')"
-        :allow-empty="!formfield.required"
+        :allow-empty="false"
+        deselect-label=""
+        select-label=""
         @tag="openNewInvestorDialog"
       />
     </div>
