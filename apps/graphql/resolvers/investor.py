@@ -4,7 +4,11 @@ from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
-from apps.landmatrix.models.gndinvestor import InvestorVersion, InvestorWorkflowInfo
+from apps.landmatrix.models.gndinvestor import (
+    InvestorVersion,
+    InvestorWorkflowInfo,
+    InvestorVentureInvolvement,
+)
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict
 from .generics import (
@@ -58,9 +62,10 @@ def resolve_investor(
             investor_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]
         ):
             raise GraphQLError("not authorized")
-        # investor["involvements"] = [
-        #     v.fields for v in rev.investorventureinvolvementversion_set.all()
-        # ]
+        if any([f.startswith("ventures_") for f in fields]):
+            investor["ventures"] = InvestorVentureInvolvement.objects.filter(
+                investor_id=id
+            )
     else:
         visible_investors = Investor.objects.visible(user, subset).filter(id=id)
         if not visible_investors:
@@ -89,7 +94,8 @@ def resolve_investor(
             .filter(operating_company_id=id)
             .order_by("id")
         )
-    if add_involvements:
+
+    if add_involvements and not version:
         investor["involvements"] = InvolvementNetwork(
             involvements_include_ventures, max_depth=involvements_depth
         ).get_network(id)

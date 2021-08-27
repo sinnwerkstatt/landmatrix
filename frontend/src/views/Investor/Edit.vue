@@ -127,7 +127,6 @@
     beforeRouteUpdate(to, from, next) {
       console.log("Investor edit: Route update");
       if (to.hash) this.active_tab = to.hash;
-
       next();
     },
     props: {
@@ -184,20 +183,17 @@
           ?.filter((i) => i.role === "LENDER")
           .sort((a, b) => a.id - b.id);
       },
-      form_changed() {
-        return JSON.stringify(this.investor) !== this.original_investor;
-      },
       current_form() {
         return document.querySelector(this.active_tab);
+      },
+      form_changed() {
+        return JSON.stringify(this.investor) !== this.original_investor;
       },
     },
     created() {
       if (!this.investorId) {
         this.investor = { investors: [] };
         this.original_investor = JSON.stringify(this.investor);
-      }
-      if (this.$route.query.newName) {
-        this.investor.name = this.$route.query.newName;
       }
     },
     methods: {
@@ -213,46 +209,20 @@
             },
           });
       },
+      saveButtonPressed() {
+        this.investor_save(location.hash);
+      },
       updateRoute(hash) {
         if (location.hash === hash) return;
-        if (!this.form_changed) {
-          this.$router.push({ hash });
+        if (!this.form_changed) this.$router.push({ hash });
+        else this.investor_save(hash);
+      },
+      investor_save(hash) {
+        if (!this.current_form.checkValidity()) {
+          this.current_form.reportValidity();
           return;
         }
 
-        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
-        else this.investor_save(hash);
-      },
-      saveButtonPressed() {
-        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
-        else this.investor_save(location.hash);
-      },
-      addInvestor(role) {
-        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
-        else
-          this.investor.investors.push({
-            role,
-            // this is a somewhat dirty hack to add more investors and still list them correctly
-            id: `new` + Math.random().toString().substring(10),
-          });
-      },
-      removeInvestor(id) {
-        let message = this.$t("Do you really want to remove the involvement?");
-        this.$bvModal
-          .msgBoxConfirm(message, {
-            size: "sm",
-            okTitle: this.$t("Delete"),
-            cancelTitle: this.$t("Cancel"),
-            centered: true,
-          })
-          .then((confirmed) => {
-            if (confirmed)
-              this.investor.investors = this.investor.investors.filter(
-                (i) => i.id !== id
-              );
-          });
-      },
-      investor_save(hash) {
         this.saving_in_progress = true;
         let payload = {
           ...this.investor,
@@ -281,12 +251,38 @@
             },
           })
           .then(({ data: { investor_edit } }) => {
+            this.original_investor = JSON.stringify(this.investor);
+
             this.saving_in_progress = false;
             if (
               location.hash !== hash ||
-              this.investorVersion !== investor_edit.investorVersion
+              +this.investorVersion !== +investor_edit.investorVersion
             )
               this.$router.push({ name: "investor_edit", params: investor_edit, hash });
+          });
+      },
+      addInvestor(role) {
+        if (!this.current_form.checkValidity()) this.current_form.reportValidity();
+        else {
+          // this is a somewhat dirty hack to add more investors and still list them correctly
+          let id = `new` + Math.random().toString().substring(10);
+          this.investor.investors.push({ role, id });
+        }
+      },
+      removeInvestor(id) {
+        let message = this.$t("Do you really want to remove the involvement?");
+        this.$bvModal
+          .msgBoxConfirm(message, {
+            size: "sm",
+            okTitle: this.$t("Delete"),
+            cancelTitle: this.$t("Cancel"),
+            centered: true,
+          })
+          .then((confirmed) => {
+            if (confirmed)
+              this.investor.investors = this.investor.investors.filter(
+                (i) => i.id !== id
+              );
           });
       },
     },
