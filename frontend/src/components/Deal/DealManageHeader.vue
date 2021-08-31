@@ -1,150 +1,146 @@
 <template>
-  <div>
-    <GenericManageHeader
-      :object="deal"
-      :object-version="dealVersion"
-      @add_comment="add_comment"
-      @change_status="$emit('change_status', $event)"
-      @delete="$emit('delete', $event)"
-      @send_to_review="show_send_to_review_overlay = true"
-    >
-      <template #heading>
-        Deal #{{ deal.id }}
-        <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
-      </template>
+  <GenericManageHeader
+    :object="deal"
+    :object-version="dealVersion"
+    @add_comment="add_comment"
+    @change_status="$emit('change_status', $event)"
+    @delete="$emit('delete', $event)"
+    @send_to_review="show_send_to_review_overlay = true"
+  >
+    <template #heading>
+      Deal #{{ deal.id }}
+      <span v-if="deal.country" class="headercountry">{{ deal.country.name }}</span>
+    </template>
 
-      <template #visibility>
-        <div class="visibility-container">
-          <div v-if="deal.is_public" class="visibility">
-            <i class="fas fa-eye fa-fw fa-lg orange"></i>
-            <span>{{ $t("Publicly visible") }}</span>
-          </div>
-          <div v-else class="visibility">
-            <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
-            <span>{{ $t("Not publicly visible") }}</span>
-          </div>
-          <div v-if="is_editable" class="confidential-toggle">
-            <b-form-checkbox
-              :checked="deal.confidential"
-              :class="{ active: deal.confidential }"
-              class="confidential-switch"
-              name="check-button"
-              switch
-              :title="$t('Toggle deal confidentiality')"
-              @click.native.prevent="toggle_confidential({ force: false })"
-            >
-              {{ deal.confidential ? $t("Confidential") : $t("Not confidential") }}
-            </b-form-checkbox>
-            <a id="confidential-reason">
-              <span v-if="deal.confidential">({{ $t("reason") }})</span>
-            </a>
-            <b-tooltip target="confidential-reason" triggers="click">
-              <!-- <strong>{{ get_confidential_reason }}</strong> <br /> -->
-              {{ deal.confidential_comment }}
-            </b-tooltip>
-          </div>
-          <ul>
-            <template v-if="!is_editable">
-              <li v-if="!deal.confidential">
-                <i class="fas fa-check fa-fw"></i>
-                {{ $t("Not confidential") }}
-              </li>
-              <li v-else>
-                <i class="fas fa-times fa-fw"></i>
-                {{ $t("Confidential") }}
-              </li>
-            </template>
-            <li v-if="deal.country">
+    <template #visibility>
+      <div class="visibility-container">
+        <div v-if="deal.is_public" class="visibility">
+          <i class="fas fa-eye fa-fw fa-lg orange"></i>
+          <span>{{ $t("Publicly visible") }}</span>
+        </div>
+        <div v-else class="visibility">
+          <i class="fas fa-eye-slash fa-fw fa-lg orange"></i>
+          <span>{{ $t("Not publicly visible") }}</span>
+        </div>
+        <div v-if="is_editable" class="confidential-toggle">
+          <b-form-checkbox
+            :checked="deal.confidential"
+            :class="{ active: deal.confidential }"
+            class="confidential-switch"
+            name="check-button"
+            switch
+            :title="$t('Toggle deal confidentiality')"
+            @click.native.prevent="toggle_confidential({ force: false })"
+          >
+            {{ deal.confidential ? $t("Confidential") : $t("Not confidential") }}
+          </b-form-checkbox>
+          <a id="confidential-reason">
+            <span v-if="deal.confidential">({{ $t("reason") }})</span>
+          </a>
+          <b-tooltip target="confidential-reason" triggers="click">
+            <!-- <strong>{{ get_confidential_reason }}</strong> <br /> -->
+            {{ deal.confidential_comment }}
+          </b-tooltip>
+        </div>
+        <ul>
+          <template v-if="!is_editable">
+            <li v-if="!deal.confidential">
               <i class="fas fa-check fa-fw"></i>
-              {{ $t("Target country is set") }}
+              {{ $t("Not confidential") }}
             </li>
             <li v-else>
               <i class="fas fa-times fa-fw"></i>
-              {{ $t("Target country is NOT set") }}
+              {{ $t("Confidential") }}
             </li>
+          </template>
+          <li v-if="deal.country">
+            <i class="fas fa-check fa-fw"></i>
+            {{ $t("Target country is set") }}
+          </li>
+          <li v-else>
+            <i class="fas fa-times fa-fw"></i>
+            {{ $t("Target country is NOT set") }}
+          </li>
 
-            <li v-if="deal.datasources.length > 0" class="nowrap">
-              <i class="fas fa-check fa-fw"></i>
-              {{ $t("At least one data source") }} ({{ deal.datasources.length }})
-            </li>
-            <li v-else>
-              <i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}
-            </li>
+          <li v-if="deal.datasources.length > 0" class="nowrap">
+            <i class="fas fa-check fa-fw"></i>
+            {{ $t("At least one data source") }} ({{ deal.datasources.length }})
+          </li>
+          <li v-else><i class="fas fa-times fa-fw"></i> {{ $t("No data source") }}</li>
 
-            <li v-if="deal.has_known_investor">
-              <i class="fas fa-check fa-fw"></i>
-              {{ $t("At least one investor") }}
-            </li>
-            <li v-else>
-              <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
-            </li>
-          </ul>
+          <li v-if="deal.has_known_investor">
+            <i class="fas fa-check fa-fw"></i>
+            {{ $t("At least one investor") }}
+          </li>
+          <li v-else>
+            <i class="fas fa-times fa-fw"></i> {{ $t("No known investor") }}
+          </li>
+        </ul>
 
-          <div v-if="deal.fully_updated" class="visibility">
-            <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
-            <span>{{ $t("Fully updated") }}</span>
-          </div>
-          <div v-else class="visibility" style="color: gray !important">
-            <i class="fas fa-minus fa-fw fa-lg"></i>
-            <span>{{ $t("Not fully updated") }}</span>
-          </div>
+        <div v-if="deal.fully_updated" class="visibility">
+          <i class="fas fa-check-circle fa-fw fa-lg orange"></i>
+          <span>{{ $t("Fully updated") }}</span>
         </div>
-      </template>
-      <template #overlays>
-        <Overlay
-          v-if="show_send_to_review_overlay"
-          :title="$t('Submit for review')"
-          @cancel="show_send_to_review_overlay = false"
-          @submit="send_to_review"
-        >
-          <p>
-            Fully updated description text "Lorem ipsum dolor sit amet, consectetur
-            adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-            officia deserunt mollit anim id est laborum."
-          </p>
+        <div v-else class="visibility" style="color: gray !important">
+          <i class="fas fa-minus fa-fw fa-lg"></i>
+          <span>{{ $t("Not fully updated") }}</span>
+        </div>
+      </div>
+    </template>
+    <template #overlays>
+      <Overlay
+        v-if="show_send_to_review_overlay"
+        :title="$t('Submit for review')"
+        @cancel="show_send_to_review_overlay = false"
+        @submit="send_to_review"
+      >
+        <p>
+          Fully updated description text "Lorem ipsum dolor sit amet, consectetur
+          adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+          deserunt mollit anim id est laborum."
+        </p>
+        <label>
+          <input v-model="deal.fully_updated" type="checkbox" />
+          {{ $t("I fully updated this deal.") }}
+        </label>
+        <div class="mt-2" style="font-weight: bold">
           <label>
-            <input v-model="deal.fully_updated" type="checkbox" />
-            {{ $t("I fully updated this deal.") }}
+            <input required type="checkbox" />
+            {{ $t("I've read and agree to the") }}
+            <a href="/about/data-policy/" target="_blank">{{ $t("Data policy") }}</a
+            >.
           </label>
-          <div class="mt-2" style="font-weight: bold">
-            <label>
-              <input required type="checkbox" />
-              {{ $t("I've read and agree to the") }}
-              <a href="/about/data-policy/" target="_blank">{{ $t("Data policy") }}</a
-              >.
-            </label>
-          </div>
-        </Overlay>
-        <Overlay
-          v-if="show_confidential_overlay"
-          :title="$t(deal.confidential ? 'Unset confidential' : 'Set confidential')"
-          :comment-input="!deal.confidential"
-          :comment-required="!deal.confidential"
-          @cancel="show_confidential_overlay = false"
-          @submit="toggle_confidential"
-        >
-          <p v-if="deal.confidential">
-            {{
-              $t(
-                "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
-              )
-            }}
-          </p>
-          <p v-else>
-            {{
-              $t(
-                "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
-              )
-            }}
-          </p>
-        </Overlay>
-      </template>
-    </GenericManageHeader>
-  </div>
+        </div>
+      </Overlay>
+      <Overlay
+        v-if="show_confidential_overlay"
+        :title="$t(deal.confidential ? 'Unset confidential' : 'Set confidential')"
+        :comment-input="!deal.confidential"
+        :comment-required="!deal.confidential"
+        @cancel="show_confidential_overlay = false"
+        @submit="toggle_confidential"
+      >
+        <p v-if="deal.confidential">
+          {{
+            $t(
+              "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
+            )
+          }}
+        </p>
+        <p v-else>
+          {{
+            $t(
+              "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
+            )
+          }}
+        </p>
+      </Overlay>
+    </template>
+  </GenericManageHeader>
 </template>
 
 <script>
@@ -236,6 +232,11 @@
 </script>
 
 <style scoped lang="scss">
+  .headercountry {
+    white-space: nowrap;
+    display: block;
+    font-size: 1rem;
+  }
   .visibility-container {
     flex-grow: 1;
     width: 100%;

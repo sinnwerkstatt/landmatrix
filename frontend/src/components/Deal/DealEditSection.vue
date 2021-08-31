@@ -23,10 +23,8 @@
     components: { EditField },
     props: {
       id: { type: String, required: true },
-      title: { type: String, required: true },
       sections: { type: Array, required: true },
       deal: { type: Object, required: true },
-      active: { type: Boolean, default: false },
     },
   };
 </script>

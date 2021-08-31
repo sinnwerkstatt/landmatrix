@@ -1,14 +1,11 @@
 <template>
   <DealSubmodelSection
-    title="Locations"
+    model="location"
     model-name="Location"
     :entries="deal.locations"
     :fields="fields"
-    model="location"
-    :active="active"
     :label-classes="['display-field-label', 'col-md-6']"
     :value-classes="['display-field-value', 'col-md-6']"
-    @activated="activateTab"
   >
     <div class="locations col-md-12 col-lg-5 col-xl-6">
       <BigMap

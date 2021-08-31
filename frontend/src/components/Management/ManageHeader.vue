@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="generic-manage-header-container">
     <div class="manage-header">
       <div class="manage-header-left-side">
         <div class="version-nav-buttons">

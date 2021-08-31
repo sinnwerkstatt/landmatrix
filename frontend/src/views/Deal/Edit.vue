@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="deal" class="container deal-edit-container">
+    <div v-if="deal" class="deal-edit-container">
       <div class="deal-edit">
         <div class="deal-edit-heading">
           <h1>
@@ -40,9 +40,9 @@
         <div class="deal-edit-nav">
           <SideTabsMenu
             :tabs="tabs"
-            :active_tab="active_tab"
-            @updateRoute="updateRoute($event)"
-          ></SideTabsMenu>
+            :active-tab="active_tab"
+            @updateRoute="updateRoute"
+          />
         </div>
         <div class="deal-edit-content">
           <section v-if="active_tab === '#locations'">
@@ -73,7 +73,6 @@
             id="general"
             :deal="deal"
             :sections="deal_sections.general_info.subsections"
-            :title="deal_sections.general_info.label"
           />
           <DealSubmodelEditSection
             v-if="active_tab === '#contracts'"
@@ -82,7 +81,6 @@
             :fields="deal_submodel_sections.contract"
             model="contract"
             model-name="Contract"
-            title="Contracts"
             @addEntry="addContract"
             @removeEntry="removeContract"
           />
@@ -92,7 +90,6 @@
             id="employment"
             :deal="deal"
             :sections="deal_sections.employment.subsections"
-            :title="deal_sections.employment.label"
           />
 
           <DealEditSection
@@ -100,7 +97,6 @@
             id="investor_info"
             :deal="deal"
             :sections="deal_sections.investor_info.subsections"
-            :title="deal_sections.investor_info.label"
           />
 
           <DealSubmodelEditSection
@@ -110,7 +106,6 @@
             :fields="deal_submodel_sections.datasource"
             model="datasource"
             model-name="Data source"
-            title="Data sources"
             @addEntry="addDataSource"
             @removeEntry="removeDataSource"
           />
@@ -120,7 +115,6 @@
             id="local_communities"
             :deal="deal"
             :sections="deal_sections.local_communities.subsections"
-            :title="deal_sections.local_communities.label"
           />
 
           <DealEditSection
@@ -128,7 +122,6 @@
             id="former_use"
             :deal="deal"
             :sections="deal_sections.former_use.subsections"
-            :title="deal_sections.former_use.label"
           />
 
           <DealEditSection
@@ -136,7 +129,6 @@
             id="produce_info"
             :deal="deal"
             :sections="deal_sections.produce_info.subsections"
-            :title="deal_sections.produce_info.label"
           />
 
           <DealEditSection
@@ -144,7 +136,6 @@
             id="water"
             :deal="deal"
             :sections="deal_sections.water.subsections"
-            :title="deal_sections.water.label"
           />
 
           <DealEditSection
@@ -152,7 +143,6 @@
             id="gender_related_info"
             :deal="deal"
             :sections="deal_sections.gender_related_info.subsections"
-            :title="deal_sections.gender_related_info.label"
           />
 
           <DealEditSection
@@ -160,7 +150,6 @@
             id="guidelines_and_principles"
             :deal="deal"
             :sections="deal_sections.guidelines_and_principles.subsections"
-            :title="deal_sections.guidelines_and_principles.label"
           />
 
           <DealEditSection
@@ -168,7 +157,6 @@
             id="overall_comment"
             :deal="deal"
             :sections="deal_sections.overall_comment.subsections"
-            :title="deal_sections.overall_comment.label"
           />
         </div>
       </div>
@@ -258,7 +246,7 @@
       deal: {
         query: deal_gql_query,
         variables() {
-          return { id: +this.dealId, version: +this.dealVersion };
+          return { id: +this.dealId, version: +this.dealVersion, subset: "UNFILTERED" };
         },
         update({ deal }) {
           this.original_deal = JSON.stringify(deal);
@@ -397,7 +385,10 @@
     overflow: hidden;
     overflow-y: auto;
     height: calc(100vh - 60px - 31px);
-    width: 100vw;
+    width: 86vw;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin: 0 auto;
   }
   .deal-edit {
     width: 100%;

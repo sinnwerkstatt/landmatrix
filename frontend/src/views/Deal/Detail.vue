@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deal">
+  <div v-if="deal" class="deal-detail-container">
     <DealManageHeader
       v-if="userAuthenticated"
       :deal="deal"
@@ -9,7 +9,7 @@
       @reload="reloadDeal"
       @set_confidential="setConfidential"
     />
-    <div v-else class="container deal-detail">
+    <div v-else class="simple-header container">
       <div class="row">
         <div>
           <h1>
@@ -23,193 +23,125 @@
       </div>
     </div>
 
-    <div class="container deal-detail">
-      <b-tabs
-        id="tabNav"
-        :key="dealId + dealVersion"
-        content-class="mb-3 col-sm-7 col-md-9"
-        nav-class="sticky-nav"
-        nav-wrapper-class="col-12 col-sm-5 col-md-3 position-relative"
-        pills
-        vertical
-      >
+    <div class="deal-detail">
+      <div class="deal-detail-nav">
+        <SideTabsMenu :tabs="tabs" :active-tab="activeTab" @updateRoute="updateRoute" />
+      </div>
+      <div class="deal-detail-content">
         <DealLocationsSection
-          key="1"
-          :active="active_tab === '#locations'"
+          v-if="activeTab === '#locations'"
           :deal="deal"
           :fields="deal_submodel_sections.location"
-          @activated="updateRoute('#locations')"
         />
+
         <DealSection
-          key="2"
-          :active="active_tab === '#general'"
+          v-if="activeTab === '#general'"
           :deal="deal"
           :sections="deal_sections.general_info.subsections"
-          :title="deal_sections.general_info.label"
-          @activated="updateRoute('#general')"
         />
 
         <DealSubmodelSection
-          key="3"
-          :active="active_tab === '#contracts'"
+          v-if="activeTab === '#contracts'"
           :entries="deal.contracts"
           :fields="deal_submodel_sections.contract"
           model="contract"
           model-name="Contract"
-          title="Contracts"
-          @activated="updateRoute('#contracts')"
         />
 
         <DealSection
-          key="4"
-          :active="active_tab === '#employment'"
+          v-if="activeTab === '#employment'"
           :deal="deal"
           :sections="deal_sections.employment.subsections"
-          :title="deal_sections.employment.label"
-          @activated="updateRoute('#employment')"
         />
 
         <DealSection
-          key="5"
-          :active="active_tab === '#investor_info'"
+          v-if="activeTab === '#investor_info'"
           :deal="deal"
           :sections="deal_sections.investor_info.subsections"
-          :title="deal_sections.investor_info.label"
-          @activated="triggerInvestorGraphRefresh"
         >
-          <div class="row">
+          <div :class="{ loading_wrapper: $apollo.queries.investor.loading }">
             <div
-              :class="{ loading_wrapper: $apollo.queries.investor.loading }"
-              class="col-md-12 col-lg-10 col-xl-9"
+              v-if="investor && investor.involvements && investor.involvements.length"
             >
-              <div
-                v-if="investor && investor.involvements && investor.involvements.length"
-              >
-                <h3 class="mb-2">
-                  Network of parent companies and tertiary investors/lenders
-                </h3>
-                <InvestorGraph
-                  ref="investorGraph"
-                  :controls="false"
-                  :init-depth="4"
-                  :investor="investor"
-                  :show-deals-on-load="false"
-                />
-              </div>
-              <div v-else class="loader"></div>
+              <h3 class="mb-2">
+                Network of parent companies and tertiary investors/lenders
+              </h3>
+              <InvestorGraph
+                ref="investorGraph"
+                :controls="false"
+                :init-depth="4"
+                :investor="investor"
+                :show-deals-on-load="false"
+              />
             </div>
+            <div v-else class="loader"></div>
           </div>
         </DealSection>
 
         <DealSubmodelSection
-          key="6"
-          :active="active_tab === '#data_sources'"
+          v-if="activeTab === '#data_sources'"
           :entries="deal.datasources"
           :fields="deal_submodel_sections.datasource"
           model="datasource"
           model-name="Data source"
-          title="Data sources"
-          @activated="updateRoute('#data_sources')"
         />
 
         <DealSection
-          key="7"
-          :active="active_tab === '#local_communities'"
+          v-if="activeTab === '#local_communities'"
           :deal="deal"
           :sections="deal_sections.local_communities.subsections"
-          :title="deal_sections.local_communities.label"
-          @activated="updateRoute('#local_communities')"
         />
 
         <DealSection
-          key="8"
-          :active="active_tab === '#former_use'"
+          v-if="activeTab === '#former_use'"
           :deal="deal"
           :sections="deal_sections.former_use.subsections"
-          :title="deal_sections.former_use.label"
-          @activated="updateRoute('#former_use')"
         />
 
         <DealSection
-          key="9"
-          :active="active_tab === '#produce_info'"
+          v-if="activeTab === '#produce_info'"
           :deal="deal"
           :sections="deal_sections.produce_info.subsections"
-          :title="deal_sections.produce_info.label"
-          @activated="updateRoute('#produce_info')"
         />
 
         <DealSection
-          key="10"
-          :active="active_tab === '#water'"
+          v-if="activeTab === '#water'"
           :deal="deal"
           :sections="deal_sections.water.subsections"
-          :title="deal_sections.water.label"
-          @activated="updateRoute('#water')"
         />
 
         <DealSection
-          key="11"
-          :active="active_tab === '#gender_related_info'"
+          v-if="activeTab === '#gender_related_info'"
           :deal="deal"
           :sections="deal_sections.gender_related_info.subsections"
-          :title="deal_sections.gender_related_info.label"
-          @activated="updateRoute('#gender_related_info')"
         />
 
         <DealSection
-          key="12"
-          :active="active_tab === '#guidelines_and_principles'"
+          v-if="activeTab === '#guidelines_and_principles'"
           :deal="deal"
           :sections="deal_sections.guidelines_and_principles.subsections"
-          :title="deal_sections.guidelines_and_principles.label"
-          @activated="updateRoute('#guidelines_and_principles')"
         />
 
         <DealSection
-          key="13"
-          :active="active_tab === '#overall_comment'"
+          v-if="activeTab === '#overall_comment'"
           :deal="deal"
           :sections="deal_sections.overall_comment.subsections"
-          :title="deal_sections.overall_comment.label"
-          @activated="updateRoute('#overall_comment')"
         />
 
-        <b-tab key="14" disabled>
-          <template #title>
-            <hr />
-          </template>
-        </b-tab>
-
-        <b-tab
-          key="15"
-          :active="active_tab === '#history'"
-          :title="$t('Deal history')"
-          @click="updateRoute('#history')"
-        >
+        <section v-if="activeTab === '#history'">
           <DealHistory :deal="deal" :deal-id="dealId" :deal-version="dealVersion" />
-        </b-tab>
+        </section>
 
-        <b-tab
-          key="16"
-          :active="active_tab === '#comments'"
-          :title="$t('Comments')"
-          @click="updateRoute('#comments')"
-        >
+        <section v-if="activeTab === '#comments'">
           <DealComments :deal-id="dealId" :comments="deal.comments" />
-        </b-tab>
+        </section>
 
-        <b-tab
-          key="17"
-          :active="active_tab === '#actions'"
-          :title="$t('Actions')"
-          @click="updateRoute('#actions')"
-        >
+        <section v-if="activeTab === '#actions'">
           <h4><i class="fa fa-download"></i> Download</h4>
           <a :href="download_link('xlsx')">XLSX</a><br />
           <a :href="download_link('csv')">CSV</a>
-        </b-tab>
-      </b-tabs>
+        </section>
+      </div>
     </div>
   </div>
   <div v-else>
@@ -233,6 +165,7 @@
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
   import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
+  import SideTabsMenu from "$components/Shared/SideTabsMenu";
   import { deal_gql_query } from "$store/queries";
   import gql from "graphql-tag";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
@@ -251,6 +184,7 @@
   export default {
     name: "Detail",
     components: {
+      SideTabsMenu,
       DealComments: () => import("$components/Deal/DealComments"),
       DealHistory,
       DealLocationsSection,
@@ -266,7 +200,7 @@
         console.log("Deal detail: Route enter");
         vm.updatePageContext(to);
         if (!to.hash) {
-          vm.active_tab = "#locations";
+          vm.activeTab = "#locations";
         }
       });
     },
@@ -290,7 +224,26 @@
         deal_submodel_sections,
         investor: { involvements: [] },
         title: "Deal",
-        active_tab: "#locations",
+        activeTab: "#locations",
+        tabs: {
+          locations: this.$t("Locations"),
+          general: this.$t("General info"),
+          contracts: this.$t("Contracts"),
+          employment: this.$t("Employment"),
+          investor_info: this.$t("Investor info"),
+          data_sources: this.$t("Data sources"),
+          local_communities: this.$t("Local communities / indigenous peoples"),
+          former_use: this.$t("Former use"),
+          produce_info: this.$t("Produce info"),
+          water: this.$t("Water"),
+          gender_related_info: this.$t("Gender-related info"),
+          guidelines_and_principles: this.$t("Guidelines & Principles"),
+          overall_comment: this.$t("Overall comment"),
+          blank1: null,
+          history: this.$t("Deal History"),
+          comments: this.$t("Comments"),
+          actions: this.$t("Actions"),
+        },
       };
     },
     apollo: {
@@ -475,6 +428,7 @@
           .then(this.reloadDeal);
       },
       updateRoute(emiter) {
+        console.log({ emiter });
         console.log("Deal detail: update route");
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
@@ -489,7 +443,7 @@
         console.log("Deal detail: update page context");
         if (to.hash) {
           // only update if hash is present (otherwise #locations are active by default)
-          this.active_tab = to.hash;
+          this.activeTab = to.hash;
         }
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {
@@ -512,29 +466,38 @@
 </script>
 
 <style lang="scss">
-  .headercountry {
-    white-space: nowrap;
-    display: block;
-    font-size: 1rem;
-  }
-
-  .sticky-nav {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 8em;
-    z-index: 99;
-  }
-
-  .panel-body > h3 {
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-  }
-
-  .panel-body:first-child > h3 {
-    margin-top: 0.3em;
+  .deal-detail-container {
+    overflow: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 60px - 31px);
+    width: 100vw;
   }
 
   .deal-detail {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    overflow: hidden;
+    position: relative;
+  }
+  .deal-detail-nav {
+    height: 100%;
+    grid-column: span 3;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
+    }
+  }
+
+  .deal-detail-content {
+    height: 100%;
+    grid-column: span 9;
+    overflow-y: auto;
+    @media only screen and (max-width: 992px) {
+      grid-column: span 12;
+    }
+  }
+
+  .simple-header {
     h1 {
       color: var(--color-lm-dark);
       text-align: left;
@@ -543,28 +506,6 @@
       &:before {
         display: none;
       }
-    }
-
-    .nav-pills {
-      .nav-item {
-        .nav-link {
-          padding-left: 0;
-          border-right: 1px solid var(--color-lm-orange);
-          color: var(--color-lm-orange);
-          border-radius: 0;
-
-          &.active {
-            border-right-width: 3px;
-            background-color: inherit;
-            color: var(--color-lm-dark);
-          }
-        }
-      }
-    }
-
-    .sticky-top {
-      top: 5em;
-      z-index: 90;
     }
   }
 </style>
