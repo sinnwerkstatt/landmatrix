@@ -474,11 +474,12 @@
   }
 
   .deal-detail {
-    width: 100%;
+    width: clamp(20rem, 86vw, 75rem);
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     overflow: hidden;
     position: relative;
+    margin: 0 auto;
   }
   .deal-detail-nav {
     height: 100%;
@@ -491,7 +492,7 @@
   .deal-detail-content {
     height: 100%;
     grid-column: span 9;
-    overflow-y: auto;
+    //overflow-y: auto;
     @media only screen and (max-width: 992px) {
       grid-column: span 12;
     }

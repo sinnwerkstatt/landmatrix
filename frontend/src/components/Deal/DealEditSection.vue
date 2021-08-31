@@ -30,10 +30,6 @@
 </script>
 
 <style lang="scss" scoped>
-  .display-field-wrapper {
-    margin-top: 2em;
-  }
-
   .panel-body {
     background-color: rgba(200, 200, 200, 0.1);
     background-image: linear-gradient(
