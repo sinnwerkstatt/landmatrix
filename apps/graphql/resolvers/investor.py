@@ -139,7 +139,7 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = InvestorVersion.objects.all()
     if filters:
         qs = qs.filter(parse_filters(filters))
-    return [iv.to_dict() for iv in qs]
+    return [iv.new_to_dict() for iv in qs]
 
 
 def resolve_add_investor_comment(

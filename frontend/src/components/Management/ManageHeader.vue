@@ -229,6 +229,10 @@
     border-radius: 0;
     color: white;
   }
+  .generic-manage-header-container {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 
   .manage-header {
     padding: 0;

@@ -140,15 +140,14 @@ def resolve_dealversions(
         qs = qs.filter(parse_filters(filters))
 
     if country_id:
-        qs = qs.filter(serialized_data__0__fields__country=country_id)
+        qs = qs.filter(serialized_data__country=country_id)
 
     if region_id:
         country_ids = list(
             Country.objects.filter(fk_region_id=region_id).values_list("id", flat=True)
         )
-        qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
+        qs = qs.filter(serialized_data__country__in=country_ids)
 
-    print("haeh?!")
     # TODO-1
     return [dv.new_to_dict() for dv in qs]
 

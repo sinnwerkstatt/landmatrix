@@ -1,7 +1,8 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db.models import Sum, Count, F, Q
+from django.db import connection
+from django.db.models import Sum, Count, F
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import parse_filters
@@ -143,7 +144,6 @@ def country_investments_and_rankings(
 
 
 def global_rankings(obj, info, count=10, filters=None):
-
     qs = Deal.objects.active()
 
     if filters:
@@ -156,28 +156,51 @@ def global_rankings(obj, info, count=10, filters=None):
 
 
 def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
-    public_deals = Deal.objects.public()
-    if country_id:
-        public_deals = public_deals.filter(country_id=country_id)
-    if region_id:
-        public_deals = public_deals.filter(country__fk_region_id=region_id)
+    from_clause = "FROM landmatrix_deal d"
+    where_clause = "WHERE status IN (2,3) AND is_public=True "
 
-    q_has_at_least_one_polygon = Q(locations__areas__isnull=False)
+    if country_id:
+        where_clause += f"AND country_id={country_id}"
+    if region_id:
+        from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
+        where_clause += f"AND c.fk_region_id={region_id}"
+
+    cursor = connection.cursor()
+
+    cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
+    deals_public_count = cursor.fetchone()[0]
+
+    #     "deals_public_multi_ds_count": (
+    #         public_deals.annotate(
+    #             count_ob=JSONObject(
+    #                 count=Func(F("datasources"), function="jsonb_array_length")
+    #             )
+    #         )
+    #         .filter(count_ob__count__gt=1)
+    #         .count()
+    #     ),
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
+    )
+    deals_public_multi_ds_count = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+        f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+    )
+    deals_public_high_geo_accuracy = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+        f" AND l->>'areas' IS NOT NULL"
+    )
+    deals_public_polygons = cursor.fetchone()[0]
 
     return {
-        "deals_public_count": public_deals.count(),
-        "deals_public_multi_ds_count": public_deals.annotate(
-            ds_count=Count("datasources")
-        )
-        .filter(ds_count__gte=2)
-        .count(),
-        "deals_public_high_geo_accuracy": public_deals.filter(
-            Q(locations__level_of_accuracy__in=["EXACT_LOCATION", "COORDINATES"])
-            | q_has_at_least_one_polygon
-        ).count(),
-        "deals_public_polygons": public_deals.filter(
-            q_has_at_least_one_polygon
-        ).count(),
+        "deals_public_count": deals_public_count,
+        "deals_public_multi_ds_count": deals_public_multi_ds_count,
+        "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
+        "deals_public_polygons": deals_public_polygons,
     }
 
 
