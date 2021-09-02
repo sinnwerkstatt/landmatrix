@@ -18,6 +18,7 @@ from apps.graphql.resolvers.charts import (
     global_rankings,
     resolve_statistics,
     resolve_deal_aggregations,
+    resolve_global_map_of_investments,
 )
 from apps.graphql.resolvers.comments import resolve_add_public_comment
 from apps.graphql.resolvers.deal import (
@@ -89,6 +90,7 @@ query.set_field("blogpages", resolve_blogpages)
 query.set_field("blogpage", resolve_blogpage)
 query.set_field("blogcategories", resolve_blogcategories)
 query.set_field("transnational_deals", resolve_web_of_transnational_deals)
+query.set_field("global_map_of_investments", resolve_global_map_of_investments)
 query.set_field("country_investments_and_rankings", country_investments_and_rankings)
 query.set_field("global_rankings", global_rankings)
 query.set_field("chart_descriptions", resolve_chart_descriptions)

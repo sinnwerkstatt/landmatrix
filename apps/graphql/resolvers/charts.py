@@ -36,27 +36,25 @@ LONG_COUNTRIES = {
 }
 
 
-def resolve_web_of_transnational_deals(
-    obj: Any, info: GraphQLResolveInfo, filters=None
-):
+def _deal_investors(filters=None):
     deals = Deal.objects.active()
     if filters:
         deals = deals.filter(parse_filters(filters))
 
     deals_investors = (
         DealTopInvestors.objects.filter(investor__status__in=(2, 3))
-        .filter(deal_id__in=deals.values_list("id", flat=True))
+        .filter(deal__in=deals)
         .prefetch_related("deal")
         .prefetch_related("investor")
         .order_by("deal__country_id")
     )
 
-    _relevant_countries = set()
+    relevant_countries = set()
     retdings = defaultdict(dict)
     for deal_invest in deals_investors:
         dc_id = deal_invest.deal.country_id
         ic_id = deal_invest.investor.country_id
-        _relevant_countries.update({dc_id, ic_id})
+        relevant_countries.update({dc_id, ic_id})
         if dc_id and ic_id:
             if retdings.get(dc_id) and retdings[dc_id].get(ic_id):
                 retdings[dc_id][ic_id]["size"] += deal_invest.deal.deal_size
@@ -66,6 +64,19 @@ def resolve_web_of_transnational_deals(
                     "size": deal_invest.deal.deal_size,
                     "count": 1,
                 }
+    return {"links": retdings, "relevant_countries": relevant_countries}
+
+
+def resolve_global_map_of_investments(obj: Any, info: GraphQLResolveInfo, filters=None):
+    xx = _deal_investors(filters)
+    return dict(xx["links"])
+
+
+def resolve_web_of_transnational_deals(
+    obj: Any, info: GraphQLResolveInfo, filters=None
+):
+    deal_investors = _deal_investors(filters)
+    _relevant_countries = deal_investors["relevant_countries"]
 
     country_dict = {c.id: c for c in Country.objects.filter(id__in=_relevant_countries)}
 
@@ -73,7 +84,7 @@ def resolve_web_of_transnational_deals(
     for country_id, country in country_dict.items():
         imports = []
         # regiondata = defaultdict(dict)
-        for k, v in retdings[country_id].items():
+        for k, v in deal_investors["links"][country_id].items():
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
             imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]

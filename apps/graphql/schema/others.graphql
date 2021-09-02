@@ -80,6 +80,7 @@ enum Subset {
 }
 
 scalar WebOfTransnationalDeals
+scalar GlobalInvestmentMap
 scalar CountryInvestmentsAndRankings
 scalar Rankings
 

@@ -45,6 +45,12 @@ const router = new Router({
       meta: { hideBreadcrumbs: true },
     },
     {
+      path: "/charts/gmap/",
+      name: "gmap",
+      component: () => import("$views/Data/Charts/GlobalMapOfInvolvements"),
+      meta: { hideBreadcrumbs: true },
+    },
+    {
       path: "/charts/produce-info/",
       name: "produce-info",
       component: () => import("$views/Data/Charts/ProduceInfoTreeMap"),

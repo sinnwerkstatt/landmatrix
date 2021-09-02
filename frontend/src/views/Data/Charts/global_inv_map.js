@@ -12,16 +12,14 @@
  * http://bl.ocks.org/tlfrd/df1f1f705c7940a6a7c0dca47041fec8
  */
 
+import { addMarkers } from "./utils";
 import {
   drag,
   geoCentroid,
   geoGraticule,
-  geoInterpolate,
   geoOrthographic,
   geoPath,
-  mean,
   pointer,
-  pointers,
   select,
   zoom,
 } from "d3";
@@ -99,14 +97,16 @@ function globe_drag(update) {
 //   return drag().on("start", dragstarted).on("drag", dragged);
 // }
 
-let width = 500;
-let height = 500;
+let width = 600;
+let height = 600;
+let scale = height / 2.0;
+// geoMercator
 let projection = geoOrthographic()
-  .scale(height / 2.0)
+  .scale(scale)
   .translate([width / 2, height / 2])
   .clipAngle(90);
 
-let centroid = geoPath().projection((d) => d).centroid;
+// let centroid = geoPath().projection((d) => d).centroid;
 
 let countries = feature(world, world.objects.countries).features;
 
@@ -116,7 +116,14 @@ let graticule = geoGraticule().extent([
   [180 - 0.1, 90 - 0.1],
 ]);
 
-export function doTheThing(svg_selector) {
+function moneyLine(source, target) {
+  return path({
+    type: "LineString",
+    coordinates: [geoCentroid(source), geoCentroid(target)],
+  });
+}
+
+export function doTheThing(svg_selector, global_map_of_investments) {
   let svg = select(svg_selector).attr("width", width).attr("height", height);
 
   svg
@@ -126,9 +133,9 @@ export function doTheThing(svg_selector) {
     .attr("cy", height / 2)
     .attr("r", projection.scale());
 
-  // let rotate = d3_geo_greatArcInterpolator();
+  addMarkers(svg);
 
-  let i = -1;
+  // draw the backside of the earth.
   projection.clipAngle(180);
   let backLine = svg
     .append("path")
@@ -143,36 +150,50 @@ export function doTheThing(svg_selector) {
     .attr("class", "back-country")
     .attr("d", path);
 
+  // draw the frontside
   projection.clipAngle(90);
   let line = svg.append("path").datum(graticule).attr("class", "line").attr("d", path);
+  console.log({ countries });
   let country = svg
     .selectAll(".country")
     .data(countries)
     .enter()
     .insert("path", ".line")
     .attr("class", "country")
-    .attr("d", path);
+    .attr("data-id", (d) => d.id)
+    .attr("d", path)
+    .on("click", countrySelect);
 
-  let ug = countries.find((c) => c.properties.name === "Uganda");
-  let chile = countries.find((c) => c.properties.name === "Chile");
-  let argentina = countries.find((c) => c.properties.name === "Argentina");
-  function lineToLondon(source, target) {
-    return path({
-      type: "LineString",
-      coordinates: [geoCentroid(source), geoCentroid(target)],
-    });
+  let source;
+  let targets;
+  let moneylines;
+  function countrySelect(e) {
+    // reset playing field
+    if (moneylines) moneylines.remove();
+    svg.selectAll(".country").attr("class", "country");
+
+    let source_id = +e.target.dataset.id;
+    source = countries.find((c) => +c.id === source_id);
+    targets = Object.keys(global_map_of_investments[source_id]).map((k) =>
+      countries.find((c) => +c.id !== source_id && +c.id === +k)
+    );
+
+    if (targets) {
+      moneylines = svg
+        .append("g")
+        .attr("class", "moneylines")
+        .selectAll(".lines")
+        .data(targets)
+        .enter()
+        .append("path")
+        .attr("class", "moneyline")
+        .attr("d", (target) => moneyLine(source, target));
+    }
+
+    svg.selectAll(".country").classed("investor-country", (d) => targets.includes(d));
+    svg.selectAll(".country").classed("target-country", (d) => source_id === +d.id);
+    select(this).classed("target-country", true);
   }
-  let source = ug;
-  let targets = [chile, argentina];
-  let moneylines = svg
-    .append("g")
-    .attr("class", "moneylines")
-    .selectAll(".lines")
-    .data(targets)
-    .enter()
-    .append("path")
-    .attr("class", "moneyline")
-    .attr("d", (target) => lineToLondon(source, target));
 
   function refresh() {
     projection.clipAngle(180);
@@ -182,118 +203,17 @@ export function doTheThing(svg_selector) {
     projection.clipAngle(90);
     country.attr("d", path);
     line.attr("d", path);
-    moneylines.attr("d", (target) => lineToLondon(source, target));
-    // svg.selectAll(".land").attr("d", path);
-    // svg.selectAll(".countries path").attr("d", path);
-    // svg.selectAll(".graticule").attr("d", path);
-    // svg.selectAll(".point").attr("d", path);
-    // svg.selectAll(".lines").attr("d", (d) => { if (d) { return lineToLondon(d); }});
-    // position_labels();
+    if (moneylines) moneylines.attr("d", (target) => moneyLine(source, target));
   }
 
   const zoomed = (event) => {
-    console.log({ event });
+    console.log();
     console.log("zoomed");
-    // projection.translate(event.translate).scale(event.scale);
-    // refresh();
+    scale = event.sourceEvent.deltaY > 0 ? scale * 0.9 : scale * 1.1;
+    projection.scale(scale);
+    svg.select(".world-outline").attr("r", scale);
+    refresh();
   };
   svg.call(globe_drag(refresh));
   svg.call(zoom().on("zoom", zoomed));
 }
-
-// svg
-//   .call(
-//     mydrag(projection)
-//       .on("drag.render", () => {})
-//       .on("end.render", () => {})
-//   )
-//   .call(() => {})
-//   .node();
-
-// // step();
-//
-// // function step() {
-// //   if (++i >= countries.length) i = 0;
-// //
-// //   // title.text(countries[i].id);
-// //
-// //   country.transition().style("fill", function (d, j) {
-// //     return j === i ? "red" : "#737368";
-// //   });
-// //
-// //   transition()
-// //     .delay(250)
-// //     .duration(1250)
-// //     .tween("rotate", function () {
-// //       let point = centroid(countries[i]);
-// //       rotate
-// //         .source(projection.rotate())
-// //         .target([-point[0], -point[1]])
-// //         .distance();
-// //       return function (t) {
-// //         projection.rotate(rotate(t)).clipAngle(180);
-// //         backCountry.attr("d", path);
-// //         backLine.attr("d", path);
-// //
-// //         projection.rotate(rotate(t)).clipAngle(90);
-// //         country.attr("d", path);
-// //         line.attr("d", path);
-// //       };
-// //     })
-// //     .transition()
-// //     .each("end", step);
-// // }
-//
-// let d3_radians = Math.PI / 180;
-//
-// function d3_geo_greatArcInterpolator() {
-//   let x0, y0, cy0, sy0, kx0, ky0, x1, y1, cy1, sy1, kx1, ky1, d, k;
-//
-//   function interpolate(t) {
-//     var B = Math.sin((t *= d)) * k,
-//       A = Math.sin(d - t) * k,
-//       x = A * kx0 + B * kx1,
-//       y = A * ky0 + B * ky1,
-//       z = A * sy0 + B * sy1;
-//     return [
-//       Math.atan2(y, x) / d3_radians,
-//       Math.atan2(z, Math.sqrt(x * x + y * y)) / d3_radians,
-//     ];
-//   }
-//
-//   interpolate.distance = function () {
-//     if (d == null)
-//       k =
-//         1 /
-//         Math.sin(
-//           (d = Math.acos(
-//             Math.max(-1, Math.min(1, sy0 * sy1 + cy0 * cy1 * Math.cos(x1 - x0)))
-//           ))
-//         );
-//     return d;
-//   };
-//
-//   interpolate.source = function (_) {
-//     var cx0 = Math.cos((x0 = _[0] * d3_radians)),
-//       sx0 = Math.sin(x0);
-//     cy0 = Math.cos((y0 = _[1] * d3_radians));
-//     sy0 = Math.sin(y0);
-//     kx0 = cy0 * cx0;
-//     ky0 = cy0 * sx0;
-//     d = null;
-//     return interpolate;
-//   };
-//
-//   interpolate.target = function (_) {
-//     var cx1 = Math.cos((x1 = _[0] * d3_radians)),
-//       sx1 = Math.sin(x1);
-//     cy1 = Math.cos((y1 = _[1] * d3_radians));
-//     sy1 = Math.sin(y1);
-//     kx1 = cy1 * cx1;
-//     ky1 = cy1 * sx1;
-//     d = null;
-//     return interpolate;
-//   };
-//
-//   return interpolate;
-// }
