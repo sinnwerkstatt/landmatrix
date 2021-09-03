@@ -1,4 +1,4 @@
-from typing import List, Union, Literal
+from typing import List, Union
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -14,7 +14,8 @@ from apps.landmatrix.models.gndinvestor import (
 )
 from apps.utils import ecma262
 
-OType = Union[Literal["deal"], Literal["investor"]]
+# OType = Union[Literal["deal"], Literal["investor"]]
+OType = str
 User = get_user_model()
 
 
