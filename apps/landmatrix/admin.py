@@ -43,6 +43,7 @@ class FilterPresetGroupAdmin(admin.ModelAdmin):
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
     list_display = ["name", "high_income"]
+    exclude = ["geom"]
 
 
 admin.site.register(models.Region)

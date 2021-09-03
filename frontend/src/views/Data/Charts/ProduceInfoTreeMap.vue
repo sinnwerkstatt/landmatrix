@@ -23,9 +23,7 @@
   import LoadingPulse from "$components/Data/LoadingPulse";
   import { thousandsep } from "$utils/filters";
 
-  import { format } from "d3-format";
-  import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
-  import { select, selectAll } from "d3-selection";
+  import { format, hierarchy, treemap, treemapSquarify, select, selectAll } from "d3";
 
   import { data_deal_produce_query, data_deal_query } from "../query";
 

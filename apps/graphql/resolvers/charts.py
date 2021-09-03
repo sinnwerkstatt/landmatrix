@@ -1,7 +1,8 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db.models import Sum, Count, F, Q
+from django.db import connection
+from django.db.models import Sum, Count, F
 from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import parse_filters
@@ -35,27 +36,25 @@ LONG_COUNTRIES = {
 }
 
 
-def resolve_web_of_transnational_deals(
-    obj: Any, info: GraphQLResolveInfo, filters=None
-):
+def _deal_investors(filters=None):
     deals = Deal.objects.active()
     if filters:
         deals = deals.filter(parse_filters(filters))
 
     deals_investors = (
         DealTopInvestors.objects.filter(investor__status__in=(2, 3))
-        .filter(deal_id__in=deals.values_list("id", flat=True))
+        .filter(deal__in=deals)
         .prefetch_related("deal")
         .prefetch_related("investor")
         .order_by("deal__country_id")
     )
 
-    _relevant_countries = set()
+    relevant_countries = set()
     retdings = defaultdict(dict)
     for deal_invest in deals_investors:
         dc_id = deal_invest.deal.country_id
         ic_id = deal_invest.investor.country_id
-        _relevant_countries.update({dc_id, ic_id})
+        relevant_countries.update({dc_id, ic_id})
         if dc_id and ic_id:
             if retdings.get(dc_id) and retdings[dc_id].get(ic_id):
                 retdings[dc_id][ic_id]["size"] += deal_invest.deal.deal_size
@@ -65,6 +64,19 @@ def resolve_web_of_transnational_deals(
                     "size": deal_invest.deal.deal_size,
                     "count": 1,
                 }
+    return {"links": retdings, "relevant_countries": relevant_countries}
+
+
+def resolve_global_map_of_investments(obj: Any, info: GraphQLResolveInfo, filters=None):
+    xx = _deal_investors(filters)
+    return dict(xx["links"])
+
+
+def resolve_web_of_transnational_deals(
+    obj: Any, info: GraphQLResolveInfo, filters=None
+):
+    deal_investors = _deal_investors(filters)
+    _relevant_countries = deal_investors["relevant_countries"]
 
     country_dict = {c.id: c for c in Country.objects.filter(id__in=_relevant_countries)}
 
@@ -72,7 +84,7 @@ def resolve_web_of_transnational_deals(
     for country_id, country in country_dict.items():
         imports = []
         # regiondata = defaultdict(dict)
-        for k, v in retdings[country_id].items():
+        for k, v in deal_investors["links"][country_id].items():
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
             imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]
@@ -143,7 +155,6 @@ def country_investments_and_rankings(
 
 
 def global_rankings(obj, info, count=10, filters=None):
-
     qs = Deal.objects.active()
 
     if filters:
@@ -156,28 +167,51 @@ def global_rankings(obj, info, count=10, filters=None):
 
 
 def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
-    public_deals = Deal.objects.public()
-    if country_id:
-        public_deals = public_deals.filter(country_id=country_id)
-    if region_id:
-        public_deals = public_deals.filter(country__fk_region_id=region_id)
+    from_clause = "FROM landmatrix_deal d"
+    where_clause = "WHERE status IN (2,3) AND is_public=True "
 
-    q_has_at_least_one_polygon = Q(locations__areas__isnull=False)
+    if country_id:
+        where_clause += f"AND country_id={country_id}"
+    if region_id:
+        from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
+        where_clause += f"AND c.fk_region_id={region_id}"
+
+    cursor = connection.cursor()
+
+    cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
+    deals_public_count = cursor.fetchone()[0]
+
+    #     "deals_public_multi_ds_count": (
+    #         public_deals.annotate(
+    #             count_ob=JSONObject(
+    #                 count=Func(F("datasources"), function="jsonb_array_length")
+    #             )
+    #         )
+    #         .filter(count_ob__count__gt=1)
+    #         .count()
+    #     ),
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
+    )
+    deals_public_multi_ds_count = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+        f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+    )
+    deals_public_high_geo_accuracy = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+        f" AND l->>'areas' IS NOT NULL"
+    )
+    deals_public_polygons = cursor.fetchone()[0]
 
     return {
-        "deals_public_count": public_deals.count(),
-        "deals_public_multi_ds_count": public_deals.annotate(
-            ds_count=Count("datasources")
-        )
-        .filter(ds_count__gte=2)
-        .count(),
-        "deals_public_high_geo_accuracy": public_deals.filter(
-            Q(locations__level_of_accuracy__in=["EXACT_LOCATION", "COORDINATES"])
-            | q_has_at_least_one_polygon
-        ).count(),
-        "deals_public_polygons": public_deals.filter(
-            q_has_at_least_one_polygon
-        ).count(),
+        "deals_public_count": deals_public_count,
+        "deals_public_multi_ds_count": deals_public_multi_ds_count,
+        "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
+        "deals_public_polygons": deals_public_polygons,
     }
 
 

@@ -1,29 +1,23 @@
-import pytest
-from django.utils import timezone
-
 from apps.landmatrix.models import (
     HistoricalInvestor,
     HistoricalInvestorVentureInvolvement,
     InvestorVentureInvolvement,
 )
 from apps.landmatrix.models import Investor
-from apps.landmatrix.models.gndinvestor import (
-    InvestorVersion,
-    InvestorVentureInvolvementVersion,
-)
-from apps.landmatrix.models.versions import Version
+from apps.landmatrix.models.abstracts import STATUS
 
 NAME = "The Grand Investor"
 COMMENT = "regular blabla comment"
 HOMEPAGE = "https://grandinvestor.the"
-OPENCORP = "http://closed.com"
+OPENCORP = "https://closed.com"
 ACTION_COMM = "AKTION!"
 
 
+# noinspection PyUnusedLocal
 def test_histvolvement_draft(db):
-    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=Investor.STATUS_DRAFT)
+    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=STATUS["DRAFT"])
     hi1.save(update_elasticsearch=False)
-    hi2 = HistoricalInvestor(investor_identifier=2, fk_status_id=Investor.STATUS_DRAFT)
+    hi2 = HistoricalInvestor(investor_identifier=2, fk_status_id=STATUS["DRAFT"])
     hi2.save(update_elasticsearch=False)
     assert HistoricalInvestor.objects.all().count() == 2
 
@@ -45,7 +39,7 @@ def test_histvolvement_draft(db):
     assert ivi.venture.investors.all()
     assert ivi.investor.ventures.all()
 
-    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=Investor.STATUS_LIVE)
+    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=STATUS["LIVE"])
     hi1.save(update_elasticsearch=False)
     HistoricalInvestorVentureInvolvement.objects.create(
         fk_venture=hi1, fk_investor=hi2, role="ST", percentage=10.0
@@ -55,7 +49,7 @@ def test_histvolvement_draft(db):
     i1 = Investor.objects.get(id=1)
     assert InvestorVentureInvolvement.objects.get(venture_id=i1.id).percentage == 10
 
-    hi3 = HistoricalInvestor(investor_identifier=3, fk_status_id=Investor.STATUS_LIVE)
+    hi3 = HistoricalInvestor(investor_identifier=3, fk_status_id=STATUS["LIVE"])
     hi3.save(update_elasticsearch=False)
     assert HistoricalInvestor.objects.all().count() == 4
     HistoricalInvestorVentureInvolvement.objects.create(
@@ -65,7 +59,7 @@ def test_histvolvement_draft(db):
 
     assert InvestorVentureInvolvement.objects.filter(venture_id=i1.id).count() == 2
 
-    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=Investor.STATUS_DRAFT)
+    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=STATUS["DRAFT"])
     hi1.save(update_elasticsearch=False)
     HistoricalInvestorVentureInvolvement.objects.create(
         fk_venture=hi1, fk_investor=hi2, role="ST", percentage=20.0
@@ -74,9 +68,7 @@ def test_histvolvement_draft(db):
     involves = InvestorVentureInvolvement.objects.filter(venture_id=i1.id)
     assert {x.percentage for x in involves} == {10, 60}
 
-    hi1 = HistoricalInvestor(
-        investor_identifier=1, fk_status_id=Investor.STATUS_DELETED
-    )
+    hi1 = HistoricalInvestor(investor_identifier=1, fk_status_id=STATUS["DELETED"])
     hi1.save(update_elasticsearch=False)
 
     assert not InvestorVentureInvolvement.objects.filter(venture_id=i1.id).exists()

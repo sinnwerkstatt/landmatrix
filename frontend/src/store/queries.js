@@ -65,7 +65,7 @@ export const investor_gql_query = gql`
       version: $version
       subset: $subset
       involvements_depth: $depth
-      involvements_include_ventures: false
+      involvements_include_ventures: true
     ) {
       id
       name
@@ -81,6 +81,36 @@ export const investor_gql_query = gql`
       draft_status
       created_at
       modified_at
+      investors {
+        id
+        investment_type
+        role
+        parent_relation
+        percentage
+        investor {
+          id
+          name
+          classification
+          country {
+            id
+          }
+        }
+      }
+      ventures {
+        id
+        investment_type
+        role
+        parent_relation
+        percentage
+        venture {
+          id
+          name
+          classification
+          country {
+            id
+          }
+        }
+      }
       deals @include(if: $includeDeals) {
         id
         country {
@@ -99,6 +129,7 @@ export const investor_gql_query = gql`
       }
       involvements
       workflowinfos {
+        id
         from_user {
           id
           username
@@ -120,14 +151,10 @@ export const investor_gql_query = gql`
           status
           draft_status
         }
-        revision {
+        created_at
+        created_by {
           id
-          date_created
-          user {
-            id
-            full_name
-          }
-          comment
+          full_name
         }
         object_id
       }
@@ -402,19 +429,17 @@ export const deal_gql_query = gql`
           fully_updated
           status
           draft_status
+          confidential
         }
-        revision {
+        created_at
+        created_by {
           id
-          date_created
-          user {
-            id
-            full_name
-          }
-          comment
+          full_name
         }
         object_id
       }
       workflowinfos {
+        id
         from_user {
           id
           username
@@ -444,12 +469,6 @@ export const deal_gql_query = gql`
       }
       status
       draft_status
-      revision {
-        id
-        user {
-          id
-        }
-      }
     }
   }
 `;

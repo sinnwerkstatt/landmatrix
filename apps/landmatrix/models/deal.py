@@ -3,23 +3,29 @@ from typing import Optional
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.contrib.postgres.fields import JSONField
+from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Sum, F
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
+from apps.landmatrix.models import Investor
+from apps.landmatrix.models.abstracts import (
+    STATUS_CHOICES,
+    DRAFT_STATUS_CHOICES,
+    WorkflowInfo,
+    STATUS,
+    Version,
+)
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.fields import (
     LocationsField,
     ArrayField,
     ContractsField,
     DatasourcesField,
 )
-from apps.landmatrix.models import Investor
-from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.mixins import OldDealMixin
-from apps.landmatrix.models.versions import Version, register_version, Revision
 
 
 class DealQuerySet(models.QuerySet):
@@ -70,17 +76,25 @@ class DealQuerySet(models.QuerySet):
 
 
 class DealVersion(Version):
-    def to_dict(self, use_object=False):
-        deal = self.retrieve_object() if use_object else self.fields
+    object = models.ForeignKey(
+        "Deal",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="versions",
+    )
+
+    def new_to_dict(self):
+        self.serialized_data["id"] = self.object_id
         return {
             "id": self.id,
-            "deal": deal,
-            "revision": self.revision,
             "object_id": self.object_id,
+            "created_at": self.created_at,
+            "created_by": self.created_by,
+            "deal": self.serialized_data,
         }
 
 
-@register_version(DealVersion)
 class Deal(models.Model, OldDealMixin):
     """Deal"""
 
@@ -105,13 +119,13 @@ class Deal(models.Model, OldDealMixin):
         blank=True,
         null=True,
     )
-    contract_size = JSONField(
+    contract_size = models.JSONField(
         _("Size under contract (leased or purchased area, in ha)"),
         help_text=_("ha"),
         blank=True,
         null=True,
     )
-    production_size = JSONField(
+    production_size = models.JSONField(
         _("Size in operation (production, in ha)"),
         help_text=_("ha"),
         blank=True,
@@ -155,7 +169,7 @@ class Deal(models.Model, OldDealMixin):
             ),
         ),
     )
-    intention_of_investment = JSONField(
+    intention_of_investment = models.JSONField(
         _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
     )
     intention_of_investment_comment = models.TextField(
@@ -211,7 +225,7 @@ class Deal(models.Model, OldDealMixin):
         ("CONTRACT_EXPIRED", "Contract expired"),
         ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
     )
-    negotiation_status = JSONField(
+    negotiation_status = models.JSONField(
         _("Negotiation status"),
         choices=NEGOTIATION_STATUS_CHOICES,
         blank=True,
@@ -228,7 +242,7 @@ class Deal(models.Model, OldDealMixin):
         ("IN_OPERATION", "In operation (production)"),
         ("PROJECT_ABANDONED", "Project abandoned"),
     )
-    implementation_status = JSONField(
+    implementation_status = models.JSONField(
         _("Implementation status"),
         choices=IMPLEMENTATION_STATUS_CHOICES,
         blank=True,
@@ -311,19 +325,19 @@ class Deal(models.Model, OldDealMixin):
     #     ("NO", _("No")),
     # )
     # contract_farming = models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
-    contract_farming = models.NullBooleanField()
+    contract_farming = models.BooleanField(null=True)
 
-    on_the_lease_state = models.NullBooleanField(_("On leased / purchased"))
-    on_the_lease = JSONField(
+    on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
+    on_the_lease = models.JSONField(
         _("On leased area/farmers/households"),
         blank=True,
         null=True,
     )
 
-    off_the_lease_state = models.NullBooleanField(
-        _("Not on leased / purchased (out-grower)")
+    off_the_lease_state = models.BooleanField(
+        _("Not on leased / purchased (out-grower)"), null=True
     )
-    off_the_lease = JSONField(
+    off_the_lease = models.JSONField(
         _("Not on leased area/farmers/households (out-grower)"),
         help_text=_("ha"),
         blank=True,
@@ -338,7 +352,7 @@ class Deal(models.Model, OldDealMixin):
     contracts = ContractsField(_("Contracts"), default=list)
 
     """ Employment """
-    total_jobs_created = models.NullBooleanField(_("Jobs created (total)"))
+    total_jobs_created = models.BooleanField(_("Jobs created (total)"), null=True)
     total_jobs_planned = models.IntegerField(
         _("Planned number of jobs (total)"),
         help_text=_("jobs"),
@@ -360,7 +374,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    total_jobs_current = JSONField(
+    total_jobs_current = models.JSONField(
         _("Current total number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -369,7 +383,7 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on jobs created (total)"), blank=True
     )
 
-    foreign_jobs_created = models.NullBooleanField(_("Jobs created (foreign)"))
+    foreign_jobs_created = models.BooleanField(_("Jobs created (foreign)"), null=True)
     foreign_jobs_planned = models.IntegerField(
         _("Planned number of jobs (foreign)"),
         help_text=_("jobs"),
@@ -391,7 +405,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    foreign_jobs_current = JSONField(
+    foreign_jobs_current = models.JSONField(
         _("Current foreign number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -400,7 +414,7 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on jobs created (foreign)"), blank=True
     )
 
-    domestic_jobs_created = models.NullBooleanField(_("Jobs created (domestic)"))
+    domestic_jobs_created = models.BooleanField(_("Jobs created (domestic)"), null=True)
     domestic_jobs_planned = models.IntegerField(
         _("Planned number of jobs (domestic)"),
         help_text=_("jobs"),
@@ -422,7 +436,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0)],
     )
-    domestic_jobs_current = JSONField(
+    domestic_jobs_current = models.JSONField(
         _("Current domestic number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         null=True,
@@ -458,7 +472,7 @@ class Deal(models.Model, OldDealMixin):
         ("INTERMEDIARY", _("Intermediary")),
         ("OTHER", _("Other (please specify)")),
     )
-    involved_actors = JSONField(
+    involved_actors = models.JSONField(
         _("Actors involved in the negotiation / admission process"),
         choices=ACTOR_MAP,
         blank=True,
@@ -554,12 +568,12 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on community reaction"), blank=True
     )
 
-    land_conflicts = models.NullBooleanField(_("Presence of land conflicts"))
+    land_conflicts = models.BooleanField(_("Presence of land conflicts"), null=True)
     land_conflicts_comment = models.TextField(
         _("Comment on presence of land conflicts"), blank=True
     )
 
-    displacement_of_people = models.NullBooleanField(_("Displacement of people"))
+    displacement_of_people = models.BooleanField(_("Displacement of people"), null=True)
     displaced_people = models.IntegerField(
         _("Number of people actually displaced"),
         blank=True,
@@ -736,33 +750,33 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ Produce info """
-    crops = JSONField(_("Crops area/yield/export"), blank=True, null=True)
+    crops = models.JSONField(_("Crops area/yield/export"), blank=True, null=True)
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = JSONField(_("Livestock area/yield/export"), blank=True, null=True)
+    animals = models.JSONField(_("Livestock area/yield/export"), blank=True, null=True)
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    mineral_resources = JSONField(
+    mineral_resources = models.JSONField(
         _("Mineral resources area/yield/export"), blank=True, null=True
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
-    contract_farming_crops = JSONField(
+    contract_farming_crops = models.JSONField(
         _("Contract farming crops"), help_text=_("ha"), blank=True, null=True
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
-    contract_farming_animals = JSONField(
+    contract_farming_animals = models.JSONField(
         _("Contract farming livestock"), help_text=_("ha"), blank=True, null=True
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
-    has_domestic_use = models.NullBooleanField(_("Has domestic use"))
+    has_domestic_use = models.BooleanField(_("Has domestic use"), null=True)
     domestic_use = models.FloatField(
         _("Domestic use"),
         help_text="%",
@@ -770,7 +784,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    has_export = models.NullBooleanField(_("Has export"))
+    has_export = models.BooleanField(_("Has export"), null=True)
 
     export = models.FloatField(
         _("Export"),
@@ -830,8 +844,8 @@ class Deal(models.Model, OldDealMixin):
         verbose_name=_("Comment on use of produce"), blank=True
     )
 
-    in_country_processing = models.NullBooleanField(
-        _("In country processing of produce")
+    in_country_processing = models.BooleanField(
+        _("In country processing of produce"), null=True
     )
     in_country_processing_comment = models.TextField(
         _("Comment on in country processing of produce"), blank=True
@@ -848,8 +862,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """Water"""
-    water_extraction_envisaged = models.NullBooleanField(
-        _("Water extraction envisaged")
+    water_extraction_envisaged = models.BooleanField(
+        _("Water extraction envisaged"), null=True
     )
     water_extraction_envisaged_comment = models.TextField(
         _("Comment on water extraction envisaged"), blank=True
@@ -881,8 +895,8 @@ class Deal(models.Model, OldDealMixin):
     water_extraction_amount_comment = models.TextField(
         _("Comment on how much water is extracted"), blank=True
     )
-    use_of_irrigation_infrastructure = models.NullBooleanField(
-        _("Use of irrigation infrastructure")
+    use_of_irrigation_infrastructure = models.BooleanField(
+        _("Use of irrigation infrastructure"), null=True
     )
     use_of_irrigation_infrastructure_comment = models.TextField(
         _("Comment on use of irrigation infrastructure"), blank=True
@@ -999,32 +1013,10 @@ class Deal(models.Model, OldDealMixin):
         blank=True, null=True, validators=[MinValueValidator(1970)]
     )
     forest_concession = models.BooleanField(default=False)
-    transnational = models.NullBooleanField()
-    geojson = JSONField(blank=True, null=True)
+    transnational = models.BooleanField(null=True)
+    geojson = models.JSONField(blank=True, null=True)
 
     """ # Status """
-    STATUS_DRAFT = 1
-    STATUS_LIVE = 2
-    STATUS_UPDATED = 3
-    STATUS_DELETED = 4
-    STATUS_CHOICES = (
-        (STATUS_DRAFT, _("Draft")),
-        (STATUS_LIVE, _("Live")),
-        (STATUS_UPDATED, _("Updated")),
-        (STATUS_DELETED, _("Deleted")),
-    )
-    DRAFT_STATUS_DRAFT = 1
-    DRAFT_STATUS_REVIEW = 2
-    DRAFT_STATUS_ACTIVATION = 3
-    DRAFT_STATUS_REJECTED = 4
-    DRAFT_STATUS_TO_DELETE = 5
-    DRAFT_STATUS_CHOICES = (
-        (DRAFT_STATUS_DRAFT, _("Draft")),
-        (DRAFT_STATUS_REVIEW, _("Review")),
-        (DRAFT_STATUS_ACTIVATION, _("Activation")),
-        (DRAFT_STATUS_REJECTED, _("Rejected")),
-        (DRAFT_STATUS_TO_DELETE, _("To Delete")),
-    )
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     draft_status = models.IntegerField(
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
@@ -1086,8 +1078,7 @@ class Deal(models.Model, OldDealMixin):
             self.forest_concession = self._calculate_forest_concession()
         if dependent:
             # With the help of signals these fields are recalculated on changes to:
-            # Location, Contract, DataSource
-            # as well as Investor and InvestorVentureInvolvement
+            # Investor and InvestorVentureInvolvement
             self.has_known_investor = not self._has_no_known_investor()
             self.not_public_reason = self._calculate_public_state()
             self.is_public = self.not_public_reason == ""
@@ -1140,6 +1131,21 @@ class Deal(models.Model, OldDealMixin):
 
             else:
                 self.__setattr__(key, value)
+
+    def serialize_for_version(self) -> dict:
+        serialized_json = serializers.serialize("json", (self,))
+        return json.loads(serialized_json)[0]["fields"]
+
+    @staticmethod
+    def deserialize_from_version(version: DealVersion) -> "Deal":
+        daty = {
+            "pk": version.object_id,
+            "model": "landmatrix.deal",
+            "fields": version.serialized_data,
+        }
+        obj = list(serializers.deserialize("json", json.dumps([daty])))[0].object
+        obj.save()
+        return obj
 
     def _get_current(self, attribute, field):
         attributes: list = self.__getattribute__(attribute)
@@ -1249,7 +1255,7 @@ class Deal(models.Model, OldDealMixin):
         if not self.operating_company_id:
             return True
         oc = Investor.objects.get(id=self.operating_company_id)
-        if oc.status == Investor.STATUS_DELETED:
+        if oc.status == STATUS["DELETED"]:
             return True
 
         investors_countries = self.parent_companies.exclude(
@@ -1304,7 +1310,7 @@ class Deal(models.Model, OldDealMixin):
         if self.operating_company_id:
             oc = Investor.objects.filter(
                 id=self.operating_company_id,
-                status__in=[Investor.STATUS_LIVE, Investor.STATUS_UPDATED],
+                status__in=[STATUS["LIVE"], STATUS["UPDATED"]],
             ).first()
             if oc:
                 parent_companies = oc.get_parent_companies()
@@ -1353,28 +1359,7 @@ class Deal(models.Model, OldDealMixin):
         return not oc.investors.filter(investor__is_actually_unknown=False).exists()
 
 
-class DealWorkflowInfo(models.Model):
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
-    draft_status_before = models.IntegerField(
-        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    draft_status_after = models.IntegerField(
-        choices=Deal.DRAFT_STATUS_CHOICES, null=True, blank=True
-    )
-    timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True, null=True)
-    processed_by_receiver = models.BooleanField(default=False)
-    # watch out: ignore the draft_status within this DealVersion object, it will change
-    # when the workflow moves along. the payload will remain consistent though.
+class DealWorkflowInfo(WorkflowInfo):
     deal = models.ForeignKey(
         Deal, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -1387,18 +1372,9 @@ class DealWorkflowInfo(models.Model):
     )
 
     def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user": self.from_user,
-            "to_user": self.to_user,
-            "draft_status_before": self.draft_status_before,
-            "draft_status_after": self.draft_status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "processed_by_receiver": self.processed_by_receiver,
-            "deal": self.deal,
-            "deal_version": self.deal_version,
-        }
+        d = super().to_dict()
+        d.update({"deal": self.deal, "deal_version": self.deal_version})
+        return d
 
 
 class DealParentCompanies(models.Model):

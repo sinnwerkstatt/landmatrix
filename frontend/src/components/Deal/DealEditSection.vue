@@ -23,19 +23,13 @@
     components: { EditField },
     props: {
       id: { type: String, required: true },
-      title: { type: String, required: true },
       sections: { type: Array, required: true },
       deal: { type: Object, required: true },
-      active: { type: Boolean, default: false },
     },
   };
 </script>
 
 <style lang="scss" scoped>
-  .display-field-wrapper {
-    margin-top: 2em;
-  }
-
   .panel-body {
     background-color: rgba(200, 200, 200, 0.1);
     background-image: linear-gradient(

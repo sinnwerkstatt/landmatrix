@@ -28,12 +28,13 @@ type Investor {
 type InvestorVersion {
   id: Int!
   investor: Investor
-  revision: Revision
+  created_at: DateTime
+  created_by: User
   object_id: Int
 }
 
 type Involvement {
-  id: Int!
+  id: Int
   investor: Investor
   venture: Investor
   role: String

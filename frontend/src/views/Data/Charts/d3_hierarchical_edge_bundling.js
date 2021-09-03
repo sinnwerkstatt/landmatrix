@@ -1,9 +1,15 @@
 // source https://observablehq.com/@d3/hierarchical-edge-bundling
 
-import { ascending, cluster } from "d3";
-import { hierarchy } from "d3-hierarchy";
-import { select, selectAll } from "d3-selection";
-import { curveBundle, lineRadial } from "d3-shape";
+import { addMarkers } from "./utils";
+import {
+  ascending,
+  cluster,
+  hierarchy,
+  select,
+  selectAll,
+  curveBundle,
+  lineRadial,
+} from "d3";
 
 let width = 954;
 let radius = width / 2;
@@ -44,22 +50,7 @@ export function LandMatrixRadialSpider(
       )
     )
   );
-  let defs = svg.append("defs");
-  const marker_factory = (name) =>
-    defs
-      .append("marker")
-      .attr("id", name)
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 0)
-      .attr("refY", 0)
-      .attr("markerWidth", 10)
-      .attr("markerHeight", 10)
-      .attr("orient", "auto-start-reverse")
-      .attr("markerUnits", "userSpaceOnUse")
-      .append("path")
-      .attr("d", "M0,-5L10,0L0,5");
-  marker_factory("incoming-marker");
-  marker_factory("outgoing-marker");
+  addMarkers(svg);
 
   const link = svg
     .append("g")

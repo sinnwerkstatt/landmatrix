@@ -8,9 +8,7 @@
     >
       {{ value.name }} (#{{ value.id }})
     </router-link>
-    <template v-else>
-      {{ value.name }}
-    </template>
+    <template v-else> {{ calc_name }} </template>
   </div>
 </template>
 
@@ -20,6 +18,18 @@
       formfield: { type: Object, required: true },
       value: { type: Object, required: true },
       model: { type: String, required: true },
+    },
+    computed: {
+      calc_name() {
+        if (
+          this.formfield.related_model === "Country" &&
+          this.$store.state.page.countries
+        ) {
+          return this.$store.state.page.countries.find((c) => c.id === this.value.id)
+            .name;
+        }
+        return this.value.name ?? this.value.id;
+      },
     },
   };
 </script>

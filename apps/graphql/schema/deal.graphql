@@ -206,8 +206,6 @@ type Deal {
 
   comments: [DealComment]
 
-  # will be set if this is a deal version
-  revision: Revision
   # for statistics only
   country_id: Int
   datasources_count: Int
@@ -270,7 +268,8 @@ type Aggregations {
 type DealVersion {
   id: Int!
   deal: Deal
-  revision: Revision
+  created_at: DateTime
+  created_by: User
   object_id: Int
 }
 

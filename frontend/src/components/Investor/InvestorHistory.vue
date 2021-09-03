@@ -7,8 +7,7 @@
           <th v-if="$store.getters.userAuthenticated">User</th>
           <th>Fully updated</th>
           <th>Status</th>
-          <th>Comment</th>
-          <th style="text-align: right;">
+          <th style="text-align: right">
             <!--            Show / <a @click="compareVersions">Compare</a>-->
             Show
           </th>
@@ -16,9 +15,9 @@
       </thead>
       <tbody>
         <tr v-for="(version, i) in investor.versions" :key="i">
-          <td>{{ version.revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}</td>
+          <td>{{ version.created_at | dayjs("YYYY-MM-DD HH:mm") }}</td>
           <td v-if="$store.getters.userAuthenticated">
-            {{ version.revision.user && version.revision.user.full_name }}
+            {{ version.created_by && version.created_by.full_name }}
           </td>
           <td>
             <b-button
@@ -34,15 +33,14 @@
           <td>
             {{ version.investor.status }}
           </td>
-          <td>{{ version.revision.comment }}</td>
-          <td style="white-space: nowrap; text-align: right;">
+          <td style="white-space: nowrap; text-align: right">
             <span v-if="i === deduced_position">Current</span>
             <span v-else>
               <router-link
                 v-slot="{ href }"
                 :to="{
                   name: 'investor_detail',
-                  params: { investorId, investorVersion: version.revision.id },
+                  params: { investorId, investorVersion: version.id },
                 }"
               >
                 <!-- this hack helps to understand that a new version is actually loading, atm -->
@@ -102,7 +100,7 @@
         if (this.investor.versions.length === 0) return 0;
         if (this.investorVersion) {
           return this.investor.versions.findIndex(
-            (v) => +v.revision.id === +this.investorVersion
+            (v) => +v.id === +this.investorVersion
           );
         }
         for (const [i, v] of this.investor.versions.entries()) {
@@ -113,8 +111,8 @@
     },
     mounted() {
       if (this.investor.versions.length >= 2) {
-        this.compare_to = this.investor.versions[0].revision.id;
-        this.compare_from = this.investor.versions[1].revision.id;
+        this.compare_to = this.investor.versions[0].id;
+        this.compare_from = this.investor.versions[1].id;
       }
     },
     methods: {

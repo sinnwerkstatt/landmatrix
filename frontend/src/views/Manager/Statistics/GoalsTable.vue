@@ -13,7 +13,7 @@
       </tr>
       <tr>
         <th class="label">Publicly visible deals<sup class="tiny">1</sup></th>
-        <td>{{ goal_statistics.deals_public_count }}</td>
+        <td>{{ goalStatistics.deals_public_count }}</td>
         <td></td>
         <td></td>
         <td></td>
@@ -21,12 +21,12 @@
       </tr>
       <tr>
         <th class="label">Deals with with multiple data sources</th>
-        <td>{{ goal_statistics.deals_public_multi_ds_count }}</td>
+        <td>{{ goalStatistics.deals_public_multi_ds_count }}</td>
         <td>
           {{
             percentRatio(
-              goal_statistics.deals_public_multi_ds_count,
-              goal_statistics.deals_public_count
+              goalStatistics.deals_public_multi_ds_count,
+              goalStatistics.deals_public_count
             )
           }}
         </td>
@@ -38,12 +38,12 @@
         <th class="label">
           Deals georeferenced with high accuracy<sup class="tiny">2</sup>
         </th>
-        <td>{{ goal_statistics.deals_public_high_geo_accuracy }}</td>
+        <td>{{ goalStatistics.deals_public_high_geo_accuracy }}</td>
         <td>
           {{
             percentRatio(
-              goal_statistics.deals_public_high_geo_accuracy,
-              goal_statistics.deals_public_count
+              goalStatistics.deals_public_high_geo_accuracy,
+              goalStatistics.deals_public_count
             )
           }}
         </td>
@@ -53,12 +53,12 @@
       </tr>
       <tr>
         <th class="label">Deals with polygon data</th>
-        <td>{{ goal_statistics.deals_public_polygons }}</td>
+        <td>{{ goalStatistics.deals_public_polygons }}</td>
         <td>
           {{
             percentRatio(
-              goal_statistics.deals_public_polygons,
-              goal_statistics.deals_public_count
+              goalStatistics.deals_public_polygons,
+              goalStatistics.deals_public_count
             )
           }}
         </td>

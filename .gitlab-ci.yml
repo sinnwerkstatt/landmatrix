@@ -21,7 +21,7 @@ django formatting and linting:
   stage: test
   interruptible: true
   script:
-    - poetry config experimental.new-installer false
+#    - poetry config experimental.new-installer false
     - poetry install -E production
     - npm ci
     - black . --check
@@ -44,11 +44,11 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
-    - poetry config experimental.new-installer false
+#    - poetry config experimental.new-installer false
     - poetry install -E production
     - npm ci
     - poetry run doit -n 4 update
-    - poetry run pytest
+    - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 deploy to staging:

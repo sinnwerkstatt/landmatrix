@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.landmatrix.models.activity import HistoricalActivity
 from apps.landmatrix.models.activity_attribute_group import (
@@ -22,8 +22,8 @@ from apps.landmatrix.models.investor import (
     HistoricalInvestorVentureInvolvement,
 )
 from .currency import Currency
-from .gndinvestor import Investor, InvestorVentureInvolvement
-from .deal import Deal
+from .gndinvestor import Investor, InvestorVersion, InvestorVentureInvolvement
+from .deal import Deal, DealVersion
 
 
 class AgriculturalProduce(models.Model):

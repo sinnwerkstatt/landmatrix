@@ -483,7 +483,7 @@
             break;
           case "my_drafts":
             retfilters.push({
-              field: "current_draft.revision.user_id",
+              field: "current_draft.created_by_id",
               value: this.user.id,
             });
             break;

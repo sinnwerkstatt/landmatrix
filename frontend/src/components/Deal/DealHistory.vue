@@ -7,7 +7,7 @@
           <th>{{ $t("Created") }}</th>
           <th v-if="$store.getters.userAuthenticated">{{ $t("User") }}</th>
           <th>{{ $t("Fully updated") }}</th>
-          <th>{{ $t("Status") }}</th>
+          <th v-if="$store.getters.userAuthenticated">{{ $t("Status") }}</th>
           <th style="text-align: right">
             {{ $t("Show") }} / <a @click="compareVersions">{{ $t("Compare") }}</a>
           </th>
@@ -15,9 +15,9 @@
       </thead>
       <tbody>
         <tr v-for="(version, i) in enriched_versions" :key="i">
-          <td>{{ version.revision.date_created | dayjs("YYYY-MM-DD HH:mm") }}</td>
+          <td>{{ version.created_at | dayjs("YYYY-MM-DD HH:mm") }}</td>
           <td v-if="$store.getters.userAuthenticated">
-            {{ version.revision.user && version.revision.user.full_name }}
+            {{ version.created_by && version.created_by.full_name }}
           </td>
           <td>
             <b-button
@@ -30,7 +30,7 @@
               ]"
             />
           </td>
-          <td>
+          <td v-if="$store.getters.userAuthenticated">
             {{ $t(derive_status(version.deal.status, version.deal.draft_status)) }}
           </td>
           <td style="white-space: nowrap; text-align: right">
@@ -45,15 +45,15 @@
               <input
                 v-model="compare_from"
                 type="radio"
-                :value="version.revision.id"
-                :disabled="version.revision.id >= compare_to"
+                :value="version.id"
+                :disabled="version.id >= compare_to"
               />
 
               <input
                 v-model="compare_to"
                 type="radio"
-                :value="version.revision.id"
-                :disabled="version.revision.id <= compare_from"
+                :value="version.id"
+                :disabled="version.id <= compare_from"
               />
             </span>
           </td>
@@ -62,9 +62,9 @@
       <tfoot>
         <tr>
           <td></td>
+          <td v-if="$store.getters.userAuthenticated"></td>
           <td></td>
-          <td></td>
-          <td></td>
+          <td v-if="$store.getters.userAuthenticated"></td>
           <td v-if="compare_from && compare_to">
             <router-link
               :to="{
@@ -105,14 +105,20 @@
     computed: {
       enriched_versions() {
         let current_active = false;
-        return this.deal.versions.map((v) => {
+        let versions = this.deal.versions;
+        if (!this.$store.getters.userAuthenticated) {
+          versions = versions.filter(
+            (v) => !(v.deal.confidential || v.deal.draft_status)
+          );
+        }
+        return versions.map((v) => {
           if (!v.deal.draft_status && !current_active) {
             v.link = { name: "deal_detail", params: { dealId: this.dealId } };
             current_active = true;
           } else
             v.link = {
               name: "deal_detail",
-              params: { dealId: this.dealId, dealVersion: v.revision.id },
+              params: { dealId: this.dealId, dealVersion: v.id },
             };
           return v;
         });
@@ -120,9 +126,7 @@
       deduced_position() {
         if (this.deal.versions.length === 0) return 0;
         if (this.dealVersion) {
-          return this.deal.versions.findIndex(
-            (v) => +v.revision.id === +this.dealVersion
-          );
+          return this.deal.versions.findIndex((v) => +v.id === +this.dealVersion);
         }
         for (const [i, v] of this.deal.versions.entries()) {
           if (v.deal.draft_status === null) return i;
@@ -132,8 +136,8 @@
     },
     mounted() {
       if (this.deal.versions.length >= 2) {
-        this.compare_to = this.deal.versions[0].revision.id;
-        this.compare_from = this.deal.versions[1].revision.id;
+        this.compare_to = this.deal.versions[0].id;
+        this.compare_from = this.deal.versions[1].id;
       }
     },
     methods: {

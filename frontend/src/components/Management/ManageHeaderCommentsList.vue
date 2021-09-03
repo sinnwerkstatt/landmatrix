@@ -1,6 +1,6 @@
 <template>
   <div class="comments-list">
-    <div v-for="wfi in workflowinfos" :key="wfi.timestamp">
+    <div v-for="wfi in workflowinfos" :key="wfi.id">
       <WorkflowInfo :info="wfi"></WorkflowInfo>
     </div>
   </div>

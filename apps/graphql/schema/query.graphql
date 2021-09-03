@@ -48,6 +48,7 @@ type Query {
 
   statistics(country_id: Int, region_id: Int): Statistics
   transnational_deals(filters: [Filter]): WebOfTransnationalDeals
+  global_map_of_investments(filters: [Filter]): GlobalInvestmentMap
   country_investments_and_rankings(
     id: Int!
     filters: [Filter]

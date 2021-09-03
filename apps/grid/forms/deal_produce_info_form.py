@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import TitleField, YearBasedModelMultipleChoiceIntegerField
 from apps.grid.widgets import CommentInput, NumberInput

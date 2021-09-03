@@ -1,6 +1,6 @@
 from django.contrib.gis import forms
-from django.forms.models import BaseFormSet, formset_factory
-from django.utils.translation import ugettext_lazy as _
+from django.forms import BaseFormSet, formset_factory
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import AreaField, CountryField, TitleField
 from apps.grid.gis import parse_shapefile

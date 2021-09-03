@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import ForeignKey, Q
 from django.forms import BooleanField, ChoiceField, ModelChoiceField, MultiValueField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from pyelasticsearch import ElasticSearch as PyElasticSearch
 from pyelasticsearch.exceptions import BulkError, ElasticHttpNotFoundError
 

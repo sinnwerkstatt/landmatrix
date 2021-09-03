@@ -4,8 +4,11 @@ from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
-from apps.landmatrix.models.gndinvestor import InvestorVersion, InvestorWorkflowInfo
-from apps.landmatrix.models.versions import Revision
+from apps.landmatrix.models.gndinvestor import (
+    InvestorVersion,
+    InvestorWorkflowInfo,
+    InvestorVentureInvolvement,
+)
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict
 from .generics import (
@@ -50,20 +53,19 @@ def resolve_investor(
 
     if version:
         try:
-            rev = Revision.objects.get(id=version)
-        except Revision.DoesNotExist:
-            return
-        try:
-            investor = rev.investorversion_set.get().fields
+            investor_version = InvestorVersion.objects.get(id=version)
+            investor = investor_version.enriched_dict()
         except InvestorVersion.DoesNotExist:
             return
-        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+
+        if not (
+            investor_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]
+        ):
             raise GraphQLError("not authorized")
-        investor["created_at"] = rev.date_created
-        investor["revision"] = rev
-        # investor["involvements"] = [
-        #     v.fields for v in rev.investorventureinvolvementversion_set.all()
-        # ]
+        if any([f.startswith("ventures_") for f in fields]):
+            investor["ventures"] = InvestorVentureInvolvement.objects.filter(
+                investor_id=id
+            )
     else:
         visible_investors = Investor.objects.visible(user, subset).filter(id=id)
         if not visible_investors:
@@ -77,7 +79,7 @@ def resolve_investor(
 
     if add_versions:
         investor["versions"] = [
-            dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
+            dv.new_to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         investor["workflowinfos"] = [
@@ -92,13 +94,16 @@ def resolve_investor(
             .filter(operating_company_id=id)
             .order_by("id")
         )
-    if add_involvements:
+
+    if add_involvements and not version:
         investor["involvements"] = InvolvementNetwork(
             involvements_include_ventures, max_depth=involvements_depth
         ).get_network(id)
 
     if investor.get("investors") is None:
         investor["investors"] = []
+    if investor.get("ventures") is None:
+        investor["ventures"] = []
 
     return investor
 
@@ -134,7 +139,7 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = InvestorVersion.objects.all()
     if filters:
         qs = qs.filter(parse_filters(filters))
-    return [iv.to_dict() for iv in qs]
+    return [iv.new_to_dict() for iv in qs]
 
 
 def resolve_add_investor_comment(

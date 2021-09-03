@@ -592,9 +592,10 @@ $(document).ready(function () {
                 }
             }
             // update all bound fields
-            if (this.options.boundLocationField) {
-                this.updateLocationField([place]);
-            }
+	    // issue #273
+            //if (this.options.boundLocationField) {
+            //    this.updateLocationField([place]);
+            //}
             if (this.options.boundTargetCountryField) {
                 this.updateTargetCountryField([place]);
             }

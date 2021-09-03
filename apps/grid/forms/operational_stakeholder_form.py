@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.models import ModelChoiceField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import ActorsField, TitleField
 from apps.grid.forms.base_form import BaseForm

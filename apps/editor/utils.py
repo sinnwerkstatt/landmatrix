@@ -4,7 +4,7 @@ Template rendering utils.
 TODO: this can all be done in the template, move it there.
 """
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.templatetags.custom_tags import get_user_role
 

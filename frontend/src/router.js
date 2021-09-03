@@ -17,26 +17,20 @@ const router = new Router({
       path: "/map/",
       name: "map",
       component: () => import("$views/Data/GlobalMap"),
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
     },
     // lists
     {
       path: "/list/deals/",
       name: "list_deals",
       component: DataList,
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
     },
     {
       path: "/list/investors/",
       name: "list_investors",
       component: DataList,
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
     },
     // charts
     {
@@ -48,25 +42,25 @@ const router = new Router({
       path: "/charts/web-of-transnational-deals/",
       name: "web-of-transnational-deals",
       component: () => import("$views/Data/Charts/WebOfTransnationalDeals"),
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
+    },
+    {
+      path: "/charts/gmap/",
+      name: "gmap",
+      component: () => import("$views/Data/Charts/GlobalMapOfInvolvements"),
+      meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/produce-info/",
       name: "produce-info",
       component: () => import("$views/Data/Charts/ProduceInfoTreeMap"),
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/dynamics-overview/",
       name: "dynamics-overview",
       component: () => import("$views/Data/Charts/DynamicsOverview"),
-      meta: {
-        hideBreadcrumbs: true,
-      },
+      meta: { hideBreadcrumbs: true },
     },
     // deal
     {
@@ -88,12 +82,14 @@ const router = new Router({
       name: "deal_detail",
       component: () => import("$views/Deal/Detail"),
       props: true,
+      meta: { hideBreadcrumbs: true },
     },
     {
       path: "/deal/:dealId/compare/:fromVersion/:toVersion/",
       name: "deal_compare",
       component: () => import("$views/Deal/Compare"),
       props: true,
+      meta: { hideBreadcrumbs: true },
     },
     // investor
     {
@@ -115,6 +111,7 @@ const router = new Router({
       name: "investor_detail",
       component: () => import("$views/Investor/Detail"),
       props: true,
+      meta: { hideBreadcrumbs: true },
     },
     // manager
     {

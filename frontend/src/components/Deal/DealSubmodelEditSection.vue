@@ -51,7 +51,6 @@
     components: { EditField },
     props: {
       id: { type: String, required: true },
-      title: { type: String, required: true },
       model: { type: String, required: true },
       modelName: { type: String, required: true },
       entries: { type: Array, required: true },

@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.forms.base_model_form import BaseModelForm
 from apps.grid.utils import get_display_value

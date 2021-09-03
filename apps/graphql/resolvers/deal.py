@@ -9,9 +9,8 @@ from graphql import GraphQLResolveInfo, GraphQLError
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Deal, Country
 from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
-from apps.landmatrix.models.versions import Revision
 from apps.public_comments.models import ThreadedComment
-from apps.utils import qs_values_to_dict
+from apps.utils import qs_values_to_dict, ecma262
 from .generics import (
     add_object_comment,
     change_object_status,
@@ -40,24 +39,18 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             add_workflowinfos = True
         elif "comments" in field:
             add_comments = True
-        elif "revision" in field:
-            pass  # ignore this field on "Deal", just set it on DealVersion
         else:
             filtered_fields += [field]
 
     if version:
         try:
-            rev = Revision.objects.get(id=version)
-        except Revision.DoesNotExist:
-            return
-        try:
-            deal = rev.dealversion_set.get().fields
+            deal_version = DealVersion.objects.get(id=version)
+            deal = deal_version.enriched_dict()
         except DealVersion.DoesNotExist:
             return
-        if not (rev.user == user or role in ["ADMINISTRATOR", "EDITOR"]):
+
+        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
-        deal["created_at"] = rev.date_created
-        deal["revision"] = rev
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
@@ -71,7 +64,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
     if add_versions:
         deal["versions"] = [
-            dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
+            dv.new_to_dict() for dv in DealVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         deal["workflowinfos"] = [
@@ -147,15 +140,16 @@ def resolve_dealversions(
         qs = qs.filter(parse_filters(filters))
 
     if country_id:
-        qs = qs.filter(serialized_data__0__fields__country=country_id)
+        qs = qs.filter(serialized_data__country=country_id)
 
     if region_id:
         country_ids = list(
             Country.objects.filter(fk_region_id=region_id).values_list("id", flat=True)
         )
-        qs = qs.filter(serialized_data__0__fields__country__in=country_ids)
+        qs = qs.filter(serialized_data__country__in=country_ids)
 
-    return [dv.to_dict() for dv in qs]
+    # TODO-1
+    return [dv.new_to_dict() for dv in qs]
 
 
 def resolve_upload_datasource_file(_, info, filename, payload) -> str:
@@ -205,6 +199,7 @@ def resolve_change_deal_status(
 
 
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
+    print(payload)
     dealId, dealVersion = object_edit(
         otype="deal",
         user=info.context["request"].user,
@@ -228,26 +223,28 @@ def resolve_deal_delete(
 
 
 def resolve_set_confidential(
-    _, info, id, confidential, version=None, reason=None, comment=None
+    _, info, id, confidential, version=None, reason=None, comment=""
 ) -> bool:
     user = info.context["request"].user
     role = get_user_role(user)
     if not role:
         raise GraphQLError("not authorized")
 
+    confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
+    obj_comment = f"[{confidential_str}] {comment}"
+
     if version:
-        deal_version = DealVersion.objects.get(revision_id=version)
-        if not (
-            deal_version.revision.user == user or role in ["ADMINISTRATOR", "EDITOR"]
-        ):
+        deal_version = DealVersion.objects.get(id=version)
+        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
-        deal_v_obj = deal_version.retrieve_object()
-        deal_v_obj.confidential = confidential
-        deal_v_obj.confidential_reason = reason
-        deal_v_obj.confidential_comment = comment
-        deal_v_obj.modified_at = timezone.now()
-        deal_v_obj.modified_by = user
-        deal_version.update_from_obj(deal_v_obj).save()
+        deal_version.serialized_data["confidential"] = confidential
+        deal_version.serialized_data["confidential_reason"] = reason
+        deal_version.serialized_data["confidential_comment"] = comment
+        deal_version.serialized_data["modified_at"] = ecma262(timezone.now())
+        deal_version.serialized_data["modified_by"] = user.id
+        deal_version.save()
+
+        add_object_comment("deal", user, id, version, obj_comment)
 
     else:
         if role != "ADMINISTRATOR":
@@ -259,4 +256,16 @@ def resolve_set_confidential(
         deal.modified_at = timezone.now()
         deal.modified_by = user
         deal.save()
+
+        if deal.current_draft:
+            deal.current_draft.serialized_data["confidential"] = confidential
+            deal.current_draft.serialized_data["confidential"] = confidential
+            deal.current_draft.serialized_data["confidential_reason"] = reason
+            deal.current_draft.serialized_data["confidential_comment"] = comment
+            deal.current_draft.save()
+            # TODO-2 set new owner?
+            # deal.current_draft.serialized_data["modified_at"] = ecma262(timezone.now())
+            # deal.current_draft.serialized_data["modified_by"] = user.id
+
+        add_object_comment("deal", user, id, deal.current_draft_id, obj_comment)
     return True

@@ -20,7 +20,7 @@ from io import BytesIO
 
 from django.test import override_settings, TestCase
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from openpyxl import load_workbook
 
 

@@ -3,12 +3,13 @@ from django.utils import timezone
 
 from apps.landmatrix.models import HistoricalInvestor
 from apps.landmatrix.models import Investor
+from apps.landmatrix.models.abstracts import STATUS
 from apps.landmatrix.models.gndinvestor import InvestorVersion
 
 NAME = "The Grand Investor"
 COMMENT = "regular blabla comment"
 HOMEPAGE = "https://grandinvestor.the"
-OPENCORP = "http://closed.com"
+OPENCORP = "https://closed.com"
 ACTION_COMM = "AKTION!"
 
 
@@ -17,7 +18,7 @@ def histvestor_draft(db) -> HistoricalInvestor:
     now = timezone.now()
     histvestor = HistoricalInvestor(
         investor_identifier=1,
-        fk_status_id=Investor.STATUS_DRAFT,
+        fk_status_id=STATUS["DRAFT"],
         name=NAME,
         classification=10,
         history_date=now,
@@ -50,7 +51,7 @@ def test_new_investor_draft(histvestor_draft):
     ]
     assert inv1.country_id == 604
     assert inv1.classification == "PRIVATE_COMPANY"
-    assert inv1.status == Investor.STATUS_DRAFT
+    assert inv1.status == STATUS["DRAFT"]
     assert inv1.draft_status == 1
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
@@ -64,7 +65,7 @@ def test_draft_update_draft(histvestor_draft):
 
     inv1 = Investor.objects.get()
     assert inv1.classification == "INVESTMENT_FUND"
-    assert inv1.status == Investor.STATUS_DRAFT
+    assert inv1.status == STATUS["DRAFT"]
     assert inv1.draft_status == 1
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
@@ -80,13 +81,13 @@ def test_investor_draft_to_live(histvestor_draft_live):
         inv1.homepage,
         inv1.opencorporates,
     ]
-    assert inv1.status == Investor.STATUS_LIVE
+    assert inv1.status == STATUS["LIVE"]
     assert inv1.draft_status is None
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
-    assert versions[0].fields["status"] == Investor.STATUS_LIVE
+    assert versions[0].serialized_data["status"] == STATUS["LIVE"]
     # assert versions[0].revision.comment == "Approved"
-    assert versions[1].fields["status"] == Investor.STATUS_DRAFT
+    assert versions[1].serialized_data["status"] == STATUS["DRAFT"]
 
 
 def test_investor_live_and_draft(histvestor_draft_live):
@@ -97,28 +98,28 @@ def test_investor_live_and_draft(histvestor_draft_live):
     histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_LIVE
+    assert inv1.status == STATUS["LIVE"]
     assert inv1.draft_status == 1
     assert inv1.name == NAME
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     # assert versions[0].revision.comment == "Some more changes draft"
-    assert versions[0].fields["status"] == Investor.STATUS_LIVE
-    assert versions[0].fields["name"] == new_name
+    assert versions[0].serialized_data["status"] == STATUS["LIVE"]
+    assert versions[0].serialized_data["name"] == new_name
 
     histvestor_draft_live.fk_status_id = 2
     # histvestor_draft_live.action_comment = "Approve changes"
     histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_UPDATED
+    assert inv1.status == STATUS["UPDATED"]
     assert inv1.draft_status is None
     assert inv1.name == new_name
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 4
     # assert versions[0].revision.comment == "Approve changes"
-    assert versions[0].fields["status"] == Investor.STATUS_UPDATED
-    assert versions[0].fields["name"] == new_name
+    assert versions[0].serialized_data["status"] == STATUS["UPDATED"]
+    assert versions[0].serialized_data["name"] == new_name
 
 
 @pytest.mark.django_db
@@ -126,7 +127,7 @@ def test_new_investor_live_directly():
     now = timezone.now()
     histvestor = HistoricalInvestor(
         investor_identifier=1,
-        fk_status_id=Investor.STATUS_LIVE,
+        fk_status_id=STATUS["LIVE"],
         name=NAME,
         classification=10,
         history_date=now,
@@ -138,7 +139,7 @@ def test_new_investor_live_directly():
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 1
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_LIVE
+    assert inv1.status == STATUS["LIVE"]
     assert inv1.draft_status is None
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
@@ -146,7 +147,7 @@ def test_new_investor_live_directly():
 
     histvestor = HistoricalInvestor(
         investor_identifier=1,
-        fk_status_id=Investor.STATUS_DRAFT,
+        fk_status_id=STATUS["DRAFT"],
         name=NAME,
         classification=10,
         history_date=now,
@@ -158,12 +159,12 @@ def test_new_investor_live_directly():
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 2
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_LIVE
-    assert inv1.draft_status is Investor.STATUS_DRAFT
+    assert inv1.status == STATUS["LIVE"]
+    assert inv1.draft_status is STATUS["DRAFT"]
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 2
-    # assert versions[0].fields["comment"] == "XXCF"
-    # assert versions[1].fields["comment"] == "regular blabla comment"
+    # assert versions[0].serialized_data["comment"] == "XXCF"
+    # assert versions[1].serialized_data["comment"] == "regular blabla comment"
 
 
 @pytest.mark.django_db
@@ -171,7 +172,7 @@ def test_new_investor_deleted_directly():
     now = timezone.now()
     histvestor = HistoricalInvestor(
         investor_identifier=1,
-        fk_status_id=Investor.STATUS_DELETED,
+        fk_status_id=STATUS["DELETED"],
         name=NAME,
         classification=10,
         history_date=now,
@@ -185,7 +186,7 @@ def test_new_investor_deleted_directly():
     assert HistoricalInvestor.objects.filter(investor_identifier=1).count() == 1
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_DELETED
+    assert inv1.status == STATUS["DELETED"]
     assert inv1.draft_status is None
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     v1 = versions.get()
@@ -193,14 +194,14 @@ def test_new_investor_deleted_directly():
 
 
 def test_investor_live_then_delete(histvestor_draft_live):
-    histvestor_draft_live.fk_status_id = Investor.STATUS_DELETED
+    histvestor_draft_live.fk_status_id = STATUS["DELETED"]
     histvestor_draft_live.action_comment = "Delete this!"
     histvestor_draft_live.save(update_elasticsearch=False)
 
     inv1 = Investor.objects.get()
-    assert inv1.status == Investor.STATUS_DELETED
+    assert inv1.status == STATUS["DELETED"]
     assert inv1.draft_status is None
     versions = InvestorVersion.objects.filter(object_id=inv1.id)
     assert versions.count() == 3
     # assert versions[0].revision.comment == "Delete this!"
-    assert versions[0].fields["status"] == Investor.STATUS_DELETED
+    assert versions[0].serialized_data["status"] == STATUS["DELETED"]

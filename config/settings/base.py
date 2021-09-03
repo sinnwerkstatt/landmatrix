@@ -1,7 +1,7 @@
 import sys
 
 import environ
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = environ.Path(__file__) - 3  # type: environ.Path
 
@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     "taggit",
     "bootstrap3_datetime",
     # 'treebeard',
-    "jstemplate",
     "simple_history",
     "crispy_forms",
     "wkhtmltopdf",
@@ -108,11 +107,12 @@ MIDDLEWARE = [
     # populate the history user automatically
     "simple_history.middleware.HistoryRequestMiddleware",
     # wagtail and dependencies
-    "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
     # "django.middleware.cache.FetchFromCacheMiddleware",
 ]
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 TEMPLATES = [
     {

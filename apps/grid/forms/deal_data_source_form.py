@@ -6,7 +6,7 @@ from django import forms
 from django.core.files.base import File
 from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.grid.fields import FileFieldWithInitial, TitleField, YearMonthDateField
 from apps.grid.forms.base_form import BaseForm

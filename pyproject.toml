@@ -4,15 +4,17 @@ version = "0.1.0"
 license = "AGPL-3.0+"
 authors = [
   "Simon Liedtke <simon.liedtke@gmail.com>",
-  "Andreas Nüßlein <andreas@nuessle.in>"
+  "Andreas Nüßlein <andreas@nuessle.in>",
 ]
 readme = 'README.md'
 description = "LandMatrix"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-Django = "<2.3"
-wagtail = "<2.8"
+Django = "<4"
+djangorestframework = "<4"
+wagtail = "<2.14"
+psycopg2-binary = "*"
 
 fastjsonschema = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
@@ -21,21 +23,13 @@ pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", bra
 geojson-rewind = "^0.2.0"
 ariadne = ">=0.12"
 django-redis = "^4.12.1"
-#elasticsearch-dsl = ">=7.0.0,<8.0.0"
-#django-elasticsearch = "^7.0.2"
-#numpy = "^1.19.0"
-#gdal = "3.0"
-#fiona = "^1.8.13"
-#geopandas = "^0.8.1"
-#pyshp = "^2.1.0"
-wagtail-orderable = "^1.0.3"
+wagtail-orderable = ">=1.0.3"
 
 
-psycopg2-binary = "*"
 redis = "*"
 python-memcached = "*"
 
-djangorestframework = "<3.12"
+
 djangorestframework-gis = "<0.16"
 drf-yasg = "*"
 packaging = "*"
@@ -43,7 +37,7 @@ packaging = "*"
 django-crispy-forms = "*"
 django-environ = "*"
 django-file-resubmit = "*"
-django-jstemplate = "*"
+
 django-modeltranslation = "*"
 django-contrib-comments = "*"
 django-threadedcomments = "*"

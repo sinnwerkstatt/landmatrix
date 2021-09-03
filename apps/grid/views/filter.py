@@ -3,7 +3,7 @@ from datetime import datetime
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView

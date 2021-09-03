@@ -6,7 +6,7 @@ export function is_authorized(obj) {
     case 1: // the Reporter of the Object or Editor,Administrator
       return (
         ["ADMINISTRATOR", "EDITOR"].includes(role) ||
-        obj.versions[0]?.revision?.user?.id === id
+        obj.versions[0]?.created_by?.id === id
       );
     case 2: // at least Editor
       return ["ADMINISTRATOR", "EDITOR"].includes(role);

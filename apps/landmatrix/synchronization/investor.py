@@ -7,8 +7,7 @@ from apps.landmatrix.models import (
     HistoricalInvestor,
 )
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
-from apps.landmatrix.models.gndinvestor import InvestorWorkflowInfo
-from apps.landmatrix.models.versions import Revision, Version
+from apps.landmatrix.models.gndinvestor import InvestorWorkflowInfo, InvestorVersion
 from apps.landmatrix.synchronization.helpers import calculate_new_stati
 
 User = get_user_model()
@@ -86,11 +85,12 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
     investor.status, investor.draft_status = calculate_new_stati(investor, new_status)
     investor.recalculate_fields()
 
-    rev1 = Revision.objects.create(
-        date_created=histvestor.history_date,
-        user=histvestor.history_user,
+    investor._investors = _create_involvements_for_investor(investor, histvestor)
+
+    investor_version = InvestorVersion.from_object(
+        investor, created_at=histvestor.history_date, created_by=histvestor.history_user
     )
-    investor_version = Version.create_from_obj(investor, rev1.id)
+
     investor.current_draft = None if new_status in [2, 3, 4] else investor_version
 
     if do_save:
@@ -99,15 +99,14 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
         # or: there is a current model but it's a draft
         # or: the new status is Live, Updated or Deleted
         investor.save()
+
+        # TODO-3 we could probablu save the ones that remain
+        InvestorVentureInvolvement.objects.filter(venture=investor).delete()
+        InvestorVentureInvolvement.objects.bulk_create(investor._investors)
     else:
         Investor.objects.filter(pk=investor.pk).update(
             draft_status=investor.draft_status, current_draft=investor_version
         )
-
-    if new_status == 4:
-        InvestorVentureInvolvement.objects.filter(venture=investor).delete()
-    else:
-        _create_involvements_for_investor(investor, histvestor, do_save, rev1)
 
     InvestorWorkflowInfo.objects.create(
         from_user=histvestor.history_user or User.objects.get(id=1),
@@ -121,13 +120,12 @@ def histvestor_to_investor(histvestor: Union[HistoricalInvestor, int]):
     )
 
 
-def _create_involvements_for_investor(investor, histvestor, do_save, revision):
-    if do_save:
-        InvestorVentureInvolvement.objects.filter(venture=investor).delete()
+def _create_involvements_for_investor(investor, histvestor):
 
     involves = HistoricalInvestorVentureInvolvement.objects.filter(
         fk_venture=histvestor
     )
+    ivis = []
     for histvolvement in involves:
         types = (
             [INVESTMENT_MAP[x] for x in list(histvolvement.investment_type)]
@@ -147,6 +145,5 @@ def _create_involvements_for_investor(investor, histvestor, do_save, revision):
             comment=histvolvement.comment or "",
             old_id=histvolvement.pk,
         )
-        if do_save:
-            ivi.save()
-        Version.create_from_obj(ivi, revision.id)
+        ivis += [ivi]
+    return ivis

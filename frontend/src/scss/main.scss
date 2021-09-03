@@ -250,6 +250,11 @@ ul.lm-nav {
     &:hover {
       cursor: pointer;
     }
+    &.disabled {
+      color: grey;
+      pointer-events: none;
+
+    }
 
     &.active {
       border-right-width: 3px;

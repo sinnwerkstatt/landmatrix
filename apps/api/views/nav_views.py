@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 import coreapi
 import coreschema
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response

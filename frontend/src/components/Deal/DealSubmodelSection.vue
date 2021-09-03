@@ -1,11 +1,6 @@
 <template>
-  <b-tab
-    v-if="entries.length"
-    :title="$t(title)"
-    :active="active"
-    @click="$emit('activated')"
-  >
-    <div class="row">
+  <section v-if="entries.length">
+    <div class="d-flex">
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
@@ -25,7 +20,7 @@
       </div>
       <slot />
     </div>
-  </b-tab>
+  </section>
 </template>
 
 <script>
@@ -34,12 +29,10 @@
   export default {
     components: { DisplayField },
     props: {
-      title: { type: String, required: true },
       model: { type: String, required: true },
       modelName: { type: String, required: true },
       entries: { type: Array, required: true },
       fields: { type: Array, required: true },
-      active: { type: Boolean, default: false },
       labelClasses: {
         type: Array,
         default: () => ["display-field-label", "col-md-5", "col-lg-4"],
@@ -52,7 +45,7 @@
     computed: {
       wrapperClasses() {
         if (this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
-        else return ["col-12"];
+        else return ["w-100"];
       },
     },
   };

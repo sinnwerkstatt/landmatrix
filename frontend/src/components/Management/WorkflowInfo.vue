@@ -20,8 +20,13 @@
         {{ draft_status_map[info.draft_status_after] || status_map[2] }}
       </div>
     </div>
+    <div v-if="confidential_status_change" class="status-change">
+      <div class="status" :class="confidential_status_change">
+        {{ $t("Confidential") }}
+      </div>
+    </div>
 
-    <div v-if="info.comment" class="message">{{ info.comment }}</div>
+    <div v-if="comment_wo_head" class="message">{{ comment_wo_head }}</div>
   </div>
 </template>
 
@@ -29,7 +34,7 @@
   import { draft_status_map, status_map } from "$utils/choices";
 
   export default {
-    name: "ManageHeaderWorkflowInfo",
+    name: "WorkflowInfo",
     props: {
       info: { type: Object, required: true },
     },
@@ -38,6 +43,20 @@
         draft_status_map,
         status_map,
       };
+    },
+    computed: {
+      confidential_status_change() {
+        if (this.info.comment?.startsWith("[SET_CONFIDENTIAL]"))
+          return "set_confidential";
+        if (this.info.comment?.startsWith("[UNSET_CONFIDENTIAL]"))
+          return "unset_confidential";
+        return false;
+      },
+      comment_wo_head() {
+        return this.info.comment
+          ?.replace("[SET_CONFIDENTIAL]", "")
+          .replace("[UNSET_CONFIDENTIAL] ", "");
+      },
     },
     methods: {},
   };
@@ -78,6 +97,13 @@
     &:last-child {
       background-color: #93c7c8;
       color: white;
+    }
+    &.set_confidential {
+      background: red;
+    }
+    &.unset_confidential {
+      background: #5dbe00;
+      text-decoration: line-through;
     }
   }
 </style>

@@ -1,5 +1,5 @@
 from django import template
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from apps.landmatrix.models import Country
 from apps.wagtailcms.models import CountryPage, RegionPage, WagtailRootPage
