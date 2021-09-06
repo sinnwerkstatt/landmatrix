@@ -88,3 +88,7 @@ _("Events")
 _("Learning opportunities")
 _("News")
 _("Publications")
+
+_(
+    "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+)

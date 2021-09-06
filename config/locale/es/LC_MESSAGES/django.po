@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-05 11:18+0200\n"
+"POT-Creation-Date: 2021-09-07 00:08+0200\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2162,14 +2162,29 @@ msgstr "Lugar"
 msgid "Description"
 msgstr "Descripción"
 
+msgid "Draft"
+msgstr "Borrador"
+
+msgid "Live"
+msgstr "Activo"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Activation"
+msgstr "Activación"
+
+msgid "Rejected"
+msgstr "Rechazada"
+
+msgid "To Delete"
+msgstr "Para eliminar"
+
 msgid "Active"
 msgstr "Activa"
 
 msgid "Overwritten"
 msgstr "Sobrescrita"
-
-msgid "Rejected"
-msgstr "Rechazada"
 
 msgid "To delete"
 msgstr "Para eliminar"
@@ -2309,9 +2324,6 @@ msgstr "Índice de Percepción de la Corrupción"
 msgid "High income"
 msgstr "Ingresos altos"
 
-msgid "Is target country"
-msgstr "Es país objetivo"
-
 msgid "Locations"
 msgstr "Ubicaciones"
 
@@ -2377,21 +2389,6 @@ msgstr ""
 
 msgid "Comment why this deal is private"
 msgstr "Comentario sobre cuánta agua se extrae"
-
-msgid "Draft"
-msgstr "Borrador"
-
-msgid "Live"
-msgstr "Activo"
-
-msgid "Review"
-msgstr "Revisar"
-
-msgid "Activation"
-msgstr "Activación"
-
-msgid "To Delete"
-msgstr "Para eliminar"
 
 msgid "Created"
 msgstr "Creado el"
@@ -2585,15 +2582,6 @@ msgstr "Involucramiento Histórico del Inversor en la Actividad"
 
 msgid "Historical Investor Activity Involvements"
 msgstr "Involucramientos Históricos del Inversor en la Actividad"
-
-msgid "date created"
-msgstr "fecha de creación"
-
-msgid "user"
-msgstr "persona usuaria"
-
-msgid "comment"
-msgstr "comentario"
 
 msgid "Observatories"
 msgstr "Observatorios"
@@ -3000,6 +2988,13 @@ msgstr "Noticias"
 msgid "Publications"
 msgstr "Publicaciones"
 
+#, python-brace-format
+msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+msgstr ""
+
+msgid "Русский"
+msgstr ""
+
 msgid "Page not found"
 msgstr "Página no encontrada"
 
@@ -3223,6 +3218,18 @@ msgstr "Restablecer contraseña"
 
 msgid "Share"
 msgstr "Compartir"
+
+#~ msgid "Is target country"
+#~ msgstr "Es país objetivo"
+
+#~ msgid "date created"
+#~ msgstr "fecha de creación"
+
+#~ msgid "user"
+#~ msgstr "persona usuaria"
+
+#~ msgid "comment"
+#~ msgstr "comentario"
 
 #~ msgid "Company"
 #~ msgstr "Empresa"

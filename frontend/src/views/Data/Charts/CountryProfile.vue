@@ -1,13 +1,23 @@
 <template>
   <ChartsContainer>
     <div class="country-profile-graph">
-      Number of intentions per category of production according to implementation status
+      <h2>
+        Number of intentions per category of production according to implementation
+        status
+      </h2>
       <div class="sankey-wrapper">
         <svg id="sankey" />
       </div>
       <div class="legend">
         This figure lists the intention of investments per negotiation status. Please
-        note: a deal may have more than one intention.
+        note: a deal may have more than one intention.<br />
+
+        {{
+          $t(
+            "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
+            sankey_legend_numbers
+          )
+        }}
       </div>
     </div>
   </ChartsContainer>
@@ -19,7 +29,7 @@
     implementation_status_choices,
   } from "$utils/choices";
   import ChartsContainer from "$views/Data/Charts/ChartsContainer";
-  import { do_the_sank } from "$views/Data/Charts/country_profile_sankey";
+  import { LamaSankey } from "$views/Data/Charts/country_profile_sankey";
   import { data_deal_query } from "$views/Data/query";
 
   export default {
@@ -34,13 +44,25 @@
       });
     },
     data() {
-      return { deals: [] };
+      return { deals: [], sankey: null };
     },
     apollo: {
       deals: data_deal_query,
     },
     computed: {
-      sankey_data() {
+      sankey_legend_numbers() {
+        let multi_deal_count = this.deals.filter(
+          (d) => d.current_intention_of_investment.length > 1
+        ).length;
+        let all_intentions = this.deals
+          .map((d) => d.current_intention_of_investment.length)
+          .reduce((a, b) => a + b, 0);
+        return { x: multi_deal_count, y: all_intentions, z: this.deals.length };
+      },
+    },
+    watch: {
+      deals() {
+        if (!this.deals) return;
         let datanodes = new Set();
         let datalinks = {};
 
@@ -54,30 +76,31 @@
           });
         });
 
-        const nodes = [...datanodes].map((n) => ({
-          id: n,
-          name: implementation_status_choices[n] || flat_intention_of_investment_map[n],
-        }));
+        const nodes = [...datanodes].map((n) => {
+          return {
+            id: n,
+            ivi: !implementation_status_choices[n],
+            name:
+              implementation_status_choices[n] || flat_intention_of_investment_map[n],
+          };
+        });
 
         const links = Object.entries(datalinks).map(([k, v]) => {
           let [source, target] = k.split(",");
           return { source, target, value: v };
         });
 
-        return { nodes, links };
+        this.sankey.do_the_sank({ nodes, links });
       },
     },
-    watch: {
-      sankey_data(newV) {
-        if (newV) {
-          do_the_sank(newV);
-        }
-      },
+    mounted() {
+      this.sankey = new LamaSankey("#sankey");
     },
   };
 </script>
 <style lang="scss" scoped>
   .country-profile-graph {
+    width: 600px;
     margin-top: 5rem;
   }
 </style>
