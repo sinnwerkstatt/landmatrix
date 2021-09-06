@@ -97,8 +97,8 @@ function globe_drag(update) {
 //   return drag().on("start", dragstarted).on("drag", dragged);
 // }
 
-let width = 600;
-let height = 600;
+let width = 500;
+let height = 500;
 let scale = height / 2.0;
 // geoMercator
 let projection = geoOrthographic()
@@ -173,10 +173,12 @@ export function doTheThing(svg_selector, global_map_of_investments) {
     svg.selectAll(".country").attr("class", "country");
 
     let source_id = +e.target.dataset.id;
+    console.log({ source_id });
     source = countries.find((c) => +c.id === source_id);
     targets = Object.keys(global_map_of_investments[source_id]).map((k) =>
       countries.find((c) => +c.id !== source_id && +c.id === +k)
     );
+    console.log({ source, targets });
 
     if (targets) {
       moneylines = svg
