@@ -13,8 +13,8 @@
           <b-modal
             id="modal-select-fields"
             title="Select columns to display"
-            @show="pauseUpdate"
             @hide="updateTable"
+            @show="pauseUpdate"
           >
             <div class="inner-scroll-container">
               <b-form-group>
@@ -31,14 +31,14 @@
             </div>
             <template #modal-footer="{ ok }">
               <a href="" @click.prevent="resetFields">Reset to default columns</a>
-              <button type="button" class="btn btn-primary" @click="ok()">OK</button>
+              <button class="btn btn-primary" type="button" @click="ok()">OK</button>
             </template>
           </b-modal>
         </div>
       </div>
     </div>
     <div v-if="rowData.length > 0" class="table-wrap">
-      <table class="bigtable" :class="targetModel">
+      <table :class="targetModel" class="bigtable">
         <thead>
           <tr>
             <th
@@ -65,22 +65,21 @@
               :style="getStyle(obj, fieldName)"
             >
               <DisplayField
-                :wrapper-classes="[]"
-                :value-classes="[]"
                 :fieldname="fieldName"
-                :value="obj[fieldName]"
                 :model="targetModel"
                 :show-label="false"
+                :value="obj[fieldName]"
+                :value-classes="[]"
+                :wrapper-classes="[]"
               />
             </td>
           </tr>
         </tbody>
       </table>
       <scroll-loader
-        :loader-method="getPagedRows"
         :loader-disable="disableScrollLoader"
-      >
-      </scroll-loader>
+        :loader-method="getPagedRows"
+      />
     </div>
   </div>
 </template>

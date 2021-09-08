@@ -20,8 +20,8 @@
                 aria-hidden="true"
                 class="spinner-border spinner-border-sm"
                 role="status"
-              ></span>
-              &nbsp;
+                >&nbsp;</span
+              >
               {{ $t("Save") }}
             </button>
             <button
@@ -34,7 +34,7 @@
             <a v-else class="btn btn-gray btn-sm mx-2" @click="$router.go(-1)">
               {{ $t("Cancel") }}
             </a>
-            <span>{{ $t("Leaves edit mode") }}</span>
+            <!--            <span>{{ $t("Leaves edit mode") }}</span>-->
           </div>
         </div>
         <div class="deal-edit-nav">

@@ -123,7 +123,7 @@ const router = new Router({
     {
       path: "/management/",
       name: "manager",
-      component: () => import("$views/Manager/Manager"),
+      component: () => import("$views/Manager/Management"),
       meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
     {

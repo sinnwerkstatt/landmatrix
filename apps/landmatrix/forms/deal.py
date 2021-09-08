@@ -9,7 +9,8 @@ class DealForm(VueForm):
         "workflowinfos": {
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),
-        }
+        },
+        "combined_status": {"class": "StatusField"},
     }
 
     @property

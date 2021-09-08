@@ -28,7 +28,7 @@
           return this.$store.state.page.countries.find((c) => c.id === this.value.id)
             .name;
         }
-        return this.value.name ?? this.value.id;
+        return this.value.username ?? this.value.name ?? this.value.id;
       },
     },
   };
