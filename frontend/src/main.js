@@ -124,9 +124,10 @@ if (filters_cookie) {
   Cookies.remove("filters");
 }
 
-store.dispatch("fetchFields", locale);
+const locale_promise = store.dispatch("setLocale", locale);
+const basicdata_promise = store.dispatch("fetchBasicData", locale);
 store.dispatch("fetchMessages");
-store.dispatch("fetchBasicData", locale).then(() => {
+Promise.all([locale_promise, basicdata_promise]).then(() => {
   vue_app = new Vue({ router, store, i18n, apolloProvider, render: (h) => h(App) });
   vue_app.$mount("#app");
 });

@@ -57,7 +57,7 @@ type Query {
 
   blogpage(id: Int!): BlogPage!
   blogpages(category: String): [BlogPage]
-  blogcategories: [BlogCategory]
+  blogcategories(language: String = "en"): [BlogCategory]
 
   chart_descriptions(language: String = "en"): ChartDescriptions
 

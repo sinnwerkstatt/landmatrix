@@ -102,7 +102,8 @@ export const pageModule = {
     },
   },
   actions: {
-    fetchObservatoryPages(context) {
+    fetchObservatoryPages(context, language = "en") {
+      console.log("fetchObservatoryPages", { language });
       return new Promise(function (resolve, reject) {
         let url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
         axios
@@ -116,7 +117,8 @@ export const pageModule = {
           });
       });
     },
-    fetchAboutPages(context) {
+    fetchAboutPages(context, language = "en") {
+      console.debug("fetchAboutPages", { language });
       return new Promise(function (resolve, reject) {
         let indexUrl = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
         axios

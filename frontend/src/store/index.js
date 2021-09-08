@@ -1,6 +1,7 @@
 import { apolloClient } from "$utils/apolloclient";
 import axios from "axios";
 import gql from "graphql-tag";
+import Cookies from "js-cookie";
 import Vue from "vue";
 import Vuex from "vuex";
 import filtersModule from "./filters";
@@ -16,15 +17,24 @@ const store = new Vuex.Store({
     map: mapModule,
   },
   state: {
+    locale: "en",
     formfields: {},
   },
   mutations: {
-    setFields(state, fields) {
-      state.formfields = fields;
-    },
+    setFields: (state, fields) => (state.formfields = fields),
+    setLocale: (state, locale) => (state.locale = locale),
   },
   actions: {
+    async setLocale(context, locale) {
+      Cookies.set("django_language", locale);
+      await context.commit("setLocale", locale);
+      await context.dispatch("fetchFields", locale);
+      await context.dispatch("fetchChartDescriptions", locale);
+      await context.dispatch("fetchAboutPages", locale);
+      await context.dispatch("fetchObservatoryPages", locale);
+    },
     fetchChartDescriptions(context, language = "en") {
+      console.log("fetchChartDescriptions", { language });
       apolloClient
         .query({
           query: gql`
@@ -42,12 +52,8 @@ const store = new Vuex.Store({
           context.commit("setChartDescriptions", data.chart_descriptions);
         });
     },
-    fetchBasicData(context, language = "en") {
-      let about_promise = context.dispatch("fetchAboutPages");
-      let obs_promise = context.dispatch("fetchObservatoryPages");
-      let cd_promise = context.dispatch("fetchChartDescriptions", language);
-
-      let rest_promise = new Promise(function (resolve, reject) {
+    fetchBasicData(context) {
+      return new Promise(function (resolve, reject) {
         apolloClient
           .query({
             query: gql`
@@ -115,9 +121,9 @@ const store = new Vuex.Store({
             reject(error);
           });
       });
-      return Promise.all([about_promise, obs_promise, cd_promise, rest_promise]);
     },
     fetchFields(context, language = "en") {
+      console.debug("fetchFields", { language });
       apolloClient
         .query({
           query: gql`

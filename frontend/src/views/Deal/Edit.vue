@@ -225,21 +225,6 @@
         active_tab: "#locations",
         deal_sections,
         deal_submodel_sections,
-        tabs: {
-          locations: this.$t("Locations"),
-          general: this.$t("General info"),
-          contracts: this.$t("Contracts"),
-          employment: this.$t("Employment"),
-          investor_info: this.$t("Investor info"),
-          data_sources: this.$t("Data sources"),
-          local_communities: this.$t("Local communities / indigenous peoples"),
-          former_use: this.$t("Former use"),
-          produce_info: this.$t("Produce info"),
-          water: this.$t("Water"),
-          gender_related_info: this.$t("Gender-related info"),
-          guidelines_and_principles: this.$t("Guidelines & Principles"),
-          overall_comment: this.$t("Overall comment"),
-        },
       };
     },
     apollo: {
@@ -259,6 +244,23 @@
       },
     },
     computed: {
+      tabs() {
+        return {
+          locations: this.$t("Locations"),
+          general: this.$t("General info"),
+          contracts: this.$t("Contracts"),
+          employment: this.$t("Employment"),
+          investor_info: this.$t("Investor info"),
+          data_sources: this.$t("Data sources"),
+          local_communities: this.$t("Local communities / indigenous peoples"),
+          former_use: this.$t("Former use"),
+          produce_info: this.$t("Produce info"),
+          water: this.$t("Water"),
+          gender_related_info: this.$t("Gender-related info"),
+          guidelines_and_principles: this.$t("Guidelines & Principles"),
+          overall_comment: this.$t("Overall comment"),
+        };
+      },
       // get_save_description() {
       //   if (!this.dealId) {
       //     // deal add
