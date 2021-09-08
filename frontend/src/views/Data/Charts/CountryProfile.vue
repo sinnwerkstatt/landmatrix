@@ -9,15 +9,19 @@
         <svg id="sankey" />
       </div>
       <div class="legend">
-        This figure lists the intention of investments per negotiation status. Please
-        note: a deal may have more than one intention.<br />
-
         {{
-          $t(
-            "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
-            sankey_legend_numbers
-          )
+          $t("This figure lists the intention of investments per negotiation status.")
         }}
+        <br />
+        {{ $t("Please note: a deal may have more than one intention.") }}<br />
+        <i
+          >{{
+            $t(
+              "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
+              sankey_legend_numbers
+            )
+          }}
+        </i>
       </div>
     </div>
   </ChartsContainer>
@@ -105,23 +109,26 @@
   }
 </style>
 
-<style>
-  /*.node rect {*/
-  /*  fill-opacity: 0.9;*/
-  /*  shape-rendering: crispEdges;*/
-  /*}*/
+<style lang="scss">
+  .sankey-wrapper {
+    .node rect {
+      /*fill-opacity: 0.9;*/
+      shape-rendering: crispEdges;
+      cursor: move;
+    }
 
-  /*.node text {*/
-  /*  pointer-events: none;*/
-  /*  text-shadow: 0 1px 0 #fff;*/
-  /*}*/
+    .node text {
+      cursor: move;
+      text-shadow: 0 1px 0 #fff;
+    }
 
-  .link {
-    fill: none;
-    stroke-opacity: 0.3;
-  }
+    .link {
+      fill: none;
+      stroke-opacity: 0.3;
+    }
 
-  .link:hover {
-    stroke-opacity: 0.5;
+    .link:hover {
+      stroke-opacity: 0.5;
+    }
   }
 </style>

@@ -2,9 +2,8 @@
  * https://gist.github.com/d3noob/31665aced416f27abca4fa46f5f4b568
  * https://observablehq.com/@d3/sankey-diagram
  * https://observablehq.com/@d3/brexit-voting?collection=@d3/d3-sankey
- * https://observablehq.com/@d3/sankey-diagram
  */
-import { select } from "d3";
+import { drag, select } from "d3";
 import { sankey, sankeyLinkHorizontal } from "d3-sankey";
 
 export class LamaSankey {
@@ -21,11 +20,12 @@ export class LamaSankey {
   do_the_sank(data) {
     this.svg.selectAll("*").remove();
 
-    let graph = sankey()
+    let d3sankey = sankey()
       .nodeId((d) => d.id)
       .nodeWidth(10)
       .nodePadding(15)
-      .size([this.width, this.height])(data);
+      .size([this.width, this.height]);
+    let graph = d3sankey(data);
 
     const stroke_colors = {
       IN_OPERATION: "#f79425",
@@ -58,7 +58,12 @@ export class LamaSankey {
       .enter()
       .append("g")
       .attr("ivi", (d) => d.ivi)
-      .attr("class", "node");
+      .attr("class", "node")
+      .call(
+        drag()
+          .subject((d) => d)
+          .on("drag", dragmove)
+      );
 
     // add the rectangles for the nodes
     node
@@ -84,5 +89,17 @@ export class LamaSankey {
       .filter((d) => d.x0 < this.width / 2)
       .attr("x", (d) => d.x1 + 6)
       .attr("text-anchor", "start");
+
+    function dragmove(event, d) {
+      let curRect = select(this).select("rect");
+      // d.x1 = d.x1 + event.dx;
+      // d.x0 = d.x0 + event.dx;
+      // let xTranslate = d.x0 - curRect.attr("X");
+      d.y0 = d.y0 + event.dy;
+      let yTranslate = d.y0 - curRect.attr("y");
+      select(this).attr("transform", `translate(0,${yTranslate})`);
+      d3sankey.update(graph);
+      links.attr("d", sankeyLinkHorizontal());
+    }
   }
 }
