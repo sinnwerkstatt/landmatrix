@@ -12,14 +12,15 @@ export class LamaSankey {
     this.height = 600;
 
     this.svg = select(selector)
-      .attr("viewBox", [0, 0, this.width + 20, this.height + 20])
+      // there is a little extra padding at the bottom (+ 10)
+      .attr("viewBox", [0, 0, this.width + 20, this.height + 20 + 10])
       .append("g")
       .attr("transform", "translate(10,10)");
   }
 
   do_the_sank(data) {
     this.svg.selectAll("*").remove();
-
+    if (data.nodes.length === 0) return;
     let d3sankey = sankey()
       .nodeId((d) => d.id)
       .nodeWidth(10)
@@ -43,7 +44,9 @@ export class LamaSankey {
       .attr("class", "link")
       .attr("d", sankeyLinkHorizontal())
       .attr("stroke", (d) => stroke_colors[d.source.id])
-      .attr("stroke-width", (d) => d.width);
+      .attr("stroke-width", (d) => d.width)
+      .attr("stroke-opacity", 0.3)
+      .attr("fill", "none");
 
     // add the link titles
     links
@@ -57,7 +60,6 @@ export class LamaSankey {
       .data(graph.nodes)
       .enter()
       .append("g")
-      .attr("ivi", (d) => d.ivi)
       .attr("class", "node")
       .call(
         drag()
@@ -72,9 +74,11 @@ export class LamaSankey {
       .attr("y", (d) => d.y0)
       .attr("height", (d) => d.y1 - d.y0)
       .attr("width", 6)
+      .attr("shape-rendering", "crispEdges")
       .style("fill", "#111")
       .style("stroke", null)
       .style("stroke-width", 0)
+      .style("cursor", "move")
       .append("title")
       .text((d) => d.name + "\n" + d.value);
 
@@ -88,7 +92,9 @@ export class LamaSankey {
       .text((d) => (d.ivi ? `${d.name} (${d.value})` : d.name))
       .filter((d) => d.x0 < this.width / 2)
       .attr("x", (d) => d.x1 + 6)
-      .attr("text-anchor", "start");
+      .attr("text-anchor", "start")
+      .style("cursor", "move")
+      .style("text-shadow", "0 1px 0 #fff");
 
     function dragmove(event, d) {
       let curRect = select(this).select("rect");
@@ -102,4 +108,27 @@ export class LamaSankey {
       links.attr("d", sankeyLinkHorizontal());
     }
   }
+}
+
+export function sankey_links_to_csv_cross(json) {
+  let x = new Set();
+  let y = new Set();
+  let cross = {};
+  json.forEach((entry) => {
+    x.add(entry.source);
+    y.add(entry.target);
+    if (!cross[entry.source]) cross[entry.source] = {};
+    cross[entry.source][entry.target] = entry.value;
+  });
+  const y_list = [...y];
+  let ret = "," + y_list.join(",") + "\n";
+  [...x].forEach((source) => {
+    let line = [];
+    ret += `${source},`;
+    y_list.forEach((target) => {
+      line.push(cross[source][target] || "");
+    });
+    ret += line.join(",") + "\n";
+  });
+  return ret;
 }
