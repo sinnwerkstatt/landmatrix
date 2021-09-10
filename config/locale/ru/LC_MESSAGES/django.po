@@ -1,0 +1,3206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-06 12:47+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "English"
+msgstr ""
+
+msgid "Español"
+msgstr ""
+
+msgid "Français"
+msgstr ""
+
+#, python-format
+msgid "Attribute group \"%s\" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "is"
+msgstr ""
+
+msgid "is one of"
+msgstr ""
+
+msgid "isn't any of"
+msgstr ""
+
+msgid "is >="
+msgstr ""
+
+msgid "is >"
+msgstr ""
+
+msgid "is <="
+msgstr ""
+
+msgid "is <"
+msgstr ""
+
+msgid "contains"
+msgstr ""
+
+msgid "not contains"
+msgstr ""
+
+msgid "is empty"
+msgstr ""
+
+msgid "excludes"
+msgstr ""
+
+msgid "Agriculture"
+msgstr ""
+
+msgid "Forestry"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Multiple intentions"
+msgstr ""
+
+msgid "This field is required."
+msgstr ""
+
+msgid "Chart"
+msgstr ""
+
+msgid "Charts"
+msgstr ""
+
+msgid "Map"
+msgstr ""
+
+msgid "Data"
+msgstr ""
+
+msgid "Food-Crop - Crops that be consumed by humans, even if also used as livestock feed"
+msgstr ""
+
+msgid "Non-Food - Biofuels, exclusive livestock feed, industrial, cosmetic and medicinal uses"
+msgstr ""
+
+msgid "Flex-Crop - Potential both biofuel and food uses"
+msgstr ""
+
+msgid "Multiple Use - Several crops in different categories"
+msgstr ""
+
+msgid "Global map of investments"
+msgstr ""
+
+msgid "Choose between investor or target countries using the menu below. Click on the bubbles to visualise the selected country's involvement in the global land acquisition phenomenon."
+msgstr ""
+
+msgid "Country"
+msgstr ""
+
+msgid "0 acquisitions/targets"
+msgstr ""
+
+msgid "to/from Country"
+msgstr ""
+
+msgid "whereof 0 with itself"
+msgstr ""
+
+msgid "Go to Table"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Investor&nbsp;Countries"
+msgstr ""
+
+msgid "Target&nbsp;Countries"
+msgstr ""
+
+msgid "Investor Countries"
+msgstr ""
+
+msgid "Target Countries"
+msgstr ""
+
+msgid "Dynamics Overview"
+msgstr ""
+
+msgid "Show size or number of deals"
+msgstr ""
+
+msgid "Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
+msgstr ""
+
+msgid "There are two key variables to describe the status of a land deal: negotiation and implementation. Although these two variables are linked, they are independent in our database, and various combinations are possible for different projects. Click here for more info."
+msgstr ""
+
+msgid "Deals having “agriculture” as main intention of investment disaggregated into sub-sections."
+msgstr ""
+
+msgid "Deals divided by intention of investment."
+msgstr ""
+
+msgid "Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
+msgstr ""
+
+msgid "It's a big deal"
+msgstr ""
+
+msgid "Enter a location to set the centre of a circle that displays an area equal to the size of the intended, concluded, or failed land acquisitions."
+msgstr ""
+
+msgid "Enter location..."
+msgstr ""
+
+msgid "Go"
+msgstr ""
+
+msgid "Area equal to the size of the intended, concluded or failed land acquisitions: <span class=\"hectares\">0</span> ha"
+msgstr ""
+
+msgid "This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use."
+msgstr ""
+
+msgid "Food-Crops"
+msgstr ""
+
+msgid "Non-Food Crops"
+msgstr ""
+
+msgid "Flex-Crops"
+msgstr ""
+
+msgid "All Continents"
+msgstr ""
+
+msgid "Africa"
+msgstr ""
+
+msgid "Eastern Europe"
+msgstr ""
+
+msgid "Latin America"
+msgstr ""
+
+msgid "Oceania"
+msgstr ""
+
+msgid "Asia"
+msgstr ""
+
+msgid "Special interest"
+msgstr ""
+
+msgid "Size in operation"
+msgstr ""
+
+msgid "Size under contract"
+msgstr ""
+
+msgid "Intended Size"
+msgstr ""
+
+msgid "Deals with contract farming schemes."
+msgstr ""
+
+msgid "Wood chopping."
+msgstr ""
+
+msgid "Concluded"
+msgstr ""
+
+msgid "Intended"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "Size"
+msgstr ""
+
+msgid "Number of deals"
+msgstr ""
+
+msgid "The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."
+msgstr ""
+
+msgid "Filter and search through deals that are divided by intention of investment: Crops, mineral resources, or livestock."
+msgstr ""
+
+msgid "Crops"
+msgstr ""
+
+msgid "Mineral resources"
+msgstr ""
+
+msgid "Livestock"
+msgstr ""
+
+msgid "Toggle navigation"
+msgstr ""
+
+msgid "Web of transnational deals"
+msgstr ""
+
+msgid "Intention of investment"
+msgstr ""
+
+msgid "Negotiation status"
+msgstr ""
+
+msgid "Implementation status"
+msgstr ""
+
+msgid "Investment in agriculture"
+msgstr ""
+
+msgid "Special Interest"
+msgstr ""
+
+msgid "Agricultural Drivers"
+msgstr ""
+
+msgid "Produce Info"
+msgstr ""
+
+msgid "Mining"
+msgstr ""
+
+msgid "Forest concessions"
+msgstr ""
+
+msgid "Contract Farming"
+msgstr ""
+
+msgid "This interactive graph shows the global flow of transnational land acquisitions. Clicking on a single country shows its threads in the global pattern: blue lines for inbound investments, orange for outbound. Country names marked with * have been shortened to improve legibility"
+msgstr ""
+
+msgid "<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser. "
+msgstr ""
+
+msgid "Top Countries"
+msgstr ""
+
+msgid "Investor countries"
+msgstr ""
+
+msgid "Target countries"
+msgstr ""
+
+msgid "Regions investing in "
+msgstr ""
+
+msgid "Show all inbound deals"
+msgstr ""
+
+msgid "Regions"
+msgstr ""
+
+msgid "invests in"
+msgstr ""
+
+msgid "Show all outbound deals"
+msgstr ""
+
+msgid "to/from"
+msgstr ""
+
+msgid "Region A: 0 hectares"
+msgstr ""
+
+msgid "Region B: 0 hectares"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Overall deals"
+msgstr ""
+
+msgid "Public deals"
+msgstr ""
+
+msgid "Non public deals"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Impersonate"
+msgstr ""
+
+msgid "Investors"
+msgstr ""
+
+msgid "Deals"
+msgstr ""
+
+msgid "Countries"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Latest added"
+msgstr ""
+
+msgid "Show all"
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Added by"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Added"
+msgstr ""
+
+msgid "No deals have been added lately."
+msgstr ""
+
+msgid "Latest modified"
+msgstr ""
+
+msgid "Modified by"
+msgstr ""
+
+msgid "Modified"
+msgstr ""
+
+msgid "No deals have been modified lately."
+msgstr ""
+
+msgid "Latest deleted"
+msgstr ""
+
+msgid "Deleted by"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "No deals have been deleted lately."
+msgstr ""
+
+msgid "Needs your attention"
+msgstr ""
+
+msgid "Last revision"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Timestamp"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "No pending activities require your attention."
+msgstr ""
+
+msgid "Feedback requests"
+msgstr ""
+
+msgid "Request from"
+msgstr ""
+
+msgid "Requested"
+msgstr ""
+
+msgid "No feedback requests lately."
+msgstr ""
+
+msgid "Change log "
+msgstr ""
+
+msgid "Change log"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Manage deals/investors"
+msgstr ""
+
+msgid "My deals/investors"
+msgstr ""
+
+msgid "Feedback"
+msgstr ""
+
+msgid "Pending updates"
+msgstr ""
+
+msgid "Pending deletions"
+msgstr ""
+
+msgid "New deals for approval"
+msgstr ""
+
+msgid "Rejected by me"
+msgstr ""
+
+msgid "Currently there are no feedback requests."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Currently there are no pending updates."
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Currently there are no pending deletions."
+msgstr ""
+
+msgid "Currently there are no new deals for approval."
+msgstr ""
+
+msgid "Currently there are no rejected changes."
+msgstr ""
+
+msgid "Action comment"
+msgstr ""
+
+msgid "Page"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Deleted user"
+msgstr ""
+
+msgid "Deal has been successfully approved."
+msgstr ""
+
+msgid "Deal has been successfully rejected."
+msgstr ""
+
+msgid "Deal deletion has been successfully approved."
+msgstr ""
+
+msgid "Deal deletion has been successfully rejected."
+msgstr ""
+
+msgid "Investor has been successfully approved."
+msgstr ""
+
+msgid "Investor has been successfully rejected."
+msgstr ""
+
+msgid "Investor deletion has been successfully approved."
+msgstr ""
+
+msgid "Investor deletion has been successfully rejected."
+msgstr ""
+
+msgid "added"
+msgstr ""
+
+msgid "removed"
+msgstr ""
+
+msgid "changed from"
+msgstr ""
+
+msgid "to"
+msgstr ""
+
+msgid "No changes."
+msgstr ""
+
+msgid "Change to Deal"
+msgstr ""
+
+#, python-format
+msgid "Deal %(deal_id)s History"
+msgstr ""
+
+#, python-format
+msgid "A list of changes made to deal %(deal_id)s"
+msgstr ""
+
+msgid "New comment"
+msgstr ""
+
+#, python-brace-format
+msgid "{full_name} has addressed you in a comment on {obj_desc}:"
+msgstr ""
+
+#, python-brace-format
+msgid "{full_name} has updated {obj_desc}:"
+msgstr ""
+
+#, python-brace-format
+msgid "Please review at {url}"
+msgstr ""
+
+msgid "ha"
+msgstr ""
+
+msgid "Uploaded files must be less than 10MB."
+msgstr ""
+
+#, python-format
+msgid " (%s %s)"
+msgstr ""
+
+msgid "Biofuels"
+msgstr ""
+
+msgid "Food crops"
+msgstr ""
+
+msgid "Fodder"
+msgstr ""
+
+msgid "Non-food agricultural commodities"
+msgstr ""
+
+msgid "Agriculture unspecified"
+msgstr ""
+
+msgid "Timber plantation (for wood and fibre)"
+msgstr ""
+
+msgid "Forest logging / management (for wood and fibre)"
+msgstr ""
+
+msgid "For carbon sequestration/REDD"
+msgstr ""
+
+msgid "Forestry unspecified"
+msgstr ""
+
+msgid "Oil / Gas extraction"
+msgstr ""
+
+msgid "Tourism"
+msgstr ""
+
+msgid "Industry"
+msgstr ""
+
+msgid "Conservation"
+msgstr ""
+
+msgid "Land speculation"
+msgstr ""
+
+msgid "Renewable Energy"
+msgstr ""
+
+msgid "Other (please specify)"
+msgstr ""
+
+msgid "Outright purchase"
+msgstr ""
+
+msgid "Lease"
+msgstr ""
+
+msgid "Concession"
+msgstr ""
+
+msgid "Exploitation permit / license / concession (for mineral resources)"
+msgstr ""
+
+msgid "Pure contract farming"
+msgstr ""
+
+msgid "---------"
+msgstr ""
+
+msgid "per ha"
+msgstr ""
+
+msgid "for specified area"
+msgstr ""
+
+msgid "Government / State institutions (government, ministries, departments, agencies etc.)"
+msgstr ""
+
+msgid "Traditional land-owners / communities"
+msgstr ""
+
+msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
+msgstr ""
+
+msgid "Broker"
+msgstr ""
+
+msgid "Intermediary"
+msgstr ""
+
+msgid "Temporary removal from PI after criticism"
+msgstr ""
+
+msgid "Research in progress"
+msgstr ""
+
+msgid "Land Observatory Import"
+msgstr ""
+
+msgid "Meta info"
+msgstr ""
+
+msgid "Fully updated"
+msgstr ""
+
+msgid "Public deal"
+msgstr ""
+
+msgid "Not public"
+msgstr ""
+
+msgid "Please specify in additional comment field"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "Comment on not public"
+msgstr ""
+
+msgid "Import history"
+msgstr ""
+
+msgid "Previous identifier"
+msgstr ""
+
+msgid "Assign to"
+msgstr ""
+
+msgid "Unassigned"
+msgstr ""
+
+msgid "Feedback comment"
+msgstr ""
+
+msgid "Contracts"
+msgstr ""
+
+msgid "Contract"
+msgstr ""
+
+msgid "Contract number"
+msgstr ""
+
+msgid "Contract date"
+msgstr ""
+
+msgid "Contract expiration date"
+msgstr ""
+
+msgid "Duration of the agreement (in years)"
+msgstr ""
+
+msgid "years"
+msgstr ""
+
+msgid "Comment on contract"
+msgstr ""
+
+msgid "Data source"
+msgstr ""
+
+msgid "Data source type"
+msgstr ""
+
+msgid "Media report"
+msgstr ""
+
+msgid "Research Paper / Policy Report"
+msgstr ""
+
+msgid "Government sources"
+msgstr ""
+
+msgid "Company sources"
+msgstr ""
+
+msgid "Contract (contract farming agreement)"
+msgstr ""
+
+msgid "Personal information"
+msgstr ""
+
+msgid "Crowdsourcing"
+msgstr ""
+
+msgid "Other (Please specify in comment field)"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "File"
+msgstr ""
+
+msgid "Maximum file size: 10MB"
+msgstr ""
+
+msgid "Keep PDF not public"
+msgstr ""
+
+msgid "Publication title"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Organisation"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Includes in-country-verified information"
+msgstr ""
+
+msgid "Open Contracting ID"
+msgstr ""
+
+msgid "Comment on data source"
+msgstr ""
+
+msgid "Data sources"
+msgstr ""
+
+msgid "Employment"
+msgstr ""
+
+msgid "Number of total jobs created"
+msgstr ""
+
+msgid "Jobs created (total)"
+msgstr ""
+
+msgid "Planned number of jobs (total)"
+msgstr ""
+
+msgid "jobs"
+msgstr ""
+
+msgid "Planned employees (total)"
+msgstr ""
+
+msgid "employees"
+msgstr ""
+
+msgid "Planned daily/seasonal workers (total)"
+msgstr ""
+
+msgid "workers"
+msgstr ""
+
+msgid "Current number of jobs (total)"
+msgstr ""
+
+msgid "Current number of employees (total)"
+msgstr ""
+
+msgid "Current number of daily/seasonal workers (total)"
+msgstr ""
+
+msgid "Comment on jobs created (total)"
+msgstr ""
+
+msgid "Number of jobs for foreigners created"
+msgstr ""
+
+msgid "Jobs created (foreign)"
+msgstr ""
+
+msgid "Planned number of jobs (foreign)"
+msgstr ""
+
+msgid "Planned employees (foreign)"
+msgstr ""
+
+msgid "Planned daily/seasonal workers (foreign)"
+msgstr ""
+
+msgid "Current number of jobs (foreign)"
+msgstr ""
+
+msgid "Current number of employees (foreign)"
+msgstr ""
+
+msgid "Current number of daily/seasonal workers (foreign)"
+msgstr ""
+
+msgid "Comment on jobs created (foreign)"
+msgstr ""
+
+msgid "Number of domestic jobs created"
+msgstr ""
+
+msgid "Jobs created (domestic)"
+msgstr ""
+
+msgid "Planned number of jobs (domestic)"
+msgstr ""
+
+msgid "Planned employees (domestic)"
+msgstr ""
+
+msgid "Planned daily/seasonal workers (domestic)"
+msgstr ""
+
+msgid "Current number of jobs (domestic)"
+msgstr ""
+
+msgid "Current number of employees (domestic)"
+msgstr ""
+
+msgid "Current number of daily/seasonal workers (domestic)"
+msgstr ""
+
+msgid "Comment on jobs created (domestic)"
+msgstr ""
+
+msgid "Private (smallholders)"
+msgstr ""
+
+msgid "Private (large-scale farm)"
+msgstr ""
+
+msgid "Community"
+msgstr ""
+
+msgid "Indigenous people"
+msgstr ""
+
+msgid "Commercial (large-scale) agriculture"
+msgstr ""
+
+msgid "Smallholder agriculture"
+msgstr ""
+
+msgid "Shifting cultivation"
+msgstr ""
+
+msgid "Pastoralism"
+msgstr ""
+
+msgid "Hunting/Gathering"
+msgstr ""
+
+msgid "Cropland"
+msgstr ""
+
+msgid "Forest land"
+msgstr ""
+
+msgid "Pasture"
+msgstr ""
+
+msgid "Shrub land/Grassland (Rangeland)"
+msgstr ""
+
+msgid "Marginal land"
+msgstr ""
+
+msgid "Wetland"
+msgstr ""
+
+msgid "Other land (e.g. developed land – specify in comment field)"
+msgstr ""
+
+msgid "Former use"
+msgstr ""
+
+msgid "Former land owner (not by constitution)"
+msgstr ""
+
+msgid "Former land owner"
+msgstr ""
+
+msgid "Comment on former land owner"
+msgstr ""
+
+msgid "Former land use"
+msgstr ""
+
+msgid "Comment on former land use"
+msgstr ""
+
+msgid "Former land cover"
+msgstr ""
+
+msgid "Comment on former land cover"
+msgstr ""
+
+msgid "Gender-related info"
+msgstr ""
+
+msgid "Any gender-specific information about the investment and its impacts"
+msgstr ""
+
+msgid "Comment on gender-related info"
+msgstr ""
+
+msgid "General info"
+msgstr ""
+
+msgid "Land area"
+msgstr ""
+
+msgid "Intended size (in ha)"
+msgstr ""
+
+msgid "Size under contract (leased or purchased area, in ha)"
+msgstr ""
+
+msgid "Size in operation (production, in ha)"
+msgstr ""
+
+msgid "Comment on land area"
+msgstr ""
+
+msgid "Comment on intention of investment"
+msgstr ""
+
+msgid "Nature of the deal"
+msgstr ""
+
+msgid "Comment on nature of the deal"
+msgstr ""
+
+msgid "Comment on negotiation status"
+msgstr ""
+
+msgid "Comment on implementation status"
+msgstr ""
+
+msgid "Purchase price"
+msgstr ""
+
+msgid "Purchase price currency"
+msgstr ""
+
+msgid "Purchase price area type"
+msgstr ""
+
+msgid "Purchase price area"
+msgstr ""
+
+msgid "Comment on purchase price"
+msgstr ""
+
+msgid "Leasing fees"
+msgstr ""
+
+msgid "Annual leasing fee"
+msgstr ""
+
+msgid "Annual leasing fee currency"
+msgstr ""
+
+msgid "Annual leasing fee type"
+msgstr ""
+
+msgid "Annual leasing fee area"
+msgstr ""
+
+msgid "Comment on leasing fees"
+msgstr ""
+
+msgid "Contract farming"
+msgstr ""
+
+msgid "On leased / purchased area"
+msgstr ""
+
+msgid "On leased / purchased area (in ha)"
+msgstr ""
+
+msgid "On leased / purchased farmers"
+msgstr ""
+
+msgid "farmers"
+msgstr ""
+
+msgid "On leased / purchased households"
+msgstr ""
+
+msgid "households"
+msgstr ""
+
+msgid "Not on leased / purchased area (out-grower)"
+msgstr ""
+
+msgid "Not on leased / purchased area (out-grower, in ha)"
+msgstr ""
+
+msgid "Not on leased / purchased farmers (out-grower)"
+msgstr ""
+
+msgid "Not on leased / purchased households (out-grower)"
+msgstr ""
+
+msgid "Comment on contract farming"
+msgstr ""
+
+msgid "Indigenous Peoples traditional or customary rights recognized by government"
+msgstr ""
+
+msgid "Indigenous Peoples traditional or customary rights not recognized by government"
+msgstr ""
+
+msgid "Community traditional or customary rights recognized by government"
+msgstr ""
+
+msgid "Community traditional or customary rights not recognized by government"
+msgstr ""
+
+msgid "Not consulted"
+msgstr ""
+
+msgid "Limited consultation"
+msgstr ""
+
+msgid "Free, Prior and Informed Consent (FPIC)"
+msgstr ""
+
+msgid "Certified Free, Prior and Informed Consent (FPIC)"
+msgstr ""
+
+msgid "Consent"
+msgstr ""
+
+msgid "Mixed reaction"
+msgstr ""
+
+msgid "Rejection"
+msgstr ""
+
+msgid "Environmental degradation"
+msgstr ""
+
+msgid "Socio-economic"
+msgstr ""
+
+msgid "Cultural loss"
+msgstr ""
+
+msgid "Eviction"
+msgstr ""
+
+msgid "Displacement"
+msgstr ""
+
+msgid "Violence"
+msgstr ""
+
+msgid "Health"
+msgstr ""
+
+msgid "Education"
+msgstr ""
+
+msgid "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
+msgstr ""
+
+msgid "Roads"
+msgstr ""
+
+msgid "Capacity Building"
+msgstr ""
+
+msgid "Financial Support"
+msgstr ""
+
+msgid "Community shares in the investment project"
+msgstr ""
+
+msgid "Local communities / indigenous peoples"
+msgstr ""
+
+msgid "Names of communities / indigenous peoples affected"
+msgstr ""
+
+msgid "Name of community"
+msgstr ""
+
+msgid "Name of indigenous people"
+msgstr ""
+
+msgid "Comment on communities / indigenous peoples affected"
+msgstr ""
+
+msgid "Recognitions status of community land tenure"
+msgstr ""
+
+msgid "Recognition status of community land tenure"
+msgstr ""
+
+msgid "Comment on recognitions status of community land tenure"
+msgstr ""
+
+msgid "Consultation of local community"
+msgstr ""
+
+msgid "Community consultation"
+msgstr ""
+
+msgid "Comment on consultation of local community"
+msgstr ""
+
+msgid "How did the community react?"
+msgstr ""
+
+msgid "Community reaction"
+msgstr ""
+
+msgid "Comment on community reaction"
+msgstr ""
+
+msgid "Presence of land conflicts"
+msgstr ""
+
+msgid "Comment on presence of land conflicts"
+msgstr ""
+
+msgid "Displacement of people"
+msgstr ""
+
+msgid "Number of people actually displaced"
+msgstr ""
+
+msgid "Number of households actually displaced"
+msgstr ""
+
+msgid "Number of people displaced out of their community land"
+msgstr ""
+
+msgid "Number of people displaced staying on community land"
+msgstr ""
+
+msgid "Number of households displaced \"only\" from their agricultural fields"
+msgstr ""
+
+msgid "Number of people facing displacement once project is fully implemented"
+msgstr ""
+
+msgid "Comment on displacement of people"
+msgstr ""
+
+msgid "Negative impacts for local communities"
+msgstr ""
+
+msgid "Comment on negative impacts for local communities"
+msgstr ""
+
+msgid "Promised or received compensation"
+msgstr ""
+
+msgid "Promised compensation (e.g. for damages or resettlements)"
+msgstr ""
+
+msgid "Received compensation (e.g. for damages or resettlements)"
+msgstr ""
+
+msgid "Promised benefits for local communities"
+msgstr ""
+
+msgid "Comment on promised benefits for local communities"
+msgstr ""
+
+msgid "Materialized benefits for local communities"
+msgstr ""
+
+msgid "Comment on materialized benefits for local communities"
+msgstr ""
+
+msgid "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)"
+msgstr ""
+
+msgid "Overall Comment"
+msgstr ""
+
+msgid "Overall comment"
+msgstr ""
+
+msgid "Produce info"
+msgstr ""
+
+msgid "Detailed crop, animal and mineral information"
+msgstr ""
+
+msgid "Crops area"
+msgstr ""
+
+msgid "Crops yield"
+msgstr ""
+
+msgid "tons"
+msgstr ""
+
+msgid "Crops export"
+msgstr ""
+
+msgid "%"
+msgstr ""
+
+msgid "Comment on crops"
+msgstr ""
+
+msgid "Livestock area"
+msgstr ""
+
+msgid "Livestock yield"
+msgstr ""
+
+msgid "Livestock export"
+msgstr ""
+
+msgid "Comment on livestock"
+msgstr ""
+
+msgid "Resources area"
+msgstr ""
+
+msgid "Resources yield"
+msgstr ""
+
+msgid "Resources export"
+msgstr ""
+
+msgid "Comment on resources"
+msgstr ""
+
+msgid "Detailed contract farming crop and animal information"
+msgstr ""
+
+msgid "Contract farming crops"
+msgstr ""
+
+msgid "Comment on contract farming crops"
+msgstr ""
+
+msgid "Contract farming livestock"
+msgstr ""
+
+msgid "Comment on contract farming livestock"
+msgstr ""
+
+msgid "Use of produce"
+msgstr ""
+
+msgid "Has domestic use"
+msgstr ""
+
+msgid "Domestic use"
+msgstr ""
+
+msgid "Has export"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Country 1"
+msgstr ""
+
+msgid "Country 1 ratio"
+msgstr ""
+
+msgid "Country 2"
+msgstr ""
+
+msgid "Country 2 ratio"
+msgstr ""
+
+msgid "Country 3"
+msgstr ""
+
+msgid "Country 3 ratio"
+msgstr ""
+
+msgid "Comment on use of produce"
+msgstr ""
+
+msgid "In country processing of produce"
+msgstr ""
+
+msgid "Comment on in country processing of produce"
+msgstr ""
+
+msgid "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)"
+msgstr ""
+
+msgid "In-country end products of the project"
+msgstr ""
+
+msgid "Administrative region"
+msgstr ""
+
+msgid "Approximate location"
+msgstr ""
+
+msgid "Exact location"
+msgstr ""
+
+msgid "Coordinates"
+msgstr ""
+
+msgid "Location"
+msgstr ""
+
+msgid "Spatial accuracy level"
+msgstr ""
+
+msgid "Latitude"
+msgstr ""
+
+msgid "Longitude"
+msgstr ""
+
+msgid "Facility name"
+msgstr ""
+
+msgid "Target country"
+msgstr ""
+
+msgid "Location description"
+msgstr ""
+
+msgid "Contract area"
+msgstr ""
+
+msgid "Intended area"
+msgstr ""
+
+msgid "Area in operation"
+msgstr ""
+
+msgid "Comment on location"
+msgstr ""
+
+#, python-format
+msgid "Error parsing shapefile: %s"
+msgstr ""
+
+msgid "Guidelines & Principles"
+msgstr ""
+
+msgid "Partially"
+msgstr ""
+
+msgid "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+msgstr ""
+
+msgid "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+msgstr ""
+
+msgid "Comment on VGGT"
+msgstr ""
+
+msgid "Principles for Responsible Agricultural Investments (PRAI)"
+msgstr ""
+
+msgid "Application of Principles for Responsible Agricultural Investments (PRAI)"
+msgstr ""
+
+msgid "Comment on PRAI"
+msgstr ""
+
+msgid "Groundwater"
+msgstr ""
+
+msgid "Surface water"
+msgstr ""
+
+msgid "River"
+msgstr ""
+
+msgid "Lake"
+msgstr ""
+
+msgid "Water"
+msgstr ""
+
+msgid "Water extraction envisaged"
+msgstr ""
+
+msgid "Comment on water extraction envisaged"
+msgstr ""
+
+msgid "Source of water extraction"
+msgstr ""
+
+msgid "Comment on source of water extraction"
+msgstr ""
+
+msgid "How much do investors pay for water and the use of water infrastructure?"
+msgstr ""
+
+msgid "Comment on how much do investors pay for water"
+msgstr ""
+
+msgid "How much water is extracted?"
+msgstr ""
+
+msgid "Water extraction amount"
+msgstr ""
+
+msgid "m3/year"
+msgstr ""
+
+msgid "Comment on how much water is extracted"
+msgstr ""
+
+msgid "Use of irrigation infrastructure"
+msgstr ""
+
+msgid "Comment on use of irrigation infrastructure"
+msgstr ""
+
+msgid "Water footprint of the investment project"
+msgstr ""
+
+msgid "Investor"
+msgstr ""
+
+msgid "Classification"
+msgstr ""
+
+msgid "Country of registration/origin"
+msgstr ""
+
+msgid "Tertiary investor/lender"
+msgstr ""
+
+msgid "Parent company"
+msgstr ""
+
+msgid "Operational company"
+msgstr ""
+
+msgid "Investor info"
+msgstr ""
+
+msgid "Operating company"
+msgstr ""
+
+msgid "Actors involved in the negotiation / admission process"
+msgstr ""
+
+msgid "Name of investment project"
+msgstr ""
+
+msgid "Comment on investment chain"
+msgstr ""
+
+msgid "Parent companies"
+msgstr ""
+
+msgid "Existing parent company"
+msgstr ""
+
+msgid "Ownership share"
+msgstr ""
+
+msgid "Existing investor"
+msgstr ""
+
+msgid "Tertiary investors/lenders"
+msgstr ""
+
+msgid "User information"
+msgstr ""
+
+msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
+msgstr ""
+
+msgid "Write something about yourself and your company. This won't be published."
+msgstr ""
+
+msgid "Deal history comparison"
+msgstr ""
+
+msgid "Deal"
+msgstr ""
+
+msgid "Previous version"
+msgstr ""
+
+msgid "Selected version"
+msgstr ""
+
+msgid "changed"
+msgstr ""
+
+msgid "no changes"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit old version"
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "Comments"
+msgstr ""
+
+msgid "RSS Feed"
+msgstr ""
+
+msgid "This deal version is pending."
+msgstr ""
+
+msgid "This deal has been deleted. It is not visible for public users."
+msgstr ""
+
+msgid "This deal version has been rejected. It is not visible for public users."
+msgstr ""
+
+msgid "There's a newer version of this deal."
+msgstr ""
+
+msgid "Click here to show the latest version."
+msgstr ""
+
+msgid "comments"
+msgstr ""
+
+msgid "There are no comments to this deal yet."
+msgstr ""
+
+msgid "Add a comment"
+msgstr ""
+
+msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
+msgstr ""
+
+msgid "Add comment"
+msgstr ""
+
+msgid "Cancel reply"
+msgstr ""
+
+msgid "There are currently no deals matching your search criteria."
+msgstr ""
+
+msgid "Add a deal"
+msgstr ""
+
+msgid "Editor"
+msgstr ""
+
+msgid "mandatory"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Change Deal"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Recover this deal"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Delete this deal"
+msgstr ""
+
+msgid "All deals"
+msgstr ""
+
+msgid "By"
+msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "More..."
+msgstr ""
+
+msgid "There are currently no deals matching your search criteria"
+msgstr ""
+
+msgid "deals"
+msgstr ""
+
+msgid "Add another"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Unknown user"
+msgstr ""
+
+msgid "This version"
+msgstr ""
+
+msgid "Show this version"
+msgstr ""
+
+msgid "Compare with previous version"
+msgstr ""
+
+msgid "First version"
+msgstr ""
+
+msgid "Network of parent companies and tertiary investors/lenders"
+msgstr ""
+
+msgid "Please right-click the nodes to get more details."
+msgstr ""
+
+msgid "Legend"
+msgstr ""
+
+msgid "Is parent company of"
+msgstr ""
+
+msgid "Is tertiary investor/lender of"
+msgstr ""
+
+msgid "Left-click to reveal related parent companies and tertiary investors/lenders."
+msgstr ""
+
+msgid "Right-click on investors to get more information."
+msgstr ""
+
+msgid "Left-click to hide related parent companies and tertiary investors/lenders."
+msgstr ""
+
+msgid "This operating company is pending."
+msgstr ""
+
+msgid "This operating company has been deleted. It is not visible for public users."
+msgstr ""
+
+msgid "This operating company has been rejected. It is not visible for public users."
+msgstr ""
+
+msgid "No active filters"
+msgstr ""
+
+msgid "Cancel add filter"
+msgstr ""
+
+msgid "Add a filter"
+msgstr ""
+
+msgid "List settings"
+msgstr ""
+
+msgid "Create a custom filter"
+msgstr ""
+
+msgid "is =<"
+msgstr ""
+
+msgid "Add Filter"
+msgstr ""
+
+msgid "Select columns for the result table"
+msgstr ""
+
+msgid "default columns"
+msgstr ""
+
+msgid "all columns"
+msgstr ""
+
+msgid "Select status of deals"
+msgstr ""
+
+msgid "Added (not changed)"
+msgstr ""
+
+msgid "Changed"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Unknown country"
+msgstr ""
+
+msgid "Unknown region"
+msgstr ""
+
+msgid "Level of parent investors"
+msgstr ""
+
+msgid "Show deals"
+msgstr ""
+
+msgid "Is operating company of"
+msgstr ""
+
+msgid "Double-click to zoom in."
+msgstr ""
+
+msgid "Search for investor name"
+msgstr ""
+
+msgid "All Deals"
+msgstr ""
+
+msgid "By Target"
+msgstr ""
+
+msgid "By Target Region"
+msgstr ""
+
+msgid "By Target Country"
+msgstr ""
+
+msgid "By Investor"
+msgstr ""
+
+msgid "By Investor Region"
+msgstr ""
+
+msgid "By Investor Country"
+msgstr ""
+
+msgid "By data source"
+msgstr ""
+
+msgid "By Intention"
+msgstr ""
+
+msgid "By Crop"
+msgstr ""
+
+msgid "All Investors"
+msgstr ""
+
+msgid "By Role"
+msgstr ""
+
+msgid "By Classification"
+msgstr ""
+
+msgid "By Country of registration/origin"
+msgstr ""
+
+msgid "Investor history comparison"
+msgstr ""
+
+msgid "This investor version is pending."
+msgstr ""
+
+msgid "This investor has been deleted. It is not visible for public users."
+msgstr ""
+
+msgid "This investor version has been rejected. It is not visible for public users."
+msgstr ""
+
+msgid "Involvements as Parent Company"
+msgstr ""
+
+msgid "Involvement"
+msgstr ""
+
+msgid "Involvements as Tertiary investor/lender"
+msgstr ""
+
+msgid "Deals (Involvements as Operating company)"
+msgstr ""
+
+msgid "Add investor"
+msgstr ""
+
+msgid "Add another parent company"
+msgstr ""
+
+msgid "Add another lender"
+msgstr ""
+
+msgid "Recover this investor"
+msgstr ""
+
+msgid "Delete this investor"
+msgstr ""
+
+msgid "All investors"
+msgstr ""
+
+msgid "Show more"
+msgstr ""
+
+msgid "investors"
+msgstr ""
+
+msgid "There are currently no investors matching your search criteria."
+msgstr ""
+
+msgid "Add an investor"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "More details about this deal"
+msgstr ""
+
+msgid "Delete deal"
+msgstr ""
+
+msgid "Are you sure you want to delete this deal?"
+msgstr ""
+
+msgid "No, cancel"
+msgstr ""
+
+msgid "Yes, delete"
+msgstr ""
+
+msgid "Delete investor"
+msgstr ""
+
+msgid "Are you sure you want to delete this investor?"
+msgstr ""
+
+msgid "More details about this investor"
+msgstr ""
+
+msgid "Recover deal"
+msgstr ""
+
+msgid "Are you sure you want to recover this deal?"
+msgstr ""
+
+msgid "Yes, recover"
+msgstr ""
+
+msgid "Recover investor"
+msgstr ""
+
+msgid "Are you sure you want to recover this investor?"
+msgstr ""
+
+msgid "Administrator"
+msgstr ""
+
+msgid "Reporter"
+msgstr ""
+
+msgid "No role"
+msgstr ""
+
+msgid "for"
+msgstr ""
+
+msgid "Investor name"
+msgstr ""
+
+msgid "Availability"
+msgstr ""
+
+msgid "Deal size"
+msgstr ""
+
+msgid "Top investors"
+msgstr ""
+
+msgid "Target region"
+msgstr ""
+
+msgid "Investor country"
+msgstr ""
+
+msgid "Investor region"
+msgstr ""
+
+msgid "Investor ID"
+msgstr ""
+
+msgid "Operating company name"
+msgstr ""
+
+msgid "Parent investors"
+msgstr ""
+
+msgid "Parent investor country"
+msgstr ""
+
+msgid "Parent investor region"
+msgstr ""
+
+msgid "Parent investor percentages"
+msgstr ""
+
+msgid "Parent investor classifications"
+msgstr ""
+
+msgid "Parent investor homepages"
+msgstr ""
+
+msgid "Parent stakeholder Opencorporates links"
+msgstr ""
+
+msgid "Comment on parent investor"
+msgstr ""
+
+msgid "Operating company country of registration/origin"
+msgstr ""
+
+msgid "Operating company region of registration/origin"
+msgstr ""
+
+msgid "Operating company classification"
+msgstr ""
+
+msgid "Operating company homepage"
+msgstr ""
+
+msgid "Operating company Opencorporates link"
+msgstr ""
+
+msgid "Additional comment on Operating company"
+msgstr ""
+
+#, python-format
+msgid "Unknown group '%(group)s'."
+msgstr ""
+
+msgid "Deal ID"
+msgstr ""
+
+msgid "Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon."
+msgstr ""
+
+msgid "Your changes to the deal have been saved successfully."
+msgstr ""
+
+msgid "Please correct the error below."
+msgstr ""
+
+msgid "The deal has been submitted successfully (#{}). It will be reviewed and published soon."
+msgstr ""
+
+msgid "The deal has been added successfully (#{})."
+msgstr ""
+
+msgid "The deal #{} has been marked for deletion. It will be reviewed and deleted soon."
+msgstr ""
+
+msgid "The deal #{} has been deleted successfully."
+msgstr ""
+
+msgid "The deal #{} has been recovered successfully."
+msgstr ""
+
+msgid "Is public"
+msgstr ""
+
+msgid "Deal scope"
+msgstr ""
+
+msgid "Current size under contract"
+msgstr ""
+
+msgid "Current size in operation (production)"
+msgstr ""
+
+msgid "Current negotiation status"
+msgstr ""
+
+msgid "Current implementation status"
+msgstr ""
+
+msgid "Top parent companies"
+msgstr ""
+
+msgid "Region of registration/origin"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "The investor has been submitted successfully (#{}). It will be reviewed and published soon."
+msgstr ""
+
+msgid "The investor has been added successfully (#{})."
+msgstr ""
+
+msgid "Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon."
+msgstr ""
+
+msgid "Your changes to the investor have been saved successfully."
+msgstr ""
+
+msgid "The investor #{} has been marked for deletion. It will be reviewed and deleted soon."
+msgstr ""
+
+msgid "The investor #{} has been deleted successfully."
+msgstr ""
+
+msgid "The investor #{} has been recovered successfully."
+msgstr ""
+
+msgid "Current file"
+msgstr ""
+
+msgid "Show area"
+msgstr ""
+
+msgid "Hide area"
+msgstr ""
+
+msgid "Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)"
+msgstr ""
+
+msgid "Comments / History"
+msgstr ""
+
+msgid "Involvement type"
+msgstr ""
+
+msgid "First name"
+msgstr ""
+
+msgid "Last name"
+msgstr ""
+
+msgid "Initiation year or date"
+msgstr ""
+
+msgid "Forest concession"
+msgstr ""
+
+msgid "Investor homepage"
+msgstr ""
+
+msgid "Opencorporates link"
+msgstr ""
+
+msgid "Agricultural produce"
+msgstr ""
+
+msgid "English name"
+msgstr ""
+
+msgid "Local name"
+msgstr ""
+
+msgid "Locale"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Review"
+msgstr ""
+
+msgid "Activation"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "To Delete"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Overwritten"
+msgstr ""
+
+msgid "To delete"
+msgstr ""
+
+msgid "Domestic"
+msgstr ""
+
+msgid "Transnational"
+msgstr ""
+
+msgid "Intended (Expression of interest)"
+msgstr ""
+
+msgid "Intended (Under negotiation)"
+msgstr ""
+
+msgid "Intended (Memorandum of understanding)"
+msgstr ""
+
+msgid "Concluded (Oral Agreement)"
+msgstr ""
+
+msgid "Concluded (Contract signed)"
+msgstr ""
+
+msgid "Failed (Negotiations failed)"
+msgstr ""
+
+msgid "Failed (Contract cancelled)"
+msgstr ""
+
+msgid "Contract expired"
+msgstr ""
+
+msgid "Change of ownership"
+msgstr ""
+
+msgid "Project not started"
+msgstr ""
+
+msgid "Startup phase (no production)"
+msgstr ""
+
+msgid "In operation (production)"
+msgstr ""
+
+msgid "Project abandoned"
+msgstr ""
+
+msgid "Activity identifier"
+msgstr ""
+
+msgid "availability"
+msgstr ""
+
+msgid "Historical activity"
+msgstr ""
+
+msgid "Historical activities"
+msgstr ""
+
+msgid "Activity attribute group"
+msgstr ""
+
+msgid "Activity attribute groups"
+msgstr ""
+
+msgid "Activity Attribute Group"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Year or Date"
+msgstr ""
+
+msgid "Is current"
+msgstr ""
+
+msgid "Activity"
+msgstr ""
+
+msgid "Historical activity attribute"
+msgstr ""
+
+msgid "Historical activity attributes"
+msgstr ""
+
+msgid "Review decision"
+msgstr ""
+
+msgid "User assigned"
+msgstr ""
+
+msgid "User created"
+msgstr ""
+
+msgid "Activity feedback"
+msgstr ""
+
+msgid "Activity feedbacks"
+msgstr ""
+
+msgid "Region"
+msgstr ""
+
+msgid "Code ISO 3166-1 alpha2"
+msgstr ""
+
+msgid "Code ISO 3166-1 alpha3"
+msgstr ""
+
+msgid "Latitude of central point"
+msgstr ""
+
+msgid "Longitude of central point"
+msgstr ""
+
+msgid "Latitude of southernmost point"
+msgstr ""
+
+msgid "Longitude of westernmost point"
+msgstr ""
+
+msgid "Latitude of northernmost point"
+msgstr ""
+
+msgid "Longitude of easternmost point"
+msgstr ""
+
+msgid "Democracy index"
+msgstr ""
+
+msgid "Corruption perception index"
+msgstr ""
+
+msgid "High income"
+msgstr ""
+
+msgid "Locations"
+msgstr ""
+
+msgid "Timber plantation"
+msgstr ""
+
+msgid "Forest logging / management"
+msgstr ""
+
+msgid "Renewable energy"
+msgstr ""
+
+msgid "Annual leasing fee area type"
+msgstr ""
+
+msgid "Comment on leasing fee"
+msgstr ""
+
+msgid "On leased / purchased"
+msgstr ""
+
+msgid "On leased area/farmers/households"
+msgstr ""
+
+msgid "Not on leased / purchased (out-grower)"
+msgstr ""
+
+msgid "Not on leased area/farmers/households (out-grower)"
+msgstr ""
+
+msgid "Current total number of jobs/employees/ daily/seasonal workers"
+msgstr ""
+
+msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
+msgstr ""
+
+msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
+msgstr ""
+
+msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
+msgstr ""
+
+msgid "Comment on recognition status of community land tenure"
+msgstr ""
+
+msgid "Capacity building"
+msgstr ""
+
+msgid "Financial support"
+msgstr ""
+
+msgid "Crops area/yield/export"
+msgstr ""
+
+msgid "Livestock area/yield/export"
+msgstr ""
+
+msgid "Mineral resources area/yield/export"
+msgstr ""
+
+msgid "Comment on mineral resources"
+msgstr ""
+
+msgid "Comment why this deal is private"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Last update"
+msgstr ""
+
+msgid "Last full update"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Value 2"
+msgstr ""
+
+msgid "Polygon"
+msgstr ""
+
+msgid "Variable"
+msgstr ""
+
+msgid "Key"
+msgstr ""
+
+msgid "Operator"
+msgstr ""
+
+msgid "Filter preset group"
+msgstr ""
+
+msgid "Filter preset groups"
+msgstr ""
+
+msgid "And"
+msgstr ""
+
+msgid "Or"
+msgstr ""
+
+msgid "Global/Region"
+msgstr ""
+
+msgid "Is hidden"
+msgstr ""
+
+msgid "Filter preset"
+msgstr ""
+
+msgid "Filter presets"
+msgstr ""
+
+msgid "Government"
+msgstr ""
+
+msgid "Government institution"
+msgstr ""
+
+msgid "State-/government (owned) company"
+msgstr ""
+
+msgid "Semi state-owned company"
+msgstr ""
+
+msgid "Asset management firm"
+msgstr ""
+
+msgid "Bilateral Development Bank / Development Finance Institution"
+msgstr ""
+
+msgid "Stock-exchange listed company"
+msgstr ""
+
+msgid "Commercial Bank"
+msgstr ""
+
+msgid "Insurance firm"
+msgstr ""
+
+msgid "Investment Bank"
+msgstr ""
+
+msgid "Investment fund"
+msgstr ""
+
+msgid "Multilateral Development Bank (MDB)"
+msgstr ""
+
+msgid "Private company"
+msgstr ""
+
+msgid "Private equity firm"
+msgstr ""
+
+msgid "Individual entrepreneur"
+msgstr ""
+
+msgid "Non - Profit organization (e.g. Church, University etc.)"
+msgstr ""
+
+msgid "Other (please specify in comment field)"
+msgstr ""
+
+msgid "Venture Company"
+msgstr ""
+
+msgid "Relation type"
+msgstr ""
+
+msgid "Shares/Equity"
+msgstr ""
+
+msgid "Debt financing"
+msgstr ""
+
+msgid "Investment type"
+msgstr ""
+
+msgid "Loan amount"
+msgstr ""
+
+msgid "Loan currency"
+msgstr ""
+
+msgid "Loan date"
+msgstr ""
+
+msgid "Subsidiary of parent company"
+msgstr ""
+
+msgid "Local branch of parent company"
+msgstr ""
+
+msgid "Joint venture of parent companies"
+msgstr ""
+
+msgid "Parent relation"
+msgstr ""
+
+msgid "Investor Venture Involvement"
+msgstr ""
+
+msgid "Investor Venture Involvements"
+msgstr ""
+
+msgid "<is PARENT of>"
+msgstr ""
+
+msgid "<is INVESTOR of>"
+msgstr ""
+
+msgid "Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)"
+msgstr ""
+
+#, python-format
+msgid "Unknown operating company (#%s)"
+msgstr ""
+
+#, python-format
+msgid "Unknown parent company (#%s)"
+msgstr ""
+
+#, python-format
+msgid "Unknown tertiary investor/lender (#%s)"
+msgstr ""
+
+#, python-format
+msgid "Unknown (#%s)"
+msgstr ""
+
+msgid "Historical investor"
+msgstr ""
+
+msgid "Historical investors"
+msgstr ""
+
+msgid "Investor ID Downstream"
+msgstr ""
+
+msgid "Investor ID Upstream"
+msgstr ""
+
+msgid "Historical Investor Venture Involvement"
+msgstr ""
+
+msgid "Historical Investor Venture Involvements"
+msgstr ""
+
+msgid "Historical Investor Activity Involvement"
+msgstr ""
+
+msgid "Historical Investor Activity Involvements"
+msgstr ""
+
+msgid "Observatories"
+msgstr ""
+
+#, python-format
+msgid "The language \"%s\" is not supported"
+msgstr ""
+
+msgid "Map with all deals"
+msgstr ""
+
+msgid "Finished"
+msgstr ""
+
+msgid "Display"
+msgstr ""
+
+msgid "Group by country"
+msgstr ""
+
+msgid "Individual deals"
+msgstr ""
+
+msgid "Show info about"
+msgstr ""
+
+msgid "Areas"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Type in the field below to search for a location."
+msgstr ""
+
+msgid "Search location"
+msgstr ""
+
+msgid "Context layers"
+msgstr ""
+
+msgid "Land Cover"
+msgstr ""
+
+msgid "Global Cropland"
+msgstr ""
+
+msgid "Oil palm concessions Indonesia"
+msgstr ""
+
+msgid "Key biodiversity areas, Philippines"
+msgstr ""
+
+msgid "Protected areas, Philippines"
+msgstr ""
+
+msgid "Base layers"
+msgstr ""
+
+msgid "OSM"
+msgstr ""
+
+msgid "ESRI Satellite"
+msgstr ""
+
+msgid "MapQuest Satellite"
+msgstr ""
+
+msgid "Please click on a deal or country on the map to select details."
+msgstr ""
+
+msgid "Deals/Info"
+msgstr ""
+
+msgid "Context"
+msgstr ""
+
+msgid "Base"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "Return"
+msgstr ""
+
+msgid "Spatial accuracy"
+msgstr ""
+
+msgid "Area in production"
+msgstr ""
+
+msgid "Debug"
+msgstr ""
+
+msgid "Info"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Level"
+msgstr ""
+
+msgid "Allow users to hide message"
+msgstr ""
+
+msgid "Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again."
+msgstr ""
+
+msgid "Expiration date"
+msgstr ""
+
+msgid "After this date the message will not be displayed anymore"
+msgstr ""
+
+msgid "Is active"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Retry failed notifications"
+msgstr ""
+
+msgid "Land Matrix: New comment"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Created On"
+msgstr ""
+
+msgid "Sent on"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "CC"
+msgstr ""
+
+msgid "BCC"
+msgstr ""
+
+msgid "Reply To"
+msgstr ""
+
+msgid "Subject"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Body Plain Text"
+msgstr ""
+
+msgid "Body HTML"
+msgstr ""
+
+msgid "has posted a new comment on"
+msgstr ""
+
+msgid "Yours"
+msgstr ""
+
+msgid "Delete all Features"
+msgstr ""
+
+msgid "Debugging window (serialized value)"
+msgstr ""
+
+msgid "Edit comment"
+msgstr ""
+
+msgid "Save comment"
+msgstr ""
+
+msgid "Post"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+msgid "by"
+msgstr ""
+
+msgid "Reply"
+msgstr ""
+
+msgid "Choose a country"
+msgstr ""
+
+msgid "Deal #"
+msgstr ""
+
+msgid "News and Publications"
+msgstr ""
+
+msgid "Read more"
+msgstr ""
+
+#, python-format
+msgid "No news or publications available for %(t)s."
+msgstr ""
+
+msgid "All News and Publications"
+msgstr ""
+
+msgid "Go to"
+msgstr ""
+
+msgid "We currently have information about:"
+msgstr ""
+
+msgid "Tweets by"
+msgstr ""
+
+msgid "About"
+msgstr ""
+
+msgid "All rights reserved"
+msgstr ""
+
+msgid "Areas (as geojson)"
+msgstr ""
+
+msgid "Changes within timespan"
+msgstr ""
+
+msgid "Compare versions"
+msgstr ""
+
+msgid "Compare"
+msgstr ""
+
+msgid "Contribute"
+msgstr ""
+
+msgid "Country of registration"
+msgstr ""
+
+msgid "Current statistics"
+msgstr ""
+
+msgid "Deal history"
+msgstr ""
+
+msgid "Default filter"
+msgstr ""
+
+msgid "Download country profiles for"
+msgstr ""
+
+msgid "Excluded"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Produce"
+msgstr ""
+
+msgid "Not publicly visible"
+msgstr ""
+
+msgid "Not confidential"
+msgstr ""
+
+msgid "Confidential"
+msgstr ""
+
+msgid "Target country is set"
+msgstr ""
+
+msgid "Target country is NOT set"
+msgstr ""
+
+msgid "At least one data source"
+msgstr ""
+
+msgid "No data source"
+msgstr ""
+
+msgid "At least one investor"
+msgstr ""
+
+msgid "No investor"
+msgstr ""
+
+msgid "Included"
+msgstr ""
+
+msgid "Investor history"
+msgstr ""
+
+msgid "I've read and agree to the"
+msgstr ""
+
+msgid "Data policy"
+msgstr ""
+
+msgid "Latest tweets"
+msgstr ""
+
+msgid "Locations (as geojson)"
+msgstr ""
+
+msgid "Map settings"
+msgstr ""
+
+msgid "More details"
+msgstr ""
+
+msgid "Number of deal locations"
+msgstr ""
+
+msgid "Please click the nodes to get more details."
+msgstr ""
+
+msgid "Put each value on a new line, i.e. press enter between each name"
+msgstr ""
+
+msgid "Resources"
+msgstr ""
+
+msgid "Land Matrix region"
+msgstr ""
+
+msgid "Land Matrix regions"
+msgstr ""
+
+msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+msgstr ""
+
+msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+msgstr ""
+
+msgid "Dynamics overview charts"
+msgstr ""
+
+msgid "Country profiles"
+msgstr ""
+
+msgid "News & publications"
+msgstr ""
+
+#, python-brace-format
+msgid "Countries investing in {country}"
+msgstr ""
+
+msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+msgstr ""
+
+msgid "Displayed data"
+msgstr ""
+
+msgid "Go to map"
+msgstr ""
+
+msgid "Explore the map for information about land deals from global down to regional and country level."
+msgstr ""
+
+msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+msgstr ""
+
+msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+msgstr ""
+
+msgid "Analytical reports"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Learning opportunities"
+msgstr ""
+
+msgid "News"
+msgstr ""
+
+msgid "Publications"
+msgstr ""
+
+msgid "Русский"
+msgstr ""
+
+msgid "Page not found"
+msgstr ""
+
+msgid "The page you are looking for appears to have been moved, deleted or does not exist."
+msgstr ""
+
+msgid "Server Error"
+msgstr ""
+
+msgid "Looks like something went wrong"
+msgstr ""
+
+msgid "Clear filters"
+msgstr ""
+
+msgid "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
+msgstr ""
+
+msgid "Stop impersonation"
+msgstr ""
+
+msgid "Case statistics"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Login/Register"
+msgstr ""
+
+msgid "Stay informed"
+msgstr ""
+
+msgid "Get involved"
+msgstr ""
+
+msgid "FAQ"
+msgstr ""
+
+msgid "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google.com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve your experience.</p>"
+msgstr ""
+
+msgid "There is currently no content for this category."
+msgstr ""
+
+msgid "All categories"
+msgstr ""
+
+msgid "Responses for page"
+msgstr ""
+
+msgid "Submit Comment"
+msgstr ""
+
+msgid "Thanks for commenting"
+msgstr ""
+
+msgid "Thanks for posting your comment"
+msgstr ""
+
+msgid ""
+"\n"
+"      We have received your comment, and posted it on the web site.<br/>\n"
+"      You will be sent back to the article...\n"
+"      "
+msgstr ""
+
+msgid "Back to the article"
+msgstr ""
+
+msgid "Activate"
+msgstr ""
+
+msgid "Account activation failed"
+msgstr ""
+
+msgid "Activation complete"
+msgstr ""
+
+msgid "Your account is now activated."
+msgstr ""
+
+msgid "Activate account at"
+msgstr ""
+
+#, python-format
+msgid "Link is valid for %(expiration_days)s days."
+msgstr ""
+
+msgid "Account activation on"
+msgstr ""
+
+msgid "Activation failed"
+msgstr ""
+
+msgid "Your account could not be activated. Please try again."
+msgstr ""
+
+msgid "Registration closed"
+msgstr ""
+
+msgid "Registration is currently closed."
+msgstr ""
+
+msgid "Registration complete"
+msgstr ""
+
+msgid "You are now registered. Activation email sent."
+msgstr ""
+
+msgid "Register"
+msgstr ""
+
+msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Default filters are enabled"
+msgstr ""
+
+msgid "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data."
+msgstr ""
+
+msgid "Default filters are disabled"
+msgstr ""
+
+msgid "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets."
+msgstr ""
+
+msgid "Select a filter preset"
+msgstr ""
+
+msgid "Thanks for spending some quality time with the Web site today."
+msgstr ""
+
+msgid "Log in again"
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Your username and password didn't match. Please try again."
+msgstr ""
+
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr ""
+
+msgid "Please login to see this page."
+msgstr ""
+
+msgid "Forgot password?"
+msgstr ""
+
+msgid "Reset it"
+msgstr ""
+
+msgid "No registered user yet?"
+msgstr ""
+
+msgid "Password changed"
+msgstr ""
+
+msgid "Your password was changed successfully."
+msgstr ""
+
+msgid "Change password"
+msgstr ""
+
+msgid "Password reset complete"
+msgstr ""
+
+msgid "Your password has been reset successfully."
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid "Confirm password reset"
+msgstr ""
+
+msgid "Password reset failed"
+msgstr ""
+
+msgid "Password reset"
+msgstr ""
+
+msgid "If there's an account with the given email address, an email with password reset instructions has been sent."
+msgstr ""
+
+#, python-format
+msgid ""
+"\n"
+"Someone requested that the password be reset for the following account:\n"
+"\n"
+"%(site_name)s\n"
+"Username: %(user)s\n"
+"\n"
+"If this was a mistake, just ignore this email and nothing will happen.\n"
+"\n"
+"To reset your password, visit the following address:\n"
+msgstr ""
+
+msgid "Reset password"
+msgstr ""
+
+msgid "Share"
+msgstr ""

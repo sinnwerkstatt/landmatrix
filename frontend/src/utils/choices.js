@@ -84,6 +84,29 @@ export const intention_of_investment_map = {
   OTHER: ["Other", ""],
 };
 
+export const flat_intention_of_investment_map = {
+  BIOFUELS: "Biofuels",
+  FOOD_CROPS: "Food crops",
+  FODDER: "Fodder",
+  LIVESTOCK: "Livestock",
+  NON_FOOD_AGRICULTURE: "Non-food agricultural commodities",
+  AGRICULTURE_UNSPECIFIED: "Agriculture unspecified",
+
+  TIMBER_PLANTATION: "Timber plantation",
+  FOREST_LOGGING: "Forest logging / management",
+  CARBON: "For carbon sequestration/REDD",
+  FORESTRY_UNSPECIFIED: "Forestry unspecified",
+
+  MINING: "Mining",
+  OIL_GAS_EXTRACTION: "Oil / Gas extraction",
+  TOURISM: "Tourism",
+  INDUSTRY: "Industry",
+  CONVERSATION: "Conservation",
+  LAND_SPECULATION: "Land speculation",
+  RENEWABLE_ENERGY: "Renewable energy",
+  OTHER: "Other",
+};
+
 export const classification_choices = {
   GOVERNMENT: "Government",
   GOVERNMENT_INSTITUTION: "Government institution",

@@ -211,6 +211,8 @@ class LinkedImageBlock(ExternalLinkMixin, StructBlock):
         image_id = prep_val["image"]
         prep_val["image"] = {"id": image_id, "url": url}
         prep_val["external"] = self._is_external_link(prep_val["url"])
+        prep_val["caption"] = expand_db_html(prep_val.get("caption"))
+
         return prep_val
 
 

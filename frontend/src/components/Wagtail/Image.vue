@@ -1,6 +1,6 @@
 <template>
   <div class="widget-image">
-    <a v-if="link" :href="link" :target="{ _blank: externalLink }">
+    <a v-if="link" :href="link" :target="[externalLink ? '_blank' : '_self']">
       <img :src="path" class="image" :alt="alt" />
     </a>
     <img v-else :src="path" class="image" :alt="alt" />

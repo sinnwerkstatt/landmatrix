@@ -225,25 +225,6 @@
         investor: { involvements: [] },
         title: "Deal",
         activeTab: "#locations",
-        tabs: {
-          locations: this.$t("Locations"),
-          general: this.$t("General info"),
-          contracts: this.$t("Contracts"),
-          employment: this.$t("Employment"),
-          investor_info: this.$t("Investor info"),
-          data_sources: this.$t("Data sources"),
-          local_communities: this.$t("Local communities / indigenous peoples"),
-          former_use: this.$t("Former use"),
-          produce_info: this.$t("Produce info"),
-          water: this.$t("Water"),
-          gender_related_info: this.$t("Gender-related info"),
-          guidelines_and_principles: this.$t("Guidelines & Principles"),
-          overall_comment: this.$t("Overall comment"),
-          blank1: null,
-          history: this.$t("Deal History"),
-          comments: this.$t("Comments"),
-          actions: this.$t("Actions"),
-        },
       };
     },
     apollo: {
@@ -310,6 +291,27 @@
       },
     },
     computed: {
+      tabs() {
+        return {
+          locations: this.$t("Locations"),
+          general: this.$t("General info"),
+          contracts: this.$t("Contracts"),
+          employment: this.$t("Employment"),
+          investor_info: this.$t("Investor info"),
+          data_sources: this.$t("Data sources"),
+          local_communities: this.$t("Local communities / indigenous peoples"),
+          former_use: this.$t("Former use"),
+          produce_info: this.$t("Produce info"),
+          water: this.$t("Water"),
+          gender_related_info: this.$t("Gender-related info"),
+          guidelines_and_principles: this.$t("Guidelines & Principles"),
+          overall_comment: this.$t("Overall comment"),
+          blank1: null,
+          history: this.$t("Deal History"),
+          comments: this.$t("Comments"),
+          actions: this.$t("Actions"),
+        };
+      },
       userAuthenticated() {
         return this.$store.state.page.user?.is_authenticated;
       },

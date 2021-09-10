@@ -52,6 +52,7 @@
   import CharField from "./Display/TextField";
   import EmailField from "./Display/TextField";
   import TextField from "./Display/TextField";
+  import StatusField from "./Display/StatusField";
   import URLField from "./Display/TextField";
   import FieldLabel from "./FieldLabel";
 
@@ -85,6 +86,7 @@
       ManyToManyField,
       NullBooleanField,
       PointField,
+      StatusField,
       TextField,
       URLField,
       OCIDField,

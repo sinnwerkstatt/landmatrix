@@ -1,12 +1,17 @@
 .multiselect {
   min-width: 200px;
   font-size: 1rem !important;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
 }
 
 .multiselect__single {
   font-size: 1rem !important;
 }
 
+.multiselect__tags {
+  border: unset;
+}
 .multiselect__tag {
   background: var(--color-lm-orange);
 }

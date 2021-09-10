@@ -73,17 +73,17 @@
                 mode="range"
               />
               <br />
-              <!--              <multiselect-->
-              <!--                v-if="user_is_staff"-->
-              <!--                v-model="created_by"-->
-              <!--                :options="users"-->
-              <!--                :multiple="false"-->
-              <!--                :close-on-select="true"-->
-              <!--                :allow-empty="true"-->
-              <!--                placeholder="User"-->
-              <!--                track-by="id"-->
-              <!--                label="username"-->
-              <!--              />-->
+              <multiselect
+                v-if="user_is_staff"
+                v-model="created_by"
+                :allow-empty="true"
+                :close-on-select="true"
+                :multiple="false"
+                :options="users"
+                label="username"
+                placeholder="User"
+                track-by="id"
+              />
               <span @click="setSort('created_at')">{{ $t("Created") }}</span>
             </th>
             <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
@@ -94,17 +94,17 @@
                 mode="range"
               />
               <br />
-              <!--              <multiselect-->
-              <!--                v-if="user_is_staff"-->
-              <!--                v-model="modified_by"-->
-              <!--                :options="users"-->
-              <!--                :multiple="false"-->
-              <!--                :close-on-select="true"-->
-              <!--                :allow-empty="true"-->
-              <!--                placeholder="User"-->
-              <!--                track-by="id"-->
-              <!--                label="username"-->
-              <!--              />-->
+              <multiselect
+                v-if="user_is_staff"
+                v-model="modified_by"
+                :allow-empty="true"
+                :close-on-select="true"
+                :multiple="false"
+                :options="users"
+                label="username"
+                placeholder="User"
+                track-by="id"
+              />
               <span @click="setSort('modified_at')">{{ $t("Last modified") }}</span>
             </th>
             <th
@@ -132,6 +132,16 @@
                 asc: sortAscending,
               }"
             >
+              <multiselect
+                v-model="selected_combined_status"
+                :allow-empty="true"
+                :close-on-select="true"
+                :multiple="false"
+                :options="combined_status_choices"
+                :placeholder="$t('Status')"
+                label="name"
+                track-by="id"
+              />
               <input placeholder="Status" /><br />
               <span @click="setSort('status')">{{ $t("Status") }}</span>
             </th>
@@ -154,6 +164,17 @@
                 :value-classes="[]"
                 :wrapper-classes="[]"
               />
+              <div v-if="['created_at', 'modified_at'].includes(fieldName)">
+                <DisplayField
+                  :fieldname="fieldName.replace('_at', '_by')"
+                  :model="showDeals ? 'deal' : 'investor'"
+                  :object-id="obj.id"
+                  :show-label="false"
+                  :value="obj[fieldName.replace('_at', '_by')]"
+                  :value-classes="[]"
+                  :wrapper-classes="[]"
+                />
+              </div>
             </td>
           </tr>
         </tbody>
@@ -168,14 +189,16 @@
   import { sortAnything } from "$utils";
   import dayjs from "dayjs";
   import gql from "graphql-tag";
-  import DatePicker from "v-calendar/lib/components/date-picker.umd";
 
-  // // Register components in your 'main.js'
-  // Vue.component('calendar', Calendar)
-  // Vue.component('date-picker', DatePicker)
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+
+  dayjs.extend(isSameOrBefore);
+  dayjs.extend(isSameOrAfter);
 
   export default {
-    name: "Manager",
+    name: "Management",
     components: { LoadingPulse, DisplayField, DatePicker },
     metaInfo() {
       return { title: this.$t("Management") };
@@ -198,6 +221,7 @@
         modified_daterange: null,
         modified_by: null,
         fully_updated_daterange: null,
+        selected_combined_status: null,
       };
     },
     apollo: {
@@ -274,8 +298,15 @@
               id
               name
               created_at
+              created_by {
+                id
+                username
+              }
               modified_at
-
+              modified_by {
+                id
+                username
+              }
               status
               draft_status
               country {
@@ -315,6 +346,26 @@
       },
     },
     computed: {
+      combined_status_choices() {
+        return [
+          {
+            id: "DRAFT",
+            name: this.$t("Draft"),
+            filter: [{ field: "status", value: 1 }],
+          },
+          {
+            id: "LIVE",
+            name: this.$t("Live"),
+            filter: [
+              { field: "status", operation: "IN", value: [2, 3] },
+              { field: "draft_status", value: null },
+            ],
+          },
+
+          { id: "TO_REVIEW", name: this.$t("Submitted for review") },
+          { id: "TO_ACTIVATION", name: this.$t("Submitted for activation") },
+        ];
+      },
       user() {
         return this.$store.state.page.user;
       },
@@ -322,11 +373,63 @@
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
       objects() {
-        return sortAnything(
-          this.showDeals ? this.deals : this.investors,
+        let objects = this.showDeals ? this.deals : this.investors;
+        objects = sortAnything(
+          objects.map((o) => ({ ...o, combined_status: [o.status, o.draft_status] })),
           this.sortField,
           this.sortAscending
         );
+
+        if (this.selected_country)
+          objects = objects.filter((o) => o.country?.id === this.selected_country.id);
+        if (this.selected_region)
+          objects = objects.filter(
+            (o) => o.country?.fk_region?.id === this.selected_region.id
+          );
+        if (this.showDeals && this.selected_from_size)
+          objects = objects.filter((o) => o.deal_size >= this.selected_from_size);
+        if (this.showDeals && this.selected_to_size)
+          objects = objects.filter((o) => o.deal_size <= this.selected_to_size);
+        if (this.created_daterange)
+          objects = objects.filter(
+            (o) =>
+              dayjs(this.created_daterange.start).isSameOrBefore(o.created_at, "day") &&
+              dayjs(this.created_daterange.end).isSameOrAfter(o.created_at, "day")
+          );
+        if (this.created_by)
+          objects = objects.filter((o) => o.created_by?.id === this.created_by.id);
+
+        if (this.modified_daterange)
+          objects = objects.filter(
+            (o) =>
+              dayjs(this.modified_daterange.start).isSameOrBefore(
+                o.modified_at,
+                "day"
+              ) &&
+              dayjs(this.modified_daterange.end).isSameOrAfter(o.modified_at, "day")
+          );
+        if (this.modified_by)
+          objects = objects.filter((o) => o.modified_by?.id === this.modified_by.id);
+
+        if (this.fully_updated_daterange)
+          objects = objects.filter(
+            (o) =>
+              dayjs(this.fully_updated_daterange.start).isSameOrBefore(
+                o.fully_updated_at,
+                "day"
+              ) &&
+              dayjs(this.fully_updated_daterange.end).isSameOrAfter(
+                o.fully_updated_at,
+                "day"
+              )
+          );
+        // if (this.selected_combined_status) {}
+
+        // if (this.selected_combined_status) {
+        //   retfilters.push(...this.selected_combined_status.filter);
+        // }
+
+        return objects;
       },
       sidebarOptions() {
         const all_opts = [
@@ -353,102 +456,26 @@
       currentFilters() {
         /** @type GQLFilter[] */
         let retfilters = [];
-        if (this.selected_country)
-          retfilters.push({ field: "country_id", value: this.selected_country.id });
-
-        if (this.selected_region)
-          retfilters.push({
-            field: "country.fk_region_id",
-            value: this.selected_region.id,
-          });
-
-        if (this.showDeals && this.selected_from_size) {
-          retfilters.push({
-            field: "deal_size",
-            operation: "GE",
-            value: this.selected_from_size,
-          });
-        }
-        if (this.showDeals && this.selected_to_size) {
-          retfilters.push({
-            field: "deal_size",
-            operation: "LE",
-            value: this.selected_to_size,
-          });
-        }
-
-        if (this.created_daterange) {
-          retfilters.push(
-            {
-              field: "created_at",
-              operation: "GE",
-              value: dayjs(this.created_daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "created_at",
-              operation: "LE",
-              value: dayjs(this.created_daterange.end).format("YYYY-MM-DD"),
-            }
-          );
-        }
-        if (this.created_by)
-          retfilters.push({ field: "created_by", value: this.created_by.id });
-
-        if (this.modified_daterange) {
-          retfilters.push(
-            {
-              field: "modified_at",
-              operation: "GE",
-              value: dayjs(this.modified_daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "modified_at",
-              operation: "LE",
-              value: dayjs(this.modified_daterange.end).format("YYYY-MM-DD"),
-            }
-          );
-        }
-        if (this.modified_by)
-          retfilters.push({ field: "modified_by", value: this.modified_by.id });
-
-        if (this.fully_updated_daterange) {
-          retfilters.push(
-            {
-              field: "fully_updated_at",
-              operation: "GE",
-              value: dayjs(this.fully_updated_daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "fully_updated_at",
-              operation: "LE",
-              value: dayjs(this.fully_updated_daterange.end).format("YYYY-MM-DD"),
-            }
-          );
-        }
 
         // selected Tab
         switch (this.selectedTab) {
           case "todo_clarification":
             retfilters.push(
-              ...[
-                // { field: "workflowinfos.processed_by_receiver", value: false },
-                { field: "workflowinfos.draft_status_before", value: null },
-                { field: "workflowinfos.draft_status_after", value: null },
-                { field: "workflowinfos.to_user_id", value: this.user.id },
-              ]
+              // { field: "workflowinfos.processed_by_receiver", value: false },
+              { field: "workflowinfos.draft_status_before", value: null },
+              { field: "workflowinfos.draft_status_after", value: null },
+              { field: "workflowinfos.to_user_id", value: this.user.id }
             );
             break;
           case "todo_improve":
             retfilters.push(
-              ...[
-                { field: "draft_status", value: 1 },
-                { field: "current_draft.workflowinfos.draft_status_before", value: 2 },
-                { field: "current_draft.workflowinfos.draft_status_after", value: 1 },
-                {
-                  field: "current_draft.workflowinfos.to_user_id",
-                  value: this.user.id,
-                },
-              ]
+              { field: "draft_status", value: 1 },
+              { field: "current_draft.workflowinfos.draft_status_before", value: 2 },
+              { field: "current_draft.workflowinfos.draft_status_after", value: 1 },
+              {
+                field: "current_draft.workflowinfos.to_user_id",
+                value: this.user.id,
+              }
             );
             break;
           case "todo_review":
@@ -463,48 +490,43 @@
             break;
           case "requested_improvement":
             retfilters.push(
-              ...[
-                // { field: "workflowinfos.processed_by_receiver", value: false },
-                { field: "workflowinfos.draft_status_before", value: 2 },
-                { field: "workflowinfos.draft_status_after", value: 1 },
-                { field: "workflowinfos.from_user_id", value: this.user.id },
-              ]
+              // { field: "workflowinfos.processed_by_receiver", value: false },
+              { field: "workflowinfos.draft_status_before", value: 2 },
+              { field: "workflowinfos.draft_status_after", value: 1 },
+              { field: "workflowinfos.from_user_id", value: this.user.id }
             );
             break;
           case "requested_feedback":
             retfilters.push(
-              ...[
-                // { field: "workflowinfos.processed_by_receiver", value: false },
-                { field: "workflowinfos.draft_status_before", value: null },
-                { field: "workflowinfos.draft_status_after", value: null },
-                { field: "workflowinfos.from_user_id", value: this.user.id },
-              ]
+              // { field: "workflowinfos.processed_by_receiver", value: false },
+              { field: "workflowinfos.draft_status_before", value: null },
+              { field: "workflowinfos.draft_status_after", value: null },
+              { field: "workflowinfos.from_user_id", value: this.user.id }
             );
             break;
           case "my_drafts":
-            retfilters.push({
-              field: "current_draft.created_by_id",
-              value: this.user.id,
-            });
+            retfilters.push(
+              { field: "draft_status", exclusion: true, value: null },
+              {
+                field: "current_draft.created_by_id",
+                value: this.user.id,
+              }
+            );
             break;
           case "created_by_me":
             retfilters.push({ field: "created_by_id", value: this.user.id });
             break;
           case "reviewed_by_me":
             retfilters.push(
-              ...[
-                { field: "workflowinfos.draft_status_before", value: 2 },
-                { field: "workflowinfos.draft_status_after", value: 3 },
-                { field: "workflowinfos.from_user_id", value: this.user.id },
-              ]
+              { field: "workflowinfos.draft_status_before", value: 2 },
+              { field: "workflowinfos.draft_status_after", value: 3 },
+              { field: "workflowinfos.from_user_id", value: this.user.id }
             );
             break;
           case "activated_by_me":
             retfilters.push(
-              ...[
-                { field: "workflowinfos.draft_status_before", value: 3 },
-                { field: "workflowinfos.from_user_id", value: this.user.id },
-              ]
+              { field: "workflowinfos.draft_status_before", value: 3 },
+              { field: "workflowinfos.from_user_id", value: this.user.id }
             );
             break;
           case "all_drafts":
@@ -529,7 +551,7 @@
               "modified_at",
               "fully_updated_at",
               "workflowinfos",
-              "status",
+              "combined_status",
             ]
           : [
               "id",
@@ -538,7 +560,7 @@
               "created_at",
               "modified_at",
               "workflowinfos",
-              "status",
+              "combined_status",
             ];
       },
     },

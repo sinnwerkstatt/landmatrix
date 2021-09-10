@@ -30,12 +30,10 @@
     },
     watch: {
       global_map_of_investments(newV) {
-        console.log(newV);
+        doTheThing("#svg", newV);
       },
     },
-    mounted() {
-      doTheThing("#svg", this.global_map_of_investments);
-    },
+    mounted() {},
     methods: {},
   };
 </script>

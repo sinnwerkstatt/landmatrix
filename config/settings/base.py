@@ -9,9 +9,15 @@ env = environ.Env()
 env.read_env(BASE_DIR(".env"))
 
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", _("English")), ("es", _("Español")), ("fr", _("Français"))]
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
+    ("en", _("English")),
+    ("es", _("Español")),
+    ("fr", _("Français")),
+    ("ru", _("Русский")),
+]
+
 TIME_ZONE = "Europe/Berlin"
-USE_I18N = True
+WAGTAIL_I18N_ENABLED = USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 SITE_ID = 1

@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.utils import translation
 from graphql import GraphQLResolveInfo
 
 from apps.blog.models import BlogPage, BlogCategory
@@ -23,5 +24,6 @@ def resolve_blogpage(obj: Any, info: GraphQLResolveInfo, id):
     return BlogPage.objects.get(id=id).get_dict("max-900x900")
 
 
-def resolve_blogcategories(obj: Any, info: GraphQLResolveInfo):
-    return BlogCategory.objects.all()
+def resolve_blogcategories(obj: Any, info: GraphQLResolveInfo, language="en"):
+    with translation.override(language):
+        return BlogCategory.objects.all()

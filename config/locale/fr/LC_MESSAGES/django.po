@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-05 11:18+0200\n"
+"POT-Creation-Date: 2021-09-07 00:08+0200\n"
 "PO-Revision-Date: 2020-07-03 15:24+0200\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2157,14 +2157,29 @@ msgstr "Lieu"
 msgid "Description"
 msgstr "Description"
 
+msgid "Draft"
+msgstr "Projet"
+
+msgid "Live"
+msgstr "Démarrer"
+
+msgid "Review"
+msgstr "Examiner"
+
+msgid "Activation"
+msgstr "Activation"
+
+msgid "Rejected"
+msgstr "Rejeté"
+
+msgid "To Delete"
+msgstr "A supprimer"
+
 msgid "Active"
 msgstr "Actif"
 
 msgid "Overwritten"
 msgstr "Ecrasé"
-
-msgid "Rejected"
-msgstr "Rejeté"
 
 msgid "To delete"
 msgstr "A supprimer"
@@ -2304,9 +2319,6 @@ msgstr "Indice de perception de la corruption"
 msgid "High income"
 msgstr "Revenu élevé"
 
-msgid "Is target country"
-msgstr "Est un pays cible"
-
 msgid "Locations"
 msgstr ""
 
@@ -2372,21 +2384,6 @@ msgstr ""
 
 msgid "Comment why this deal is private"
 msgstr "Commentaire relatif aux raisons derrières la privacité de la transaction"
-
-msgid "Draft"
-msgstr "Projet"
-
-msgid "Live"
-msgstr "Démarrer"
-
-msgid "Review"
-msgstr "Examiner"
-
-msgid "Activation"
-msgstr "Activation"
-
-msgid "To Delete"
-msgstr "A supprimer"
 
 msgid "Created"
 msgstr "Créée"
@@ -2580,15 +2577,6 @@ msgstr "Implication de l’investisseur historique dans l’activité"
 
 msgid "Historical Investor Activity Involvements"
 msgstr "Implications de l’investisseur historique dans l’activité"
-
-msgid "date created"
-msgstr "date de création"
-
-msgid "user"
-msgstr "utilisateur"
-
-msgid "comment"
-msgstr "commentaire"
 
 msgid "Observatories"
 msgstr "Observatoires"
@@ -2995,6 +2983,13 @@ msgstr "Nouveautés"
 msgid "Publications"
 msgstr "Publications"
 
+#, python-brace-format
+msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+msgstr ""
+
+msgid "Русский"
+msgstr ""
+
 msgid "Page not found"
 msgstr "Page non trouvée"
 
@@ -3217,6 +3212,18 @@ msgstr "Réinitialiser le mot de passe"
 
 msgid "Share"
 msgstr "Partager"
+
+#~ msgid "Is target country"
+#~ msgstr "Est un pays cible"
+
+#~ msgid "date created"
+#~ msgstr "date de création"
+
+#~ msgid "user"
+#~ msgstr "utilisateur"
+
+#~ msgid "comment"
+#~ msgstr "commentaire"
 
 #~ msgid "Company"
 #~ msgstr "Entreprise"

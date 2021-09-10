@@ -42,15 +42,20 @@ export const blogpages_query = gql`
   }
 `;
 
-export const blogcategories_query = gql`
-  query {
-    blogcategories {
-      id
-      name
-      slug
+export const blogcategories_query = {
+  query: gql`
+    query ($language: String) {
+      blogcategories(language: $language) {
+        id
+        name
+        slug
+      }
     }
-  }
-`;
+  `,
+  variables() {
+    return { language: this.$i18n.locale };
+  },
+};
 
 export const investor_gql_query = gql`
   query Investor(
