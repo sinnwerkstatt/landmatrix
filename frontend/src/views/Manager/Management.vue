@@ -65,7 +65,7 @@
               <input v-model="selected_to_size" placeholder="To size" /><br />
               <span @click="setSort('deal_size')">{{ $t("Deal size") }}</span>
             </th>
-            <th :class="{ selected: sortField === 'created_at', asc: sortAscending }">
+            <th>
               <DatePicker
                 v-model="created_daterange"
                 :input-props="{ style: 'width: 100%' }"
@@ -84,7 +84,17 @@
                 placeholder="User"
                 track-by="id"
               />
-              <span @click="setSort('created_at')">{{ $t("Created") }}</span>
+              <span
+                :class="{ selected: sortField === 'created_at', asc: sortAscending }"
+                @click="setSort('created_at')"
+                >{{ $t("Created at") }}</span
+              >
+              /
+              <span
+                :class="{ selected: sortField === 'created_by', asc: sortAscending }"
+                @click="setSort('created_by')"
+                >{{ $t("Created by") }}</span
+              >
             </th>
             <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
               <DatePicker
@@ -105,7 +115,17 @@
                 placeholder="User"
                 track-by="id"
               />
-              <span @click="setSort('modified_at')">{{ $t("Last modified") }}</span>
+              <span
+                :class="{ selected: sortField === 'modified_at', asc: sortAscending }"
+                @click="setSort('modified_at')"
+                >{{ $t("Last modified at") }}</span
+              >
+              /
+              <span
+                :class="{ selected: sortField === 'modified_by', asc: sortAscending }"
+                @click="setSort('modified_by')"
+                >{{ $t("Last modified by") }}</span
+              >
             </th>
             <th
               v-if="showDeals"
@@ -659,6 +679,27 @@
       //border-collapse: separate;
       tr th {
         white-space: nowrap;
+      }
+      th {
+        color: white;
+        span.selected {
+          color: var(--color-lm-orange);
+          &.asc:after {
+            margin-left: 0.3rem;
+            font-weight: 600;
+            content: "\f077";
+            //noinspection CssNoGenericFontName
+            font-family: "Font Awesome 5 Free";
+          }
+
+          &:not(.asc):after {
+            margin-left: 0.3rem;
+            font-weight: 600;
+            content: "\f078";
+            //noinspection CssNoGenericFontName
+            font-family: "Font Awesome 5 Free";
+          }
+        }
       }
 
       .comments_header {
