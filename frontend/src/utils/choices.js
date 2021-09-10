@@ -144,6 +144,25 @@ export const draft_status_map = {
   5: "Deleted",
 };
 
+export const combined_status_options = {
+  DRAFT: "Draft", // status==1
+  REVIEW: "Submitted for Review", // status==1, draft_status == 2
+  ACTIVATION: "Submitted for Activation", // status==1, draft_status == 3
+  LIVE: "Live", // status == 2 || status == 3
+  LIVE_AND_DRAFT: "Live + Draft", // (status == 2 || status == 3) || draft_status != null
+  DELETED: "Deleted", // status ==4
+};
+
+export const combined_status_fn = (status, draft_status) => {
+  if (status === 1 && draft_status === 1) return "DRAFT";
+  if (status === 1 && draft_status === 2) return "REVIEW";
+  if (status === 1 && draft_status === 3) return "ACTIVATION";
+  if ([2, 3].includes(status) && draft_status === null) return "LIVE";
+  if ([2, 3].includes(status) && draft_status !== null) return "LIVE_AND_DRAFT";
+  if (status === 4) return "DELETED";
+  throw Error(`Invalid status ${status} ${draft_status}`);
+};
+
 export const confidential_reason_choices = {
   TEMPORARY_REMOVAL: "Temporary removal from PI after criticism",
   RESEARCH_IN_PROGRESS: "Research in progress",

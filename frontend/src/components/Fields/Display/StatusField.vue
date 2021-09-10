@@ -1,11 +1,9 @@
 <template>
-  <div>
-    {{ display_status }}
-  </div>
+  <span>{{ display_status }}</span>
 </template>
 
 <script>
-  import { draft_status_map, status_map } from "$utils/choices";
+  import { combined_status_fn, combined_status_options } from "$utils/choices";
 
   export default {
     props: {
@@ -15,9 +13,9 @@
     },
     computed: {
       display_status() {
-        return this.value[1]
-          ? draft_status_map[this.value[1]]
-          : status_map[this.value[0]];
+        return this.$t(
+          combined_status_options[combined_status_fn(this.value[0], this.value[1])]
+        );
       },
     },
     methods: {},

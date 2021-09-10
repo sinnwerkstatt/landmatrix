@@ -142,13 +142,12 @@
                 label="name"
                 track-by="id"
               />
-              <input placeholder="Status" /><br />
               <span @click="setSort('status')">{{ $t("Status") }}</span>
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="obj in objects" :key="obj.id">
+          <tr v-for="obj in rows" :key="obj.id">
             <td
               v-for="fieldName in fields"
               :key="`${obj.id}-${fieldName}`"
@@ -179,6 +178,7 @@
           </tr>
         </tbody>
       </table>
+      <scroll-loader :loader-disable="disableLoader" :loader-method="getPagedRows" />
     </div>
   </div>
 </template>
@@ -187,6 +187,7 @@
   import LoadingPulse from "$components/Data/LoadingPulse";
   import DisplayField from "$components/Fields/DisplayField";
   import { sortAnything } from "$utils";
+  import { combined_status_options } from "$utils/choices";
   import dayjs from "dayjs";
   import gql from "graphql-tag";
 
@@ -209,6 +210,11 @@
         users: [],
         deals: [],
         investors: [],
+        // scrollLoader
+        rows: [],
+        page: 1,
+        disableLoader: false,
+        // sorting and filtering
         sortField: "id",
         sortAscending: false,
         selectedTab: "my_drafts",
@@ -347,24 +353,10 @@
     },
     computed: {
       combined_status_choices() {
-        return [
-          {
-            id: "DRAFT",
-            name: this.$t("Draft"),
-            filter: [{ field: "status", value: 1 }],
-          },
-          {
-            id: "LIVE",
-            name: this.$t("Live"),
-            filter: [
-              { field: "status", operation: "IN", value: [2, 3] },
-              { field: "draft_status", value: null },
-            ],
-          },
-
-          { id: "TO_REVIEW", name: this.$t("Submitted for review") },
-          { id: "TO_ACTIVATION", name: this.$t("Submitted for activation") },
-        ];
+        return Object.entries(combined_status_options).map(([k, v]) => ({
+          id: k,
+          name: this.$t(v),
+        }));
       },
       user() {
         return this.$store.state.page.user;
@@ -374,6 +366,8 @@
       },
       objects() {
         let objects = this.showDeals ? this.deals : this.investors;
+        if (!objects || objects.length === 0) return [];
+
         objects = sortAnything(
           objects.map((o) => ({ ...o, combined_status: [o.status, o.draft_status] })),
           this.sortField,
@@ -423,11 +417,33 @@
                 "day"
               )
           );
-        // if (this.selected_combined_status) {}
-
-        // if (this.selected_combined_status) {
-        //   retfilters.push(...this.selected_combined_status.filter);
-        // }
+        if (this.selected_combined_status) {
+          switch (this.selected_combined_status.id) {
+            case "DRAFT":
+              objects = objects.filter((o) => o.status === 1 && o.draft_status === 1);
+              break;
+            case "REVIEW":
+              objects = objects.filter((o) => o.status === 1 && o.draft_status === 2);
+              break;
+            case "ACTIVATION":
+              objects = objects.filter((o) => o.status === 1 && o.draft_status === 3);
+              break;
+            case "LIVE":
+              objects = objects.filter(
+                (o) => [2, 3].includes(o.status) && o.draft_status === null
+              );
+              break;
+            case "LIVE_AND_DRAFT":
+              objects = objects.filter(
+                (o) => [2, 3].includes(o.status) && o.draft_status
+              );
+              break;
+            case "DELETED":
+              objects = objects.filter((o) => o.status === 4);
+              break;
+          }
+          console.log(this.selected_combined_status);
+        }
 
         return objects;
       },
@@ -564,7 +580,22 @@
             ];
       },
     },
+    watch: {
+      objects() {
+        this.page = 0;
+        this.rows = [];
+        this.getPagedRows();
+      },
+    },
     methods: {
+      getPagedRows() {
+        const PAGESIZE = 20;
+        let startIndex = (this.page - 1) * PAGESIZE;
+        let endIndex = Math.min(this.page * PAGESIZE, this.objects.length);
+        this.disableLoader = this.page * PAGESIZE > this.objects.length;
+        this.page++;
+        this.rows = [...this.rows, ...this.objects.slice(startIndex, endIndex)];
+      },
       setSort(field) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
