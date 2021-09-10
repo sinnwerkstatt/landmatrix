@@ -69,6 +69,7 @@ const router = new Router({
       meta: { hideBreadcrumbs: true },
     },
     // deal
+    { path: "/deal/", redirect: { name: "list_deals" } },
     {
       path: "/deal/add/",
       name: "deal_add",
@@ -98,6 +99,7 @@ const router = new Router({
       meta: { hideBreadcrumbs: true },
     },
     // investor
+    { path: "/investor/", redirect: { name: "list_investors" } },
     {
       path: "/investor/add/",
       name: "investor_add",
@@ -149,8 +151,6 @@ const router = new Router({
     { path: "/data/", redirect: { name: "list_deals" } },
     { path: "/data/investors/", redirect: { name: "list_investors" } },
     { path: "/list/", redirect: { name: "list_deals" } },
-    { path: "/deal/", redirect: { name: "list_deals" } },
-    { path: "/investor/", redirect: { name: "list_investors" } },
     { path: "/stay-informed/:rest?", redirect: "/resources/:rest?" },
     { path: "/partners-and-donors", redirect: "/about/partners-and-donors" },
     { path: "/privacy-policy", redirect: "/about/privacy-policy" },

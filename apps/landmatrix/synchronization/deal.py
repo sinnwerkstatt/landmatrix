@@ -738,6 +738,7 @@ def _create_locations(deal, groups):
     ACCURACY_MAP = {
         None: "",
         "Country": "COUNTRY",
+        "País": "COUNTRY",
         "Administrative region": "ADMINISTRATIVE_REGION",
         "Región administrativa": "ADMINISTRATIVE_REGION",
         "Région administrative": "ADMINISTRATIVE_REGION",
