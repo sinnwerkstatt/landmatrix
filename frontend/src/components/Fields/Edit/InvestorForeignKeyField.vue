@@ -86,7 +86,12 @@
     apollo: {
       investors: gql`
         query {
-          investors(sort: "name", limit: 0, subset: UNFILTERED) {
+          investors(
+            sort: "name"
+            limit: 0
+            subset: UNFILTERED
+            filters: [{ field: "status", value: 4, exclusion: true }]
+          ) {
             id
             name
           }
