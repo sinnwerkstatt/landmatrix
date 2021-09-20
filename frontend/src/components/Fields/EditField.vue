@@ -230,10 +230,12 @@
     }
 
     tr.is-current {
+      $radius: 5px;
+      border-radius: $radius;
+
       td {
         background: var(--color-lm-orange-light-10);
 
-        $radius: 5px;
         &:first-child {
           border-top-left-radius: $radius;
           border-bottom-left-radius: $radius;

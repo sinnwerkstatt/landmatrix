@@ -59,9 +59,6 @@ const myMixin = {
       this.updateEntries();
     },
     updateEntries() {
-      if (this.filteredVals.length <= 1) {
-        this.current = this.filteredVals.length - 1;
-      }
       this.vals = this.vals.map((v, i) => {
         let current = i === this.current ? { current: true } : {};
         delete v.current;
@@ -70,11 +67,12 @@ const myMixin = {
       this.$emit("input", this.filteredVals);
     },
     addEntry() {
+      this.current = null;
       this.vals.push({});
       this.updateEntries();
     },
     removeEntry(index) {
-      this.current = Math.min(this.current, this.vals.length - 2);
+      if (this.current === this.vals.length - 1) this.current = null;
       this.vals.splice(index, 1);
       this.updateEntries();
     },
