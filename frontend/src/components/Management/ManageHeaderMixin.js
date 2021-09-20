@@ -34,8 +34,8 @@ const ManageHeaderMixin = {
       submit_to_delete_title:
         !this.objectVersion && this.object.status === 4
           ? this.otype === "deal"
-            ? this.$t("Undelete deal")
-            : this.$t("Undelete investor")
+            ? this.$t("Reactivate deal")
+            : this.$t("Reactivate investor")
           : this.otype === "deal"
           ? this.$t("Delete deal")
           : this.$t("Delete investor"),
@@ -126,8 +126,8 @@ const ManageHeaderMixin = {
     get_delete_description() {
       if (this.is_deleted)
         return this.otype === "deal"
-          ? this.$t("Undelete this deal as active deal")
-          : this.$t("Undelete this investor as active investor");
+          ? this.$t("Reactivate this deal")
+          : this.$t("Reactivate this investor");
       if (this.objectVersion && this.has_active) {
         // is draft and has active
         return this.otype === "deal"
