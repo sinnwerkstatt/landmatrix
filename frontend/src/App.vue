@@ -10,20 +10,21 @@
   </div>
 </template>
 
-<script>
-  import BreadcrumbBar from "$components/BreadcrumbBar";
-  import Footer from "$components/Footer";
-  import Messages from "$components/Messages";
-  import Navbar from "$components/Navbar";
+<script lang="ts">
+  import Vue from "vue";
+  import BreadcrumbBar from "$components/BreadcrumbBar.vue";
+  import Footer from "$components/Footer.vue";
+  import Messages from "$components/Messages.vue";
+  import Navbar from "$components/Navbar.vue";
 
-  export default {
+  export default Vue.extend({
     name: "Landmatrix",
     components: { Navbar, Messages, BreadcrumbBar, Footer },
     metaInfo: {
       title: "Land Matrix",
       titleTemplate: "%s | Land Matrix",
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

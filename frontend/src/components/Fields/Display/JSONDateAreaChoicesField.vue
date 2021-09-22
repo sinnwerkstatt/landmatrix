@@ -11,14 +11,15 @@
 </template>
 
 <script>
+  import Vue from "vue";
   import JSONFieldMixin from "../JSONFieldMixin";
 
-  export default {
+  export default Vue.extend({
     mixins: [JSONFieldMixin],
     data() {
       return {
         vals: this.value ? this.value : [{ date: null, value: null }],
       };
     },
-  };
+  });
 </script>

@@ -1,4 +1,4 @@
-export function is_authorized(obj) {
+export function is_authorized(obj): boolean {
   const { id, role } = this.$store.state.page.user;
   switch (obj.draft_status) {
     case null: // anybody who has a ROLE

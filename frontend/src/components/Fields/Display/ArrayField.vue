@@ -4,18 +4,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+  import Vue from "vue";
   import { flatten_choices } from "$utils";
   import { intention_of_investment_map } from "$utils/choices";
 
-  export default {
+  export default Vue.extend({
     props: {
       formfield: { type: Object, required: true },
       value: { type: Array, required: true },
       model: { type: String, required: true },
     },
     methods: {
-      parseValues: function (value) {
+      parseValues(value) {
         if (this.formfield.name === "current_intention_of_investment") {
           return value
             .map((ioi) => {
@@ -40,5 +41,5 @@
         return ret;
       },
     },
-  };
+  });
 </script>
