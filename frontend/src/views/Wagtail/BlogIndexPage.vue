@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageTitle>{{ $t(pageTitle) }}</PageTitle>
+    <PageTitle><span v-html="$t(pageTitle)"></span></PageTitle>
     <div class="container">
       <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
       <!--    <div class="row " v-if="tag">-->
@@ -66,7 +66,6 @@
     data() {
       return {
         blogpages: null,
-        tag: null,
         blogcategories: [],
       };
     },
@@ -74,6 +73,9 @@
     computed: {
       category() {
         return this.$route.query.category || null;
+      },
+      tag() {
+        return this.$route.query.tag || null;
       },
       blogcategories_with_all() {
         return [{ slug: null, name: "All categories" }, ...this.blogcategories];
@@ -92,8 +94,7 @@
         return this.blogpages;
       },
       pageTitle() {
-        let title = this.$store.state.page.wagtailPage.title;
-        this.tag = this.$route.query.tag || null;
+        let title = this.$t(this.$store.state.page.wagtailPage.title);
         if (this.tag) {
           title += ` &nbsp;&nbsp;<small><i class="fas fa-tags"></i> ${this.tag}</small>`;
         }
