@@ -20,12 +20,12 @@
         <FilterCollapse :init-expanded="true" :title="$t('Download')">
           <ul>
             <li>
-              <a :href="download_link('xlsx')">
+              <a :href="download_link('xlsx')" @click="trackDownload('xlsx')">
                 <i class="fas fa-file-download" /> XLSX
               </a>
             </li>
             <li>
-              <a :href="download_link('csv')">
+              <a :href="download_link('csv')" @click="trackDownload('csv')">
                 <i class="fas fa-file-download" /> CSV
               </a>
             </li>
@@ -70,6 +70,25 @@
         let filters = JSON.stringify(this.$store.getters.filtersForGQL);
         let subset = this.$store.state.filters.publicOnly ? "PUBLIC" : "ACTIVE";
         return `/api/legacy_export/?filters=${filters}&subset=${subset}&format=${format}`;
+      },
+      trackDownload(format) {
+        let name = "Global";
+        const country_id = this.$store.state.filters.filters.country_id;
+        const region_id = this.$store.state.filters.filters.region_id;
+        if (country_id) {
+          name = this.$store.getters.getCountryOrRegion({
+            type: "country",
+            id: country_id,
+          }).name;
+        }
+        if (region_id) {
+          name = this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: region_id,
+          }).name;
+        }
+
+        window._paq.push(["trackEvent", "Downloads", format, name]);
       },
     },
   };
