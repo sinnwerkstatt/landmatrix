@@ -13,7 +13,7 @@ description = "LandMatrix"
 python = "^3.6"
 Django = "<4"
 djangorestframework = "<4"
-wagtail = "<2.14"
+wagtail = "<2.15"
 psycopg2-binary = "*"
 
 fastjsonschema = "*"
