@@ -1765,10 +1765,17 @@ description = "Translates Wagtail CMS models using a registration approach."
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
 
 [package.dependencies]
 django-modeltranslation = ">=0.13"
 wagtail = ">=1.12"
+
+[package.source]
+type = "git"
+url = "https://github.com/infoportugal/wagtail-modeltranslation"
+reference = "master"
+resolved_reference = "c0c3788628b9d6c5bb3f6c3d06dbfd483c2b2a2a"
 
 [[package]]
 name = "wagtail-orderable"
@@ -1871,7 +1878,7 @@ production = ["gunicorn", "sentry_sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "045e0d5e1073d99d5929dd58889de5816a17eecb92b93f6f89dc45aee2fc236f"
+content-hash = "f2337c597f3f9318f92f61adf6cc30dd380e18a2ae29e45c6e7e60a6fc2538ef"
 
 [metadata.files]
 amqp = [
@@ -2818,10 +2825,7 @@ wagtail = [
     {file = "wagtail-2.14.1-py3-none-any.whl", hash = "sha256:45de88c0573baee1517cebb86b3102b5f77778791c5fba8fada32fbc4e47e756"},
     {file = "wagtail-2.14.1.tar.gz", hash = "sha256:e4bec0ecb24da6aa3bbe6feb6e62518c8d155d86a3bb26b3d7fcaa01688d4c99"},
 ]
-wagtail-modeltranslation = [
-    {file = "wagtail-modeltranslation-0.10.17.tar.gz", hash = "sha256:0bcbcf39fe009828b1f2dc28025ba99c489d4533abc4cbcd29cf6450a85cc929"},
-    {file = "wagtail_modeltranslation-0.10.17-py3-none-any.whl", hash = "sha256:d696a798f9e2844fa0ee3fefe6c4365bd9873f45da9d24c1da8e284c508340fc"},
-]
+wagtail-modeltranslation = []
 wagtail-orderable = [
     {file = "wagtail-orderable-1.0.3.tar.gz", hash = "sha256:c72c99f51bfff2edfe2ea601d4c4f1b4af6677d15d35bfeb94e63c7753cf53ad"},
     {file = "wagtail_orderable-1.0.3-py3-none-any.whl", hash = "sha256:bccf80cfe5ca3bf0a13205f45e05980dc300ae2a48dbb87bd7c2f5c1d908260c"},
