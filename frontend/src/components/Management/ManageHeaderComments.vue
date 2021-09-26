@@ -7,21 +7,21 @@
           <textarea
             ref="comment"
             v-model="comment"
-            rows="2"
             required="required"
+            rows="2"
           ></textarea>
         </div>
         <div class="send">
           <span>{{ $t("Send to:") }}</span>
           <multiselect
             v-model="send_to_user"
-            :options="users"
-            :multiple="false"
-            :close-on-select="true"
             :allow-empty="true"
+            :close-on-select="true"
+            :custom-label="(u) => `${u.full_name} (${u.username})`"
+            :multiple="false"
+            :options="users"
             placeholder="Send to"
             track-by="id"
-            :custom-label="(u) => `${u.full_name} (${u.username})`"
           />
           <a class="btn btn-default" @click.prevent="add_comment">
             {{ $t("Send") }}

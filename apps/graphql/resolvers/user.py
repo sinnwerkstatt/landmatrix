@@ -35,7 +35,7 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     if not role:
         raise HttpError(message="Not allowed")
 
-    users = User.objects.exclude(id=current_user.id)
+    users = User.objects.exclude(id=current_user.id).filter(is_active=True)
 
     # this is implemented in Python, not in SQL, to support the "full_name"
     reverse = False
