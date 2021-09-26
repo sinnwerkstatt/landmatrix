@@ -284,7 +284,10 @@ def object_delete(
         if obj.versions.count() == 0 and obj.status == STATUS["DRAFT"]:
             Object.objects.get(id=obj.id).delete()
 
-        if obj.versions.count() and not obj.versions[0].serialized_data["draft_status"]:
+        if (
+            obj.versions.count()
+            and not obj.versions.all()[0].serialized_data["draft_status"]
+        ):
             # reset the Live version to "not having a draft" if we delete the draft.
             Object.objects.filter(id=obj_id).update(draft_status=None)
 

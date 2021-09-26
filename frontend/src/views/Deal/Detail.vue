@@ -246,7 +246,7 @@
               name: "deal_detail",
               params: {
                 dealId: this.dealId,
-                dealVersion: deal.versions[0].id,
+                dealVersion: deal.versions[0]?.id,
               },
             });
           return deal;

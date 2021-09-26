@@ -301,7 +301,7 @@
               name: "investor_detail",
               params: {
                 investorId: this.investorId,
-                investorVersion: investor.versions[0].id,
+                investorVersion: investor.versions[0]?.id,
               },
             });
 
