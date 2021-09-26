@@ -322,7 +322,7 @@
             <b-form-radio
               v-model="forest_concession"
               name="forest_concessionRadio"
-              :value="true"
+              :value="null"
             >
               {{ $t("Included") }}
             </b-form-radio>
@@ -332,6 +332,13 @@
               :value="false"
             >
               {{ $t("Excluded") }}
+            </b-form-radio>
+            <b-form-radio
+              v-model="forest_concession"
+              name="forest_concessionRadio"
+              :value="true"
+            >
+              {{ $t("Only") }}
             </b-form-radio>
           </b-form-group>
         </FilterCollapse>

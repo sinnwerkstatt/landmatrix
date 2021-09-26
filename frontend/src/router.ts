@@ -4,9 +4,9 @@ import store from "./store";
 
 Vue.use(Router);
 
-const DataList = () => import("$views/Data/List");
-const DealEdit = () => import("$views/Deal/Edit");
-const InvestorEdit = () => import("$views/Investor/Edit");
+const DataList = () => import("$views/Data/List.vue");
+const DealEdit = () => import("$views/Deal/Edit.vue");
+const InvestorEdit = () => import("$views/Investor/Edit.vue");
 
 const router = new Router({
   mode: "history",
@@ -16,7 +16,7 @@ const router = new Router({
     {
       path: "/map/",
       name: "map",
-      component: () => import("$views/Data/GlobalMap"),
+      component: () => import("$views/Data/GlobalMap.vue"),
       meta: { hideBreadcrumbs: true },
     },
     // lists
@@ -41,31 +41,31 @@ const router = new Router({
     {
       path: "/charts/web-of-transnational-deals/",
       name: "web-of-transnational-deals",
-      component: () => import("$views/Data/Charts/WebOfTransnationalDeals"),
+      component: () => import("$views/Data/Charts/WebOfTransnationalDeals.vue"),
       meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/gmap/",
       name: "gmap",
-      component: () => import("$views/Data/Charts/GlobalMapOfInvolvements"),
+      component: () => import("$views/Data/Charts/GlobalMapOfInvolvements.vue"),
       meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/country_profiles/",
       name: "country_profiles",
-      component: () => import("$views/Data/Charts/CountryProfile"),
+      component: () => import("$views/Data/Charts/CountryProfile.vue"),
       meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/produce-info/",
       name: "produce-info",
-      component: () => import("$views/Data/Charts/ProduceInfoTreeMap"),
+      component: () => import("$views/Data/Charts/ProduceInfoTreeMap.vue"),
       meta: { hideBreadcrumbs: true },
     },
     {
       path: "/charts/dynamics-overview/",
       name: "dynamics-overview",
-      component: () => import("$views/Data/Charts/DynamicsOverview"),
+      component: () => import("$views/Data/Charts/DynamicsOverview.vue"),
       meta: { hideBreadcrumbs: true },
     },
     // deal
@@ -87,14 +87,14 @@ const router = new Router({
     {
       path: "/deal/:dealId/:dealVersion?/",
       name: "deal_detail",
-      component: () => import("$views/Deal/Detail"),
+      component: () => import("$views/Deal/Detail.vue"),
       props: true,
       meta: { hideBreadcrumbs: true },
     },
     {
       path: "/deal/:dealId/compare/:fromVersion/:toVersion/",
       name: "deal_compare",
-      component: () => import("$views/Deal/Compare"),
+      component: () => import("$views/Deal/Compare.vue"),
       props: true,
       meta: { hideBreadcrumbs: true },
     },
@@ -117,7 +117,7 @@ const router = new Router({
     {
       path: "/investor/:investorId/:investorVersion?/",
       name: "investor_detail",
-      component: () => import("$views/Investor/Detail"),
+      component: () => import("$views/Investor/Detail.vue"),
       props: true,
       meta: { hideBreadcrumbs: true },
     },
@@ -125,26 +125,26 @@ const router = new Router({
     {
       path: "/management/",
       name: "manager",
-      component: () => import("$views/Manager/Management"),
+      component: () => import("$views/Manager/Management.vue"),
       meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
     {
       path: "/management/dashboard/",
       name: "dashboard",
-      component: () => import("$views/Manager/Dashboard"),
+      component: () => import("$views/Manager/Dashboard.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/management/case_statistics/",
       name: "case_statistics",
-      component: () => import("$views/Manager/CaseStatistics"),
+      component: () => import("$views/Manager/CaseStatistics.vue"),
       meta: { requiresAuth: true },
     },
     //
     {
       path: "/login/",
       name: "login",
-      component: () => import("$views/Login"),
+      component: () => import("$views/Login.vue"),
     },
 
     // redirects
@@ -170,12 +170,12 @@ const router = new Router({
     {
       path: "*",
       name: "wagtail",
-      component: () => import("$views/Wagtail/WagtailSwitch"),
+      component: () => import("$views/Wagtail/WagtailSwitch.vue"),
     },
     {
       path: "*",
       name: "404",
-      component: () => import("$views/NotFound"),
+      component: () => import("$views/NotFound.vue"),
       beforeEnter(to, from, next) {
         store.dispatch("setPageContext", { breadcrumbs: [] }).then(next);
       },

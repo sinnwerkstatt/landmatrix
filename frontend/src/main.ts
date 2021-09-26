@@ -29,22 +29,22 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "./scss/main.scss";
 
 // needs to be registered globally for streamfield loops
-import Title from "$components/Wagtail/Title";
-import Heading from "$components/Wagtail/Heading";
-import Image from "$components/Wagtail/Image";
-import Paragraph from "$components/Wagtail/Paragraph";
-import Columns1on1 from "$components/Wagtail/Columns1on1";
-import Columns3 from "$components/Wagtail/Columns3";
-import FullWidthContainer from "$components/Wagtail/FullWidthContainer";
-import Slider from "$components/Wagtail/Slider";
-import Gallery from "$components/Wagtail/Gallery";
-import FaqsBlock from "$components/Wagtail/FaqsBlock";
-import Twitter from "$components/Wagtail/Twitter";
-import LatestNews from "$components/Wagtail/LatestNews";
-import LatestDatabaseModifications from "$components/Wagtail/LatestDatabaseModifications";
-import Statistics from "$components/Wagtail/Statistics";
-import SectionDivider from "$components/Wagtail/SectionDivider";
-import RawHTML from "$components/Wagtail/RawHTML";
+import Title from "$components/Wagtail/Title.vue";
+import Heading from "$components/Wagtail/Heading.vue";
+import Image from "$components/Wagtail/Image.vue";
+import Paragraph from "$components/Wagtail/Paragraph.vue";
+import Columns1on1 from "$components/Wagtail/Columns1on1.vue";
+import Columns3 from "$components/Wagtail/Columns3.vue";
+import FullWidthContainer from "$components/Wagtail/FullWidthContainer.vue";
+import Slider from "$components/Wagtail/Slider.vue";
+import Gallery from "$components/Wagtail/Gallery.vue";
+import FaqsBlock from "$components/Wagtail/FaqsBlock.vue";
+import Twitter from "$components/Wagtail/Twitter.vue";
+import LatestNews from "$components/Wagtail/LatestNews.vue";
+import LatestDatabaseModifications from "$components/Wagtail/LatestDatabaseModifications.vue";
+import Statistics from "$components/Wagtail/Statistics.vue";
+import SectionDivider from "$components/Wagtail/SectionDivider.vue";
+import RawHTML from "$components/Wagtail/RawHTML.vue";
 
 Vue.use(BootstrapVue);
 Vue.use(VueMeta);
@@ -101,7 +101,7 @@ Vue.component("wagtail-latest_news", LatestNews);
 Vue.component("wagtail-latest_database_modifications", LatestDatabaseModifications);
 Vue.component("wagtail-statistics", Statistics);
 
-Vue.filter("dayjs", (value, date_format) => {
+Vue.filter("dayjs", (value: Date, date_format: string) => {
   return dayjs(value).format(date_format);
 });
 
@@ -118,7 +118,7 @@ const apolloProvider = new VueApollo({ defaultClient: apolloClient });
 let vue_app;
 
 // transfer filters cookie to localstorage and remove it afterwards.
-let filters_cookie = Cookies.get("filters");
+const filters_cookie = Cookies.get("filters");
 if (filters_cookie) {
   localStorage.filters = filters_cookie;
   Cookies.remove("filters");

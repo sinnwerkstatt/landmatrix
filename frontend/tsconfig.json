@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "es2020",
+    "lib": ["es2020", "DOM"],
+    "target": "es2017",
+    //"noImplicitAny": false,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": false,
+    "paths": {
+      "$components/*": ["src/components/*"],
+      "$views/*": ["src/views/*"],
+      "$store/*": ["src/store/*"],
+      "$utils/*": ["src/utils/*"],
+      "$utils": ["src/utils/"],
+      "$static/*": ["src/static/*"]
+    }
+  }
+  //  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.vue"]
+}

@@ -1,11 +1,13 @@
 <template>
   <div class="workflowinfo-field" @click="showMore">
     <WorkflowInfo :info="value[0]" />
-    <div v-if="showMoreInfos" class="more-infos">
-      <div class="close-x" @mouseup.prevent="closeShowMoreEsc">
-        <i class="lm lm-close"></i>
+    <div class="more-infos-anchor">
+      <div v-if="showMoreInfos" class="more-infos">
+        <div class="close-x" @mouseup.prevent="closeShowMoreEsc">
+          <i class="lm lm-close"></i>
+        </div>
+        <ManageHeaderCommentsList :workflowinfos="moreInfos" />
       </div>
-      <ManageHeaderCommentsList :workflowinfos="moreInfos" />
     </div>
   </div>
 </template>
@@ -83,9 +85,11 @@
   .workflowinfo-field {
     cursor: pointer;
     font-size: 0.8rem;
+  }
+  .more-infos-anchor {
+    /* we use an extra div here, for table z-index problems in Management on scroll */
     position: relative;
   }
-
   .more-infos {
     font-size: 1rem;
     z-index: 1000;

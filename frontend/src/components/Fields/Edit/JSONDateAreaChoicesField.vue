@@ -17,6 +17,10 @@
               <input
                 :id="`${formfield.name}_current_${i}`"
                 v-model="current"
+                :name="`${formfield.name}_current`"
+                :required="
+                  vals.length > 0 && (vals[0].date || vals[0].area || vals[0].choices)
+                "
                 class="form-check-input"
                 type="radio"
                 :value="i"

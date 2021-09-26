@@ -43,7 +43,7 @@
           this.$refs.inputfield.setCustomValidity("");
           return;
         }
-        v = v.replace("/", "-");
+        v = v.replace("/", "-").replace(".", "-").replace(",", "-");
 
         let field_valid = dayjs(
           this.val,

@@ -179,6 +179,7 @@ a {
           color: var(--color-lm-orange);
 
           &.asc:after {
+            margin-left: 0.3rem;
             font-weight: 600;
             content: "\f077";
             //noinspection CssNoGenericFontName
@@ -186,6 +187,7 @@ a {
           }
 
           &:not(.asc):after {
+            margin-left: 0.3rem;
             font-weight: 600;
             content: "\f078";
             //noinspection CssNoGenericFontName
@@ -253,7 +255,6 @@ ul.lm-nav {
     &.disabled {
       color: grey;
       pointer-events: none;
-
     }
 
     &.active {
