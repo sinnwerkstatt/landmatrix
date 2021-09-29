@@ -12,12 +12,19 @@
             <dd>
               <strong>{{ comm.title }}</strong>
               <p>{{ comm.comment }}</p>
+              <div class="">
+                <!--                <button @click.prevent="editComment(comm.id)">Edit</button>-->
+                <!--                |-->
+                <button class="delete-button" @click.prevent="removeComment(comm.id)">
+                  Delete
+                </button>
+              </div>
             </dd>
           </dl>
         </li>
       </ul>
     </div>
-    <form @submit.prevent="sendComment">
+    <form class="mt-5" @submit.prevent="sendComment">
       <h4>{{ $t("Add a comment") }}</h4>
 
       <div v-if="$store.getters.userAuthenticated">
@@ -145,6 +152,35 @@
             }
           });
       },
+      removeComment(id) {
+        apolloClient
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!) {
+                remove_public_deal_comment(id: $id)
+              }
+            `,
+            variables: { id },
+          })
+          .then(({ data: { remove_public_deal_comment } }) => {
+            if (remove_public_deal_comment) {
+              const idx = this.cmmnts.findIndex((c) => c.id === id);
+              this.cmmnts.splice(idx, 1);
+              console.log(this.cmmnts);
+            }
+            console.log({ remove_public_deal_comment });
+          });
+      },
+      editComment(id) {
+        // apolloClient.mutate({
+        //   mutation: gql`
+        //     mutation ($id: Int!) {
+        //       edit_public_deal_comment(id: $id)
+        //     }
+        //   `,
+        //   variables: { id },
+        // });
+      },
     },
   };
 </script>
@@ -161,7 +197,7 @@
 
   li {
     padding: 1.5rem 1rem;
-    border-bottom: 1px solid var(--color-lm-light);
+    border-bottom: 1px solid var(--color-lm-dark);
   }
 
   dt {
@@ -194,5 +230,11 @@
     //  color: red;
     //  display: inline;
     //}
+  }
+  .delete-button {
+    font-size: 0.75rem;
+    color: red;
+    border: 0;
+    background: inherit;
   }
 </style>
