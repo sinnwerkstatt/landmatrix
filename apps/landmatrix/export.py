@@ -162,10 +162,6 @@ deal_fields = {
     "use_of_irrigation_infrastructure_comment": "Comment on use of irrigation infrastructure",
     "water_footprint": "Water footprint of the investment project",
     "gender_related_information": "Comment on gender-related info",
-    "vggt_applied": "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
-    "vggt_applied_comment": "Comment on VGGT",
-    "prai_applied": "Application of Principles for Responsible Agricultural Investments (PRAI)",
-    "prai_applied_comment": "Comment on PRAI",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
     "confidential_reason": "Reason",
@@ -892,10 +888,6 @@ class DataDownload:
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
 
-        if data.get("vggt_applied"):
-            data["vggt_applied"] = dict(Deal.YPN_CHOICES)[data["vggt_applied"]]
-        if data.get("prai_applied"):
-            data["prai_applied"] = dict(Deal.YPN_CHOICES)[data["prai_applied"]]
         if data.get("confidential_reason"):
             data["confidential_reason"] = dict(Deal.CONFIDENTIAL_REASON_CHOICES)[
                 data["confidential_reason"]

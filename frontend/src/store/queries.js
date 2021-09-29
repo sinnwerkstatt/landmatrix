@@ -406,11 +406,6 @@ export const deal_gql_query = gql`
       water_footprint
       # Gender-related info
       gender_related_information
-      # Guidelines & Principles
-      vggt_applied
-      vggt_applied_comment
-      prai_applied
-      prai_applied_comment
       # Overall comment
       overall_comment
       # Meta

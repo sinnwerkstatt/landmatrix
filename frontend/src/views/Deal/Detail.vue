@@ -117,12 +117,6 @@
         />
 
         <DealSection
-          v-if="activeTab === '#guidelines_and_principles'"
-          :deal="deal"
-          :sections="deal_sections.guidelines_and_principles.subsections"
-        />
-
-        <DealSection
           v-if="activeTab === '#overall_comment'"
           :deal="deal"
           :sections="deal_sections.overall_comment.subsections"
@@ -304,7 +298,6 @@
           produce_info: this.$t("Produce info"),
           water: this.$t("Water"),
           gender_related_info: this.$t("Gender-related info"),
-          guidelines_and_principles: this.$t("Guidelines & Principles"),
           overall_comment: this.$t("Overall comment"),
           blank1: null,
           history: this.$t("Deal History"),

@@ -146,13 +146,6 @@
           />
 
           <DealEditSection
-            v-if="active_tab === '#guidelines_and_principles'"
-            id="guidelines_and_principles"
-            :deal="deal"
-            :sections="deal_sections.guidelines_and_principles.subsections"
-          />
-
-          <DealEditSection
             v-if="active_tab === '#overall_comment'"
             id="overall_comment"
             :deal="deal"
@@ -257,7 +250,6 @@
           produce_info: this.$t("Produce info"),
           water: this.$t("Water"),
           gender_related_info: this.$t("Gender-related info"),
-          guidelines_and_principles: this.$t("Guidelines & Principles"),
           overall_comment: this.$t("Overall comment"),
         };
       },
