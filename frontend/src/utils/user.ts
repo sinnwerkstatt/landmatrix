@@ -1,10 +1,11 @@
 import type { Deal } from "$types/deal";
 import type { Investor } from "$types/investor";
+import store from "$store/index";
 
 type Obj = Deal | Investor;
 
 export function is_authorized(obj: Obj): boolean {
-  const { id, role } = this.$store.state.page.user;
+  const { id, role } = store.state.page.user;
   switch (obj.draft_status) {
     case null: // anybody who has a ROLE
       return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(role);

@@ -1,5 +1,5 @@
 <template>
-  <GenericManageHeader
+  <ManageHeader
     :object="deal"
     :object-version="dealVersion"
     @add_comment="add_comment"
@@ -140,18 +140,18 @@
         </p>
       </Overlay>
     </template>
-  </GenericManageHeader>
+  </ManageHeader>
 </template>
 
 <script>
   import Overlay from "$components/Overlay";
   import gql from "graphql-tag";
   import { is_authorized } from "$utils/user";
-  import GenericManageHeader from "../Management/ManageHeader";
+  import ManageHeader from "../Management/ManageHeader";
   export default {
     name: "DealManageHeader",
     components: {
-      GenericManageHeader,
+      ManageHeader,
       Overlay,
     },
     props: {

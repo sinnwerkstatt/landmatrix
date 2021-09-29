@@ -23,7 +23,8 @@
       "$store/*": ["src/store/*"],
       "$utils/*": ["src/utils/*"],
       "$utils": ["src/utils/"],
-      "$static/*": ["src/static/*"]
+      "$static/*": ["src/static/*"],
+      "$types/*": ["src/types/*"]
     }
   }
   //  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.vue"]

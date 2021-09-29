@@ -210,14 +210,15 @@
   import Vue, { PropType } from "vue";
   import { is_authorized } from "$utils/user";
   import gql from "graphql-tag";
-  import type { Deal, DealVersion } from "$views/Deal/deal";
-  import type { Investor, InvestorVersion } from "$views/Investor/investor";
+  import type { Deal, DealVersion } from "$types/deal";
+  import type { Investor, InvestorVersion } from "$types/investor";
+  import type { Location } from "vue-router/types/router";
 
   type Obj = Deal | Investor;
   type ObjVersion = DealVersion | InvestorVersion;
 
   export default Vue.extend({
-    name: "GenericManageHeader",
+    name: "ManageHeader",
     components: {
       ManageHeaderComments,
       HeaderDates,
@@ -374,44 +375,56 @@
       },
     },
     methods: {
-      object_detail_path(obID, obV) {
+      object_detail_path(obID: number, obV: number): Location {
         return this.otype === "deal"
           ? {
               name: "deal_detail",
-              params: { dealId: obID, dealVersion: obV },
+              params: { dealId: obID.toString(), dealVersion: obV?.toString() },
             }
           : {
               name: "investor_detail",
-              params: { investorId: obID, investorVersion: obV },
+              params: { investorId: obID.toString(), investorVersion: obV?.toString() },
             };
       },
-      object_edit_path(obID, obV) {
+      object_edit_path(obID: number, obV: number): Location {
         return this.otype === "deal"
           ? {
               name: "deal_edit",
-              params: { dealId: obID, dealVersion: obV },
+              params: { dealId: obID.toString(), dealVersion: obV?.toString() },
             }
           : {
               name: "investor_edit",
-              params: { investorId: obID, investorVersion: obV },
+              params: { investorId: obID.toString(), investorVersion: obV?.toString() },
             };
       },
-      object_compare_path(oID, fromVersion, toVersion) {
+      object_compare_path(
+        oID: number,
+        fromVersion: number,
+        toVersion: number
+      ): Location {
         return this.otype === "deal"
           ? {
               name: "deal_compare",
-              params: { dealId: oID, fromVersion, toVersion },
+              params: {
+                dealId: oID.toString(),
+                fromVersion: fromVersion.toString(),
+                toVersion: toVersion.toString(),
+              },
             }
           : {
               name: "investor_compare",
-              params: { investorId: oID, fromVersion, toVersion },
+              params: {
+                investorId: oID.toString(),
+                fromVersion: fromVersion.toString(),
+                toVersion: toVersion.toString(),
+              },
             };
       },
-      do_delete({ comment }) {
+      do_delete({ comment }): void {
         this.$emit("delete", comment);
         this.show_to_delete_overlay = false;
       },
-      do_to_draft({ comment, to_user }) {
+      do_to_draft({ comment, to_user }): void {
         this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
         this.show_to_draft_overlay = false;
       },
