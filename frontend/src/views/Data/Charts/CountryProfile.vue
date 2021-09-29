@@ -13,12 +13,31 @@
         <button class="btn" @click="downloadImage('svg')">
           <i class="fas fa-file-image" /> SVG
         </button>
-        <button class="btn" @click="downloadImage('png')">
-          <i class="fas fa-file-image" /> PNG
-        </button>
-        <button class="btn" @click="downloadImage('webp')">
-          <i class="fas fa-file-image" /> WebP
-        </button>
+        <span id="download-png">
+          <button
+            class="btn"
+            :class="{ 'use-chrome': !isChrome }"
+            @click="downloadImage('png')"
+          >
+            <i class="fas fa-file-image" />
+            PNG
+          </button>
+        </span>
+        <b-tooltip v-if="!isChrome" target="download-png" triggers="hover">
+          At the moment, downloading PNG does not work in Firefox.
+        </b-tooltip>
+        <span id="download-webp">
+          <button
+            class="btn"
+            :class="{ 'use-chrome': !isChrome }"
+            @click="downloadImage('webp')"
+          >
+            <i class="fas fa-file-image" /> WebP
+          </button>
+        </span>
+        <b-tooltip v-if="!isChrome" target="download-webp" triggers="hover">
+          At the moment, downloading WebP does not work in Firefox.
+        </b-tooltip>
         <span style="margin: 2rem 0">|</span>
         <button class="btn" @click="downloadJSON">
           <i class="fas fa-file-code" /> JSON
@@ -87,6 +106,9 @@
           .map((d) => d.current_intention_of_investment?.length || 0)
           .reduce((a, b) => a + b, 0);
         return { x: multi_deal_count, y: all_intentions, z: this.deals.length };
+      },
+      isChrome() {
+        return /Google Inc/.test(navigator.vendor);
       },
     },
     watch: {
@@ -205,5 +227,9 @@
     .link:hover {
       stroke-opacity: 0.5;
     }
+  }
+  .use-chrome {
+    opacity: 0.7;
+    pointer-events: none;
   }
 </style>
