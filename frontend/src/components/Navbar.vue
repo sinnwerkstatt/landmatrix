@@ -292,7 +292,7 @@
         password: null,
         login_failed_message: "",
         language: Cookies.get("django_language") ?? "en",
-        languages: { en: "English", es: "Español", fr: "Français" },
+        languages: { en: "English", es: "Español", fr: "Français", ru: "Русский" },
         blogcategories: [],
         data_links: [
           { name: "Map", link: { name: "map" } },

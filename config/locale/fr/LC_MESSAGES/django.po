@@ -2988,7 +2988,7 @@ msgid "{x} deals have multiple intentions, resulting in a total of {y} intention
 msgstr ""
 
 msgid "Русский"
-msgstr ""
+msgstr "Русский"
 
 msgid "Page not found"
 msgstr "Page non trouvée"
