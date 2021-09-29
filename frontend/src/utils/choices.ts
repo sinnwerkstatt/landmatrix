@@ -1,3 +1,5 @@
+import { i18n } from "../main";
+
 export const implementation_status_choices = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
@@ -144,7 +146,7 @@ export const draft_status_map = {
   5: "Deleted",
 };
 
-export const combined_status_options = {
+export const combined_status_options: { [key: string]: string } = {
   DRAFT: "Draft", // status==1
   REVIEW: "Submitted for Review", // status==1, draft_status == 2
   ACTIVATION: "Submitted for Activation", // status==1, draft_status == 3
@@ -153,14 +155,20 @@ export const combined_status_options = {
   DELETED: "Deleted", // status ==4
 };
 
-export const combined_status_fn = (status, draft_status) => {
-  if (status === 1 && draft_status === 1) return "DRAFT";
-  if (status === 1 && draft_status === 2) return "REVIEW";
-  if (status === 1 && draft_status === 3) return "ACTIVATION";
-  if ([2, 3].includes(status) && draft_status === null) return "LIVE";
-  if ([2, 3].includes(status) && draft_status !== null) return "LIVE_AND_DRAFT";
-  if (status === 4) return "DELETED";
-  throw Error(`Invalid status ${status} ${draft_status}`);
+export const combined_status_fn = (
+  status: number,
+  draft_status: number,
+  toString = false
+): string => {
+  let ret;
+  if (status === 1 && draft_status === 1) ret = "DRAFT";
+  if (status === 1 && draft_status === 2) ret = "REVIEW";
+  if (status === 1 && draft_status === 3) ret = "ACTIVATION";
+  if ([2, 3].includes(status) && draft_status === null) ret = "LIVE";
+  if ([2, 3].includes(status) && draft_status !== null) ret = "LIVE_AND_DRAFT";
+  if (status === 4) ret = "DELETED";
+  if (!ret) throw Error(`Invalid status ${status} ${draft_status}`);
+  return toString ? combined_status_options[ret] : ret;
 };
 
 export const confidential_reason_choices = {

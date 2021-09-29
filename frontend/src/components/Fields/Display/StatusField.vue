@@ -2,13 +2,14 @@
   <span>{{ display_status }}</span>
 </template>
 
-<script>
+<script lang="ts">
   import { combined_status_fn, combined_status_options } from "$utils/choices";
+  import Vue, { PropType } from "vue";
 
-  export default {
+  export default Vue.extend({
     props: {
       formfield: { type: Object, required: true },
-      value: { type: Array, required: true },
+      value: { type: Array as PropType<number[]>, required: true },
       model: { type: String, required: true },
     },
     computed: {
@@ -18,6 +19,5 @@
         );
       },
     },
-    methods: {},
-  };
+  });
 </script>

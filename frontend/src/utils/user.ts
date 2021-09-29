@@ -1,4 +1,9 @@
-export function is_authorized(obj): boolean {
+import type { Deal } from "$types/deal";
+import type { Investor } from "$types/investor";
+
+type Obj = Deal | Investor;
+
+export function is_authorized(obj: Obj): boolean {
   const { id, role } = this.$store.state.page.user;
   switch (obj.draft_status) {
     case null: // anybody who has a ROLE

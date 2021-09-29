@@ -22,6 +22,7 @@ export function chart_download(
   } else {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
+    if (!context) return;
     canvas.width = 800;
     canvas.height = 800;
     context.clearRect(0, 0, canvas.width, canvas.height);

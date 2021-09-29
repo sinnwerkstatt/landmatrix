@@ -4,10 +4,14 @@ import Cookies from "js-cookie";
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import Multiselect from "vue-multiselect";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import ScrollLoader from "vue-scroll-loader";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import VueMatomo from "vue-matomo";
 
 import App from "./App.vue";

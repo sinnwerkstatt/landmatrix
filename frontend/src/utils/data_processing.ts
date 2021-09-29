@@ -1,19 +1,20 @@
 import { negotiation_status_choices } from "$utils/choices";
+import type { Deal } from "$types/deal";
 
-export const sum = function (items, prop) {
+export function sum(items: Deal[], prop: string): number {
   return items.reduce(function (a, b) {
     return a + b[prop];
   }, 0);
-};
+}
 
-export const prepareNegotianStatusData = function (deals) {
-  let stati = ["Intended", "Concluded", "Failed"];
-  let colors = ["rgba(252,148,31,0.4)", "rgba(252,148,31,1)", "#7D4A0F"];
-  let data = [];
+export function prepareNegotianStatusData(deals: Deal[]): Array<unknown> {
+  const stati = ["Intended", "Concluded", "Failed"];
+  const colors = ["rgba(252,148,31,0.4)", "rgba(252,148,31,1)", "#7D4A0F"];
+  const data = [];
 
   if (deals.length) {
     for (const [i, status] of stati.entries()) {
-      let filteredDeals = deals.filter((d) => {
+      const filteredDeals = deals.filter((d) => {
         return Object.keys(negotiation_status_choices[status]).includes(
           d.current_negotiation_status
         );
@@ -27,4 +28,4 @@ export const prepareNegotianStatusData = function (deals) {
     }
   }
   return data;
-};
+}

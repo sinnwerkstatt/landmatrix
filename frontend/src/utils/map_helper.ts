@@ -1,21 +1,23 @@
 import { primary_color } from "$utils/colors";
+import type { Marker } from "leaflet";
 
 export function styleCircle(
-  circle,
-  size,
-  innerHTML,
+  circle: Marker,
+  size: number,
+  innerHTML: string,
   dealsCount = true,
   maxFactor = 40
-) {
-  let circle_elem = circle.getElement();
+): void {
+  const circle_elem = circle.getElement();
+  if (!circle_elem) return;
 
-  let innertextnode = document.createElement("span");
+  const innertextnode = document.createElement("span");
   innertextnode.className = "landmatrix-custom-circle-text";
 
   innertextnode.innerHTML = innerHTML;
   circle_elem.append(innertextnode);
 
-  let hoverlabel = document.createElement("span");
+  const hoverlabel = document.createElement("span");
   hoverlabel.className = "landmatrix-custom-circle-hover-text";
   circle_elem.append(hoverlabel);
 
