@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "paths": {
       "$components/*": ["src/components/*"],
       "$views/*": ["src/views/*"],
