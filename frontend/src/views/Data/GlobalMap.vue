@@ -123,10 +123,7 @@
       return { title: this.$t("Map") };
     },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        // vm.$store.dispatch("fetchDeals");
-        vm.$store.dispatch("showContextBar", "!isMobile");
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", "!isMobile"));
     },
     data() {
       return {

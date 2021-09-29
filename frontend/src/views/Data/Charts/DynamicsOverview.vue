@@ -80,9 +80,7 @@
       return { title: this.$t("Dynamics overview") };
     },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", true));
     },
     apollo: {
       deals: data_deal_query,

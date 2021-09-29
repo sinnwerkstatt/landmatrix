@@ -86,9 +86,7 @@
       return { title: this.$t("Country profile graphs") };
     },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", false);
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", false));
     },
     data() {
       return { deals: null, sankey: null, sankey_links: null };

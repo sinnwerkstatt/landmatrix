@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const pageModule = {
   state: () => ({
-    /** @type {User} */
+    /** @type User */
     user: null,
     countries: [],
     regions: [],

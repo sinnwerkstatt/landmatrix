@@ -1,3 +1,12 @@
+interface UserRegInfo {
+  country: unknown;
+  region: unknown;
+}
+interface Group {
+  id: number;
+  name: string;
+}
+
 type User = {
   id: number;
   username: string;
@@ -11,7 +20,7 @@ type User = {
   is_staff: boolean;
   is_impersonate: boolean;
   date_joined: Date;
-  // userregionalinfo: UserRegionalInfo
-  // groups: [UserGroup]
+  userregionalinfo?: UserRegInfo;
+  groups?: Group[];
   // role: UserRole
 };

@@ -53,7 +53,7 @@ const store = new Vuex.Store({
         });
     },
     fetchBasicData(context) {
-      return new Promise(function (resolve, reject) {
+      return new Promise<void>(function (resolve, reject) {
         apolloClient
           .query({
             query: gql`
@@ -145,8 +145,7 @@ const store = new Vuex.Store({
         });
     },
     fetchMessages(context) {
-      let url = `/api/newdeal_legacy/messages/`;
-      axios.get(url).then((response) => {
+      axios.get(`/api/newdeal_legacy/messages/`).then((response) => {
         context.commit("setMessages", response.data.messages);
       });
     },
@@ -186,7 +185,7 @@ const store = new Vuex.Store({
             variables: { username, password },
           })
           .then(({ data }) => {
-            let login_data = data.login;
+            const login_data = data.login;
             if (login_data.status === true) {
               context.commit("setUser", login_data.user);
               resolve(login_data);
@@ -197,7 +196,7 @@ const store = new Vuex.Store({
       });
     },
     logout() {
-      return new Promise(function (resolve, reject) {
+      return new Promise<void>(function (resolve, reject) {
         apolloClient
           .mutate({
             mutation: gql`

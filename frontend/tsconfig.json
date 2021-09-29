@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "paths": {
       "$components/*": ["src/components/*"],
       "$views/*": ["src/views/*"],
@@ -26,6 +26,6 @@
       "$static/*": ["src/static/*"],
       "$types/*": ["src/types/*"]
     }
-  }
-  //  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.vue"]
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.vue"]
 }

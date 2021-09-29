@@ -47,9 +47,7 @@
     name: "DataList",
     components: { FilterCollapse, DataContainer, Table, LoadingPulse },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", false);
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", false));
     },
     metaInfo() {
       return {

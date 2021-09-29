@@ -1,5 +1,3 @@
-import { i18n } from "../main";
-
 export const implementation_status_choices = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",

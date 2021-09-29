@@ -76,6 +76,10 @@
     display: flex;
     flex-direction: column;
 
+    @media screen and (min-width: 992px) {
+      max-width: 40vw;
+    }
+
     h3 {
       margin-top: 0;
       font-weight: 600;
