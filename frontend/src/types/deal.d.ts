@@ -3,6 +3,8 @@ export type Deal = {
   status: number;
   draft_status: number;
   versions: DealVersion[];
+  current_intention_of_investment: string[];
+  current_implementation_status: string;
 };
 
 export type DealVersion = {

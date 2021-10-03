@@ -91,6 +91,10 @@
             title: "Produce info map",
             route_name: "produce-info",
           },
+          {
+            title: "Country profile",
+            route_name: "country_profiles",
+          },
         ],
       };
     },

@@ -115,10 +115,17 @@
         let datanodes = new Set();
         let datalinks = {};
 
+        let i_status_counter = {};
+
         this.deals.forEach((d) => {
-          if (!d.current_implementation_status || !d.current_intention_of_investment)
-            return;
+          if (!d.current_implementation_status)
+            d.current_implementation_status = "S_UNKNOWN";
+          if (!d.current_intention_of_investment)
+            d.current_intention_of_investment = ["I_UNKNOWN"];
           datanodes.add(d.current_implementation_status);
+          i_status_counter[d.current_implementation_status] =
+            i_status_counter[d.current_implementation_status] + 1 || 1;
+
           d.current_intention_of_investment?.forEach((ivi) => {
             datanodes.add(ivi);
             datalinks[[d.current_implementation_status, ivi]] =
@@ -127,11 +134,16 @@
         });
 
         const nodes = [...datanodes].map((n) => {
+          let istatus = implementation_status_choices[n] || n === "S_UNKNOWN";
           return {
             id: n,
-            ivi: !implementation_status_choices[n],
+            istatus,
+            deal_count: istatus ? i_status_counter[n] : 0,
             name:
-              implementation_status_choices[n] || flat_intention_of_investment_map[n],
+              (n === "S_UNKNOWN" && this.$t("Status unknown")) ||
+              (n === "I_UNKNOWN" && this.$t("Intention unknown")) ||
+              implementation_status_choices[n] ||
+              flat_intention_of_investment_map[n],
           };
         });
 
@@ -196,14 +208,17 @@
 </script>
 <style lang="scss" scoped>
   .country-profile-graph {
-    width: 600px;
-    height: 100%;
-    margin-top: 5rem;
-    background: var(--color-lm-light);
+    max-height: 80vh;
+    margin: 5rem 3rem;
+    background: var(--color-lm-orange-light-10);
     border-radius: 1rem;
     padding: 1rem;
+    display: flex;
+    flex-flow: column wrap;
   }
   .sankey-wrapper {
+    flex-grow: 1;
+    max-width: 100%;
     border-radius: 5px 5px 0 0;
   }
   .download-buttons {
@@ -223,7 +238,7 @@
   .sankey-wrapper {
     background: white;
     .link:hover {
-      stroke-opacity: 0.5;
+      stroke-opacity: 0.9;
     }
   }
   .use-chrome {
