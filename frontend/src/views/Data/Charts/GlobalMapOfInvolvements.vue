@@ -1,16 +1,22 @@
 <template>
   <div class="svg-container">
+    <LoadingPulse v-if="$apollo.loading" />
+
     <svg id="svg"></svg>
   </div>
 </template>
 
 <script>
-  import { doTheThing } from "$views/Data/Charts/global_inv_map";
   import gql from "graphql-tag";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import { GlobalInvolvementMap } from "./global_inv_map";
+
   export default {
     name: "WebOfTransnationalDeals",
+    components: { LoadingPulse },
     data() {
       return {
+        global_map: null,
         global_map_of_investments: null,
       };
     },
@@ -30,10 +36,15 @@
     },
     watch: {
       global_map_of_investments(newV) {
-        doTheThing("#svg", newV);
+        // let projection = "geoOrthographic";
+        let projection = "geoNaturalEarth1";
+        this.global_map.doTheThing(newV);
       },
     },
-    mounted() {},
+    mounted() {
+      this.global_map = new GlobalInvolvementMap("#svg");
+    },
+
     methods: {},
   };
 </script>

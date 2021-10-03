@@ -8,9 +8,12 @@
   </div>
 </template>
 
-<script>
-  export default { name: "LoadingPulse" };
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({ name: "LoadingPulse" });
 </script>
+
 <style lang="scss">
   .lm-loading-container {
     z-index: 100;
@@ -24,6 +27,7 @@
     align-items: center;
     justify-content: center;
   }
+
   .lds-facebook {
     display: inline-block;
     position: relative;
