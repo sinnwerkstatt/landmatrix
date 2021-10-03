@@ -50,19 +50,20 @@
 </script>
 <style lang="scss">
   .svg-container {
-    max-height: 100%;
-    width: 100%;
-    padding: 4em 2em 2em 2em;
+    height: 100%;
+    max-height: 90vh;
+    width: 100vw;
+    overflow: hidden;
+    background: #dff0fa;
+    margin-top: 2rem;
+    //padding: 4em 2em 2em 2em;
     svg {
       display: block;
+      width: auto;
+      height: auto;
       margin-left: auto;
       margin-right: auto;
     }
-
-    //> svg {
-    //  width: 100%;
-    //  height: 100%;
-    //}
   }
   /**
  * from https://codepen.io/chrislaskey/pen/jqabBQ
@@ -90,9 +91,17 @@
   }
 
   .country {
-    fill: hsl(32, 17%, 20%);
-    stroke-width: 0;
+    //fill: hsl(32, 17%, 10%);
+    fill: white;
+    stroke-width: 0.3;
+    stroke: black;
     stroke-linejoin: round;
+    &.hover {
+      fill: hsla(0, 0%, 62%, 0.5);
+    }
+    &.selected-country {
+      fill: hsl(0, 0%, 32%);
+    }
     &.target-country {
       fill: var(--color-lm-orange);
     }
@@ -115,10 +124,23 @@
   //#outgoing-marker {
   //  fill: var(--color-lm-investor);
   //}
-  .moneyline {
+  .target-country-line {
+    fill: none;
+    stroke: var(--color-lm-orange-light);
+    stroke-width: 0.6;
+    //marker-end: url(#outgoing-marker);
+  }
+  .investor-country-line {
     fill: none;
     stroke: var(--color-lm-investor-light);
-    stroke-width: 1px;
-    //marker-start: url(#outgoing-marker);
+    stroke-width: 0.6;
+    //marker-start: url(#incoming-marker);
+  }
+  #incoming-marker {
+    fill: var(--color-lm-investor);
+  }
+
+  #outgoing-marker {
+    fill: var(--color-lm-orange);
   }
 </style>
