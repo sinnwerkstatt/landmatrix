@@ -23,21 +23,16 @@
   </div>
 </template>
 
-<script>
-  import PageTitle from "$components/PageTitle";
+<script lang="ts">
+  import PageTitle from "$components/PageTitle.vue";
   import { blogpage_query } from "$store/queries";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     components: { PageTitle },
     data() {
-      return {
-        blogpage: null,
-      };
+      return { blogpage: null };
     },
-    apollo: {
-      blogpage: blogpage_query,
-    },
-  };
+    apollo: { blogpage: blogpage_query },
+  });
 </script>
-
-<style lang="scss"></style>

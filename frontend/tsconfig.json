@@ -21,6 +21,7 @@
       "$components/*": ["src/components/*"],
       "$views/*": ["src/views/*"],
       "$store/*": ["src/store/*"],
+      "$store": ["src/store"],
       "$utils/*": ["src/utils/*"],
       "$utils": ["src/utils/"],
       "$static/*": ["src/static/*"],

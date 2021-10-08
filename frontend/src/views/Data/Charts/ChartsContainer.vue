@@ -23,16 +23,16 @@
   </div>
 </template>
 
-<script>
-  import ContextBarContainer from "$components/Data/ContextBarContainer";
-  import FilterBar from "$components/Data/FilterBar";
-  import ViewSwitcher from "$components/Data/ViewSwitcher";
+<script lang="ts">
+  import ContextBarContainer from "$components/Data/ContextBarContainer.vue";
+  import FilterBar from "$components/Data/FilterBar.vue";
+  import ViewSwitcher from "$components/Data/ViewSwitcher.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "ChartsContainer",
     components: { ContextBarContainer, FilterBar, ViewSwitcher },
-    computed: {},
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

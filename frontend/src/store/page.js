@@ -9,6 +9,7 @@ export const pageModule = {
     aboutPages: [],
     observatories: [],
     messages: [],
+    /** @type WagtailPage */
     wagtailPage: null,
     title: null,
     searchDescription: null,

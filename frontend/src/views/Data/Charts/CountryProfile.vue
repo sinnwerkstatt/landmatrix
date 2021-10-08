@@ -52,8 +52,8 @@
         }}
         <br />
         {{ $t("Please note: a deal may have more than one intention.") }}<br />
-        <i v-if="sankey_legend_numbers"
-          >{{
+        <i v-if="sankey_legend_numbers">
+          {{
             $t(
               "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
               sankey_legend_numbers
@@ -67,19 +67,17 @@
 
 <script>
   import LoadingPulse from "$components/Data/LoadingPulse";
+  import ChartsContainer from "./ChartsContainer.vue";
   import { a_download, chart_download } from "$utils/charts";
   import {
     flat_intention_of_investment_map,
     implementation_status_choices,
   } from "$utils/choices";
-  import ChartsContainer from "$views/Data/Charts/ChartsContainer";
-  import {
-    LamaSankey,
-    sankey_links_to_csv_cross,
-  } from "$views/Data/Charts/country_profile_sankey";
+  import { LamaSankey, sankey_links_to_csv_cross } from "./country_profile_sankey";
   import { data_deal_query } from "$views/Data/query";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "CountryProfileGraphs",
     components: { LoadingPulse, ChartsContainer },
     metaInfo() {
@@ -204,7 +202,7 @@
         // encodeURIComponent();
       },
     },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .country-profile-graph {
