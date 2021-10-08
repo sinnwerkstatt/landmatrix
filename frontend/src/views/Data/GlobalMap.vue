@@ -85,12 +85,12 @@
   </div>
 </template>
 
-<script>
-  import BigMap from "$components/BigMap";
-  import FilterCollapse from "$components/Data/FilterCollapse";
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import DataContainer from "$components/DataContainer";
-  import MapMarkerPopup from "$components/Map/MapMarkerPopup";
+<script lang="ts">
+  import BigMap from "$components/BigMap.vue";
+  import FilterCollapse from "$components/Data/FilterCollapse.vue";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import DataContainer from "$components/DataContainer.vue";
+  import MapMarkerPopup from "$components/Map/MapMarkerPopup.vue";
   import { styleCircle } from "$utils/map_helper";
 
   import { DivIcon, FeatureGroup, LayerGroup, Marker, Popup } from "leaflet";
@@ -116,7 +116,7 @@
     419: [-4.442, -61.3269],
   };
 
-  export default {
+  export default Vue.extend({
     name: "GlobalMap",
     components: { LoadingPulse, FilterCollapse, DataContainer, BigMap },
     metaInfo() {
@@ -404,5 +404,5 @@
         bigmap.on("zoomend", () => (this.current_zoom = bigmap.getZoom()));
       },
     },
-  };
+  });
 </script>

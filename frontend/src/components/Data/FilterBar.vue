@@ -350,7 +350,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import {
     implementation_status_choices,
     intention_of_investment_choices,
@@ -358,10 +358,11 @@
   } from "$utils/choices";
   import gql from "graphql-tag";
   import { mapState } from "vuex";
-  import FilterCollapse from "./FilterCollapse";
-  import Wimpel from "$components/Wimpel";
+  import FilterCollapse from "./FilterCollapse.vue";
+  import Wimpel from "$components/Wimpel.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "FilterBar",
     components: { FilterCollapse, Wimpel },
     apollo: {
@@ -651,7 +652,7 @@
         else this.$store.dispatch("clearFilters");
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

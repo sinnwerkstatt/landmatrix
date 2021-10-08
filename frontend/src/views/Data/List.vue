@@ -37,13 +37,14 @@
   </div>
 </template>
 
-<script>
-  import FilterCollapse from "$components/Data/FilterCollapse";
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import Table from "$components/Data/Table";
-  import DataContainer from "$components/DataContainer";
+<script lang="ts">
+  import FilterCollapse from "$components/Data/FilterCollapse.vue";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import Table from "$components/Data/Table.vue";
+  import DataContainer from "$components/DataContainer.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "DataList",
     components: { FilterCollapse, DataContainer, Table, LoadingPulse },
     beforeRouteEnter(to, from, next) {
@@ -89,8 +90,9 @@
         window._paq.push(["trackEvent", "Downloads", format, name]);
       },
     },
-  };
+  });
 </script>
+
 <style lang="scss" scoped>
   .sideBuffer {
     min-width: 220px;

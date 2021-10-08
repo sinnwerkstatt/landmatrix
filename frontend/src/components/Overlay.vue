@@ -7,6 +7,7 @@
 
         <template v-if="commentInput">
           <label>{{ $t("Please provide a comment explaining your request") }}</label>
+          <!--suppress HtmlUnknownAttribute -->
           <textarea
             ref="comment"
             v-model="comment"
@@ -42,10 +43,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import gql from "graphql-tag";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "Overlay",
     props: {
       title: { type: String, default: "" },
@@ -99,7 +101,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

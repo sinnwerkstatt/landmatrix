@@ -2,14 +2,15 @@
   <component :is="pageType" v-if="pageType" />
 </template>
 
-<script>
+<script lang="ts">
+  import BlogIndexPage from "./BlogIndexPage.vue";
+  import BlogPage from "./BlogPage.vue";
+  import ObservatoryPage from "./ObservatoryPage.vue";
+  import Vue from "vue";
+  import WagtailPage from "./WagtailPage.vue";
   import store from "$store";
-  import BlogIndexPage from "./BlogIndexPage";
-  import BlogPage from "./BlogPage";
-  import ObservatoryPage from "./ObservatoryPage";
-  import WagtailPage from "./WagtailPage";
 
-  export default {
+  export default Vue.extend({
     name: "WagtailSwitch",
     components: { BlogIndexPage, BlogPage, WagtailPage, ObservatoryPage },
     beforeRouteEnter: (to, from, next) => {
@@ -59,7 +60,5 @@
         }
       },
     },
-  };
+  });
 </script>
-
-<style scoped></style>

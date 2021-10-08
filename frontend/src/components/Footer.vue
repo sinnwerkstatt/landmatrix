@@ -21,8 +21,10 @@
   </footer>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "Footer",
     data() {
       return {
@@ -35,7 +37,7 @@
         return base + this.$route.path;
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

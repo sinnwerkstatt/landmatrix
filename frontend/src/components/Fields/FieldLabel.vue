@@ -4,8 +4,10 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "FieldLabel",
     props: {
       fieldname: { type: String, required: true },
@@ -17,7 +19,7 @@
         return this.$store.state.formfields[this.model][this.fieldname].label;
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

@@ -94,18 +94,20 @@
   </div>
 </template>
 
-<script>
-  import StatusPieChart from "$components/Charts/StatusPieChart";
-  import PageTitle from "$components/PageTitle";
-  import QuasiStaticMap from "$components/QuasiStaticMap";
-  import Streamfield from "$components/Streamfield";
-  import ArticleList from "$components/Wagtail/ArticleList";
-  import MapDataCharts from "$components/Wagtail/MapDataCharts";
-  import Twitter from "$components/Wagtail/Twitter";
+<script lang="ts">
+  import StatusPieChart from "$components/Charts/StatusPieChart.vue";
+  import PageTitle from "$components/PageTitle.vue";
+  import QuasiStaticMap from "$components/QuasiStaticMap.vue";
+  import Streamfield from "$components/Streamfield.vue";
+  import ArticleList from "$components/Wagtail/ArticleList.vue";
+  import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
+  import Twitter from "$components/Wagtail/Twitter.vue";
   import { deal_aggregations_query } from "$store/queries";
   import gql from "graphql-tag";
+  import Vue from "vue";
+  import type { ObservatoryPage } from "$types/wagtail";
 
-  export default {
+  export default Vue.extend({
     name: "ObservatoryPage",
     components: {
       PageTitle,
@@ -149,16 +151,16 @@
       },
     },
     computed: {
-      page() {
+      page(): ObservatoryPage {
         return this.$store.state.page.wagtailPage;
       },
-      region_id() {
+      region_id(): number {
         return this.page.region ? this.page.region.id : null;
       },
-      country_id() {
+      country_id(): number {
         return this.page.country ? this.page.country.id : null;
       },
-      slug() {
+      slug(): string {
         let ret;
         if (this.page.region) {
           ret = this.$store.getters.getCountryOrRegion({
@@ -173,17 +175,17 @@
         }
         return ret ? ret.slug : null;
       },
-      content() {
+      content(): string | string[] {
         return this.page ? this.page.body : [];
       },
-      totalCount() {
+      totalCount(): number {
         if (!this.deal_aggregations) return;
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
-      totalSize() {
+      totalSize(): string {
         if (!this.deal_aggregations) return;
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
@@ -283,7 +285,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>
