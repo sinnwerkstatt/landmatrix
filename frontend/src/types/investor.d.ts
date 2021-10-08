@@ -1,22 +1,19 @@
+import { User } from "$types/user";
+import type { Obj, ObjVersion, WorkflowInfo } from "$types/generics";
+
 enum role {
   PARENT,
   LENDER,
 }
 
-export type Investor = {
-  id: number;
-  status: number;
-  draft_status: number;
+interface Investor extends Obj {
   versions: InvestorVersion[];
-};
+  workflowinfos: InvestorWorkflowInfo[];
+}
 
-export type InvestorVersion = {
-  id: number;
+interface InvestorVersion extends ObjVersion {
   investor: Investor;
-  created_at: Date;
-  created_by: User;
-  object_id: Int;
-};
+}
 
 export type Involvement = {
   id: number;
@@ -30,3 +27,7 @@ export type Involvement = {
   comment: string;
   involvement_type: string;
 };
+
+interface InvestorWorkflowInfo extends WorkflowInfo {
+  investor: Investor;
+}

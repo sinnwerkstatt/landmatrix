@@ -7,7 +7,7 @@ interface Group {
   name: string;
 }
 
-type User = {
+export type User = {
   id: number;
   username: string;
   first_name: string;

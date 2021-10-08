@@ -1,16 +1,16 @@
-export type Deal = {
-  id: number;
-  status: number;
-  draft_status: number;
+import type { Obj, ObjVersion, WorkflowInfo } from "$types/generics";
+
+interface Deal extends Obj {
   versions: DealVersion[];
+  workflowinfos: DealWorkflowInfo[];
   current_intention_of_investment: string[];
   current_implementation_status: string;
-};
+}
 
-export type DealVersion = {
-  id: number;
+interface DealVersion extends ObjVersion {
   deal: Deal;
-  created_at: Date;
-  created_by: User;
-  object_id: Int;
-};
+}
+
+interface DealWorkflowInfo extends WorkflowInfo {
+  deal: Deal;
+}

@@ -1,22 +1,23 @@
 <template>
   <div class="context-bar-container" :class="{ collapsed: !showContextBar }">
-    <span class="wimpel" @click.prevent="showContextBar = !showContextBar">
-      <svg viewBox="0 0 2 20" width="20px">
-        <path d="M0,0 L2,2 L2,18 L0,20z"></path>
-        <text x="0.3" y="11">
-          {{ showContextBar ? "&lsaquo;" : "&rsaquo;" }}
-        </text>
-      </svg>
-    </span>
+    <Wimpel
+      :showing="showContextBar"
+      :flipped="true"
+      @click="showContextBar = !showContextBar"
+    />
     <div class="context-bar-container-content">
       <slot></slot>
     </div>
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Wimpel from "$components/Wimpel.vue";
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "ContextBarContainer",
+    components: { Wimpel },
     data() {
       return {
         showDealCount: true,
@@ -39,10 +40,10 @@
         this.$emit("visibility-changed", state);
       },
     },
-  };
+  });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .context-bar-container {
     //border-left: 1px dotted var(--color-lm-dark);
     position: absolute;
@@ -57,12 +58,6 @@
     min-width: 220px;
     max-width: 300px;
     filter: drop-shadow(-3px 3px 3px rgba(0, 0, 0, 0.3));
-
-    .wimpel {
-      transform: rotateY(180deg);
-      left: -20px;
-      right: auto;
-    }
 
     .context-bar-container-content {
       overflow-y: auto;
