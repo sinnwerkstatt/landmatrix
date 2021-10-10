@@ -1,12 +1,7 @@
-import type { Deal } from "$types/deal";
-import type { Investor } from "$types/investor";
+import type { Obj } from "$types/generics";
 import store from "$store/index";
 
-type Obj = Deal | Investor;
-
 export function is_authorized(obj: Obj): boolean {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const { id, role } = store.state.page.user;
   switch (obj.draft_status) {
     case null: // anybody who has a ROLE

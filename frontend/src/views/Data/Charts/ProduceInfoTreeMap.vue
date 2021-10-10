@@ -18,7 +18,7 @@
   </ChartsContainer>
 </template>
 
-<script>
+<script lang="ts">
   import Legend from "$components/Charts/Legend";
   import LoadingPulse from "$components/Data/LoadingPulse";
   import { thousandsep } from "$utils/filters";
@@ -28,6 +28,7 @@
   import { data_deal_produce_query, data_deal_query } from "../query";
 
   import ChartsContainer from "./ChartsContainer";
+  import Vue from "vue";
 
   function buildTreeChart(treeData) {
     if (!treeData) return;
@@ -109,11 +110,11 @@
       .text((d) => d);
   }
 
-  export default {
+  export default Vue.extend({
     name: "ProduceInfoTreeMap",
     components: { ChartsContainer, LoadingPulse, Legend },
     metaInfo() {
-      return { title: this.$t("Produce info map") };
+      return { title: this.$t("Produce info map").toString() };
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => vm.$store.dispatch("showContextBar", true));
@@ -248,7 +249,7 @@
         return key;
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

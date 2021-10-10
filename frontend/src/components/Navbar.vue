@@ -277,13 +277,15 @@
     </div>
   </nav>
 </template>
-<script>
-  import NavbarSearch from "$components/NavbarSearch";
+
+<script lang="ts">
+  import NavbarSearch from "$components/NavbarSearch.vue";
   import { blogcategories_query } from "$store/queries";
   import Cookies from "js-cookie";
   import lm_logo from "$static/images/lm-logo.png";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     components: { NavbarSearch },
     data() {
       return {
@@ -357,7 +359,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

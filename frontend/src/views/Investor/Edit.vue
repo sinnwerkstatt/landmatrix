@@ -101,15 +101,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import LoadingPulse from "$components/Data/LoadingPulse";
   import InvestorSubmodelEditSection from "$components/Deal/InvestorSubmodelEditSection";
   import EditField from "$components/Fields/EditField";
   import Overlay from "$components/Overlay";
   import { investor_edit_query } from "$store/queries";
   import gql from "graphql-tag";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "InvestorEdit",
     components: {
       InvestorSubmodelEditSection,
@@ -136,7 +137,7 @@
     data() {
       return {
         investor: null,
-        original_investor: null,
+        original_investor: "",
         saving_in_progress: false,
         show_really_quit_overlay: false,
         active_tab: "#general",
@@ -286,7 +287,7 @@
           });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

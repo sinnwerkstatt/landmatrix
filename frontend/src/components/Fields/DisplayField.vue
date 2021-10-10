@@ -42,7 +42,7 @@
   import JSONDateAreaField from "./Display/JSONDateAreaField.vue";
   import JSONDateChoiceField from "./Display/JSONDateChoiceField.vue";
   import JSONExportsField from "./Display/JSONExportsField.vue";
-  import JSONField from "./Display/JSONField.vue.vue";
+  import JSONField from "./Display/JSONField.vue";
   import JSONJobsField from "./Display/JSONJobsField.vue";
   import JSONLeaseField from "./Display/JSONLeaseField.vue";
   import LengthField from "./Display/LengthField.vue";

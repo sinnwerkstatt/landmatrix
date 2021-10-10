@@ -15,10 +15,11 @@
   </section>
 </template>
 
-<script>
-  import EditField from "$components/Fields/EditField";
+<script lang="ts">
+  import EditField from "$components/Fields/EditField.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "DealEditSection",
     components: { EditField },
     props: {
@@ -26,7 +27,7 @@
       sections: { type: Array, required: true },
       deal: { type: Object, required: true },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

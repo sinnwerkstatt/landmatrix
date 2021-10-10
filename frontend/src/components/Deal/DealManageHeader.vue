@@ -143,12 +143,14 @@
   </ManageHeader>
 </template>
 
-<script>
-  import Overlay from "$components/Overlay";
+<script lang="ts">
+  import Overlay from "$components/Overlay.vue";
   import gql from "graphql-tag";
   import { is_authorized } from "$utils/user";
-  import ManageHeader from "../Management/ManageHeader";
-  export default {
+  import ManageHeader from "../Management/ManageHeader.vue";
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "DealManageHeader",
     components: {
       ManageHeader,
@@ -228,7 +230,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style scoped lang="scss">

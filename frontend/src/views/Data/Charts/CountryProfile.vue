@@ -65,8 +65,8 @@
   </ChartsContainer>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import ChartsContainer from "./ChartsContainer.vue";
   import { a_download, chart_download } from "$utils/charts";
   import {
@@ -74,27 +74,43 @@
     implementation_status_choices,
   } from "$utils/choices";
   import { LamaSankey, sankey_links_to_csv_cross } from "./country_profile_sankey";
-  import { data_deal_query } from "$views/Data/query";
+  import { data_deal_query_gql } from "$views/Data/query";
   import Vue from "vue";
+  import type { Deal } from "$types/deal";
+  import type { OperationVariables } from "apollo-client/core/types";
 
   export default Vue.extend({
     name: "CountryProfileGraphs",
     components: { LoadingPulse, ChartsContainer },
     metaInfo() {
-      return { title: this.$t("Country profile graphs") };
+      return { title: this.$t("Country profile graphs").toString() };
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => vm.$store.dispatch("showContextBar", false));
     },
     data() {
-      return { deals: null, sankey: null, sankey_links: null };
+      return { deals: [] as Deal[], sankey: null, sankey_links: null };
     },
     apollo: {
-      deals: data_deal_query,
+      deals: {
+        query: data_deal_query_gql,
+        variables(): OperationVariables {
+          return {
+            limit: 0,
+            filters: this.$store.getters.filtersForGQL,
+            subset: this.$store.getters.userAuthenticated
+              ? this.$store.state.filters.publicOnly
+                ? "PUBLIC"
+                : "ACTIVE"
+              : "PUBLIC",
+          };
+        },
+        debounce: 200,
+      },
     },
     computed: {
-      sankey_legend_numbers() {
-        if (!this.deals) return null;
+      sankey_legend_numbers(): { [key: string]: number } {
+        if (this.deals.length === 0) return {};
         let multi_deal_count = this.deals.filter(
           (d) => d.current_intention_of_investment?.length > 1
         ).length;
@@ -103,17 +119,17 @@
           .reduce((a, b) => a + b, 0);
         return { x: multi_deal_count, y: all_intentions, z: this.deals.length };
       },
-      isChrome() {
+      isChrome(): boolean {
         return /Google Inc/.test(navigator.vendor);
       },
     },
     watch: {
       deals() {
         if (!this.deals) return;
-        let datanodes = new Set();
-        let datalinks = {};
+        let datanodes: Set<string> = new Set();
+        let datalinks: { [key: string]: number } = {};
 
-        let i_status_counter = {};
+        let i_status_counter: { [key: string]: number } = {};
 
         this.deals.forEach((d) => {
           if (!d.current_implementation_status)
@@ -126,8 +142,8 @@
 
           d.current_intention_of_investment?.forEach((ivi) => {
             datanodes.add(ivi);
-            datalinks[[d.current_implementation_status, ivi]] =
-              datalinks[[d.current_implementation_status, ivi]] + 1 || 1;
+            datalinks[`${d.current_implementation_status},${ivi}`] =
+              datalinks[`${d.current_implementation_status},${ivi}`] + 1 || 1;
           });
         });
 
@@ -150,14 +166,14 @@
           return { source, target, value: v };
         });
         this.sankey_links = JSON.parse(JSON.stringify(links));
-        this.sankey.do_the_sank({ nodes, links });
+        if (this.sankey) this.sankey.do_the_sank({ nodes, links });
       },
     },
     mounted() {
       this.sankey = new LamaSankey("#sankey");
     },
     methods: {
-      _fileName(suffix = "") {
+      _fileName(suffix = ""): string {
         let filters = this.$store.state.filters.filters;
         let prefix = "Global - ";
         if (filters.country_id)
@@ -180,7 +196,7 @@
           suffix
         );
       },
-      downloadImage(filetype) {
+      downloadImage(filetype: string) {
         chart_download(
           document.querySelector("#sankey"),
           `image/${filetype}`,

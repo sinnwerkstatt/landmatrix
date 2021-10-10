@@ -25,10 +25,16 @@
   </div>
 </template>
 
-<script>
-  export default {
-    name: "ArticleListe",
-    props: ["articles", "articlesLabel"],
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+  import type { BlogPage } from "$types/wagtail";
+
+  export default Vue.extend({
+    name: "ArticleList",
+    props: {
+      articles: { type: Object as PropType<BlogPage[]>, required: true },
+      articlesLabel: { type: String, required: true },
+    },
     data() {
       return {
         limit: 3,
@@ -43,7 +49,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

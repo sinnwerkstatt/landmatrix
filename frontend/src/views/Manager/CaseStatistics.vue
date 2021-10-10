@@ -30,8 +30,8 @@
               <hr />
               <StatisticsTable
                 :countries="countries"
-                :deal_statistics="current_deal_statistics"
-                :investor_statistics="current_investor_statistics"
+                :deal-statistics="current_deal_statistics"
+                :investor-statistics="current_investor_statistics"
                 :selected-country="selectedCountry"
                 :selected-region="selectedRegion"
               />
@@ -86,12 +86,11 @@
               <div class="my-5" />
               <StatisticsTable
                 :countries="countries"
-                :deal_statistics="historic_deal_statistics"
-                :investor_statistics="historic_investor_statistics"
+                :deal-statistics="historic_deal_statistics"
+                :investor-statistics="historic_investor_statistics"
                 :selected-country="selectedCountry"
                 :selected-region="selectedRegion"
-              >
-              </StatisticsTable>
+              />
             </b-card-text>
           </b-tab>
         </b-tabs>
@@ -100,18 +99,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import dayjs from "dayjs";
   import gql from "graphql-tag";
   import DatePicker from "v-calendar/lib/components/date-picker.umd";
-  import { mapState } from "vuex";
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
   import StatisticsTable from "./Statistics/StatisticsTable.vue";
+  import Vue from "vue";
+  import type { GQLFilter } from "$types/filters";
+  import type { Deal } from "$types/deal";
+  import type { Investor } from "$types/investor";
+  import type { Country, Region } from "$types/wagtail";
+  import type { User } from "$types/user";
+  import type { Obj } from "$types/generics";
 
-  function uniq(a, keepLatest = false) {
+  function uniq(objs: Obj[], keepLatest = false) {
     if (keepLatest) {
-      a.sort((a, b) => {
+      objs.sort((a, b) => {
         return a.modified_at > b.modified_at
           ? -1
           : a.modified_at < b.modified_at
@@ -120,17 +125,13 @@
       });
     }
     let seen = new Set();
-    return a.filter((item) => {
+    return objs.filter((item) => {
       let k = item.id;
       return seen.has(k) ? false : seen.add(k);
     });
   }
 
-  function uniqByKeepLatest(a) {
-    return uniq(a, true);
-  }
-
-  export default {
+  export default Vue.extend({
     name: "CaseStatistics",
     components: { LocationFilter, GoalsTable, StatisticsTable, DatePicker },
     data: function () {
@@ -154,8 +155,8 @@
           { name: "Last 365 days", value: 365 },
         ],
         goal_statistics: {},
-        simple_deals: [],
-        simple_investors: [],
+        simple_deals: [] as Deal[],
+        simple_investors: [] as Investor[],
       };
     },
     apollo: {
@@ -319,19 +320,21 @@
       },
     },
     computed: {
-      ...mapState({
-        regions: (state) => {
-          let world = {
-            id: -1,
-            name: "Global",
-            slug: "global",
-          };
-          return state.page.regions.concat([world]);
-        },
-        countries: (state) => state.page.countries,
-        user: (state) => state.page.user,
-      }),
-      location_filters() {
+      regions(): Region[] {
+        let world = {
+          id: -1,
+          name: "Global",
+          slug: "global",
+        };
+        return [...this.$store.state.page.regions, world];
+      },
+      countries(): Country[] {
+        return this.$store.state.page.countries;
+      },
+      user(): User {
+        return this.$store.state.page.user;
+      },
+      location_filters(): GQLFilter[] {
         let filters;
         if (this.selectedCountry)
           filters = [
@@ -351,31 +354,31 @@
           ];
         return filters;
       },
-      deals_active() {
+      deals_active(): Deal[] {
         return this.simple_deals.filter((d) => [2, 3].includes(d.status));
       },
-      deals_pending() {
+      deals_pending(): Deal[] {
         return this.simple_deals.filter((d) => [1, 2, 3].includes(d.draft_status));
       },
-      deals_rejected() {
+      deals_rejected(): Deal[] {
         return this.simple_deals.filter((d) => d.draft_status === 4);
       },
-      deals_pending_deletion() {
+      deals_pending_deletion(): Deal[] {
         return this.simple_deals.filter((d) => d.draft_status === 5);
       },
-      investors_active() {
+      investors_active(): Investor[] {
         return this.simple_investors.filter((i) => [2, 3].includes(i.status));
       },
-      investors_pending() {
+      investors_pending(): Investor[] {
         return this.simple_investors.filter((i) => [1, 2, 3].includes(i.draft_status));
       },
-      investors_rejected() {
+      investors_rejected(): Investor[] {
         return this.simple_investors.filter((i) => i.draft_status === 4);
       },
-      investors_pending_deletion() {
+      investors_pending_deletion(): Investor[] {
         return this.simple_investors.filter((i) => i.draft_status === 5);
       },
-      historic_deal_statistics() {
+      historic_deal_statistics(): { [key: string]: string }[] {
         let stats = [
           {
             name: "Deals added",
@@ -400,7 +403,7 @@
           },
           {
             name: "Deals Fully Updated",
-            deals: uniqByKeepLatest(this.historic_deals).filter((d) => {
+            deals: uniq(this.historic_deals, true).filter((d) => {
               if (d.fully_updated_at) {
                 let dateFU = dayjs(d.fully_updated_at);
                 return this.daterange.start <= dateFU && dateFU <= this.daterange.end;
@@ -410,7 +413,7 @@
           },
           {
             name: "Deals approved",
-            deals: uniqByKeepLatest(this.historic_deals).filter(
+            deals: uniq(this.historic_deals, true).filter(
               (d) => d.draft_status === null && (d.status === 2 || d.status === 3)
             ),
           },
@@ -420,7 +423,7 @@
         }
         return stats;
       },
-      current_deal_statistics() {
+      current_deal_statistics(): { [key: string]: string }[] {
         let stats = [
           { name: "Deals pending", deals: this.deals_pending },
           { name: "Deals rejected", deals: this.deals_rejected },
@@ -440,7 +443,7 @@
         }
         return stats;
       },
-      historic_investor_statistics() {
+      historic_investor_statistics(): { [key: string]: string }[] {
         let stats = [
           {
             name: "Investors added",
@@ -465,7 +468,7 @@
           },
           {
             name: "Investors published",
-            investors: uniqByKeepLatest(this.historic_investors).filter(
+            investors: uniq(this.historic_investors, true).filter(
               (d) => d.draft_status === null && (d.status === 2 || d.status === 3)
             ),
           },
@@ -475,8 +478,8 @@
         }
         return stats;
       },
-      current_investor_statistics() {
-        let stats = [
+      current_investor_statistics(): { [key: string]: string }[] {
+        let stats: { [key: string]: string }[] = [
           {
             name: "Investors pending",
             investors: this.investors_pending,
@@ -501,20 +504,20 @@
       },
     },
     watch: {
-      user() {
+      user(): void {
         this.triggerUserRegion();
       },
     },
     methods: {
-      updateRegion(region) {
+      updateRegion(region: Region): void {
         this.selectedRegion = region;
         this.selectedCountry = null;
       },
-      updateCountry(country) {
+      updateCountry(country: Country): void {
         this.selectedCountry = country;
         this.selectedRegion = null;
       },
-      triggerUserRegion() {
+      triggerUserRegion(): void {
         if (this.user.userregionalinfo) {
           let uri = this.user.userregionalinfo;
           if (uri.region.length) {
@@ -527,14 +530,14 @@
           }
         }
       },
-      updateDateRange() {
+      updateDateRange(): void {
         this.daterange = {
           start: dayjs().subtract(this.selectedDateOption, "day").toDate(),
           end: new Date(),
         };
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

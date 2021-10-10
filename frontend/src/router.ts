@@ -128,12 +128,12 @@ const router = new Router({
       component: () => import("$views/Manager/Management.vue"),
       meta: { requiresAuth: true, hideBreadcrumbs: true },
     },
-    {
-      path: "/management/dashboard/",
-      name: "dashboard",
-      component: () => import("$views/Manager/Dashboard.vue"),
-      meta: { requiresAuth: true },
-    },
+    // {
+    //   path: "/management/dashboard/",
+    //   name: "dashboard",
+    //   component: () => import("$views/Manager/Dashboard.vue"),
+    //   meta: { requiresAuth: true },
+    // },
     {
       path: "/management/case_statistics/",
       name: "case_statistics",

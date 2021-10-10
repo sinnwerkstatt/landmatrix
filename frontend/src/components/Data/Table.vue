@@ -84,14 +84,15 @@
   </div>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import DisplayField from "$components/Fields/DisplayField";
-  import FieldLabel from "$components/Fields/FieldLabel";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import FieldLabel from "$components/Fields/FieldLabel.vue";
   import { sortAnything } from "$utils";
   import { data_deal_query } from "$views/Data/query";
   import gql from "graphql-tag";
   import { mapState } from "vuex";
+  import Vue from "vue";
 
   const DEAL_DEFAULT_QUERY_FIELDS = [
     "id",
@@ -121,7 +122,7 @@
     investor: ["modified_at", "id", "name", "country", "classification", "deals"],
   };
 
-  export default {
+  export default Vue.extend({
     name: "Table",
     components: { FieldLabel, DisplayField, LoadingPulse },
     props: {
@@ -412,7 +413,7 @@
         this.disableScrollLoader = false;
       },
     },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .data-table {

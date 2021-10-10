@@ -23,7 +23,7 @@
             pills
             vertical
           >
-            <b-tab v-for="(stats, i) in deal_statistics" :key="i">
+            <b-tab v-for="(stats, i) in dealStatistics" :key="i">
               <template #title>
                 <strong>{{ stats.value }}</strong> {{ stats.name }}<br />
               </template>
@@ -60,7 +60,7 @@
             pills
             vertical
           >
-            <b-tab v-for="(stats, i) in investor_statistics" :key="i">
+            <b-tab v-for="(stats, i) in investorStatistics" :key="i">
               <template #title>
                 <strong>{{ stats.value }}</strong> {{ stats.name }}<br />
               </template>
@@ -90,22 +90,25 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import DealTable from "$components/Deal/DealTable";
   import InvestorTable from "$components/Investor/InvestorTable";
   import dayjs from "dayjs";
+  // noinspection TypeScriptCheckImport
   import DownloadJsonCSV from "vue-json-csv";
+  import Vue, { PropType } from "vue";
+  import type { Country, Region } from "$types/wagtail";
 
-  export default {
+  export default Vue.extend({
     name: "StatisticsTable",
     components: { InvestorTable, DealTable, DownloadJsonCSV },
-    props: [
-      "deal_statistics",
-      "investor_statistics",
-      "countries",
-      "selectedRegion",
-      "selectedCountry",
-    ],
+    props: {
+      dealStatistics: { type: Object },
+      investorStatistics: { type: Object },
+      countries: { type: Object as PropType<Country[]>, default: null },
+      selectedRegion: { type: Object as PropType<Region> },
+      selectedCountry: { type: Object as PropType<Country> },
+    },
     data: function () {
       return {
         dealFields: [
@@ -134,10 +137,10 @@
       },
       allStatsCsv() {
         let allStats = {};
-        for (let stats of this.deal_statistics) {
+        for (let stats of this.dealStatistics) {
           allStats[stats.name] = stats.value;
         }
-        for (let stats of this.investor_statistics) {
+        for (let stats of this.investorStatistics) {
           allStats[stats.name] = stats.value;
         }
         return [allStats];
@@ -193,7 +196,7 @@
         });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

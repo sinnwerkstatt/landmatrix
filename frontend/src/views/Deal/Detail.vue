@@ -149,20 +149,22 @@
   </div>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
 
-  import DealHistory from "$components/Deal/DealHistory";
-  import DealLocationsSection from "$components/Deal/DealLocationsSection";
-  import DealManageHeader from "$components/Deal/DealManageHeader";
-  import DealSection from "$components/Deal/DealSection";
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection";
-  import HeaderDates from "$components/HeaderDates";
-  import InvestorGraph from "$components/Investor/InvestorGraph";
-  import SideTabsMenu from "$components/Shared/SideTabsMenu";
+  import DealHistory from "$components/Deal/DealHistory.vue";
+  import DealLocationsSection from "$components/Deal/DealLocationsSection.vue";
+  import DealManageHeader from "$components/Deal/DealManageHeader.vue";
+  import DealSection from "$components/Deal/DealSection.vue";
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.vue";
+  import HeaderDates from "$components/HeaderDates.vue";
+  import InvestorGraph from "$components/Investor/InvestorGraph.vue";
+  import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
   import { deal_gql_query } from "$store/queries";
   import gql from "graphql-tag";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import Vue from "vue";
+  import type { LocaleMessages } from "vue-i18n";
 
   // function equalDealParams(from_params, to_params) {
   //   if (parseInt(from_params.dealId) !== parseInt(to_params.dealId)) return false;
@@ -175,11 +177,11 @@
   //   return true;
   // }
 
-  export default {
+  export default Vue.extend({
     name: "Detail",
     components: {
       SideTabsMenu,
-      DealComments: () => import("$components/Deal/DealComments"),
+      DealComments: () => import("$components/Deal/DealComments.vue"),
       DealHistory,
       DealLocationsSection,
       DealManageHeader,
@@ -285,7 +287,7 @@
       },
     },
     computed: {
-      tabs() {
+      tabs(): { [key: string]: string | LocaleMessages | null } {
         return {
           locations: this.$t("Locations"),
           general: this.$t("General info"),
@@ -305,12 +307,12 @@
           actions: this.$t("Actions"),
         };
       },
-      userAuthenticated() {
+      userAuthenticated(): boolean {
         return this.$store.state.page.user?.is_authenticated;
       },
     },
     methods: {
-      changeStatus({ transition, comment = "", to_user = null }) {
+      changeStatus({ transition, comment = "", to_user = null }): void {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -366,7 +368,7 @@
           })
           .catch((error) => console.error(error));
       },
-      deleteDeal(comment) {
+      deleteDeal(comment): void {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -392,7 +394,7 @@
             this.reloadDeal();
           });
       },
-      setConfidential(data) {
+      setConfidential(data): void {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -422,19 +424,19 @@
           })
           .then(this.reloadDeal);
       },
-      updateRoute(emiter) {
+      updateRoute(emiter): void {
         console.log({ emiter });
         console.log("Deal detail: update route");
         if (location.hash !== emiter) this.$router.push(this.$route.path + emiter);
       },
-      triggerInvestorGraphRefresh() {
-        console.log("Deal detail: investor graph refresh");
-        this.updateRoute("#investor_info");
-        if ("investorGraph" in this.$refs) {
-          this.$refs.investorGraph.refresh_graph();
-        }
-      },
-      updatePageContext(to) {
+      // triggerInvestorGraphRefresh() {
+      //   console.log("Deal detail: investor graph refresh");
+      //   this.updateRoute("#investor_info");
+      //   if ("investorGraph" in this.$refs) {
+      //     this.$refs.investorGraph.refresh_graph();
+      //   }
+      // },
+      updatePageContext(to): void {
         console.log("Deal detail: update page context");
         if (to.hash) {
           // only update if hash is present (otherwise #locations are active by default)
@@ -449,15 +451,15 @@
           ],
         });
       },
-      download_link(format) {
+      download_link(format: string): string {
         return `/api/legacy_export/?deal_id=${this.deal.id}&subset=UNFILTERED&format=${format}`;
       },
-      reloadDeal() {
+      reloadDeal(): void {
         console.log("Deal detail: reload");
         this.$apollo.queries.deal.refetch();
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

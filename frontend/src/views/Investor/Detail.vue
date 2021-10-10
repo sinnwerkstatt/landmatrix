@@ -238,24 +238,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import LoadingPulse from "$components/Data/LoadingPulse";
   import DisplayField from "$components/Fields/DisplayField";
   import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
-  import InvestorHistory from "$components/Investor/InvestorHistory";
   import InvestorManageHeader from "$components/Investor/InvestorManageHeader";
   import store from "$store";
   import { investor_gql_query } from "$store/queries";
   import gql from "graphql-tag";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "InvestorDetail",
     components: {
       DisplayField,
       HeaderDates,
       InvestorGraph,
-      InvestorHistory,
       InvestorManageHeader,
       LoadingPulse,
     },
@@ -470,7 +469,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

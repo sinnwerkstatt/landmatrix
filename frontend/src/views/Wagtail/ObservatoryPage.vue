@@ -105,7 +105,9 @@
   import { deal_aggregations_query } from "$store/queries";
   import gql from "graphql-tag";
   import Vue from "vue";
-  import type { ObservatoryPage } from "$types/wagtail";
+  import type { ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
+  import type { BlogPage } from "$types/wagtail";
+  import type { DealAggregations } from "$types/deal";
 
   export default Vue.extend({
     name: "ObservatoryPage",
@@ -122,8 +124,8 @@
       return {
         readMore: false,
         deals: [],
-        deal_aggregations: null,
-        articles: [],
+        deal_aggregations: {} as DealAggregations,
+        articles: [] as BlogPage[],
       };
     },
     apollo: {
@@ -154,10 +156,10 @@
       page(): ObservatoryPage {
         return this.$store.state.page.wagtailPage;
       },
-      region_id(): number {
+      region_id(): number | null {
         return this.page.region ? this.page.region.id : null;
       },
-      country_id(): number {
+      country_id(): number | null {
         return this.page.country ? this.page.country.id : null;
       },
       slug(): string {
@@ -175,24 +177,25 @@
         }
         return ret ? ret.slug : null;
       },
-      content(): string | string[] {
+      content(): WagtailStreamfield {
         return this.page ? this.page.body : [];
       },
-      totalCount(): number {
-        if (!this.deal_aggregations) return;
+      totalCount(): string {
+        if (!this.deal_aggregations) return "";
+        console.log(this.deal_aggregations.current_negotiation_status);
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
       totalSize(): string {
-        if (!this.deal_aggregations) return;
+        if (!this.deal_aggregations) return "";
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
-      negotiationStatusBuckets() {
+      negotiationStatusBuckets(): unknown {
         if (!this.deal_aggregations) return;
         let retval = [
           { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
@@ -223,35 +226,28 @@
         return retval;
       },
 
-      filteredCountryProfiles() {
+      filteredCountryProfiles(): BlogPage[] {
         if (!this.slug) return [];
         return this.articles
-          .filter((a) => {
-            return (
-              a.tags.find((t) => {
-                return t.slug === this.slug;
-              }) &&
-              a.categories.find((c) => {
-                return c.slug === "country-profile";
-              })
-            );
-          })
-          .sort((a, b) => new Date(b.date) - new Date(a.date));
+          .filter(
+            (a) =>
+              a.tags.find((t) => t.slug === this.slug) &&
+              a.categories.find((c) => c.slug === "country-profile")
+          )
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       },
-      filteredNewsPubs() {
+      filteredNewsPubs(): BlogPage[] {
         if (!this.slug) return [];
         return this.articles
           .filter((a) => {
             return (
-              a.tags.find((t) => {
-                return t.slug === this.slug;
-              }) &&
-              a.categories.find((c) => {
-                return ["news", "publications"].includes(c.slug);
-              })
+              a.tags.find((t) => t.slug === this.slug) &&
+              a.categories.find(
+                (c) => c.slug && ["news", "publications"].includes(c.slug)
+              )
             );
           })
-          .sort((a, b) => new Date(b.date) - new Date(a.date));
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       },
     },
     watch: {

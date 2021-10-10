@@ -58,7 +58,7 @@
   </ChartsContainer>
 </template>
 
-<script>
+<script lang="ts">
   import StatusPieChart from "$components/Charts/StatusPieChart";
   import DealDisplayToggle from "$components/Shared/DealDisplayToggle";
   import {
@@ -70,10 +70,10 @@
   import { data_deal_query } from "../query";
 
   import ChartsContainer from "./ChartsContainer";
-
+  import Vue from "vue";
   const NO_INTENTION = "No intention";
 
-  export default {
+  export default Vue.extend({
     name: "DynamicsOverview",
     components: { ChartsContainer, StatusPieChart, DealDisplayToggle },
     metaInfo() {
@@ -248,7 +248,7 @@
         return data;
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

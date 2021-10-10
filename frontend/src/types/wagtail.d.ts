@@ -17,6 +17,18 @@ type WagtailPageMeta = {
   locale: string;
 };
 
+export interface Region {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface Country {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export interface WagtailPage {
   id: number;
   title: string;
@@ -28,6 +40,8 @@ export interface ObservatoryPage extends WagtailPage {
   short_description: string;
   introduction_text: string;
   twitter_feed: unknown;
+  region?: Region;
+  country?: Country;
 }
 
 export interface BlogPage extends WagtailPage {
@@ -45,6 +59,7 @@ export interface BlogCategory {
   name: string;
   slug: string | null;
 }
+
 export interface BlogTag {
   id: number;
   name: string;

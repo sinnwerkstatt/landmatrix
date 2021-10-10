@@ -6,12 +6,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import gql from "graphql-tag";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import { GlobalInvolvementMap } from "./global_inv_map";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "WebOfTransnationalDeals",
     components: { LoadingPulse },
     data() {
@@ -46,7 +47,7 @@
     },
 
     methods: {},
-  };
+  });
 </script>
 <style lang="scss">
   .svg-container {

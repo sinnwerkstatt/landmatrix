@@ -4,23 +4,24 @@
  * https://observablehq.com/@d3/brexit-voting?collection=@d3/d3-sankey
  */
 import { drag, select } from "d3";
-import { sankey, sankeyLinkHorizontal } from "d3-sankey";
+import { sankey, SankeyGraph, sankeyLinkHorizontal } from "d3-sankey";
 
 export class LamaSankey {
-  constructor(selector) {
-    this.width = 700;
-    this.height = 700;
+  private readonly width = 700;
+  private readonly height = 700;
+  private svg;
 
+  constructor(selector: string) {
     this.svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
       .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
-      .attr("height", "auto")
-      .attr("width", "auto")
+      .attr("height", "100%")
+      .attr("width", "100%")
       .append("g")
       .attr("transform", "translate(10,10)");
   }
 
-  do_the_sank(data) {
+  do_the_sank(data: SankeyGraph<{}, {}>): void {
     this.svg.selectAll("*").remove();
     if (data.nodes.length === 0) return;
     const d3sankey = sankey()
@@ -30,7 +31,7 @@ export class LamaSankey {
       .size([this.width, this.height]);
     const graph = d3sankey(data);
 
-    const stroke_colors = {
+    const stroke_colors: { [key: string]: string } = {
       PROJECT_NOT_STARTED: "#4BBB87",
       STARTUP_PHASE: "#B9D635",
       IN_OPERATION: "#fc941f",

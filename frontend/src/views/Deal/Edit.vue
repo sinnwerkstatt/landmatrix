@@ -10,9 +10,9 @@
 
           <div class="savebar-container">
             <button
-              type="submit"
-              class="btn btn-primary btn-sm mx-2"
               :disabled="!form_changed || saving_in_progress"
+              class="btn btn-primary btn-sm mx-2"
+              type="submit"
               @click="saveButtonPressed"
             >
               <span
@@ -39,8 +39,8 @@
         </div>
         <div class="deal-edit-nav">
           <SideTabsMenu
-            :tabs="tabs"
             :active-tab="active_tab"
+            :tabs="tabs"
             @updateRoute="updateRoute"
           />
         </div>
@@ -168,21 +168,25 @@
   </div>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import DealEditSection from "$components/Deal/DealEditSection";
-  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection";
-  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection";
-  import EditField from "$components/Fields/EditField";
-  import Overlay from "$components/Overlay";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import DealEditSection from "$components/Deal/DealEditSection.vue";
+  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.vue";
+  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.vue";
+  import EditField from "$components/Fields/EditField.vue";
+  import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
+  import Overlay from "$components/Overlay.vue";
   import { deal_gql_query } from "$store/queries";
   import { removeEmptyEntries } from "$utils";
   import gql from "graphql-tag";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-  import SideTabsMenu from "$components/Shared/SideTabsMenu";
 
-  export default {
+  import Vue from "vue";
+  import type { LocaleMessages } from "vue-i18n";
+  import type { Contract, DataSource, Deal } from "$types/deal";
+
+  export default Vue.extend({
     name: "DealEdit",
     components: {
       SideTabsMenu,
@@ -211,8 +215,8 @@
     },
     data() {
       return {
-        deal: null,
-        original_deal: null,
+        deal: {} as Deal,
+        original_deal: "",
         saving_in_progress: false,
         show_really_quit_overlay: false,
         active_tab: "#locations",
@@ -237,7 +241,7 @@
       },
     },
     computed: {
-      tabs() {
+      tabs(): { [key: string]: string | LocaleMessages } {
         return {
           locations: this.$t("Locations"),
           general: this.$t("General info"),
@@ -266,42 +270,47 @@
       //     }
       //   }
       // },
-      current_form() {
+      current_form(): HTMLSelectElement {
         return document.querySelector(this.active_tab);
       },
-      form_changed() {
+      form_changed(): boolean {
         return JSON.stringify(this.deal) !== this.original_deal;
       },
     },
     created() {
       if (!this.dealId) {
-        this.deal = { country: null, locations: [], contracts: [], datasources: [] };
+        this.deal = {
+          country: undefined,
+          locations: [],
+          contracts: [],
+          datasources: [],
+        };
         this.original_deal = JSON.stringify(this.deal);
       }
     },
     methods: {
-      quitEditor(force) {
+      quitEditor(force: boolean) {
         if (this.form_changed && !force) this.show_really_quit_overlay = true;
         else if (!this.dealId) this.$router.push("/");
         else
           this.$router.push({
             name: "deal_detail",
             params: {
-              dealId: this.dealId,
-              dealVersion: this.dealVersion,
+              dealId: this.dealId.toString(),
+              dealVersion: this.dealVersion.toString(),
             },
           });
       },
       saveButtonPressed() {
         this.deal_save(location.hash);
       },
-      updateRoute(hash) {
+      updateRoute(hash: string) {
         if (location.hash === hash) return;
         if (!this.form_changed) this.$router.push({ hash });
         else this.deal_save(hash);
       },
 
-      deal_save(hash) {
+      deal_save(hash: string) {
         if (!this.current_form.checkValidity()) {
           this.current_form.reportValidity();
           return;
@@ -341,27 +350,31 @@
       addContract() {
         let maxid = 0;
         this.deal.contracts.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        this.deal.contracts.push(new Object({ id: maxid + 1 }));
+        this.deal.contracts.push(Object.create({ id: maxid + 1 }));
       },
-      removeContract(index) {
+      removeContract(index: number) {
         this.removeSubmodelEntry(this.deal.contracts, index, "contract");
       },
       addDataSource() {
         let maxid = 0;
         this.deal.datasources.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        this.deal.datasources.push(new Object({ id: maxid + 1 }));
+        this.deal.datasources.push(Object.create({ id: maxid + 1 }));
       },
-      removeDataSource(index) {
+      removeDataSource(index: number) {
         this.removeSubmodelEntry(this.deal.datasources, index, "data source");
       },
-      removeSubmodelEntry(submodels, index, label) {
+      removeSubmodelEntry(
+        submodels: DataSource[] | Location[] | Contract[],
+        index: number,
+        label: string
+      ) {
         let message =
           this.$t("Do you really want to remove " + label) + ` #${index + 1}?`;
         this.$bvModal
           .msgBoxConfirm(message, {
             size: "sm",
-            okTitle: this.$t("Delete"),
-            cancelTitle: this.$t("Cancel"),
+            okTitle: this.$t("Delete").toString(),
+            cancelTitle: this.$t("Cancel").toString(),
             centered: true,
           })
           .then((confirmed) => {
@@ -371,7 +384,7 @@
           });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">
@@ -384,6 +397,7 @@
     padding-bottom: 1rem;
     margin: 0 auto;
   }
+
   .deal-edit {
     width: 100%;
     display: grid;

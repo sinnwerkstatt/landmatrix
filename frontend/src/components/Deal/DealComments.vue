@@ -65,7 +65,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { apolloClient } from "$utils/apolloclient";
   import VueHcaptcha from "@hcaptcha/vue-hcaptcha";
   import dayjs from "dayjs";
@@ -73,11 +73,11 @@
 
   import utc from "dayjs/plugin/utc";
   import gql from "graphql-tag";
-
+  import Vue from "vue";
   dayjs.extend(utc);
   dayjs.extend(timezone);
 
-  export default {
+  export default Vue.extend({
     components: { VueHcaptcha },
     props: {
       comments: { type: Array, required: true },
@@ -182,7 +182,7 @@
         // });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

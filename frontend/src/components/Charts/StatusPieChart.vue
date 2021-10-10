@@ -7,12 +7,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import Chart from "chart.js";
   import numeral from "numeral";
   import Legend from "./Legend";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "StatusPieChart",
     components: { Legend },
     props: [
@@ -131,7 +132,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

@@ -1,4 +1,4 @@
-export const implementation_status_choices = {
+export const implementation_status_choices: { [key: string]: string } = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
   IN_OPERATION: "In operation (production)",
@@ -84,7 +84,7 @@ export const intention_of_investment_map = {
   OTHER: ["Other", ""],
 };
 
-export const flat_intention_of_investment_map = {
+export const flat_intention_of_investment_map: { [key: string]: string } = {
   BIOFUELS: "Biofuels",
   FOOD_CROPS: "Food crops",
   FODDER: "Fodder",

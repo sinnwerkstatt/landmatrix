@@ -15,44 +15,31 @@
 import { addMarkers } from "./utils";
 import {
   D3ZoomEvent,
-  drag,
   geoCentroid,
-  geoEqualEarth,
-  GeoGeometryObjects,
-  geoGraticule,
-  GeoGraticuleGenerator,
   geoNaturalEarth1,
-  geoNaturalEarth1Raw,
-  geoOrthographic,
+  geOrthographic,
   GeoPath,
   geoPath,
-  pointer,
   select,
   zoom,
 } from "d3";
 import { feature } from "topojson-client";
-import versor from "versor";
 import world from "world-atlas/countries-110m.json";
-import type { DragBehavior } from "d3-drag";
-import type { GeoJSONObject } from "@turf/turf";
-import * as GeoJSON from "geojson";
+import type * as GeoJSON from "geojson";
 
 export class GlobalInvolvementMap {
-  private width: number;
-  private readonly height: number;
-  private projection: any;
+  private readonly width = 950;
+  private readonly height = 500;
+  private readonly projection;
   private readonly path: GeoPath;
-  private svg: any;
-  private countries: any;
-  private frontCountries: any;
-  private moneylines: any;
-  private selectedCountry?: any;
-  private global_map_of_investments: any;
+  private readonly svg;
+  private readonly countries;
+  private readonly moneylines;
+  private frontCountries: unknown;
+  private selectedCountry?: unknown;
+  private global_map_of_investments: unknown;
 
   constructor(svg_selector: string) {
-    this.width = 950;
-    this.height = 500;
-
     this.projection = geoNaturalEarth1();
     // this.projection = geoEqualEarth();
 
@@ -61,6 +48,8 @@ export class GlobalInvolvementMap {
     this.path = geoPath().projection(this.projection);
 
     this.svg = select(svg_selector).attr("viewBox", `0 0 ${this.width} ${this.height}`);
+    this.moneylines = this.svg.append("g").attr("class", "moneylines");
+    console.warn("MONEYLS", this.moneylines);
 
     addMarkers(this.svg);
   }
@@ -79,9 +68,6 @@ export class GlobalInvolvementMap {
       .on("mouseover", (e: Event) => select(e.target).classed("hover", true))
       .on("mouseout", (e: Event) => select(e.target).classed("hover", false))
       .on("click", (e: Event) => this.countrySelect(e));
-
-    this.moneylines = this.svg.append("g").attr("class", "moneylines");
-    console.warn("MONEYLS", this.moneylines);
 
     this.svg.call(
       zoom().on("zoom", (e) => {

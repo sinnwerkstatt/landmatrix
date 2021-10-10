@@ -210,12 +210,9 @@
   import Vue, { PropType } from "vue";
   import { is_authorized } from "$utils/user";
   import gql from "graphql-tag";
-  import type { Deal, DealVersion } from "$types/deal";
-  import type { Investor, InvestorVersion } from "$types/investor";
+  import type { Obj, ObjVersion } from "$types/generics";
+  import type { User } from "$types/user";
   import type { Location } from "vue-router/types/router";
-
-  type Obj = Deal | Investor;
-  type ObjVersion = DealVersion | InvestorVersion;
 
   export default Vue.extend({
     name: "ManageHeader",
@@ -303,12 +300,12 @@
         return this.is_old_draft && [2, 3].includes(this.latest_object_version.status);
       },
       is_old_draft(): boolean {
-        return this.objectVersion && this.last_version.id !== +this.objectVersion;
+        return !!this.objectVersion && this.last_version.id !== +this.objectVersion;
       },
       has_newer_draft(): boolean {
         if (this.is_active_with_draft) return true;
         // old with newer draft
-        return this.is_old_draft && this.latest_object_version.draft_status;
+        return this.is_old_draft && !!this.latest_object_version.draft_status;
       },
       has_active(): boolean {
         return !!this.object.status;
@@ -323,51 +320,53 @@
           if (!this.has_active) {
             // only for new drafts without active
             return this.otype === "deal"
-              ? this.$t("Starts editing this deal")
-              : this.$t("Starts editing this investor");
+              ? this.$t("Starts editing this deal").toString()
+              : this.$t("Starts editing this investor").toString();
           } else {
             // only for new drafts with active
             return this.otype === "deal"
-              ? this.$t("Edits this draft version")
-              : this.$t("Edits this investor version");
+              ? this.$t("Edits this draft version").toString()
+              : this.$t("Edits this investor version").toString();
           }
         } else
           return this.otype === "deal"
-            ? this.$t("Creates a new draft version of this deal")
-            : this.$t("Creates a new draft version of this investor");
+            ? this.$t("Creates a new draft version of this deal").toString()
+            : this.$t("Creates a new draft version of this investor").toString();
       },
-      get_delete_text() {
-        if (this.is_deleted) return this.$t("Undelete");
+      get_delete_text(): string {
+        if (this.is_deleted) return this.$t("Undelete").toString();
         else if (!this.objectVersion && !this.object.draft_status) {
           // active without draft
           return this.otype === "deal"
-            ? this.$t("Delete deal")
-            : this.$t("Delete investor");
-        } else return this.$t("Delete");
+            ? this.$t("Delete deal").toString()
+            : this.$t("Delete investor").toString();
+        } else return this.$t("Delete").toString();
       },
-      get_delete_description() {
+      get_delete_description(): string {
         if (this.is_deleted)
           return this.otype === "deal"
-            ? this.$t("Reactivate this deal")
-            : this.$t("Reactivate this investor");
+            ? this.$t("Reactivate this deal").toString()
+            : this.$t("Reactivate this investor").toString();
         if (this.objectVersion && this.has_active) {
           // is draft and has active
           return this.otype === "deal"
-            ? this.$t("Deletes this draft version of the deal")
-            : this.$t("Deletes this draft version of the investor");
+            ? this.$t("Deletes this draft version of the deal").toString()
+            : this.$t("Deletes this draft version of the investor").toString();
         } else
           return this.otype === "deal"
-            ? this.$t("Deletes this deal")
-            : this.$t("Deletes this investor");
+            ? this.$t("Deletes this deal").toString()
+            : this.$t("Deletes this investor").toString();
       },
-      get_activate_description() {
+      get_activate_description(): string {
         return this.has_active
-          ? this.$t("Activates submitted version replacing currently active version")
+          ? this.$t(
+              "Activates submitted version replacing currently active version"
+            ).toString()
           : this.otype === "deal"
-          ? this.$t("Sets the deal active")
-          : this.$t("Sets the investor active");
+          ? this.$t("Sets the deal active").toString()
+          : this.$t("Sets the investor active").toString();
       },
-      transition_to_user() {
+      transition_to_user(): User {
         const latest_draft_creation = this.object.workflowinfos.find((v) => {
           return !v.draft_status_before && v.draft_status_after === 1;
         });
@@ -375,18 +374,26 @@
       },
     },
     methods: {
-      object_detail_path(obID: number, obV: number): Location {
-        return this.otype === "deal"
-          ? {
-              name: "deal_detail",
-              params: { dealId: obID.toString(), dealVersion: obV?.toString() },
-            }
-          : {
-              name: "investor_detail",
-              params: { investorId: obID.toString(), investorVersion: obV?.toString() },
-            };
+      object_detail_path(obID: number, obV?: number): Location {
+        if (this.otype === "deal") {
+          return {
+            name: "deal_detail",
+            params: obV
+              ? {
+                  dealId: obID.toString(),
+                  dealVersion: obV.toString(),
+                }
+              : { dealId: obID.toString() },
+          };
+        }
+        return {
+          name: "investor_detail",
+          params: obV
+            ? { investorId: obID.toString(), investorVersion: obV?.toString() }
+            : { investorId: obID.toString() },
+        };
       },
-      object_edit_path(obID: number, obV: number): Location {
+      object_edit_path(obID: number, obV: number | string): Location {
         return this.otype === "deal"
           ? {
               name: "deal_edit",
@@ -425,6 +432,7 @@
         this.show_to_delete_overlay = false;
       },
       do_to_draft({ comment, to_user }): void {
+        console.log("to_draft", { comment, to_user });
         this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
         this.show_to_draft_overlay = false;
       },

@@ -17,18 +17,20 @@
       store
         .dispatch("fetchWagtailPage", to.path)
         .then(() => next())
+        // the params are fine, this is a vue-router "hack" to keep the path
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     beforeRouteUpdate(to, from, next) {
       store
         .dispatch("fetchWagtailPage", to.path)
         .then(() => next())
+        // the params are fine, this is a vue-router "hack" to keep the path
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     metaInfo() {
-      let ret = { title: this.$store.state.page.title };
-      if (this.$route.path === "/") ret.titleTemplate = "Land Matrix";
-      return ret;
+      const title = this.$store.state.page.title;
+      if (this.$route.path === "/") return { title, titleTemplate: "Land Matrix" };
+      return { title };
     },
     computed: {
       pageType() {

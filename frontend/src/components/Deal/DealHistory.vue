@@ -86,10 +86,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { draft_status_map, status_map } from "$utils/choices";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "DealHistory",
     props: {
       deal: { type: Object, required: true },
@@ -155,5 +156,5 @@
         });
       },
     },
-  };
+  });
 </script>
