@@ -23,8 +23,7 @@ django formatting and linting:
   script:
     # - poetry config experimental.new-installer false
     - poetry install -E production
-    # - npm ci
-    - mkdir node_modules # dirty hack to make gitlab CI/CD happy
+    - npm i
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
@@ -47,8 +46,7 @@ tests and coverage:
   script:
     # - poetry config experimental.new-installer false
     - poetry install -E production
-    # - npm ci
-    - mkdir node_modules # dirty hack to make gitlab CI/CD happy
+    - npm i
     - poetry run doit -n 4 update
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
