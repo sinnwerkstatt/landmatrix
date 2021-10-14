@@ -72,7 +72,7 @@
     props: {
       dealData: { type: Array, required: true },
       aspectRatio: { type: Number, default: 2 },
-      maxWidth: { type: String, default: "200px" },
+      containerStyle: { type: Object, default: () => ({ maxWidth: "auto" }) },
       unit: { type: String, required: false, default: null },
       valueField: { type: String, default: "value" },
       // legends: { type: Object, default: null },
@@ -84,11 +84,6 @@
       };
     },
     computed: {
-      containerStyle() {
-        return {
-          maxWidth: this.maxWidth,
-        };
-      },
       chartoptions() {
         return {
           cutoutPercentage: 0,
@@ -102,25 +97,13 @@
             },
             tooltip: {
               callbacks: {
-                label: (item, data) => {
-                  console.log({ item, data });
-                  // let origItem = this.dealData[item.datasetIndex];
-                  // let label = data.labels[item.index];
-                  // let value = data.datasets[item.datasetIndex].data[item.index];
-                  // console.log({ origItem, label, value });
-                  return "xx";
+                label: (context) => {
+                  let label = context.label;
+                  let value = context.dataset.data[context.dataIndex];
+                  value = numeral(value).format("0,0");
+                  label = `${label}: ${value}${this.unit ? ` ${this.unit}` : ""}`;
+                  return label;
                 },
-                // label: (item, data) => {
-                //   if (origItem.precision) {
-                //     value = numeral(value).format(
-                //       "0,0." + "0".repeat(origItem.precision)
-                //     );
-                //   } else {
-                //     value = numeral(value).format("0,0");
-                //   }
-                //   label = `${label}: ${value}${this.unit ? ` ${this.unit}` : ""}`;
-                //   return label;
-                // },
               },
             },
           },
