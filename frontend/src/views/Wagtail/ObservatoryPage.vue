@@ -32,7 +32,7 @@
                 <StatusPieChart
                   :deal-data="negotiationStatusBuckets"
                   :aspect-ratio="1"
-                  max-width="70%"
+                  :container-style="{ maxWidth: '70%' }"
                   unit="ha"
                   value-field="size"
                 />
@@ -45,7 +45,7 @@
                 <StatusPieChart
                   :deal-data="negotiationStatusBuckets"
                   :aspect-ratio="1"
-                  max-width="70%"
+                  :container-style="{ maxWidth: '70%' }"
                   value-field="count"
                 />
               </div>
