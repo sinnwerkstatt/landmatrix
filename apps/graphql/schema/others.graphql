@@ -90,4 +90,12 @@ type ChartDescriptions {
   produce_info_map: String
 }
 
-scalar DealAggregations
+type DealAggregation {
+  value: String
+  count: Int
+  size: Float
+}
+
+type DealAggregations {
+  current_negotiation_status: [DealAggregation]
+}

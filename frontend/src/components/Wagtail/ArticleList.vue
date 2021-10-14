@@ -32,7 +32,7 @@
   export default Vue.extend({
     name: "ArticleList",
     props: {
-      articles: { type: Object as PropType<BlogPage[]>, required: true },
+      articles: { type: Array as PropType<BlogPage[]>, required: true },
       articlesLabel: { type: String, required: true },
     },
     data() {

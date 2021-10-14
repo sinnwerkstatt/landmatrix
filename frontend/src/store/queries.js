@@ -221,26 +221,6 @@ export const markers_query = {
   },
 };
 
-export const deal_aggregations_query = {
-  query: gql`
-    query DealAggregations($fields: [String]!, $subset: Subset, $filters: [Filter]) {
-      deal_aggregations(fields: $fields, subset: $subset, filters: $filters)
-    }
-  `,
-  variables() {
-    let extra_filter = {
-      region_id: this.page.region ? this.page.region.id : null,
-      country_id: this.page.country ? this.page.country.id : null,
-      negotiation_status: [],
-    };
-    return {
-      fields: ["current_negotiation_status"],
-      filters: this.$store.getters.defaultFiltersForGQL(extra_filter),
-      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
-    };
-  },
-};
-
 export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int, $subset: Subset) {
     deal(id: $id, version: $version, subset: $subset) {

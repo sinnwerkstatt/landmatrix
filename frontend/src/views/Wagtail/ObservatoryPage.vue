@@ -30,9 +30,9 @@
                 <label>Size</label>
                 <div class="total">{{ totalSize }} ha</div>
                 <StatusPieChart
-                  :aspect-ratio="1"
                   :deal-data="negotiationStatusBuckets"
-                  :display-legend="true"
+                  :aspect-ratio="1"
+                  max-width="70%"
                   unit="ha"
                   value-field="size"
                 />
@@ -43,9 +43,9 @@
                   {{ totalCount }}
                 </div>
                 <StatusPieChart
-                  :aspect-ratio="1"
                   :deal-data="negotiationStatusBuckets"
-                  :display-legend="true"
+                  :aspect-ratio="1"
+                  max-width="70%"
                   value-field="count"
                 />
               </div>
@@ -102,11 +102,9 @@
   import ArticleList from "$components/Wagtail/ArticleList.vue";
   import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
   import Twitter from "$components/Wagtail/Twitter.vue";
-  import { deal_aggregations_query } from "$store/queries";
   import gql from "graphql-tag";
   import Vue from "vue";
-  import type { ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
-  import type { BlogPage } from "$types/wagtail";
+  import type { BlogPage, ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
   import type { DealAggregations } from "$types/deal";
 
   export default Vue.extend({
@@ -129,7 +127,35 @@
       };
     },
     apollo: {
-      deal_aggregations: deal_aggregations_query,
+      deal_aggregations: {
+        query: gql`
+          query DealAggregations(
+            $fields: [String]!
+            $subset: Subset
+            $filters: [Filter]
+          ) {
+            deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
+              current_negotiation_status {
+                value
+                size
+                count
+              }
+            }
+          }
+        `,
+        variables() {
+          let extra_filter = {
+            region_id: this.page.region ? this.page.region.id : null,
+            country_id: this.page.country ? this.page.country.id : null,
+            negotiation_status: [],
+          };
+          return {
+            fields: ["current_negotiation_status"],
+            filters: this.$store.getters.defaultFiltersForGQL(extra_filter),
+            subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
+          };
+        },
+      },
       articles: {
         query: gql`
           query {
@@ -181,22 +207,21 @@
         return this.page ? this.page.body : [];
       },
       totalCount(): string {
-        if (!this.deal_aggregations) return "";
-        console.log(this.deal_aggregations.current_negotiation_status);
+        if (!this.deal_aggregations.current_negotiation_status) return "";
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
       totalSize(): string {
-        if (!this.deal_aggregations) return "";
+        if (!this.deal_aggregations?.current_negotiation_status) return "";
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
       negotiationStatusBuckets(): unknown {
-        if (!this.deal_aggregations) return;
+        if (!this.deal_aggregations.current_negotiation_status) return;
         let retval = [
           { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
           { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
