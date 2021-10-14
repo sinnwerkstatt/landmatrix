@@ -19,6 +19,7 @@ interface Deal extends Obj {
   versions: DealVersion[];
   workflowinfos: DealWorkflowInfo[];
   current_intention_of_investment: string[];
+  current_negotiation_status: string;
   current_implementation_status: string;
 }
 

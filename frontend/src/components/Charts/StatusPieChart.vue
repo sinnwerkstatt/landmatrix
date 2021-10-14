@@ -10,61 +10,18 @@
 <script lang="ts">
   import {
     Chart,
-    // ArcElement,
-    // LineElement,
-    // BarElement,
-    // PointElement,
-    // BarController,
-    // BubbleController,
-    // DoughnutController,
-    // LineController,
-    // PieController,
-    // PolarAreaController,
-    // RadarController,
-    // ScatterController,
-    // CategoryScale,
-    // LinearScale,
-    // LogarithmicScale,
-    // RadialLinearScale,
-    // TimeScale,
-    // TimeSeriesScale,
-    // Decimation,
-    // Filler,
-    // Title,
-    // Tooltip,
-    // SubTitle,
-    registerables,
+    ArcElement,
+    PieController,
+    Title,
+    Tooltip,
+    Legend,
+    SubTitle,
   } from "chart.js";
   import numeral from "numeral";
-  // import Legend from "./Legend";
+
   import Vue from "vue";
 
-  Chart.register(...registerables);
-  // Chart.register(
-  //   ArcElement,
-  //   LineElement,
-  //   BarElement,
-  //   PointElement,
-  //   BarController,
-  //   BubbleController,
-  //   DoughnutController,
-  //   LineController,
-  //   PieController,
-  //   PolarAreaController,
-  //   RadarController,
-  //   ScatterController,
-  //   CategoryScale,
-  //   LinearScale,
-  //   LogarithmicScale,
-  //   RadialLinearScale,
-  //   TimeScale,
-  //   TimeSeriesScale,
-  //   Decimation,
-  //   Filler,
-  //   Title,
-  //   Tooltip,
-  //   SubTitle
-  // );
+  Chart.register(ArcElement, PieController, Legend, Tooltip, SubTitle, Title);
 
   export default Vue.extend({
     name: "StatusPieChart",
@@ -95,36 +52,25 @@
                 textAlign: "left",
               },
             },
+            // title: { display: true, text: "Custom Chart Title" },
             tooltip: {
               callbacks: {
                 label: (context) => {
-                  let label = context.label;
                   let value = context.dataset.data[context.dataIndex];
                   value = numeral(value).format("0,0");
-                  label = `${label}: ${value}${this.unit ? ` ${this.unit}` : ""}`;
-                  return label;
+                  if (this.unit) value += ` ${this.unit}`;
+                  return `${context.label}: ${value}`;
                 },
               },
             },
           },
           aspectRatio: this.aspectRatio,
           responsive: true,
-          title: {
-            display: false,
-            text: this.title,
-          },
-          animation: {
-            animateScale: true,
-            animateRotate: true,
-            duration: 0,
-          },
         };
       },
       chartdata() {
         return {
-          labels: this.dealData.map((n) => {
-            return n.label;
-          }),
+          labels: this.dealData.map((n) => n.label),
           datasets: [
             {
               data: this.dealData.map((n) => n[this.valueField]),

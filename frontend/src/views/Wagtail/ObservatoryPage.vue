@@ -95,6 +95,8 @@
 </template>
 
 <script lang="ts">
+  import gql from "graphql-tag";
+  import Vue from "vue";
   import StatusPieChart from "$components/Charts/StatusPieChart.vue";
   import PageTitle from "$components/PageTitle.vue";
   import QuasiStaticMap from "$components/QuasiStaticMap.vue";
@@ -102,10 +104,9 @@
   import ArticleList from "$components/Wagtail/ArticleList.vue";
   import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
   import Twitter from "$components/Wagtail/Twitter.vue";
-  import gql from "graphql-tag";
-  import Vue from "vue";
   import type { BlogPage, ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
   import type { DealAggregations } from "$types/deal";
+  import type { GQLFilter } from "$types/filters";
 
   export default Vue.extend({
     name: "ObservatoryPage",
@@ -144,7 +145,7 @@
           }
         `,
         variables() {
-          let extra_filter = {
+          let extra_filter: GQLFilter[] = {
             region_id: this.page.region ? this.page.region.id : null,
             country_id: this.page.country ? this.page.country.id : null,
             negotiation_status: [],
@@ -201,7 +202,7 @@
             id: this.page.country.id,
           });
         }
-        return ret ? ret.slug : null;
+        return ret ? ret.slug : "";
       },
       content(): WagtailStreamfield {
         return this.page ? this.page.body : [];
@@ -246,6 +247,8 @@
               retval[2].count += agg.count;
               retval[2].size += +agg.size;
               break;
+            default:
+              console.warn({ agg });
           }
         }
         return retval;

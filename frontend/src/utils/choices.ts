@@ -14,7 +14,9 @@ export const nature_of_deal_choices = {
   PURE_CONTRACT_FARMING: "Pure contract farming",
 };
 
-export const negotiation_status_choices = {
+export const negotiation_status_choices: {
+  [key: string]: { [key: string]: string } | string;
+} = {
   Intended: {
     EXPRESSION_OF_INTEREST: "Expression of interest",
     UNDER_NEGOTIATION: "Under negotiation",

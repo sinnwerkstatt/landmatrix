@@ -323,7 +323,8 @@ export default {
     filtersForGQL: (state) => {
       return prepareFilters(state.filters);
     },
-    defaultFiltersForGQL: () => (extra_filters) => {
+
+    defaultFiltersForGQL: (state) => (extra_filters) => {
       return prepareFilters({ ...DEFAULT_FILTERS, ...extra_filters });
     },
   },
