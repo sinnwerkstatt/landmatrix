@@ -3,28 +3,80 @@
     <div class="chart-container" :style="containerStyle">
       <canvas ref="chart-canvas"></canvas>
     </div>
-    <Legend v-if="legendItems && (displayLegend || legends)" :items="legendItems" />
+    <!--    <Legend v-if="legendItems && (displayLegend || legends)" :items="legendItems" />-->
   </div>
 </template>
 
 <script lang="ts">
-  import Chart from "chart.js";
+  import {
+    Chart,
+    // ArcElement,
+    // LineElement,
+    // BarElement,
+    // PointElement,
+    // BarController,
+    // BubbleController,
+    // DoughnutController,
+    // LineController,
+    // PieController,
+    // PolarAreaController,
+    // RadarController,
+    // ScatterController,
+    // CategoryScale,
+    // LinearScale,
+    // LogarithmicScale,
+    // RadialLinearScale,
+    // TimeScale,
+    // TimeSeriesScale,
+    // Decimation,
+    // Filler,
+    // Title,
+    // Tooltip,
+    // SubTitle,
+    registerables,
+  } from "chart.js";
   import numeral from "numeral";
-  import Legend from "./Legend";
+  // import Legend from "./Legend";
   import Vue from "vue";
+
+  Chart.register(...registerables);
+  // Chart.register(
+  //   ArcElement,
+  //   LineElement,
+  //   BarElement,
+  //   PointElement,
+  //   BarController,
+  //   BubbleController,
+  //   DoughnutController,
+  //   LineController,
+  //   PieController,
+  //   PolarAreaController,
+  //   RadarController,
+  //   ScatterController,
+  //   CategoryScale,
+  //   LinearScale,
+  //   LogarithmicScale,
+  //   RadialLinearScale,
+  //   TimeScale,
+  //   TimeSeriesScale,
+  //   Decimation,
+  //   Filler,
+  //   Title,
+  //   Tooltip,
+  //   SubTitle
+  // );
 
   export default Vue.extend({
     name: "StatusPieChart",
-    components: { Legend },
-    props: [
-      "dealData",
-      "displayLegend",
-      "legends",
-      "aspectRatio",
-      "maxWidth",
-      "valueField",
-      "unit",
-    ],
+    // components: { Legend },
+    props: {
+      dealData: { type: Array, required: true },
+      aspectRatio: { type: Number, default: 2 },
+      maxWidth: { type: String, default: "200px" },
+      unit: { type: String, required: false, default: null },
+      valueField: { type: String, default: "value" },
+      // legends: { type: Object, default: null },
+    },
     data: function () {
       return {
         canvasCtx: null,
@@ -34,16 +86,45 @@
     computed: {
       containerStyle() {
         return {
-          maxWidth: this.maxWidth || "200px",
+          maxWidth: this.maxWidth,
         };
       },
       chartoptions() {
         return {
           cutoutPercentage: 0,
-          legend: {
-            display: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 10,
+                textAlign: "left",
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: (item, data) => {
+                  console.log({ item, data });
+                  // let origItem = this.dealData[item.datasetIndex];
+                  // let label = data.labels[item.index];
+                  // let value = data.datasets[item.datasetIndex].data[item.index];
+                  // console.log({ origItem, label, value });
+                  return "xx";
+                },
+                // label: (item, data) => {
+                //   if (origItem.precision) {
+                //     value = numeral(value).format(
+                //       "0,0." + "0".repeat(origItem.precision)
+                //     );
+                //   } else {
+                //     value = numeral(value).format("0,0");
+                //   }
+                //   label = `${label}: ${value}${this.unit ? ` ${this.unit}` : ""}`;
+                //   return label;
+                // },
+              },
+            },
           },
-          aspectRatio: this.aspectRatio || 2,
+          aspectRatio: this.aspectRatio,
           responsive: true,
           title: {
             display: false,
@@ -54,24 +135,6 @@
             animateRotate: true,
             duration: 0,
           },
-          tooltips: {
-            callbacks: {
-              label: (item, data) => {
-                let origItem = this.dealData[item.datasetIndex];
-                let label = data.labels[item.index];
-                let value = data.datasets[item.datasetIndex].data[item.index];
-                if (origItem.precision) {
-                  value = numeral(value).format(
-                    "0,0." + "0".repeat(origItem.precision)
-                  );
-                } else {
-                  value = numeral(value).format("0,0");
-                }
-                label = `${label}: ${value}${this.unit ? " " + this.unit : ""}`;
-                return label;
-              },
-            },
-          },
         };
       },
       chartdata() {
@@ -81,12 +144,8 @@
           }),
           datasets: [
             {
-              data: this.dealData.map((n) => {
-                return n[this.valueField || "value"];
-              }),
-              backgroundColor: this.dealData.map((n) => {
-                return n.color;
-              }),
+              data: this.dealData.map((n) => n[this.valueField]),
+              backgroundColor: this.dealData.map((n) => n.color),
             },
           ],
         };
@@ -99,12 +158,12 @@
     watch: {
       dealData: {
         deep: true,
-        handler: function () {
+        handler() {
           this.updateChart();
         },
       },
       valueField: {
-        handler: function () {
+        handler() {
           this.updateChart();
         },
       },

@@ -33,7 +33,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
-    "chart.js": "~2.9.4",
+    "chart.js": "^3.5.1",
     "cytoscape": "^3.19.0",
     "cytoscape-cose-bilkent": "^4.1.0",
     "cytoscape-popper": "^1.0.7",
@@ -125,5 +125,8 @@
   },
   "browserslist": [
     "since 2017-06"
-  ]
+  ],
+  "devDependencies": {
+    "@types/numeral": "^2.0.2"
+  }
 }

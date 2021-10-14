@@ -23,7 +23,6 @@
         <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <StatusPieChart
           :deal-data="dealsFilteredByNegStatus"
-          :display-legend="true"
           :value-field="displayDealsCount ? 'count' : 'size'"
           :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
@@ -32,7 +31,6 @@
         <h5>{{ $t("Implementation status") }}</h5>
         <StatusPieChart
           :deal-data="implementationStatusData"
-          :display-legend="true"
           value-field="value"
           :unit="displayDealsCount ? 'deals' : 'ha'"
         ></StatusPieChart>
@@ -43,7 +41,7 @@
           :deal-data="produceData"
           :legends="produceDataLegendItems"
           unit="%"
-        ></StatusPieChart>
+        />
       </div>
       <div class="get-involved">
         <router-link :to="`/contribute/`">{{ $t("Contribute") }}</router-link>

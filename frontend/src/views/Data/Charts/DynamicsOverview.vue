@@ -8,7 +8,6 @@
             <StatusPieChart
               :aspect-ratio="aspectRatio"
               :deal-data="intentionData"
-              :display-legend="true"
               :legends="intentionLegend"
               :unit="displayDealsCount ? 'deals' : 'ha'"
               max-width="auto"
@@ -20,7 +19,6 @@
             <StatusPieChart
               :aspect-ratio="aspectRatio"
               :deal-data="intentionAgricultureData"
-              :display-legend="true"
               :unit="displayDealsCount ? 'deals' : 'ha'"
               max-width="auto"
             ></StatusPieChart>
@@ -31,7 +29,6 @@
             <StatusPieChart
               :aspect-ratio="aspectRatio"
               :deal-data="implementationStatusData"
-              :display-legend="true"
               :unit="displayDealsCount ? 'deals' : 'ha'"
               max-width="auto"
             ></StatusPieChart>
@@ -42,7 +39,6 @@
             <StatusPieChart
               :aspect-ratio="aspectRatio"
               :deal-data="negotiationStatusData"
-              :display-legend="true"
               :unit="displayDealsCount ? 'deals' : 'ha'"
               max-width="auto"
             ></StatusPieChart>
