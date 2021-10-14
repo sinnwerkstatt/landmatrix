@@ -12,16 +12,26 @@
   </ChartsContainer>
 </template>
 
-<script>
-  import ContextBarWebOfTransnationalDeals from "$components/Charts/ContextBarWebOfTransnationalDeals";
-  import LoadingPulse from "$components/Data/LoadingPulse";
+<script lang="ts">
+  import ContextBarWebOfTransnationalDeals from "$components/Charts/ContextBarWebOfTransnationalDeals.vue";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import gql from "graphql-tag";
-  import ChartsContainer from "./ChartsContainer";
+  import Vue from "vue";
+  import ChartsContainer from "./ChartsContainer.vue";
   import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
+  import type { GQLFilter } from "$types/filters";
 
-  export default {
+  export default Vue.extend({
     name: "WebOfTransnationalDeals",
     components: { ChartsContainer, LoadingPulse, ContextBarWebOfTransnationalDeals },
+    beforeRouteEnter(to, from, next) {
+      next((vm) => vm.$store.dispatch("showContextBar", true));
+    },
+    data() {
+      return {
+        transnational_deals: [],
+      };
+    },
     apollo: {
       transnational_deals: {
         query: gql`
@@ -37,25 +47,15 @@
       },
     },
     metaInfo() {
-      return { title: this.$t("Web of transnational deals") };
-    },
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", true);
-      });
-    },
-    data() {
-      return {
-        transnational_deals: [],
-      };
+      return { title: this.$t("Web of transnational deals").toString() };
     },
     computed: {
-      filtered_filtersForGQL() {
+      filtered_filtersForGQL(): GQLFilter[] {
         return this.$store.getters.filtersForGQL.filter(
           (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
         );
       },
-      filtered_country_id() {
+      filtered_country_id(): number {
         return this.$store.state.filters.filters.country_id;
       },
     },
@@ -68,7 +68,7 @@
       },
     },
     methods: {
-      redrawSpider() {
+      redrawSpider(): void {
         LandMatrixRadialSpider(
           this.transnational_deals,
           "#svg-container > svg",
@@ -82,8 +82,9 @@
         );
       },
     },
-  };
+  });
 </script>
+
 <style lang="scss">
   #svg-container {
     max-height: 100%;

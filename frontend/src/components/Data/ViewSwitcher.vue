@@ -69,8 +69,10 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "ViewSwitcher",
     data() {
       return {
@@ -90,6 +92,10 @@
           {
             title: "Produce info map",
             route_name: "produce-info",
+          },
+          {
+            title: "Country profile",
+            route_name: "country_profiles",
           },
         ],
       };
@@ -111,7 +117,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

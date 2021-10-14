@@ -1,5 +1,7 @@
-export function addMarkers(svg) {
-  let defs = svg.append("defs");
+export function addMarkers(
+  svg: Selection<BaseType, unknown, HTMLElement, unknown>
+): void {
+  const defs = svg.append("defs");
   const marker_factory = (name) =>
     defs
       .append("marker")

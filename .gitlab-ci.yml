@@ -21,12 +21,12 @@ django formatting and linting:
   stage: test
   interruptible: true
   script:
-#    - poetry config experimental.new-installer false
+    # - poetry config experimental.new-installer false
     - poetry install -E production
-    - npm ci
+    - npm i --force
     - black . --check
     - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
-#    - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
+    # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
 frontend formatting and linting:
   stage: test
@@ -44,9 +44,9 @@ tests and coverage:
     - mdillon/postgis:10
     - elasticsearch:5
   script:
-#    - poetry config experimental.new-installer false
+    # - poetry config experimental.new-installer false
     - poetry install -E production
-    - npm ci
+    - npm i --force
     - poetry run doit -n 4 update
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/

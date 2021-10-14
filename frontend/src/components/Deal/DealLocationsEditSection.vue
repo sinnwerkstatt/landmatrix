@@ -87,15 +87,16 @@
   </div>
 </template>
 
-<script>
-  import BigMap from "$components/BigMap";
-  import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField";
-  import PointField from "$components/Fields/Edit/PointField";
-  import EditField from "$components/Fields/EditField";
+<script lang="ts">
+  import BigMap from "$components/BigMap.vue";
+  import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.vue";
+  import PointField from "$components/Fields/Edit/PointField.vue";
+  import EditField from "$components/Fields/EditField.vue";
   import "@geoman-io/leaflet-geoman-free";
   import { GeoJSON, LatLngBounds, Marker } from "leaflet";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     components: { PointField, LocationGoogleField, EditField, BigMap },
     props: {
       locations: { type: Array, required: true },
@@ -394,7 +395,7 @@
         this._features_changed();
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -496,7 +497,6 @@
     filter: saturate(0);
     /*filter: grayscale(100%);*/
   }
-
 
   .locationlist .row {
     margin-left: 0;

@@ -5,19 +5,21 @@
   </div>
 </template>
 
-<script>
-  import PageTitle from "$components/PageTitle";
-  import Streamfield from "$components/Streamfield";
+<script lang="ts">
+  import PageTitle from "$components/PageTitle.vue";
+  import Streamfield from "$components/Streamfield.vue";
+  import Vue from "vue";
+  import type { WagtailPage, WagtailStreamfield } from "$types/wagtail";
 
-  export default {
+  export default Vue.extend({
     components: { PageTitle, Streamfield },
     computed: {
-      page() {
+      page(): WagtailPage {
         return this.$store.state.page.wagtailPage;
       },
-      content() {
+      content(): WagtailStreamfield {
         return this.page?.body || [];
       },
     },
-  };
+  });
 </script>

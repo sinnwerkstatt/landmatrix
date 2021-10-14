@@ -31,8 +31,10 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "FilterCollapse",
     props: {
       title: { type: String, required: true },
@@ -49,7 +51,7 @@
         return "slot" + this._uid;
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
+from apps.graphql.resolvers.user_utils import get_user_role
 from apps.public_comments.models import ThreadedComment
 
 
@@ -35,3 +36,11 @@ def resolve_add_public_comment(
         tc.user_email = email
     tc.save()
     return True
+
+
+def resolve_remove_public_comment(_, info, id) -> bool:
+    user = info.context["request"].user
+    if get_user_role(user) == "ADMINISTRATOR":
+        ThreadedComment.objects.filter(id=id).update(is_removed=True)
+        return True
+    return False

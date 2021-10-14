@@ -1,7 +1,7 @@
 type Query {
   me: User
   user(id: Int!): User
-  users(sort: String = "id"): [User]
+  users(sort: String = "username"): [User]
 
   deal(id: Int!, version: Int, subset: Subset = PUBLIC): Deal
   deals(

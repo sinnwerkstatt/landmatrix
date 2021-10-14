@@ -1,6 +1,9 @@
 <template>
   <div>
-    <PageTitle><span v-html="$t(pageTitle)"></span></PageTitle>
+    <PageTitle>
+      <span>{{ $t($store.state.page.wagtailPage.title) }}</span>
+      <small v-if="tag"><i class="fas fa-tags"></i> {{ tag }}</small>
+    </PageTitle>
     <div class="container">
       <LoadingPulse v-if="$apollo.queries.blogpages.loading" />
       <!--    <div class="row " v-if="tag">-->
@@ -55,33 +58,35 @@
   </div>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import PageTitle from "$components/PageTitle";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import PageTitle from "$components/PageTitle.vue";
   import { blogcategories_query, blogpages_query } from "$store/queries";
+  import Vue from "vue";
+  import type { BlogCategory, BlogPage } from "$types/wagtail";
 
-  export default {
+  export default Vue.extend({
     name: "BlogIndexPage",
     components: { LoadingPulse, PageTitle },
     data() {
       return {
-        blogpages: null,
-        blogcategories: [],
+        blogpages: [] as BlogPage[],
+        blogcategories: [] as BlogCategory[],
       };
     },
     apollo: { blogpages: blogpages_query, blogcategories: blogcategories_query },
     computed: {
-      category() {
-        return this.$route.query.category || null;
+      category(): string | null {
+        return this.$route.query?.category?.toString() || null;
       },
-      tag() {
-        return this.$route.query.tag || null;
+      tag(): string | null {
+        return this.$route.query?.tag?.toString() || null;
       },
-      blogcategories_with_all() {
-        return [{ slug: null, name: "All categories" }, ...this.blogcategories];
+      blogcategories_with_all(): BlogCategory[] {
+        return [{ id: -1, slug: null, name: "All categories" }, ...this.blogcategories];
       },
-      filtered_articles() {
-        if (this.category) {
+      filtered_articles(): BlogPage[] {
+        if (this.category && this.blogpages.length > 0) {
           return this.blogpages.filter((art) =>
             art.categories.map((c) => c.slug).includes(this.category)
           );
@@ -93,15 +98,6 @@
         }
         return this.blogpages;
       },
-      pageTitle() {
-        let title = this.$t(this.$store.state.page.wagtailPage.title);
-        if (this.tag) {
-          title += ` &nbsp;&nbsp;<small><i class="fas fa-tags"></i> ${this.tag}</small>`;
-        }
-        return title;
-      },
     },
-  };
+  });
 </script>
-
-<style lang="scss"></style>

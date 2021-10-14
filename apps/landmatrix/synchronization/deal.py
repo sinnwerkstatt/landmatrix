@@ -708,17 +708,7 @@ def _parse_water(deal, attrs):
 
 
 def _parse_remaining(deal, attrs):
-    YPN_MAP = {v: k for k, v in Deal.YPN_CHOICES}
-
     deal.gender_related_information = attrs.get("tg_gender_specific_info_comment") or ""
-    deal.vggt_applied = (
-        YPN_MAP[attrs.get("vggt_applied")] if attrs.get("vggt_applied") else None
-    )
-    deal.vggt_applied_comment = attrs.get("tg_vggt_applied_comment") or ""
-    deal.prai_applied = (
-        YPN_MAP[attrs.get("prai_applied")] if attrs.get("prai_applied") else None
-    )
-    deal.prai_applied_comment = attrs.get("tg_prai_applied_comment") or ""
     deal.overall_comment = attrs.get("tg_overall_comment") or ""
 
     # META!

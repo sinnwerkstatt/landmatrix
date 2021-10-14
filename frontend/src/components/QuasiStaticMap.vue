@@ -18,19 +18,21 @@
     ></BigMap>
   </div>
 </template>
-<script>
+
+<script lang="ts">
   import { markers_query } from "$store/queries";
   import { styleCircle } from "$utils/map_helper";
 
   import { DivIcon, FeatureGroup, Marker } from "leaflet";
-  import { MarkerClusterGroup } from "leaflet.markercluster";
+  import { MarkerClusterGroup } from "leaflet.markercluster/src";
 
   import BigMap from "./BigMap";
   import LoadingPulse from "./Data/LoadingPulse";
+  import Vue from "vue";
 
   const ZOOM_LEVEL_COUNTRY = 4;
 
-  export default {
+  export default Vue.extend({
     name: "QuasiStaticMap",
     components: { LoadingPulse, BigMap },
     props: {
@@ -170,7 +172,7 @@
         this.$router.push({ name: "map" });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

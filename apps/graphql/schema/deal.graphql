@@ -148,13 +148,6 @@ type Deal {
   water_footprint: String
   # Gender-related info
   gender_related_information: String
-  # Guidelines & Principles
-  vggt_applied: String
-  #vggt_applied_display: String
-  vggt_applied_comment: String
-  prai_applied: String
-  #prai_applied_display: String
-  prai_applied_comment: String
 
   # internal?
   overall_comment: String

@@ -44,10 +44,11 @@
   </section>
 </template>
 
-<script>
-  import EditField from "$components/Fields/EditField";
+<script lang="ts">
+  import EditField from "$components/Fields/EditField.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     components: { EditField },
     props: {
       id: { type: String, required: true },
@@ -74,7 +75,7 @@
         this.active_entry = this.entries[this.entries.length - 1];
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

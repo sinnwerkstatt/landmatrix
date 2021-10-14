@@ -97,11 +97,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import store from "$store";
   import gql from "graphql-tag";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
+    name: "Dashboard",
     beforeRouteEnter(to, from, next) {
       let title = "Dashboard";
       store.dispatch("setPageContext", {
@@ -130,7 +132,7 @@
         }
       `,
     },
-  };
+  });
 </script>
 
 <style scoped>

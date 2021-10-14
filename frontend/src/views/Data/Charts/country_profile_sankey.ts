@@ -4,38 +4,42 @@
  * https://observablehq.com/@d3/brexit-voting?collection=@d3/d3-sankey
  */
 import { drag, select } from "d3";
-import { sankey, sankeyLinkHorizontal } from "d3-sankey";
+import { sankey, SankeyGraph, sankeyLinkHorizontal } from "d3-sankey";
 
 export class LamaSankey {
-  constructor(selector) {
-    this.width = 600;
-    this.height = 600;
+  private readonly width = 700;
+  private readonly height = 700;
+  private svg;
 
+  constructor(selector: string) {
     this.svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
-      .attr("viewBox", [0, 0, this.width + 20, this.height + 20 + 10])
+      .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
+      .attr("height", "100%")
+      .attr("width", "100%")
       .append("g")
       .attr("transform", "translate(10,10)");
   }
 
-  do_the_sank(data) {
+  do_the_sank(data: SankeyGraph<{}, {}>): void {
     this.svg.selectAll("*").remove();
     if (data.nodes.length === 0) return;
-    let d3sankey = sankey()
+    const d3sankey = sankey()
       .nodeId((d) => d.id)
       .nodeWidth(10)
       .nodePadding(15)
       .size([this.width, this.height]);
-    let graph = d3sankey(data);
+    const graph = d3sankey(data);
 
-    const stroke_colors = {
-      IN_OPERATION: "#f79425",
-      PROJECT_ABANDONED: "#44bc87",
-      PROJECT_NOT_STARTED: "#b8d435",
-      STARTUP_PHASE: "#179a62",
+    const stroke_colors: { [key: string]: string } = {
+      PROJECT_NOT_STARTED: "#4BBB87",
+      STARTUP_PHASE: "#B9D635",
+      IN_OPERATION: "#fc941f",
+      PROJECT_ABANDONED: "#7C9A61",
+      S_UNKNOWN: "rgb(185,185,185)",
     };
 
-    let links = this.svg
+    const links = this.svg
       .append("g")
       .selectAll(".link")
       .data(graph.links)
@@ -45,7 +49,7 @@ export class LamaSankey {
       .attr("d", sankeyLinkHorizontal())
       .attr("stroke", (d) => stroke_colors[d.source.id])
       .attr("stroke-width", (d) => d.width)
-      .attr("stroke-opacity", 0.3)
+      .attr("stroke-opacity", 0.6)
       .attr("fill", "none");
 
     // add the link titles
@@ -54,7 +58,7 @@ export class LamaSankey {
       .text((d) => `${d.source.name} → ${d.target.name}\n${d.value} deals`);
 
     // add in the nodes
-    let node = this.svg
+    const node = this.svg
       .append("g")
       .selectAll(".node")
       .data(graph.nodes)
@@ -89,7 +93,9 @@ export class LamaSankey {
       .attr("y", (d) => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
-      .text((d) => (d.ivi ? `${d.name} (${d.value})` : d.name))
+      .text((d) =>
+        d.istatus ? `${d.name} - ${d.deal_count}` : `${d.name} - ${d.value}`
+      )
       .filter((d) => d.x0 < this.width / 2)
       .attr("x", (d) => d.x1 + 6)
       .attr("text-anchor", "start")
@@ -97,12 +103,12 @@ export class LamaSankey {
       .style("text-shadow", "0 1px 0 #fff");
 
     function dragmove(event, d) {
-      let curRect = select(this).select("rect");
+      const curRect = select(this).select("rect");
       // d.x1 = d.x1 + event.dx;
       // d.x0 = d.x0 + event.dx;
       // let xTranslate = d.x0 - curRect.attr("X");
       d.y0 = d.y0 + event.dy;
-      let yTranslate = d.y0 - curRect.attr("y");
+      const yTranslate = d.y0 - curRect.attr("y");
       select(this).attr("transform", `translate(0,${yTranslate})`);
       d3sankey.update(graph);
       links.attr("d", sankeyLinkHorizontal());
@@ -111,9 +117,9 @@ export class LamaSankey {
 }
 
 export function sankey_links_to_csv_cross(json) {
-  let x = new Set();
-  let y = new Set();
-  let cross = {};
+  const x = new Set();
+  const y = new Set();
+  const cross = {};
   json.forEach((entry) => {
     x.add(entry.source);
     y.add(entry.target);
@@ -123,8 +129,8 @@ export function sankey_links_to_csv_cross(json) {
   const y_list = [...y];
   let ret = "," + y_list.join(",") + "\n";
   [...x].forEach((source) => {
-    let line = [];
     ret += `${source},`;
+    const line = [];
     y_list.forEach((target) => {
       line.push(cross[source][target] || "");
     });

@@ -10,6 +10,7 @@ type Mutation {
     name: String
     email: String
   ): Boolean
+  remove_public_deal_comment(id: Int!): Boolean
 
   add_deal_comment(
     id: Int!

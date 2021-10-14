@@ -17,12 +17,13 @@
   </DealSubmodelSection>
 </template>
 
-<script>
-  import BigMap from "$components/BigMap";
+<script lang="ts">
+  import BigMap from "$components/BigMap.vue";
 
   import { area } from "@turf/turf";
   import { GeoJSON, LatLngBounds } from "leaflet";
-  import DealSubmodelSection from "./DealSubmodelSection";
+  import DealSubmodelSection from "./DealSubmodelSection.vue";
+  import Vue from "vue";
 
   let styles = {
     contract_area: {
@@ -40,7 +41,7 @@
     },
   };
 
-  export default {
+  export default Vue.extend({
     components: {
       DealSubmodelSection,
       BigMap,
@@ -128,7 +129,7 @@
         this.refreshMap();
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

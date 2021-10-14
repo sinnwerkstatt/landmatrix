@@ -47,11 +47,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { sortAnything } from "$utils";
   import { draft_status_map, status_map } from "$utils/choices";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     props: ["deals", "fields", "pageSize"],
     data() {
       return {
@@ -120,7 +121,7 @@
           .join("<br>");
       },
     },
-  };
+  });
 </script>
 
 <style scoped lang="scss">

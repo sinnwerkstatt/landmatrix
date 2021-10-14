@@ -2,13 +2,14 @@ import axios from "axios";
 
 export const pageModule = {
   state: () => ({
-    /** @type {User} */
+    /** @type User */
     user: null,
     countries: [],
     regions: [],
     aboutPages: [],
     observatories: [],
     messages: [],
+    /** @type WagtailPage */
     wagtailPage: null,
     title: null,
     searchDescription: null,

@@ -4,10 +4,14 @@ import Cookies from "js-cookie";
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import Multiselect from "vue-multiselect";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import ScrollLoader from "vue-scroll-loader";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import VueMatomo from "vue-matomo";
 
 import App from "./App.vue";
@@ -18,6 +22,7 @@ import { apolloClient } from "$utils/apolloclient";
 import en_messages from "./i18n_messages.en.json";
 import es_messages from "./i18n_messages.es.json";
 import fr_messages from "./i18n_messages.fr.json";
+import ru_messages from "./i18n_messages.ru.json";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap";
@@ -110,7 +115,7 @@ const locale = Cookies.get("django_language") ?? "en";
 const i18n = new VueI18n({
   locale,
   fallbackLocale: "en",
-  messages: { en: en_messages, es: es_messages, fr: fr_messages },
+  messages: { en: en_messages, es: es_messages, fr: fr_messages, ru: ru_messages },
   silentTranslationWarn: true,
 });
 

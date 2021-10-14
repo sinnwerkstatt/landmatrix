@@ -5,15 +5,15 @@
         <div class="version-nav-buttons">
           <router-link
             v-if="is_draft_with_active"
-            class="btn btn-gray"
             :to="object_detail_path(object.id)"
+            class="btn btn-gray"
           >
             {{ $t("Go to active version") }}
           </router-link>
           <router-link
             v-if="has_newer_draft"
-            class="btn btn-gray"
             :to="object_detail_path(object.id, last_version.id)"
+            class="btn btn-gray"
           >
             {{ $t("Go to current draft") }}
           </router-link>
@@ -21,10 +21,12 @@
 
         <div class="title-and-date-bar">
           <div>
-            <h1><slot name="heading"></slot></h1>
+            <h1>
+              <slot name="heading"></slot>
+            </h1>
           </div>
           <div>
-            <HeaderDates :obj="object" :is-version="!!objectVersion" />
+            <HeaderDates :is-version="!!objectVersion" :obj="object" />
           </div>
         </div>
 
@@ -59,9 +61,9 @@
             <div class="col text-right">
               <a
                 v-if="object.draft_status === 1 && is_authorized(object)"
-                class="btn btn-pelorous"
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="submit_for_review_link_title"
+                class="btn btn-pelorous"
                 @click="$emit('send_to_review')"
               >
                 {{ $t("Submit for review") }}
@@ -71,9 +73,9 @@
                   (object.draft_status === 2 || object.draft_status === 3) &&
                   is_authorized(object)
                 "
-                class="btn btn-primary"
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="request_improvement_link_title"
+                class="btn btn-primary"
                 @click="show_to_draft_overlay = true"
               >
                 {{ $t("Request improvement") }}
@@ -82,9 +84,9 @@
             <div class="col text-center">
               <a
                 v-if="object.draft_status === 2 && is_authorized(object)"
-                class="btn btn-pelorous"
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="submit_for_activation_link_title"
+                class="btn btn-pelorous"
                 @click="$emit('change_status', { transition: 'TO_ACTIVATION' })"
               >
                 {{ $t("Submit for activation") }}
@@ -93,9 +95,9 @@
             <div class="col text-left">
               <a
                 v-if="object.draft_status === 3 && is_authorized(object)"
-                class="btn btn-pelorous"
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="get_activate_description"
+                class="btn btn-pelorous"
                 @click="$emit('change_status', { transition: 'ACTIVATE' })"
               >
                 {{ $t("Activate") }}
@@ -131,9 +133,9 @@
               <div v-if="is_editable" class="action-button">
                 <div class="d-inline-block">
                   <router-link
-                    class="btn btn-primary"
                     :class="{ disabled: is_old_draft }"
                     :to="object_edit_path(object.id, objectVersion)"
+                    class="btn btn-primary"
                     >{{ $t("Edit") }}
                   </router-link>
                 </div>
@@ -160,8 +162,8 @@
               class="action-buttons"
             >
               <a
-                class="btn btn-primary"
                 :href="`/legacy/${otype}/edit/${object.id}/`"
+                class="btn btn-primary"
                 target="_blank"
               >
                 {{ $t("Edit") }}
@@ -182,46 +184,267 @@
     <slot name="overlays"></slot>
     <Overlay
       v-if="show_to_draft_overlay"
-      :title="$t('Request improvement')"
+      :assign-to-user-input="true"
       :comment-input="true"
       :comment-required="true"
-      :assign-to-user-input="true"
+      :title="$t('Request improvement')"
       :to-user="transition_to_user"
       @cancel="show_to_draft_overlay = false"
       @submit="do_to_draft($event)"
     />
     <Overlay
       v-if="show_to_delete_overlay"
-      :title="submit_to_delete_title"
       :comment-input="true"
       :comment-required="true"
+      :title="submit_to_delete_title"
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
     />
   </div>
 </template>
 
-<script>
-  import HeaderDates from "$components/HeaderDates";
-  import ManageHeaderComments from "$components/Management/ManageHeaderComments";
-  import ManageHeaderMixin from "$components/Management/ManageHeaderMixin";
-  import Overlay from "$components/Overlay";
+<script lang="ts">
+  import HeaderDates from "$components/HeaderDates.vue";
+  import ManageHeaderComments from "$components/Management/ManageHeaderComments.vue";
+  import Overlay from "$components/Overlay.vue";
+  import Vue, { PropType } from "vue";
+  import { is_authorized } from "$utils/user";
+  import gql from "graphql-tag";
+  import type { Obj, ObjVersion } from "$types/generics";
+  import type { User } from "$types/user";
+  import type { Location } from "vue-router/types/router";
 
-  export default {
-    name: "GenericManageHeader",
+  export default Vue.extend({
+    name: "ManageHeader",
     components: {
       ManageHeaderComments,
       HeaderDates,
       Overlay,
     },
-    mixins: [ManageHeaderMixin],
-  };
+    props: {
+      object: { type: Object as PropType<Obj>, required: true },
+      objectVersion: { type: [Number, String], default: null },
+      otype: { type: String, default: "deal" },
+    },
+    data() {
+      return {
+        allow_editing: import.meta.env.VITE_ALLOW_EDITING.toLowerCase() === "true",
+        show_legacy_edit_link: import.meta.env.VITE_LEGACY_EDIT_LINK === "true",
+        users: [],
+        show_to_draft_overlay: false,
+        show_to_delete_overlay: false,
+        is_authorized,
+        submit_for_review_link_title:
+          this.otype === "deal"
+            ? this.$t("Submits the deal for review")
+            : this.$t("Submits the investor for review"),
+        request_improvement_link_title:
+          this.otype === "deal"
+            ? this.$t(
+                "Send a request of improvent and create a new draft version of the deal"
+              )
+            : this.$t(
+                "Send a request of improvent and create a new draft version of the investor"
+              ),
+        submit_for_activation_link_title:
+          this.otype === "deal"
+            ? this.$t("Submits the deal for activation")
+            : this.$t("Submits the investor for activation"),
+        submit_to_delete_title:
+          !this.objectVersion && this.object.status === 4
+            ? this.otype === "deal"
+              ? this.$t("Reactivate deal")
+              : this.$t("Reactivate investor")
+            : this.otype === "deal"
+            ? this.$t("Delete deal")
+            : this.$t("Delete investor"),
+      };
+    },
+    apollo: {
+      users: gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
+    },
+    computed: {
+      last_version(): ObjVersion {
+        return this.object?.versions[0] ?? {};
+      },
+      is_active_with_draft(): boolean {
+        return !this.objectVersion && !!this.object.draft_status;
+      },
+      is_editable(): boolean {
+        // object ist deleted
+        if (!this.objectVersion && this.object.status === 4) return false;
+        if (this.is_active_with_draft) return false;
+        return is_authorized(this.object);
+      },
+      is_deletable(): boolean {
+        if (this.is_active_with_draft) return false;
+        if (this.is_old_draft) return false;
+        return is_authorized(this.object);
+      },
+      is_deleted(): boolean {
+        // active and deleted
+        return !this.objectVersion && this.object.status === 4;
+      },
+      is_draft_with_active(): boolean {
+        // current draft with active object
+        if (this.objectVersion && [2, 3].includes(this.object.status)) return true;
+        // old draft with activated object
+        return this.is_old_draft && [2, 3].includes(this.latest_object_version.status);
+      },
+      is_old_draft(): boolean {
+        return !!this.objectVersion && this.last_version.id !== +this.objectVersion;
+      },
+      has_newer_draft(): boolean {
+        if (this.is_active_with_draft) return true;
+        // old with newer draft
+        return this.is_old_draft && !!this.latest_object_version.draft_status;
+      },
+      has_active(): boolean {
+        return !!this.object.status;
+      },
+      latest_object_version(): Obj {
+        return this.object.versions.find(
+          (v: ObjVersion) => v.id === this.last_version.id
+        )[this.otype];
+      },
+      get_edit_description(): string {
+        if (this.object.draft_status === 1) {
+          if (!this.has_active) {
+            // only for new drafts without active
+            return this.otype === "deal"
+              ? this.$t("Starts editing this deal").toString()
+              : this.$t("Starts editing this investor").toString();
+          } else {
+            // only for new drafts with active
+            return this.otype === "deal"
+              ? this.$t("Edits this draft version").toString()
+              : this.$t("Edits this investor version").toString();
+          }
+        } else
+          return this.otype === "deal"
+            ? this.$t("Creates a new draft version of this deal").toString()
+            : this.$t("Creates a new draft version of this investor").toString();
+      },
+      get_delete_text(): string {
+        if (this.is_deleted) return this.$t("Undelete").toString();
+        else if (!this.objectVersion && !this.object.draft_status) {
+          // active without draft
+          return this.otype === "deal"
+            ? this.$t("Delete deal").toString()
+            : this.$t("Delete investor").toString();
+        } else return this.$t("Delete").toString();
+      },
+      get_delete_description(): string {
+        if (this.is_deleted)
+          return this.otype === "deal"
+            ? this.$t("Reactivate this deal").toString()
+            : this.$t("Reactivate this investor").toString();
+        if (this.objectVersion && this.has_active) {
+          // is draft and has active
+          return this.otype === "deal"
+            ? this.$t("Deletes this draft version of the deal").toString()
+            : this.$t("Deletes this draft version of the investor").toString();
+        } else
+          return this.otype === "deal"
+            ? this.$t("Deletes this deal").toString()
+            : this.$t("Deletes this investor").toString();
+      },
+      get_activate_description(): string {
+        return this.has_active
+          ? this.$t(
+              "Activates submitted version replacing currently active version"
+            ).toString()
+          : this.otype === "deal"
+          ? this.$t("Sets the deal active").toString()
+          : this.$t("Sets the investor active").toString();
+      },
+      transition_to_user(): User {
+        const latest_draft_creation = this.object.workflowinfos.find((v) => {
+          return !v.draft_status_before && v.draft_status_after === 1;
+        });
+        return latest_draft_creation.from_user;
+      },
+    },
+    methods: {
+      object_detail_path(obID: number, obV?: number): Location {
+        if (this.otype === "deal") {
+          return {
+            name: "deal_detail",
+            params: obV
+              ? {
+                  dealId: obID.toString(),
+                  dealVersion: obV.toString(),
+                }
+              : { dealId: obID.toString() },
+          };
+        }
+        return {
+          name: "investor_detail",
+          params: obV
+            ? { investorId: obID.toString(), investorVersion: obV?.toString() }
+            : { investorId: obID.toString() },
+        };
+      },
+      object_edit_path(obID: number, obV: number | string): Location {
+        return this.otype === "deal"
+          ? {
+              name: "deal_edit",
+              params: { dealId: obID.toString(), dealVersion: obV?.toString() },
+            }
+          : {
+              name: "investor_edit",
+              params: { investorId: obID.toString(), investorVersion: obV?.toString() },
+            };
+      },
+      object_compare_path(
+        oID: number,
+        fromVersion: number,
+        toVersion: number
+      ): Location {
+        return this.otype === "deal"
+          ? {
+              name: "deal_compare",
+              params: {
+                dealId: oID.toString(),
+                fromVersion: fromVersion.toString(),
+                toVersion: toVersion.toString(),
+              },
+            }
+          : {
+              name: "investor_compare",
+              params: {
+                investorId: oID.toString(),
+                fromVersion: fromVersion.toString(),
+                toVersion: toVersion.toString(),
+              },
+            };
+      },
+      do_delete({ comment }): void {
+        this.$emit("delete", comment);
+        this.show_to_delete_overlay = false;
+      },
+      do_to_draft({ comment, to_user }): void {
+        console.log("to_draft", { comment, to_user });
+        this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
+        this.show_to_draft_overlay = false;
+      },
+    },
+  });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
   @import "node_modules/bootstrap/scss/functions";
   @import "node_modules/bootstrap/scss/variables";
   @import "node_modules/bootstrap/scss/mixins/_breakpoints";
+
   $arrow-height: 34px;
   $max-z-index: 10;
 
@@ -229,6 +452,7 @@
     border-radius: 0;
     color: white;
   }
+
   .generic-manage-header-container {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
@@ -386,10 +610,12 @@
     width: 100%;
     flex-flow: row;
     gap: 1rem;
+
     > div {
       flex-basis: 0;
       //width: 100%;
     }
+
     .left-side {
       flex-grow: 2;
     }
@@ -401,6 +627,7 @@
 
     .action-button {
       margin-bottom: 0.5em;
+
       &:not(:last-child) {
         margin-bottom: 7px;
       }

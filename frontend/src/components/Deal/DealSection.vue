@@ -17,10 +17,11 @@
   </section>
 </template>
 
-<script>
-  import DisplayField from "$components/Fields/DisplayField";
+<script lang="ts">
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     components: { DisplayField },
     props: {
       deal: { type: Object, required: true },
@@ -55,7 +56,7 @@
         );
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

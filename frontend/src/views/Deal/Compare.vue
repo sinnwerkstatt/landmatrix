@@ -179,7 +179,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import DisplayField from "$components/Fields/DisplayField";
   import FieldLabel from "$components/Fields/FieldLabel";
   import { deal_gql_query } from "$store/queries";
@@ -187,8 +187,9 @@
   import { diff } from "deep-object-diff";
 
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "Compare",
     components: {
       FieldLabel,
@@ -264,7 +265,7 @@
         return subsec.fields.some((f) => this.dealdiff.has(f));
       },
     },
-  };
+  });
 </script>
 
 <style scoped>

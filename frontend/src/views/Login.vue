@@ -34,8 +34,10 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "Login",
     data() {
       return {
@@ -46,22 +48,19 @@
     },
     created() {
       if (this.$store.getters.userAuthenticated) {
-        if (this.$route.query.next) this.$router.push(this.$route.query.next);
+        if (this.$route.query.next)
+          this.$router.push(this.$route.query.next.toString());
       }
     },
     methods: {
       dispatchLogin() {
         this.$store
           .dispatch("login", { username: this.username, password: this.password })
-          .then(() => {
-            this.$router.push(this.$route.query.next || "/");
-          })
-          .catch((response) => {
-            this.login_failed_message = response.error;
-          });
+          .then(() => this.$router.push(this.$route.query.next.toString() || "/"))
+          .catch((response) => (this.login_failed_message = response.error));
       },
     },
-  };
+  });
 </script>
 
 <style scoped>

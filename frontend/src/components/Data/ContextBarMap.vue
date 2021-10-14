@@ -52,17 +52,17 @@
   </ContextBarContainer>
 </template>
 
-<script>
+<script lang="ts">
   import { implementation_status_choices } from "$utils/choices";
   import { prepareNegotianStatusData, sum } from "$utils/data_processing";
   import { data_deal_produce_query, data_deal_query } from "$views/Data/query";
   import numeral from "numeral/numeral";
   import { mapGetters, mapState } from "vuex";
-  import StatusPieChart from "../Charts/StatusPieChart";
-  import DealDisplayToggle from "../Shared/DealDisplayToggle";
-  import ContextBarContainer from "./ContextBarContainer";
-
-  export default {
+  import StatusPieChart from "../Charts/StatusPieChart.vue";
+  import DealDisplayToggle from "../Shared/DealDisplayToggle.vue";
+  import ContextBarContainer from "./ContextBarContainer.vue";
+  import Vue from "vue";
+  export default Vue.extend({
     name: "ContextBarMap",
     components: { ContextBarContainer, StatusPieChart, DealDisplayToggle },
     data() {
@@ -241,7 +241,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

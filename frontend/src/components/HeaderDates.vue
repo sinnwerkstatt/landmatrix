@@ -25,17 +25,18 @@
   </div>
 </template>
 
-<script>
-  import DisplayField from "$components/Fields/DisplayField";
+<script lang="ts">
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "HeaderDates",
     components: { DisplayField },
     props: {
       obj: { type: Object, required: true },
       isVersion: { type: Boolean, default: false },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

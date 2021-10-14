@@ -910,29 +910,6 @@ class Deal(models.Model, OldDealMixin):
         _("Comment on gender-related info"), blank=True
     )
 
-    """ Guidelines & Principles """
-    YPN_CHOICES = (("YES", "Yes"), ("PARTIALLY", "Partially"), ("NO", "No"))
-
-    vggt_applied = models.CharField(
-        _(
-            "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
-        ),
-        max_length=100,
-        choices=YPN_CHOICES,
-        blank=True,
-        null=True,
-    )
-    vggt_applied_comment = models.TextField(_("Comment on VGGT"), blank=True)
-
-    prai_applied = models.CharField(
-        _("Application of Principles for Responsible Agricultural Investments (PRAI)"),
-        max_length=100,
-        choices=YPN_CHOICES,
-        blank=True,
-        null=True,
-    )
-    prai_applied_comment = models.TextField(_("Comment on PRAI"), blank=True)
-
     """ Overall comment """
     overall_comment = models.TextField(_("Overall comment"), blank=True)
 

@@ -45,10 +45,11 @@
   </section>
 </template>
 
-<script>
-  import EditField from "$components/Fields/EditField";
+<script lang="ts">
+  import EditField from "$components/Fields/EditField.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "InvestorSubmodelEditSection",
     components: { EditField },
     props: {
@@ -89,7 +90,7 @@
         });
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

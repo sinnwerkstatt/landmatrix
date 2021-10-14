@@ -1,5 +1,5 @@
 <template>
-  <GenericManageHeader
+  <ManageHeader
     :object="deal"
     :object-version="dealVersion"
     @add_comment="add_comment"
@@ -140,18 +140,20 @@
         </p>
       </Overlay>
     </template>
-  </GenericManageHeader>
+  </ManageHeader>
 </template>
 
-<script>
-  import Overlay from "$components/Overlay";
+<script lang="ts">
+  import Overlay from "$components/Overlay.vue";
   import gql from "graphql-tag";
   import { is_authorized } from "$utils/user";
-  import GenericManageHeader from "../Management/ManageHeader";
-  export default {
+  import ManageHeader from "../Management/ManageHeader.vue";
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "DealManageHeader",
     components: {
-      GenericManageHeader,
+      ManageHeader,
       Overlay,
     },
     props: {
@@ -228,7 +230,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style scoped lang="scss">

@@ -16,7 +16,7 @@
       model: { type: String, required: true },
     },
     methods: {
-      parseValues(value) {
+      parseValues(value: string[]) {
         if (this.formfield.name === "current_intention_of_investment") {
           return value
             .map((ioi) => {
@@ -30,14 +30,9 @@
 
         let choices = flatten_choices(this.formfield.choices);
         let ret = "";
-        if (value instanceof Array) {
-          if (choices) {
-            ret += value.map((v) => choices[v]).join(", ");
-          } else ret += value.join(", ");
-        } else {
-          if (choices) ret += choices[value];
-          else ret += value;
-        }
+        if (choices) {
+          ret += value.map((v) => choices[v]).join(", ");
+        } else ret += value.join(", ");
         return ret;
       },
     },

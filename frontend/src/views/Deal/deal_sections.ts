@@ -277,19 +277,6 @@ export const deal_sections = {
       },
     ],
   },
-  guidelines_and_principles: {
-    label: "Guidelines & Principles",
-    subsections: [
-      {
-        name: "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)",
-        fields: ["vggt_applied", "vggt_applied_comment"],
-      },
-      {
-        name: "Principles for Responsible Agricultural Investments (PRAI)",
-        fields: ["prai_applied", "prai_applied_comment"],
-      },
-    ],
-  },
   overall_comment: {
     label: "Overall comment",
     subsections: [

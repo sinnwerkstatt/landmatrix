@@ -2,32 +2,35 @@
   <component :is="pageType" v-if="pageType" />
 </template>
 
-<script>
+<script lang="ts">
+  import BlogIndexPage from "./BlogIndexPage.vue";
+  import BlogPage from "./BlogPage.vue";
+  import ObservatoryPage from "./ObservatoryPage.vue";
+  import Vue from "vue";
+  import WagtailPage from "./WagtailPage.vue";
   import store from "$store";
-  import BlogIndexPage from "./BlogIndexPage";
-  import BlogPage from "./BlogPage";
-  import ObservatoryPage from "./ObservatoryPage";
-  import WagtailPage from "./WagtailPage";
 
-  export default {
+  export default Vue.extend({
     name: "WagtailSwitch",
     components: { BlogIndexPage, BlogPage, WagtailPage, ObservatoryPage },
     beforeRouteEnter: (to, from, next) => {
       store
         .dispatch("fetchWagtailPage", to.path)
         .then(() => next())
+        // the params are fine, this is a vue-router "hack" to keep the path
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     beforeRouteUpdate(to, from, next) {
       store
         .dispatch("fetchWagtailPage", to.path)
         .then(() => next())
+        // the params are fine, this is a vue-router "hack" to keep the path
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     metaInfo() {
-      let ret = { title: this.$store.state.page.title };
-      if (this.$route.path === "/") ret.titleTemplate = "Land Matrix";
-      return ret;
+      const title = this.$store.state.page.title;
+      if (this.$route.path === "/") return { title, titleTemplate: "Land Matrix" };
+      return { title };
     },
     computed: {
       pageType() {
@@ -59,7 +62,5 @@
         }
       },
     },
-  };
+  });
 </script>
-
-<style scoped></style>

@@ -21,42 +21,43 @@
   </div>
 </template>
 
-<script>
-  import ArrayField from "./Display/ArrayField";
-  import AutoField from "./Display/AutoField";
-  import BooleanField from "./Display/BooleanField";
-  import NullBooleanField from "./Display/BooleanField";
-  import DateField from "./Display/DateField";
-  import DateTimeField from "./Display/DateField";
-  import DecimalField from "./Display/DecimalField";
-  import FloatField from "./Display/DecimalField";
-  import IntegerField from "./Display/DecimalField";
-  import FileField from "./Display/FileField";
-  import ForeignKey from "./Display/ForeignKeyField";
-  import CountryForeignKey from "./Display/ForeignKeyField";
-  import InvestorForeignKey from "./Display/ForeignKeyField";
-  import WorkflowInfosField from "./Display/WorkflowInfosField";
+<script lang="ts">
+  import ArrayField from "./Display/ArrayField.vue";
+  import AutoField from "./Display/AutoField.vue";
+  import BooleanField from "./Display/BooleanField.vue";
+  import NullBooleanField from "./Display/BooleanField.vue";
+  import DateField from "./Display/DateField.vue";
+  import DateTimeField from "./Display/DateField.vue";
+  import DecimalField from "./Display/DecimalField.vue";
+  import FloatField from "./Display/DecimalField.vue";
+  import IntegerField from "./Display/DecimalField.vue";
+  import FileField from "./Display/FileField.vue";
+  import ForeignKey from "./Display/ForeignKeyField.vue";
+  import CountryForeignKey from "./Display/ForeignKeyField.vue";
+  import InvestorForeignKey from "./Display/ForeignKeyField.vue";
+  import WorkflowInfosField from "./Display/WorkflowInfosField.vue";
 
-  import JSONActorsField from "./Display/JSONActorsField";
-  import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField";
-  import JSONDateAreaField from "./Display/JSONDateAreaField";
-  import JSONDateChoiceField from "./Display/JSONDateChoiceField";
-  import JSONExportsField from "./Display/JSONExportsField";
+  import JSONActorsField from "./Display/JSONActorsField.vue";
+  import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField.vue";
+  import JSONDateAreaField from "./Display/JSONDateAreaField.vue";
+  import JSONDateChoiceField from "./Display/JSONDateChoiceField.vue";
+  import JSONExportsField from "./Display/JSONExportsField.vue";
   import JSONField from "./Display/JSONField.vue";
-  import JSONJobsField from "./Display/JSONJobsField";
-  import JSONLeaseField from "./Display/JSONLeaseField";
-  import LengthField from "./Display/LengthField";
-  import ManyToManyField from "./Display/ManyToManyField";
-  import OCIDField from "./Display/OCIDField";
-  import PointField from "./Display/PointField";
-  import CharField from "./Display/TextField";
-  import EmailField from "./Display/TextField";
-  import TextField from "./Display/TextField";
-  import StatusField from "./Display/StatusField";
-  import URLField from "./Display/TextField";
-  import FieldLabel from "./FieldLabel";
+  import JSONJobsField from "./Display/JSONJobsField.vue";
+  import JSONLeaseField from "./Display/JSONLeaseField.vue";
+  import LengthField from "./Display/LengthField.vue";
+  import ManyToManyField from "./Display/ManyToManyField.vue";
+  import OCIDField from "./Display/OCIDField.vue";
+  import PointField from "./Display/PointField.vue";
+  import CharField from "./Display/TextField.vue";
+  import EmailField from "./Display/TextField.vue";
+  import TextField from "./Display/TextField.vue";
+  import StatusField from "./Display/StatusField.vue";
+  import URLField from "./Display/TextField.vue";
+  import FieldLabel from "./FieldLabel.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "DisplayField",
     components: {
       ArrayField,
@@ -140,7 +141,7 @@
         );
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

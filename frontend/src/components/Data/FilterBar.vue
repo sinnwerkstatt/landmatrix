@@ -1,13 +1,6 @@
 <template>
   <div class="filter-overlay" :class="{ collapsed: !showFilterBar }">
-    <span class="wimpel" @click.prevent="showFilterBar = !showFilterBar">
-      <svg viewBox="0 0 2 20" width="20px">
-        <path d="M0,0 L2,2 L2,18 L0,20z"></path>
-        <text x="0.3" y="11">
-          {{ showFilterBar ? "&lsaquo;" : "&rsaquo;" }}
-        </text>
-      </svg>
-    </span>
+    <Wimpel :showing="showFilterBar" @click="showFilterBar = !showFilterBar" />
     <div class="overlay-content">
       <div class="main-pane">
         <h3>{{ $t("Filter") }}</h3>
@@ -254,6 +247,13 @@
           :clearable="intention_of_investment.length > 0"
           @click="intention_of_investment = []"
         >
+          <div class="hint">
+            {{
+              $t(
+                "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
+              )
+            }}
+          </div>
           <div v-for="(options, name) in choices.intention_of_investment" :key="name">
             <strong>{{ $t(name) }}</strong>
             <div v-for="(isname, isval) in options" :key="isname" class="form-check">
@@ -350,7 +350,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import {
     implementation_status_choices,
     intention_of_investment_choices,
@@ -358,11 +358,13 @@
   } from "$utils/choices";
   import gql from "graphql-tag";
   import { mapState } from "vuex";
-  import FilterCollapse from "./FilterCollapse";
+  import FilterCollapse from "./FilterCollapse.vue";
+  import Wimpel from "$components/Wimpel.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "FilterBar",
-    components: { FilterCollapse },
+    components: { FilterCollapse, Wimpel },
     apollo: {
       investors: {
         query: gql`
@@ -650,10 +652,10 @@
         else this.$store.dispatch("clearFilters");
       },
     },
-  };
+  });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .filter-overlay {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95);
@@ -802,27 +804,13 @@
         }
       }
     }
-  }
-
-  .wimpel {
-    position: absolute;
-    top: calc(50% - 100px);
-    cursor: pointer;
-    right: -20px;
-
-    svg {
-      opacity: 0.8;
-      filter: drop-shadow(1px -1px 1px rgba(0, 0, 0, 0.3));
-      color: black;
-
-      path {
-        fill: var(--color-lm-orange);
-      }
-
-      text {
-        font-size: 4px;
-        fill: white;
-      }
+    .hint {
+      padding: 0.2em;
+      margin: 0 0 0.5em;
+      border-radius: 0.3em;
+      background: white;
+      font-size: 0.65rem;
+      font-style: italic;
     }
   }
 </style>

@@ -40,10 +40,11 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
   import Cookies from "js-cookie";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "Messages",
     data() {
       return {
@@ -95,7 +96,7 @@
         }
       },
     },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .messages-overlay {

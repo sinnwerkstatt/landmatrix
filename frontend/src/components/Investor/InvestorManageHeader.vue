@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GenericManageHeader
+    <ManageHeader
       :object="investor"
       :object-version="investorVersion"
       otype="investor"
@@ -29,12 +29,12 @@
           </div>
         </Overlay>
       </template>
-    </GenericManageHeader>
+    </ManageHeader>
   </div>
 </template>
 
 <script>
-  import GenericManageHeader from "$components/Management/ManageHeader";
+  import ManageHeader from "$components/Management/ManageHeader";
   import Overlay from "$components/Overlay";
   import gql from "graphql-tag";
 
@@ -42,7 +42,7 @@
     name: "InvestorManageHeader",
     components: {
       Overlay,
-      GenericManageHeader,
+      ManageHeader,
     },
     props: {
       investor: { type: Object, required: true },

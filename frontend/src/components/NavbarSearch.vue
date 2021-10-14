@@ -40,10 +40,12 @@
     </div>
   </li>
 </template>
-<script>
-  import gql from "graphql-tag";
 
-  export default {
+<script lang="ts">
+  import gql from "graphql-tag";
+  import Vue from "vue";
+
+  export default Vue.extend({
     name: "NavbarSearch",
     data() {
       return {
@@ -161,7 +163,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style scoped lang="scss">

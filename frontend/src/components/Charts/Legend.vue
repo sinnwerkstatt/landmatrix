@@ -1,25 +1,25 @@
 <template>
   <ul class="legend">
     <li v-for="item in items" :key="item.label" class="legend-item">
-      <span class="colored-area" :style="getStyle(item)" />
+      <span class="colored-area" :style="{ backgroundColor: item.color }" />
       <span class="label"> {{ item.label }}</span>
     </li>
   </ul>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+
+  interface LegendItem {
+    label: string;
+    color: string;
+  }
+
+  export default Vue.extend({
     props: {
-      items: { type: Array, required: true },
+      items: { type: Array as PropType<LegendItem[]>, required: true },
     },
-    methods: {
-      getStyle(item) {
-        return {
-          backgroundColor: item.color,
-        };
-      },
-    },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

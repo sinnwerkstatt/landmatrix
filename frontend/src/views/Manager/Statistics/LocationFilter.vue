@@ -30,5 +30,3 @@
     props: ["regions", "countries", "selectedRegion", "selectedCountry"],
   };
 </script>
-
-<style scoped></style>

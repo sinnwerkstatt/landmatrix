@@ -94,18 +94,22 @@
   </div>
 </template>
 
-<script>
-  import StatusPieChart from "$components/Charts/StatusPieChart";
-  import PageTitle from "$components/PageTitle";
-  import QuasiStaticMap from "$components/QuasiStaticMap";
-  import Streamfield from "$components/Streamfield";
-  import ArticleList from "$components/Wagtail/ArticleList";
-  import MapDataCharts from "$components/Wagtail/MapDataCharts";
-  import Twitter from "$components/Wagtail/Twitter";
+<script lang="ts">
+  import StatusPieChart from "$components/Charts/StatusPieChart.vue";
+  import PageTitle from "$components/PageTitle.vue";
+  import QuasiStaticMap from "$components/QuasiStaticMap.vue";
+  import Streamfield from "$components/Streamfield.vue";
+  import ArticleList from "$components/Wagtail/ArticleList.vue";
+  import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
+  import Twitter from "$components/Wagtail/Twitter.vue";
   import { deal_aggregations_query } from "$store/queries";
   import gql from "graphql-tag";
+  import Vue from "vue";
+  import type { ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
+  import type { BlogPage } from "$types/wagtail";
+  import type { DealAggregations } from "$types/deal";
 
-  export default {
+  export default Vue.extend({
     name: "ObservatoryPage",
     components: {
       PageTitle,
@@ -120,8 +124,8 @@
       return {
         readMore: false,
         deals: [],
-        deal_aggregations: null,
-        articles: [],
+        deal_aggregations: {} as DealAggregations,
+        articles: [] as BlogPage[],
       };
     },
     apollo: {
@@ -149,16 +153,16 @@
       },
     },
     computed: {
-      page() {
+      page(): ObservatoryPage {
         return this.$store.state.page.wagtailPage;
       },
-      region_id() {
+      region_id(): number | null {
         return this.page.region ? this.page.region.id : null;
       },
-      country_id() {
+      country_id(): number | null {
         return this.page.country ? this.page.country.id : null;
       },
-      slug() {
+      slug(): string {
         let ret;
         if (this.page.region) {
           ret = this.$store.getters.getCountryOrRegion({
@@ -173,24 +177,25 @@
         }
         return ret ? ret.slug : null;
       },
-      content() {
+      content(): WagtailStreamfield {
         return this.page ? this.page.body : [];
       },
-      totalCount() {
-        if (!this.deal_aggregations) return;
+      totalCount(): string {
+        if (!this.deal_aggregations) return "";
+        console.log(this.deal_aggregations.current_negotiation_status);
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
-      totalSize() {
-        if (!this.deal_aggregations) return;
+      totalSize(): string {
+        if (!this.deal_aggregations) return "";
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
           .reduce((a, b) => +a + +b, 0)
           .toLocaleString();
       },
-      negotiationStatusBuckets() {
+      negotiationStatusBuckets(): unknown {
         if (!this.deal_aggregations) return;
         let retval = [
           { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
@@ -221,35 +226,28 @@
         return retval;
       },
 
-      filteredCountryProfiles() {
+      filteredCountryProfiles(): BlogPage[] {
         if (!this.slug) return [];
         return this.articles
-          .filter((a) => {
-            return (
-              a.tags.find((t) => {
-                return t.slug === this.slug;
-              }) &&
-              a.categories.find((c) => {
-                return c.slug === "country-profile";
-              })
-            );
-          })
-          .sort((a, b) => new Date(b.date) - new Date(a.date));
+          .filter(
+            (a) =>
+              a.tags.find((t) => t.slug === this.slug) &&
+              a.categories.find((c) => c.slug === "country-profile")
+          )
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       },
-      filteredNewsPubs() {
+      filteredNewsPubs(): BlogPage[] {
         if (!this.slug) return [];
         return this.articles
           .filter((a) => {
             return (
-              a.tags.find((t) => {
-                return t.slug === this.slug;
-              }) &&
-              a.categories.find((c) => {
-                return ["news", "publications"].includes(c.slug);
-              })
+              a.tags.find((t) => t.slug === this.slug) &&
+              a.categories.find(
+                (c) => c.slug && ["news", "publications"].includes(c.slug)
+              )
             );
           })
-          .sort((a, b) => new Date(b.date) - new Date(a.date));
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       },
     },
     watch: {
@@ -283,7 +281,7 @@
         }
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

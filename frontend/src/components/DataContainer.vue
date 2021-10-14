@@ -11,15 +11,16 @@
   </div>
 </template>
 
-<script>
-  import ContextBarMap from "$components/Data/ContextBarMap";
-  import FilterBar from "$components/Data/FilterBar";
-  import ViewSwitcher from "$components/Data/ViewSwitcher";
+<script lang="ts">
+  import ContextBarMap from "$components/Data/ContextBarMap.vue";
+  import FilterBar from "$components/Data/FilterBar.vue";
+  import ViewSwitcher from "$components/Data/ViewSwitcher.vue";
+  import Vue from "vue";
 
-  export default {
+  export default Vue.extend({
     name: "DataContainer",
     components: { ContextBarMap, FilterBar, ViewSwitcher },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .datacontainer {

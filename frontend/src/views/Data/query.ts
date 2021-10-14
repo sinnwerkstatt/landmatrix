@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { OperationVariables } from "apollo-client/core/types";
 
 export const data_deal_query_gql = gql`
   query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
@@ -38,7 +39,7 @@ export const data_deal_query_gql = gql`
 
 export const data_deal_query = {
   query: data_deal_query_gql,
-  variables() {
+  variables(): OperationVariables {
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,
@@ -63,7 +64,7 @@ export const data_deal_produce_query = {
       }
     }
   `,
-  variables() {
+  variables(): OperationVariables {
     return {
       limit: 0,
       filters: this.$store.getters.filtersForGQL,

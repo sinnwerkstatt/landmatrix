@@ -13,12 +13,31 @@
         <button class="btn" @click="downloadImage('svg')">
           <i class="fas fa-file-image" /> SVG
         </button>
-        <button class="btn" @click="downloadImage('png')">
-          <i class="fas fa-file-image" /> PNG
-        </button>
-        <button class="btn" @click="downloadImage('webp')">
-          <i class="fas fa-file-image" /> WebP
-        </button>
+        <span id="download-png">
+          <button
+            class="btn"
+            :class="{ 'use-chrome': !isChrome }"
+            @click="downloadImage('png')"
+          >
+            <i class="fas fa-file-image" />
+            PNG
+          </button>
+        </span>
+        <b-tooltip v-if="!isChrome" target="download-png" triggers="hover">
+          At the moment, downloading PNG does not work in Firefox.
+        </b-tooltip>
+        <span id="download-webp">
+          <button
+            class="btn"
+            :class="{ 'use-chrome': !isChrome }"
+            @click="downloadImage('webp')"
+          >
+            <i class="fas fa-file-image" /> WebP
+          </button>
+        </span>
+        <b-tooltip v-if="!isChrome" target="download-webp" triggers="hover">
+          At the moment, downloading WebP does not work in Firefox.
+        </b-tooltip>
         <span style="margin: 2rem 0">|</span>
         <button class="btn" @click="downloadJSON">
           <i class="fas fa-file-code" /> JSON
@@ -33,8 +52,8 @@
         }}
         <br />
         {{ $t("Please note: a deal may have more than one intention.") }}<br />
-        <i v-if="sankey_legend_numbers"
-          >{{
+        <i v-if="sankey_legend_numbers">
+          {{
             $t(
               "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
               sankey_legend_numbers
@@ -46,40 +65,52 @@
   </ChartsContainer>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
+<script lang="ts">
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import ChartsContainer from "./ChartsContainer.vue";
   import { a_download, chart_download } from "$utils/charts";
   import {
     flat_intention_of_investment_map,
     implementation_status_choices,
   } from "$utils/choices";
-  import ChartsContainer from "$views/Data/Charts/ChartsContainer";
-  import {
-    LamaSankey,
-    sankey_links_to_csv_cross,
-  } from "$views/Data/Charts/country_profile_sankey";
-  import { data_deal_query } from "$views/Data/query";
+  import { LamaSankey, sankey_links_to_csv_cross } from "./country_profile_sankey";
+  import { data_deal_query_gql } from "$views/Data/query";
+  import Vue from "vue";
+  import type { Deal } from "$types/deal";
+  import type { OperationVariables } from "apollo-client/core/types";
 
-  export default {
+  export default Vue.extend({
     name: "CountryProfileGraphs",
     components: { LoadingPulse, ChartsContainer },
     metaInfo() {
-      return { title: this.$t("Country profile graphs") };
+      return { title: this.$t("Country profile graphs").toString() };
     },
     beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.$store.dispatch("showContextBar", false);
-      });
+      next((vm) => vm.$store.dispatch("showContextBar", false));
     },
     data() {
-      return { deals: null, sankey: null, sankey_links: null };
+      return { deals: [] as Deal[], sankey: null, sankey_links: null };
     },
     apollo: {
-      deals: data_deal_query,
+      deals: {
+        query: data_deal_query_gql,
+        variables(): OperationVariables {
+          return {
+            limit: 0,
+            filters: this.$store.getters.filtersForGQL,
+            subset: this.$store.getters.userAuthenticated
+              ? this.$store.state.filters.publicOnly
+                ? "PUBLIC"
+                : "ACTIVE"
+              : "PUBLIC",
+          };
+        },
+        debounce: 200,
+      },
     },
     computed: {
-      sankey_legend_numbers() {
-        if (!this.deals) return null;
+      sankey_legend_numbers(): { [key: string]: number } {
+        if (this.deals.length === 0) return {};
         let multi_deal_count = this.deals.filter(
           (d) => d.current_intention_of_investment?.length > 1
         ).length;
@@ -88,30 +119,45 @@
           .reduce((a, b) => a + b, 0);
         return { x: multi_deal_count, y: all_intentions, z: this.deals.length };
       },
+      isChrome(): boolean {
+        return /Google Inc/.test(navigator.vendor);
+      },
     },
     watch: {
       deals() {
         if (!this.deals) return;
-        let datanodes = new Set();
-        let datalinks = {};
+        let datanodes: Set<string> = new Set();
+        let datalinks: { [key: string]: number } = {};
+
+        let i_status_counter: { [key: string]: number } = {};
 
         this.deals.forEach((d) => {
-          if (!d.current_implementation_status || !d.current_intention_of_investment)
-            return;
+          if (!d.current_implementation_status)
+            d.current_implementation_status = "S_UNKNOWN";
+          if (!d.current_intention_of_investment)
+            d.current_intention_of_investment = ["I_UNKNOWN"];
           datanodes.add(d.current_implementation_status);
+          i_status_counter[d.current_implementation_status] =
+            i_status_counter[d.current_implementation_status] + 1 || 1;
+
           d.current_intention_of_investment?.forEach((ivi) => {
             datanodes.add(ivi);
-            datalinks[[d.current_implementation_status, ivi]] =
-              datalinks[[d.current_implementation_status, ivi]] + 1 || 1;
+            datalinks[`${d.current_implementation_status},${ivi}`] =
+              datalinks[`${d.current_implementation_status},${ivi}`] + 1 || 1;
           });
         });
 
         const nodes = [...datanodes].map((n) => {
+          let istatus = implementation_status_choices[n] || n === "S_UNKNOWN";
           return {
             id: n,
-            ivi: !implementation_status_choices[n],
+            istatus,
+            deal_count: istatus ? i_status_counter[n] : 0,
             name:
-              implementation_status_choices[n] || flat_intention_of_investment_map[n],
+              (n === "S_UNKNOWN" && this.$t("Status unknown")) ||
+              (n === "I_UNKNOWN" && this.$t("Intention unknown")) ||
+              implementation_status_choices[n] ||
+              flat_intention_of_investment_map[n],
           };
         });
 
@@ -120,14 +166,14 @@
           return { source, target, value: v };
         });
         this.sankey_links = JSON.parse(JSON.stringify(links));
-        this.sankey.do_the_sank({ nodes, links });
+        if (this.sankey) this.sankey.do_the_sank({ nodes, links });
       },
     },
     mounted() {
       this.sankey = new LamaSankey("#sankey");
     },
     methods: {
-      _fileName(suffix = "") {
+      _fileName(suffix = ""): string {
         let filters = this.$store.state.filters.filters;
         let prefix = "Global - ";
         if (filters.country_id)
@@ -150,7 +196,7 @@
           suffix
         );
       },
-      downloadImage(filetype) {
+      downloadImage(filetype: string) {
         chart_download(
           document.querySelector("#sankey"),
           `image/${filetype}`,
@@ -172,18 +218,21 @@
         // encodeURIComponent();
       },
     },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .country-profile-graph {
-    width: 600px;
-    height: 100%;
-    margin-top: 5rem;
-    background: var(--color-lm-light);
+    max-height: 80vh;
+    margin: 5rem 3rem;
+    background: var(--color-lm-orange-light-10);
     border-radius: 1rem;
     padding: 1rem;
+    display: flex;
+    flex-flow: column wrap;
   }
   .sankey-wrapper {
+    flex-grow: 1;
+    max-width: 100%;
     border-radius: 5px 5px 0 0;
   }
   .download-buttons {
@@ -203,7 +252,11 @@
   .sankey-wrapper {
     background: white;
     .link:hover {
-      stroke-opacity: 0.5;
+      stroke-opacity: 0.9;
     }
+  }
+  .use-chrome {
+    opacity: 0.7;
+    pointer-events: none;
   }
 </style>
