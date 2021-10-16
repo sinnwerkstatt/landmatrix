@@ -292,7 +292,7 @@
           />
         </FilterCollapse>
         <FilterCollapse
-          :title="$t('Transnational')"
+          :title="$t('Scope')"
           :clearable="transnational !== null"
           @click="transnational = null"
         >
