@@ -1,5 +1,6 @@
 import type { Obj, ObjVersion, WorkflowInfo } from "$types/generics";
 import type { Country } from "$types/wagtail";
+import type { Investor } from "$types/investor";
 
 interface Location {
   id: number;
@@ -21,6 +22,9 @@ interface Deal extends Obj {
   current_intention_of_investment: string[];
   current_negotiation_status: string;
   current_implementation_status: string;
+  top_investors: Investor[];
+  deal_size: number;
+  current_contract_size: number;
 }
 
 interface DealVersion extends ObjVersion {

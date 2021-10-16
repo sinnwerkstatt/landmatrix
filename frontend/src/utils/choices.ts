@@ -109,7 +109,7 @@ export const flat_intention_of_investment_map: { [key: string]: string } = {
   OTHER: "Other",
 };
 
-export const classification_choices = {
+export const classification_choices: { [key: string]: string } = {
   GOVERNMENT: "Government",
   GOVERNMENT_INSTITUTION: "Government institution",
   STATE_OWNED_COMPANY: "State-/government (owned) company",

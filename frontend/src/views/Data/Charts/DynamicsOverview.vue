@@ -51,18 +51,18 @@
 </template>
 
 <script lang="ts">
-  import StatusPieChart from "$components/Charts/StatusPieChart";
-  import DealDisplayToggle from "$components/Shared/DealDisplayToggle";
+  import { mapState } from "vuex";
+  import Vue from "vue";
+  import StatusPieChart from "$components/Charts/StatusPieChart.vue";
+  import DealDisplayToggle from "$components/Shared/DealDisplayToggle.vue";
+  import ChartsContainer from "./ChartsContainer.vue";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
   } from "$utils/choices";
   import { prepareNegotianStatusData, sum } from "$utils/data_processing";
-  import { mapState } from "vuex";
-  import { data_deal_query } from "../query";
+  import { data_deal_query } from "$views/Data/query";
 
-  import ChartsContainer from "./ChartsContainer";
-  import Vue from "vue";
   const NO_INTENTION = "No intention";
 
   export default Vue.extend({
@@ -87,11 +87,11 @@
       ...mapState({
         displayDealsCount: (state) => state.map.displayDealsCount,
       }),
-      chart_desc() {
-        if (!this.$store.state.page.chartDescriptions) return null;
+      chart_desc(): string {
+        if (!this.$store.state.page.chartDescriptions) return "";
         return this.$store.state.page.chartDescriptions.dynamics_overview;
       },
-      dealsFilteredByNegStatus() {
+      dealsFilteredByNegStatus(): Array<unknown> {
         return prepareNegotianStatusData(this.deals);
       },
       negotiationStatusData() {
@@ -107,27 +107,15 @@
       },
       intentionLegend() {
         return [
-          {
-            label: "Agriculture",
-            color: "rgba(252,148,31,1)",
-          },
-          {
-            label: "Forestry",
-            color: "#7D4A0F",
-          },
-          {
-            label: "Other",
-            color: "black",
-          },
-          {
-            label: NO_INTENTION,
-            color: "rgba(252,148,31,0.4)",
-          },
+          { label: "Agriculture", color: "rgba(252,148,31,1)" },
+          { label: "Forestry", color: "#7D4A0F" },
+          { label: "Other", color: "black" },
+          { label: NO_INTENTION, color: "rgba(252,148,31,0.4)" },
         ];
       },
       intentionData() {
         let data = [];
-        let colors = [];
+        let colors: string[] = [];
         let otherValue = 0;
         this.intentionLegend.map((l) => {
           colors[l.label] = l.color;

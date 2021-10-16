@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-07 00:08+0200\n"
+"POT-Creation-Date: 2021-10-16 11:07+0200\n"
 "PO-Revision-Date: 2020-07-03 15:33+0200\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2990,6 +2990,10 @@ msgstr "Publicaciones"
 
 #, python-brace-format
 msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+msgstr ""
+
+#, python-brace-format
+msgid "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type."
 msgstr ""
 
 msgid "Русский"
