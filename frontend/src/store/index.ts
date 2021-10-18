@@ -1,5 +1,4 @@
 import { apolloClient } from "$utils/apolloclient";
-import axios from "axios";
 import gql from "graphql-tag";
 import Cookies from "js-cookie";
 import Vue from "vue";
@@ -144,10 +143,9 @@ const store = new Vuex.Store({
           context.commit("setFields", data.data.formfields);
         });
     },
-    fetchMessages(context) {
-      axios.get(`/api/newdeal_legacy/messages/`).then((response) => {
-        context.commit("setMessages", response.data.messages);
-      });
+    async fetchMessages(context) {
+      const res = await (await fetch(`/api/newdeal_legacy/messages/`)).json();
+      context.commit("setMessages", res.messages);
     },
 
     login(context, { username, password }) {
