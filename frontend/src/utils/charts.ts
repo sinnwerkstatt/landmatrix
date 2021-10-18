@@ -1,3 +1,23 @@
+import store from "$store";
+
+export function fileName(title: string, suffix = ""): string {
+  const filters = store.state.filters.filters;
+  let prefix = "Global - ";
+  if (filters.country_id)
+    prefix =
+      store.getters.getCountryOrRegion({
+        type: "country",
+        id: filters.country_id,
+      }).name + " - ";
+  if (filters.region_id)
+    prefix =
+      store.getters.getCountryOrRegion({
+        type: "region",
+        id: filters.region_id,
+      }).name + " - ";
+  return prefix + title + suffix;
+}
+
 export function a_download(data: string, name: string): void {
   const a = document.createElement("a");
   a.href = data;
@@ -8,10 +28,11 @@ export function a_download(data: string, name: string): void {
 }
 
 export function chart_download(
-  svg: Element,
+  svg: Element | null,
   filetype = "image/svg",
   name = "Chart.svg"
 ): void {
+  if (!svg) return;
   const serialized = new XMLSerializer().serializeToString(svg);
   const source =
     '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + serialized;

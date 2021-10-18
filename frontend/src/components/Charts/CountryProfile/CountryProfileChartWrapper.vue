@@ -1,8 +1,11 @@
 <template>
   <div class="country-profile-chart-wrapper">
-    <slot name="heading"></slot>
-    <slot name="default"></slot>
-
+    <slot name="heading">
+      <h2>{{ title }}</h2>
+    </slot>
+    <div class="svg-wrapper">
+      <slot name="default"></slot>
+    </div>
     <div class="download-buttons">
       <button class="btn" @click="downloadImage('svg')">
         <i class="fas fa-file-image" /> SVG
@@ -33,12 +36,12 @@
         At the moment, downloading WebP does not work in Firefox.
       </b-tooltip>
       <span style="margin: 2rem 0">|</span>
-      <button class="btn" @click="downloadJSON">
+      <button class="btn" @click="$emit('downloadJSON')">
         <i class="fas fa-file-code" /> JSON
       </button>
-      <!--      <button class="btn" @click="downloadCSV">-->
-      <!--        <i class="fas fa-file-code" /> CSV-->
-      <!--      </button>-->
+      <button class="btn" @click="$emit('downloadCSV')">
+        <i class="fas fa-file-code" /> CSV
+      </button>
     </div>
     <div class="legend">
       <slot name="legend" />
@@ -49,13 +52,17 @@
 <script lang="ts">
   import Vue from "vue";
   import { data_deal_query_gql } from "$views/Data/query";
-  import { a_download, chart_download } from "$utils/charts";
+  import { chart_download, fileName } from "$utils/charts";
   import type { Deal } from "$types/deal";
   import type { OperationVariables } from "apollo-client/core/types";
 
   export default Vue.extend({
     name: "CountryProfileChartWrapper",
     components: {},
+    props: {
+      svgId: { type: String, required: true },
+      title: { type: String, required: true },
+    },
     data() {
       return { deals: [] as Deal[] };
     },
@@ -82,64 +89,42 @@
       },
     },
     methods: {
-      _fileName(suffix = ""): string {
-        let filters = this.$store.state.filters.filters;
-        let prefix = "Global - ";
-        if (filters.country_id)
-          prefix =
-            this.$store.getters.getCountryOrRegion({
-              type: "country",
-              id: filters.country_id,
-            }).name + " - ";
-        if (filters.region_id)
-          prefix =
-            this.$store.getters.getCountryOrRegion({
-              type: "region",
-              id: filters.region_id,
-            }).name + " - ";
-        return (
-          prefix +
-          this.$t(
-            "Number of intentions per category of production according to implementation status"
-          ) +
-          suffix
-        );
-      },
       downloadImage(filetype: string) {
         chart_download(
-          document.querySelector("#sankey"),
+          document.getElementById(this.svgId),
           `image/${filetype}`,
-          this._fileName(`.${filetype}`)
+          fileName(this.title, `.${filetype}`)
         );
       },
-      downloadJSON() {
-        let data =
-          "data:application/json;charset=utf-8," +
-          encodeURIComponent(JSON.stringify(this.sankey_links, null, 2));
-        a_download(data, this._fileName(".json"));
-      },
-      // downloadCSV() {
-      //   console.log(this.sankey_links);
-      //   let csv = sankey_links_to_csv_cross(this.sankey_links);
-      //   let data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-      //   a_download(data, this._fileName(".csv"));
-      //   // this.sankey_links;
-      //   // encodeURIComponent();
-      // },
     },
   });
 </script>
 
 <style lang="scss" scoped>
   .country-profile-chart-wrapper {
-    height: 80vh;
-    max-height: 80vh;
-    margin: 5rem 3rem;
+    min-height: 75vh;
+    margin: 1rem 3rem 1rem;
     background: var(--color-lm-orange-light-10);
     border-radius: 1rem;
     padding: 1rem;
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: column nowrap;
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
+  .svg-wrapper {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-width: 100%;
+    border-radius: 5px 5px 0 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    * > {
+      flex: 1 1 auto;
+    }
   }
   .download-buttons {
     background: #2d2d2dff;
@@ -151,5 +136,13 @@
       font-size: 0.85rem;
       padding: 0 0.75rem 0.15rem;
     }
+  }
+  .legend {
+    flex-shrink: 0;
+    padding: 0.4rem;
+  }
+  .use-chrome {
+    opacity: 0.7;
+    pointer-events: none;
   }
 </style>

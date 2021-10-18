@@ -1,7 +1,8 @@
 <template>
   <ChartsContainer>
     <div class="country-profile">
-      <!--      <IntentionsPerCategory />-->
+      <LoadingPulse v-if="$apollo.loading" />
+      <IntentionsPerCategory :deals="deals" />
       <!--      <LSLAByNegotiation :deals="deals" />-->
       <DynamicsOfDeal :deals="deals" />
     </div>
@@ -17,10 +18,12 @@
   import type { Deal } from "$types/deal";
   import type { OperationVariables } from "apollo-client/core/types";
   import DynamicsOfDeal from "$components/Charts/CountryProfile/DynamicsOfDeal.vue";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
 
   export default Vue.extend({
     name: "CountryProfile",
     components: {
+      LoadingPulse,
       DynamicsOfDeal,
       // LSLAByNegotiation,
       ChartsContainer,
@@ -56,12 +59,12 @@
 </script>
 <style lang="scss" scoped>
   .country-profile {
-    height: 100%;
+    margin-top: 5rem;
     overflow: visible;
     display: flex;
     flex-direction: column;
+    > * {
+      flex-shrink: 0;
+    }
   }
-  //.country-profile {
-  //  max-width: 100%;
-  //}
 </style>
