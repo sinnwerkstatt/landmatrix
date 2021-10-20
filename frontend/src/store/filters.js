@@ -128,6 +128,7 @@ function prepareFilters(filters) {
       field: "current_implementation_status",
       operation: "IN",
       value: filters.implementation_status,
+      allow_null: filters.implementation_status.includes("UNKNOWN"),
     });
   }
 
@@ -323,7 +324,8 @@ export default {
     filtersForGQL: (state) => {
       return prepareFilters(state.filters);
     },
-    defaultFiltersForGQL: () => (extra_filters) => {
+
+    defaultFiltersForGQL: (state) => (extra_filters) => {
       return prepareFilters({ ...DEFAULT_FILTERS, ...extra_filters });
     },
   },

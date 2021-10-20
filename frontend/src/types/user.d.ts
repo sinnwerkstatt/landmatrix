@@ -1,13 +1,16 @@
+import type { Country, Region } from "$types/wagtail";
+
 interface UserRegInfo {
-  country: unknown;
-  region: unknown;
+  country: Country[];
+  region: Region[];
 }
+
 interface Group {
   id: number;
   name: string;
 }
 
-export type User = {
+interface User {
   id: number;
   username: string;
   first_name: string;
@@ -23,4 +26,5 @@ export type User = {
   userregionalinfo?: UserRegInfo;
   groups?: Group[];
   // role: UserRole
-};
+  bigrole?: string;
+}

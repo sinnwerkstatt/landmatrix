@@ -27,7 +27,6 @@ const enum Classification {
 
 interface Investor extends Obj {
   name: string;
-  country?: Country;
   classification: Classification;
   homepage: string;
   opencorporates: string;

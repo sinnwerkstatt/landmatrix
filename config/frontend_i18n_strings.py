@@ -92,3 +92,7 @@ _("Publications")
 _(
     "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
 )
+_(
+    "Please note: {number} deals have multiple investor types. The full size of the deal"
+    " is assigned to each investor type."
+)

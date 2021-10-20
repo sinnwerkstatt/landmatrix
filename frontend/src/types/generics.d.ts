@@ -1,4 +1,5 @@
 import { User } from "$types/user";
+import { Country } from "$types/wagtail";
 
 export enum Transition {
   TO_REVIEW,
@@ -10,13 +11,15 @@ export enum Transition {
 interface Obj {
   id: number;
   status: number;
-  draft_status?: number;
+  draft_status: number | null;
   versions: ObjVersion[];
   workflowinfos: WorkflowInfo[];
   created_at: Date;
   created_by: User;
   modified_at: Date;
   modified_by: User;
+  country?: Country;
+  country_id?: number;
 }
 
 interface ObjVersion {

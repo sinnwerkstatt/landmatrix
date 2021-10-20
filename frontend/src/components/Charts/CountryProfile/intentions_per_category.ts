@@ -9,20 +9,23 @@ import { sankey, SankeyGraph, sankeyLinkHorizontal } from "d3-sankey";
 export class LamaSankey {
   private readonly width = 700;
   private readonly height = 700;
-  private svg;
 
-  constructor(selector: string) {
-    this.svg = select(selector)
+  do_the_sank(
+    selector: string,
+    data: SankeyGraph<
+      { [key: string]: string | number | boolean },
+      { [key: string]: string | number }
+    >
+  ): void {
+    const svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
       .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
       .attr("height", "100%")
       .attr("width", "100%")
+      .style("background-color", "white")
       .append("g")
       .attr("transform", "translate(10,10)");
-  }
-
-  do_the_sank(data: SankeyGraph<{}, {}>): void {
-    this.svg.selectAll("*").remove();
+    svg.selectAll("*").remove();
     if (data.nodes.length === 0) return;
     const d3sankey = sankey()
       .nodeId((d) => d.id)
@@ -39,7 +42,7 @@ export class LamaSankey {
       S_UNKNOWN: "rgb(185,185,185)",
     };
 
-    const links = this.svg
+    const links = svg
       .append("g")
       .selectAll(".link")
       .data(graph.links)
@@ -58,7 +61,7 @@ export class LamaSankey {
       .text((d) => `${d.source.name} → ${d.target.name}\n${d.value} deals`);
 
     // add in the nodes
-    const node = this.svg
+    const node = svg
       .append("g")
       .selectAll(".node")
       .data(graph.nodes)
@@ -116,10 +119,16 @@ export class LamaSankey {
   }
 }
 
-export function sankey_links_to_csv_cross(json) {
-  const x = new Set();
-  const y = new Set();
-  const cross = {};
+type SankeyLink = {
+  source: string;
+  target: string;
+  value: number;
+};
+
+export function sankey_links_to_csv_cross(json: SankeyLink[]): string {
+  const x = new Set() as Set<string>;
+  const y = new Set() as Set<string>;
+  const cross: { [key: string]: { [key: string]: number } } = {};
   json.forEach((entry) => {
     x.add(entry.source);
     y.add(entry.target);
@@ -130,7 +139,7 @@ export function sankey_links_to_csv_cross(json) {
   let ret = "," + y_list.join(",") + "\n";
   [...x].forEach((source) => {
     ret += `${source},`;
-    const line = [];
+    const line: Array<string | number> = [];
     y_list.forEach((target) => {
       line.push(cross[source][target] || "");
     });

@@ -292,7 +292,7 @@
           />
         </FilterCollapse>
         <FilterCollapse
-          :title="$t('Transnational')"
+          :title="$t('Scope')"
           :clearable="transnational !== null"
           @click="transnational = null"
         >
@@ -393,7 +393,10 @@
             INTENDED: "Intended",
             FAILED: "Failed",
           },
-          implementation_status: implementation_status_choices,
+          implementation_status: {
+            UNKNOWN: this.$t("No information").toString(),
+            ...implementation_status_choices,
+          },
           nature_of_deal: nature_of_deal_choices,
           intention_of_investment: intention_of_investment_choices,
         },

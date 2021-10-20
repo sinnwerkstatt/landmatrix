@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="loading" class="loadingscreen">
-      <div class="loader"></div>
-    </div>
+    <LoadingPulse v-if="$apollo.loading" />
     <div>
       <b-card no-body>
         <b-tabs card>
@@ -48,10 +46,7 @@
                     <label>Date range</label>
                     <div class="input-group datepicker-div">
                       <div class="input-group-prepend">
-                        <select
-                          v-model="selectedDateOption"
-                          @change="updateDateRange($event)"
-                        >
+                        <select v-model="selectedDateOption" @change="updateDateRange">
                           <option
                             v-for="option in date_pre_options"
                             :key="option.name"
@@ -102,26 +97,34 @@
 <script lang="ts">
   import dayjs from "dayjs";
   import gql from "graphql-tag";
-  import DatePicker from "v-calendar/lib/components/date-picker.umd";
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
   import StatisticsTable from "./Statistics/StatisticsTable.vue";
   import Vue from "vue";
-  import type { GQLFilter } from "$types/filters";
-  import type { Deal } from "$types/deal";
+  import type { Deal, DealVersion } from "$types/deal";
   import type { Investor } from "$types/investor";
   import type { Country, Region } from "$types/wagtail";
   import type { User } from "$types/user";
-  import type { Obj } from "$types/generics";
+  import type { GQLFilter } from "$types/filters";
+  // @ts-ignore
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
 
-  function uniq(objs: Obj[], keepLatest = false) {
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+
+  dayjs.extend(isSameOrBefore);
+  dayjs.extend(isSameOrAfter);
+
+  function uniq<S extends Deal | Investor>(
+    objs: Array<S>,
+    keepLatest = false
+  ): Array<S> {
     if (keepLatest) {
       objs.sort((a, b) => {
-        return a.modified_at > b.modified_at
-          ? -1
-          : a.modified_at < b.modified_at
-          ? 1
-          : 0;
+        if (a.modified_at > b.modified_at) return -1;
+        if (a.modified_at < b.modified_at) return 1;
+        return 0;
       });
     }
     let seen = new Set();
@@ -131,22 +134,33 @@
     });
   }
 
+  export type Stat<S> = {
+    name: string;
+    objs: S[];
+    value: number;
+  };
+
   export default Vue.extend({
     name: "CaseStatistics",
-    components: { LocationFilter, GoalsTable, StatisticsTable, DatePicker },
+    components: {
+      LoadingPulse,
+      LocationFilter,
+      GoalsTable,
+      StatisticsTable,
+      DatePicker,
+    },
     data: function () {
       return {
-        loading: false,
         today: dayjs().format("YYYY/MM/DD"),
         daterange: {
           start: dayjs().subtract(30, "day").toDate(),
           end: new Date(),
         },
-        selectedCountry: null,
-        selectedRegion: null,
+        selectedCountry: null as Country | null,
+        selectedRegion: null as Region | null,
 
-        historic_deals: [],
-        historic_investors: [],
+        historic_deals: [] as Deal[],
+        historic_investors: [] as Investor[],
         selectedDateOption: 30,
         date_pre_options: [
           { name: "Last 30 days", value: 30 },
@@ -162,7 +176,7 @@
     apollo: {
       goal_statistics: {
         query: gql`
-          query Statistics($c_id: Int, $r_id: Int) {
+          query ($c_id: Int, $r_id: Int) {
             goal_statistics: statistics(country_id: $c_id, region_id: $r_id) {
               deals_public_count
               deals_public_multi_ds_count
@@ -187,6 +201,9 @@
               draft_status
               confidential
               country_id
+              country {
+                id
+              }
               created_at
               modified_at
               is_public
@@ -209,7 +226,6 @@
               name
               country {
                 id
-                name
               }
               status
               draft_status
@@ -236,6 +252,9 @@
                 draft_status
                 confidential
                 country_id
+                country {
+                  id
+                }
                 created_at
                 modified_at
               }
@@ -262,7 +281,7 @@
           };
         },
         update({ dealversions }) {
-          return dealversions.map((v) => v.deal);
+          return dealversions.map((v: DealVersion) => v.deal);
         },
       },
       historic_investors: {
@@ -275,7 +294,6 @@
                 name
                 country {
                   id
-                  name
                 }
                 status
                 draft_status
@@ -335,9 +353,8 @@
         return this.$store.state.page.user;
       },
       location_filters(): GQLFilter[] {
-        let filters;
         if (this.selectedCountry)
-          filters = [
+          return [
             {
               field: "country.id",
               operation: "EQ",
@@ -345,20 +362,28 @@
             },
           ];
         if (this.selectedRegion && this.selectedRegion.id !== -1)
-          filters = [
+          return [
             {
               field: "country.fk_region.id",
               operation: "EQ",
               value: this.selectedRegion.id,
             },
           ];
-        return filters;
+        return [];
       },
+      // simple_deals_with_combi(): Deal[] {
+      //   return this.simple_deals.map((o: Deal) => ({
+      //       ...o,
+      //       combined_status: [o.status, o.draft_status],
+      //     }));
+      // },
       deals_active(): Deal[] {
         return this.simple_deals.filter((d) => [2, 3].includes(d.status));
       },
       deals_pending(): Deal[] {
-        return this.simple_deals.filter((d) => [1, 2, 3].includes(d.draft_status));
+        return this.simple_deals.filter(
+          (d) => d.draft_status && [1, 2, 3].includes(d.draft_status)
+        );
       },
       deals_rejected(): Deal[] {
         return this.simple_deals.filter((d) => d.draft_status === 4);
@@ -370,7 +395,9 @@
         return this.simple_investors.filter((i) => [2, 3].includes(i.status));
       },
       investors_pending(): Investor[] {
-        return this.simple_investors.filter((i) => [1, 2, 3].includes(i.draft_status));
+        return this.simple_investors.filter(
+          (i) => i.draft_status && [1, 2, 3].includes(i.draft_status)
+        );
       },
       investors_rejected(): Investor[] {
         return this.simple_investors.filter((i) => i.draft_status === 4);
@@ -378,20 +405,20 @@
       investors_pending_deletion(): Investor[] {
         return this.simple_investors.filter((i) => i.draft_status === 5);
       },
-      historic_deal_statistics(): { [key: string]: string }[] {
-        let stats = [
+      historic_deal_statistics(): Stat<Deal>[] {
+        const stats = [
           {
             name: "Deals added",
-            deals: uniq(
+            objs: uniq(
               this.historic_deals.filter(
-                (d) => d.status === 1 && d.created_at === d.modified_at
+                (d: Deal) => d.status === 1 && d.created_at === d.modified_at
               )
             ),
           },
           {
             name: "Deals updated",
-            deals: uniq(
-              this.historic_deals.filter((d) => {
+            objs: uniq(
+              this.historic_deals.filter((d: Deal) => {
                 // not added deals
                 if (d.status === 1 && d.created_at === d.modified_at) return false;
                 // not deleted deals
@@ -403,64 +430,66 @@
           },
           {
             name: "Deals Fully Updated",
-            deals: uniq(this.historic_deals, true).filter((d) => {
-              if (d.fully_updated_at) {
-                let dateFU = dayjs(d.fully_updated_at);
-                return this.daterange.start <= dateFU && dateFU <= this.daterange.end;
-              }
-              return false;
+            objs: uniq(this.historic_deals, true).filter((d: Deal) => {
+              if (!d.fully_updated_at) return false;
+
+              let dateFU = dayjs(d.fully_updated_at);
+              return (
+                dateFU.isSameOrAfter(this.daterange.start, "day") &&
+                dateFU.isSameOrBefore(this.daterange.end, "day")
+              );
             }),
           },
           {
             name: "Deals approved",
-            deals: uniq(this.historic_deals, true).filter(
-              (d) => d.draft_status === null && (d.status === 2 || d.status === 3)
+            objs: uniq(this.historic_deals, true).filter(
+              (d: Deal) => d.draft_status === null && (d.status === 2 || d.status === 3)
             ),
           },
         ];
-        for (let stat of stats) {
-          stat.value = stat.deals.length;
+        for (let stat of stats as Stat<Deal>[]) {
+          stat.value = stat.objs.length;
         }
-        return stats;
+        return stats as Stat<Deal>[];
       },
-      current_deal_statistics(): { [key: string]: string }[] {
+      current_deal_statistics(): Stat<Deal>[] {
         let stats = [
-          { name: "Deals pending", deals: this.deals_pending },
-          { name: "Deals rejected", deals: this.deals_rejected },
-          { name: "Deals pending deletion", deals: this.deals_pending_deletion },
-          { name: "Deals active", deals: this.deals_active },
+          { name: "Deals pending", objs: this.deals_pending },
+          { name: "Deals rejected", objs: this.deals_rejected },
+          { name: "Deals pending deletion", objs: this.deals_pending_deletion },
+          { name: "Deals active", objs: this.deals_active },
           {
             name: "Deals active, but not public",
-            deals: this.deals_active.filter((d) => !d.is_public),
+            objs: this.deals_active.filter((d) => !d.is_public),
           },
           {
             name: "Deals active, but confidential",
-            deals: this.deals_active.filter((d) => d.confidential),
+            objs: this.deals_active.filter((d) => d.confidential),
           },
         ];
-        for (let stat of stats) {
-          stat.value = stat.deals.length;
+        for (let stat of stats as Stat<Deal>[]) {
+          stat.value = stat.objs.length;
         }
-        return stats;
+        return stats as Stat<Deal>[];
       },
-      historic_investor_statistics(): { [key: string]: string }[] {
-        let stats = [
+      historic_investor_statistics(): Stat<Investor>[] {
+        const stats = [
           {
             name: "Investors added",
-            investors: uniq(
+            objs: uniq(
               this.historic_investors.filter(
-                (d) => d.status === 1 && d.created_at === d.modified_at
+                (o) => o.status === 1 && o.created_at === o.modified_at
               )
             ),
           },
           {
             name: "Investors updated",
-            investors: uniq(
-              this.historic_investors.filter((d) => {
-                // not added deals
-                if (d.status === 1 && d.created_at === d.modified_at) return false;
-                // not deleted deals
-                if (d.status === 4) return false;
+            objs: uniq(
+              this.historic_investors.filter((o: Investor) => {
+                // not added investors
+                if (o.status === 1 && o.created_at === o.modified_at) return false;
+                // not deleted investors
+                if (o.status === 4) return false;
                 // finally
                 return true;
               })
@@ -468,39 +497,39 @@
           },
           {
             name: "Investors published",
-            investors: uniq(this.historic_investors, true).filter(
+            objs: uniq(this.historic_investors, true).filter(
               (d) => d.draft_status === null && (d.status === 2 || d.status === 3)
             ),
           },
         ];
-        for (let stat of stats) {
-          stat.value = stat.investors.length;
+        for (let stat of stats as Stat<Investor>[]) {
+          stat.value = stat.objs.length;
         }
-        return stats;
+        return stats as Stat<Investor>[];
       },
-      current_investor_statistics(): { [key: string]: string }[] {
-        let stats: { [key: string]: string }[] = [
+      current_investor_statistics(): Stat<Investor>[] {
+        const stats = [
           {
             name: "Investors pending",
-            investors: this.investors_pending,
+            objs: this.investors_pending,
           },
           {
             name: "Investors rejected",
-            investors: this.investors_rejected,
+            objs: this.investors_rejected,
           },
           {
             name: "Investors pending deletion",
-            investors: this.investors_pending_deletion,
+            objs: this.investors_pending_deletion,
           },
           {
             name: "Investors active",
-            investors: this.investors_active,
+            objs: this.investors_active,
           },
         ];
-        for (let stat of stats) {
-          stat.value = stat.investors.length;
+        for (let stat of stats as Stat<Investor>[]) {
+          stat.value = stat.objs.length;
         }
-        return stats;
+        return stats as Stat<Investor>[];
       },
     },
     watch: {
@@ -521,12 +550,12 @@
         if (this.user.userregionalinfo) {
           let uri = this.user.userregionalinfo;
           if (uri.region.length) {
-            this.selectedRegion = this.regions.find((r) => r.id === uri.region[0].id);
+            this.selectedRegion =
+              this.regions.find((r) => r.id === uri.region[0].id) || null;
           }
           if (uri.country.length) {
-            this.selectedCountry = this.countries.find(
-              (c) => c.id === uri.country[0].id
-            );
+            this.selectedCountry =
+              this.countries.find((c) => c.id === uri.country[0].id) || null;
           }
         }
       },

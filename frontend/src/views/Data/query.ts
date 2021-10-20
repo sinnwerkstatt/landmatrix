@@ -32,6 +32,7 @@ export const data_deal_query_gql = gql`
         # for listing
         id
         name
+        classification
       }
     }
   }

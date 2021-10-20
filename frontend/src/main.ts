@@ -4,15 +4,16 @@ import Cookies from "js-cookie";
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import Multiselect from "vue-multiselect";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import ScrollLoader from "vue-scroll-loader";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
+
 // @ts-ignore
 import VueMatomo from "vue-matomo";
+// @ts-ignore
+import ScrollLoader from "vue-scroll-loader";
 
 import App from "./App.vue";
 import router from "./router";
@@ -56,6 +57,7 @@ Vue.use(VueMeta);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
 Vue.use(ScrollLoader);
+Vue.component("Multiselect", Multiselect);
 
 Vue.use(VueMatomo, {
   host: "https://stats.landmatrix.org",
@@ -85,7 +87,21 @@ Vue.use(VueMatomo, {
   // domains: '*.landmatrix.org',
 });
 
-Vue.component("Multiselect", Multiselect);
+if (import.meta.env.PROD)
+  Sentry.init({
+    Vue,
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [
+      new Integrations.BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        tracingOrigins: ["dev.landmatrix.org", "landmatrix.org", /^\//],
+      }),
+    ],
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+  });
 
 /* eslint-disable vue/component-definition-name-casing */
 Vue.component("wagtail-title", Title);

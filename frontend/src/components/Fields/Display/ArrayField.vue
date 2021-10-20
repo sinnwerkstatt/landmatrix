@@ -5,13 +5,14 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
+  import Vue, { PropType } from "vue";
   import { flatten_choices } from "$utils";
   import { intention_of_investment_map } from "$utils/choices";
+  import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: Array, required: true },
       model: { type: String, required: true },
     },

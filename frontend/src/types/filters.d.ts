@@ -1,7 +1,7 @@
-export type GQLFilter = {
+export interface GQLFilter {
   field: string;
   operation?: string;
-  value: any;
+  value: unknown;
   exclusion?: boolean;
   allow_null?: boolean;
-};
+}

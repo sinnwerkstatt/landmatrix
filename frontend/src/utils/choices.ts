@@ -14,7 +14,9 @@ export const nature_of_deal_choices = {
   PURE_CONTRACT_FARMING: "Pure contract farming",
 };
 
-export const negotiation_status_choices = {
+export const negotiation_status_choices: {
+  [key: string]: { [key: string]: string } | string;
+} = {
   Intended: {
     EXPRESSION_OF_INTEREST: "Expression of interest",
     UNDER_NEGOTIATION: "Under negotiation",
@@ -61,7 +63,7 @@ export const intention_of_investment_choices = {
   },
 };
 
-export const intention_of_investment_map = {
+export const intention_of_investment_map: { [key: string]: string[] } = {
   BIOFUELS: ["Biofuels", "fas fa-leaf"],
   FOOD_CROPS: ["Food crops", "fas fa-carrot"],
   FODDER: ["Fodder", "fas fa-leaf"],
@@ -107,7 +109,7 @@ export const flat_intention_of_investment_map: { [key: string]: string } = {
   OTHER: "Other",
 };
 
-export const classification_choices = {
+export const classification_choices: { [key: string]: string } = {
   GOVERNMENT: "Government",
   GOVERNMENT_INSTITUTION: "Government institution",
   STATE_OWNED_COMPANY: "State-/government (owned) company",
@@ -162,6 +164,7 @@ export const combined_status_fn = (
   if (status === 1 && draft_status === 1) ret = "DRAFT";
   if (status === 1 && draft_status === 2) ret = "REVIEW";
   if (status === 1 && draft_status === 3) ret = "ACTIVATION";
+  if (status === 1 && draft_status === 4) ret = "UNCLEAR. 1 4 ??";
   if ([2, 3].includes(status) && draft_status === null) ret = "LIVE";
   if ([2, 3].includes(status) && draft_status !== null) ret = "LIVE_AND_DRAFT";
   if (status === 4) ret = "DELETED";
