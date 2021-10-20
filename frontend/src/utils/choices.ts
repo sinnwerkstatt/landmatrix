@@ -63,7 +63,7 @@ export const intention_of_investment_choices = {
   },
 };
 
-export const intention_of_investment_map = {
+export const intention_of_investment_map: { [key: string]: string[] } = {
   BIOFUELS: ["Biofuels", "fas fa-leaf"],
   FOOD_CROPS: ["Food crops", "fas fa-carrot"],
   FODDER: ["Fodder", "fas fa-leaf"],
@@ -164,6 +164,7 @@ export const combined_status_fn = (
   if (status === 1 && draft_status === 1) ret = "DRAFT";
   if (status === 1 && draft_status === 2) ret = "REVIEW";
   if (status === 1 && draft_status === 3) ret = "ACTIVATION";
+  if (status === 1 && draft_status === 4) ret = "UNCLEAR. 1 4 ??";
   if ([2, 3].includes(status) && draft_status === null) ret = "LIVE";
   if ([2, 3].includes(status) && draft_status !== null) ret = "LIVE_AND_DRAFT";
   if (status === 4) ret = "DELETED";

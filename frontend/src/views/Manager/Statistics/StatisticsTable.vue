@@ -30,19 +30,15 @@
               <b-card-text>
                 <div class="actions">
                   <DownloadJsonCSV
-                    v-if="prepareDealsCsv(stats.deals).length"
-                    :data="prepareDealsCsv(stats.deals)"
+                    v-if="prepareDealsCsv(stats.objs).length"
+                    :data="prepareDealsCsv(stats.objs)"
                     :name="`Indicator-List_${stats.name}.csv`"
                   >
                     <a class="btn btn-outline-primary">Download deals as CSV</a>
                   </DownloadJsonCSV>
                 </div>
                 <div class="scroll-container">
-                  <DealTable
-                    :deals="prepareDeals(stats.deals)"
-                    :fields="dealFields"
-                    :page-size="10"
-                  />
+                  <DealTable :deals="stats.objs" :fields="dealFields" :page-size="10" />
                 </div>
               </b-card-text>
             </b-tab>
@@ -67,8 +63,8 @@
               <b-card-text>
                 <div class="actions">
                   <DownloadJsonCSV
-                    v-if="prepareInvestors(stats.investors).length"
-                    :data="prepareInvestors(stats.investors)"
+                    v-if="stats.objs.length > 0"
+                    :data="stats.objs"
                     :name="`Indicator-List_${stats.name}.csv`"
                   >
                     <a class="btn btn-outline-primary">Download investors as CSV</a>
@@ -77,7 +73,7 @@
                 <div class="scroll-container">
                   <InvestorTable
                     :fields="investorFields"
-                    :investors="prepareInvestors(stats.investors)"
+                    :investors="stats.objs"
                     :page-size="10"
                   />
                 </div>
@@ -91,23 +87,26 @@
 </template>
 
 <script lang="ts">
-  import DealTable from "$components/Deal/DealTable";
-  import InvestorTable from "$components/Investor/InvestorTable";
-  import dayjs from "dayjs";
-  // noinspection TypeScriptCheckImport
-  import DownloadJsonCSV from "vue-json-csv";
   import Vue, { PropType } from "vue";
+  import dayjs from "dayjs";
+  import DealTable from "$components/Deal/DealTable.vue";
+  import InvestorTable from "$components/Investor/InvestorTable.vue";
   import type { Country, Region } from "$types/wagtail";
+  // @ts-ignore
+  import DownloadJsonCSV from "vue-json-csv";
+  import type { Stat } from "$views/Manager/CaseStatistics.vue";
+  import type { Deal } from "$types/deal";
+  import type { Investor } from "$types/investor";
 
   export default Vue.extend({
     name: "StatisticsTable",
     components: { InvestorTable, DealTable, DownloadJsonCSV },
     props: {
-      dealStatistics: { type: Object },
-      investorStatistics: { type: Object },
-      countries: { type: Object as PropType<Country[]>, default: null },
-      selectedRegion: { type: Object as PropType<Region> },
-      selectedCountry: { type: Object as PropType<Country> },
+      dealStatistics: { type: Array as PropType<Stat<Deal>[]>, required: true },
+      investorStatistics: { type: Array as PropType<Stat<Investor>[]>, required: true },
+      countries: { type: Array as PropType<Country[]>, default: null },
+      selectedRegion: { type: Object as PropType<Region>, default: null },
+      selectedCountry: { type: Object as PropType<Country>, default: null },
     },
     data: function () {
       return {
@@ -132,11 +131,11 @@
       };
     },
     computed: {
-      formFilled() {
-        return this.selectedRegion || this.selectedCountry;
+      formFilled(): boolean {
+        return !!(this.selectedRegion || this.selectedCountry);
       },
-      allStatsCsv() {
-        let allStats = {};
+      allStatsCsv(): { [key: string]: number }[] {
+        let allStats: { [key: string]: number } = {};
         for (let stats of this.dealStatistics) {
           allStats[stats.name] = stats.value;
         }
@@ -145,7 +144,7 @@
         }
         return [allStats];
       },
-      allStatsCsvFileName() {
+      allStatsCsvFileName(): string {
         let filename = "Indicators_";
         if (this.selectedCountry) {
           filename += "_" + this.selectedCountry.slug;
@@ -157,41 +156,20 @@
       },
     },
     methods: {
-      prepareDeals(deals) {
+      prepareDealsCsv(deals: Deal[]) {
         return deals.map((deal) => {
+          // confidential: `<i class="fa ${confidential}" aria-hidden="true"></i>`,
+
+          delete deal.confidential;
           let country = this.countries.find((c) => c.id == deal.country_id);
-          country = country ? country.name : "";
-          let operating_company = deal.operating_company
-            ? deal.operating_company.name
-            : "";
-          let confidential = deal.confidential ? "fa-check" : "fa-times";
+
           return {
             ...deal,
             created_at: dayjs(deal.created_at).format("YYYY-MM-DD"),
             modified_at: dayjs(deal.modified_at).format("YYYY-MM-DD"),
-            fully_updated_at: dayjs(deal.modified_at).format("YYYY-MM-DD"),
-            confidential: `<i class="fa ${confidential}" aria-hidden="true"></i>`,
-            country,
-            operating_company,
-          };
-        });
-      },
-      prepareDealsCsv(deals) {
-        return this.prepareDeals(deals).map((deal) => {
-          delete deal.confidential;
-          return {
-            ...deal,
-          };
-        });
-      },
-      prepareInvestors(investors) {
-        return investors.map((investor) => {
-          let country = investor.country ? investor.country.name : "";
-          return {
-            ...investor,
-            country,
-            created_at: dayjs(investor.created_at).format("YYYY-MM-DD"),
-            modified_at: dayjs(investor.modified_at).format("YYYY-MM-DD"),
+            fully_updated_at: dayjs(deal.fully_updated_at).format("YYYY-MM-DD"),
+            country: country ? country.name : "",
+            operating_company: deal.operating_company?.name || "",
           };
         });
       },

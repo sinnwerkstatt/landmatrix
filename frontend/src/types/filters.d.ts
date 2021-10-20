@@ -1,4 +1,4 @@
-interface GQLFilter {
+export interface GQLFilter {
   field: string;
   operation?: string;
   value: unknown;

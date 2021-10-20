@@ -18,13 +18,16 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
+
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: Number, required: true },
       model: { type: String, required: true },
       targetBlank: { type: Boolean, default: false },
     },
-  };
+  });
 </script>

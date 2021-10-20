@@ -10,10 +10,8 @@ import VueI18n from "vue-i18n";
 import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import VueMatomo from "vue-matomo";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ScrollLoader from "vue-scroll-loader";
 

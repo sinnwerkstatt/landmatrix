@@ -22,7 +22,7 @@
             :class="{ selected: sortField === field, asc: sortAscending }"
             @click="setSort(field)"
           >
-            {{ fieldNameMap[field] || field }}
+            <FieldLabel :fieldname="field" model="deal" :label-classes="[]" />
           </th>
         </tr>
       </thead>
@@ -36,11 +36,9 @@
               <a :href="href">{{ deal.id }}</a>
             </router-link>
           </td>
-          <td
-            v-for="field in fields"
-            :key="field"
-            v-html="displayField(deal, field)"
-          ></td>
+          <td v-for="field in fields" :key="field">
+            <DisplayField :fieldname="field" :value="deal[field]" :show-label="false" />
+          </td>
         </tr>
       </tbody>
     </table>
@@ -49,43 +47,34 @@
 
 <script lang="ts">
   import { sortAnything } from "$utils";
-  import { draft_status_map, status_map } from "$utils/choices";
-  import Vue from "vue";
+  import Vue, { PropType } from "vue";
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import FieldLabel from "$components/Fields/FieldLabel.vue";
+  import type { Deal } from "$types/deal";
 
   export default Vue.extend({
-    props: ["deals", "fields", "pageSize"],
+    components: { FieldLabel, DisplayField },
+    props: {
+      deals: { type: Array as PropType<Deal[]>, required: true },
+      fields: { type: Array as PropType<Array<string>>, required: true },
+      pageSize: { type: Number, default: null },
+    },
+
     data() {
       return {
         currentPage: 1,
         sortField: "id",
         sortAscending: true,
-        fieldNameMap: {
-          country: "Target country",
-          top_investors: "Top investors",
-          intention_of_investment: "Intention of investment",
-          current_negotiation_status: "Negotiation status",
-          current_implementation_status: "Implementation status",
-          deal_size: "Deal size in ha",
-          fully_updated: "Full updated",
-          status: "Status",
-          draft_status: "Draft status",
-          confidential: "Confidential",
-          operating_company: "Operating company",
-          created_at: "Created at",
-          modified_at: "Last modified at",
-          fully_updated_at: "Fully updated at",
-          // cached_has_no_known_investor: "Has no known investor",
-        },
       };
     },
     computed: {
-      pages() {
+      pages(): number {
         if (this.deals.length > 0) {
-          return Math.ceil(this.deals.length / parseInt(this.pageSize));
+          return Math.ceil(this.deals.length / +this.pageSize);
         }
         return 0;
       },
-      dt_deals() {
+      dt_deals(): Deal[] {
         let deals = sortAnything(this.deals, this.sortField, this.sortAscending);
 
         if (this.pageSize) {
@@ -98,27 +87,9 @@
       },
     },
     methods: {
-      setSort(field) {
+      setSort(field: string) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
-      },
-      displayField(deal, field) {
-        let val = deal[field];
-        if (field === "status") {
-          return status_map[val];
-        } else if (field === "draft_status") {
-          return draft_status_map[val];
-        } else {
-          return val;
-        }
-      },
-      parseTopInvestors(deal) {
-        if (!deal.top_investors) return "";
-        return deal.top_investors
-          .map((inv) => {
-            return inv.name;
-          })
-          .join("<br>");
       },
     },
   });

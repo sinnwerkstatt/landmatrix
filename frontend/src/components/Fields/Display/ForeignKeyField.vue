@@ -12,24 +12,30 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
+  import type { Country } from "$types/wagtail";
+
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: Object, required: true },
       model: { type: String, required: true },
     },
     computed: {
-      calc_name() {
+      calc_name(): string {
+        if (!this.value || !this.value.id) return "";
         if (
           this.formfield.related_model === "Country" &&
           this.$store.state.page.countries
         ) {
-          return this.$store.state.page.countries.find((c) => c.id === this.value.id)
-            .name;
+          return this.$store.state.page.countries.find(
+            (c: Country) => c.id === this.value.id
+          ).name;
         }
         return this.value.username ?? this.value.name ?? this.value.id;
       },
     },
-  };
+  });
 </script>

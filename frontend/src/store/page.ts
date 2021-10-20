@@ -1,6 +1,6 @@
-import type { Store } from "vuex";
 import type { Country, ObservatoryPage, Region, WagtailPage } from "$types/wagtail";
 import type { User } from "$types/user";
+import type { StoreOptions } from "vuex";
 
 interface PageState {
   user: User;
@@ -17,7 +17,7 @@ interface PageState {
   chartDescriptions: string;
 }
 
-export const pageModule: Store<PageState> = {
+export const pageModule: StoreOptions<PageState> = {
   state: {
     user: null as unknown as User,
     countries: [],
@@ -35,7 +35,7 @@ export const pageModule: Store<PageState> = {
   getters: {
     getCountryOrRegion:
       (state: PageState) =>
-      ({ type, id }) => {
+      ({ type, id }: { [key: string]: string | number }) => {
         const roc =
           type === "region"
             ? state.regions.find((region) => region.id === +id)
@@ -116,13 +116,13 @@ export const pageModule: Store<PageState> = {
     },
   },
   actions: {
-    async fetchObservatoryPages(context: Store<PageState>, language = "en") {
+    async fetchObservatoryPages(context, language = "en") {
       console.log("fetchObservatoryPages", { language });
       const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
       const res = await (await fetch(url)).json();
       context.commit("setObservatories", res.items);
     },
-    async fetchAboutPages(context: Store<PageState>, language = "en") {
+    async fetchAboutPages(context, language = "en") {
       console.debug("fetchAboutPages", { language });
       const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
       const res = await (await fetch(url)).json();
@@ -132,7 +132,7 @@ export const pageModule: Store<PageState> = {
       const res_children = await (await fetch(pagesUrl)).json();
       context.commit("setAboutPages", res_children.items);
     },
-    async fetchWagtailPage(context: Store<PageState>, path) {
+    async fetchWagtailPage(context, path) {
       const url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
       const res = await (await fetch(url)).json();
       let breadcrumbs;
@@ -149,11 +149,11 @@ export const pageModule: Store<PageState> = {
       context.commit("setSearchDescription", res.meta.search_description);
       context.commit("setWagtailPage", res);
     },
-    setPageContext(context: Store<PageState>, page_context) {
+    setPageContext(context, page_context) {
       context.commit("setTitle", page_context.title);
       context.commit("setBreadcrumbs", page_context.breadcrumbs);
     },
-    breadcrumbBar(context: Store<PageState>, visible: boolean) {
+    breadcrumbBar(context, visible: boolean) {
       context.commit("breadcrumbBar", visible);
     },
   },
