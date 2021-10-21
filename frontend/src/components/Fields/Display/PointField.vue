@@ -5,12 +5,16 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import type { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
+  import Vue from "vue";
+
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
-      value: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
+      value: { type: [Array, Object], required: true },
       model: { type: String, required: true },
     },
-  };
+  });
 </script>

@@ -7,17 +7,17 @@
 
 <script lang="ts">
   import { thousandsep } from "$utils/filters";
-  import Vue from "vue";
+  import Vue, { PropType } from "vue";
   import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({
     props: {
-      formfield: { type: Object as FormField, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: Number, required: true },
       model: { type: String, required: true },
     },
     computed: {
-      val() {
+      val(): string {
         if (this.formfield.choices) {
           return this.formfield.choices[this.value];
         }

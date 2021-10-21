@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- eslint-disable-next-line vue/no-v-html -->
     <span v-html="parseValues(value)"></span>
   </div>
 </template>
@@ -29,9 +30,9 @@
             .join(" ");
         }
 
-        let choices = flatten_choices(this.formfield.choices);
         let ret = "";
-        if (choices) {
+        if (this.formfield.choices) {
+          let choices = flatten_choices(this.formfield.choices);
           ret += value.map((v) => choices[v]).join(", ");
         } else ret += value.join(", ");
         return ret;

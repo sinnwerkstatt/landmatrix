@@ -5,4 +5,5 @@ export interface FormField {
   required: boolean;
   related_model?: string;
   choices?: { [key: string | number]: string };
+  unit?: string;
 }

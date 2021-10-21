@@ -1,6 +1,9 @@
-export function flatten_choices(choices, append_group = false) {
+interface Choi {
+  [key: string | number]: string | { [key: string | number]: string };
+}
+export function flatten_choices(choices: Choi, append_group = false): Choi {
   if (choices) {
-    const newchoices = {};
+    const newchoices: Choi = {};
     for (const [key, value] of Object.entries(choices)) {
       if (typeof value === "string") {
         newchoices[key] = value;
@@ -12,14 +15,15 @@ export function flatten_choices(choices, append_group = false) {
     }
     return newchoices;
   }
+  return {};
 }
 
-export function sortAnything<T>(
+export function sortAnything<T extends { [key: string | number]: any }>(
   list: Array<T>,
   sortField: string,
   sortAscending: boolean
 ): Array<T> {
-  function sortFunction(a, b) {
+  function sortFunction(a: T, b: T) {
     const fieldx = sortAscending ? a[sortField] : b[sortField];
     const fieldy = sortAscending ? b[sortField] : a[sortField];
 
@@ -47,7 +51,9 @@ export function sortAnything<T>(
   return list.sort(sortFunction);
 }
 
-export function removeEmptyEntries<T>(objectlist: T): T {
+export function removeEmptyEntries<T extends { [key: string]: string }>(
+  objectlist: T[]
+): T[] {
   // this function throws out any entries that have only an ID field and otherwise empty values.
   return objectlist.filter((con) => {
     return Object.entries(con)
