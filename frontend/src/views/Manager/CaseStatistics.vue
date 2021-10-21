@@ -246,8 +246,6 @@
               deal {
                 id
                 deal_size
-                fully_updated
-                fully_updated_at
                 status
                 draft_status
                 confidential
@@ -257,25 +255,26 @@
                 }
                 created_at
                 modified_at
+                fully_updated
+                fully_updated_at
               }
             }
           }
         `,
         variables() {
-          let filters = [
-            {
-              field: "created_at",
-              operation: "GE",
-              value: dayjs(this.daterange.start).format("YYYY-MM-DD"),
-            },
-            {
-              field: "created_at",
-              operation: "LE",
-              value: dayjs(this.daterange.end).format("YYYY-MM-DD"),
-            },
-          ];
           return {
-            filters,
+            filters: [
+              {
+                field: "created_at",
+                operation: "GE",
+                value: dayjs(this.daterange.start).format("YYYY-MM-DD"),
+              },
+              {
+                field: "created_at",
+                operation: "LE",
+                value: dayjs(this.daterange.end).format("YYYY-MM-DD"),
+              },
+            ],
             c_id: this.selectedCountry?.id,
             r_id: this.selectedRegion?.id,
           };

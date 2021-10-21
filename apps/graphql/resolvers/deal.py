@@ -134,6 +134,7 @@ def resolve_deals(
 def resolve_dealversions(
     obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
 ):
+    # TODO-1 We are not restricting queries here!!!
     qs = DealVersion.objects.all()
 
     if filters:

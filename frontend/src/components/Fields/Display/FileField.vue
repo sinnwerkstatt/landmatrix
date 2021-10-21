@@ -8,10 +8,13 @@
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
+
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: String, required: true },
       model: { type: String, required: true },
       fileNotPublic: { type: Boolean, default: false },
@@ -19,5 +22,5 @@
     data() {
       return { media_url: import.meta.env.VITE_MEDIA_URL };
     },
-  };
+  });
 </script>

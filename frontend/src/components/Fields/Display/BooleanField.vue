@@ -6,18 +6,19 @@
     <span v-else-if="value === false">
       {{ $t("No") }}
     </span>
-    <span v-else>
-      NULL
-    </span>
+    <span v-else> NULL </span>
   </div>
 </template>
 
-<script>
-  export default {
+<script lang="ts">
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
+
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: Boolean, required: true },
       model: { type: String, required: true },
     },
-  };
+  });
 </script>

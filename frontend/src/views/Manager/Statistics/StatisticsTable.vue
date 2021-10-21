@@ -30,7 +30,7 @@
               <b-card-text>
                 <div class="actions">
                   <DownloadJsonCSV
-                    v-if="prepareDealsCsv(stats.objs).length"
+                    v-if="stats.objs.length > 0"
                     :data="prepareDealsCsv(stats.objs)"
                     :name="`Indicator-List_${stats.name}.csv`"
                   >
@@ -158,17 +158,12 @@
     methods: {
       prepareDealsCsv(deals: Deal[]) {
         return deals.map((deal) => {
-          // confidential: `<i class="fa ${confidential}" aria-hidden="true"></i>`,
-
-          delete deal.confidential;
-          let country = this.countries.find((c) => c.id == deal.country_id);
-
           return {
             ...deal,
             created_at: dayjs(deal.created_at).format("YYYY-MM-DD"),
             modified_at: dayjs(deal.modified_at).format("YYYY-MM-DD"),
             fully_updated_at: dayjs(deal.fully_updated_at).format("YYYY-MM-DD"),
-            country: country ? country.name : "",
+            country: this.countries?.find((c) => c.id === deal.country_id)?.name || "",
             operating_company: deal.operating_company?.name || "",
           };
         });

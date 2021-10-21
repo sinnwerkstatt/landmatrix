@@ -2,13 +2,15 @@
   <div class="nowrap">{{ val }}</div>
 </template>
 
-<script>
+<script lang="ts">
   import dayjs from "dayjs";
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
 
-  export default {
+  export default Vue.extend({
     name: "DateField",
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: [Date, String], required: true },
       model: { type: String, required: true },
     },
@@ -25,5 +27,5 @@
         }
       },
     },
-  };
+  });
 </script>

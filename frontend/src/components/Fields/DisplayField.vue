@@ -56,6 +56,7 @@
   import URLField from "./Display/TextField.vue";
   import FieldLabel from "./FieldLabel.vue";
   import Vue from "vue";
+  import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({
     name: "DisplayField",
@@ -116,15 +117,15 @@
       objectId: { type: Number, default: null, required: false },
     },
     computed: {
-      _visible() {
+      _visible(): boolean {
         if (!this.visible) return false;
         if (this.fieldname === "file_not_public") return false;
         if (this.formfield.class === "FileField") {
           return !this.fileNotPublic || this.$store.getters.userAuthenticated;
         }
-        return !!this.value;
+        return true;
       },
-      formfield() {
+      formfield(): FormField {
         return {
           name: this.fieldname,
           ...this.$store.state.formfields[this.model][this.fieldname],
@@ -132,7 +133,7 @@
       },
     },
     methods: {
-      custom_is_null(field) {
+      custom_is_null(field: unknown) {
         return (
           field === undefined ||
           field === null ||
