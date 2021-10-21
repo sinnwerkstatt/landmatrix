@@ -409,41 +409,36 @@
           {
             name: "Deals added",
             objs: uniq(
-              this.historic_deals.filter(
-                (d: Deal) => d.status === 1 && d.created_at === d.modified_at
-              )
-            ),
-          },
-          {
-            name: "Deals updated",
-            objs: uniq(
               this.historic_deals.filter((d: Deal) => {
-                // not added deals
-                if (d.status === 1 && d.created_at === d.modified_at) return false;
-                // not deleted deals
-                if (d.status === 4) return false;
-                // finally
-                return true;
+                let dateCreated = dayjs(d.created_at);
+                return (
+                  dateCreated.isSameOrAfter(this.daterange.start, "day") &&
+                  dateCreated.isSameOrBefore(this.daterange.end, "day")
+                );
               })
             ),
           },
           {
-            name: "Deals Fully Updated",
+            name: "Deals updated",
+            objs: uniq(this.historic_deals.filter((d: Deal) => d.status === 3)),
+          },
+          {
+            name: "Deals fully updated",
             objs: uniq(this.historic_deals, true).filter((d: Deal) => {
               if (!d.fully_updated_at) return false;
-
               let dateFU = dayjs(d.fully_updated_at);
               return (
+                (d.status === 3 || d.status === 2) &&
                 dateFU.isSameOrAfter(this.daterange.start, "day") &&
                 dateFU.isSameOrBefore(this.daterange.end, "day")
               );
             }),
           },
           {
-            name: "Deals approved",
-            objs: uniq(this.historic_deals, true).filter(
-              (d: Deal) => d.draft_status === null && (d.status === 2 || d.status === 3)
-            ),
+            name: "Deals activated",
+            objs: uniq(this.historic_deals, true).filter((d: Deal) => {
+              return d.draft_status === null && (d.status === 2 || d.status === 3);
+            }),
           },
         ];
         for (let stat of stats as Stat<Deal>[]) {
