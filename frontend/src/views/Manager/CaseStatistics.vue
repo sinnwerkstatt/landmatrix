@@ -412,6 +412,7 @@
               this.historic_deals.filter((d: Deal) => {
                 let dateCreated = dayjs(d.created_at);
                 return (
+                  [2, 3].includes(d.status) &&
                   dateCreated.isSameOrAfter(this.daterange.start, "day") &&
                   dateCreated.isSameOrBefore(this.daterange.end, "day")
                 );
