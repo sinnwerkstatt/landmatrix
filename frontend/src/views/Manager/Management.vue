@@ -6,7 +6,7 @@
         <div :class="{ active: showDeals }" @click="showDeals = true">Deals</div>
         <div :class="{ active: !showDeals }" @click="showDeals = false">Investors</div>
       </div>
-      <div class="sidebar-options">
+      <div :class="{ 'clr-investor': !showDeals }" class="sidebar-options">
         <ul :class="{ 'clr-investor': !showDeals }" class="lm-nav">
           <li
             v-for="opt in sidebarOptions"
@@ -15,7 +15,7 @@
             class="sidebar-option"
           >
             <div v-if="opt.space" />
-            <a v-else @click="selectedTab = opt.id">{{ opt.name }}</a>
+            <a v-else @click="switchTab(opt.id)">{{ opt.name }}</a>
           </li>
         </ul>
       </div>
@@ -164,6 +164,9 @@
               />
               <span @click="setSort('status')">{{ $t("Status") }}</span>
             </th>
+            <th v-if="!showDeals">
+              <span>{{ $t("Deals") }}</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -198,38 +201,52 @@
           </tr>
         </tbody>
       </table>
-      <scroll-loader :loader-disable="disableLoader" :loader-method="getPagedRows" />
+      <scroll-loader :loader-disable="disableLoader" :loader-method="updatePagedRows" />
     </div>
   </div>
 </template>
 
-<script>
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import DisplayField from "$components/Fields/DisplayField";
-  import { sortAnything } from "$utils";
-  import { combined_status_options } from "$utils/choices";
-  import dayjs from "dayjs";
+<script lang="ts">
+  import Vue from "vue";
   import gql from "graphql-tag";
-
-  import DatePicker from "v-calendar/lib/components/date-picker.umd";
+  import dayjs from "dayjs";
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
   import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import { sortAnything } from "$utils";
+  import { combined_status_options } from "$utils/choices";
+  // @ts-ignore
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
+
+  import type { User } from "$types/user";
+  import type { Investor } from "$types/investor";
+  import type { Deal } from "$types/deal";
+  import type { GQLFilter } from "$types/filters";
+  import type { Country, Region } from "$types/wagtail";
 
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);
 
-  export default {
+  type SidebarOption = {
+    name?: string;
+    id?: string;
+    staff?: boolean;
+    space?: boolean;
+  };
+
+  export default Vue.extend({
     name: "Management",
     components: { LoadingPulse, DisplayField, DatePicker },
     metaInfo() {
-      return { title: this.$t("Management") };
+      return { title: this.$t("Management").toString() };
     },
     data() {
       return {
         showDeals: true,
-        users: [],
-        deals: [],
-        investors: [],
+        users: [] as User[],
+        deals: [] as Deal[],
+        investors: [] as Investor[],
         // scrollLoader
         rows: [],
         page: 1,
@@ -237,17 +254,17 @@
         // sorting and filtering
         sortField: "id",
         sortAscending: false,
-        selectedTab: "my_drafts",
-        selected_region: null,
-        selected_country: null,
-        selected_from_size: null,
-        selected_to_size: null,
-        created_daterange: null,
-        created_by: null,
-        modified_daterange: null,
-        modified_by: null,
-        fully_updated_daterange: null,
-        selected_combined_status: null,
+        selectedTab: localStorage.management_selectedTab || "my_drafts",
+        selected_region: null as Region | null,
+        selected_country: null as Country | null,
+        selected_from_size: null as number | null,
+        selected_to_size: null as number | null,
+        created_daterange: null as Date | null,
+        created_by: null as User | null,
+        modified_daterange: null as Date | null,
+        modified_by: null as User | null,
+        fully_updated_daterange: null as Date | null,
+        selected_combined_status: null as { id: string; name: string } | null,
       };
     },
     apollo: {
@@ -343,6 +360,9 @@
                   name
                 }
               }
+              deals {
+                id
+              }
               workflowinfos {
                 id
                 comment
@@ -372,19 +392,19 @@
       },
     },
     computed: {
-      combined_status_choices() {
+      combined_status_choices(): { id: string; name: string }[] {
         return Object.entries(combined_status_options).map(([k, v]) => ({
           id: k,
-          name: this.$t(v),
+          name: this.$t(v).toString(),
         }));
       },
-      user() {
+      user(): User {
         return this.$store.state.page.user;
       },
-      user_is_staff() {
+      user_is_staff(): boolean {
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
-      objects() {
+      objects(): Array<Deal | Investor> {
         let objects = this.showDeals ? this.deals : this.investors;
         if (!objects || objects.length === 0) return [];
 
@@ -467,16 +487,16 @@
 
         return objects;
       },
-      sidebarOptions() {
+      sidebarOptions(): SidebarOption[] {
         const all_opts = [
           { name: "Todo: Clarification", id: "todo_clarification" },
           { name: "Todo: Improve", id: "todo_improve" },
           { name: "Todo: Review", id: "todo_review", staff: true },
           { name: "Todo: Activation", id: "todo_activation", staff: true },
-          { name: "New public comment", id: "new_public_comment", staff: true },
+          // { name: "New public comment", id: "new_public_comment", staff: true },
           { space: true, staff: true },
           { name: "Requested improvement", id: "requested_improvement", staff: true },
-          { name: "Requested feedback", id: "requested_feedback", staff: true },
+          { name: "Requested feedback", id: "requested_feedback" },
           { space: true },
           { name: "My drafts", id: "my_drafts" },
           { name: "Created by me", id: "created_by_me" },
@@ -489,9 +509,8 @@
         ];
         return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
       },
-      currentFilters() {
-        /** @type GQLFilter[] */
-        let retfilters = [];
+      currentFilters(): GQLFilter[] {
+        let retfilters: GQLFilter[] = [];
 
         // selected Tab
         switch (this.selectedTab) {
@@ -506,10 +525,10 @@
           case "todo_improve":
             retfilters.push(
               { field: "draft_status", value: 1 },
-              { field: "current_draft.workflowinfos.draft_status_before", value: 2 },
-              { field: "current_draft.workflowinfos.draft_status_after", value: 1 },
+              { field: "workflowinfos.draft_status_before", value: 2 },
+              { field: "workflowinfos.draft_status_after", value: 1 },
               {
-                field: "current_draft.workflowinfos.to_user_id",
+                field: "current_draft.created_by_id",
                 value: this.user.id,
               }
             );
@@ -577,7 +596,7 @@
         }
         return retfilters;
       },
-      fields() {
+      fields(): string[] {
         return this.showDeals
           ? [
               "id",
@@ -597,6 +616,7 @@
               "modified_at",
               "workflowinfos",
               "combined_status",
+              "deals",
             ];
       },
     },
@@ -604,11 +624,11 @@
       objects() {
         this.page = 0;
         this.rows = [];
-        this.getPagedRows();
+        this.updatePagedRows();
       },
     },
     methods: {
-      getPagedRows() {
+      updatePagedRows() {
         const PAGESIZE = 20;
         let startIndex = (this.page - 1) * PAGESIZE;
         let endIndex = Math.min(this.page * PAGESIZE, this.objects.length);
@@ -616,29 +636,44 @@
         this.page++;
         this.rows = [...this.rows, ...this.objects.slice(startIndex, endIndex)];
       },
-      setSort(field) {
+      setSort(field: string) {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
       },
+      switchTab(tab: string) {
+        this.selectedTab = tab;
+        localStorage.management_selectedTab = tab;
+      },
     },
-  };
+  });
 </script>
+
 <style lang="scss" scoped>
   .management {
     display: flex;
     width: 100%;
     height: calc(100vh - 60px - 31px);
-    padding-left: 1em;
-    padding-right: 1em;
+    //margin-top: 1em;
+    border: 1px solid var(--color-lm-dark);
+
+    //padding-left: 1.5em;
+    //padding-right: 1em;
   }
 
   .sidebar {
-    width: 11rem;
-    min-width: 11rem;
-    padding: 0.2rem;
-    overflow-y: auto;
-    max-height: 100%;
+    width: 12rem;
+    min-width: 12rem;
+    padding: 0.4rem;
+    overflow-y: hidden;
+    height: 100%;
 
+    .sidebar-options {
+      border-right: 1px solid var(--color-lm-orange);
+      height: 100%;
+      &.clr-investor {
+        border-right: 1px solid var(--color-lm-investor);
+      }
+    }
     .sidebar-header {
       border-bottom: 1px solid #dee2e6;
       padding: 0.2rem;
@@ -680,10 +715,13 @@
       tr th {
         white-space: nowrap;
       }
+
       th {
         color: white;
+
         span.selected {
           color: var(--color-lm-orange);
+
           &.asc:after {
             margin-left: 0.3rem;
             font-weight: 600;
