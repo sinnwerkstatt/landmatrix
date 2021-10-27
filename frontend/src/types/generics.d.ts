@@ -38,4 +38,5 @@ interface WorkflowInfo {
   timestamp: Date;
   comment: string;
   processed_by_receiver: boolean;
+  __typename?: string;
 }

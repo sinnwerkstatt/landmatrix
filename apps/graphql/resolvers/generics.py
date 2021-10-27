@@ -2,7 +2,7 @@ from typing import List, Union
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from graphql import GraphQLError
+from graphql import GraphQLError, GraphQLResolveInfo
 
 from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
@@ -313,3 +313,19 @@ def object_delete(
             comment=comment,
         )
     return True
+
+
+def resolve_toggle_workflow_info_unread(
+    _, info: GraphQLResolveInfo, id: int, type: str
+) -> bool:
+    if type == "DealWorkflowInfo":
+        wi = DealWorkflowInfo.objects.get(id=id)
+        wi.processed_by_receiver = not wi.processed_by_receiver
+        wi.save()
+        return True
+    elif type == "InvestorWorkflowInfo":
+        wi = InvestorWorkflowInfo.objects.get(id=id)
+        wi.processed_by_receiver = not wi.processed_by_receiver
+        wi.save()
+        return True
+    return False

@@ -36,6 +36,7 @@ from apps.graphql.resolvers.deal import (
     resolve_set_confidential,
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
+from apps.graphql.resolvers.generics import resolve_toggle_workflow_info_unread
 from apps.graphql.resolvers.investor import (
     resolve_investor,
     resolve_investors,
@@ -117,6 +118,8 @@ mutation.set_field("add_investor_comment", resolve_add_investor_comment)
 mutation.set_field("change_investor_status", resolve_change_investor_status)
 mutation.set_field("investor_edit", resolve_investor_edit)
 mutation.set_field("investor_delete", resolve_investor_delete)
+
+mutation.set_field("toggle_workflow_info_unread", resolve_toggle_workflow_info_unread)
 
 schema = make_executable_schema(
     type_defs,

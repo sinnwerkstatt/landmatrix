@@ -1,5 +1,5 @@
 <template>
-  <div class="comment">
+  <div :class="{ unread }" class="comment">
     <div class="meta">
       <span class="date">{{ info.timestamp | dayjs("YYYY-MM-DD HH:mm") }}</span>
       <span class="from-to">
@@ -26,17 +26,25 @@
       </div>
     </div>
 
-    <div v-if="comment_wo_head" class="message">{{ comment_wo_head }}</div>
+    <div v-if="comment_wo_head" class="message">
+      {{ comment_wo_head }}
+      <button v-if="unread" class="action" @click.prevent="processInfo">
+        <i class="fas fa-check-circle fa-lg orange"></i>
+      </button>
+    </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { draft_status_map, status_map } from "$utils/choices";
+  import Vue, { PropType } from "vue";
+  import type { WorkflowInfo } from "$types/generics";
+  import gql from "graphql-tag";
 
-  export default {
+  export default Vue.extend({
     name: "WorkflowInfo",
     props: {
-      info: { type: Object, required: true },
+      info: { type: Object as PropType<WorkflowInfo>, required: true },
     },
     data() {
       return {
@@ -45,21 +53,42 @@
       };
     },
     computed: {
-      confidential_status_change() {
+      confidential_status_change(): string | boolean {
         if (this.info.comment?.startsWith("[SET_CONFIDENTIAL]"))
           return "set_confidential";
         if (this.info.comment?.startsWith("[UNSET_CONFIDENTIAL]"))
           return "unset_confidential";
         return false;
       },
-      comment_wo_head() {
+      comment_wo_head(): string {
         return this.info.comment
           ?.replace("[SET_CONFIDENTIAL]", "")
           .replace("[UNSET_CONFIDENTIAL] ", "");
       },
+      unread(): boolean {
+        return (
+          this.info.to_user?.username === this.$store.state.page.user.username &&
+          !this.info.processed_by_receiver &&
+          this.comment_wo_head.length > 0
+        );
+      },
     },
-    methods: {},
-  };
+    methods: {
+      async processInfo() {
+        let res = await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($id: Int!, $type: String!) {
+              toggle_workflow_info_unread(id: $id, type: $type)
+            }
+          `,
+          variables: { id: this.info.id, type: this.info.__typename },
+        });
+        if (res.data.toggle_workflow_info_unread)
+          // eslint-disable-next-line vue/no-mutating-props
+          this.info.processed_by_receiver = true;
+      },
+    },
+  });
 </script>
 
 <style scoped lang="scss">
@@ -67,21 +96,33 @@
     font-size: 0.8em;
     margin-bottom: 0.5em;
 
+    &.unread {
+      font-weight: bold !important;
+    }
     .meta {
       .date {
         font-weight: 600;
       }
     }
 
-    //.status-change {
-    //  margin-bottom: 2px;
-    //}
-
     .message {
       background: #e5e5e5;
       padding: 0.3em 0.5em;
       border-radius: 5px;
       white-space: pre-line;
+      position: relative;
+      .action {
+        position: absolute;
+        top: 0.2rem;
+        right: 1rem;
+        border: 0;
+        background: 0;
+        opacity: 0.7;
+        transition: opacity 100ms ease;
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
   }
 

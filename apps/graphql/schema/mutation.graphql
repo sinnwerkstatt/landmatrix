@@ -52,6 +52,8 @@ type Mutation {
   ): InvestorEditReturn
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
   investor_delete(id: Int!, version: Int, comment: String): Boolean
+
+  toggle_workflow_info_unread(id: Int!, type: String!): Boolean
 }
 
 scalar Payload

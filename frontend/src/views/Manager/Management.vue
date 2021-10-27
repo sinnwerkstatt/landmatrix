@@ -705,6 +705,7 @@
     overflow-y: auto;
     max-height: 100%;
     overflow-x: auto;
+    width: 100%;
     //width: min(99%, 90em);
   }
 

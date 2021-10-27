@@ -3,7 +3,6 @@
     <template v-if="formfield.related_model === 'Investor'">
       <template v-for="val in value">
         <router-link
-          :key="val.id"
           class="investor"
           target="_blank"
           :to="{ name: 'investor_detail', params: { investorId: val.id } }"
