@@ -1,9 +1,12 @@
 interface Choi {
   [key: string | number]: string | { [key: string | number]: string };
 }
-export function flatten_choices(choices: Choi, append_group = false): Choi {
+export function flatten_choices(
+  choices: Choi,
+  append_group = false
+): { [key: string]: string } {
   if (choices) {
-    const newchoices: Choi = {};
+    const newchoices: { [key: string]: string } = {};
     for (const [key, value] of Object.entries(choices)) {
       if (typeof value === "string") {
         newchoices[key] = value;

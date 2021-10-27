@@ -9,23 +9,27 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { flatten_choices } from "$utils";
+  import Vue, { PropType } from "vue";
+  import type { FormField } from "$components/Fields/fields";
 
-  export default {
+  export default Vue.extend({
     props: {
-      formfield: { type: Object, required: true },
+      formfield: { type: Object as PropType<FormField>, required: true },
       value: { type: String, required: true },
       model: { type: String, required: true },
     },
     methods: {
-      parseVal(val) {
-        if (val) {
+      parseVal(val: string): string {
+        if (!val) return "n/a";
+        if (this.formfield.choices) {
+          console.log({ val });
           let choices = flatten_choices(this.formfield.choices, true);
           return choices ? choices[val] : val;
         }
-        return "n/a";
+        return val;
       },
     },
-  };
+  });
 </script>
