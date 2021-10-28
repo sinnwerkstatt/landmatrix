@@ -54,7 +54,6 @@
     "leaflet-gesture-handling": "^1.2.1",
     "leaflet.markercluster": "^1.5.1",
     "lodash-es": "^4.17.21",
-    "numeral": "^2.0.6",
     "popper.js": "^1.16.1",
     "prettier": "^2.3.2",
     "sass": "~1.32.13",
@@ -109,7 +108,7 @@
     ],
     "rules": {
       "no-unused-vars": "off",
-      "@typescript-eslint/ban-ts-comment":"off",
+      "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-unused-vars": "error",
       "vue/no-unused-vars": "error",
       "vue/no-v-html": "warn",
@@ -127,8 +126,5 @@
   },
   "browserslist": [
     "since 2017-06"
-  ],
-  "devDependencies": {
-    "@types/numeral": "^2.0.2"
-  }
+  ]
 }
