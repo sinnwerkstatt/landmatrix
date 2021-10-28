@@ -115,7 +115,6 @@ export class LSLAByNegotiation {
       .attr("y", (d, i) => y(i))
       .attr("width", (d) => x2(d.size) - x2(0))
       .attr("height", y.bandwidth());
-    // console.log({ svg });
 
     bar_size
       .append("text")

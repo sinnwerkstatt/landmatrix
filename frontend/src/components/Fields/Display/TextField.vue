@@ -24,7 +24,6 @@
       parseVal(val: string): string {
         if (!val) return "n/a";
         if (this.formfield.choices) {
-          console.log({ val });
           let choices = flatten_choices(this.formfield.choices, true);
           return choices ? choices[val] : val;
         }

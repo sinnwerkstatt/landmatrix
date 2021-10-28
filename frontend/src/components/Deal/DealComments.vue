@@ -166,7 +166,6 @@
             if (remove_public_deal_comment) {
               const idx = this.cmmnts.findIndex((c) => c.id === id);
               this.cmmnts.splice(idx, 1);
-              console.log(this.cmmnts);
             }
             console.log({ remove_public_deal_comment });
           });

@@ -65,7 +65,6 @@
     watch: {
       deals() {
         if (!this.deals) return;
-        console.log("rendering dings");
         let datanodes: Set<string> = new Set();
         let datalinks: { [key: string]: number } = {};
 

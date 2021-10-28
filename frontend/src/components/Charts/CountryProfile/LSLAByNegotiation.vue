@@ -65,7 +65,6 @@
 
         this.deals.forEach((d: Deal) => {
           const ngrp = negotiation_status_group_map[d.current_negotiation_status];
-          console.log({ ngrp });
           // const name = this.$t(nstat.title).toString();
           pots[d.current_negotiation_status].amount += 1;
           pots[d.current_negotiation_status].size += d.current_contract_size || 0;

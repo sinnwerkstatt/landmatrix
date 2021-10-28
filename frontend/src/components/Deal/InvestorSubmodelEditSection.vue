@@ -68,7 +68,6 @@
         "loans_currency",
         "loans_date",
       ];
-      console.log(this.id);
       if (this.id === "parents") fields.push("parent_relation");
       fields.push("comment");
       return {
