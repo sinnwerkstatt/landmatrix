@@ -114,8 +114,7 @@
     font-size: 1.2rem;
   }
   .svg-wrapper {
-    flex-grow: 1;
-    flex-shrink: 1;
+    flex: 1 1 auto;
     max-width: 100%;
     border-radius: 5px 5px 0 0;
     background: white;

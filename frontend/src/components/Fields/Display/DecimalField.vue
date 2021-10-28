@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-  import { thousandsep } from "$utils/filters";
   import Vue, { PropType } from "vue";
   import type { FormField } from "$components/Fields/fields";
 
@@ -21,7 +20,7 @@
         if (this.formfield.choices) {
           return this.formfield.choices[this.value];
         }
-        return thousandsep(this.value);
+        return this.value.toLocaleString("fr");
       },
     },
   });

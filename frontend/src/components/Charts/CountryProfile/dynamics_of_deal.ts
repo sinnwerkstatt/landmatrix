@@ -2,7 +2,6 @@
  *
  */
 import { axisLeft, descending, max, range, scaleBand, scaleLinear, select } from "d3";
-import numeral from "numeral";
 
 export type DynamicsDataPoint = {
   name: string;
@@ -15,6 +14,9 @@ export class DynamicsOfDeal {
   private readonly margin = { top: 30, right: 0, bottom: 10, left: 300 };
 
   do_the_graph(selector: string, data: DynamicsDataPoint[]): void {
+    const elem = document.querySelector(selector);
+    if (elem) elem.innerHTML = "";
+
     data = data.sort((a, b) => descending(a.value, b.value));
 
     const svg = select(selector)
@@ -34,7 +36,7 @@ export class DynamicsOfDeal {
       .domain([0, max(data, (d) => d.value)])
       .range([this.margin.left, this.width - this.margin.right]);
 
-    const format = (val: number) => `${numeral(val).format("0,0")} ha`;
+    const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`;
 
     const bar = svg.selectAll("g").data(data).enter().append("g");
 

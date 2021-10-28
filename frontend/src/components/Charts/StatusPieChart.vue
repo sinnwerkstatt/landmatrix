@@ -8,6 +8,7 @@
 </template>
 
 <script lang="ts">
+  import Vue from "vue";
   import {
     Chart,
     ArcElement,
@@ -17,9 +18,6 @@
     Legend,
     SubTitle,
   } from "chart.js";
-  import numeral from "numeral";
-
-  import Vue from "vue";
 
   Chart.register(ArcElement, PieController, Legend, Tooltip, SubTitle, Title);
 
@@ -57,7 +55,7 @@
               callbacks: {
                 label: (context) => {
                   let value = context.dataset.data[context.dataIndex];
-                  value = numeral(value).format("0,0");
+                  value = Math.round(value).toLocaleString("fr");
                   if (this.unit) value += ` ${this.unit}`;
                   return `${context.label}: ${value}`;
                 },

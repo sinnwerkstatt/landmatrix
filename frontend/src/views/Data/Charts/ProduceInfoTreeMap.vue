@@ -19,16 +19,12 @@
 </template>
 
 <script lang="ts">
-  import Legend from "$components/Charts/Legend";
-  import LoadingPulse from "$components/Data/LoadingPulse";
-  import { thousandsep } from "$utils/filters";
-
-  import { format, hierarchy, treemap, treemapSquarify, select, selectAll } from "d3";
-
-  import { data_deal_produce_query, data_deal_query } from "../query";
-
-  import ChartsContainer from "./ChartsContainer";
   import Vue from "vue";
+  import { format, hierarchy, treemap, treemapSquarify, select, selectAll } from "d3";
+  import Legend from "$components/Charts/Legend.vue";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import ChartsContainer from "./ChartsContainer.vue";
+  import { data_deal_produce_query, data_deal_query } from "../query";
 
   function buildTreeChart(treeData) {
     if (!treeData) return;
@@ -101,7 +97,7 @@
       .data((d) =>
         d.data.name
           .split(/(?=[A-Z][a-z]\(\) )\s+/g)
-          .concat(thousandsep(d.data.value) + " ha")
+          .concat(`${Math.round(d.data.value).toLocaleString("fr")} ha`)
       )
       .join("tspan")
       .attr("x", 2)

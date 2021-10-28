@@ -3,7 +3,7 @@
     <div class="country-profile">
       <LoadingPulse v-if="$apollo.loading" />
       <IntentionsPerCategory :deals="deals" />
-      <!--      <LSLAByNegotiation :deals="deals" />-->
+      <LSLAByNegotiation :deals="deals" />
       <DynamicsOfDeal :deals="deals" />
     </div>
   </ChartsContainer>
@@ -11,21 +11,21 @@
 
 <script lang="ts">
   import Vue from "vue";
-  import IntentionsPerCategory from "$components/Charts/CountryProfile/IntentionsPerCategory.vue";
-  import ChartsContainer from "$views/Data/Charts/ChartsContainer.vue";
-  // import LSLAByNegotiation from "$views/Data/Charts/CountryProfile/LSLAByNegotiation.vue";
   import { data_deal_query_gql } from "$views/Data/query";
-  import type { Deal } from "$types/deal";
-  import type { OperationVariables } from "apollo-client/core/types";
+  import ChartsContainer from "$views/Data/Charts/ChartsContainer.vue";
+  import LSLAByNegotiation from "$views/Data/Charts/CountryProfile/LSLAByNegotiation.vue";
+  import IntentionsPerCategory from "$components/Charts/CountryProfile/IntentionsPerCategory.vue";
   import DynamicsOfDeal from "$components/Charts/CountryProfile/DynamicsOfDeal.vue";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import type { OperationVariables } from "apollo-client/core/types";
+  import type { Deal } from "$types/deal";
 
   export default Vue.extend({
     name: "CountryProfile",
     components: {
       LoadingPulse,
       DynamicsOfDeal,
-      // LSLAByNegotiation,
+      LSLAByNegotiation,
       ChartsContainer,
       IntentionsPerCategory,
     },
