@@ -240,8 +240,6 @@ def resolve_set_confidential(
         deal_version.serialized_data["confidential"] = confidential
         deal_version.serialized_data["confidential_reason"] = reason
         deal_version.serialized_data["confidential_comment"] = comment
-        deal_version.serialized_data["modified_at"] = ecma262(timezone.now())
-        deal_version.serialized_data["modified_by"] = user.id
         deal_version.save()
 
         add_object_comment("deal", user, id, version, obj_comment)
@@ -253,8 +251,6 @@ def resolve_set_confidential(
         deal.confidential = confidential
         deal.confidential_reason = reason
         deal.confidential_comment = comment
-        deal.modified_at = timezone.now()
-        deal.modified_by = user
         deal.save()
 
         if deal.current_draft:
@@ -263,9 +259,6 @@ def resolve_set_confidential(
             deal.current_draft.serialized_data["confidential_reason"] = reason
             deal.current_draft.serialized_data["confidential_comment"] = comment
             deal.current_draft.save()
-            # TODO-2 set new owner?
-            # deal.current_draft.serialized_data["modified_at"] = ecma262(timezone.now())
-            # deal.current_draft.serialized_data["modified_by"] = user.id
 
         add_object_comment("deal", user, id, deal.current_draft_id, obj_comment)
     return True
