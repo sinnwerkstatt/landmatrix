@@ -539,10 +539,10 @@
           case "todo_activation":
             retfilters.push({ field: "draft_status", value: 3 });
             break;
-          case "new_public_comment":
-            // TODO
-            retfilters.push({ field: "status", value: "7" });
-            break;
+          // case "new_public_comment":
+          //   // TODO-3
+          //   retfilters.push({ field: "status", value: "7" });
+          //   break;
           case "requested_improvement":
             retfilters.push(
               // { field: "workflowinfos.processed_by_receiver", value: false },

@@ -84,7 +84,7 @@ class DealVersion(Version):
         related_name="versions",
     )
 
-    def new_to_dict(self):
+    def to_dict(self):
         self.serialized_data["id"] = self.object_id
         return {
             "id": self.id,

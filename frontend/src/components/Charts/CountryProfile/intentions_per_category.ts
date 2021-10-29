@@ -17,6 +17,9 @@ export class LamaSankey {
       { [key: string]: string | number }
     >
   ): void {
+    const elem = document.querySelector(selector);
+    if (elem) elem.innerHTML = "";
+
     const svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
       .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)

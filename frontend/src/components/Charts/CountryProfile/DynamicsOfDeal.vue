@@ -54,7 +54,9 @@
           if (d.top_investors.length > 1) this.multideals += 1;
           d.top_investors.forEach((i) => {
             const cl = i.classification;
-            pots[cl] = pots[cl] ? pots[cl] + d.deal_size : d.deal_size;
+            pots[cl] = pots[cl]
+              ? pots[cl] + d.current_contract_size
+              : d.current_contract_size;
           });
         });
 

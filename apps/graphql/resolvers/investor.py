@@ -79,7 +79,7 @@ def resolve_investor(
 
     if add_versions:
         investor["versions"] = [
-            dv.new_to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
+            dv.to_dict() for dv in InvestorVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         investor["workflowinfos"] = [
@@ -139,7 +139,7 @@ def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
     qs = InvestorVersion.objects.all()
     if filters:
         qs = qs.filter(parse_filters(filters))
-    return [iv.new_to_dict() for iv in qs]
+    return [iv.to_dict() for iv in qs]
 
 
 def resolve_add_investor_comment(

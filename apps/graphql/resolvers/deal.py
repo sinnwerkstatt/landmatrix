@@ -64,7 +64,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
     if add_versions:
         deal["versions"] = [
-            dv.new_to_dict() for dv in DealVersion.objects.filter(object_id=id)
+            dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
         ]
     if add_workflowinfos:
         deal["workflowinfos"] = [
@@ -149,8 +149,7 @@ def resolve_dealversions(
         )
         qs = qs.filter(serialized_data__country__in=country_ids)
 
-    # TODO-1
-    return [dv.new_to_dict() for dv in qs]
+    return [dv.to_dict() for dv in qs]
 
 
 def resolve_upload_datasource_file(_, info, filename, payload) -> str:

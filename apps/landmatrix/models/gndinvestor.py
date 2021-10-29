@@ -66,7 +66,7 @@ class InvestorVersion(Version):
                 }
         return edict
 
-    def new_to_dict(self):
+    def to_dict(self):
         self.serialized_data["id"] = self.object_id
         return {
             "id": self.id,
@@ -163,7 +163,7 @@ class Investor(models.Model):
 
     """ # computed properties """
     # The following flag is needed at the moment to filter through Deals (public-filter)
-    # FIXME This should be replaced by an option to _NOT_ specify the investor name.
+    # NOTE This should be replaced by an option to _NOT_ specify the investor name.
     is_actually_unknown = models.BooleanField(default=False)
 
     def recalculate_fields(self):

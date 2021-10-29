@@ -27,7 +27,7 @@ def resolve_add_public_comment(
         comment=comment,
         site_id=settings.SITE_ID,
     )
-    # TODO: Walrus this in python 3.8
+    # TODO-3: Walrus this in python 3.8
     user = info.context["request"].user
     if user.is_authenticated:
         tc.user = user
