@@ -10,7 +10,7 @@ readme = 'README.md'
 description = "LandMatrix"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.8"
 Django = "<4"
 djangorestframework = "<4"
 wagtail = "<2.15"
@@ -71,6 +71,7 @@ sentry_sdk = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
+pre-commit = "*"
 black = { version = "*", allow-prereleases = true }
 mypy = "*"
 django-livereload = "*"
