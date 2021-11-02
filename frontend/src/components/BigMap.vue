@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import iconRetinaUrl from "$static/images/marker-icon-2x.png";
   import iconUrl from "$static/images/marker-icon.png";
   import shadowUrl from "$static/images/marker-shadow.png";
@@ -35,16 +35,17 @@
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
   import "leaflet/dist/leaflet.css";
   import { LMap, LTileLayer } from "vue2-leaflet";
-  import { mapState } from "vuex";
-  import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher";
+  import BigMapStandaloneLayerSwitcher from "./Map/BigMapStandaloneLayerSwitcher.vue";
+  import Vue from "vue";
 
   Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
+  // @ts-ignore
   delete Icon.Default.prototype._getIconUrl;
   let shadowSize = [0, 0];
   Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
 
-  export default {
+  export default Vue.extend({
     name: "BigMap",
     components: {
       BigMapStandaloneLayerSwitcher,
@@ -59,10 +60,12 @@
       hideLayerSwitcher: { type: Boolean, default: false },
     },
     computed: {
-      ...mapState({
-        tileLayers: (state) => state.map.layers,
-        visibleLayer: (state) => state.map.visibleLayer,
-      }),
+      tileLayers() {
+        return this.$store.state.map.layers;
+      },
+      visibleLayer() {
+        return this.$store.state.map.visibleLayer;
+      },
       mapOptions() {
         return {
           zoomSnap: 0.5,
@@ -83,7 +86,7 @@
         };
       },
     },
-  };
+  });
 </script>
 
 <style lang="scss" scoped>

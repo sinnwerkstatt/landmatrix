@@ -11,31 +11,32 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { Loader } from "@googlemaps/js-api-loader";
+  import Vue from "vue";
 
   const loader = new Loader({
     apiKey: import.meta.env.VITE_GAPI_KEY,
     libraries: ["places"],
   });
 
-  export default {
+  export default Vue.extend({
     props: {
       value: { type: String, required: false, default: "" },
       countryCode: { type: String, required: false, default: "" },
     },
     data() {
       return {
-        autocomplete: null,
+        autocomplete: null as unknown,
         randomhash: Math.random().toString(36).substring(2),
       };
     },
     computed: {
       val: {
-        get() {
+        get(): string {
           return this.value;
         },
-        set() {},
+        set(): void {},
       },
     },
     watch: {
@@ -47,19 +48,24 @@
       this.$nextTick(() => {
         const input_field = document.getElementById(
           `location-input-${this.randomhash}`
-        );
+        ) as HTMLInputElement;
+        if (!input_field) return;
 
-        let opts = { fields: ["geometry"], strictBounds: true };
-        if (this.countryCode)
-          opts.componentRestrictions = { country: this.countryCode };
+        loader.load().then((google) => {
+          const autocomplete = new google.maps.places.Autocomplete(input_field, {
+            fields: ["geometry"],
+            strictBounds: true,
+            componentRestrictions: this.countryCode
+              ? { country: this.countryCode }
+              : undefined,
+          });
+          this.autocomplete = autocomplete;
 
-        loader.load().then(() => {
-          // eslint-disable-next-line no-undef
-          this.autocomplete = new google.maps.places.Autocomplete(input_field, opts);
-          this.autocomplete.addListener("place_changed", () => {
-            const geometry = this.autocomplete.getPlace().geometry;
+          autocomplete?.addListener("place_changed", () => {
+            const geometry = autocomplete.getPlace().geometry;
+            if (!geometry) return;
             this.$emit("change", {
-              latLng: [geometry.location.lat(), geometry.location.lng()],
+              latLng: [geometry.location?.lat(), geometry.location?.lng()],
               viewport: geometry.viewport,
             });
             this.$emit("input", input_field.value);
@@ -67,5 +73,5 @@
         });
       });
     },
-  };
+  });
 </script>

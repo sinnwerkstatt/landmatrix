@@ -27,6 +27,7 @@ export interface Country {
   id: number;
   name: string;
   slug: string;
+  code_alpha2: string;
 }
 
 export interface WagtailPage {

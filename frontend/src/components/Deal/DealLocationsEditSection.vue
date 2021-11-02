@@ -65,9 +65,29 @@
           </div>
           <div class="row">
             <form enctype="multipart/form-data" novalidate class="mt-3">
-              <div class="col-12 small">{{ $t("Upload GeoJSON") }}</div>
+              <div class="col-12 small">{{ $t("Add intended area") }}</div>
               <div class="col-12">
-                <input type="file" multiple class="input-file" @change="uploadFiles" />
+                <input
+                  type="file"
+                  class="input-file"
+                  @change="uploadFiles('intended_area', $event)"
+                />
+              </div>
+              <div class="col-12 small">{{ $t("Add contract area") }}</div>
+              <div class="col-12">
+                <input
+                  type="file"
+                  class="input-file"
+                  @change="uploadFiles('contract_area', $event)"
+                />
+              </div>
+              <div class="col-12 small">{{ $t("Add production area") }}</div>
+              <div class="col-12">
+                <input
+                  type="file"
+                  class="input-file"
+                  @change="uploadFiles('production_area', $event)"
+                />
               </div>
             </form>
           </div>
@@ -94,53 +114,62 @@
   import EditField from "$components/Fields/EditField.vue";
   import "@geoman-io/leaflet-geoman-free";
   import { GeoJSON, LatLngBounds, Marker } from "leaflet";
-  import Vue from "vue";
+  import Vue, { PropType } from "vue";
+  import type { Country } from "$types/wagtail";
+  import type { Location } from "$types/deal";
+  import type L from "leaflet";
+  import type { Feature, GeoJsonObject } from "geojson";
 
   export default Vue.extend({
     components: { PointField, LocationGoogleField, EditField, BigMap },
     props: {
-      locations: { type: Array, required: true },
-      country: { type: Object, required: true },
+      locations: { type: Array as PropType<Location[]>, required: true },
+      country: { type: Object as PropType<Country>, required: true },
     },
     data() {
       return {
         fields: ["description", "facility_name", "comment"],
-        bigmap: null,
-        locs: null,
-        actLoc: null,
-        hoverLocID: null,
-        locationFGs: new Map(),
-        actFG: null,
+        bigmap: null as unknown as L.Map,
+        locs: [] as Location[],
+        actLoc: null as Location | null,
+        hoverLocID: null as number | null,
+        locationFGs: new Map() as Map<number, L.GeoJSON>,
+        actFG: undefined as L.GeoJSON | undefined,
         geoman_opts: {
-          position: "topleft",
+          position: "topleft" as L.ControlPosition,
           drawCircle: false,
           drawCircleMarker: false,
           drawRectangle: false,
           drawPolyline: false,
+          drawPolygon: false,
           cutPolygon: false,
           drawMarker: false,
         },
-        geojson_options: {
-          onEachFeature: (feature, layer) => {
+      };
+    },
+    computed: {
+      geojson_options() {
+        return {
+          onEachFeature: (feature: Feature, layer: L.Layer) => {
             // highlight location in list on map-hover
             layer.addEventListener(
               "mouseover",
-              () => (this.hoverLocID = feature.properties.id)
+              () => (this.hoverLocID = feature.properties?.id)
             );
             layer.addEventListener("mouseout", () => (this.hoverLocID = null));
 
             if (feature.geometry.type === "Point") {
               layer.addEventListener("click", () => {
                 this.actLoc = this.locs.filter(
-                  (l) => l.id === feature.properties.id
+                  (l) => l.id === feature.properties?.id
                 )[0];
               });
             } else {
               this._addPropertiesPopup(layer, feature);
             }
           },
-        },
-      };
+        };
+      },
     },
     watch: {
       country(nCa) {
@@ -154,18 +183,17 @@
         if (actLoc) {
           if (!this.locationFGs.get(actLoc.id)) this._addNewLayerGroup(actLoc.id);
           this.actFG = this.locationFGs.get(actLoc.id);
-          this.actFG.eachLayer((l) => {
+          this.actFG?.eachLayer((l) => {
             if (l.feature.geometry.type === "Point") drawMarker = false;
           });
-          // noinspection JSCheckFunctionSignatures
+          // noinspection JSCheckFunctionSignatures,TypeScriptValidateJSTypes
           this.bigmap.pm.setGlobalOptions({ layerGroup: this.actFG });
           this.bigmap.pm.addControls({ ...this.geoman_opts, drawMarker });
         } else {
           this.bigmap.pm.removeControls();
         }
         this.locationFGs.forEach((value, key) => {
-          value.eachLayer((l) => {
-            // noinspection JSUnresolvedVariable
+          value.eachLayer((l: L.Layer) => {
             let relevant_element = l?._icon || l._path;
             if (actLoc && key !== actLoc.id)
               relevant_element.classList.add("leaflet-hidden");
@@ -175,7 +203,7 @@
       },
       hoverLocID() {
         this.locationFGs.forEach((value, key) => {
-          value.eachLayer((l) => {
+          value.eachLayer((l: L.Layer) => {
             let relevant_element = l?._icon || l._path;
             if (this.hoverLocID && key !== this.hoverLocID)
               relevant_element.classList.add("leaflet-unhighlight");
@@ -188,7 +216,7 @@
       this.locs = JSON.parse(JSON.stringify(this.locations));
     },
     methods: {
-      mapIsReady(map) {
+      mapIsReady(map: L.Map) {
         this.bigmap = map;
 
         this.locs.forEach((loc) => {
@@ -208,20 +236,20 @@
       addLocation() {
         let maxid = 0;
         this.locs.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        let newloc = new Object({ id: maxid + 1 });
+        let newloc = new Object({ id: maxid + 1 }) as Location;
         this.actLoc = newloc;
         this.locs.push(newloc);
         this._features_changed();
       },
-      removeLocation(index) {
+      removeLocation(index: number) {
         let message =
           this.$t("Do you really want to remove location") + ` #${index + 1}?`;
         this.$bvModal;
         this.$bvModal
           .msgBoxConfirm(message, {
             size: "sm",
-            okTitle: this.$t("Delete"),
-            cancelTitle: this.$t("Cancel"),
+            okTitle: this.$t("Delete").toString(),
+            cancelTitle: this.$t("Cancel").toString(),
             centered: true,
           })
           .then((confirmed) => {
@@ -234,18 +262,18 @@
             }
           });
       },
-      locationGoogleAutocomplete(lGA) {
+      locationGoogleAutocomplete(lGA: { latLng: [number, number] }) {
         let hasMarker = false;
-        this.actFG.eachLayer((l) => {
-          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
+        this.actFG?.eachLayer((l: L.Layer) => {
+          if (l?._icon && l.feature.properties.id === this.actLoc?.id) {
             hasMarker = true;
-            l.setLatLng(lGA.latLng);
+            (l as L.Marker).setLatLng(lGA.latLng);
           }
         });
         if (!hasMarker) {
           let lpoint = new Marker(lGA.latLng).toGeoJSON();
-          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
-          this.actFG.addData(lpoint);
+          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc?.name };
+          this.actFG?.addData(lpoint);
         }
         if (!this.bigmap.getBounds().contains(lGA.latLng)) {
           if (lGA.viewport) {
@@ -260,12 +288,12 @@
         }
         this._features_changed();
       },
-      pointChange(lPo) {
+      pointChange(lPo: { lat: number; lng: number }) {
         let hasMarker = false;
-        this.actFG.eachLayer((l) => {
-          if (l?._icon && l.feature.properties.id === this.actLoc.id) {
+        this.actFG?.eachLayer((l) => {
+          if (l?._icon && l.feature.properties.id === this.actLoc?.id) {
             hasMarker = true;
-            l.setLatLng(lPo);
+            (l as L.Marker).setLatLng(lPo);
             // this.bigmap.setView(lPo);
             // alternative approach to focussing
             // this.bigmap.fitBounds(this.editableFeatures.getBounds().pad(0.2));
@@ -274,26 +302,35 @@
         if (!hasMarker) {
           if (!lPo.lat || !lPo.lng) return;
           let lpoint = new Marker(lPo).toGeoJSON();
-          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc.name };
-          this.actFG.addData(lpoint);
+          lpoint.properties = { id: this.actLoc?.id, name: this.actLoc?.name };
+          this.actFG?.addData(lpoint);
         }
         this._features_changed();
       },
-      uploadFiles(event) {
-        for (let file of event.target.files) {
-          const reader = new FileReader();
-          reader.addEventListener("load", (event) => {
-            this.actFG.addData(JSON.parse(event.target.result));
-            let bounds = this.bigmap.getBounds();
-            bounds.extend(this.actFG.getBounds());
-            this.bigmap.fitBounds(bounds);
+      uploadFiles(area_type: string, event: Event) {
+        const target = event.target as HTMLInputElement;
+        if (!target || !target.files || target.files.length <= 0) return;
+
+        const reader = new FileReader();
+        reader.addEventListener("load", (event) => {
+          if (!this.actFG) return;
+          let result = JSON.parse(event.target?.result as string);
+          const features: Feature[] = result.features.map((f: Feature) => {
+            if (f.properties) f.properties.type = area_type;
+            else f.properties = { type: area_type };
+            return f;
           });
-          reader.readAsText(file);
-        }
-        event.target.value = null;
+          this.actFG.addData({ type: "FeatureCollection", features } as GeoJsonObject);
+          let bounds = this.bigmap.getBounds();
+          bounds.extend(this.actFG.getBounds());
+          this.bigmap.fitBounds(bounds);
+        });
+        reader.readAsText(target?.files[0]);
+
+        target.value = "";
       },
-      _addNewLayerGroup(id) {
-        let fg = new GeoJSON(null, this.geojson_options);
+      _addNewLayerGroup(id: number) {
+        let fg = new GeoJSON(undefined, this.geojson_options);
         fg.on("pm:update", this._features_changed);
         fg.on("pm:dragend", this._features_changed);
         fg.on("pm:rotateend", this._features_changed);
@@ -301,8 +338,8 @@
         this.bigmap.addLayer(fg);
         return fg;
       },
-      _addPropertiesPopup(layer, feature) {
-        let colormap = {
+      _addPropertiesPopup(layer, feature: Feature) {
+        let colormap: { [key: string]: string } = {
           contract_area: "#ff00ff",
           intended_area: "#66ff33",
           production_area: "#ff0000",
@@ -317,15 +354,20 @@
         ].forEach((optn) => {
           let option = document.createElement("option");
           option.value = optn.value;
-          option.innerHTML = optn.innerHTML;
+          option.innerHTML = optn.innerHTML.toString();
           select.appendChild(option);
         });
-        select.addEventListener("change", ({ target }) => {
-          feature.properties.type = target.value;
-          layer.setStyle({ color: colormap[target.value] });
-          this._features_changed();
+        select.addEventListener("change", (event) => {
+          const target = event.target as HTMLSelectElement;
+          if (target?.value) {
+            if (feature.properties) feature.properties.type = target.value;
+            else feature.properties = { type: target.value };
+            layer.setStyle({ color: colormap[target.value] });
+            this._features_changed();
+          }
         });
-        select.value = feature.properties.type;
+
+        select.value = feature.properties?.type;
         layer.setStyle({ color: colormap[select.value] });
         layer.bindPopup(select);
       },
@@ -367,6 +409,7 @@
         this.bigmap.fitBounds(bounds);
       },
       _on_pm_create({ layer, shape }) {
+        if (!this.actFG) return;
         ////// do a little three-card monte carlo:
         // save the current id, remove it from existing layers and add it
         // back in geojson style after giving it props. 🙄
