@@ -107,6 +107,15 @@ def change_object_status(
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
+        # if there was a request for improvement workflowinfo, send an email to the requester
+        old_wfi = obj.workflowinfos.last()
+        if (
+            old_wfi.draft_status_before == 2
+            and old_wfi.draft_status_after == 1
+            and old_wfi.to_user == user
+        ):
+            send_comment_to_user(obj, "", user, old_wfi.from_user_id, obj_version_id)
+
     elif transition == "TO_ACTIVATION":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
