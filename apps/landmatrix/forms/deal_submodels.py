@@ -93,7 +93,6 @@ datasource_fields = {
         "label": "Url",
         "class": "URLField",
         "required": False,
-        "type": "url",
     },
     "file": {
         "label": "File",
@@ -105,7 +104,6 @@ datasource_fields = {
         "label": "Keep PDF not public",
         "class": "BooleanField",
         "required": True,
-        "hidden_in_detail_view": True,
     },
     "publication_title": {
         "label": "Publication title",

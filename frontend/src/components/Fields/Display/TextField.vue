@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="formfield.type === 'url'">
+    <template v-if="formfield.class === 'URLField'">
       <a :href="value" target="_blank">{{ value }}</a>
     </template>
     <template v-else>

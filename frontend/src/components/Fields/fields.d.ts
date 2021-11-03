@@ -6,4 +6,5 @@ export interface FormField {
   related_model?: string;
   choices?: { [key: string | number]: string };
   unit?: string;
+  help_text?: string;
 }
