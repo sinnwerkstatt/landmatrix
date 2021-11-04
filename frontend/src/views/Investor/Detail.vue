@@ -6,6 +6,7 @@
       :investor-version="investorVersion"
       @change_status="changeStatus"
       @delete="deleteInvestor"
+      @copy="copyInvestor"
       @reload="reloadInvestor"
     />
     <div v-else class="container investor-detail">
@@ -443,6 +444,32 @@
                 .then(this.reloadInvestor);
             }
             this.reloadInvestor();
+          });
+      },
+      copyInvestor(): void {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!) {
+                object_copy(otype: "investor", obj_id: $id) {
+                  objId
+                  objVersion
+                }
+              }
+            `,
+            variables: { id: +this.investorId },
+          })
+          .then(({ data }) => {
+            window.open(
+              this.$router.resolve({
+                name: "investor_detail",
+                params: {
+                  investorId: data.object_copy.objId,
+                  investorVersion: data.object_copy.objVersion,
+                },
+              }).href,
+              "_blank"
+            );
           });
       },
       reloadInvestor() {

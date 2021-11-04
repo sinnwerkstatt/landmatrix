@@ -6,6 +6,7 @@
       :deal-version="dealVersion"
       @change_status="changeStatus"
       @delete="deleteDeal"
+      @copy="copyDeal"
       @reload="reloadDeal"
       @set_confidential="setConfidential"
     />
@@ -392,6 +393,32 @@
                 .then(this.reloadDeal);
             }
             this.reloadDeal();
+          });
+      },
+      copyDeal(): void {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: Int!) {
+                object_copy(otype: "deal", obj_id: $id) {
+                  objId
+                  objVersion
+                }
+              }
+            `,
+            variables: { id: +this.dealId },
+          })
+          .then(({ data }) => {
+            window.open(
+              this.$router.resolve({
+                name: "deal_detail",
+                params: {
+                  dealId: data.object_copy.objId,
+                  dealVersion: data.object_copy.objVersion,
+                },
+              }).href,
+              "_blank"
+            );
           });
       },
       setConfidential(data): void {

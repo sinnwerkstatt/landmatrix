@@ -54,6 +54,7 @@ type Mutation {
   investor_delete(id: Int!, version: Int, comment: String): Boolean
 
   toggle_workflow_info_unread(id: Int!, type: String!): Boolean
+  object_copy(otype: String!, obj_id: Int!): ObjectReturn
 }
 
 scalar Payload
@@ -71,6 +72,10 @@ enum WorkflowTransition {
   ACTIVATE
 }
 
+type ObjectReturn {
+  objId: Int
+  objVersion: Int
+}
 type DealEditReturn {
   dealId: Int
   dealVersion: Int

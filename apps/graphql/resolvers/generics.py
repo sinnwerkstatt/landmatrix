@@ -338,3 +338,34 @@ def resolve_toggle_workflow_info_unread(
         wi.save()
         return True
     return False
+
+
+def resolve_object_copy(_, info, otype: OType, obj_id: int) -> dict:
+    user = info.context["request"].user
+    Object = Deal if otype == "deal" else Investor
+    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
+
+    obj = Object.objects.get(id=obj_id)
+    obj.id = None
+    if otype == "deal":
+        obj.operating_company = None
+    obj.current_draft = None
+    obj.recalculate_fields()
+    obj.created_by = user
+    obj.modified_at = timezone.now()
+    obj.modified_by = user
+    obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
+
+    obj.save()
+    obj_version = ObjectVersion.from_object(obj, created_by=user)
+    Object.objects.filter(id=obj.id).update(current_draft=obj_version)
+    add_workflow_info(
+        otype=otype,
+        obj=obj,
+        obj_version=obj_version,
+        from_user=user,
+        draft_status_after=obj.draft_status,
+        comment=f"Copied from {otype} #{obj_id}",
+    )
+
+    return {"objId": obj.id, "objVersion": obj_version.id}

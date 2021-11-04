@@ -7,6 +7,7 @@
       @add_comment="add_comment"
       @change_status="$emit('change_status', $event)"
       @delete="$emit('delete', $event)"
+      @copy="$emit('copy', $event)"
       @send_to_review="show_send_to_review_overlay = true"
     >
       <template #heading>
