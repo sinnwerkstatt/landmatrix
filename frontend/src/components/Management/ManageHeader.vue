@@ -156,10 +156,13 @@
                   {{ get_delete_description }}
                 </div>
               </div>
-              <div v-if="is_authorized(object)" class="action-button">
+              <div
+                v-if="is_authorized(object) && otype === 'deal'"
+                class="action-button"
+              >
                 <div class="d-inline-block">
                   <button class="btn btn-gray btn-sm" @click.prevent="$emit('copy')">
-                    {{ otype === "deal" ? $t("Copy deal") : $t("Copy investor") }}
+                    {{ $t("Copy deal") }}
                   </button>
                 </div>
                 <div class="d-inline-block button-description">

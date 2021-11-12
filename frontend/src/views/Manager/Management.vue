@@ -40,20 +40,16 @@
             <th :class="{ selected: sortField === 'country', asc: sortAscending }">
               <multiselect
                 v-model="selected_country"
-                :options="$store.state.page.countries"
+                :options="country_options"
                 label="name"
                 placeholder="Country"
-                @input="selected_region = null"
-              />
-              <multiselect
-                v-model="selected_region"
-                :options="$store.state.page.regions"
-                label="name"
-                placeholder="Region"
-                @input="selected_country = null"
               />
               <span @click="setSort('country')">
-                {{ $t("Target country (region)") }}
+                {{
+                  showDeals
+                    ? $t("Target country")
+                    : $t("Country of registration/origin")
+                }}
               </span>
             </th>
 
@@ -255,7 +251,6 @@
         sortField: "id",
         sortAscending: false,
         selectedTab: localStorage.management_selectedTab || "my_drafts",
-        selected_region: null as Region | null,
         selected_country: null as Country | null,
         selected_from_size: null as number | null,
         selected_to_size: null as number | null,
@@ -362,6 +357,11 @@
               }
               deals {
                 id
+                country {
+                  fk_region {
+                    id
+                  }
+                }
               }
               workflowinfos {
                 id
@@ -404,6 +404,23 @@
       user_is_staff(): boolean {
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
+      region(): Region | null {
+        console.log(this.user);
+        const regions = this.user.userregionalinfo?.region;
+        if (regions.length > 0) return regions[0];
+        return null;
+      },
+      country_options(): Country[] {
+        const seen_ids = [] as number[];
+        const countries = [] as Country[];
+        this.objects.forEach((o) => {
+          if (!o.country) return;
+          if (seen_ids.includes(o.country.id)) return;
+          seen_ids.push(o.country.id);
+          countries.push(o.country);
+        });
+        return countries.sort((a, b) => a.name.localeCompare(b.name));
+      },
       objects(): Array<Deal | Investor> {
         let objects = this.showDeals ? this.deals : this.investors;
         if (!objects || objects.length === 0) return [];
@@ -413,13 +430,21 @@
           this.sortField,
           this.sortAscending
         );
+        if (this.region)
+          if (this.showDeals)
+            objects = objects.filter(
+              (o) => o.country?.fk_region?.id === this.region.id
+            );
+          else
+            objects = objects.filter((o) => {
+              const deal_regions = o.deals.map((d) => d.country?.fk_region?.id);
+              console.log(deal_regions, this.region.id);
+              return deal_regions.includes(this.region.id);
+            });
 
         if (this.selected_country)
           objects = objects.filter((o) => o.country?.id === this.selected_country.id);
-        if (this.selected_region)
-          objects = objects.filter(
-            (o) => o.country?.fk_region?.id === this.selected_region.id
-          );
+
         if (this.showDeals && this.selected_from_size)
           objects = objects.filter((o) => o.deal_size >= this.selected_from_size);
         if (this.showDeals && this.selected_to_size)

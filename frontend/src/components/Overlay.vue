@@ -46,6 +46,7 @@
 <script lang="ts">
   import gql from "graphql-tag";
   import Vue from "vue";
+  import type { User } from "$types/user";
 
   export default Vue.extend({
     name: "Overlay",
@@ -75,7 +76,7 @@
       `,
     },
     computed: {
-      selected_user() {
+      selected_user(): User {
         return this.to_user_selected ? this.to_user_selected : this.toUser;
       },
     },
@@ -86,18 +87,19 @@
       document.removeEventListener("keydown", this.cancel);
     },
     methods: {
-      cancel(e) {
+      cancel(e: KeyboardEvent) {
         if (e.key === "Escape") this.$emit("cancel");
       },
-      submit(e) {
-        if (e.target.checkValidity()) {
+      submit(e: Event) {
+        const tgt = e?.target as HTMLFormElement;
+        if (tgt.checkValidity()) {
           let args = { comment: this.comment, force: true };
           if (this.assignToUserInput) {
             args.to_user = this.selected_user;
           }
           this.$emit("submit", args);
         } else {
-          e.target.reportValidity();
+          tgt.reportValidity();
         }
       },
     },

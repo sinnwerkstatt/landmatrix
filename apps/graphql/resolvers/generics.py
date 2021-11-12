@@ -352,8 +352,9 @@ def resolve_object_copy(_, info, otype: OType, obj_id: int) -> dict:
     obj.current_draft = None
     obj.recalculate_fields()
     obj.created_by = user
-    obj.modified_at = timezone.now()
+    obj.created_at = timezone.now()
     obj.modified_by = user
+    obj.modified_at = timezone.now()
     obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
 
     obj.save()
