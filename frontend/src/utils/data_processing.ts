@@ -7,6 +7,15 @@ export function sum(items: Deal[], prop: string): number {
   }, 0);
 }
 
+export function custom_is_null(field: unknown): boolean {
+  return (
+    field === undefined ||
+    field === null ||
+    field === "" ||
+    (Array.isArray(field) && field.length === 0)
+  );
+}
+
 export function prepareNegotianStatusData(deals: Deal[]): Array<unknown> {
   const stati = ["Intended", "Concluded", "Failed"];
   const colors = ["rgba(252,148,31,0.4)", "rgba(252,148,31,1)", "#7D4A0F"];

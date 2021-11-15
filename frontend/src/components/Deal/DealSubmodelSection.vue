@@ -6,16 +6,18 @@
           <h3>
             {{ $t(modelName) }} <small>#{{ entry.id }}</small>
           </h3>
-          <DisplayField
-            v-for="fieldname in fields"
-            :key="fieldname"
-            :fieldname="fieldname"
-            :value="entry[fieldname]"
-            :model="model"
-            :label-classes="labelClasses"
-            :value-classes="valueClasses"
-            :file-not-public="entry.file_not_public"
-          />
+          <template v-for="fieldname in fields">
+            <DisplayField
+              v-if="!custom_is_null(entry[fieldname])"
+              :key="fieldname"
+              :fieldname="fieldname"
+              :value="entry[fieldname]"
+              :model="model"
+              :label-classes="labelClasses"
+              :value-classes="valueClasses"
+              :file-not-public="entry.file_not_public"
+            />
+          </template>
         </div>
       </div>
       <slot />
@@ -24,8 +26,9 @@
 </template>
 
 <script lang="ts">
-  import DisplayField from "$components/Fields/DisplayField.vue";
   import Vue from "vue";
+  import DisplayField from "$components/Fields/DisplayField.vue";
+  import { custom_is_null } from "$utils/data_processing";
 
   export default Vue.extend({
     components: { DisplayField },
@@ -42,6 +45,11 @@
         type: Array,
         default: () => ["display-field-value", "col-md-7", "col-lg-8"],
       },
+    },
+    data() {
+      return {
+        custom_is_null,
+      };
     },
     computed: {
       wrapperClasses() {

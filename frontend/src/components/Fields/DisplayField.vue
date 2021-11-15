@@ -57,6 +57,7 @@
   import FieldLabel from "./FieldLabel.vue";
   import Vue from "vue";
   import type { FormField } from "$components/Fields/fields";
+  import { custom_is_null } from "$utils/data_processing";
 
   export default Vue.extend({
     name: "DisplayField",
@@ -116,6 +117,9 @@
       targetBlank: { type: Boolean, default: false },
       objectId: { type: Number, default: null, required: false },
     },
+    data() {
+      return { custom_is_null };
+    },
     computed: {
       _visible(): boolean {
         if (!this.visible) return false;
@@ -130,16 +134,6 @@
           name: this.fieldname,
           ...this.$store.state.formfields[this.model][this.fieldname],
         };
-      },
-    },
-    methods: {
-      custom_is_null(field: unknown) {
-        return (
-          field === undefined ||
-          field === null ||
-          field === "" ||
-          (Array.isArray(field) && field.length === 0)
-        );
       },
     },
   });

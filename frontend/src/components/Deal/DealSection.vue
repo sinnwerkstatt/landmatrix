@@ -20,6 +20,7 @@
 <script lang="ts">
   import DisplayField from "$components/Fields/DisplayField.vue";
   import Vue from "vue";
+  import { custom_is_null } from "$utils/data_processing";
 
   export default Vue.extend({
     components: { DisplayField },
@@ -28,32 +29,24 @@
       sections: { type: Array, required: true },
     },
     computed: {
-      sections_with_filled_fields() {
+      sections_with_filled_fields(): unknown {
         return this.sections.filter((section) => {
           return this.section_fields_with_values(section).length > 0;
         });
       },
     },
     methods: {
-      any_field_in_sections(sections) {
+      any_field_in_sections(sections): boolean {
         return (
           sections.filter(
             (section) => this.section_fields_with_values(section).length > 0
           ).length > 0
         );
       },
-      section_fields_with_values(section) {
+      section_fields_with_values<T>(section: T[]): T[] {
         return section.fields.filter((field) => {
-          return !this.custom_is_null(this.deal[field]);
+          return custom_is_null(this.deal[field]);
         });
-      },
-      custom_is_null(field) {
-        return (
-          field === undefined ||
-          field === null ||
-          field === "" ||
-          (Array.isArray(field) && field.length === 0)
-        );
       },
     },
   });
