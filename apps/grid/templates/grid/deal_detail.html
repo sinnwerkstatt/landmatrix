@@ -116,27 +116,6 @@
                                     <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                                 {% endif %}
                             </div>
-                            {% if not is_pdf_export %}
-                            <form method="post" action="{% comment_form_target %}">
-                                <div class="col-sm-12">
-                                    <h3>{% trans "Add a comment" %}</h3>
-                                </div>
-                                {% get_comment_form for comment_activity as comment_form %}
-                                {% csrf_token %}
-                                {# TODO: move next into the form logic #}
-                                <input type="hidden" name="next" value="{% url 'deal_detail' activity.activity_identifier %}">
-                                {% include "grid/form.html" with form=comment_form %}
-                                <p>
-                                    <input type="checkbox" required name="terms">
-                                    {% blocktrans %}I've read and agree to the <a href="/about/data-policy" target="_blank">Data Policy</a>.{% endblocktrans %}
-                                    <br><br>
-                                </p>
-                                <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
-                                <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
-                            </form>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
             {% endif %}
         </div>
