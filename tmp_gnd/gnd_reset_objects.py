@@ -34,6 +34,8 @@ y = """
 
 """
 
+xx = """SELECT setval('landmatrix_deal_id_seq', COALESCE((SELECT MAX(id)+1 FROM landmatrix_deal), 1), false);"""
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

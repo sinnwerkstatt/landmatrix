@@ -347,8 +347,12 @@ def resolve_object_copy(_, info, otype: OType, obj_id: int) -> dict:
 
     obj = Object.objects.get(id=obj_id)
     obj.id = None
+
+    old_comp_id = None
     if otype == "deal":
+        old_comp_id = obj.operating_company_id
         obj.operating_company = None
+
     obj.current_draft = None
     obj.recalculate_fields()
     obj.created_by = user
@@ -358,6 +362,10 @@ def resolve_object_copy(_, info, otype: OType, obj_id: int) -> dict:
     obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
 
     obj.save()
+    if otype == "deal":
+        obj.operating_company_id = old_comp_id
+        obj.save()
+
     obj_version = ObjectVersion.from_object(obj, created_by=user)
     Object.objects.filter(id=obj.id).update(current_draft=obj_version)
     add_workflow_info(
