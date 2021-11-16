@@ -10,7 +10,7 @@ const DEFAULT_FILTERS = {
   deal_size_min: 200,
   deal_size_max: null,
   // Negotiation Status "Concluded"
-  negotiation_status: ["CONCLUDED"],
+  negotiation_status: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
   // Exclude Pure Contract Farming
   nature_of_deal: ["OUTRIGHT_PURCHASE", "LEASE", "CONCESSION", "EXPLOITATION_PERMIT"],
   investor: null,
@@ -105,21 +105,10 @@ function prepareFilters(filters) {
     });
   }
   if (filters.negotiation_status.length > 0) {
-    let negstat = [];
-    if (filters.negotiation_status.includes("CONCLUDED"))
-      negstat.push("ORAL_AGREEMENT", "CONTRACT_SIGNED");
-    if (filters.negotiation_status.includes("INTENDED"))
-      negstat.push(
-        "EXPRESSION_OF_INTEREST",
-        "UNDER_NEGOTIATION",
-        "MEMORANDUM_OF_UNDERSTANDING"
-      );
-    if (filters.negotiation_status.includes("FAILED"))
-      negstat.push("NEGOTIATIONS_FAILED", "CONTRACT_CANCELED");
     filterArray.push({
       field: "current_negotiation_status",
       operation: "IN",
-      value: negstat,
+      value: filters.negotiation_status,
     });
   }
 
@@ -301,6 +290,20 @@ export default {
   },
   actions: {
     setFilter(context, filter) {
+      if (filter.filter === "negotiation_status") {
+        const valid_choices = [
+          "EXPRESSION_OF_INTEREST",
+          "UNDER_NEGOTIATION",
+          "MEMORANDUM_OF_UNDERSTANDING",
+          "ORAL_AGREEMENT",
+          "CONTRACT_SIGNED",
+          "NEGOTIATIONS_FAILED",
+          "CONTRACT_CANCELED",
+          "CONTRACT_EXPIRED",
+          "CHANGE_OF_OWNERSHIP",
+        ];
+        filter.value = filter.value.filter((f) => valid_choices.includes(f));
+      }
       context.commit("setFilter", filter);
       context.dispatch("setStorage");
       // context.dispatch("fetchDeals");

@@ -98,30 +98,7 @@
           </div>
         </FilterCollapse>
 
-        <FilterCollapse
-          :title="$t('Negotiation status')"
-          :clearable="negotiation_status.length > 0"
-          @click="negotiation_status = []"
-        >
-          <div
-            v-for="(nsname, nsval) in choices.negotiation_status"
-            :key="nsname"
-            class="form-check"
-          >
-            <div class="custom-control custom-checkbox">
-              <input
-                :id="nsval"
-                v-model="negotiation_status"
-                class="form-check-input custom-control-input"
-                type="checkbox"
-                :value="nsval"
-              />
-              <label class="form-check-label custom-control-label" :for="nsval">
-                {{ $t(nsname) }}
-              </label>
-            </div>
-          </div>
-        </FilterCollapse>
+        <FilterBarNegotiationStatusToggle />
 
         <FilterCollapse
           :title="$t('Nature of deal')"
@@ -361,10 +338,11 @@
   import FilterCollapse from "./FilterCollapse.vue";
   import Wimpel from "$components/Wimpel.vue";
   import Vue from "vue";
+  import FilterBarNegotiationStatusToggle from "$components/Data/FilterBarNegotiationStatusToggle.vue";
 
   export default Vue.extend({
     name: "FilterBar",
-    components: { FilterCollapse, Wimpel },
+    components: { FilterBarNegotiationStatusToggle, FilterCollapse, Wimpel },
     apollo: {
       investors: {
         query: gql`
@@ -388,11 +366,6 @@
         year: new Date().getFullYear(),
         investors: [],
         choices: {
-          negotiation_status: {
-            CONCLUDED: "Concluded",
-            INTENDED: "Intended",
-            FAILED: "Failed",
-          },
           implementation_status: {
             UNKNOWN: this.$t("No information").toString(),
             ...implementation_status_choices,
@@ -464,16 +437,6 @@
         set(value) {
           if (value !== this.filters.deal_size_max) {
             this.$store.dispatch("setFilter", { filter: "deal_size_max", value });
-          }
-        },
-      },
-      negotiation_status: {
-        get() {
-          return this.filters.negotiation_status;
-        },
-        set(value) {
-          if (value !== this.filters.negotiation_status) {
-            this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
           }
         },
       },
