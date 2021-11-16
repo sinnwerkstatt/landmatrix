@@ -16,11 +16,6 @@ export default defineConfig({
       $static: resolve("src/static"),
     },
   },
-  css: {
-    postcss: {
-      plugins: [require("autoprefixer")],
-    },
-  },
   build: {
     target: "es2015",
     rollupOptions: {
