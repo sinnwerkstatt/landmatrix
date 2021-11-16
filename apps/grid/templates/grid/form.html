@@ -7,16 +7,16 @@
     <div class="control-label col-sm-12">
         <h3>
             {{ field.field.initial }}
-            {% if form_count %} 
+            {% if form_count %}
             <small>#{{ form_count }}</small>
             <a class="btn pull-right add-form">
                 <i class="fa fa-plus"></i>
                 {% trans "Add another" %} {{ field.field.initial|lower }}
             </a>
-            <a class="btn pull-right remove-form">
-                <i class="fa fa-minus"></i>
-                {% trans "Remove" %}
-            </a>
+{#            <a class="btn pull-right remove-form">#}
+{#                <i class="fa fa-minus"></i>#}
+{#                {% trans "Remove" %}#}
+{#            </a>#}
             {% endif %}
         </h3>
     </div>
