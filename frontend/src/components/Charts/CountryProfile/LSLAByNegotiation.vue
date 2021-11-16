@@ -41,34 +41,61 @@
         const selected_neg_stat =
           filter_negstat.length > 0
             ? [...filter_negstat]
-            : ["INTENDED", "CONCLUDED", "FAILED"];
+            : [
+                "EXPRESSION_OF_INTEREST",
+                "UNDER_NEGOTIATION",
+                "MEMORANDUM_OF_UNDERSTANDING",
+                "ORAL_AGREEMENT",
+                "CONTRACT_SIGNED",
+                "NEGOTIATIONS_FAILED",
+                "CONTRACT_CANCELED",
+                "CONTRACT_EXPIRED",
+                "CHANGE_OF_OWNERSHIP",
+              ];
 
-        let pots: { [key: string]: { amount: number; size: number; meta?: boolean } } =
+        let pots: { [key: string]: { amount: number; size: number; bold?: boolean } } =
           {};
-        if (selected_neg_stat.includes("INTENDED")) {
+        if (selected_neg_stat.includes("EXPRESSION_OF_INTEREST"))
           pots.EXPRESSION_OF_INTEREST = { amount: 0, size: 0 };
+        if (selected_neg_stat.includes("UNDER_NEGOTIATION"))
           pots.UNDER_NEGOTIATION = { amount: 0, size: 0 };
+        if (selected_neg_stat.includes("MEMORANDUM_OF_UNDERSTANDING"))
           pots.MEMORANDUM_OF_UNDERSTANDING = { amount: 0, size: 0 };
-          pots.INTENDED = { amount: 0, size: 0, meta: true };
-        }
-        if (selected_neg_stat.includes("CONCLUDED")) {
+        if (
+          selected_neg_stat.includes("EXPRESSION_OF_INTEREST") &&
+          selected_neg_stat.includes("UNDER_NEGOTIATION") &&
+          selected_neg_stat.includes("MEMORANDUM_OF_UNDERSTANDING")
+        )
+          pots.INTENDED = { amount: 0, size: 0, bold: true };
+        if (selected_neg_stat.includes("ORAL_AGREEMENT"))
           pots.ORAL_AGREEMENT = { amount: 0, size: 0 };
+        if (selected_neg_stat.includes("CONTRACT_SIGNED"))
           pots.CONTRACT_SIGNED = { amount: 0, size: 0 };
-
-          pots.CONCLUDED = { amount: 0, size: 0, meta: true };
-        }
-        if (selected_neg_stat.includes("FAILED")) {
+        if (
+          selected_neg_stat.includes("ORAL_AGREEMENT") &&
+          selected_neg_stat.includes("CONTRACT_SIGNED")
+        )
+          pots.CONCLUDED = { amount: 0, size: 0, bold: true };
+        if (selected_neg_stat.includes("NEGOTIATIONS_FAILED"))
           pots.NEGOTIATIONS_FAILED = { amount: 0, size: 0 };
+        if (selected_neg_stat.includes("CONTRACT_CANCELED"))
           pots.CONTRACT_CANCELED = { amount: 0, size: 0 };
-          pots.FAILED = { amount: 0, size: 0, meta: true };
-        }
+        if (
+          selected_neg_stat.includes("NEGOTIATIONS_FAILED") &&
+          selected_neg_stat.includes("CONTRACT_CANCELED")
+        )
+          pots.FAILED = { amount: 0, size: 0, bold: true };
+        if (selected_neg_stat.includes("CONTRACT_EXPIRED"))
+          pots.CONTRACT_EXPIRED = { amount: 0, size: 0, bold: true };
+        if (selected_neg_stat.includes("CHANGE_OF_OWNERSHIP"))
+          pots.CHANGE_OF_OWNERSHIP = { amount: 0, size: 0, bold: true };
 
         this.deals.forEach((d: Deal) => {
-          const ngrp = negotiation_status_group_map[d.current_negotiation_status];
-          // const name = this.$t(nstat.title).toString();
           pots[d.current_negotiation_status].amount += 1;
           pots[d.current_negotiation_status].size += d.current_contract_size || 0;
-          if (ngrp) {
+
+          const ngrp = negotiation_status_group_map[d.current_negotiation_status];
+          if (ngrp && pots[ngrp]) {
             pots[ngrp].amount += 1;
             pots[ngrp].size += d.current_contract_size || 0;
           }

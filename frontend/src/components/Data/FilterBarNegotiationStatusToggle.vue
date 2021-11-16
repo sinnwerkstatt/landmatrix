@@ -134,6 +134,11 @@
         },
       },
     },
+    mounted() {
+      this.choices.forEach((choice) => {
+        if (choice.group) this.toggleSingle(choice as GroupChoice);
+      });
+    },
     methods: {
       toggleGroup(choice: GroupChoice) {
         // const fieldmap: { [key: string]: string[] } = {
@@ -150,10 +155,8 @@
         }
       },
       toggleSingle(choice: GroupChoice) {
-        console.log(choice, choice.state);
         const cur_set: Set<string> = new Set(this.negotiation_status);
         const exp_set: Set<string> = new Set(choice.options.map((o) => o.value));
-
         const checkbox = document.getElementById(choice.group);
 
         if (isSuperset(cur_set, exp_set)) {
@@ -165,8 +168,6 @@
           checkbox.indeterminate = false;
           choice.state = false;
         }
-
-        console.log(choice, choice.state);
       },
     },
   });

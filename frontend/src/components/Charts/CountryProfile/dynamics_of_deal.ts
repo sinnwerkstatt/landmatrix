@@ -45,7 +45,7 @@ export class DynamicsOfDeal {
       .append("rect")
       .attr("x", x(0))
       .attr("y", (d, i) => y(i))
-      .attr("width", (d) => x(d.value) - x(0))
+      .attr("width", (d) => x(d.value) - x(0) || 0)
       .attr("height", y.bandwidth());
 
     bar

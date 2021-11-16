@@ -7,7 +7,7 @@ export type LSLAData = {
   name: string;
   amount: number;
   size: number;
-  meta?: boolean;
+  bold?: boolean;
 };
 
 export class LSLAByNegotiation {
@@ -70,7 +70,7 @@ export class LSLAByNegotiation {
 
     bar_amount
       .append("rect")
-      .attr("fill", (d) => (d.meta ? "#812819" : "#d3b7ac"))
+      .attr("fill", (d) => (d.bold ? "#812819" : "#d3b7ac"))
       .attr("x", x1(0))
       .attr("y", (d, i) => y(i))
       .attr("width", (d) => x1(d.amount) - x1(0))
@@ -92,6 +92,21 @@ export class LSLAByNegotiation {
         +(z[idx].getAttribute("dx") || 1) > 0 ? "black" : "white"
       );
 
+    // left hand labels (axis)
+    bar_amount
+      .append("text")
+      .attr("x", (d) => x1(d.amount))
+      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .text((d) => d.name)
+      .style("font-weight", (d) => (d.bold ? "bold" : "normal"))
+      .attr("fill", "black")
+      .attr("dy", "0.35em")
+      .attr("dx", function (d) {
+        const barWidth = x1(d.amount) - x1(0);
+        const textWidth = Math.ceil(Math.max(0, this.getBBox().width));
+        return -barWidth - textWidth - 10;
+      });
+
     const bar_size = svg
       .append("g")
       .attr("id", "sizestuff")
@@ -109,7 +124,7 @@ export class LSLAByNegotiation {
       .attr("width", 300)
       .attr("height", y.bandwidth());
     bar_size
-      .attr("fill", (d) => (d.meta ? "#f68d1f" : "#f8d6ab"))
+      .attr("fill", (d) => (d.bold ? "#f68d1f" : "#f8d6ab"))
       .append("rect")
       .attr("x", x2(0))
       .attr("y", (d, i) => y(i))
@@ -131,15 +146,5 @@ export class LSLAByNegotiation {
       .attr("fill", (d, idx, z) =>
         +(z[idx].getAttribute("dx") || 1) > 0 ? "black" : "white"
       );
-
-    svg
-      .append("g")
-      .attr("transform", `translate(${this.margin.left},0)`)
-      .call(
-        axisLeft(y)
-          .tickFormat((i) => data[i].name)
-          .tickSizeOuter(0)
-      )
-      .attr("font-size", "1rem");
   }
 }
