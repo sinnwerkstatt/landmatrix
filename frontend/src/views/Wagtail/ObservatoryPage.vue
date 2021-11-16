@@ -30,6 +30,7 @@
                 <label>Size</label>
                 <div class="total">{{ totalSize }} ha</div>
                 <StatusPieChart
+                  v-if="negotiationStatusBuckets"
                   :deal-data="negotiationStatusBuckets"
                   :aspect-ratio="1"
                   :container-style="{ maxWidth: '70%' }"
@@ -43,6 +44,7 @@
                   {{ totalCount }}
                 </div>
                 <StatusPieChart
+                  v-if="negotiationStatusBuckets"
                   :deal-data="negotiationStatusBuckets"
                   :aspect-ratio="1"
                   :container-style="{ maxWidth: '70%' }"
@@ -212,14 +214,14 @@
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.count)
           .reduce((a, b) => +a + +b, 0)
-          .toLocaleString();
+          .toLocaleString("fr");
       },
       totalSize(): string {
         if (!this.deal_aggregations?.current_negotiation_status) return "";
         return this.deal_aggregations.current_negotiation_status
           .map((ns) => ns.size)
           .reduce((a, b) => +a + +b, 0)
-          .toLocaleString();
+          .toLocaleString("fr");
       },
       negotiationStatusBuckets(): unknown {
         if (!this.deal_aggregations.current_negotiation_status) return;
@@ -227,6 +229,13 @@
           { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
           { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
           { color: "rgba(125,74,15,1)", label: "Failed", count: 0, size: 0 },
+          {
+            color: "rgb(59,36,8)",
+            label: "Change of ownership",
+            count: 0,
+            size: 0,
+          },
+          { color: "rgb(44,28,5)", label: "Contract expired", count: 0, size: 0 },
         ];
         for (let agg of this.deal_aggregations.current_negotiation_status) {
           switch (agg.value) {
@@ -246,6 +255,14 @@
             case "CONTRACT_CANCELED":
               retval[2].count += agg.count;
               retval[2].size += +agg.size;
+              break;
+            case "CHANGE_OF_OWNERSHIP":
+              retval[4].count += agg.count;
+              retval[4].size += +agg.size;
+              break;
+            case "CONTRACT_EXPIRED":
+              retval[4].count += agg.count;
+              retval[4].size += +agg.size;
               break;
             default:
               console.warn({ agg });

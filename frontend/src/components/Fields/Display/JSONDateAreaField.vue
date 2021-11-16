@@ -2,7 +2,7 @@
   <div class="nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
-      <span v-if="val.area">{{ val.area.toLocaleString() }} ha</span>
+      <span v-if="val.area">{{ val.area.toLocaleString("fr") }} ha</span>
     </div>
   </div>
 </template>
