@@ -77,6 +77,7 @@ NATURE_LEASE = "Lease"
 NATURE_CONCESSION = "Concession"
 NATURE_EXPLOITATION_PERMIT = "Exploitation permit / license / concession"
 NATURE_CONTRACT_FARMING = "Pure contract farming"
+NATURE_OTHER = "Other"
 nature_choices = (
     (NATURE_OUTRIGHT_PURCHASE, _("Outright purchase")),
     (NATURE_LEASE, _("Lease")),
@@ -86,6 +87,7 @@ nature_choices = (
         _("Exploitation permit / license / concession (for mineral resources)"),
     ),
     (NATURE_CONTRACT_FARMING, _("Pure contract farming")),
+    (NATURE_OTHER, _("Other")),
 )
 
 price_type_choices = (

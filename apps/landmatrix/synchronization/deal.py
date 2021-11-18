@@ -97,6 +97,10 @@ def _parse_general(deal, attrs):
         "Exploitation permit / license / concession": "EXPLOITATION_PERMIT",
         "Resource exploitation license / concession": "EXPLOITATION_PERMIT",
         "Pure contract farming": "PURE_CONTRACT_FARMING",
+        "Other": "OTHER",
+        "Otro": "OTHER",
+        "Autre": "OTHER",
+        "Иное": "OTHER",
     }
     deal.nature_of_deal = _extras_to_list(attrs, "nature", NATURE_OF_DEAL_MAP)
     deal.nature_of_deal_comment = attrs.get("tg_nature_comment") or ""

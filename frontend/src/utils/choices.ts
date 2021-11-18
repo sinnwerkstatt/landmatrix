@@ -12,6 +12,7 @@ export const nature_of_deal_choices = {
   EXPLOITATION_PERMIT:
     "Exploitation permit / license / concession (for mineral resources)",
   PURE_CONTRACT_FARMING: "Pure contract farming",
+  OTHER: "Other",
 };
 
 export const negotiation_status_choices: {
