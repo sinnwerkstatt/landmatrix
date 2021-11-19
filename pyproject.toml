@@ -67,6 +67,7 @@ celery = "*"
 libsass = "*"
 gunicorn = { version = "*", optional = true }
 sentry_sdk = { version = "*", optional = true }
+termtables = "^0.2.4"
 
 
 [tool.poetry.dev-dependencies]

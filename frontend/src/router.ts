@@ -85,6 +85,13 @@ const router = new Router({
       meta: { requiresAuth: true, requiresEditPerms: true, hideBreadcrumbs: true },
     },
     {
+      path: "/deal/:dealId/datasources_table/",
+
+      component: () => import("$views/Deal/DataSourcesTable.vue"),
+      props: true,
+      meta: { requiresAdmin: true, requiresEditPerms: true, hideBreadcrumbs: true },
+    },
+    {
       path: "/deal/:dealId/:dealVersion?/",
       name: "deal_detail",
       component: () => import("$views/Deal/Detail.vue"),
@@ -191,6 +198,14 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getters.userAuthenticated) {
       next({ name: "login", query: { next: to.fullPath } });
+    } else next();
+  } else if (to.matched.some((record) => record.meta.requiresAdmin)) {
+    if (
+      !(
+        store.getters.userAuthenticated && store.getters.userInGroup(["Administrators"])
+      )
+    ) {
+      next({ name: "map" });
     } else next();
   } else next();
 });

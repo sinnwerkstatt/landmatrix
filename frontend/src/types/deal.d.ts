@@ -29,6 +29,20 @@ interface Contract {
 }
 interface DataSource {
   id: number;
+  type: string;
+  url: string;
+  file: string;
+  file_not_public: string;
+  publication_title: string;
+  date: string;
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  includes_in_country_verified_information: string;
+  open_land_contracts_id: string;
+  comment: string;
+  old_group_id: number;
 }
 interface Deal extends Obj {
   locations: Location[];
