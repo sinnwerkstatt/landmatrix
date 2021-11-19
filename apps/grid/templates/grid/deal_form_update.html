@@ -66,7 +66,7 @@
         </button>
         {% endif %}
         or <a href="{% url "deal_detail" deal_id=deal_id %}">{% trans 'Cancel' %}</a>
-        {% if perms.landmatrix.review_historicalactivity or perms.landmatrix.delete_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
+        {% if perms.landmatrix.delete_historicalactivity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
         {% endif %}
     </form>
     {% if activity.fk_status_id == 4 %}
