@@ -45,7 +45,7 @@
       },
       section_fields_with_values<T>(section: T[]): T[] {
         return section.fields.filter((field) => {
-          return custom_is_null(this.deal[field]);
+          return !custom_is_null(this.deal[field]);
         });
       },
     },
