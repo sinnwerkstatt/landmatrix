@@ -1,7 +1,7 @@
 <template>
-  <div class="nowrap">
+  <div class="jsondateareachoices_field">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
-      <span>{{ date_and_current(val) }}</span>
+      <span>{{ date_and_current(val) }} </span>
       <span v-if="val.choices">{{ mapChoices(val.choices) }}</span>
       <span v-if="val.area">
         (<i class="fas fa-circle-notch"></i> {{ val.area.toLocaleString("fr") }} ha)

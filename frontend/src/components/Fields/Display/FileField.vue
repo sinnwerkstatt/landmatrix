@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="file_field">
     <a :href="`${media_url}${value}`" target="_blank">
       <i v-if="fileNotPublic" class="fas fa-eye-slash mr-1"></i>
       <i class="far fa-file-pdf"></i>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="manytomany_field">
     <template v-if="formfield.related_model === 'Investor'">
       <template v-for="val in value">
         <router-link

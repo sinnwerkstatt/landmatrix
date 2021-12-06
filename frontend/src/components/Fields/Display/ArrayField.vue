@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="array_field">
     <!-- eslint-disable-next-line vue/no-v-html -->
     <span v-html="parseValues(value)"></span>
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="nowrap">{{ val }}</div>
+  <div class="date_field nowrap">{{ val }}</div>
 </template>
 
 <script lang="ts">
@@ -15,7 +15,7 @@
       model: { type: String, required: true },
     },
     computed: {
-      val() {
+      val(): string {
         if (this.value) {
           // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
           // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️

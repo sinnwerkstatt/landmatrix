@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="foreignkey_field">
     <router-link
       v-if="formfield.related_model === 'Investor'"
       class="investor"

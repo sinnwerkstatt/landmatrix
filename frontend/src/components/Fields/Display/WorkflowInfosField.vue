@@ -12,13 +12,14 @@
   </div>
 </template>
 
-<script>
-  import ManageHeaderCommentsList from "$components/Management/ManageHeaderCommentsList";
-  import WorkflowInfo from "$components/Management/WorkflowInfo";
-  import { apolloClient } from "$utils/apolloclient";
+<script lang="ts">
+  import Vue from "vue";
   import gql from "graphql-tag";
+  import ManageHeaderCommentsList from "$components/Management/ManageHeaderCommentsList.vue";
+  import WorkflowInfo from "$components/Management/WorkflowInfo.vue";
+  import { apolloClient } from "$utils/apolloclient";
 
-  export default {
+  export default Vue.extend({
     components: { WorkflowInfo, ManageHeaderCommentsList },
     props: {
       formfield: { type: Object, required: true },
@@ -33,7 +34,7 @@
       document.removeEventListener("keydown", this.closeShowMoreEsc);
     },
     methods: {
-      closeShowMoreEsc(e) {
+      closeShowMoreEsc(e: Event) {
         if (
           e instanceof MouseEvent ||
           (e instanceof KeyboardEvent && e.key === "Escape")
@@ -79,7 +80,7 @@
         }
       },
     },
-  };
+  });
 </script>
 <style lang="scss" scoped>
   .workflowinfo-field {

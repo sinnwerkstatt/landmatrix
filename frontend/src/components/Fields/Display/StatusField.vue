@@ -1,5 +1,5 @@
 <template>
-  <span>{{ display_status }}</span>
+  <span class="status_field">{{ display_status }}</span>
 </template>
 
 <script lang="ts">

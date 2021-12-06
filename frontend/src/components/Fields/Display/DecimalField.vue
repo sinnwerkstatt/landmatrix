@@ -1,5 +1,5 @@
 <template>
-  <div style="white-space: nowrap">
+  <div class="decimal_field nowrap">
     {{ val }}
     <span v-if="formfield.unit">{{ formfield.unit }}</span>
   </div>

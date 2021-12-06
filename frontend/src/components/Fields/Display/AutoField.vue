@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="auto_field">
     <router-link
       v-if="model === 'deal'"
       class="id-display deal-id-display"

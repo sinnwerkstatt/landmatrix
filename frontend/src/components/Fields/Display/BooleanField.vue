@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="boolean_field">
     <span v-if="value">
       {{ $t("Yes") }}
     </span>

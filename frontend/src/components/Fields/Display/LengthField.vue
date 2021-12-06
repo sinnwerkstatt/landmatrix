@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="length_field">
     <a href="#" @click.prevent="displayDeals = !displayDeals">{{ value.length }}</a>
     <div v-if="displayDeals">
       <span v-for="val in value" :key="val.id">
