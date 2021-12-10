@@ -13,6 +13,10 @@
         />
         <label :for="`flop-${v.id}`" />
         <div class="w-26 flex-shrink-0">
+          <span class="whitespace-nowrap">{{
+            dayjs(v.created_at).format("YYYY-MM-DD")
+          }}</span
+          ><br />
           <router-link
             class="text-blue-400"
             :to="{
@@ -21,7 +25,6 @@
             }"
             >{{ v.id }}</router-link
           ><br />
-          {{ dayjs(v.created_at).format("YYYY-MM-DD") }}<br />
           {{ combined_status_fn(v.deal.status, v.deal.draft_status) }}
         </div>
 
@@ -31,7 +34,7 @@
           class="flex-shrink overflow-hidden"
         >
           <div
-            class="p-2 m-2 d-flex flex-column overflow-hidden rounded-lg"
+            class="p-2 m-2 d-flex flex-column overflow-hidden rounded-lg h-64"
             :class="[ds.file_is_probably_broken ? 'bg-yellow-300' : 'bg-green-200']"
           >
             <div>id: {{ ds.id }}</div>
@@ -42,11 +45,18 @@
             <div>company: {{ ds.company }}</div>
             <div class="whitespace-nowrap">
               <div :class="{ probably_broken: ds.file_is_probably_broken }">
-                file: {{ ds.file && ds.file.replace("uploads/", "") }}
+                file:
+                <a :href="`${media_url}${ds.file}`">
+                  {{ ds.file && ds.file.replace("uploads/", "") }}
+                </a>
               </div>
               <div v-if="ds.file_prop">
-                replace: {{ ds.file_prop.replace("uploads/", "") }}
+                replace:
+                <a :href="`${media_url}${ds.file_prop}`">
+                  {{ ds.file_prop.replace("uploads/", "") }}
+                </a>
               </div>
+              <div>{{ ds.old_group_id }}</div>
             </div>
           </div>
         </div>
@@ -72,6 +82,7 @@
     },
     data() {
       return {
+        media_url: import.meta.env.VITE_MEDIA_URL,
         deal: undefined as unknown as Deal,
       };
     },
@@ -114,6 +125,8 @@
         let ret = [] as EDealVersion[];
         let prev_dses = [] as DataSource[];
         let startflagging = false;
+        let prev_dv: EDealVersion;
+        let prev_dv_shown = false;
         this.deal.versions
           .slice()
           .reverse()
@@ -122,30 +135,58 @@
             if (startflagging) {
               dv.showEntry = true;
             }
-            if (prev_dses.length > dses.length) {
-              startflagging = true;
-              dv.showEntry = true;
-              ret.at(-1).showEntry = true;
+            // if (prev_dses.length > dses.length) {
+            //   startflagging = true;
+            //   dv.showEntry = true;
+            //   // ret.at(-1).showEntry = true;
+            //
+            //   // // try to map the entries
+            //   // for (let [index, ds] of dses.entries()) {
+            //   //   const pds = prev_dses[index];
+            //   //   if (
+            //   //     ds.type === pds.type &&
+            //   //     ds.url === pds.url &&
+            //   //     ds.date === pds.date
+            //   //   ) {
+            //   //     // this is fine
+            //   //   } else {
+            //   //     const pds2 = prev_dses[index + 1];
+            //   //     ds.file_is_probably_broken = true;
+            //   //     ds.file_prop = pds2.file;
+            //   //     console.log({ index, ds, pds });
+            //   //   }
+            //   // }
+            // }
 
-              // try to map the entries
-              for (let [index, ds] of dses.entries()) {
-                const pds = prev_dses[index];
-                if (
-                  ds.type === pds.type &&
-                  ds.url === pds.url &&
-                  ds.date === pds.date
-                ) {
-                  // this is fine
-                } else {
-                  const pds2 = prev_dses[index + 1];
-                  ds.file_is_probably_broken = true;
-                  ds.file_prop = pds2.file;
-                  console.log({ index, ds, pds });
+            if (new Date(dv.created_at).getTime() >= new Date(2018, 1, 1).getTime()) {
+              if (prev_dses.length > dses.length) {
+                startflagging = true;
+                dv.showEntry = true;
+                // try to map the entries
+                for (let [index, ds] of dses.entries()) {
+                  const pds = prev_dses[index];
+                  if (
+                    ds.type === pds.type &&
+                    ds.url === pds.url &&
+                    ds.date === pds.date
+                  ) {
+                    // this is fine
+                  } else {
+                    const pds2 = prev_dses[index + 1];
+                    ds.file_is_probably_broken = true;
+                    ds.file_prop = pds2.file;
+                    console.log({ index, ds, pds });
+                  }
                 }
               }
+              if (prev_dv && !prev_dv_shown) {
+                ret.push({ ...prev_dv });
+                prev_dv_shown = true;
+              }
+              ret.push({ ...dv });
             }
 
-            ret.push({ ...dv });
+            prev_dv = dv;
             prev_dses = dses;
           });
         return ret;
@@ -182,11 +223,17 @@
   }
   .flopmenu + label::before {
     content: "SHOW";
+    border-radius: 5px;
+
+    padding: 0.3em 0.75em;
     background: red;
   }
 
   .flopmenu:checked + label::before {
     content: "HIDE";
+    border-radius: 5px;
+    padding: 0.3em 0.75em;
     background: green;
+    color: white;
   }
 </style>
