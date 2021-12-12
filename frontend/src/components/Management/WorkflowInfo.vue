@@ -67,7 +67,7 @@
       },
       unread(): boolean {
         return (
-          this.info.to_user?.username === this.$store.state.page.user.username &&
+          this.info.to_user?.username === this.$store.state.user.username &&
           !this.info.processed_by_receiver &&
           this.comment_wo_head.length > 0
         );

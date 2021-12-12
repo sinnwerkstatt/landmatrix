@@ -268,7 +268,7 @@
             },
           ];
 
-          let store_state_filters = this.$store.state.filters.filters;
+          let store_state_filters = this.$store.state.filters;
           if (store_state_filters.investor) {
             filters.push({
               field: "id",

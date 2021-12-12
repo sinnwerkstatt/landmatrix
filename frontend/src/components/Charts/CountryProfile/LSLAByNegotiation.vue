@@ -37,7 +37,7 @@
     watch: {
       deals() {
         if (!this.svg || !this.deals) return;
-        const filter_negstat = this.$store.state.filters.filters.negotiation_status;
+        const filter_negstat = this.$store.state.filters.negotiation_status;
         const selected_neg_stat =
           filter_negstat.length > 0
             ? [...filter_negstat]

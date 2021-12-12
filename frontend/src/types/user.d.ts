@@ -25,6 +25,6 @@ interface User {
   date_joined: Date;
   userregionalinfo?: UserRegInfo;
   groups?: Group[];
-  // role: UserRole
+  role: string;
   bigrole?: string;
 }

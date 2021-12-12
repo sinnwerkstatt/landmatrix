@@ -8,11 +8,11 @@
     <div class="main-content">
       <div class="h-100">
         <div
-          :class="{ collapsed: !$store.state.map.showFilterBar }"
+          :class="{ collapsed: !$store.state.showFilterBar }"
           class="sideBuffer float-left"
         ></div>
         <div
-          :class="{ collapsed: !$store.state.map.showContextBar }"
+          :class="{ collapsed: !$store.state.showContextBar }"
           class="sideBuffer float-right"
         ></div>
         <div class="charts-container">

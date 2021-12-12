@@ -56,6 +56,7 @@
   import DealDisplayToggle from "../Shared/DealDisplayToggle.vue";
   import ContextBarContainer from "./ContextBarContainer.vue";
   import Vue from "vue";
+  import type { CountryOrRegion } from "$types/wagtail";
   export default Vue.extend({
     name: "ContextBarMap",
     components: { ContextBarContainer, StatusPieChart, DealDisplayToggle },
@@ -71,13 +72,13 @@
     },
     computed: {
       ...mapState({
-        displayDealsCount: (state) => state.map.displayDealsCount,
-        observatories: (state) => state.page.observatories,
-        filters: (state) => state.filters.filters,
+        displayDealsCount: (state) => state.displayDealsCount,
+        observatories: (state) => state.observatories,
+        filters: (state) => state.filters,
       }),
       ...mapGetters(["getCountryOrRegion"]),
-      currentItem() {
-        let item = null;
+      currentItem(): CountryOrRegion {
+        let item: CountryOrRegion;
         if (this.filters.country_id || this.filters.region_id) {
           if (this.filters.country_id) {
             item = this.getCountryOrRegion({

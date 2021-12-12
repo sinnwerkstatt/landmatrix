@@ -61,10 +61,10 @@
     },
     computed: {
       tileLayers() {
-        return this.$store.state.map.layers;
+        return this.$store.state.layers;
       },
       visibleLayer() {
-        return this.$store.state.map.visibleLayer;
+        return this.$store.state.visibleLayer;
       },
       mapOptions() {
         return {

@@ -309,7 +309,7 @@
         };
       },
       userAuthenticated(): boolean {
-        return this.$store.state.page.user?.is_authenticated;
+        return this.$store.state.user?.is_authenticated;
       },
     },
     methods: {

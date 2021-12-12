@@ -27,8 +27,8 @@
     },
     computed: {
       ...mapState({
-        tileLayers: (state) => state.map.layers,
-        visibleLayer: (state) => state.map.visibleLayer,
+        tileLayers: (state) => state.layers,
+        visibleLayer: (state) => state.visibleLayer,
       }),
     },
   };

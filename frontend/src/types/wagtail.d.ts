@@ -17,16 +17,15 @@ type WagtailPageMeta = {
   locale: string;
 };
 
-export interface Region {
-  id: number;
+export interface CountryOrRegion {
+  id?: number;
   name: string;
-  slug: string;
+  slug?: string;
+  observatory_page_id?: number;
 }
+export type Region = CountryOrRegion;
 
-export interface Country {
-  id: number;
-  name: string;
-  slug: string;
+export interface Country extends CountryOrRegion {
   code_alpha2: string;
 }
 

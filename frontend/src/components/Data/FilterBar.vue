@@ -378,7 +378,7 @@
     computed: {
       showFilterBar: {
         get() {
-          return this.$store.state.map.showFilterBar;
+          return this.$store.state.showFilterBar;
         },
         set(value) {
           this.$store.dispatch("showFilterBar", value);
@@ -551,7 +551,7 @@
       },
       isDefaultFilter: {
         get() {
-          return this.$store.state.filters.isDefaultFilter;
+          return this.$store.state.isDefaultFilter;
         },
         set() {
           // do nothing - only on user action: see updateDefaultFilter()
@@ -567,14 +567,14 @@
       },
 
       ...mapState({
-        filters: (state) => state.filters.filters,
-        countries: (state) => state.page.countries,
+        filters: (state) => state.filters,
+        countries: (state) => state.countries,
         regions: (state) => {
           let global = {
             id: null,
             name: "Global",
           };
-          return [global, ...state.page.regions];
+          return [global, ...state.regions];
         },
         dealFormfields: (state) => state.formfields.deal,
       }),

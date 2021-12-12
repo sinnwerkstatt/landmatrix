@@ -399,7 +399,7 @@
         }));
       },
       user(): User {
-        return this.$store.state.page.user;
+        return this.$store.state.user;
       },
       user_is_staff(): boolean {
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);

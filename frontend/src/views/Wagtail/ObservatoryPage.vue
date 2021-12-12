@@ -183,7 +183,7 @@
     },
     computed: {
       page(): ObservatoryPage {
-        return this.$store.state.page.wagtailPage;
+        return this.$store.state.wagtailPage;
       },
       region_id(): number | null {
         return this.page.region ? this.page.region.id : null;

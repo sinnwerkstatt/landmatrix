@@ -1,6 +1,34 @@
 import { isEqual } from "lodash-es";
+import type { GQLFilter } from "$types/filters";
+import type { Investor } from "$types/investor";
 
-const DEFAULT_FILTERS = {
+interface Produce {
+  name: string;
+  id: string;
+  value: string;
+}
+
+export interface FilterValues {
+  region_id: number | null;
+  country_id: number | null;
+  investor_country_id: number | null;
+  deal_size_min: number | null;
+  deal_size_max: number | null;
+  negotiation_status: string[];
+  nature_of_deal: string[];
+  investor: null | Investor;
+  initiation_year_min: number | null;
+  initiation_year_max: number | null;
+  initiation_year_unknown: boolean;
+  implementation_status: string[];
+  intention_of_investment: string[];
+  produce: Produce[];
+  transnational: boolean | null;
+  forest_concession: boolean | null;
+  [key: string]: null | string | number | boolean | string[] | Investor | Produce[];
+}
+
+export const DEFAULT_FILTERS: FilterValues = {
   region_id: null,
   country_id: null,
   investor_country_id: null,
@@ -44,7 +72,7 @@ const DEFAULT_FILTERS = {
   forest_concession: false,
 };
 
-const emptyFilters = {
+export const emptyFilters: FilterValues = {
   region_id: null,
   country_id: null,
   investor_country_id: null,
@@ -63,11 +91,15 @@ const emptyFilters = {
   forest_concession: null,
 };
 
-const DEFAULT_FILTER_IGNORED_KEYS = ["region_id", "country_id", "investor_country_id"];
+export const DEFAULT_FILTER_IGNORED_KEYS = [
+  "region_id",
+  "country_id",
+  "investor_country_id",
+];
 
-const isDefaultFilter = (filters) => {
-  let defaultKeys = Object.keys(DEFAULT_FILTERS);
-  for (let key of Object.keys(filters)) {
+export const isDefaultFilter = (filters: FilterValues): boolean => {
+  const defaultKeys = Object.keys(DEFAULT_FILTERS);
+  for (const key of Object.keys(filters)) {
     if (DEFAULT_FILTER_IGNORED_KEYS.includes(key)) continue;
     else if (defaultKeys.includes(key)) {
       if (Array.isArray(DEFAULT_FILTERS[key])) {
@@ -80,9 +112,8 @@ const isDefaultFilter = (filters) => {
   return true;
 };
 
-function prepareFilters(filters) {
-  /** @type GQLFilter[] */
-  let filterArray = [];
+export function prepareFilters(filters: FilterValues): GQLFilter[] {
+  const filterArray = [] as GQLFilter[];
 
   if (filters.region_id)
     filterArray.push({ field: "country.fk_region_id", value: filters.region_id });
@@ -131,7 +162,7 @@ function prepareFilters(filters) {
     });
   }
   if (filters.nature_of_deal.length > 0) {
-    let nature_of_deal_choices = [
+    const nature_of_deal_choices = [
       "OUTRIGHT_PURCHASE",
       "LEASE",
       "CONCESSION",
@@ -139,7 +170,7 @@ function prepareFilters(filters) {
       "PURE_CONTRACT_FARMING",
     ];
 
-    let diflist = nature_of_deal_choices.filter(
+    const diflist = nature_of_deal_choices.filter(
       (x) => !filters.nature_of_deal.includes(x)
     );
     if (diflist.length > 0) {
@@ -170,7 +201,7 @@ function prepareFilters(filters) {
   }
 
   if (filters.intention_of_investment.length > 0) {
-    let intention_of_investment_choices = [
+    const intention_of_investment_choices = [
       "BIOFUELS",
       "FOOD_CROPS",
       "FODDER",
@@ -190,7 +221,7 @@ function prepareFilters(filters) {
       "RENEWABLE_ENERGY",
       "OTHER",
     ];
-    let diflist = intention_of_investment_choices.filter(
+    const diflist = intention_of_investment_choices.filter(
       (x) => !filters.intention_of_investment.includes(x)
     );
     if (diflist.length > 0) {
@@ -203,10 +234,10 @@ function prepareFilters(filters) {
     }
   }
   if (filters.produce && filters.produce.length > 0) {
-    let crops = [];
-    let animals = [];
-    let minerals = [];
-    for (let prod of filters.produce) {
+    const crops = [];
+    const animals = [];
+    const minerals = [];
+    for (const prod of filters.produce) {
       if (prod.id.startsWith("crop_")) crops.push(prod.value);
       if (prod.id.startsWith("animal_")) animals.push(prod.value);
       if (prod.id.startsWith("mineral_")) minerals.push(prod.value);
@@ -237,99 +268,3 @@ function prepareFilters(filters) {
 
   return filterArray;
 }
-
-export default {
-  state: () => ({
-    filters: (() => {
-      // see if we have filters in a cookie, otherwise default Filters.
-      return JSON.parse(
-        localStorage.getItem("filters") || JSON.stringify(DEFAULT_FILTERS)
-      );
-    })(),
-    default_filters: [
-      {
-        field: "current_intention_of_investment",
-        operation: "OVERLAP",
-        value: ["OIL_GAS_EXTRACTION", "MINING"],
-        exclusion: true,
-      },
-    ],
-    isDefaultFilter: localStorage.getItem("filters")
-      ? isDefaultFilter(JSON.parse(localStorage.getItem("filters")))
-      : true,
-    publicOnly: true,
-  }),
-  mutations: {
-    setFilter(state, { filter, value }) {
-      state.filters[filter] = value;
-      if (!DEFAULT_FILTER_IGNORED_KEYS.includes(filter)) {
-        state.isDefaultFilter = isDefaultFilter(state.filters);
-      }
-    },
-    resetFilters(state) {
-      state.filters = {
-        ...JSON.parse(JSON.stringify(DEFAULT_FILTERS)),
-        region_id: state.filters.region_id,
-        country_id: state.filters.country_id,
-        investor_country_id: state.filters.investor_country_id,
-      };
-      state.isDefaultFilter = true;
-    },
-    clearFilters(state) {
-      state.filters = {
-        ...emptyFilters,
-        region_id: state.filters.region_id,
-        country_id: state.filters.country_id,
-        investor_country_id: state.filters.investor_country_id,
-      };
-      state.isDefaultFilter = false;
-    },
-    setPublicOnly(state, value) {
-      state.publicOnly = value;
-    },
-  },
-  actions: {
-    setFilter(context, filter) {
-      if (filter.filter === "negotiation_status") {
-        const valid_choices = [
-          "EXPRESSION_OF_INTEREST",
-          "UNDER_NEGOTIATION",
-          "MEMORANDUM_OF_UNDERSTANDING",
-          "ORAL_AGREEMENT",
-          "CONTRACT_SIGNED",
-          "NEGOTIATIONS_FAILED",
-          "CONTRACT_CANCELED",
-          "CONTRACT_EXPIRED",
-          "CHANGE_OF_OWNERSHIP",
-        ];
-        filter.value = filter.value.filter((f) => valid_choices.includes(f));
-      }
-      context.commit("setFilter", filter);
-      context.dispatch("setStorage");
-      // context.dispatch("fetchDeals");
-    },
-    resetFilters(context) {
-      context.commit("resetFilters");
-      context.dispatch("setStorage");
-    },
-    clearFilters(context) {
-      context.commit("clearFilters");
-      context.dispatch("setStorage");
-    },
-    setPublicOnly(context, value) {
-      context.commit("setPublicOnly", value);
-    },
-    setStorage(context) {
-      localStorage.setItem("filters", JSON.stringify(context.state.filters));
-    },
-  },
-  getters: {
-    filtersForGQL: (state) => {
-      return prepareFilters(state.filters);
-    },
-
-    defaultFiltersForGQL: (state) => (extra_filters) => {
-      return prepareFilters({ ...DEFAULT_FILTERS, ...extra_filters });
-    },
-  },
-};

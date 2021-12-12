@@ -85,11 +85,11 @@
     },
     computed: {
       ...mapState({
-        displayDealsCount: (state) => state.map.displayDealsCount,
+        displayDealsCount: (state) => state.displayDealsCount,
       }),
       chart_desc(): string {
-        if (!this.$store.state.page.chartDescriptions) return "";
-        return this.$store.state.page.chartDescriptions.dynamics_overview;
+        if (!this.$store.state.chartDescriptions) return "";
+        return this.$store.state.chartDescriptions.dynamics_overview;
       },
       dealsFilteredByNegStatus(): Array<unknown> {
         return prepareNegotianStatusData(this.deals);

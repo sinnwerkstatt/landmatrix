@@ -17,7 +17,7 @@ export const blogpage_query = {
   `,
   variables() {
     return {
-      id: this.$store.state.page.wagtailPage.id,
+      id: this.$store.state.wagtailPage.id,
     };
   },
 };

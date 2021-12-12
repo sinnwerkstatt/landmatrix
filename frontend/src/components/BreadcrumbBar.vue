@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8 mr-auto">
         <ul class="breadcrumb">
-          <li v-for="bcrumb in $store.state.page.breadcrumbs" :key="bcrumb.name">
+          <li v-for="bcrumb in $store.state.breadcrumbs" :key="bcrumb.name">
             <router-link v-if="bcrumb.link" :to="bcrumb.link">{{
               bcrumb.name
             }}</router-link>

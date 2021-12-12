@@ -21,7 +21,7 @@
     computed: {
       displayDealsCount: {
         get() {
-          return this.$store.state.map.displayDealsCount;
+          return this.$store.state.displayDealsCount;
         },
         set(value) {
           this.$store.commit("setDisplayDealsCount", value);

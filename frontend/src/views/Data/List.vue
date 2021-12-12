@@ -5,11 +5,11 @@
         <LoadingPulse v-if="$apollo.loading" />
         <div class="h-100">
           <div
-            :class="{ collapsed: !$store.state.map.showFilterBar }"
+            :class="{ collapsed: !$store.state.showFilterBar }"
             class="sideBuffer float-left"
           ></div>
           <div
-            :class="{ collapsed: !$store.state.map.showContextBar }"
+            :class="{ collapsed: !$store.state.showContextBar }"
             class="sideBuffer float-right"
           ></div>
           <Table :target-model="targetModel"></Table>
@@ -72,8 +72,8 @@
       },
       trackDownload(format) {
         let name = "Global";
-        const country_id = this.$store.state.filters.filters.country_id;
-        const region_id = this.$store.state.filters.filters.region_id;
+        const country_id = this.$store.state.filters.country_id;
+        const region_id = this.$store.state.filters.region_id;
         if (country_id) {
           name = this.$store.getters.getCountryOrRegion({
             type: "country",

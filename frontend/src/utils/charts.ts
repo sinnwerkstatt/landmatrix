@@ -1,7 +1,7 @@
 import store from "$store";
 
 export function fileName(title: string, suffix = ""): string {
-  const filters = store.state.filters.filters;
+  const filters = store.state.filters;
   let prefix = "Global - ";
   if (filters.country_id)
     prefix =

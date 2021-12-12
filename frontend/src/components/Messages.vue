@@ -62,7 +62,7 @@
           // dont display messages when coming from internal referer
           return [];
         } else {
-          return this.$store.state.page.messages.filter(
+          return this.$store.state.messages.filter(
             (x) => !this.acknowledgedMessages.includes(x.id)
           );
         }

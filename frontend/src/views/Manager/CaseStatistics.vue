@@ -343,13 +343,13 @@
           name: "Global",
           slug: "global",
         };
-        return [...this.$store.state.page.regions, world];
+        return [...this.$store.state.regions, world];
       },
       countries(): Country[] {
-        return this.$store.state.page.countries;
+        return this.$store.state.countries;
       },
       user(): User {
-        return this.$store.state.page.user;
+        return this.$store.state.user;
       },
       location_filters(): GQLFilter[] {
         if (this.selectedCountry)

@@ -26,11 +26,8 @@
     computed: {
       calc_name(): string {
         if (!this.value || !this.value.id) return "";
-        if (
-          this.formfield.related_model === "Country" &&
-          this.$store.state.page.countries
-        ) {
-          return this.$store.state.page.countries.find(
+        if (this.formfield.related_model === "Country" && this.$store.state.countries) {
+          return this.$store.state.countries.find(
             (c: Country) => c.id === this.value.id
           ).name;
         }

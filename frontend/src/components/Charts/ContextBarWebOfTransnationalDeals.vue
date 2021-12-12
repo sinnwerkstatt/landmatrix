@@ -81,11 +81,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import gql from "graphql-tag";
-  import { mapGetters } from "vuex";
+  import Vue from "vue";
+  import type { Country, CountryOrRegion } from "$types/wagtail";
 
-  export default {
+  export default Vue.extend({
     name: "ContextBarWebOfTransnationalDeals",
     props: {
       filters: { type: Array, required: true },
@@ -132,22 +133,24 @@
       };
     },
     computed: {
-      ...mapGetters(["getCountryOrRegion"]),
-      country_id() {
-        return this.$store.state.filters.filters.country_id;
+      getCountryOrRegion(): CountryOrRegion {
+        return this.$store.getters.getCountryOrRegion;
       },
-      chart_description() {
-        if (!this.$store.state.page.chartDescriptions) return null;
+      country_id(): number | null {
+        return this.$store.state.filters.country_id;
+      },
+      chart_description(): null | string {
+        if (!this.$store.state.chartDescriptions) return null;
         // noinspection JSUnresolvedVariable
-        return this.$store.state.page.chartDescriptions.web_of_transnational_deals;
+        return this.$store.state.chartDescriptions.web_of_transnational_deals;
       },
-      country() {
+      country(): Country | null {
         if (!this.country_id || this.country_id === 0) return null;
         return this.getCountryOrRegion({
           id: this.country_id,
         });
       },
-      investing_countries() {
+      investing_countries(): Country[] {
         return this.country_investments_and_rankings.investing.map((x) => {
           let country_name = this.getCountryOrRegion({
             id: +x.country_id,
@@ -155,7 +158,7 @@
           return { country_name, ...x };
         });
       },
-      invested_countries() {
+      invested_countries(): Country[] {
         return this.country_investments_and_rankings.invested.map((x) => {
           let country_name = this.getCountryOrRegion({
             id: +x.country_id,
@@ -165,7 +168,7 @@
       },
       // global_ranking_deals() {
       //   if (!this.global_rankings) return;
-      //   if (this.$store.state.page.countries.length === 0) return;
+      //   if (this.$store.state.countries.length === 0) return;
       //   return this.global_rankings.ranking_deal.map((x) => {
       //     let country_name = this.getCountryOrRegion({
       //       id: +x.country_id,
@@ -175,7 +178,7 @@
       // },
       // global_ranking_investors() {
       //   if (!this.global_rankings) return;
-      //   if (this.$store.state.page.countries.length === 0) return;
+      //   if (this.$store.state.countries.length === 0) return;
       //   return this.global_rankings.ranking_investor.map((x) => {
       //     let country_name = this.getCountryOrRegion({
       //       id: +x.country_id,
@@ -184,7 +187,7 @@
       //   });
       // },
     },
-  };
+  });
 </script>
 
 <style lang="scss">

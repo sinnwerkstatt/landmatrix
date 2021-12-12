@@ -28,7 +28,7 @@
       <h4>{{ $t("Add a comment") }}</h4>
 
       <div v-if="$store.getters.userAuthenticated">
-        Name: <strong>{{ $store.state.page.user.full_name }}</strong>
+        Name: <strong>{{ $store.state.user.full_name }}</strong>
       </div>
       <div v-else class="add-a-comment-header">
         <input v-model="name" :placeholder="$t('Name')" required />
@@ -139,7 +139,7 @@
               let newD = {
                 id: Math.floor(Math.random() * 100000000),
                 submit_date: new Date(),
-                userinfo: { name: this.name || this.$store.state.page.user.full_name },
+                userinfo: { name: this.name || this.$store.state.user.full_name },
                 comment: this.comment,
                 title: this.title,
               };

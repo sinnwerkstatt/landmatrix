@@ -127,7 +127,7 @@
     },
     computed: {
       chart_desc() {
-        return this.$store.state.page.chartDescriptions?.produce_info_map;
+        return this.$store.state.chartDescriptions?.produce_info_map;
       },
       legendItems() {
         if (this.treeData) {

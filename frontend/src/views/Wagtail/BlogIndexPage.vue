@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageTitle>
-      <span>{{ $t($store.state.page.wagtailPage.title) }}</span>
+      <span>{{ $t($store.state.wagtailPage.title) }}</span>
       <small v-if="tag"><i class="fas fa-tags"></i> {{ tag }}</small>
     </PageTitle>
     <div class="container">

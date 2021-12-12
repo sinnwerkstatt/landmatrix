@@ -35,7 +35,7 @@
     computed: {
       pageType() {
         if (!this.$store.state?.page?.wagtailPage) return null;
-        let page = this.$store.state.page.wagtailPage;
+        let page = this.$store.state.wagtailPage;
         switch (page.meta?.type) {
           case "blog.BlogIndexPage":
             return BlogIndexPage;
@@ -53,9 +53,7 @@
             return;
           case "wagtailcms.AboutIndexPage":
             // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-            this.$router.push(
-              `/about/${this.$store.state.page.aboutPages[0].meta.slug}/`
-            );
+            this.$router.push(`/about/${this.$store.state.aboutPages[0].meta.slug}/`);
             return;
           default:
             return WagtailPage;

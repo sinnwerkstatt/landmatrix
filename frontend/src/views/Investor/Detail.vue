@@ -325,7 +325,7 @@
         ];
       },
       userAuthenticated() {
-        return this.$store.state.page.user?.is_authenticated;
+        return this.$store.state.user?.is_authenticated;
       },
       involvements() {
         return this.investor.involvements || [];

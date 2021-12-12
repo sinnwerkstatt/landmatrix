@@ -240,7 +240,7 @@
           variables: {
             id: +this.dealId,
             version: +this.fromVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+            subset: this.$store.state.user ? "UNFILTERED" : "PUBLIC",
           },
         })
         .then((data) => (this.from_deal = data.data.deal));
@@ -250,7 +250,7 @@
           variables: {
             id: +this.dealId,
             version: +this.toVersion,
-            subset: this.$store.state.page.user ? "UNFILTERED" : "PUBLIC",
+            subset: this.$store.state.user ? "UNFILTERED" : "PUBLIC",
           },
         })
         .then((data) => (this.to_deal = data.data.deal));

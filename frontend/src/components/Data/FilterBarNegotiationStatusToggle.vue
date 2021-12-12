@@ -125,10 +125,10 @@
     computed: {
       negotiation_status: {
         get() {
-          return this.$store.state.filters.filters.negotiation_status;
+          return this.$store.state.filters.negotiation_status;
         },
         set(value) {
-          if (value !== this.$store.state.filters.filters.negotiation_status) {
+          if (value !== this.$store.state.filters.negotiation_status) {
             this.$store.dispatch("setFilter", { filter: "negotiation_status", value });
           }
         },

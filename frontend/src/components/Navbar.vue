@@ -307,13 +307,13 @@
     apollo: { blogcategories: blogcategories_query },
     computed: {
       user() {
-        return this.$store.state.page.user;
+        return this.$store.state.user;
       },
       aboutPages() {
-        return this.$store.state.page.aboutPages;
+        return this.$store.state.aboutPages;
       },
       aboutLinks() {
-        return this.$store.state.page.aboutPages.map((page) => {
+        return this.$store.state.aboutPages.map((page) => {
           return {
             name: page.title,
             link: `/about/${page.meta.slug}/`,
@@ -322,7 +322,7 @@
       },
       observatories_group() {
         let ret = { global: [], regions: [], countries: [] };
-        this.$store.state.page.observatories.forEach((ob) => {
+        this.$store.state.observatories.forEach((ob) => {
           if (ob.country) ret.countries.push(ob);
           else if (ob.region) ret.regions.push(ob);
           else ret.global.push(ob);

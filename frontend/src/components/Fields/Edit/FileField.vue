@@ -33,7 +33,7 @@
     data() {
       return {
         media_url: import.meta.env.VITE_MEDIA_URL,
-        user: this.$store.state.page.user,
+        user: this.$store.state.user,
       };
     },
     methods: {

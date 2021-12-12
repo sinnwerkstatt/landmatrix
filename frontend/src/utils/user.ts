@@ -2,7 +2,7 @@ import type { Obj } from "$types/generics";
 import store from "$store/index";
 
 export function is_authorized(obj: Obj): boolean {
-  const { id, role } = store.state.page.user;
+  const { id, role } = store.state.user;
   switch (obj.draft_status) {
     case null: // anybody who has a ROLE
       return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(role);

@@ -28,7 +28,7 @@
     computed: {
       showContextBar: {
         get() {
-          return this.$store.state.map.showContextBar;
+          return this.$store.state.showContextBar;
         },
         set(value) {
           this.$store.dispatch("showContextBar", value);

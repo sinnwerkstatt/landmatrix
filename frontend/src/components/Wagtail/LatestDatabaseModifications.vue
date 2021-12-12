@@ -75,7 +75,7 @@
     },
     computed: {
       current_region_or_country() {
-        let wtpage = this.$store.state.page.wagtailPage;
+        let wtpage = this.$store.state.wagtailPage;
         if (wtpage.meta.type === "wagtailcms.RegionPage") {
           return [
             {

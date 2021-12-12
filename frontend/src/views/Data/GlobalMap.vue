@@ -149,7 +149,7 @@
     computed: {
       displayDealsCount: {
         get() {
-          return this.map.displayDealsCount;
+          return this.$store.state.displayDealsCount;
         },
         set(value) {
           this.$store.commit("setDisplayDealsCount", value);
@@ -157,7 +157,7 @@
       },
       visibleLayer: {
         get() {
-          return this.map.visibleLayer;
+          return this.$store.state.visibleLayer;
         },
         set(value) {
           this.$store.dispatch("setCurrentLayer", value);
@@ -165,15 +165,14 @@
       },
       ...mapState({
         // deals: (state) => state.data.deals,
-        map: (state) => state.map,
         formfields: (state) => state.formfields,
-        tileLayers: (state) => state.map.layers,
-        contextLayers: (state) => state.map.contextLayers,
-        region_id: (state) => state.filters.filters.region_id,
-        country_id: (state) => state.filters.filters.country_id,
+        tileLayers: (state) => state.layers,
+        contextLayers: (state) => state.contextLayers,
+        region_id: (state) => state.filters.region_id,
+        country_id: (state) => state.filters.country_id,
         country_coords: (state) => {
           let coords = {};
-          state.page.countries.forEach((country) => {
+          state.countries.forEach((country) => {
             coords[country.id] = [country.point_lat, country.point_lon];
           });
           return coords;

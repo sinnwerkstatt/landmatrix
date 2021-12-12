@@ -15,7 +15,7 @@
     components: { PageTitle, Streamfield },
     computed: {
       page(): WagtailPage {
-        return this.$store.state.page.wagtailPage;
+        return this.$store.state.wagtailPage;
       },
       content(): WagtailStreamfield {
         return this.page?.body || [];

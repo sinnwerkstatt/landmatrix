@@ -56,7 +56,7 @@
         );
       },
       filtered_country_id(): number {
-        return this.$store.state.filters.filters.country_id;
+        return this.$store.state.filters.country_id;
       },
     },
     watch: {
