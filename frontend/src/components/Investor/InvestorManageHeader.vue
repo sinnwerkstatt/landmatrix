@@ -17,6 +17,7 @@
         <Overlay
           v-if="show_send_to_review_overlay"
           :title="$t('Submit for review')"
+          :comment-input="true"
           @cancel="show_send_to_review_overlay = false"
           @submit="send_to_review"
         >

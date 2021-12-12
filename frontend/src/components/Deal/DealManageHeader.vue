@@ -91,7 +91,8 @@
     <template #overlays>
       <Overlay
         v-if="show_send_to_review_overlay"
-        :title="$t('Submit for review')"
+        :title="$t('Submit for review').toString()"
+        :comment-input="true"
         @cancel="show_send_to_review_overlay = false"
         @submit="send_to_review"
       >
@@ -119,7 +120,9 @@
       </Overlay>
       <Overlay
         v-if="show_confidential_overlay"
-        :title="$t(deal.confidential ? 'Unset confidential' : 'Set confidential')"
+        :title="
+          $t(deal.confidential ? 'Unset confidential' : 'Set confidential').toString()
+        "
         :comment-input="!deal.confidential"
         :comment-required="!deal.confidential"
         @cancel="show_confidential_overlay = false"
@@ -149,7 +152,9 @@
   import gql from "graphql-tag";
   import { is_authorized } from "$utils/user";
   import ManageHeader from "../Management/ManageHeader.vue";
-  import Vue from "vue";
+  import Vue, { PropType } from "vue";
+  import type { Deal } from "$types/deal";
+  import type { User } from "$types/user";
 
   export default Vue.extend({
     name: "DealManageHeader",
@@ -158,7 +163,7 @@
       Overlay,
     },
     props: {
-      deal: { type: Object, required: true },
+      deal: { type: Object as PropType<Deal>, required: true },
       dealVersion: { type: [Number, String], default: null },
     },
     data() {
@@ -169,10 +174,10 @@
       };
     },
     computed: {
-      is_active_with_draft() {
-        return !this.dealVersion && this.deal.draft_status;
+      is_active_with_draft(): boolean {
+        return !this.dealVersion && !!this.deal.draft_status;
       },
-      is_editable() {
+      is_editable(): boolean {
         if (import.meta.env.VITE_ALLOW_EDITING.toLowerCase() !== "true") return false;
         // deal ist deleted
         if (!this.dealVersion && this.deal.status === 4) return false;
@@ -185,7 +190,7 @@
         this.$emit("change_status", { transition: "TO_REVIEW" });
         this.show_send_to_review_overlay = false;
       },
-      add_comment({ comment, send_to_user }) {
+      add_comment({ comment, send_to_user }: { comment: string; send_to_user: User }) {
         this.$apollo
           .mutate({
             mutation: gql`
@@ -213,7 +218,7 @@
           })
           .catch((error) => console.error(error));
       },
-      toggle_confidential(data) {
+      toggle_confidential(data: { [key: string]: string | boolean }) {
         if (!this.is_editable) return;
         if (data.force) {
           if (this.deal.confidential) {

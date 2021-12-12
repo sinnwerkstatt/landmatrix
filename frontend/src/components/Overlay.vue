@@ -6,7 +6,12 @@
         <slot></slot>
 
         <template v-if="commentInput">
-          <label>{{ $t("Please provide a comment explaining your request") }}</label>
+          <label v-if="commentRequired">
+            {{ $t("Please provide a comment explaining your request") }}
+          </label>
+          <label v-else>
+            {{ $t("Additional comment") }}
+          </label>
           <!--suppress HtmlUnknownAttribute -->
           <textarea
             ref="comment"
