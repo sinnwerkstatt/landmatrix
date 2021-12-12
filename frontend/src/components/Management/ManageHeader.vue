@@ -302,6 +302,8 @@
       is_deletable(): boolean {
         if (this.is_active_with_draft) return false;
         if (this.is_old_draft) return false;
+        if (this.object.draft_status === null)
+          return this.$store.state.user.role === "ADMINISTRATOR";
         return is_authorized(this.object);
       },
       is_deleted(): boolean {
