@@ -43,9 +43,6 @@
           unit="%"
         />
       </div>
-      <div class="get-involved">
-        <router-link :to="`/contribute/`">{{ $t("Contribute") }}</router-link>
-      </div>
     </div>
   </ContextBarContainer>
 </template>
