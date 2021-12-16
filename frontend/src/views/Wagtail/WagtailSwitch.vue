@@ -28,13 +28,13 @@
         .catch(() => next({ name: "404", params: [to.path], replace: true }));
     },
     metaInfo() {
-      const title = this.$store.state.page.title;
+      const title = this.$store.state.title;
       if (this.$route.path === "/") return { title, titleTemplate: "Land Matrix" };
       return { title };
     },
     computed: {
       pageType() {
-        if (!this.$store.state?.page?.wagtailPage) return null;
+        if (!this.$store.state?.wagtailPage) return null;
         let page = this.$store.state.wagtailPage;
         switch (page.meta?.type) {
           case "blog.BlogIndexPage":
