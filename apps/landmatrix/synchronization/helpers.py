@@ -355,7 +355,7 @@ def calculate_new_stati(obj: [Deal, Investor], status) -> tuple:
             new_status = current_model.status
         else:
             new_status = STATUS["DRAFT"]
-        new_draft_status = DRAFT_STATUS["DRAFT"]
+        new_draft_status = DRAFT_STATUS["REVIEW"]
 
     # "Active" and "Overwritten"
     elif status in [2, 3]:
