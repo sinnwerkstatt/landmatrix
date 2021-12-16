@@ -9,13 +9,16 @@
       <div :class="{ 'clr-investor': !showDeals }" class="sidebar-options">
         <ul :class="{ 'clr-investor': !showDeals }" class="lm-nav">
           <li
-            v-for="opt in sidebarOptions"
+            v-for="opt in filterChoices"
             :key="opt.id"
             :class="{ active: opt.id === selectedTab }"
             class="sidebar-option"
           >
             <div v-if="opt.space" />
-            <a v-else @click="switchTab(opt.id)">{{ opt.name }}</a>
+            <a v-else class="nowrap" @click="switchTab(opt.id)">
+              {{ $t(opt.name) }}
+              <span v-if="opt.count">({{ opt.count }})</span>
+            </a>
           </li>
         </ul>
       </div>
@@ -224,11 +227,13 @@
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);
 
-  type SidebarOption = {
+  type FilterChoice = {
     name?: string;
     id?: string;
     staff?: boolean;
     space?: boolean;
+    filters?: GQLFilter[];
+    count?: number;
   };
 
   export default Vue.extend({
@@ -319,9 +324,7 @@
           }
         `,
         variables() {
-          return {
-            filters: this.currentFilters,
-          };
+          return { filters: this.currentFilters };
         },
         skip() {
           return !this.showDeals;
@@ -405,15 +408,14 @@
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
       region(): Region | null {
-        console.log(this.user);
         const regions = this.user.userregionalinfo?.region;
-        if (regions.length > 0) return regions[0];
+        if (regions?.length > 0) return regions[0];
         return null;
       },
       country_options(): Country[] {
         const seen_ids = [] as number[];
         const countries = [] as Country[];
-        this.objects.forEach((o) => {
+        this.objects.forEach((o: Deal | Investor) => {
           if (!o.country) return;
           if (seen_ids.includes(o.country.id)) return;
           seen_ids.push(o.country.id);
@@ -512,114 +514,125 @@
 
         return objects;
       },
-      sidebarOptions(): SidebarOption[] {
+      filterChoices(): FilterChoice[] {
         const all_opts = [
-          { name: "Todo: Clarification", id: "todo_clarification" },
-          { name: "Todo: Improve", id: "todo_improve" },
-          { name: "Todo: Review", id: "todo_review", staff: true },
-          { name: "Todo: Activation", id: "todo_activation", staff: true },
-          // { name: "New public comment", id: "new_public_comment", staff: true },
-          { space: true, staff: true },
-          { name: "Requested improvement", id: "requested_improvement", staff: true },
-          { name: "Requested feedback", id: "requested_feedback" },
-          { space: true },
-          { name: "My drafts", id: "my_drafts" },
-          { name: "Created by me", id: "created_by_me" },
-          { name: "Reviewed by me", id: "reviewed_by_me", staff: true },
-          { name: "Activated by me", id: "activated_by_me", staff: true },
-          { space: true, staff: true },
-          { name: "All drafts", id: "all_drafts", staff: true },
-          { name: "All deleted", id: "all_deleted", staff: true },
-          { name: "All not public", id: "all_not_public", staff: true },
-        ];
-        return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
-      },
-      currentFilters(): GQLFilter[] {
-        let retfilters: GQLFilter[] = [];
-
-        // selected Tab
-        switch (this.selectedTab) {
-          case "todo_clarification":
-            retfilters.push(
-              // { field: "workflowinfos.processed_by_receiver", value: false },
+          {
+            name: "Todo: Clarification",
+            id: "todo_clarification",
+            filters: [
               { field: "workflowinfos.draft_status_before", value: null },
               { field: "workflowinfos.draft_status_after", value: null },
-              { field: "workflowinfos.to_user_id", value: this.user.id }
-            );
-            break;
-          case "todo_improve":
-            retfilters.push(
+              { field: "workflowinfos.to_user_id", value: this.user.id },
+            ],
+          },
+          {
+            name: "Todo: Improve",
+            id: "todo_improve",
+            filters: [
               { field: "draft_status", value: 1 },
               { field: "workflowinfos.draft_status_before", value: 2 },
               { field: "workflowinfos.draft_status_after", value: 1 },
               {
                 field: "current_draft.created_by_id",
                 value: this.user.id,
-              }
-            );
-            break;
-          case "todo_review":
-            retfilters.push({ field: "draft_status", value: 2 });
-            break;
-          case "todo_activation":
-            retfilters.push({ field: "draft_status", value: 3 });
-            break;
-          // case "new_public_comment":
-          //   // TODO-3
-          //   retfilters.push({ field: "status", value: "7" });
-          //   break;
-          case "requested_improvement":
-            retfilters.push(
-              // { field: "workflowinfos.processed_by_receiver", value: false },
+              },
+            ],
+          },
+          {
+            name: "Todo: Review",
+            id: "todo_review",
+            staff: true,
+            filters: [{ field: "draft_status", value: 2 }],
+          },
+          {
+            name: "Todo: Activation",
+            id: "todo_activation",
+            staff: true,
+            filters: [{ field: "draft_status", value: 3 }],
+          },
+          { space: true, staff: true },
+          {
+            name: "Requested improvement",
+            id: "requested_improvement",
+            staff: true,
+            filters: [
               { field: "workflowinfos.draft_status_before", value: 2 },
               { field: "workflowinfos.draft_status_after", value: 1 },
-              { field: "workflowinfos.from_user_id", value: this.user.id }
-            );
-            break;
-          case "requested_feedback":
-            retfilters.push(
-              // { field: "workflowinfos.processed_by_receiver", value: false },
+              { field: "workflowinfos.from_user_id", value: this.user.id },
+            ],
+          },
+          {
+            name: "Requested feedback",
+            id: "requested_feedback",
+            filters: [
               { field: "workflowinfos.draft_status_before", value: null },
               { field: "workflowinfos.draft_status_after", value: null },
-              { field: "workflowinfos.from_user_id", value: this.user.id }
-            );
-            break;
-          case "my_drafts":
-            retfilters.push(
+              { field: "workflowinfos.from_user_id", value: this.user.id },
+            ],
+          },
+          { space: true },
+          {
+            name: "My drafts",
+            id: "my_drafts",
+            filters: [
               { field: "draft_status", exclusion: true, value: null },
               {
                 field: "current_draft.created_by_id",
                 value: this.user.id,
-              }
-            );
-            break;
-          case "created_by_me":
-            retfilters.push({ field: "created_by_id", value: this.user.id });
-            break;
-          case "reviewed_by_me":
-            retfilters.push(
+              },
+            ],
+          },
+          {
+            name: "Created by me",
+            id: "created_by_me",
+            filters: [{ field: "created_by_id", value: this.user.id }],
+          },
+          {
+            name: "Reviewed by me",
+            id: "reviewed_by_me",
+            staff: true,
+            filters: [
               { field: "workflowinfos.draft_status_before", value: 2 },
               { field: "workflowinfos.draft_status_after", value: 3 },
-              { field: "workflowinfos.from_user_id", value: this.user.id }
-            );
-            break;
-          case "activated_by_me":
-            retfilters.push(
+              { field: "workflowinfos.from_user_id", value: this.user.id },
+            ],
+          },
+          {
+            name: "Activated by me",
+            id: "activated_by_me",
+            staff: true,
+            filters: [
               { field: "workflowinfos.draft_status_before", value: 3 },
-              { field: "workflowinfos.from_user_id", value: this.user.id }
-            );
-            break;
-          case "all_drafts":
-            retfilters.push({ field: "draft_status", exclusion: true, value: null });
-            break;
-          case "all_deleted":
-            retfilters.push({ field: "status", value: 4 });
-            break;
-          case "all_not_public":
-            retfilters.push({ field: "is_public", value: false });
-            break;
-        }
-        return retfilters;
+              { field: "workflowinfos.from_user_id", value: this.user.id },
+            ],
+          },
+          { space: true, staff: true },
+          {
+            name: "All drafts",
+            id: "all_drafts",
+            staff: true,
+            filters: [{ field: "draft_status", exclusion: true, value: null }],
+          },
+          {
+            name: "All deleted",
+            id: "all_deleted",
+            staff: true,
+            filters: [{ field: "status", value: 4 }],
+          },
+          {
+            name: "All not public",
+            id: "all_not_public",
+            staff: true,
+            filters: [{ field: "is_public", value: false }],
+          },
+        ];
+        return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
+      },
+      currentFilters(): GQLFilter[] {
+        const sidebarOption = this.filterChoices.find(
+          (s: FilterChoice) => s.id === this.selectedTab
+        );
+        return sidebarOption.filters;
       },
       fields(): string[] {
         return this.showDeals
@@ -652,8 +665,25 @@
         this.updatePagedRows();
       },
     },
+    created() {
+      this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
+    },
     methods: {
-      updatePagedRows() {
+      async calc_count(query: FilterChoice): Promise<void> {
+        if (!query.filters) return;
+        const xx = await this.$apollo.query({
+          query: gql`
+            query deals($filters: [Filter]) {
+              deals(limit: 0, filters: $filters, subset: UNFILTERED) {
+                id
+              }
+            }
+          `,
+          variables: { filters: query.filters },
+        });
+        query.count = xx.data.deals.length;
+      },
+      updatePagedRows(): void {
         const PAGESIZE = 20;
         let startIndex = (this.page - 1) * PAGESIZE;
         let endIndex = Math.min(this.page * PAGESIZE, this.objects.length);
@@ -661,11 +691,11 @@
         this.page++;
         this.rows = [...this.rows, ...this.objects.slice(startIndex, endIndex)];
       },
-      setSort(field: string) {
+      setSort(field: string): void {
         if (this.sortField === field) this.sortAscending = !this.sortAscending;
         this.sortField = field;
       },
-      switchTab(tab: string) {
+      switchTab(tab: string): void {
         this.selectedTab = tab;
         localStorage.management_selectedTab = tab;
       },
@@ -675,26 +705,14 @@
 
 <style lang="scss" scoped>
   .management {
-    display: flex;
-    width: 100%;
-    height: calc(100vh - 60px - 31px);
-    //margin-top: 1em;
-    border: 1px solid var(--color-lm-dark);
-
-    //padding-left: 1.5em;
-    //padding-right: 1em;
+    @apply tw-flex tw-w-full tw-border-lm-dark tw-border tw-h-[calc(100vh-60px-31px)];
   }
 
   .sidebar {
-    width: 12rem;
-    min-width: 12rem;
-    padding: 0.4rem;
-    overflow-y: hidden;
-    height: 100%;
+    @apply tw-h-full tw-p-2 tw-flex-auto;
 
     .sidebar-options {
-      border-right: 1px solid var(--color-lm-orange);
-      height: 100%;
+      @apply tw-border-r tw-border-orange tw-h-full;
       &.clr-investor {
         border-right: 1px solid var(--color-lm-investor);
       }
@@ -727,17 +745,16 @@
   }
 
   .management-main {
+    flex: 1 1 100%;
     overflow-y: auto;
     max-height: 100%;
     overflow-x: auto;
     width: 100%;
-    //width: min(99%, 90em);
   }
 
   .bigtable {
     thead {
       border-bottom: 3px solid var(--color-lm-orange);
-      //border-collapse: separate;
       tr th {
         white-space: nowrap;
       }

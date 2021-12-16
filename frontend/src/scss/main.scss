@@ -23,6 +23,10 @@ $fa-font-path: "/static/assets";
   --primary: var(--color-lm-orange);
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "headings";
 @import "landmatrix_icons";
 
