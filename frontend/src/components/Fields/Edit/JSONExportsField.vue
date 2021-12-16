@@ -1,5 +1,5 @@
 <template>
-  <div class="nowrap">
+  <div class="whitespace-nowrap">
     <table class="w-100">
       <thead>
         <tr>

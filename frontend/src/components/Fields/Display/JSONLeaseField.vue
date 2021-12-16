@@ -1,5 +1,5 @@
 <template>
-  <div class="jsonlease_field nowrap">
+  <div class="jsonlease_field whitespace-nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.area" class="mx-2">

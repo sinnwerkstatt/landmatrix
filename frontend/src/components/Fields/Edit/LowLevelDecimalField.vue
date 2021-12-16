@@ -1,5 +1,5 @@
 <template>
-  <div class="nowrap input-group">
+  <div class="whitespace-nowrap input-group">
     <input
       v-model="val"
       type="number"

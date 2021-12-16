@@ -1,5 +1,5 @@
 <template>
-  <div class="date_field nowrap">{{ val }}</div>
+  <div class="date_field whitespace-nowrap">{{ val }}</div>
 </template>
 
 <script lang="ts">

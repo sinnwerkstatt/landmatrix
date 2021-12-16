@@ -1,5 +1,5 @@
 <template>
-  <div class="jsonactors_field nowrap">
+  <div class="jsonactors_field whitespace-nowrap">
     <div v-for="val in vals">
       <span>{{ val.name }}</span>
       <span v-if="val.role" class="font-weight-light">

@@ -15,7 +15,7 @@
             class="sidebar-option"
           >
             <div v-if="opt.space" />
-            <a v-else class="nowrap" @click="switchTab(opt.id)">
+            <a v-else class="whitespace-nowrap" @click="switchTab(opt.id)">
               {{ $t(opt.name) }}
               <span v-if="opt.count">({{ opt.count }})</span>
             </a>
@@ -714,56 +714,41 @@
     .sidebar-options {
       @apply tw-border-r tw-border-orange tw-h-full;
       &.clr-investor {
-        border-right: 1px solid var(--color-lm-investor);
+        @apply tw-border-teal;
       }
     }
     .sidebar-header {
-      border-bottom: 1px solid #dee2e6;
-      padding: 0.2rem;
+      @apply tw-border-b tw-border-gray-200 tw-p-1;
 
       div {
-        //margin-left: 0.4rem;
-        //padding-left: 0.4rem;
-        margin-right: 0.6rem;
-        padding-bottom: 0.2rem;
-        display: inline;
-        font-weight: bold;
+        @apply tw-mr-3 tw-px-1 tw-pb-1 tw-inline tw-font-bold;
 
         &.active {
-          border-bottom: 1px solid;
+          @apply tw-border-b tw-border-solid tw-border-black;
         }
-
-        &:hover {
-          border-color: #e9ecef #e9ecef #dee2e6;
-        }
+        @apply hover:tw-text-gray-600 hover:tw-border-gray-200;
       }
-    }
-
-    .active {
-      font-weight: bold;
     }
   }
 
   .management-main {
-    flex: 1 1 100%;
-    overflow-y: auto;
-    max-height: 100%;
-    overflow-x: auto;
-    width: 100%;
+    @apply tw-flex-auto tw-overflow-auto tw-max-h-full tw-w-full;
   }
 
   .bigtable {
     thead {
-      border-bottom: 3px solid var(--color-lm-orange);
+      @apply tw-border-b-4 tw-border-orange;
+
       tr th {
-        white-space: nowrap;
+        @apply tw-whitespace-nowrap;
       }
 
       th {
         color: white;
 
         span.selected {
-          color: var(--color-lm-orange);
+          @apply tw-text-orange;
+          //color: var(--color-lm-orange);
 
           &.asc:after {
             margin-left: 0.3rem;
@@ -790,12 +775,12 @@
 
     &.clr-investor {
       thead {
-        border-bottom: 3px solid var(--color-lm-investor);
+        @apply tw-border-b-4 tw-border-teal;
       }
     }
 
     td.field-workflowinfos {
-      max-width: 100px;
+      @apply tw-max-w-[100px];
     }
   }
 </style>

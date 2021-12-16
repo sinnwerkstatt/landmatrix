@@ -63,7 +63,7 @@
             {{ $t("Target country is NOT set") }}
           </li>
 
-          <li v-if="deal.datasources.length > 0" class="nowrap">
+          <li v-if="deal.datasources.length > 0" class="whitespace-nowrap">
             <i class="fas fa-check fa-fw"></i>
             {{ $t("At least one data source") }} ({{ deal.datasources.length }})
           </li>

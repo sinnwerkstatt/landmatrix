@@ -1,5 +1,5 @@
 <template>
-  <div class="jsonjobs_field nowrap">
+  <div class="jsonjobs_field whitespace-nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.jobs" class="mx-2">

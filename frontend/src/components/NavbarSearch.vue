@@ -13,7 +13,7 @@
     </a>
     <div class="dropdown-menu search-menu" style="padding: 0.5rem 1rem">
       <form class="input-group">
-        <label for="search" class="nowrap">
+        <label for="search" class="whitespace-nowrap">
           {{ $t("Search deals and investors") }}
           <input
             id="search"

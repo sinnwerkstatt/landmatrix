@@ -1,5 +1,5 @@
 <template>
-  <div class="jsondatearea_field nowrap">
+  <div class="jsondatearea_field whitespace-nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.area">{{ val.area.toLocaleString("fr") }} ha</span>

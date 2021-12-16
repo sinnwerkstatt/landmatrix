@@ -1,5 +1,5 @@
 <template>
-  <div class="nowrap">
+  <div class="whitespace-nowrap">
     <div v-for="(val, i) in vals" class="row">
       <div class="col-5">
         <input

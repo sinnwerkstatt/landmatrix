@@ -1,5 +1,5 @@
 <template>
-  <div class="jsondatechoice_field nowrap">
+  <div class="jsondatechoice_field whitespace-nowrap">
     <div v-for="val in vals" :class="{ 'font-weight-bold': val.current }">
       <span>{{ date_and_current(val) }}</span>
       <span v-if="val.choice">{{ mapChoices(val.choice) }}</span>
