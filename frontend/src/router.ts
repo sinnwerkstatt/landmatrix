@@ -86,10 +86,9 @@ const router = new Router({
     },
     {
       path: "/deal/:dealId/datasources_table/",
-
       component: () => import("$views/Deal/DataSourcesTable.vue"),
       props: true,
-      meta: { requiresAdmin: true, requiresEditPerms: true, hideBreadcrumbs: true },
+      meta: { requiresAdmin: true, hideBreadcrumbs: true },
     },
     {
       path: "/deal/:dealId/:dealVersion?/",
