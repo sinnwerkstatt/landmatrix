@@ -51,12 +51,6 @@
                   {{ ds.file && ds.file.replace("uploads/", "") }}
                 </a>
               </div>
-              <div v-if="ds.file_prop">
-                replace:
-                <a :href="`${media_url}${ds.file_prop}`">
-                  {{ ds.file_prop.replace("uploads/", "") }}
-                </a>
-              </div>
             </div>
           </div>
         </div>
