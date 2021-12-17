@@ -1,8 +1,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 const config = {
-  prefix: "tw-",
-  content: ["./src/**/*.{html,js,svelte,ts,vue}"],
+  content: ["./src/**/*.{vue,html,js,ts}"],
 
   theme: {
     extend: {

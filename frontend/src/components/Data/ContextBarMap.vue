@@ -259,9 +259,4 @@
       margin-top: 1em;
     }
   }
-
-  .get-involved {
-    margin-top: 2em;
-    text-align: left;
-  }
 </style>

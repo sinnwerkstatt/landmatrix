@@ -705,49 +705,49 @@
 
 <style lang="scss" scoped>
   .management {
-    @apply tw-flex tw-w-full tw-border-lm-dark tw-border tw-h-[calc(100vh-60px-31px)];
+    @apply flex w-full border-lm-dark border h-[calc(100vh-60px-31px)];
   }
 
   .sidebar {
-    @apply tw-h-full tw-p-2 tw-flex-auto;
+    @apply h-full p-2 flex-auto;
 
     .sidebar-options {
-      @apply tw-border-r tw-border-orange tw-h-full;
+      @apply border-r border-orange h-full;
       &.clr-investor {
-        @apply tw-border-teal;
+        @apply border-teal;
       }
     }
     .sidebar-header {
-      @apply tw-border-b tw-border-gray-200 tw-p-1;
+      @apply border-b border-gray-200 p-1;
 
       div {
-        @apply tw-mr-3 tw-px-1 tw-pb-1 tw-inline tw-font-bold;
+        @apply mr-3 px-1 pb-1 inline font-bold;
 
         &.active {
-          @apply tw-border-b tw-border-solid tw-border-black;
+          @apply border-b border-solid border-black;
         }
-        @apply hover:tw-text-gray-600 hover:tw-border-gray-200;
+        @apply hover:text-gray-600 hover:border-gray-200;
       }
     }
   }
 
   .management-main {
-    @apply tw-flex-auto tw-overflow-auto tw-max-h-full tw-w-full;
+    @apply flex-auto overflow-auto max-h-full w-full;
   }
 
   .bigtable {
     thead {
-      @apply tw-border-b-4 tw-border-orange;
+      @apply border-b-4 border-orange;
 
       tr th {
-        @apply tw-whitespace-nowrap;
+        @apply whitespace-nowrap;
       }
 
       th {
         color: white;
 
         span.selected {
-          @apply tw-text-orange;
+          @apply text-orange;
           //color: var(--color-lm-orange);
 
           &.asc:after {
@@ -775,12 +775,12 @@
 
     &.clr-investor {
       thead {
-        @apply tw-border-b-4 tw-border-teal;
+        @apply border-b-4 border-teal;
       }
     }
 
     td.field-workflowinfos {
-      @apply tw-max-w-[100px];
+      @apply max-w-[100px];
     }
   }
 </style>

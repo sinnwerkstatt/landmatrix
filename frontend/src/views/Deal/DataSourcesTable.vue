@@ -43,6 +43,7 @@
             <div>date: {{ ds.date }}</div>
             <div>name: {{ ds.name }}</div>
             <div>company: {{ ds.company }}</div>
+            <div>old_gid: {{ ds.old_group_id }}</div>
             <div class="whitespace-nowrap">
               <div :class="{ probably_broken: ds.file_is_probably_broken }">
                 file:
@@ -56,7 +57,6 @@
                   {{ ds.file_prop.replace("uploads/", "") }}
                 </a>
               </div>
-              <div>{{ ds.old_group_id }}</div>
             </div>
           </div>
         </div>
@@ -204,17 +204,14 @@
 </script>
 
 <style scoped>
-  @import "../../static/tailwind.min.css";
-
   .probably_broken {
-    color: red;
-    font-weight: bold;
+    @apply text-red-600 font-bold;
   }
   .flopmenu {
-    visibility: hidden;
+    @apply invisible;
   }
   .flopmenu ~ div {
-    width: 1rem;
+    @apply w-4;
     transition: width 50ms ease;
   }
 
@@ -227,6 +224,7 @@
 
     padding: 0.3em 0.75em;
     background: red;
+    color: white;
   }
 
   .flopmenu:checked + label::before {

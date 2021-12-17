@@ -1,10 +1,11 @@
 <template>
-  <div class="map-data-charts">
+  <div class="map-data-charts my-8 flex gap-8">
     <router-link :to="{ name: 'map' }" class="square">
       <div>
-        <h3 class="title">{{ $t("Map") }}</h3>
-        <div class="icon">
+        <h3>{{ $t("Map") }}</h3>
+        <div class="mt-4 mx-auto h-24">
           <svg
+            class="mx-auto"
             width="72"
             height="96"
             viewBox="0 0 72 96"
@@ -17,7 +18,7 @@
             />
           </svg>
         </div>
-        <div class="text">
+        <div class="mt-2 text-lg">
           {{
             $t(
               "Explore the map for information about land deals from global down to regional and country level."
@@ -29,9 +30,10 @@
 
     <router-link :to="{ name: 'list_deals' }" class="square">
       <div>
-        <h3 class="title">{{ $t("Data") }}</h3>
-        <div class="icon">
+        <h3>{{ $t("Data") }}</h3>
+        <div class="mt-4 mx-auto h-24">
           <svg
+            class="mx-auto"
             width="96"
             height="84"
             viewBox="0 0 96 84"
@@ -44,7 +46,7 @@
             />
           </svg>
         </div>
-        <div class="text">
+        <div class="mt-2 text-lg">
           {{
             $t(
               "Search and filter the dataset through pre-configured entry points or drill down to single deals."
@@ -55,9 +57,10 @@
     </router-link>
     <router-link :to="{ name: 'charts' }" class="square">
       <div>
-        <h3 class="title">{{ $t("Charts") }}</h3>
-        <div class="icon">
+        <h3>{{ $t("Charts") }}</h3>
+        <div class="mt-4 mx-auto h-24">
           <svg
+            class="mx-auto"
             width="96"
             height="72"
             viewBox="0 0 96 72"
@@ -70,7 +73,7 @@
             />
           </svg>
         </div>
-        <div class="text">
+        <div class="mt-2 text-lg">
           {{
             $t(
               "Generate your own infographics using a wide selection of charts to illustrate information about deals."
@@ -86,33 +89,12 @@
   export default {};
 </script>
 
-<style lang="scss" scoped>
-  .map-data-charts {
-    margin: 2em 0;
-    display: flex;
-    gap: 2rem;
-
-    .square {
-      display: block;
-      background-color: var(--color-lm-light);
-      text-align: center;
-      border-radius: 0.5rem;
-      padding: 1em;
-      color: black;
-
-      &:hover {
-        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.35));
-        text-decoration: none;
-      }
-
-      .icon {
-        margin-top: 1em;
-        height: 6em;
-      }
-      .text {
-        margin-top: 0.5em;
-        font-size: 1.125rem;
-      }
-    }
+<style scoped>
+  .square {
+    @apply block bg-lm-light text-center rounded-xl p-4 text-black;
+  }
+  .square:hover {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.35));
+    text-decoration: none;
   }
 </style>
