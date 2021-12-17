@@ -28,15 +28,15 @@
             v-model="loc.level_of_accuracy"
             fieldname="level_of_accuracy"
             model="location"
-            :label-classes="['col-12', 'small']"
-            :value-classes="['col-12']"
+            :label-classes="['col-12', 'mb-2']"
+            :value-classes="['col-12', 'mb-1']"
             @input="_features_changed"
           />
           <div class="form-field row">
-            <div class="col-12 small">
+            <div class="col-12 mb-2">
               {{ $t("Location") }}
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
               <LocationGoogleField
                 v-model="loc.name"
                 :country-code="country.code_alpha2"
@@ -46,10 +46,10 @@
           </div>
 
           <div class="form-field row">
-            <div class="col-12 small">
+            <div class="col-12 mb-1">
               {{ $t("Point") }}
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
               <PointField :value="loc.point" @input="pointChange" />
             </div>
           </div>
@@ -58,31 +58,31 @@
               v-model="loc[fieldname]"
               :fieldname="fieldname"
               model="location"
-              :label-classes="['col-12', 'small']"
-              :value-classes="['col-12']"
+              :label-classes="['col-12', 'mb-2']"
+              :value-classes="['col-12', 'mb-3']"
               @input="_features_changed"
             />
           </div>
           <div class="row">
             <form enctype="multipart/form-data" novalidate class="mt-3">
-              <div class="col-12 small">{{ $t("Add intended area") }}</div>
-              <div class="col-12">
+              <div class="col-12 mb-1">{{ $t("Add intended area") }}</div>
+              <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"
                   @change="uploadFiles('intended_area', $event)"
                 />
               </div>
-              <div class="col-12 small">{{ $t("Add contract area") }}</div>
-              <div class="col-12">
+              <div class="col-12 mb-1">{{ $t("Add contract area") }}</div>
+              <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"
                   @change="uploadFiles('contract_area', $event)"
                 />
               </div>
-              <div class="col-12 small">{{ $t("Add production area") }}</div>
-              <div class="col-12">
+              <div class="col-12 mb-1">{{ $t("Add production area") }}</div>
+              <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"

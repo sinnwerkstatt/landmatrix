@@ -1,6 +1,6 @@
 <template>
-  <div class="row">
-    <div class="col-md-6">
+  <div class="flex gap-2">
+    <div>
       <div class="small">Lat:</div>
       <LowLevelDecimalField
         v-model="val.lat"
@@ -9,7 +9,7 @@
         :decimals="5"
       />
     </div>
-    <div class="col-md-6">
+    <div>
       <div class="small">Lng:</div>
       <LowLevelDecimalField
         v-model="val.lng"
