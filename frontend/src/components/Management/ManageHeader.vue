@@ -157,7 +157,7 @@
                 </div>
               </div>
               <div
-                v-if="is_authorized(object) && otype === 'deal'"
+                v-if="$store.state.user.role === 'ADMINISTRATOR' && otype === 'deal'"
                 class="action-button"
               >
                 <div class="d-inline-block">
