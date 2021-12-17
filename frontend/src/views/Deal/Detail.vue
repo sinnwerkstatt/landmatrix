@@ -127,10 +127,6 @@
           <DealHistory :deal="deal" :deal-id="dealId" :deal-version="dealVersion" />
         </section>
 
-        <section v-if="activeTab === '#comments'">
-          <DealComments :deal-id="dealId" :comments="deal.comments" />
-        </section>
-
         <section v-if="activeTab === '#actions'">
           <h4><i class="fa fa-download"></i> Download</h4>
           <a :href="download_link('xlsx')">XLSX</a><br />
@@ -182,7 +178,6 @@
     name: "Detail",
     components: {
       SideTabsMenu,
-      DealComments: () => import("$components/Deal/DealComments.vue"),
       DealHistory,
       DealLocationsSection,
       DealManageHeader,
@@ -304,7 +299,6 @@
           overall_comment: this.$t("Overall comment"),
           blank1: null,
           history: this.$t("Deal History"),
-          comments: this.$t("Comments"),
           actions: this.$t("Actions"),
         };
       },
