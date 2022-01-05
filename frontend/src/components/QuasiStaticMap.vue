@@ -26,8 +26,8 @@
   import { DivIcon, FeatureGroup, Marker } from "leaflet";
   import { MarkerClusterGroup } from "leaflet.markercluster/src";
 
-  import BigMap from "./BigMap";
-  import LoadingPulse from "./Data/LoadingPulse";
+  import BigMap from "./BigMap.vue";
+  import LoadingPulse from "./Data/LoadingPulse.vue";
   import Vue from "vue";
 
   const ZOOM_LEVEL_COUNTRY = 4;

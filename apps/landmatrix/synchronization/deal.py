@@ -141,6 +141,7 @@ def _parse_general(deal, attrs):
         None: None,
         "per ha": "PER_HA",
         "par ha": "PER_HA",
+        "por ha": "PER_HA",
         "for specified area": "PER_AREA",
         "por área específica": "PER_AREA",
     }
@@ -269,6 +270,7 @@ def _parse_local_communities(deal, attrs):
         "Community traditional or customary rights recognized by government": "COMMUNITY_RIGHTS_RECOGNIZED",
         "Derechos consuetudinarios o tradicionales de comunidad reconocidos por el gobierno": "COMMUNITY_RIGHTS_RECOGNIZED",
         "Community traditional or customary rights not recognized by government": "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+        "Derechos consuetudinarios o tradicionales de comunidad no reconocidos por el gobierno": "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
     }
 
     deal.recognition_status = _extras_to_list(
@@ -403,6 +405,7 @@ def _parse_former_use(deal, attrs):
         "Comunidad": "COMMUNITY",
         "Communauté": "COMMUNITY",
         "Indigenous people": "INDIGENOUS_PEOPLE",
+        "Pueblos Indígenas": "INDIGENOUS_PEOPLE",
         "Other": "OTHER",
         "Otro": "OTHER",
     }
@@ -441,8 +444,10 @@ def _parse_former_use(deal, attrs):
         "Shrub land/Grassland": "RANGELAND",
         "Matorrales/Praderas (Pastizales)": "RANGELAND",
         "Marginal land": "MARGINAL_LAND",
+        "Tierra marginal": "MARGINAL_LAND",
         "Terres marginales": "MARGINAL_LAND",
         "Wetland": "WETLAND",
+        "Humedales": "WETLAND",
         "Other land (e.g. developed land – specify in comment field)": "OTHER_LAND",
         "Otras tierras (ej. terrenos urbanizados - especifíquese en el campo para comentarios)": "OTHER_LAND",
         "Other land": "OTHER_LAND",
@@ -654,6 +659,7 @@ def _parse_water(deal, attrs):
         "River": "RIVER",
         "Río": "RIVER",
         "Lake": "LAKE",
+        "Lago": "LAKE",
     }
 
     deal.water_extraction_envisaged = _to_nullbool(
