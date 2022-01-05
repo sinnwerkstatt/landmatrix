@@ -47,7 +47,8 @@
 
 <script lang="ts">
   import { sortAnything } from "$utils";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import DisplayField from "$components/Fields/DisplayField.vue";
   import FieldLabel from "$components/Fields/FieldLabel.vue";
   import type { Deal } from "$types/deal";

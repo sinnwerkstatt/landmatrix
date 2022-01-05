@@ -4,7 +4,8 @@
  * https://observablehq.com/@d3/brexit-voting?collection=@d3/d3-sankey
  */
 import { drag, select } from "d3";
-import { sankey, SankeyGraph, sankeyLinkHorizontal } from "d3-sankey";
+import { sankey, sankeyLinkHorizontal } from "d3-sankey";
+import type { SankeyGraph } from "d3-sankey";
 
 export class LamaSankey {
   private readonly width = 700;

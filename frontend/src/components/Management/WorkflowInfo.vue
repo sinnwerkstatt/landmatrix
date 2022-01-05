@@ -37,7 +37,8 @@
 
 <script lang="ts">
   import { draft_status_map, status_map } from "$utils/choices";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { WorkflowInfo } from "$types/generics";
   import gql from "graphql-tag";
 

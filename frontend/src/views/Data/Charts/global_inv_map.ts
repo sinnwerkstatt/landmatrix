@@ -14,15 +14,14 @@
 
 import { addMarkers } from "./utils";
 import {
-  D3ZoomEvent,
   geoCentroid,
   geoNaturalEarth1,
-  geOrthographic,
-  GeoPath,
+  // geoOrthographic,
   geoPath,
   select,
   zoom,
 } from "d3";
+import type { D3ZoomEvent, GeoPath } from "d3";
 import { feature } from "topojson-client";
 import world from "world-atlas/countries-110m.json";
 import type * as GeoJSON from "geojson";

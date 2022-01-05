@@ -4,7 +4,8 @@
 
 <script lang="ts">
   import { combined_status_fn, combined_status_options } from "$utils/choices";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
 
   export default Vue.extend({
     props: {

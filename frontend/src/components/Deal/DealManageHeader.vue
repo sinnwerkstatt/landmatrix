@@ -152,7 +152,8 @@
   import gql from "graphql-tag";
   import { is_authorized } from "$utils/user";
   import ManageHeader from "../Management/ManageHeader.vue";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { Deal } from "$types/deal";
   import type { User } from "$types/user";
 

@@ -297,7 +297,7 @@
             name: "deal_detail",
             params: {
               dealId: this.dealId.toString(),
-              dealVersion: this.dealVersion.toString(),
+              dealVersion: this.dealVersion?.toString(),
             },
           });
       },

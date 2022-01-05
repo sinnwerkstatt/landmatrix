@@ -7,11 +7,12 @@ import {
   DEFAULT_FILTER_IGNORED_KEYS,
   DEFAULT_FILTERS,
   emptyFilters,
-  FilterValues,
   isDefaultFilter,
   prepareFilters,
 } from "./filters";
-import { BaseLayer, ContextLayer, contextLayers, mapLayers } from "./map";
+import { contextLayers, mapLayers } from "./map";
+import type { FilterValues } from "./filters";
+import type { BaseLayer, ContextLayer } from "./map";
 import type { User } from "$types/user";
 import type {
   Country,

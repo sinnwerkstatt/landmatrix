@@ -6,7 +6,8 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import { flatten_choices } from "$utils";
   import { intention_of_investment_map } from "$utils/choices";
   import type { FormField } from "$components/Fields/fields";

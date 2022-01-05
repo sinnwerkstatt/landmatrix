@@ -222,7 +222,8 @@
   import HeaderDates from "$components/HeaderDates.vue";
   import ManageHeaderComments from "$components/Management/ManageHeaderComments.vue";
   import Overlay from "$components/Overlay.vue";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import { is_authorized } from "$utils/user";
   import gql from "graphql-tag";
   import type { Obj, ObjVersion } from "$types/generics";

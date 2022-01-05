@@ -11,7 +11,8 @@
 
 <script lang="ts">
   import { flatten_choices } from "$utils";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({

@@ -13,7 +13,8 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import CountryProfileChartWrapper from "$components/Charts/CountryProfile/CountryProfileChartWrapper.vue";
   import { LSLAByNegotiation } from "$components/Charts/CountryProfile/lsla_by_negotiation";
   import type { Deal } from "$types/deal";

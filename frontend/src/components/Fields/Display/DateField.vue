@@ -4,7 +4,8 @@
 
 <script lang="ts">
   import dayjs from "dayjs";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({

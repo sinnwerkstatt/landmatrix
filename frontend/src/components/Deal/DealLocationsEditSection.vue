@@ -114,7 +114,8 @@
   import EditField from "$components/Fields/EditField.vue";
   import "@geoman-io/leaflet-geoman-free";
   import { GeoJSON, LatLngBounds, Marker } from "leaflet";
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { Country } from "$types/wagtail";
   import type { Location } from "$types/deal";
   import type L from "leaflet";

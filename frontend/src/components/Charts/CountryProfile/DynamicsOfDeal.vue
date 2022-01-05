@@ -21,13 +21,14 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import CountryProfileChartWrapper from "$components/Charts/CountryProfile/CountryProfileChartWrapper.vue";
   import {
     dynamics_csv,
-    DynamicsDataPoint,
     DynamicsOfDeal,
   } from "$components/Charts/CountryProfile/dynamics_of_deal";
+  import type { DynamicsDataPoint } from "$components/Charts/CountryProfile/dynamics_of_deal";
   import { classification_choices } from "$utils/choices";
   import type { Deal } from "$types/deal";
   import { a_download, fileName } from "$utils/charts";

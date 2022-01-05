@@ -25,7 +25,8 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import { a_download, fileName } from "$utils/charts";
   import {
     flat_intention_of_investment_map,

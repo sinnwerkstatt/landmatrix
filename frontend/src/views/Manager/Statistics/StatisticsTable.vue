@@ -87,7 +87,8 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import dayjs from "dayjs";
   import DealTable from "$components/Deal/DealTable.vue";
   import InvestorTable from "$components/Investor/InvestorTable.vue";

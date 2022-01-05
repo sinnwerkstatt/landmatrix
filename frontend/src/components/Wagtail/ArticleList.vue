@@ -26,7 +26,8 @@
 </template>
 
 <script lang="ts">
-  import Vue, { PropType } from "vue";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { BlogPage } from "$types/wagtail";
 
   export default Vue.extend({
