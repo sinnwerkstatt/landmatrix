@@ -8,7 +8,7 @@
     <template slot="default">
       <svg id="lslabyneg" />
     </template>
-    <template slot="legend"> Legende </template>
+    <!--    <template slot="legend"> Legende </template>-->
   </CountryProfileChartWrapper>
 </template>
 
@@ -16,12 +16,12 @@
   import Vue from "vue";
   import type { PropType } from "vue";
   import CountryProfileChartWrapper from "$components/Charts/CountryProfile/CountryProfileChartWrapper.vue";
-  import { LSLAByNegotiation } from "$components/Charts/CountryProfile/lsla_by_negotiation";
-  import type { Deal } from "$types/deal";
   import {
-    flat_negotiation_status_map,
-    negotiation_status_group_map,
-  } from "$utils/choices";
+    LSLAByNegotiation,
+    LSLAData,
+  } from "$components/Charts/CountryProfile/lsla_by_negotiation";
+  import type { Deal } from "$types/deal";
+  import { negotiation_status_group_map } from "$utils/choices";
 
   export default Vue.extend({
     name: "LSLAByNegotiation",
@@ -54,61 +54,56 @@
                 "CHANGE_OF_OWNERSHIP",
               ];
 
-        let pots: { [key: string]: { amount: number; size: number; bold?: boolean } } =
-          {};
+        let pots: { [key: string]: LSLAData } = {};
         if (selected_neg_stat.includes("EXPRESSION_OF_INTEREST"))
-          pots.EXPRESSION_OF_INTEREST = { amount: 0, size: 0 };
+          pots.EXPRESSION_OF_INTEREST = new LSLAData("EXPRESSION_OF_INTEREST");
         if (selected_neg_stat.includes("UNDER_NEGOTIATION"))
-          pots.UNDER_NEGOTIATION = { amount: 0, size: 0 };
+          pots.UNDER_NEGOTIATION = new LSLAData("UNDER_NEGOTIATION");
         if (selected_neg_stat.includes("MEMORANDUM_OF_UNDERSTANDING"))
-          pots.MEMORANDUM_OF_UNDERSTANDING = { amount: 0, size: 0 };
+          pots.MEMORANDUM_OF_UNDERSTANDING = new LSLAData(
+            "MEMORANDUM_OF_UNDERSTANDING"
+          );
         if (
           selected_neg_stat.includes("EXPRESSION_OF_INTEREST") &&
           selected_neg_stat.includes("UNDER_NEGOTIATION") &&
           selected_neg_stat.includes("MEMORANDUM_OF_UNDERSTANDING")
         )
-          pots.INTENDED = { amount: 0, size: 0, bold: true };
+          pots.INTENDED = new LSLAData("INTENDED", true);
         if (selected_neg_stat.includes("ORAL_AGREEMENT"))
-          pots.ORAL_AGREEMENT = { amount: 0, size: 0 };
+          pots.ORAL_AGREEMENT = new LSLAData("ORAL_AGREEMENT");
         if (selected_neg_stat.includes("CONTRACT_SIGNED"))
-          pots.CONTRACT_SIGNED = { amount: 0, size: 0 };
+          pots.CONTRACT_SIGNED = new LSLAData("CONTRACT_SIGNED");
         if (
           selected_neg_stat.includes("ORAL_AGREEMENT") &&
           selected_neg_stat.includes("CONTRACT_SIGNED")
         )
-          pots.CONCLUDED = { amount: 0, size: 0, bold: true };
+          pots.CONCLUDED = new LSLAData("CONCLUDED", true);
         if (selected_neg_stat.includes("NEGOTIATIONS_FAILED"))
-          pots.NEGOTIATIONS_FAILED = { amount: 0, size: 0 };
+          pots.NEGOTIATIONS_FAILED = new LSLAData("NEGOTIATIONS_FAILED");
         if (selected_neg_stat.includes("CONTRACT_CANCELED"))
-          pots.CONTRACT_CANCELED = { amount: 0, size: 0 };
+          pots.CONTRACT_CANCELED = new LSLAData("CONTRACT_CANCELED");
         if (
           selected_neg_stat.includes("NEGOTIATIONS_FAILED") &&
           selected_neg_stat.includes("CONTRACT_CANCELED")
         )
-          pots.FAILED = { amount: 0, size: 0, bold: true };
+          pots.FAILED = new LSLAData("FAILED", true);
         if (selected_neg_stat.includes("CONTRACT_EXPIRED"))
-          pots.CONTRACT_EXPIRED = { amount: 0, size: 0, bold: true };
+          pots.CONTRACT_EXPIRED = new LSLAData("CONTRACT_EXPIRED", true);
         if (selected_neg_stat.includes("CHANGE_OF_OWNERSHIP"))
-          pots.CHANGE_OF_OWNERSHIP = { amount: 0, size: 0, bold: true };
+          pots.CHANGE_OF_OWNERSHIP = new LSLAData("CHANGE_OF_OWNERSHIP", true);
 
         this.deals.forEach((d: Deal) => {
-          pots[d.current_negotiation_status].amount += 1;
-          pots[d.current_negotiation_status].size += d.current_contract_size || 0;
-
+          if (!d.current_negotiation_status) return;
+          (pots[d.current_negotiation_status] as LSLAData).add(
+            d.current_contract_size,
+            d.intended_size
+          );
           const ngrp = negotiation_status_group_map[d.current_negotiation_status];
-          if (ngrp && pots[ngrp]) {
-            pots[ngrp].amount += 1;
-            pots[ngrp].size += d.current_contract_size || 0;
-          }
+          if (ngrp && pots[ngrp])
+            (pots[ngrp] as LSLAData).add(d.current_contract_size, d.intended_size);
         });
 
-        this.svg.do_the_graph(
-          "#lslabyneg",
-          Object.entries(pots).map(([k, v]) => {
-            const name = this.$t(flat_negotiation_status_map[k]).toString();
-            return { name, ...v };
-          })
-        );
+        this.svg.do_the_graph("#lslabyneg", Object.values(pots));
       },
     },
     methods: {

@@ -57,6 +57,7 @@ interface Deal extends Obj {
   top_investors: Investor[];
   deal_size: number;
   current_contract_size: number;
+  intended_size: number;
   operating_company?: Investor;
   confidential: boolean;
   is_public: boolean;

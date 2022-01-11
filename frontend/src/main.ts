@@ -128,7 +128,7 @@ Vue.filter("dayjs", (value: Date, date_format: string) => {
 
 const locale = Cookies.get("django_language") ?? "en";
 
-const i18n = new VueI18n({
+export const i18n = new VueI18n({
   locale,
   fallbackLocale: "en",
   messages: { en: en_messages, es: es_messages, fr: fr_messages, ru: ru_messages },

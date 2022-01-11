@@ -17,6 +17,7 @@ export const data_deal_query_gql = gql`
       current_negotiation_status
       current_contract_size
       current_implementation_status
+      intended_size
       locations
       #      locations {
       #        id
