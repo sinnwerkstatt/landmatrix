@@ -183,8 +183,8 @@
       },
     },
     methods: {
-      send_to_review() {
-        this.$emit("change_status", { transition: "TO_REVIEW" });
+      send_to_review(args) {
+        this.$emit("change_status", { ...args, transition: "TO_REVIEW" });
         this.show_send_to_review_overlay = false;
       },
       add_comment({ comment, send_to_user }: { comment: string; send_to_user: User }) {

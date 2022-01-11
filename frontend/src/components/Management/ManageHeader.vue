@@ -91,7 +91,7 @@
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="submit_for_activation_link_title"
                 class="btn btn-pelorous"
-                @click="$emit('change_status', { transition: 'TO_ACTIVATION' })"
+                @click="show_send_to_activation_overlay = true"
               >
                 {{ $t("Submit for activation") }}
               </a>
@@ -102,7 +102,7 @@
                 :class="{ disabled: last_version.id !== +objectVersion }"
                 :title="get_activate_description"
                 class="btn btn-pelorous"
-                @click="$emit('change_status', { transition: 'ACTIVATE' })"
+                @click="show_activate_overlay = true"
               >
                 {{ $t("Activate") }}
               </a>
@@ -219,6 +219,18 @@
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
     />
+    <Overlay
+      v-if="show_send_to_activation_overlay"
+      :comment-input="true"
+      @cancel="show_send_to_activation_overlay = false"
+      @submit="send_to_activation"
+    />
+    <Overlay
+      v-if="show_activate_overlay"
+      :comment-input="true"
+      @cancel="show_activate_overlay = false"
+      @submit="activate"
+    />
   </div>
 </template>
 
@@ -253,6 +265,8 @@
         users: [],
         show_to_draft_overlay: false,
         show_to_delete_overlay: false,
+        show_send_to_activation_overlay: false,
+        show_activate_overlay: false,
         is_authorized,
         submit_for_review_link_title:
           this.otype === "deal"
@@ -457,6 +471,14 @@
         console.log("to_draft", { comment, to_user });
         this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
         this.show_to_draft_overlay = false;
+      },
+      send_to_activation({ comment }) {
+        this.$emit("change_status", { comment, transition: "TO_ACTIVATION" });
+        this.show_send_to_activation_overlay = false;
+      },
+      activate({ comment }) {
+        this.$emit("change_status", { comment, transition: "ACTIVATE" });
+        this.show_activate_overlay = false;
       },
     },
   });
