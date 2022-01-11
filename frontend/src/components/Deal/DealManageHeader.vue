@@ -96,20 +96,16 @@
         @cancel="show_send_to_review_overlay = false"
         @submit="send_to_review"
       >
-        <p>
-          Fully updated description text "Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-          aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-          nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-          deserunt mollit anim id est laborum."
+        <p class="mb-1">
+          If you have checked the information entered for every single variable, please
+          tick the box beside "I fully updated this deal" - even if no additional
+          information was found, but a complete search through the deal was conducted.
         </p>
         <label>
           <input v-model="deal.fully_updated" type="checkbox" />
           {{ $t("I fully updated this deal.") }}
         </label>
-        <div class="mt-2" style="font-weight: bold">
+        <div class="my-4" style="font-weight: bold">
           <label>
             <input required type="checkbox" />
             {{ $t("I've read and agree to the") }}
