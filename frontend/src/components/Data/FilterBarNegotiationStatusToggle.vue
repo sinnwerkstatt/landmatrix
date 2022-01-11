@@ -1,6 +1,6 @@
 <template>
   <FilterCollapse
-    :title="$t('Negotiation status')"
+    :title="$t('Negotiation status').toString()"
     :clearable="negotiation_status.length > 0"
     @click="negotiation_status = []"
   >
@@ -134,6 +134,13 @@
         },
       },
     },
+    watch: {
+      "$store.state.signalNegstat"() {
+        this.choices.forEach((choice) => {
+          if (choice.group) this.toggleSingle(choice as GroupChoice);
+        });
+      },
+    },
     mounted() {
       this.choices.forEach((choice) => {
         if (choice.group) this.toggleSingle(choice as GroupChoice);
@@ -157,7 +164,7 @@
       toggleSingle(choice: GroupChoice) {
         const cur_set: Set<string> = new Set(this.negotiation_status);
         const exp_set: Set<string> = new Set(choice.options.map((o) => o.value));
-        const checkbox = document.getElementById(choice.group);
+        const checkbox = document.getElementById(choice.group) as HTMLInputElement;
 
         if (isSuperset(cur_set, exp_set)) {
           checkbox.indeterminate = false;

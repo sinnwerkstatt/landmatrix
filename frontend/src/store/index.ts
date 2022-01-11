@@ -44,6 +44,7 @@ interface PageState {
   filters: FilterValues;
   isDefaultFilter: boolean;
   publicOnly: boolean;
+  signalNegstat: number;
   // map
   showFilterBar: boolean;
   showContextBar: boolean;
@@ -80,6 +81,7 @@ const store = new Vuex.Store({
     //filters
     filters: lSfilters,
     isDefaultFilter: isDefaultFilter(lSfilters),
+    signalNegstat: 0,
     publicOnly: true,
     // map stuff
     showFilterBar: !isMobile(),
@@ -193,6 +195,7 @@ const store = new Vuex.Store({
         country_id: state.filters.country_id,
         investor_country_id: state.filters.investor_country_id,
       };
+      state.signalNegstat = Math.random();
       state.isDefaultFilter = true;
     },
     clearFilters(state) {
@@ -202,6 +205,7 @@ const store = new Vuex.Store({
         country_id: state.filters.country_id,
         investor_country_id: state.filters.investor_country_id,
       };
+      state.signalNegstat = Math.random();
       state.isDefaultFilter = false;
     },
     setPublicOnly(state, value) {
