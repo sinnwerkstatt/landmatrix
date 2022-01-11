@@ -3,14 +3,20 @@
     <router-link
       v-if="model === 'deal'"
       class="id-display deal-id-display"
-      :to="{ name: 'deal_detail', params: { dealId: value } }"
+      :to="{
+        name: 'deal_detail',
+        params: { dealId: value, dealVersion: objectVersion },
+      }"
       :target="targetBlank ? '_blank' : '_self'"
       >{{ value }}</router-link
     >
     <router-link
       v-else-if="model === 'investor'"
       class="id-display investor-id-display"
-      :to="{ name: 'investor_detail', params: { investorId: value } }"
+      :to="{
+        name: 'investor_detail',
+        params: { investorId: value, investorVersion: objectVersion },
+      }"
       :target="targetBlank ? '_blank' : '_self'"
       >{{ value }}</router-link
     >
@@ -29,6 +35,7 @@
       value: { type: Number, required: true },
       model: { type: String, required: true },
       targetBlank: { type: Boolean, default: false },
+      objectVersion: { type: Number, default: null, required: false },
     },
   });
 </script>

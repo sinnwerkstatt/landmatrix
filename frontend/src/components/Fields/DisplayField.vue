@@ -16,6 +16,7 @@
         :file-not-public="fileNotPublic"
         :target-blank="targetBlank"
         :object-id="objectId"
+        :object-version="objectVersion"
       />
     </div>
   </div>
@@ -116,6 +117,7 @@
       visible: { type: Boolean, default: true },
       targetBlank: { type: Boolean, default: false },
       objectId: { type: Number, default: null, required: false },
+      objectVersion: { type: Number, default: null, required: false },
     },
     data() {
       return { custom_is_null };

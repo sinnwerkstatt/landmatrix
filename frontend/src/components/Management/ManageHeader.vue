@@ -30,15 +30,19 @@
           </div>
         </div>
 
+        <div v-if="object.status === 4" class="status-and-progress-buttons">
+          <div class="fat-stati">
+            <div class="deleted">
+              {{ $t("Deleted") }}
+            </div>
+          </div>
+        </div>
         <div
-          v-if="object.status !== 1 && !objectVersion"
+          v-else-if="object.status !== 1 && !objectVersion"
           class="status-and-progress-buttons"
         >
           <div class="fat-stati">
-            <div v-if="object.status === 4" class="deleted">
-              {{ $t("Deleted") }}
-            </div>
-            <div v-else class="active">{{ $t("Activated") }}</div>
+            <div class="active">{{ $t("Activated") }}</div>
           </div>
         </div>
         <div v-else class="status-and-progress-buttons">

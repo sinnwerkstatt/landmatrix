@@ -179,6 +179,7 @@
                 :fieldname="fieldName"
                 :model="showDeals ? 'deal' : 'investor'"
                 :object-id="obj.id"
+                :object-version="obj.current_draft.id"
                 :show-label="false"
                 :target-blank="true"
                 :value="obj[fieldName]"
@@ -282,6 +283,9 @@
           query deals($filters: [Filter]) {
             deals(limit: 0, filters: $filters, subset: UNFILTERED) {
               id
+              current_draft {
+                id
+              }
               deal_size
               created_at
               created_by {
