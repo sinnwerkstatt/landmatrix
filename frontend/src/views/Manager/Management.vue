@@ -579,7 +579,7 @@
             name: "My drafts",
             id: "my_drafts",
             filters: [
-              { field: "draft_status", exclusion: true, value: null },
+              { field: "draft_status", value: 1 },
               {
                 field: "current_draft.created_by_id",
                 value: this.user.id,
