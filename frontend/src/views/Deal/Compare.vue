@@ -1,5 +1,5 @@
 <template>
-  <div class="container deal-detail">
+  <div class="container deal-detail-compare">
     <div v-if="dealdiff" class="row">
       <div class="col-sm-5 col-md-3">
         <h1>Deal #{{ dealId }}</h1>
@@ -242,6 +242,7 @@
             version: +this.fromVersion,
             subset: this.$store.state.user ? "UNFILTERED" : "PUBLIC",
           },
+          fetchPolicy: "no-cache",
         })
         .then((data) => (this.from_deal = data.data.deal));
       this.$apollo
@@ -252,6 +253,7 @@
             version: +this.toVersion,
             subset: this.$store.state.user ? "UNFILTERED" : "PUBLIC",
           },
+          fetchPolicy: "no-cache",
         })
         .then((data) => (this.to_deal = data.data.deal));
     },
