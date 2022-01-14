@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-  import { combined_status_fn, combined_status_options } from "$utils/choices";
+  import { combined_status_fn } from "$utils/choices";
   import Vue from "vue";
   import type { PropType } from "vue";
 
@@ -15,9 +15,7 @@
     },
     computed: {
       display_status() {
-        return this.$t(
-          combined_status_options[combined_status_fn(this.value[0], this.value[1])]
-        );
+        return this.$t(combined_status_fn(this.value[0], this.value[1], true));
       },
     },
   });

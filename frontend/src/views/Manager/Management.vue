@@ -156,7 +156,7 @@
                 :allow-empty="true"
                 :close-on-select="true"
                 :multiple="false"
-                :options="combined_status_choices"
+                :options="status_options"
                 :placeholder="$t('Status')"
                 label="name"
                 track-by="id"
@@ -179,7 +179,7 @@
                 :fieldname="fieldName"
                 :model="showDeals ? 'deal' : 'investor'"
                 :object-id="obj.id"
-                :object-version="obj.current_draft.id"
+                :object-version="obj.current_draft && obj.current_draft.id"
                 :show-label="false"
                 :target-blank="true"
                 :value="obj[fieldName]"
@@ -215,7 +215,7 @@
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import DisplayField from "$components/Fields/DisplayField.vue";
   import { sortAnything } from "$utils";
-  import { combined_status_options } from "$utils/choices";
+  import { combined_status_fn } from "$utils/choices";
   // @ts-ignore
   import DatePicker from "v-calendar/lib/components/date-picker.umd";
 
@@ -399,12 +399,6 @@
       },
     },
     computed: {
-      combined_status_choices(): { id: string; name: string }[] {
-        return Object.entries(combined_status_options).map(([k, v]) => ({
-          id: k,
-          name: this.$t(v).toString(),
-        }));
-      },
       user(): User {
         return this.$store.state.user;
       },
@@ -426,6 +420,19 @@
           countries.push(o.country);
         });
         return countries.sort((a, b) => a.name.localeCompare(b.name));
+      },
+      status_options(): { id: string; name: string }[] {
+        const seen_ids = [] as string[];
+        const status_options = [] as { id: string; name: string }[];
+        this.objects.forEach((o: Deal | Investor) => {
+          const name = combined_status_fn(o.status, o.draft_status, true);
+          const id = combined_status_fn(o.status, o.draft_status, false);
+          if (seen_ids.includes(id)) return;
+          console.log(o.status, o.draft_status);
+          status_options.push({ id, name });
+          seen_ids.push(id);
+        });
+        return status_options;
       },
       objects(): Array<Deal | Investor> {
         let objects = this.showDeals ? this.deals : this.investors;
@@ -490,27 +497,25 @@
           );
         if (this.selected_combined_status) {
           switch (this.selected_combined_status.id) {
+            case "DELETED":
+              objects = objects.filter((o) => o.status === 4);
+              break;
             case "DRAFT":
-              objects = objects.filter((o) => o.status === 1 && o.draft_status === 1);
+              objects = objects.filter((o) => o.draft_status === 1);
               break;
             case "REVIEW":
-              objects = objects.filter((o) => o.status === 1 && o.draft_status === 2);
+              objects = objects.filter((o) => o.draft_status === 2);
               break;
             case "ACTIVATION":
-              objects = objects.filter((o) => o.status === 1 && o.draft_status === 3);
+              objects = objects.filter((o) => o.draft_status === 3);
+              break;
+            case "REJECTED":
+              objects = objects.filter((o) => o.draft_status === 4);
               break;
             case "LIVE":
               objects = objects.filter(
                 (o) => [2, 3].includes(o.status) && o.draft_status === null
               );
-              break;
-            case "LIVE_AND_DRAFT":
-              objects = objects.filter(
-                (o) => [2, 3].includes(o.status) && o.draft_status
-              );
-              break;
-            case "DELETED":
-              objects = objects.filter((o) => o.status === 4);
               break;
           }
           console.log(this.selected_combined_status);

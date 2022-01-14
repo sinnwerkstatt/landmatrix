@@ -177,30 +177,19 @@ export const draft_status_map = {
   5: "Deleted",
 };
 
-export const combined_status_options: { [key: string]: string } = {
-  DRAFT: "Draft", // status==1
-  REVIEW: "Submitted for Review", // status==1, draft_status == 2
-  ACTIVATION: "Submitted for Activation", // status==1, draft_status == 3
-  LIVE: "Live", // status == 2 || status == 3
-  LIVE_AND_DRAFT: "Live + Draft", // (status == 2 || status == 3) || draft_status != null
-  DELETED: "Deleted", // status ==4
-};
-
 export const combined_status_fn = (
   status: number,
-  draft_status: number,
+  draft_status: number | null,
   toString = false
 ): string => {
-  let ret;
-  if (status === 1 && draft_status === 1) ret = "DRAFT";
-  if (status === 1 && draft_status === 2) ret = "REVIEW";
-  if (status === 1 && draft_status === 3) ret = "ACTIVATION";
-  if (status === 1 && draft_status === 4) ret = "UNCLEAR. 1 4 ??";
-  if ([2, 3].includes(status) && draft_status === null) ret = "LIVE";
-  if ([2, 3].includes(status) && draft_status !== null) ret = "LIVE_AND_DRAFT";
-  if (status === 4) ret = "DELETED";
-  if (!ret) throw Error(`Invalid status ${status} ${draft_status}`);
-  return toString ? combined_status_options[ret] : ret;
+  if (status === 4) return toString ? "Deleted" : "DELETED";
+  if (draft_status === 1) return toString ? "Draft" : "DRAFT";
+  if (draft_status === 2) return toString ? "Submitted for review" : "REVIEW";
+  if (draft_status === 3) return toString ? "Submitted for activation" : "ACTIVATION";
+  if (draft_status === 4) return toString ? "Rejected" : "REJECTED";
+  if ([2, 3].includes(status) && draft_status === null)
+    return toString ? "Live" : "LIVE";
+  throw Error(`Invalid status ${status} ${draft_status}`);
 };
 
 export const confidential_reason_choices = {
