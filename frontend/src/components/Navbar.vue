@@ -204,9 +204,9 @@
                 {{ $t("Case statistics") }}
               </router-link>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/deal/add/">
+              <router-link class="dropdown-item" :to="{ name: 'deal_add' }">
                 {{ $t("Add a deal") }}
-              </a>
+              </router-link>
 
               <a class="dropdown-item" @click.prevent="dispatchLogout">
                 {{ $t("Logout") }}

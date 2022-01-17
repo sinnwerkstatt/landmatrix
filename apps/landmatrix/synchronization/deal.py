@@ -418,6 +418,7 @@ def _parse_former_use(deal, attrs):
         "Smallholder agriculture": "SMALLHOLDER_AGRICULTURE",
         "Agricultura minifundista": "SMALLHOLDER_AGRICULTURE",
         "Shifting cultivation": "SHIFTING_CULTIVATION",
+        "Rotación de cultivos": "SHIFTING_CULTIVATION",
         "Pastoralism": "PASTORALISM",
         "Pastoralismo": "PASTORALISM",
         "Hunting/Gathering": "HUNTING_GATHERING",
@@ -875,6 +876,8 @@ def _create_contracts(deal, groups):
                 expdate = "2057-09-24"
             if expdate == "2056-15":
                 expdate = "2056"
+            if expdate == "2024-22":
+                expdate = "2024"
             if date_year_field(expdate):
                 contract["expiration_date"] = expdate
             else:
@@ -907,6 +910,7 @@ def _create_data_sources(deal, groups):
         "Entreprises": "COMPANY_SOURCES",
         "Fuentes empresariales": "COMPANY_SOURCES",
         "Contract": "CONTRACT",
+        "Contrato": "CONTRACT",
         "Contract (contract farming agreement)": "CONTRACT_FARMING_AGREEMENT",
         "Personal information": "PERSONAL_INFORMATION",
         "Información personal": "PERSONAL_INFORMATION",
