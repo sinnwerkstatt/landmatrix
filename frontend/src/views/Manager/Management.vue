@@ -607,6 +607,9 @@
             case "REJECTED":
               objects = objects.filter((o) => o.draft_status === 4);
               break;
+            case "TO_DELETE":
+              objects = objects.filter((o) => o.draft_status === 5);
+              break;
             case "LIVE":
               objects = objects.filter(
                 (o) => [2, 3].includes(o.status) && o.draft_status === null

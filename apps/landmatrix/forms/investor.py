@@ -11,6 +11,7 @@ class InvestorForm(VueForm):
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),
         },
+        "combined_status": {"class": "StatusField"},
     }
     attributes = {"country": {"class": "CountryForeignKey"}}
 
