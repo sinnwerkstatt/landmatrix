@@ -4,8 +4,8 @@
       <div id="footer-etc" class="row">
         <div class="col-12 text-center">
           <p class="mb-0">
-            <a :href="legacy_link">&copy; {{ currentyear }}</a>
-            The Land Matrix | {{ $t("All rights reserved") }}
+            &copy; {{ new Date().getFullYear() }} The Land Matrix |
+            {{ $t("All rights reserved") }}
           </p>
         </div>
         <div class="social-buttons">
@@ -24,20 +24,7 @@
 <script lang="ts">
   import Vue from "vue";
 
-  export default Vue.extend({
-    name: "Footer",
-    data() {
-      return {
-        currentyear: new Date().getFullYear(),
-      };
-    },
-    computed: {
-      legacy_link() {
-        let base = "/legacy";
-        return base + this.$route.path;
-      },
-    },
-  });
+  export default Vue.extend({ name: "Footer" });
 </script>
 
 <style lang="scss" scoped>
