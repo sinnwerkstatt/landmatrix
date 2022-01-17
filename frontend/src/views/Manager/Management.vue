@@ -67,10 +67,40 @@
             <th>
               <DatePicker
                 v-model="created_daterange"
-                :input-props="{ style: 'width: 100%' }"
                 :max-date="new Date()"
-                mode="range"
-              />
+                mode="date"
+                is-range
+                :first-day-of-week="2"
+                :masks="{ input: 'YYYY-MM-DD' }"
+              >
+                <template #default="{ inputValue, inputEvents, isDragging }">
+                  <div class="flex flex-col sm:flex-row justify-start items-center">
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.start"
+                        v-on="inputEvents.start"
+                      />
+                    </div>
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.end"
+                        v-on="inputEvents.end"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </DatePicker>
+
               <br />
               <multiselect
                 v-if="user_is_staff"
@@ -98,10 +128,39 @@
             <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
               <DatePicker
                 v-model="modified_daterange"
-                :input-props="{ style: 'width: 100%' }"
                 :max-date="new Date()"
-                mode="range"
-              />
+                mode="date"
+                is-range
+                :first-day-of-week="2"
+                :masks="{ input: 'YYYY-MM-DD' }"
+              >
+                <template #default="{ inputValue, inputEvents, isDragging }">
+                  <div class="flex flex-col sm:flex-row justify-start items-center">
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.start"
+                        v-on="inputEvents.start"
+                      />
+                    </div>
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.end"
+                        v-on="inputEvents.end"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </DatePicker>
               <br />
               <multiselect
                 v-if="user_is_staff"
@@ -135,10 +194,39 @@
             >
               <DatePicker
                 v-model="fully_updated_daterange"
-                :input-props="{ style: 'width: 100%' }"
                 :max-date="new Date()"
-                mode="range"
-              />
+                mode="date"
+                is-range
+                :first-day-of-week="2"
+                :masks="{ input: 'YYYY-MM-DD' }"
+              >
+                <template #default="{ inputValue, inputEvents, isDragging }">
+                  <div class="flex flex-col sm:flex-row justify-start items-center">
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.start"
+                        v-on="inputEvents.start"
+                      />
+                    </div>
+                    <div class="relative flex-grow">
+                      <CalendarIcon
+                        cls="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+                      />
+                      <input
+                        class="flex-grow !pl-6 pr-2 py-1 bg-gray-100 border rounded w-full"
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.end"
+                        v-on="inputEvents.end"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </DatePicker>
               <br />
               <span @click="setSort('fully_updated_at')">
                 {{ $t("Fully updated") }}
@@ -224,6 +312,7 @@
   import type { Deal } from "$types/deal";
   import type { GQLFilter } from "$types/filters";
   import type { Country, Region } from "$types/wagtail";
+  import CalendarIcon from "$components/icons/Calendar.vue";
 
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);
@@ -239,7 +328,7 @@
 
   export default Vue.extend({
     name: "Management",
-    components: { LoadingPulse, DisplayField, DatePicker },
+    components: { CalendarIcon, LoadingPulse, DisplayField, DatePicker },
     metaInfo() {
       return { title: this.$t("Management").toString() };
     },
