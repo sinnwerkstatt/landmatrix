@@ -854,6 +854,8 @@ def _create_contracts(deal, groups):
                 cdate = "2008-09-24"
             if cdate == "2007-15":
                 cdate = "2007"
+            if cdate == "2009-20-08":
+                cdate = "2009-08-20"
             if date_year_field(cdate):
                 contract["date"] = cdate
             else:

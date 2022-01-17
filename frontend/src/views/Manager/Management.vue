@@ -15,7 +15,12 @@
             class="sidebar-option"
           >
             <div v-if="opt.space" />
-            <a v-else class="whitespace-nowrap" @click="switchTab(opt.id)">
+            <a
+              v-else
+              class="whitespace-nowrap"
+              :class="[!showDeals && 'text-teal']"
+              @click="switchTab(opt.id)"
+            >
               {{ $t(opt.name) }}
               <span v-if="opt.count">({{ opt.count }})</span>
             </a>
@@ -324,6 +329,7 @@
     space?: boolean;
     filters?: GQLFilter[];
     count?: number;
+    onlyForDeals?: boolean;
   };
 
   export default Vue.extend({
@@ -722,6 +728,7 @@
             id: "all_not_public",
             staff: true,
             filters: [{ field: "is_public", value: false }],
+            onlyForDeals: true,
           },
         ];
         return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
@@ -762,24 +769,43 @@
         this.rows = [];
         this.updatePagedRows();
       },
+      showDeals() {
+        console.log("changing 'showDeals'");
+        this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
+      },
     },
     created() {
       this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
     },
     methods: {
       async calc_count(query: FilterChoice): Promise<void> {
-        if (!query.filters) return;
-        const xx = await this.$apollo.query({
-          query: gql`
-            query deals($filters: [Filter]) {
-              deals(limit: 0, filters: $filters, subset: UNFILTERED) {
-                id
+        if (!query.filters || (query.onlyForDeals && !this.showDeals)) return;
+        let xx;
+        if (this.showDeals) {
+          xx = await this.$apollo.query({
+            query: gql`
+              query deals($filters: [Filter]) {
+                deals(limit: 0, filters: $filters, subset: UNFILTERED) {
+                  id
+                }
               }
-            }
-          `,
-          variables: { filters: query.filters },
-        });
-        query.count = xx.data.deals.length;
+            `,
+            variables: { filters: query.filters },
+          });
+          query.count = xx.data.deals.length;
+        } else {
+          xx = await this.$apollo.query({
+            query: gql`
+              query investors($filters: [Filter]) {
+                investors(limit: 0, filters: $filters, subset: UNFILTERED) {
+                  id
+                }
+              }
+            `,
+            variables: { filters: query.filters },
+          });
+          query.count = xx.data.investors.length;
+        }
       },
       updatePagedRows(): void {
         const PAGESIZE = 20;

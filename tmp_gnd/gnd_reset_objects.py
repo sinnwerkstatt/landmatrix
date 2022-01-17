@@ -18,6 +18,8 @@ y = """
     delete from landmatrix_investorventureinvolvement;
     alter sequence landmatrix_investorventureinvolvement_id_seq restart;
 
+    -- poetry run ./manage.py shell
+    -- from apps.landmatrix.models import Investor
     -- Investor.objects.all().delete()
 
     delete from landmatrix_investor;
@@ -25,7 +27,7 @@ y = """
     alter sequence landmatrix_investor_id_seq restart;
     alter sequence landmatrix_investorversion_id_seq restart;
 
-    -- ./manage.py sync_investors
+    -- poetry run ./manage.py sync_investors
 
     SELECT setval('landmatrix_investor_id_seq', COALESCE((SELECT MAX(id)+1 FROM landmatrix_investor), 1), false);
 
