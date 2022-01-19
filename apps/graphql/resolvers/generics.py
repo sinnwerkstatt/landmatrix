@@ -239,6 +239,7 @@ def object_edit(
 
             obj_version.id = None
             obj_version.created_by = user
+            obj_version.created_at = timezone.now()
             obj_version.serialized_data["draft_status"] = DRAFT_STATUS["DRAFT"]
             obj_version.save()
 
