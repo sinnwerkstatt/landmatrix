@@ -250,7 +250,9 @@ def object_edit(
                 draft_status_before=oldstatus,
                 draft_status_after=DRAFT_STATUS["DRAFT"],
             )
-            Object.objects.filter(id=obj.id).update(current_draft=obj_version)
+            Object.objects.filter(id=obj.id).update(
+                current_draft=obj_version, draft_status=DRAFT_STATUS["DRAFT"]
+            )
         else:
             obj_version.save()
             if obj.status == STATUS["DRAFT"]:
