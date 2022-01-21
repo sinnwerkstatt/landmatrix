@@ -307,6 +307,7 @@
   import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import DisplayField from "$components/Fields/DisplayField.vue";
+  import CalendarIcon from "$components/icons/Calendar.vue";
   import { sortAnything } from "$utils";
   import { combined_status_fn } from "$utils/choices";
   // @ts-ignore
@@ -317,7 +318,6 @@
   import type { Deal } from "$types/deal";
   import type { GQLFilter } from "$types/filters";
   import type { Country, Region } from "$types/wagtail";
-  import CalendarIcon from "$components/icons/Calendar.vue";
 
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);

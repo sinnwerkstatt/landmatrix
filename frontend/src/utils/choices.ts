@@ -189,7 +189,7 @@ export const combined_status_fn = (
   if (draft_status === 4) return toString ? "Rejected" : "REJECTED";
   if (draft_status === 5) return toString ? "To Delete" : "TO_DELETE";
   if ([2, 3].includes(status) && draft_status === null)
-    return toString ? "Live" : "LIVE";
+    return toString ? "Active" : "ACTIVE";
   throw Error(`Invalid status ${status} ${draft_status}`);
 };
 

@@ -481,13 +481,13 @@
           if (involvement.involvement_type === "INVESTOR")
             return this.$t("Parent company");
           if (involvement.involvement_type === "VENTURE")
-            return this.$t("Involved in as Parent Company");
+            return this.$t("Subsidiary company");
         }
         if (involvement.role === "LENDER") {
           if (involvement.involvement_type === "INVESTOR")
             return this.$t("Tertiary investor/lender");
           if (involvement.involvement_type === "VENTURE")
-            return this.$t("Involved in as Tertiary investor/lender");
+            return this.$t("Beneficiary company");
         }
       },
       onNewDepth(value) {
