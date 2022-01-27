@@ -60,6 +60,7 @@
             v-model="country"
             :options="countries_with_deals"
             label="name"
+            select-label=""
             placeholder="Country"
             @change="region_id = null"
             @select="region_id = null"
@@ -140,12 +141,14 @@
               placeholder="Investor"
               track-by="id"
               label="name"
+              select-label=""
             />
             {{ $t("Country of registration") }}
             <multiselect
               v-model="investor_country"
               :options="countries"
               label="name"
+              select-label=""
               placeholder="Country of registration"
             />
           </div>
@@ -266,6 +269,7 @@
             group-values="options"
             track-by="id"
             label="name"
+            select-label=""
           />
         </FilterCollapse>
         <FilterCollapse

@@ -54,6 +54,7 @@
               :group-label="formfield.with_categories ? 'category' : null"
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
+              select-label=""
               @input="updateEntries"
             />
           </td>

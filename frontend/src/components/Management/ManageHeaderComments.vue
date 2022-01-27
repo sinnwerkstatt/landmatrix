@@ -22,6 +22,7 @@
             :options="users"
             placeholder="Send to"
             track-by="id"
+            select-label=""
           />
           <a class="btn btn-default" @click.prevent="add_comment">
             {{ $t("Send") }}

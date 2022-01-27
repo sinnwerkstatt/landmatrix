@@ -38,6 +38,7 @@
               :placeholder="formfield.placeholder"
               :group-select="true"
               :custom-label="(x) => labels[x]"
+              select-label=""
               @input="updateEntries"
             />
           </td>

@@ -50,6 +50,7 @@
                 v-model="selected_country"
                 :options="country_options"
                 label="name"
+                select-label=""
                 placeholder="Country"
               />
               <span @click="setSort('country')">
@@ -115,6 +116,7 @@
                 :multiple="false"
                 :options="users"
                 label="username"
+                select-label=""
                 placeholder="User"
                 track-by="id"
               />
@@ -175,6 +177,7 @@
                 :multiple="false"
                 :options="users"
                 label="username"
+                select-label=""
                 placeholder="User"
                 track-by="id"
               />
@@ -253,6 +256,7 @@
                 :placeholder="$t('Status')"
                 label="name"
                 track-by="id"
+                select-label=""
               />
               <span @click="setSort('status')">{{ $t("Status") }}</span>
             </th>

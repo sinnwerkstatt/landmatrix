@@ -29,6 +29,7 @@
             :close-on-select="true"
             :allow-empty="false"
             placeholder="Send to"
+            select-label=""
             track-by="id"
             :custom-label="(u) => `${u.full_name} (${u.username})`"
             @select="to_user_selected = $event"

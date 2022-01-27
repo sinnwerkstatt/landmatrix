@@ -6,6 +6,7 @@
         :options="target_countries"
         label="name"
         track-by="id"
+        select-label=""
         :allow-empty="!formfield.required"
         :disabled="disabled"
       />

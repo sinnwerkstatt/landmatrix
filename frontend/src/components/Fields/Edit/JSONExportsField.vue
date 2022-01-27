@@ -50,6 +50,7 @@
               :multiple="true"
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
+              select-label=""
               @input="updateEntries"
             />
           </td>

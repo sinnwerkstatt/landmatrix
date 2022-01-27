@@ -7,6 +7,7 @@
           :options="regions"
           :value="selectedRegion"
           label="name"
+          select-label=""
           placeholder="Region"
           @input="(r) => $emit('updateRegion', r)"
         />
@@ -16,6 +17,7 @@
           :options="countries"
           :value="selectedCountry"
           label="name"
+          select-label=""
           placeholder="Country"
           @input="(c) => $emit('updateCountry', c)"
         />

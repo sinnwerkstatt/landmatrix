@@ -6,6 +6,7 @@
         v-model="val"
         :options="currencies"
         label="name"
+        select-label=""
         :custom-label="(mdl) => `${mdl.name} (${mdl.code})`"
         track-by="id"
         :allow-empty="!formfield.required"
