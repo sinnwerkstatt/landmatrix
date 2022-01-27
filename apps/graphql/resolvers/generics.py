@@ -255,6 +255,17 @@ def object_edit(
                 current_draft=obj_version, draft_status=DRAFT_STATUS["DRAFT"]
             )
         else:
+            if obj_version.serialized_data["draft_status"] == DRAFT_STATUS["REJECTED"]:
+                add_workflow_info(
+                    otype=otype,
+                    obj=obj,
+                    obj_version=obj_version,
+                    from_user=user,
+                    draft_status_before=DRAFT_STATUS["REJECTED"],
+                    draft_status_after=DRAFT_STATUS["DRAFT"],
+                )
+                obj_version.serialized_data["draft_status"] = DRAFT_STATUS["DRAFT"]
+
             obj_version.save()
             if obj.status == STATUS["DRAFT"]:
                 obj.save()
