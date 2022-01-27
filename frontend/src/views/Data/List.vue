@@ -67,7 +67,7 @@
     methods: {
       download_link(format) {
         let filters = JSON.stringify(this.$store.getters.filtersForGQL);
-        let subset = this.$store.state.filters.publicOnly ? "PUBLIC" : "ACTIVE";
+        let subset = this.$store.state.publicOnly ? "PUBLIC" : "ACTIVE";
         return `/api/legacy_export/?filters=${filters}&subset=${subset}&format=${format}`;
       },
       trackDownload(format) {

@@ -51,10 +51,9 @@
 
 <script lang="ts">
   import Vue from "vue";
-  import { data_deal_query_gql } from "$views/Data/query";
+  import { data_deal_query } from "$views/Data/query";
   import { chart_download, fileName } from "$utils/charts";
   import type { Deal } from "$types/deal";
-  import type { OperationVariables } from "apollo-client/core/types";
 
   export default Vue.extend({
     name: "CountryProfileChartWrapper",
@@ -66,23 +65,7 @@
     data() {
       return { deals: [] as Deal[] };
     },
-    apollo: {
-      deals: {
-        query: data_deal_query_gql,
-        variables(): OperationVariables {
-          return {
-            limit: 0,
-            filters: this.$store.getters.filtersForGQL,
-            subset: this.$store.getters.userAuthenticated
-              ? this.$store.state.filters.publicOnly
-                ? "PUBLIC"
-                : "ACTIVE"
-              : "PUBLIC",
-          };
-        },
-        debounce: 200,
-      },
-    },
+    apollo: { deals: data_deal_query },
     computed: {
       isChrome(): boolean {
         return /Google Inc/.test(navigator.vendor);

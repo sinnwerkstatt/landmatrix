@@ -164,7 +164,7 @@
             limit: 0,
             filters: this.$store.getters.filtersForGQL,
             subset: this.$store.getters.userAuthenticated
-              ? this.$store.state.filters.publicOnly
+              ? this.$store.state.publicOnly
                 ? "ACTIVE"
                 : "UNFILTERED"
               : "PUBLIC",

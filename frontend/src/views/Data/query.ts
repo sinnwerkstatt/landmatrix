@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import type { OperationVariables } from "apollo-client/core/types";
+import store from "$store";
 
 export const data_deal_query_gql = gql`
   query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
@@ -45,9 +46,9 @@ export const data_deal_query = {
   variables(): OperationVariables {
     return {
       limit: 0,
-      filters: this.$store.getters.filtersForGQL,
-      subset: this.$store.getters.userAuthenticated
-        ? this.$store.state.filters.publicOnly
+      filters: store.getters.filtersForGQL,
+      subset: store.getters.userAuthenticated
+        ? store.state.publicOnly
           ? "PUBLIC"
           : "ACTIVE"
         : "PUBLIC",
@@ -70,9 +71,9 @@ export const data_deal_produce_query = {
   variables(): OperationVariables {
     return {
       limit: 0,
-      filters: this.$store.getters.filtersForGQL,
-      subset: this.$store.getters.userAuthenticated
-        ? this.$store.state.filters.publicOnly
+      filters: store.getters.filtersForGQL,
+      subset: store.getters.userAuthenticated
+        ? store.state.publicOnly
           ? "PUBLIC"
           : "ACTIVE"
         : "PUBLIC",

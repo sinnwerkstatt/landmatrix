@@ -559,7 +559,7 @@
       },
       publicOnly: {
         get() {
-          return this.$store.state.filters.publicOnly;
+          return this.$store.state.publicOnly;
         },
         set() {
           // do nothing - only on user action: see updateDefaultFilter()
