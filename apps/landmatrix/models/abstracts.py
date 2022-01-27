@@ -66,8 +66,8 @@ class Version(models.Model):
             if x.__class__.__name__ == "ForeignKey":
                 if edict.get(x.name):
                     edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
-        edict["created_at"] = self.created_at
-        edict["created_by"] = self.created_by
+        # edict["created_at"] = self.created_at
+        # edict["created_by"] = self.created_by
         return edict
 
 
