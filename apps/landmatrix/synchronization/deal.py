@@ -1044,6 +1044,7 @@ def histivity_to_deal(activity_pk: int = None, activity_identifier: int = None):
             # if: there is not a current_model
             # or: there is a current model but it's a draft
             # or: the new status is Live, Updated or Deleted
+            deal.current_draft = None
             deal.save()
         else:
             Deal.objects.filter(pk=deal.pk).update(
