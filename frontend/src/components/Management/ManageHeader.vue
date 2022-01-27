@@ -316,12 +316,18 @@
         // object ist deleted
         if (!this.objectVersion && this.object.status === 4) return false;
         if (this.is_active_with_draft) return false;
+        if (this.object.draft_status === 4)
+          return this.$store.state.user.role === "ADMINISTRATOR";
         return is_authorized(this.object);
       },
       is_deletable(): boolean {
         if (this.is_active_with_draft) return false;
         if (this.is_old_draft) return false;
-        if (this.object.draft_status === null)
+
+        if (
+          this.object.draft_status === null ||
+          this.object.draft_status === 4 // 4 = rejected
+        )
           return this.$store.state.user.role === "ADMINISTRATOR";
         return is_authorized(this.object);
       },
