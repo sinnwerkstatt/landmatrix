@@ -47,8 +47,18 @@
         </div>
         <div v-else class="status-and-progress-buttons">
           <div class="fat-stati">
-            <div :class="{ active: object.draft_status === 1 }">
+            <div
+              :class="{
+                active: object.draft_status === 1 || object.draft_status === 4,
+              }"
+            >
               <span>{{ $t("Draft") }}</span>
+              <span
+                v-if="object.draft_status === 4"
+                class="font-bold text-red-600 pl-2"
+              >
+                ({{ $t("Rejected") }})
+              </span>
             </div>
             <div :class="{ active: object.draft_status === 2 }">
               <span>{{ $t("Submitted for review") }}</span>

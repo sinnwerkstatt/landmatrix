@@ -722,7 +722,7 @@
             name: "All drafts",
             id: "all_drafts",
             staff: true,
-            filters: [{ field: "draft_status", exclusion: true, value: null }],
+            filters: [{ field: "current_draft", exclusion: true, value: null }],
           },
           {
             name: "All deleted",

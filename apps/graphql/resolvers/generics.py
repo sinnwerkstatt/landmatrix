@@ -265,6 +265,9 @@ def object_edit(
                     draft_status_after=DRAFT_STATUS["DRAFT"],
                 )
                 obj_version.serialized_data["draft_status"] = DRAFT_STATUS["DRAFT"]
+                Object.objects.filter(id=obj.id).update(
+                    current_draft=obj_version, draft_status=DRAFT_STATUS["DRAFT"]
+                )
 
             obj_version.save()
             if obj.status == STATUS["DRAFT"]:
