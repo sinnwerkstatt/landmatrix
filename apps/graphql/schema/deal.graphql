@@ -197,7 +197,7 @@ type Deal {
   versions: [DealVersion]
   workflowinfos: [DealWorkflowInfo]
 
-  comments: [DealComment]
+#  comments: [DealComment]
 
   # for statistics only
   country_id: Int

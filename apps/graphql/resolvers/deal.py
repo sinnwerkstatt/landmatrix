@@ -30,15 +30,12 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
     add_versions = False
     add_workflowinfos = False
-    add_comments = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
             add_versions = True
         elif "workflowinfos" in field:
             add_workflowinfos = True
-        elif "comments" in field:
-            add_comments = True
         else:
             filtered_fields += [field]
 
@@ -71,24 +68,6 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
             dwi.to_dict()
             for dwi in DealWorkflowInfo.objects.filter(deal_id=id).order_by(
                 "-timestamp"
-            )
-        ]
-    if add_comments:
-        deal_ct = ContentType.objects.get(app_label="landmatrix", model="deal")
-        deal["comments"] = [
-            {
-                "id": comm.id,
-                "title": comm.title,
-                "parent": comm.parent,
-                "last_child": comm.last_child,
-                "tree_path": comm.tree_path,
-                "newest_activity": comm.newest_activity,
-                "comment": comm.comment,
-                "submit_date": comm.submit_date,
-                "userinfo": comm._get_userinfo(),
-            }
-            for comm in ThreadedComment.objects.filter(
-                content_type=deal_ct, object_pk=id, is_public=True, is_removed=False
             )
         ]
 

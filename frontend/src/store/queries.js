@@ -435,18 +435,18 @@ export const deal_gql_query = gql`
         comment
         processed_by_receiver
       }
-      comments {
-        id
-        userinfo
-        comment
-        submit_date
-        title
-        parent {
-          id
-        }
-        tree_path
-        newest_activity
-      }
+      #      comments {
+      #        id
+      #        userinfo
+      #        comment
+      #        submit_date
+      #        title
+      #        parent {
+      #          id
+      #        }
+      #        tree_path
+      #        newest_activity
+      #      }
       status
       draft_status
     }
