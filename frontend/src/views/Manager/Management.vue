@@ -643,10 +643,7 @@
               { field: "draft_status", value: 1 },
               { field: "workflowinfos.draft_status_before", value: 2 },
               { field: "workflowinfos.draft_status_after", value: 1 },
-              // {
-              //   field: "current_draft.created_by_id",
-              //   value: this.user.id,
-              // },
+              { field: "workflowinfos.to_user_id", value: this.user.id },
             ],
           },
           {
