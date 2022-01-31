@@ -727,13 +727,13 @@
             staff: true,
             filters: [{ field: "status", value: 4 }],
           },
-          {
-            name: "All not public",
-            id: "all_not_public",
-            staff: true,
-            filters: [{ field: "is_public", value: false }],
-            onlyForDeals: true,
-          },
+          // {
+          //   name: "All not public",
+          //   id: "all_not_public",
+          //   staff: true,
+          //   filters: [{ field: "is_public", value: false }],
+          //   onlyForDeals: true,
+          // },
         ];
         return all_opts.filter((o) => this.user_is_staff || o.staff !== true);
       },
