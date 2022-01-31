@@ -12,7 +12,7 @@
         <td></td>
       </tr>
       <tr>
-        <th class="label">Publicly visible deals<sup class="tiny">1</sup></th>
+        <th class="text-left">Publicly visible deals<sup class="tiny">1</sup></th>
         <td>{{ goalStatistics.deals_public_count }}</td>
         <td></td>
         <td></td>
@@ -20,7 +20,7 @@
         <td></td>
       </tr>
       <tr>
-        <th class="label">Deals with with multiple data sources</th>
+        <th class="text-left">Deals with with multiple data sources</th>
         <td>{{ goalStatistics.deals_public_multi_ds_count }}</td>
         <td>
           {{
@@ -93,25 +93,15 @@
   };
 </script>
 
-<style lang="scss" scoped>
-  table.goals {
-    th,
-    td {
-      padding: 0.3em;
-    }
+<style scoped>
+  th {
+    padding: 0.3em;
+    text-align: center;
+    white-space: nowrap;
+  }
 
-    th {
-      text-align: center;
-      white-space: nowrap;
-
-      &.label {
-        text-align: left;
-      }
-    }
-
-    td {
-      text-align: right;
-      padding: 0.3em 1.5em;
-    }
+  td {
+    text-align: right;
+    padding: 0.3em 1.5em;
   }
 </style>
