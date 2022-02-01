@@ -7,8 +7,8 @@ import Multiselect from "vue-multiselect";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
-import * as Sentry from "@sentry/vue";
-import { Integrations } from "@sentry/tracing";
+// import * as Sentry from "@sentry/vue";
+// import { Integrations } from "@sentry/tracing";
 
 // @ts-ignore
 import VueMatomo from "vue-matomo";
@@ -87,21 +87,21 @@ Vue.use(VueMatomo, {
   // domains: '*.landmatrix.org',
 });
 
-if (import.meta.env.PROD)
-  Sentry.init({
-    Vue,
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [
-      new Integrations.BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-        tracingOrigins: ["dev.landmatrix.org", "landmatrix.org", /^\//],
-      }),
-    ],
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
-  });
+// if (import.meta.env.PROD)
+//   Sentry.init({
+//     Vue,
+//     dsn: import.meta.env.VITE_SENTRY_DSN,
+//     integrations: [
+//       new Integrations.BrowserTracing({
+//         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+//         tracingOrigins: ["dev.landmatrix.org", "landmatrix.org", /^\//],
+//       }),
+//     ],
+//     // Set tracesSampleRate to 1.0 to capture 100%
+//     // of transactions for performance monitoring.
+//     // We recommend adjusting this value in production
+//     tracesSampleRate: 1.0,
+//   });
 
 /* eslint-disable vue/component-definition-name-casing */
 Vue.component("wagtail-title", Title);
