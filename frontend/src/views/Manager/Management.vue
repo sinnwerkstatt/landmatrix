@@ -826,6 +826,15 @@
       switchTab(tab: string): void {
         this.selectedTab = tab;
         localStorage.management_selectedTab = tab;
+        this.selected_country = null;
+        this.selected_from_size = null;
+        this.selected_to_size = null;
+        this.created_daterang = null;
+        this.created_by = null;
+        this.modified_daterange = null;
+        this.modified_b = null;
+        this.fully_updated_daterang = null;
+        this.selected_combined_status = null;
       },
     },
   });
