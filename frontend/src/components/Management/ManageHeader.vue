@@ -419,9 +419,13 @@
           : this.$t("Sets the investor active").toString();
       },
       transition_to_user(): User {
-        const latest_draft_creation = this.object.workflowinfos.find((v) => {
+        let latest_draft_creation = this.object.workflowinfos.find((v) => {
           return !v.draft_status_before && v.draft_status_after === 1;
         });
+        if (!latest_draft_creation)
+          latest_draft_creation = this.object.workflowinfos.find((v) => {
+            return !v.draft_status_before && v.draft_status_after === 2;
+          });
         return latest_draft_creation.from_user;
       },
     },
