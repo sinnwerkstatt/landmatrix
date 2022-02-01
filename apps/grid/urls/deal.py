@@ -1,7 +1,14 @@
 from django.urls import path
 
 from apps.feeds.views import ActivityChangesFeed
-from apps.grid.views.deal import DealDetailView, DealListView
+from apps.grid.views.deal import (
+    DealDetailView,
+    DealListView,
+    DealUpdateView,
+    DealCreateView,
+    DealDeleteView,
+    DealRecoverView,
+)
 from apps.grid.views.export import ExportView
 
 urlpatterns = [
@@ -23,14 +30,14 @@ urlpatterns = [
         {"format": "PDF"},
         name="deal_detail_pdf",
     ),
-    # path("edit/<int:deal_id>/", DealUpdateView.as_view(), name="change_deal"),
-    # path(
-    #     "edit/<int:deal_id>/<int:history_id>/",
-    #     DealUpdateView.as_view(),
-    #     name="change_deal",
-    # ),
-    # path("add/", DealCreateView.as_view(), name="add_deal"),
-    # path("delete/<int:deal_id>/", DealDeleteView.as_view(), name="delete_deal"),
-    # path("recover/<int:deal_id>/", DealRecoverView.as_view(), name="recover_deal"),
+    path("edit/<int:deal_id>/", DealUpdateView.as_view(), name="change_deal"),
+    path(
+        "edit/<int:deal_id>/<int:history_id>/",
+        DealUpdateView.as_view(),
+        name="change_deal",
+    ),
+    path("add/", DealCreateView.as_view(), name="add_deal"),
+    path("delete/<int:deal_id>/", DealDeleteView.as_view(), name="delete_deal"),
+    path("recover/<int:deal_id>/", DealRecoverView.as_view(), name="recover_deal"),
     path("", DealListView.as_view(), name="deals"),
 ]
