@@ -1,12 +1,7 @@
 from django.urls import re_path, path
 
-from apps.grid.views.investor import (
-    InvestorDetailView,
-    InvestorCreateView,
-    DeleteInvestorView,
-    RecoverInvestorView,
-    InvestorUpdateView,
-)
+from apps.grid.views.base import not_avail
+from apps.grid.views.investor import InvestorDetailView
 
 urlpatterns = [
     # dont' just refactor these two without checking apps.grids.views.investor.InvestorUpdateView.dispatch()
@@ -19,23 +14,9 @@ urlpatterns = [
         InvestorDetailView.as_view(),
         name="investor_detail",
     ),
-    path("add/", InvestorCreateView.as_view(), name="investor_add"),
-    path(
-        "delete/<int:investor_id>/",
-        DeleteInvestorView.as_view(),
-        name="investor_delete",
-    ),
-    path(
-        "recover/<int:investor_id>/",
-        RecoverInvestorView.as_view(),
-        name="investor_recover",
-    ),
-    path(
-        "edit/<int:investor_id>/", InvestorUpdateView.as_view(), name="investor_update"
-    ),
-    path(
-        "edit/<int:investor_id>/<int:history_id>/",
-        InvestorUpdateView.as_view(),
-        name="investor_update",
-    ),
+    path("add/", not_avail, name="investor_add"),
+    path("delete/<int:investor_id>/", not_avail, name="investor_delete"),
+    path("recover/<int:investor_id>/", not_avail, name="investor_recover"),
+    path("edit/<int:investor_id>/", not_avail, name="investor_update"),
+    path("edit/<int:investor_id>/<int:history_id>/", not_avail, name="investor_update"),
 ]

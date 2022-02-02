@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from django.http import Http404
+from django.shortcuts import render
 from django.template.defaultfilters import urlencode
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
@@ -14,7 +15,11 @@ from apps.grid.forms.choices import (
 from apps.grid.views.browse_filter_conditions import get_activity_field_label
 from apps.grid.views.filter import FilterWidgetMixin
 from apps.landmatrix.models import Country, Crop, Region
-from apps.wagtailcms.models import WagtailRootPage
+
+
+def not_avail(request, *args, **kwargs):
+    return render(request, template_name="not_avail.html")
+
 
 INTENTION_MAP = {}
 for choice, value in intention_choices:
@@ -34,7 +39,7 @@ for choice, value in intention_choices:
         "value": value,
         "slug": urlencode(choice),
         "order_by": value,
-        #'is_parent': choices and len(choices) > 0
+        # 'is_parent': choices and len(choices) > 0
     }
     # if not choices:
     #    continue
@@ -48,7 +53,6 @@ for choice, value in intention_choices:
 
 
 class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
-
     LOAD_MORE_AMOUNT = 20
     QUERY_LIMITED_GROUPS = [
         "target_country",
