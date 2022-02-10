@@ -360,6 +360,7 @@ def flatten_date_current_value(data, field, fieldname) -> None:
 
 def flatten_array_choices(data, field, choices) -> None:
     if not data.get(field):
+        data[field] = ""
         return
 
     data[field] = "|".join([choices[x] for x in data[field]])
