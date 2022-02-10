@@ -27,3 +27,7 @@
 p {
   margin: 0 0 1rem;
 }
+
+ul {
+  @apply list-disc pl-4;
+}
