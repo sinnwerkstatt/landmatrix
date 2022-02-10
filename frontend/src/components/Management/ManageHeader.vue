@@ -225,7 +225,7 @@
       v-if="show_to_delete_overlay"
       :comment-input="true"
       :comment-required="true"
-      :title="submit_to_delete_title"
+      :title="get_submit_to_delete_title"
       @cancel="show_to_delete_overlay = false"
       @submit="do_delete($event)"
     />
@@ -294,14 +294,6 @@
           this.otype === "deal"
             ? this.$t("Submits the deal for activation")
             : this.$t("Submits the investor for activation"),
-        submit_to_delete_title:
-          !this.objectVersion && this.object.status === 4
-            ? this.otype === "deal"
-              ? this.$t("Reactivate deal")
-              : this.$t("Reactivate investor")
-            : this.otype === "deal"
-            ? this.$t("Delete deal")
-            : this.$t("Delete investor"),
       };
     },
     apollo: {
@@ -408,6 +400,21 @@
           return this.otype === "deal"
             ? this.$t("Deletes this deal").toString()
             : this.$t("Deletes this investor").toString();
+      },
+      get_submit_to_delete_title(): string {
+        if (this.objectVersion)
+          return this.otype === "deal"
+            ? this.$t("Delete deal version").toString()
+            : this.$t("Delete investor version").toString();
+
+        if (this.object.status === 4)
+          return this.otype === "deal"
+            ? this.$t("Reactivate deal").toString()
+            : this.$t("Reactivate investor").toString();
+
+        return this.otype === "deal"
+          ? this.$t("Delete deal").toString()
+          : this.$t("Delete investor").toString();
       },
       get_activate_description(): string {
         return this.has_active
