@@ -294,14 +294,21 @@
           this.otype === "deal"
             ? this.$t("Submits the deal for activation")
             : this.$t("Submits the investor for activation"),
-        submit_to_delete_title:
-          !this.objectVersion && this.object.status === 4
+        submit_to_delete_title: this.objectVersion
+          ? this.object.status === 4
             ? this.otype === "deal"
-              ? this.$t("Reactivate deal")
-              : this.$t("Reactivate investor")
+              ? this.$t("Reactivate deal version")
+              : this.$t("Reactivate investor version")
             : this.otype === "deal"
-            ? this.$t("Delete deal")
-            : this.$t("Delete investor"),
+            ? this.$t("Delete deal version")
+            : this.$t("Delete investor version")
+          : this.object.status === 4
+          ? this.otype === "deal"
+            ? this.$t("Reactivate deal")
+            : this.$t("Reactivate investor")
+          : this.otype === "deal"
+          ? this.$t("Delete deal")
+          : this.$t("Delete investor"),
       };
     },
     apollo: {
