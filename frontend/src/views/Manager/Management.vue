@@ -775,11 +775,11 @@
       },
       showDeals() {
         console.log("changing 'showDeals'");
-        this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
+        // this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
       },
     },
     created() {
-      this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
+      // this.filterChoices.forEach((sopt: FilterChoice) => this.calc_count(sopt));
     },
     methods: {
       async calc_count(query: FilterChoice): Promise<void> {
