@@ -43,7 +43,6 @@
             <div>date: {{ ds.date }}</div>
             <div>name: {{ ds.name }}</div>
             <div>company: {{ ds.company }}</div>
-            <div>old_gid: {{ ds.old_group_id }}</div>
             <div class="whitespace-nowrap">
               <div :class="{ probably_broken: ds.file_is_probably_broken }">
                 file:
