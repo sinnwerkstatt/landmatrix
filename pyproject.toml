@@ -15,13 +15,15 @@ Django = "<4"
 djangorestframework = "<4"
 wagtail = "<2.15"
 psycopg2-binary = "*"
+django-cors-headers = "*"
 
 fastjsonschema = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
 # greennewdeal
 geojson-rewind = "^0.2.0"
-ariadne = ">=0.12"
+ariadne = ">=0.14"
+ariadne_django = "*"
 django-redis = "^4.12.1"
 wagtail-orderable = ">=1.0.3"
 
@@ -50,8 +52,7 @@ django-simple-history = "*"
 django-wkhtmltopdf = "*"
 
 #wagtail-blog = "*"
-# TODO: check this here for new releases. broken is 0.10.17 still.
-wagtail-modeltranslation = {git = "https://github.com/infoportugal/wagtail-modeltranslation", branch = "master" }
+wagtail-modeltranslation = "*"
 
 geojson = "<2"
 unicodecsv = "*"

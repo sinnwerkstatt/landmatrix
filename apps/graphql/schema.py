@@ -5,7 +5,7 @@ from ariadne import (
     load_schema_from_path,
     make_executable_schema,
 )
-from ariadne.contrib.django.scalars import date_scalar
+from ariadne_django.scalars import date_scalar
 
 from apps.graphql.resolvers.blog import (
     resolve_blogpages,

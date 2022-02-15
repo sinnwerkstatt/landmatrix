@@ -97,19 +97,21 @@ INSTALLED_APPS = [
     "celery",
     # green new deal
     "wagtail.api.v2",
-    "ariadne.contrib.django",
+    "ariadne_django",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     # "django.middleware.cache.UpdateCacheMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
     # populate the history user automatically
     "simple_history.middleware.HistoryRequestMiddleware",
     # wagtail and dependencies
@@ -173,6 +175,12 @@ CACHES = {
         "LOCATION": "/tmp/file_resubmit/",
     },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "https://dev.accountability.landmatrix.org",
+    "https://accountability.landmatrix.org",
+]
+CORS_ALLOW_CREDENTIALS = True
 
 COMMENTS_APP = "apps.public_comments"
 
