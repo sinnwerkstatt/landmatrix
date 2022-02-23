@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     "apps.landmatrix",
     "apps.grid",
     "apps.map",
-    "apps.charts",
     "apps.editor",
     "apps.wagtailcms",
     "apps.api",
