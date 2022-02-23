@@ -91,7 +91,6 @@ INSTALLED_APPS = [
     "apps.api",
     "apps.notifications",
     "apps.public_comments",
-    "apps.feeds",
     "impersonate",
     "celery",
     # green new deal

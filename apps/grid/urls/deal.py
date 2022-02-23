@@ -1,6 +1,5 @@
 from django.urls import path
 
-from apps.feeds.views import ActivityChangesFeed
 from apps.grid.views.base import not_avail
 from apps.grid.views.deal import (
     DealDetailView,
@@ -18,7 +17,6 @@ urlpatterns = [
         name="deal_detail_pdf",
     ),
     path("<int:deal_id>.<suffix:format>/", ExportView.as_view(), name="export"),
-    path("<int:deal_id>/changes.rss", ActivityChangesFeed(), name="deal_changes_feed"),
     path(
         "<int:deal_id>/<int:history_id>/", DealDetailView.as_view(), name="deal_detail"
     ),
