@@ -214,9 +214,6 @@ ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
 print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
 
-# GreenNewDeal
-OLD_ELASTIC = env.bool("OLD_ELASTIC", default=True)
-
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"
 CELERY_REDIS_BACKEND = BROKER_URL

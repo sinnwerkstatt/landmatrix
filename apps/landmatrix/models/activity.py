@@ -1000,19 +1000,19 @@ class HistoricalActivity(ActivityBase):
         return comment
 
     def save(self, *args, **kwargs):
-        update_elasticsearch = kwargs.pop("update_elasticsearch", True)
+        kwargs.pop("update_elasticsearch", True)
         super().save(*args, **kwargs)
-        if update_elasticsearch and settings.OLD_ELASTIC:
-            from apps.landmatrix.tasks import index_activity, delete_historicalactivity
-
-            if self.fk_status_id == self.STATUS_DELETED:
-                transaction.on_commit(
-                    lambda: delete_historicalactivity.delay(self.activity_identifier)
-                )
-            else:
-                transaction.on_commit(
-                    lambda: index_activity.delay(self.activity_identifier)
-                )
+        # if update_elasticsearch and settings.OLD_ELASTIC:
+        #     from apps.landmatrix.tasks import index_activity, delete_historicalactivity
+        #
+        #     if self.fk_status_id == self.STATUS_DELETED:
+        #         transaction.on_commit(
+        #             lambda: delete_historicalactivity.delay(self.activity_identifier)
+        #         )
+        #     else:
+        #         transaction.on_commit(
+        #             lambda: index_activity.delay(self.activity_identifier)
+        #         )
 
     def trigger_gnd(self):
         return  # do nothing, we're migrating 🎉
