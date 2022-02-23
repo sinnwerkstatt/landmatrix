@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     "taggit",
     "bootstrap3_datetime",
     # 'treebeard',
-    "simple_history",
     "crispy_forms",
     "wkhtmltopdf",
     "threadedcomments",
@@ -112,8 +111,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # populate the history user automatically
-    "simple_history.middleware.HistoryRequestMiddleware",
     # wagtail and dependencies
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",

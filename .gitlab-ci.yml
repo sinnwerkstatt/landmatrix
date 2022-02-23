@@ -25,7 +25,7 @@ django formatting and linting:
     - poetry install -E production
     - npm i --force
     - black . --check
-    - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
+    # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
 frontend formatting and linting:
