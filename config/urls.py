@@ -84,10 +84,8 @@ if settings.NEW_ROUTES:
             InvestorComparisonView.as_view(),
             name="compare_investors",
         ),
-        # Legacy wagtail pages
-        path("legacy/", include("wagtail.core.urls")),
-        # NEW DEAL
         path("", include("apps.landmatrix.urls")),
+        path("", include("wagtail.core.urls")),
     ]
 
 else:
