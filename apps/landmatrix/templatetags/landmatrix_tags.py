@@ -54,10 +54,3 @@ def nav_countries():
         },
     ]
     return countries
-
-
-@register.filter
-def newdeallink(x):
-    if not settings.NEW_ROUTES:
-        return f"/newdeal{x}"
-    return x.replace("/legacy", "")
