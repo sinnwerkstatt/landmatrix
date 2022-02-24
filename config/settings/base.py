@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.sites",
     # OL3 widgets must come before GIS
-    "apps.ol3_widgets",
     "django.contrib.gis",
     # wagtail and dependencies
     "wagtail.contrib.modeladmin",
@@ -71,8 +70,6 @@ INSTALLED_APPS = [
     # 'treebeard',
     "crispy_forms",
     "wkhtmltopdf",
-    "threadedcomments",
-    "django_comments",
     "captcha",
     "rest_framework",
     "rest_framework.authtoken",
@@ -83,13 +80,9 @@ INSTALLED_APPS = [
     #   apps of the actual landmatrix project
     "apps.message",
     "apps.landmatrix",
-    "apps.grid",
-    "apps.map",
     "apps.editor",
     "apps.wagtailcms",
-    "apps.api",
     "apps.notifications",
-    "apps.public_comments",
     "impersonate",
     "celery",
     # green new deal
@@ -130,7 +123,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
-                "apps.wagtailcms.context_processors.add_data_source_dir",
             ]
         },
     }
@@ -177,7 +169,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-COMMENTS_APP = "apps.public_comments"
 
 WAGTAIL_SITE_NAME = "Land Matrix"
 
@@ -200,9 +191,9 @@ IMPERSONATE = {
 
 ELASTICSEARCH_URL = env("ELASTICSEARCH_URL", default="http://localhost")
 try:
-    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r").read()
+    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r", encoding="UTF-8").read()
 except FileNotFoundError:
-    open(".es_index_ab_switch", "w").write("a")
+    open(".es_index_ab_switch", "w", encoding="UTF-8").write("a")
     ELASTIC_INDEX_AB = "a"
 ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatrix")
 ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"

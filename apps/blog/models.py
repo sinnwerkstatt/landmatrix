@@ -17,8 +17,6 @@ from .abstract import (
     BlogPageTagAbstract,
 )
 
-COMMENTS_APP = getattr(settings, "COMMENTS_APP", None)
-
 
 class BlogIndexPage(BlogIndexPageAbstract):
     max_count = 1
@@ -86,7 +84,6 @@ class BlogIndexPage(BlogIndexPageAbstract):
         context["category"] = category
         context["tag"] = tag
         context["author"] = author
-        context["COMMENTS_APP"] = COMMENTS_APP
         context["paginator"] = paginator
         context = get_blog_context(context)
 
@@ -157,7 +154,6 @@ class BlogPage(BlogPageAbstract):
         context = super().get_context(request, *args, **kwargs)
         context["blogs"] = self.get_blog_index().blogindexpage.blogs
         context = get_blog_context(context)
-        context["COMMENTS_APP"] = COMMENTS_APP
         return context
 
     def get_dict(self, rendition_str):

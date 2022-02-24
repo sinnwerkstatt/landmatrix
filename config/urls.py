@@ -26,18 +26,11 @@ urlpatterns = [
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
     path("cms/", include("wagtail.admin.urls")),
-    # path("news/", include("apps.blog.urls", namespace="news")),
     # path("documents/", include("wagtail.documents.urls")),
     # APIs
     path("graphql/", include("apps.graphql.urls")),
     path("wagtailapi/v2/", api_router.urls),
-    path("api/", include("apps.api.urls")),
     path("api/", include("apps.landmatrix.urlsapi")),
-    # path(
-    #     "ajax/widget/<di:doc_type>/", FilterWidgetAjaxView.as_view(), name="ajax_widget"
-    # ),
-    # Editor-Backend / Workflow
-    # path("editor/", include("apps.editor.urls")),
 ]
 
 if settings.DEBUG:
@@ -46,37 +39,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [
-    # Deals, Investors, Map, Charts, stuff...
-    # path("legacy/list/deals/", include("apps.grid.urls")),
-    # path("legacy/list/investors/", InvestorListView.as_view()),
-    # path("legacy/data/", include("apps.grid.urls")),
-    # path("legacy/map/", include("apps.map.urls")),
-    # path("legacy/charts/", include("apps.charts.urls")),
-    # path("legacy/deal/comments/", include("apps.public_comments.urls")),
-    # path("legacy/deal/", include("apps.grid.urls.deal")),
-    # path(
-    #     "legacy/compare/<int:activity_1>/<int:activity_2>/",
-    #     DealComparisonView.as_view(),
-    #     name="compare_deals",
-    # ),
-    # path(
-    #     "legacy/compare/<int:activity_1>/",
-    #     DealComparisonView.as_view(),
-    #     name="compare_deals",
-    # ),
-    # path("legacy/region/<slug:region_slug>/", RegionView.as_view(), name="region"),
-    # path("legacy/country/<slug:country_slug>/", CountryView.as_view(), name="country"),
-    # path("legacy/investor/", include("apps.grid.urls.investor")),
-    # path(
-    #     "legacy/investors/compare/<int:investor_1>/<int:investor_2>/",
-    #     InvestorComparisonView.as_view(),
-    #     name="compare_investors",
-    # ),
-    # path(
-    #     "legacy/investors/compare/<int:investor_1>/",
-    #     InvestorComparisonView.as_view(),
-    #     name="compare_investors",
-    # ),
     path("", include("apps.landmatrix.urls")),
     path("", include("wagtail.core.urls")),
 ]

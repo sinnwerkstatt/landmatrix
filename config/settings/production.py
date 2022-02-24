@@ -17,13 +17,13 @@ except ImproperlyConfigured:
     SECRET_KEY = "".join(
         [
             random.SystemRandom().choice(
-                "{}{}{}".format(string.ascii_letters, string.digits, "+-:$;<=>?@^_~")
+                f"{string.ascii_letters}{string.digits}{'+-:$;<=>?@^_~'}"
             )
             for i in range(63)
         ]
     )
-    with open(".env", "a") as envfile:
-        envfile.write("DJANGO_SECRET_KEY={}\n".format(SECRET_KEY))
+    with open(".env", "a", encoding="UTF-8") as envfile:
+        envfile.write(f"DJANGO_SECRET_KEY={SECRET_KEY}\n")
 
 sentry_sdk.init(
     dsn=env("DJANGO_SENTRY_DSN"),
