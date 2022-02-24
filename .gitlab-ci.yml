@@ -46,7 +46,6 @@ tests and coverage:
   script:
     # - poetry config experimental.new-installer false
     - poetry install -E production
-    - npm i -g closure-util
     - npm i --force
     - poetry run doit -n 4 update
     - poetry run pytest -x
