@@ -20,10 +20,7 @@ from apps.graphql.resolvers.charts import (
     resolve_deal_aggregations,
     resolve_global_map_of_investments,
 )
-from apps.graphql.resolvers.comments import (
-    resolve_add_public_comment,
-    resolve_remove_public_comment,
-)
+
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
@@ -107,8 +104,6 @@ mutation = ObjectType("Mutation")
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 # deal
-mutation.set_field("add_public_deal_comment", resolve_add_public_comment)
-mutation.set_field("remove_public_deal_comment", resolve_remove_public_comment)
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
