@@ -26,7 +26,7 @@ urlpatterns = [
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
     path("cms/", include("wagtail.admin.urls")),
-    # path("documents/", include("wagtail.documents.urls")),
+    path("documents/", include("wagtail.documents.urls")),
     # APIs
     path("graphql/", include("apps.graphql.urls")),
     path("wagtailapi/v2/", api_router.urls),
