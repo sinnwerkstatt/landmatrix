@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_message
 
-from apps.grid.forms.choices import INTENTION_FOREST_LOGGING, NATURE_CONCESSION
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.investor import (
     HistoricalInvestorVentureInvolvement,
