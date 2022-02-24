@@ -1,25 +1,44 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import Cookies from "js-cookie";
+  import { aboutPages, blogCategories, observatoryPages } from "$lib/stores";
+  import type { ObservatoryPage } from "$lib/types/wagtail";
 
   const language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
-  const data_links = [
-    { name: "Map", link: { name: "map" } },
-    { name: "Deals", link: { name: "list_deals" } },
-    { name: "Investors", link: { name: "list_investors" } },
-    { name: "Charts", link: { name: "charts" } }
+  const dataLinks = [
+    { name: "Map", href: "/map" } ,
+    { name: "Deals", href: "/list/deals" } ,
+    { name: "Investors", href: "/list/investors" } ,
+    { name: "Charts", href: "/charts" }
   ];
-  let observatories_group = [];
-  let blogcategories = [];
-  let aboutLinks = [];
+
+  let observatoriesGroups = { global: [], regions: [], countries: [] };
+  $observatoryPages.forEach((op: ObservatoryPage) => {
+    if(op.country) observatoriesGroups.countries.push(op)
+    else if (op.region)  observatoriesGroups.regions.push(op)
+    else observatoriesGroups.global.push(op);
+  })
   let user;
 
   function switchLanguage(locale: string) {
   }
 
-  function showDropdown() {
-  }
+  function showDropdown(e) {
+        const dropdownMenu = e.currentTarget.parentNode.querySelector(".dropdown-menu");
+        console.log(dropdownMenu);
+        dropdownMenu.style.display =
+          dropdownMenu.style.display === "block" ? "none" : "block";
+
+        const closeMenuClick = () => {
+          dropdownMenu.style.display = "none";
+          document.removeEventListener("click", closeMenuClick, true);
+        };
+        setTimeout(() => {
+          document.addEventListener("click", closeMenuClick, true);
+        }, 100);
+      };
+
 
   let username="";
   let password="";
@@ -62,89 +81,88 @@
         />
       </svg>
     </button>
-<!--    <div class="hidden w-full flex-grow items-center lg:flex lg:w-auto">-->
-<!--      <ul class="flex w-full items-center">-->
-<!--        <li class="nav-item dropdown">-->
-<!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-<!--            {$_("Data")}-->
-<!--          </a>-->
-<!--          <div class="dropdown-menu">-->
-<!--            {#each data_links as data_link}-->
-<!--              <a-->
-<!--                href={data_link.link}-->
-<!--                on:click={closeMenu}-->
-<!--              >-->
-<!--                {$_(data_link.name)}-->
-<!--              </a>-->
-<!--            {/each}-->
-<!--          </div>-->
-<!--        </li>-->
-<!--        <li class="nav-item dropdown">-->
-<!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-<!--            {$_("Observatories")}-->
-<!--          </a>-->
-<!--          <div class="dropdown-menu divide-y divide-solid">-->
-<!--            {#each observatories_group as { obs, obsgroup }}-->
-<!--              <div>-->
-<!--                {#each obs as observatory}-->
-<!--                  <a-->
-<!--                    href="/observatory/{observatory.meta.slug}"-->
-<!--                    on:click={closeMenu}-->
-<!--                  >-->
-<!--                    {observatory.title}-->
-<!--                  </a>-->
-<!--                {/each}-->
-<!--              </div>-->
-<!--            {/each}-->
-<!--          </div>-->
-<!--        </li>-->
-<!--        <li class="nav-item dropdown">-->
-<!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-<!--            {$_("Resources")}-->
-<!--          </a>-->
-<!--          <div class="dropdown-menu">-->
-<!--            {#each blogcategories as cat}-->
-<!--              <a-->
-<!--                href="/resources/?category={cat.slug}"-->
-<!--                on:click={closeMenu}-->
-
-<!--              >-->
-<!--                {$_(cat.name)}-->
-<!--              </a>-->
-<!--            {/each}-->
-<!--          </div>-->
-<!--        </li>-->
-<!--        <li class="nav-item dropdown">-->
-<!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-<!--            {$_("About")}-->
-<!--          </a>-->
-<!--          <div class="dropdown-menu">-->
-<!--            {#each aboutLinks as about_link}-->
-<!--              <a-->
-<!--                href={about_link.link}-->
-<!--                on:click={closeMenu}-->
-<!--              >-->
-<!--                {$_(about_link.name)}-->
-<!--              </a>-->
-<!--            {/each}-->
-<!--          </div>-->
-<!--        </li>-->
-<!--        <li class="nav-item">-->
-<!--          <a class="nav-link" href="/faq/" on:click={closeMenu}>-->
-<!--            {$_("FAQ")}-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li class="nav-item">-->
-<!--          <a-->
-<!--            class="nav-link"-->
-<!--            href="/contribute/"-->
-<!--            on:click={closeMenu}-->
-<!--          >-->
-<!--            {$_("Contribute")}-->
-<!--          </a>-->
-<!--        </li>-->
-<!--      </ul>-->
-<!--      <ul class="flex items-center ml-auto">-->
+    <div class="hidden w-full flex-grow items-center lg:flex lg:w-auto">
+      <ul class="flex w-full items-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link" on:click={showDropdown} role="button">
+            {$_("Data")}
+          </a>
+          <div class="dropdown-menu">
+            {#each dataLinks as { name, href }}
+              <a
+                href={href}
+                on:click={closeMenu}
+              >
+                {$_(name)}
+              </a>
+            {/each}
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" on:click={showDropdown} role="button">
+            {$_("Observatories")}
+          </a>
+          <div class="dropdown-menu divide-y divide-solid">
+            {#each Object.entries(observatoriesGroups) as [og,obs]}
+              <div>
+                {#each obs as observatory}
+                  <a
+                    href="/observatory/{observatory.meta.slug}"
+                    on:click={closeMenu}
+                  >
+                    {observatory.title}
+                  </a>
+                {/each}
+              </div>
+            {/each}
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" on:click={showDropdown} role="button">
+            {$_("Resources")}
+          </a>
+          <div class="dropdown-menu">
+            {#each $blogCategories as cat}
+              <a
+                href="/resources/?category={cat.slug}"
+                on:click={closeMenu}
+              >
+                {$_(cat.name)}
+              </a>
+            {/each}
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" on:click={showDropdown} role="button">
+            {$_("About")}
+          </a>
+          <div class="dropdown-menu">
+            {#each $aboutPages as { title, meta }}
+              <a
+                href="/about/{meta.slug}/"
+                on:click={closeMenu}
+              >
+                {$_(title)}
+              </a>
+            {/each}
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/faq/" on:click={closeMenu}>
+            {$_("FAQ")}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/contribute/"
+            on:click={closeMenu}
+          >
+            {$_("Contribute")}
+          </a>
+        </li>
+      </ul>
+      <ul class="flex items-center ml-auto">
 <!--        &lt;!&ndash;          <NavbarSearch />&ndash;&gt;-->
 <!--        <li class="nav-item dropdown">-->
 <!--          <a class="nav-link" on:click={showDropdown} role="button">-->
@@ -258,8 +276,8 @@
 <!--            </div>-->
 <!--          </li>-->
 <!--        {/if}-->
-<!--      </ul>-->
-<!--    </div>-->
+      </ul>
+    </div>
   </div>
 </nav>
 

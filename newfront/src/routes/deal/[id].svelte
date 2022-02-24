@@ -2,14 +2,14 @@
   import { request } from "graphql-request";
   import type { Load } from "@sveltejs/kit";
   import { deal_gql_query } from "./queries";
+  import { GQLEndpoint } from "$lib";
 
-  const endpoint = "http://localhost:3000/graphql/";
   export const load: Load = async ({ params }) => {
 
     const variables = {
       id: +params.id
     };
-    const deal = await request(endpoint, deal_gql_query, variables);
+    const deal = await request(GQLEndpoint, deal_gql_query, variables);
     console.log(JSON.stringify(deal, undefined, 2));
 
     return {props:{deal}};
