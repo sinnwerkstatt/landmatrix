@@ -3,6 +3,7 @@ import re
 
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
+from django.utils.translation import gettext as _
 from wagtail.core import blocks
 from wagtail.core.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
 from wagtail.core.fields import StreamField
@@ -43,7 +44,6 @@ class LinkBlock(ExternalLinkMixin, StructBlock):
 
     class Meta:
         icon = "anchor"
-        template = "widgets/link.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -63,7 +63,6 @@ class AnchorBlock(StructBlock):
 
     class Meta:
         icon = "anchor"
-        template = "widgets/anchor.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -82,7 +81,6 @@ class FAQsBlock(StructBlock):
 
     class Meta:
         icon = "fa fa-medkit"
-        template = "widgets/faq_block.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -109,7 +107,6 @@ class TwitterBlock(StructBlock):
 
     class Meta:
         icon = "fa fa-twitter"
-        template = "widgets/twitter.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -161,7 +158,6 @@ class ImageBlock(ImageChooserBlock):
 
     class Meta:
         icon = "image"
-        template = "widgets/image.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value)
@@ -179,7 +175,6 @@ class ImageBlock(ImageChooserBlock):
 class SectionDivider(StructBlock):
     class Meta:
         icon = "fa fa-minus"
-        template = "widgets/divider.html"
 
 
 class LinkedImageBlock(ExternalLinkMixin, StructBlock):
@@ -189,7 +184,6 @@ class LinkedImageBlock(ExternalLinkMixin, StructBlock):
 
     class Meta:
         icon = "image"
-        template = "widgets/image.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -242,7 +236,6 @@ class SliderBlock(StructBlock):
     class Meta:
         icon = "fa fa-picture-o"
         label = "Slider"
-        template = "widgets/slider.html"
 
 
 class GalleryBlock(StructBlock):
@@ -282,14 +275,12 @@ class GalleryBlock(StructBlock):
     class Meta:
         icon = "fa fa-th"
         label = "Gallery"
-        template = "widgets/gallery.html"
 
 
 class TitleBlock(blocks.CharBlock):
     class Meta:
         icon = "title"
         label = "Title"
-        template = "widgets/title.html"
 
 
 class TitleWithIconBlock(StructBlock):
@@ -311,7 +302,6 @@ class TitleWithIconBlock(StructBlock):
     class Meta:
         icon = "title"
         label = "Title with Icon"
-        template = "widgets/title.html"
 
 
 CONTENT_BLOCKS = [
@@ -395,7 +385,6 @@ class LatestNewsBlock(StructBlock):
     class Meta:
         icon = "fa fa-list"
         label = "Latest news"
-        template = "widgets/latest-news.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
@@ -426,7 +415,6 @@ class StatisticsBlock(StructBlock):
     class Meta:
         icon = "fa fa-list"
         label = "Statistics"
-        template = "widgets/statistics.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
@@ -442,7 +430,6 @@ class MapDataChartsBlock(StructBlock):
     class Meta:
         icon = "fa fa-chain"
         label = "Map / Grid / Charts"
-        template = "widgets/map-data-charts.html"
 
     def get_context(self, value, parent_context={}):
         context = super().get_context(value, parent_context=parent_context)
@@ -454,6 +441,90 @@ class MapDataChartsBlock(StructBlock):
         return context
 
 
+def get_legend():
+    return {
+        "implementation": {
+            "label": _("Implementation status"),
+            "attributes": [
+                {
+                    "label": _("Project not started"),
+                    "id": "Project not started",
+                    "color": "#1D6914",
+                },
+                {
+                    "label": _("Startup phase (no production)"),
+                    "id": "Startup phase (no production)",
+                    "color": "#2A4BD7",
+                },
+                {
+                    "label": _("In operation (production)"),
+                    "id": "In operation (production)",
+                    "color": "#575757",
+                },
+                {
+                    "label": _("Project abandoned"),
+                    "id": "Project abandoned",
+                    "color": "#AD2323",
+                },
+                {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
+            ],
+        },
+        "intention": {
+            "label": _("Intention of investment"),
+            "attributes": [
+                {
+                    "label": _("Agriculture"),
+                    "id": "Agriculture",
+                    "color": "#1D6914",
+                },
+                {"label": _("Forestry"), "id": "Forestry", "color": "#2A4BD7"},
+                {"label": _("Mining"), "id": "Mining", "color": "#814A19"},
+                {"label": _("Tourism"), "id": "Tourism", "color": "#9DAFFF"},
+                {"label": _("Industry"), "id": "Industry", "color": "#AD2323"},
+                {
+                    "label": _("Conservation"),
+                    "id": "Conservation",
+                    "color": "#575757",
+                },
+                {
+                    "label": _("Renewable Energy"),
+                    "id": "Renewable Energy",
+                    "color": "#81C57A",
+                },
+                {"label": _("Other"), "id": "Other", "color": "#8126C0"},
+                {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
+            ],
+        },
+        "level_of_accuracy": {
+            "label": _("Spatial accuracy"),
+            "attributes": [
+                {"label": _("Country"), "id": "Country", "color": "#1D6914"},
+                {
+                    "label": _("Administrative region"),
+                    "id": "Administrative region",
+                    "color": "#8126C0",
+                },
+                {
+                    "label": _("Approximate location"),
+                    "id": "Approximate location",
+                    "color": "#575757",
+                },
+                {
+                    "label": _("Exact location"),
+                    "id": "Exact location",
+                    "color": "#AD2323",
+                },
+                {
+                    "label": _("Coordinates"),
+                    "id": "Coordinates",
+                    "color": "#814A19",
+                },
+                {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
+            ],
+        },
+    }
+
+
 class LinkMapBlock(StructBlock):
     """
     Note that the map template used here is NOT the one from ol3_widgets.
@@ -462,7 +533,6 @@ class LinkMapBlock(StructBlock):
     class Meta:
         icon = "fa fa-map-marker"
         label = "Map"
-        template = "widgets/link-map.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
@@ -471,10 +541,8 @@ class LinkMapBlock(StructBlock):
                 parent_context.get("request"), parent_context.get("page")
             )
         )
-        # prevent circular import
-        from apps.map.views import MapSettingsMixin
 
-        legend = MapSettingsMixin().get_legend()
+        legend = get_legend()
         context.update(
             {
                 "legend": legend,
@@ -492,7 +560,6 @@ class LatestDatabaseModificationsBlock(StructBlock):
     class Meta:
         icon = "fa fa-list"
         label = "Latest database modifications"
-        template = "widgets/latest-database-modifications.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
@@ -509,7 +576,6 @@ class RegionBlock(StructBlock):
     class Meta:
         icon = "fa fa-map-marker"
         label = "Region"
-        template = "widgets/region.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
@@ -527,7 +593,6 @@ class CountriesBlock(StructBlock):
     class Meta:
         icon = "fa fa-flag"
         label = "Countries"
-        template = "widgets/countries.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
@@ -570,7 +635,6 @@ class Columns1To1Block(StructBlock):
 
     class Meta:
         label = "Two Columns"
-        template = "widgets/two-columns.html"
         icon = "fa fa-columns"
 
 
@@ -591,7 +655,6 @@ class ThreeColumnsBlock(StructBlock):
 
     class Meta:
         label = "Three Columns"
-        template = "widgets/three-columns.html"
         icon = "fa fa-columns"
 
 
@@ -612,7 +675,6 @@ class TabsBlock(StructBlock):
 
     class Meta:
         icon = "fa fa-folder"
-        template = "widgets/tabs_block.html"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -653,7 +715,6 @@ class FullWidthContainerBlock(StructBlock):
     class Meta:
         icon = "fa fa-arrows-h"
         label = "Full width container"
-        template = "widgets/full-width-container.html"
 
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
