@@ -1,7 +1,7 @@
 <template>
   <div class="text_field">
     <template v-if="formfield.class === 'URLField'">
-      <a :href="value" target="_blank">{{ value }}</a>
+      <a :href="value" target="_blank">{{ get_hostname(value) }}</a>
     </template>
     <template v-else>
       {{ parseVal(value) }}
@@ -22,6 +22,9 @@
       model: { type: String, required: true },
     },
     methods: {
+      get_hostname(value: string): string {
+        return new URL(value).hostname;
+      },
       parseVal(val: string): string {
         if (!val) return "n/a";
         if (this.formfield.choices) {

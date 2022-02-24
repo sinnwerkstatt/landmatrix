@@ -1,6 +1,6 @@
 <template>
   <section v-if="entries.length">
-    <div class="d-flex">
+    <div class="flex">
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
@@ -54,7 +54,7 @@
     computed: {
       wrapperClasses() {
         if (this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
-        else return ["w-100"];
+        else return ["w-full"];
       },
     },
   });

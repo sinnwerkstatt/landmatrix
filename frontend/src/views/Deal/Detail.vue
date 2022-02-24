@@ -28,7 +28,7 @@
       <div class="deal-detail-nav">
         <SideTabsMenu :tabs="tabs" :active-tab="activeTab" @updateRoute="updateRoute" />
       </div>
-      <div class="deal-detail-content">
+      <div class="deal-detail-content w-full h-full">
         <DealLocationsSection
           v-if="activeTab === '#locations'"
           :deal="deal"
@@ -508,7 +508,6 @@
   }
 
   .deal-detail-content {
-    height: 100%;
     grid-column: span 9;
     //overflow-y: auto;
     @media only screen and (max-width: 992px) {
