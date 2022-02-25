@@ -5,16 +5,14 @@
   import { GQLEndpoint } from "$lib";
 
   export const load: Load = async ({ params }) => {
-
     const variables = {
-      id: +params.id
+      id: +params.id,
     };
     const deal = await request(GQLEndpoint, deal_gql_query, variables);
     console.log(JSON.stringify(deal, undefined, 2));
 
-    return {props:{deal}};
+    return { props: { deal } };
   };
-
 </script>
 
 <script lang="ts">
@@ -26,4 +24,4 @@
 
 Deal {dealID}
 
-<pre>{JSON.stringify(deal,null,2)}</pre>
+<pre>{JSON.stringify(deal, null, 2)}</pre>

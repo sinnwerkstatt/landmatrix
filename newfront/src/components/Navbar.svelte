@@ -7,49 +7,40 @@
   const language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
   const dataLinks = [
-    { name: "Map", href: "/map" } ,
-    { name: "Deals", href: "/list/deals" } ,
-    { name: "Investors", href: "/list/investors" } ,
-    { name: "Charts", href: "/charts" }
+    { name: "Map", href: "/map" },
+    { name: "Deals", href: "/list/deals" },
+    { name: "Investors", href: "/list/investors" },
+    { name: "Charts", href: "/charts" },
   ];
 
   let observatoriesGroups = { global: [], regions: [], countries: [] };
   $observatoryPages.forEach((op: ObservatoryPage) => {
-    if(op.country) observatoriesGroups.countries.push(op)
-    else if (op.region)  observatoriesGroups.regions.push(op)
+    if (op.country) observatoriesGroups.countries.push(op);
+    else if (op.region) observatoriesGroups.regions.push(op);
     else observatoriesGroups.global.push(op);
-  })
+  });
   let user;
 
-  function switchLanguage(locale: string) {
-  }
+  function switchLanguage(locale: string) {}
 
   function showDropdown(e) {
-        const dropdownMenu = e.currentTarget.parentNode.querySelector(".dropdown-menu");
-        console.log(dropdownMenu);
-        dropdownMenu.style.display =
-          dropdownMenu.style.display === "block" ? "none" : "block";
+    const dropdownMenu = e.currentTarget.parentNode.querySelector(".dropdown-menu");
+    dropdownMenu.style.display =
+      dropdownMenu.style.display === "block" ? "none" : "block";
 
-        const closeMenuClick = () => {
-          dropdownMenu.style.display = "none";
-          document.removeEventListener("click", closeMenuClick, true);
-        };
-        setTimeout(() => {
-          document.addEventListener("click", closeMenuClick, true);
-        }, 100);
-      };
-
-
-  let username="";
-  let password="";
-  let login_failed_message="";
-  function dispatchLogin() {
-  }
-  function dispatchLogout() {
-  }
-  function closeMenu() {
+    const closeMenuClick = () => {
+      dropdownMenu.style.display = "none";
+      document.removeEventListener("click", closeMenuClick, true);
+    };
+    setTimeout(() => document.addEventListener("click", closeMenuClick, true), 100);
   }
 
+  let username = "";
+  let password = "";
+  let login_failed_message = "";
+  function dispatchLogin() {}
+  function dispatchLogout() {}
+  function closeMenu() {}
 </script>
 
 <nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex">
@@ -89,10 +80,7 @@
           </a>
           <div class="dropdown-menu">
             {#each dataLinks as { name, href }}
-              <a
-                href={href}
-                on:click={closeMenu}
-              >
+              <a {href} on:click={closeMenu}>
                 {$_(name)}
               </a>
             {/each}
@@ -103,13 +91,10 @@
             {$_("Observatories")}
           </a>
           <div class="dropdown-menu divide-y divide-solid">
-            {#each Object.entries(observatoriesGroups) as [og,obs]}
+            {#each Object.entries(observatoriesGroups) as [og, obs]}
               <div>
                 {#each obs as observatory}
-                  <a
-                    href="/observatory/{observatory.meta.slug}"
-                    on:click={closeMenu}
-                  >
+                  <a href="/observatory/{observatory.meta.slug}" on:click={closeMenu}>
                     {observatory.title}
                   </a>
                 {/each}
@@ -123,10 +108,7 @@
           </a>
           <div class="dropdown-menu">
             {#each $blogCategories as cat}
-              <a
-                href="/resources/?category={cat.slug}"
-                on:click={closeMenu}
-              >
+              <a href="/resources/?category={cat.slug}" on:click={closeMenu}>
                 {$_(cat.name)}
               </a>
             {/each}
@@ -138,10 +120,7 @@
           </a>
           <div class="dropdown-menu">
             {#each $aboutPages as { title, meta }}
-              <a
-                href="/about/{meta.slug}/"
-                on:click={closeMenu}
-              >
+              <a href="/about/{meta.slug}/" on:click={closeMenu}>
                 {$_(title)}
               </a>
             {/each}
@@ -153,134 +132,129 @@
           </a>
         </li>
         <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/contribute/"
-            on:click={closeMenu}
-          >
+          <a class="nav-link" href="/contribute/" on:click={closeMenu}>
             {$_("Contribute")}
           </a>
         </li>
       </ul>
       <ul class="flex items-center ml-auto">
-<!--        &lt;!&ndash;          <NavbarSearch />&ndash;&gt;-->
-<!--        <li class="nav-item dropdown">-->
-<!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-<!--            <i aria-hidden="true" class="fa fa-language"></i>-->
-<!--            {languages[language]}-->
-<!--          </a>-->
-<!--          <div class="dropdown-menu">-->
-<!--            {#each languages as { lingo, lcode }}-->
-<!--              <a-->
-<!--                class:active={lcode === language}-->
-<!--                on:click={() => switchLanguage(lcode)}-->
-<!--              >-->
-<!--                {lingo} ({lcode})-->
-<!--              </a>-->
-<!--            {/each}-->
-<!--          </div>-->
-<!--        </li>-->
-<!--        {#if user}-->
-<!--          <li class="nav-item dropdown">-->
-<!--            <a on:click={showDropdown} class="nav-link" role="button">-->
-<!--              {user.initials}-->
-<!--              {#if user.role === 'ADMINISTRATOR'}-->
-<!--                <i class="fas fa-user-astronaut"></i>-->
-<!--              {:else if user.role === 'EDITOR'}-->
-<!--                <i class="fas fa-user-nurse"></i>-->
-<!--              {:else if user.is_impersonate}-->
-<!--                <i class="fa fa-user-secret"></i>-->
-<!--              {:else}-->
-<!--                <i class="fa fa-user"></i>-->
-<!--              {/if}-->
-<!--            </a>-->
-<!--            <div-->
-<!--              aria-labelledby="#navbarDropdown"-->
-<!--              class="dropdown-menu !right-0"-->
-<!--            >-->
-<!--              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">-->
-<!--                {user.full_name}-->
-<!--                <br />-->
-<!--                <small>{$_(user.bigrole)}</small>-->
-<!--              </p>-->
-<!--              <hr />-->
-<!--              &lt;!&ndash;suppress HtmlUnknownTarget &ndash;&gt;-->
-<!--              {#if user.is_impersonate}-->
-<!--                <a-->
+        <!--        &lt;!&ndash;          <NavbarSearch />&ndash;&gt;-->
+        <!--        <li class="nav-item dropdown">-->
+        <!--          <a class="nav-link" on:click={showDropdown} role="button">-->
+        <!--            <i aria-hidden="true" class="fa fa-language"></i>-->
+        <!--            {languages[language]}-->
+        <!--          </a>-->
+        <!--          <div class="dropdown-menu">-->
+        <!--            {#each languages as { lingo, lcode }}-->
+        <!--              <a-->
+        <!--                class:active={lcode === language}-->
+        <!--                on:click={() => switchLanguage(lcode)}-->
+        <!--              >-->
+        <!--                {lingo} ({lcode})-->
+        <!--              </a>-->
+        <!--            {/each}-->
+        <!--          </div>-->
+        <!--        </li>-->
+        <!--        {#if user}-->
+        <!--          <li class="nav-item dropdown">-->
+        <!--            <a on:click={showDropdown} class="nav-link" role="button">-->
+        <!--              {user.initials}-->
+        <!--              {#if user.role === 'ADMINISTRATOR'}-->
+        <!--                <i class="fas fa-user-astronaut"></i>-->
+        <!--              {:else if user.role === 'EDITOR'}-->
+        <!--                <i class="fas fa-user-nurse"></i>-->
+        <!--              {:else if user.is_impersonate}-->
+        <!--                <i class="fa fa-user-secret"></i>-->
+        <!--              {:else}-->
+        <!--                <i class="fa fa-user"></i>-->
+        <!--              {/if}-->
+        <!--            </a>-->
+        <!--            <div-->
+        <!--              aria-labelledby="#navbarDropdown"-->
+        <!--              class="dropdown-menu !right-0"-->
+        <!--            >-->
+        <!--              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">-->
+        <!--                {user.full_name}-->
+        <!--                <br />-->
+        <!--                <small>{$_(user.bigrole)}</small>-->
+        <!--              </p>-->
+        <!--              <hr />-->
+        <!--              &lt;!&ndash;suppress HtmlUnknownTarget &ndash;&gt;-->
+        <!--              {#if user.is_impersonate}-->
+        <!--                <a-->
 
-<!--                  href="/impersonate/stop/?next=/dashboard/"-->
-<!--                >-->
-<!--                  {$_("Stop impersonation")}-->
-<!--                </a>-->
-<!--                <hr />-->
-<!--              {/if}-->
+        <!--                  href="/impersonate/stop/?next=/dashboard/"-->
+        <!--                >-->
+        <!--                  {$_("Stop impersonation")}-->
+        <!--                </a>-->
+        <!--                <hr />-->
+        <!--              {/if}-->
 
-<!--              <a href="/manager/">-->
-<!--                {$_("Manage")}-->
-<!--              </a>-->
-<!--              <a href="/case_statistics/">-->
-<!--                {$_("Case statistics")}-->
-<!--              </a>-->
-<!--              <hr />-->
-<!--              <a href="/deal/add">-->
-<!--                {$_("Add a deal")}-->
-<!--              </a>-->
+        <!--              <a href="/manager/">-->
+        <!--                {$_("Manage")}-->
+        <!--              </a>-->
+        <!--              <a href="/case_statistics/">-->
+        <!--                {$_("Case statistics")}-->
+        <!--              </a>-->
+        <!--              <hr />-->
+        <!--              <a href="/deal/add">-->
+        <!--                {$_("Add a deal")}-->
+        <!--              </a>-->
 
-<!--              <a on:click|preventDefault={dispatchLogout}>-->
-<!--                {$_("Logout")}-->
-<!--              </a>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--        {:else }-->
-<!--          <li class="nav-item dropdown">-->
-<!--            <a-->
-<!--              on:click={showDropdown}-->
-<!--              class="nav-link"-->
-<!--              role="button"-->
-<!--              title="Login/Register"-->
-<!--            >-->
-<!--              <i class="far fa-user"></i>-->
-<!--            </a>-->
-<!--            <div class="dropdown-menu right-0">-->
-<!--              <form on:submit|preventDefault={dispatchLogin} class="px-4 pt-3">-->
-<!--                <div class="form-group">-->
-<!--                  <input-->
-<!--                    autocomplete="username"-->
-<!--                    id="username"-->
-<!--                    placeholder="Username"-->
-<!--                    type="text"-->
-<!--                    bind:value={username}-->
-<!--                  />-->
-<!--                </div>-->
-<!--                <div class="form-group">-->
-<!--                  <input-->
-<!--                    autocomplete="current-password"-->
-<!--                    id="password"-->
-<!--                    placeholder="Password"-->
-<!--                    type="password"-->
-<!--                    bind:value={password}-->
-<!--                  />-->
-<!--                </div>-->
-<!--                <button class="btn btn-secondary" type="submit">-->
-<!--                  {$_("Login")}-->
-<!--                </button>-->
-<!--                <p class="mt-3 text-danger small">{login_failed_message}</p>-->
-<!--              </form>-->
-<!--              <hr />-->
-<!--              <a href="/accounts/register/">-->
-<!--                { $_("New around here? Sign up") }-->
-<!--              </a>-->
-<!--              <a href="/accounts/password_reset/">-->
-<!--                {$_("Forgot password?")}-->
-<!--              </a>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--        {/if}-->
+        <!--              <a on:click|preventDefault={dispatchLogout}>-->
+        <!--                {$_("Logout")}-->
+        <!--              </a>-->
+        <!--            </div>-->
+        <!--          </li>-->
+        <!--        {:else }-->
+        <!--          <li class="nav-item dropdown">-->
+        <!--            <a-->
+        <!--              on:click={showDropdown}-->
+        <!--              class="nav-link"-->
+        <!--              role="button"-->
+        <!--              title="Login/Register"-->
+        <!--            >-->
+        <!--              <i class="far fa-user"></i>-->
+        <!--            </a>-->
+        <!--            <div class="dropdown-menu right-0">-->
+        <!--              <form on:submit|preventDefault={dispatchLogin} class="px-4 pt-3">-->
+        <!--                <div class="form-group">-->
+        <!--                  <input-->
+        <!--                    autocomplete="username"-->
+        <!--                    id="username"-->
+        <!--                    placeholder="Username"-->
+        <!--                    type="text"-->
+        <!--                    bind:value={username}-->
+        <!--                  />-->
+        <!--                </div>-->
+        <!--                <div class="form-group">-->
+        <!--                  <input-->
+        <!--                    autocomplete="current-password"-->
+        <!--                    id="password"-->
+        <!--                    placeholder="Password"-->
+        <!--                    type="password"-->
+        <!--                    bind:value={password}-->
+        <!--                  />-->
+        <!--                </div>-->
+        <!--                <button class="btn btn-secondary" type="submit">-->
+        <!--                  {$_("Login")}-->
+        <!--                </button>-->
+        <!--                <p class="mt-3 text-danger small">{login_failed_message}</p>-->
+        <!--              </form>-->
+        <!--              <hr />-->
+        <!--              <a href="/accounts/register/">-->
+        <!--                { $_("New around here? Sign up") }-->
+        <!--              </a>-->
+        <!--              <a href="/accounts/password_reset/">-->
+        <!--                {$_("Forgot password?")}-->
+        <!--              </a>-->
+        <!--            </div>-->
+        <!--          </li>-->
+        <!--        {/if}-->
       </ul>
     </div>
   </div>
 </nav>
-
 
 <style>
   .dropdown-menu {
