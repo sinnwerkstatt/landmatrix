@@ -1,10 +1,7 @@
 <script lang="ts">
-  export let value: {
-    image?: { url: string };
-    url: string;
-    caption?: string;
-    external?: boolean;
-  };
+  import type { BlockImage } from "$lib/types/custom";
+
+  export let value: BlockImage;
 
   $: link = value.image ? value.url : null;
   $: path = value.image ? value.image.url : value.url;

@@ -1,7 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import Cookies from "js-cookie";
-  import { aboutPages, blogCategories, observatoryPages } from "$lib/stores";
+  import {
+    aboutPages,
+    blogCategories,
+    dispatchLogin,
+    observatoryPages,
+    user,
+  } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
 
   const language = Cookies.get("django_language") ?? "en";
@@ -19,7 +25,6 @@
     else if (op.region) observatoriesGroups.regions.push(op);
     else observatoriesGroups.global.push(op);
   });
-  let user;
 
   function switchLanguage(locale: string) {}
 
@@ -38,7 +43,10 @@
   let username = "";
   let password = "";
   let login_failed_message = "";
-  function dispatchLogin() {}
+  async function login() {
+    const xx = await dispatchLogin(username, password);
+    console.log(xx);
+  }
   function dispatchLogout() {}
   function closeMenu() {}
 </script>
@@ -91,7 +99,7 @@
             {$_("Observatories")}
           </a>
           <div class="dropdown-menu divide-y divide-solid">
-            {#each Object.entries(observatoriesGroups) as [og, obs]}
+            {#each Object.values(observatoriesGroups) as obs}
               <div>
                 {#each obs as observatory}
                   <a href="/observatory/{observatory.meta.slug}" on:click={closeMenu}>
@@ -138,7 +146,7 @@
         </li>
       </ul>
       <ul class="flex items-center ml-auto">
-        <!--        &lt;!&ndash;          <NavbarSearch />&ndash;&gt;-->
+        <!--          <NavbarSearch />-->
         <!--        <li class="nav-item dropdown">-->
         <!--          <a class="nav-link" on:click={showDropdown} role="button">-->
         <!--            <i aria-hidden="true" class="fa fa-language"></i>-->
@@ -155,102 +163,96 @@
         <!--            {/each}-->
         <!--          </div>-->
         <!--        </li>-->
-        <!--        {#if user}-->
-        <!--          <li class="nav-item dropdown">-->
-        <!--            <a on:click={showDropdown} class="nav-link" role="button">-->
-        <!--              {user.initials}-->
-        <!--              {#if user.role === 'ADMINISTRATOR'}-->
-        <!--                <i class="fas fa-user-astronaut"></i>-->
-        <!--              {:else if user.role === 'EDITOR'}-->
-        <!--                <i class="fas fa-user-nurse"></i>-->
-        <!--              {:else if user.is_impersonate}-->
-        <!--                <i class="fa fa-user-secret"></i>-->
-        <!--              {:else}-->
-        <!--                <i class="fa fa-user"></i>-->
-        <!--              {/if}-->
-        <!--            </a>-->
-        <!--            <div-->
-        <!--              aria-labelledby="#navbarDropdown"-->
-        <!--              class="dropdown-menu !right-0"-->
-        <!--            >-->
-        <!--              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">-->
-        <!--                {user.full_name}-->
-        <!--                <br />-->
-        <!--                <small>{$_(user.bigrole)}</small>-->
-        <!--              </p>-->
-        <!--              <hr />-->
-        <!--              &lt;!&ndash;suppress HtmlUnknownTarget &ndash;&gt;-->
-        <!--              {#if user.is_impersonate}-->
-        <!--                <a-->
+        {#if $user}
+          <li class="nav-item dropdown">
+            <a on:click={showDropdown} class="nav-link" role="button">
+              {$user.initials}
+              {#if $user.role === "ADMINISTRATOR"}
+                <i class="fas fa-user-astronaut" />
+              {:else if $user.role === "EDITOR"}
+                <i class="fas fa-user-nurse" />
+              {:else if $user.is_impersonate}
+                <i class="fa fa-user-secret" />
+              {:else}
+                <i class="fa fa-user" />
+              {/if}
+            </a>
+            <div aria-labelledby="#navbarDropdown" class="dropdown-menu !right-0">
+              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
+                {$user.full_name}
+                <br />
+                <small>{$_($user.bigrole)}</small>
+              </p>
+              <hr />
+              <!--suppress HtmlUnknownTarget -->
+              {#if $user.is_impersonate}
+                <a href="/impersonate/stop/?next=/dashboard/">
+                  {$_("Stop impersonation")}
+                </a>
+                <hr />
+              {/if}
 
-        <!--                  href="/impersonate/stop/?next=/dashboard/"-->
-        <!--                >-->
-        <!--                  {$_("Stop impersonation")}-->
-        <!--                </a>-->
-        <!--                <hr />-->
-        <!--              {/if}-->
+              <a href="/manager/">
+                {$_("Manage")}
+              </a>
+              <a href="/case_statistics/">
+                {$_("Case statistics")}
+              </a>
+              <hr />
+              <a href="/deal/add">
+                {$_("Add a deal")}
+              </a>
 
-        <!--              <a href="/manager/">-->
-        <!--                {$_("Manage")}-->
-        <!--              </a>-->
-        <!--              <a href="/case_statistics/">-->
-        <!--                {$_("Case statistics")}-->
-        <!--              </a>-->
-        <!--              <hr />-->
-        <!--              <a href="/deal/add">-->
-        <!--                {$_("Add a deal")}-->
-        <!--              </a>-->
-
-        <!--              <a on:click|preventDefault={dispatchLogout}>-->
-        <!--                {$_("Logout")}-->
-        <!--              </a>-->
-        <!--            </div>-->
-        <!--          </li>-->
-        <!--        {:else }-->
-        <!--          <li class="nav-item dropdown">-->
-        <!--            <a-->
-        <!--              on:click={showDropdown}-->
-        <!--              class="nav-link"-->
-        <!--              role="button"-->
-        <!--              title="Login/Register"-->
-        <!--            >-->
-        <!--              <i class="far fa-user"></i>-->
-        <!--            </a>-->
-        <!--            <div class="dropdown-menu right-0">-->
-        <!--              <form on:submit|preventDefault={dispatchLogin} class="px-4 pt-3">-->
-        <!--                <div class="form-group">-->
-        <!--                  <input-->
-        <!--                    autocomplete="username"-->
-        <!--                    id="username"-->
-        <!--                    placeholder="Username"-->
-        <!--                    type="text"-->
-        <!--                    bind:value={username}-->
-        <!--                  />-->
-        <!--                </div>-->
-        <!--                <div class="form-group">-->
-        <!--                  <input-->
-        <!--                    autocomplete="current-password"-->
-        <!--                    id="password"-->
-        <!--                    placeholder="Password"-->
-        <!--                    type="password"-->
-        <!--                    bind:value={password}-->
-        <!--                  />-->
-        <!--                </div>-->
-        <!--                <button class="btn btn-secondary" type="submit">-->
-        <!--                  {$_("Login")}-->
-        <!--                </button>-->
-        <!--                <p class="mt-3 text-danger small">{login_failed_message}</p>-->
-        <!--              </form>-->
-        <!--              <hr />-->
-        <!--              <a href="/accounts/register/">-->
-        <!--                { $_("New around here? Sign up") }-->
-        <!--              </a>-->
-        <!--              <a href="/accounts/password_reset/">-->
-        <!--                {$_("Forgot password?")}-->
-        <!--              </a>-->
-        <!--            </div>-->
-        <!--          </li>-->
-        <!--        {/if}-->
+              <a on:click|preventDefault={dispatchLogout}>
+                {$_("Logout")}
+              </a>
+            </div>
+          </li>
+        {:else}
+          <li class="nav-item dropdown">
+            <a
+              on:click={showDropdown}
+              class="nav-link"
+              role="button"
+              title="Login/Register"
+            >
+              <i class="far fa-user" />
+            </a>
+            <div class="dropdown-menu right-0">
+              <form on:submit|preventDefault={login} class="px-4 pt-3">
+                <div class="form-group">
+                  <input
+                    autocomplete="username"
+                    id="username"
+                    placeholder="Username"
+                    type="text"
+                    bind:value={username}
+                  />
+                </div>
+                <div class="form-group">
+                  <input
+                    autocomplete="current-password"
+                    id="password"
+                    placeholder="Password"
+                    type="password"
+                    bind:value={password}
+                  />
+                </div>
+                <button class="btn btn-secondary" type="submit">
+                  {$_("Login")}
+                </button>
+                <p class="mt-3 text-danger small">{login_failed_message}</p>
+              </form>
+              <hr />
+              <a href="/accounts/register/">
+                {$_("New around here? Sign up")}
+              </a>
+              <a href="/accounts/password_reset/">
+                {$_("Forgot password?")}
+              </a>
+            </div>
+          </li>
+        {/if}
       </ul>
     </div>
   </div>

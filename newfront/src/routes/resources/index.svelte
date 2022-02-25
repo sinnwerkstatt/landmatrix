@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import PageTitle from "$components/PageTitle.svelte";
-  import type { BlogPage, WagtailPage } from "$lib/types/wagtail";
+  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
   import { blogCategories } from "$lib/stores";
   import { _ } from "svelte-i18n";
 
@@ -30,7 +30,7 @@
     ? blogpages.filter((page) => page.tags.map((t) => t.slug).includes(tag))
     : blogpages;
 
-  let blogCategoriesWithAll;
+  let blogCategoriesWithAll: BlogCategory[];
   $: blogCategoriesWithAll = [
     { id: -1, slug: null, name: "All categories" },
     ...$blogCategories,

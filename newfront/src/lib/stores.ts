@@ -1,10 +1,17 @@
 import { get, writable } from "svelte/store";
-import { gql, request } from "graphql-request";
+import { gql, GraphQLClient } from "graphql-request";
 
-import type { BlogCategory, ObservatoryPage, WagtailPage } from "$lib/types/wagtail";
 import { GQLEndpoint, RESTEndpoint } from "$lib/index";
+import type { BlogCategory, ObservatoryPage, WagtailPage } from "$lib/types/wagtail";
+import type { User } from "$lib/types/user";
+
+const graphQLClient = new GraphQLClient(GQLEndpoint, {
+  credentials: "include",
+  mode: "cors"
+});
 
 export const observatoryPages = writable(undefined);
+
 async function getObservatoryPages(language = "en"): Promise<ObservatoryPage[]> {
   console.log("getObservatoryPages", { language });
   const observatoriesStore = get(observatoryPages);
@@ -16,6 +23,7 @@ async function getObservatoryPages(language = "en"): Promise<ObservatoryPage[]> 
 }
 
 export const aboutPages = writable(undefined);
+
 async function getAboutPages(language = "en"): Promise<WagtailPage[]> {
   console.log("getAboutPages", { language });
   const aboutPagesStore = get(aboutPages);
@@ -30,6 +38,7 @@ async function getAboutPages(language = "en"): Promise<WagtailPage[]> {
 }
 
 export const blogCategories = writable(undefined);
+
 async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
   console.log("getBlogCategories", { language });
   const blogcategoriesStore = get(blogCategories);
@@ -44,13 +53,89 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
     }
   `;
   const variables = { language: "en" };
-  const gqlres = await request(GQLEndpoint, query, variables);
+  const gqlres = await graphQLClient.request(query, variables);
   await blogCategories.set(gqlres.blogcategories);
   return gqlres.blogcategories;
+}
+
+export const user = writable(undefined);
+
+async function getMe(): Promise<User> {
+  console.log("getMe");
+  const userStore = get(user);
+  if (userStore !== undefined) return userStore;
+  const query = gql`
+    query {
+      me {
+        id
+        full_name
+        username
+        initials
+        is_authenticated
+        is_impersonate
+        role
+        userregionalinfo {
+          country {
+            id
+            name
+          }
+          region {
+            id
+            name
+          }
+        }
+        groups {
+          id
+          name
+        }
+      }
+    }
+  `;
+  const gqlres = await graphQLClient.request(query);
+  await user.set(gqlres.me);
+}
+
+export async function dispatchLogin(username, password) {
+  const mutation = gql`
+    mutation Login($username: String!, $password: String!) {
+      login(username: $username, password: $password) {
+        status
+        error
+        user {
+          id
+          full_name
+          username
+          is_authenticated
+          is_impersonate
+          userregionalinfo {
+            country {
+              id
+              name
+            }
+            region {
+              id
+              name
+            }
+          }
+          groups {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+  const variables = { username, password };
+  const data = await graphQLClient.request(mutation, variables);
+  if (data.login.status === true) {
+    user.set(data.login.user);
+  }
+  return data.login;
 }
 
 export async function fetchBasis() {
   await getObservatoryPages();
   await getBlogCategories();
   await getAboutPages();
+  await getMe();
 }

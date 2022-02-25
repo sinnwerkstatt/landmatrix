@@ -3,7 +3,7 @@ import { waitLocale, init, register } from "svelte-i18n";
 import { browser } from "$app/env";
 
 export const supportedLanguages = ["en", "es", "fr", "ru"];
-export async function i18nload(params): Promise<void> {
+export async function i18nload(params: Record<string, string>): Promise<void> {
   // these "params" are taken from [lang] in the routes-folder
   const { lang } = params;
 

@@ -15,8 +15,18 @@
 
 @layer components {
   a {
-    @apply text-orange hover:underline;
+    @apply text-orange cursor-pointer hover:underline hover:text-orange-200;
   }
+  a.lm-underline:hover {
+    text-decoration: none;
+    color: var(--color-lm-dark);
+    border-bottom: 3px solid var(--color-lm-orange);
+  }
+
+  a.investor {
+    @apply text-pelorous;
+  }
+
   p {
     @apply mb-4;
   }
@@ -26,6 +36,52 @@
   }
   h3 a {
     @apply text-lm-dark;
+  }
+  .btn {
+    @apply inline-block border m-0.5 px-4 py-2 rounded shadow whitespace-nowrap transform transition;
+    @apply focus:outline-none focus:ring;
+  }
+  .btn.disabled {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .btn-primary {
+    @apply bg-orange text-white border-orange text-center;
+    @apply hover:bg-orange-300 hover:border-orange-300;
+    @apply active:bg-orange-700;
+  }
+  .btn-secondary {
+    @apply bg-white text-orange border-orange;
+    @apply hover:bg-orange-300 hover:text-white hover:border-orange-300;
+    @apply active:bg-orange-700;
+  }
+  /*  .btn-secondary {*/
+  /*  background-color: #b1b1b1;*/
+
+  /*  &:hover {*/
+  /*    color: white;*/
+  /*    background-color: darken(#b1b1b1, 5%);*/
+  /*  }*/
+  /*}*/
+  .btn-link {
+    @apply bg-none text-orange shadow-none border-none;
+    @apply hover:text-orange-200;
+    @apply active:text-orange-500;
+  }
+
+  .btn-gray {
+    @apply bg-gray-300 text-gray-600;
+    @apply hover:text-white hover:bg-gray-400;
+  }
+
+  .btn-pelorous {
+    @apply bg-pelorous-300 border-pelorous text-white;
+    @apply hover:bg-pelorous hover:text-white;
+    @apply active:bg-pelorous active:text-white;
+  }
+  .btn-danger {
+    @apply border-dotted border-red-600 text-red-600 bg-transparent;
+    @apply hover:text-white hover:bg-red-400;
   }
 }
 

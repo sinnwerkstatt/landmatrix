@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
   import { i18nload } from "$lib/i18n/i18n";
-  import type { LoadInput, LoadOutput } from "@sveltejs/kit";
+  import type { Load } from "@sveltejs/kit";
   import { fetchBasis } from "$lib/stores";
 
-  export async function load({ params }: LoadInput): Promise<LoadOutput> {
+  export const load: Load = async ({ params }) => {
     await fetchBasis();
     await i18nload(params);
     return {};
-  }
+  };
 </script>
 
 <script>

@@ -17,8 +17,9 @@
 
 <script lang="ts">
   import { page } from "$app/stores";
+  import type { Deal } from "$lib/types/deal";
 
-  export let deal;
+  export let deal: Deal;
   const dealID = $page.params.id;
 </script>
 
