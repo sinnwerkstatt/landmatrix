@@ -166,6 +166,7 @@ CACHES = {
 CORS_ALLOWED_ORIGINS = [
     "https://dev.accountability.landmatrix.org",
     "https://accountability.landmatrix.org",
+    "http://localhost:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 

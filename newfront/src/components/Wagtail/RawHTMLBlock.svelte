@@ -2,5 +2,4 @@
   export let value: string;
 </script>
 
-
-    <div>{@html value}</div>
+<div>{@html value}</div>

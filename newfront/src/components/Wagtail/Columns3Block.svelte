@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { blockMap } from "$components/Wagtail/utils";
+  import { blockMap } from "$components/Wagtail/blocks";
   import type { WagtailStreamfieldBlock } from "$lib/types/wagtail";
 
   export let value: {

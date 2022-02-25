@@ -6,6 +6,9 @@ import FullWidthContainerBlock from "$components/Wagtail/FullWidthContainerBlock
 import Columns3Block from "$components/Wagtail/Columns3Block.svelte";
 import FAQsBlock from "$components/Wagtail/FAQsBlock.svelte";
 import RawHTMLBlock from "$components/Wagtail/RawHTMLBlock.svelte";
+import ImageBlock from "$components/Wagtail/ImageBlock.svelte";
+import TitleBlock from "$components/Wagtail/TitleBlock.svelte";
+import GalleryBlock from "$components/Wagtail/GalleryBlock.svelte";
 
 export const blockMap = {
   paragraph: ParagraphBlock,
@@ -16,4 +19,8 @@ export const blockMap = {
   full_width_container: FullWidthContainerBlock,
   faqs_block: FAQsBlock,
   html: RawHTMLBlock,
+  image: ImageBlock,
+  linked_image: ImageBlock,
+  title: TitleBlock,
+  gallery: GalleryBlock,
 };

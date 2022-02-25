@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { WagtailStreamfield } from "$lib/types/wagtail";
-  import { blockMap } from "$components/Wagtail/utils";
+  import { blockMap } from "$components/Wagtail/blocks";
 
   export let content: WagtailStreamfield = [];
 </script>

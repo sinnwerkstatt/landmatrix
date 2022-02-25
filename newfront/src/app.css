@@ -13,14 +13,20 @@
 @tailwind components;
 @tailwind utilities;
 
-.streamfield h3 {
-  @apply text-lm-dark text-[22px] my-5 font-bold;
-}
-.streamfield p {
-  @apply mb-4;
-}
-a {
-  @apply text-orange hover:underline;
+@layer components {
+  a {
+    @apply text-orange hover:underline;
+  }
+  p {
+    @apply mb-4;
+  }
+
+  h3 {
+    @apply text-lm-dark text-[22px] my-5 font-bold;
+  }
+  h3 a {
+    @apply text-lm-dark;
+  }
 }
 
 .richtext-image {

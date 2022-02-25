@@ -5,7 +5,9 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.utils.text import Truncator
 from django.utils.translation import gettext_lazy as _
+from rest_framework.fields import ListField
 from taggit.models import Tag
+from wagtail.api import APIField
 from wagtail.images.models import SourceImageIOError
 from wagtail.snippets.models import register_snippet
 
@@ -181,3 +183,16 @@ class BlogPage(BlogPageAbstract):
         }
 
     parent_page_types = ["blog.BlogIndexPage"]
+
+    def dict_tags(self):
+        return [
+            {"id": tag.id, "name": tag.name, "slug": tag.slug}
+            for tag in self.tags.all()
+        ]
+
+    api_fields = [
+        "body",
+        APIField("tags", ListField(source="dict_tags")),
+        "date",
+        "header_image",
+    ]

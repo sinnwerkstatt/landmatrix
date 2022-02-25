@@ -14,10 +14,12 @@
   import "../app.css";
   import Footer from "$components/Footer.svelte";
   import Navbar from "$components/Navbar.svelte";
+  import NavigationLoader from "$components/NavigationLoader.svelte";
 </script>
 
+<NavigationLoader />
 <Navbar />
-<div class="h-[calc(100vh-58px-32px)] overflow-x-auto">
+<div class="h-[calc(100vh-58px-32px)] overflow-x-auto pb-12">
   <slot />
 </div>
 <Footer />
