@@ -50,8 +50,7 @@ django-simple-history = "*"
 django-wkhtmltopdf = "*"
 
 #wagtail-blog = "*"
-# TODO: check this here for new releases. broken is 0.10.17 still.
-wagtail-modeltranslation = {git = "https://github.com/infoportugal/wagtail-modeltranslation", branch = "master" }
+wagtail-modeltranslation = "*"
 
 geojson = "<2"
 unicodecsv = "*"
