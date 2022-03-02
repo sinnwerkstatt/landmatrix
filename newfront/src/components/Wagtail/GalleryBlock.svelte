@@ -6,7 +6,6 @@
     images: BlockImage[];
     columns: number;
   };
-  console.log(value);
 
   const cols_map = { 3: "grid-cols-3", 5: "grid-cols-5" };
   $: galleryColumns = cols_map[value.columns] ?? "grid-cols-1";

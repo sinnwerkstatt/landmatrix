@@ -7,7 +7,7 @@ import type { User } from "$lib/types/user";
 
 const graphQLClient = new GraphQLClient(GQLEndpoint, {
   credentials: "include",
-  mode: "cors"
+  mode: "cors",
 });
 
 export const observatoryPages = writable(undefined);
@@ -105,8 +105,10 @@ export async function dispatchLogin(username, password) {
           id
           full_name
           username
+          initials
           is_authenticated
           is_impersonate
+          role
           userregionalinfo {
             country {
               id
@@ -131,6 +133,15 @@ export async function dispatchLogin(username, password) {
     user.set(data.login.user);
   }
   return data.login;
+}
+export async function dispatchLogout() {
+  const mutation = gql`
+    mutation {
+      logout
+    }
+  `;
+  const data = await graphQLClient.request(mutation);
+  return data.logout;
 }
 
 export async function fetchBasis() {

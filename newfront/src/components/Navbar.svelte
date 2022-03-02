@@ -5,10 +5,17 @@
     aboutPages,
     blogCategories,
     dispatchLogin,
+    dispatchLogout,
     observatoryPages,
     user,
   } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
+  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
+  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
+  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
+  import { computePosition } from "@floating-ui/dom";
+  import UserRegular from "$components/icons/UserRegular.svelte";
+  import TranslateIcon from "$components/icons/TranslateIcon.svelte";
 
   const language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
@@ -29,11 +36,25 @@
   function switchLanguage(locale: string) {}
 
   function showDropdown(e) {
+    const referenceElement = e.currentTarget;
     const dropdownMenu = e.currentTarget.parentNode.querySelector(".dropdown-menu");
-    dropdownMenu.style.display =
-      dropdownMenu.style.display === "block" ? "none" : "block";
 
-    const closeMenuClick = () => {
+    function applyStyles({ x = 0, y = 0 }) {
+      Object.assign(dropdownMenu.style, {
+        display: "block",
+        left: `${x}px`,
+        top: `${y}px`,
+      });
+    }
+
+    computePosition(referenceElement, dropdownMenu, {
+      placement: "bottom",
+    }).then(applyStyles);
+
+    dropdownMenu.style.display = "block";
+
+    const closeMenuClick = (e) => {
+      if (e.target === dropdownMenu || dropdownMenu.contains(e.target)) return;
       dropdownMenu.style.display = "none";
       document.removeEventListener("click", closeMenuClick, true);
     };
@@ -45,13 +66,15 @@
   let login_failed_message = "";
   async function login() {
     const xx = await dispatchLogin(username, password);
-    console.log(xx);
+    if (xx.status === true) await location.reload();
   }
-  function dispatchLogout() {}
+  async function logout() {
+    if (await dispatchLogout()) location.reload();
+  }
   function closeMenu() {}
 </script>
 
-<nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex">
+<nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex px-2">
   <div class="mx-6 w-full lg:container lg:mx-auto flex justify-between p-1">
     <a class="mt-1 mr-6" href="/">
       <img
@@ -147,37 +170,40 @@
       </ul>
       <ul class="flex items-center ml-auto">
         <!--          <NavbarSearch />-->
-        <!--        <li class="nav-item dropdown">-->
-        <!--          <a class="nav-link" on:click={showDropdown} role="button">-->
-        <!--            <i aria-hidden="true" class="fa fa-language"></i>-->
-        <!--            {languages[language]}-->
-        <!--          </a>-->
-        <!--          <div class="dropdown-menu">-->
-        <!--            {#each languages as { lingo, lcode }}-->
-        <!--              <a-->
-        <!--                class:active={lcode === language}-->
-        <!--                on:click={() => switchLanguage(lcode)}-->
-        <!--              >-->
-        <!--                {lingo} ({lcode})-->
-        <!--              </a>-->
-        <!--            {/each}-->
-        <!--          </div>-->
-        <!--        </li>-->
+        <li class="nav-item dropdown">
+          <a class="nav-link" on:click={showDropdown} role="button">
+            <TranslateIcon class="h-4 w-4 inline" />
+            {languages[language]}
+          </a>
+          <div class="dropdown-menu">
+            {#each Object.entries(languages) as [lcode, lingo]}
+              <a
+                class:active={lcode === language}
+                on:click={() => switchLanguage(lcode)}
+              >
+                {lingo} ({lcode})
+              </a>
+            {/each}
+          </div>
+        </li>
         {#if $user}
           <li class="nav-item dropdown">
-            <a on:click={showDropdown} class="nav-link" role="button">
+            <a on:click={showDropdown} class="nav-link flex items-center" role="button">
               {$user.initials}
               {#if $user.role === "ADMINISTRATOR"}
+                <UserAstronautSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-astronaut" />
               {:else if $user.role === "EDITOR"}
+                <UserNurseSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-nurse" />
               {:else if $user.is_impersonate}
+                <UserSecretSolid class="h-4 w-4 inline" />
                 <i class="fa fa-user-secret" />
               {:else}
                 <i class="fa fa-user" />
               {/if}
             </a>
-            <div aria-labelledby="#navbarDropdown" class="dropdown-menu !right-0">
+            <div aria-labelledby="#navbarDropdown" class="dropdown-menu ">
               <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
                 {$user.full_name}
                 <br />
@@ -202,8 +228,7 @@
               <a href="/deal/add">
                 {$_("Add a deal")}
               </a>
-
-              <a on:click|preventDefault={dispatchLogout}>
+              <a on:click|preventDefault={logout}>
                 {$_("Logout")}
               </a>
             </div>
@@ -216,13 +241,14 @@
               role="button"
               title="Login/Register"
             >
-              <i class="far fa-user" />
+              <UserRegular class="h-4 w-4 inline mx-1" />
             </a>
             <div class="dropdown-menu right-0">
               <form on:submit|preventDefault={login} class="px-4 pt-3">
                 <div class="form-group">
                   <input
                     autocomplete="username"
+                    class="inpt"
                     id="username"
                     placeholder="Username"
                     type="text"
@@ -232,6 +258,7 @@
                 <div class="form-group">
                   <input
                     autocomplete="current-password"
+                    class="inpt"
                     id="password"
                     placeholder="Password"
                     type="password"
@@ -260,19 +287,18 @@
 
 <style>
   .dropdown-menu {
-    @apply absolute border border-orange bg-white hidden;
-    background-clip: padding-box;
-    color: #212529;
-    float: left;
-    left: 0;
-    list-style: none;
-    margin: 0.125rem 0 0;
-    min-width: 10rem;
+    @apply absolute border border-orange bg-white hidden absolute;
+    /*background-clip: padding-box;*/
+    /*color: #212529;*/
+    /*float: left;*/
+    /*left: 0;*/
+    /*list-style: none;*/
+    /*margin: 0.125rem 0 0;*/
+    /*min-width: 10rem;*/
 
-    position: absolute;
-    text-align: left;
-    top: 100%;
-    z-index: 1000;
+    /*text-align: left;*/
+    /*top: 100%;*/
+    /*z-index: 1000;*/
   }
 
   .dropdown-menu a {
@@ -289,9 +315,9 @@
     @apply whitespace-nowrap;
   }
 
-  .nav-item.dropdown {
-    @apply relative;
-  }
+  /*.nav-item.dropdown {*/
+  /*  @apply relative;*/
+  /*}*/
 
   .nav-item.dropdown > a {
     @apply relative pr-[20px];

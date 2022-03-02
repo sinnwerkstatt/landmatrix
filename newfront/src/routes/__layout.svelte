@@ -19,7 +19,7 @@
 
 <NavigationLoader />
 <Navbar />
-<div class="h-[calc(100vh-58px-32px)] overflow-x-auto pb-12">
+<div class="h-[calc(100vh-58px-32px)] overflow-x-auto pb-12 px-2">
   <slot />
 </div>
 <Footer />

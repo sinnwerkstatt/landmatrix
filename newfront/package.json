@@ -12,6 +12,7 @@
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
   },
   "devDependencies": {
+    "@floating-ui/dom": "^0.3.0",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "@types/js-cookie": "^3.0.1",
