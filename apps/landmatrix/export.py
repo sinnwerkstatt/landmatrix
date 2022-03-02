@@ -340,6 +340,7 @@ involvement_choices_fields = {"role": dict(InvestorVentureInvolvement.ROLE_CHOIC
 
 def flatten_date_current_value(data, field, fieldname) -> None:
     if not data.get(field):
+        data[field] = ""
         return
     data[field] = "|".join(
         [
@@ -769,6 +770,8 @@ class DataDownload:
                     for x in data["involved_actors"]
                 ]
             )
+        else:
+            data["involved_actors"] = ""
 
         bool_cast(data, "on_the_lease_state")
         bool_cast(data, "off_the_lease_state")
