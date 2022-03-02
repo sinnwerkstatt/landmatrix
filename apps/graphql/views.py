@@ -1,6 +1,6 @@
 import json
 
-from ariadne.contrib.django.views import GraphQLView
+from ariadne_django.views import GraphQLView
 from ariadne.exceptions import HttpBadRequestError
 from django.http import HttpResponseBadRequest, JsonResponse, HttpRequest
 

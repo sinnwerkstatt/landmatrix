@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.sites",
     # OL3 widgets must come before GIS
-    "apps.ol3_widgets",
     "django.contrib.gis",
     # wagtail and dependencies
     "wagtail.contrib.modeladmin",
@@ -69,11 +68,8 @@ INSTALLED_APPS = [
     "taggit",
     "bootstrap3_datetime",
     # 'treebeard',
-    "simple_history",
     "crispy_forms",
     "wkhtmltopdf",
-    "threadedcomments",
-    "django_comments",
     "captcha",
     "rest_framework",
     "rest_framework.authtoken",
@@ -84,34 +80,28 @@ INSTALLED_APPS = [
     #   apps of the actual landmatrix project
     "apps.message",
     "apps.landmatrix",
-    "apps.grid",
-    "apps.map",
-    "apps.charts",
     "apps.editor",
     "apps.wagtailcms",
-    "apps.api",
     "apps.notifications",
-    "apps.public_comments",
-    "apps.feeds",
     "impersonate",
     "celery",
     # green new deal
     "wagtail.api.v2",
-    "ariadne.contrib.django",
+    "ariadne_django",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     # "django.middleware.cache.UpdateCacheMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    # populate the history user automatically
-    "simple_history.middleware.HistoryRequestMiddleware",
     # wagtail and dependencies
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
@@ -133,7 +123,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
-                "apps.wagtailcms.context_processors.add_data_source_dir",
             ]
         },
     }
@@ -174,7 +163,13 @@ CACHES = {
     },
 }
 
-COMMENTS_APP = "apps.public_comments"
+CORS_ALLOWED_ORIGINS = [
+    "https://dev.accountability.landmatrix.org",
+    "https://accountability.landmatrix.org",
+    "http://localhost:3000",
+]
+CORS_ALLOW_CREDENTIALS = True
+
 
 WAGTAIL_SITE_NAME = "Land Matrix"
 
@@ -197,18 +192,14 @@ IMPERSONATE = {
 
 ELASTICSEARCH_URL = env("ELASTICSEARCH_URL", default="http://localhost")
 try:
-    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r").read()
+    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r", encoding="UTF-8").read()
 except FileNotFoundError:
-    open(".es_index_ab_switch", "w").write("a")
+    open(".es_index_ab_switch", "w", encoding="UTF-8").write("a")
     ELASTIC_INDEX_AB = "a"
 ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatrix")
 ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
 print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
 sys.stdout.flush()
-
-# GreenNewDeal
-OLD_ELASTIC = env.bool("OLD_ELASTIC", default=True)
-NEW_ROUTES = env.bool("NEW_ROUTES", default=True)
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

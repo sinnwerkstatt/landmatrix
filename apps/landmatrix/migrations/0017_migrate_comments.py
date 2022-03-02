@@ -4,23 +4,13 @@ from django.db import migrations
 
 
 def migrate_comments(apps, schema_editor):
-    from apps.public_comments.models import ThreadedComment
-    # ThreadedComment = apps.get_model("threadedcomments", "ThreadedComment")
-    Activity = apps.get_model("landmatrix", "Activity")
-    HistoricalActivity = apps.get_model("landmatrix", "HistoricalActivity")
-    queryset = ThreadedComment.objects.filter(content_type_id=24)
-    for comment in queryset:
-        activity_identifier = Activity.objects.get(pk=comment.object_pk).activity_identifier
-        hactivity = HistoricalActivity.objects.activity_for_comments(activity_identifier)
-        comment.content_object = hactivity
-        comment.save()
+    pass
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('landmatrix', '0016_auto_20190425_0004'),
-        ('threadedcomments', '0003_threadedcomment_newest_activity'),
     ]
 
     operations = [

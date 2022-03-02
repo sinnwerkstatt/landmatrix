@@ -1,0 +1,33 @@
+<script context="module" lang="ts">
+  import type { Load } from "@sveltejs/kit";
+  import type { WagtailPage } from "$lib/types/wagtail";
+  import { pageQuery } from "$lib/queries";
+
+  export const load: Load = async ({ url, fetch }) => {
+    const page = await pageQuery(url, fetch);
+    return { props: { page } };
+  };
+</script>
+
+<script lang="ts">
+  import BasePage from "$views/BasePage.svelte";
+  import ObservatoryPage from "$views/ObservatoryPage.svelte";
+
+  export let page: WagtailPage;
+
+  $: wagtailPage = {
+    WagtailRootPage: BasePage,
+    WagtailPage: BasePage,
+    ObservatoryPage: ObservatoryPage,
+  }[page.meta?.type.split(".")[1]];
+</script>
+
+<svelte:head>
+  <title>{page.title}</title>
+</svelte:head>
+
+{#if wagtailPage}
+  <svelte:component this={wagtailPage} {page} />
+{:else}
+  Dieser Seitentyp existiert nicht: {page?.meta?.type}
+{/if}

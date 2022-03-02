@@ -4,9 +4,20 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django_registration.forms import RegistrationForm
 
-from apps.grid.fields import UserModelChoiceField
 from apps.landmatrix.models import Country, HistoricalInvestor
 from ..models import HistoricalActivity, Region
+
+
+class UserModelChoiceField(forms.ModelChoiceField):
+    """
+    Extend ModelChoiceField for users so that the choices are
+    listed as 'first_name last_name (username)' instead of just
+    'username'.
+
+    """
+
+    def label_from_instance(self, obj):
+        return "%s" % obj.get_full_name() or obj.username
 
 
 class CustomRegistrationForm(RegistrationForm):

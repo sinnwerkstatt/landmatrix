@@ -1,4 +1,4 @@
-{% load static i18n filter_tags wagtailcore_tags custom_tags landmatrix_tags message_tags %}<!DOCTYPE html>
+{% load static i18n wagtailcore_tags landmatrix_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -147,7 +147,6 @@
   <div class="container">
     {% block navutils %}
       {% block messages %}
-        {% custom_messages as custommessages %}
         {% for message in custommessages %}
           <div class="alert{% if message.level %} alert-{% if message.level == "error" %}danger{% else %}{{ message.level }}{% endif %}{% else %} alert-info{% endif %}">
             {% if message.title %}<div><strong>{{ message.title }}</strong></div> {% endif %}{{ message.text|richtext }}
@@ -228,7 +227,7 @@
       <div id="footer-etc" class="row">
         <div class="col-md-6">
           <p>
-            <a href="{{ request.path|newdeallink }}">&copy; {% now "Y" %}</a> The Land Matrix | All rights reserved
+            &copy; {% now "Y" %} The Land Matrix | All rights reserved
           </p>
         </div>
         <div class="col-md-6 text-right">

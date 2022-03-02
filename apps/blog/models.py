@@ -5,7 +5,9 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.utils.text import Truncator
 from django.utils.translation import gettext_lazy as _
+from rest_framework.fields import ListField
 from taggit.models import Tag
+from wagtail.api import APIField
 from wagtail.images.models import SourceImageIOError
 from wagtail.snippets.models import register_snippet
 
@@ -16,8 +18,6 @@ from .abstract import (
     BlogPageAbstract,
     BlogPageTagAbstract,
 )
-
-COMMENTS_APP = getattr(settings, "COMMENTS_APP", None)
 
 
 class BlogIndexPage(BlogIndexPageAbstract):
@@ -86,7 +86,6 @@ class BlogIndexPage(BlogIndexPageAbstract):
         context["category"] = category
         context["tag"] = tag
         context["author"] = author
-        context["COMMENTS_APP"] = COMMENTS_APP
         context["paginator"] = paginator
         context = get_blog_context(context)
 
@@ -157,7 +156,6 @@ class BlogPage(BlogPageAbstract):
         context = super().get_context(request, *args, **kwargs)
         context["blogs"] = self.get_blog_index().blogindexpage.blogs
         context = get_blog_context(context)
-        context["COMMENTS_APP"] = COMMENTS_APP
         return context
 
     def get_dict(self, rendition_str):
@@ -185,3 +183,16 @@ class BlogPage(BlogPageAbstract):
         }
 
     parent_page_types = ["blog.BlogIndexPage"]
+
+    def dict_tags(self):
+        return [
+            {"id": tag.id, "name": tag.name, "slug": tag.slug}
+            for tag in self.tags.all()
+        ]
+
+    api_fields = [
+        "body",
+        APIField("tags", ListField(source="dict_tags")),
+        "date",
+        "header_image",
+    ]

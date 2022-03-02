@@ -1,8 +1,0 @@
-<div class="widget-image">
-  {% if href %}
-    <a href="{{ href }}"{% if external %} target="_blank"{% endif %}><img src="{{ url }}" class="image" alt="{{ name }}"></a>
-  {% else %}
-    <img src="{{ url }}" class="image" alt="{{ name }}">
-  {% endif %}
-  {% if caption %}<div class="carousel-caption">{{ caption }}</div>{% endif %}
-</div><!-- widget-image -->

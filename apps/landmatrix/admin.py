@@ -8,38 +8,6 @@ from apps.landmatrix.models import (
 )
 
 
-@admin.register(models.FilterCondition)
-class FilterConditionAdmin(admin.ModelAdmin):
-    pass
-
-
-class FilterConditionInline(admin.TabularInline):
-    model = models.FilterCondition
-    extra = 0
-
-
-@admin.register(models.FilterPreset)
-class FilterPresetAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "group",
-        "relation",
-        "is_default_country",
-        "is_default_global",
-    ]
-    inlines = [FilterConditionInline]
-
-
-class FilterPresetInline(admin.TabularInline):
-    model = models.FilterPreset
-    extra = 0
-
-
-@admin.register(models.FilterPresetGroup)
-class FilterPresetGroupAdmin(admin.ModelAdmin):
-    inlines = [FilterPresetInline]
-
-
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
     list_display = ["name", "high_income"]

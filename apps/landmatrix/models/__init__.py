@@ -11,11 +11,7 @@ from apps.landmatrix.models.activity_attribute_group import (
 from apps.landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
 from apps.landmatrix.models.activity_feedback import ActivityFeedback
 from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.filter import (
-    FilterCondition,
-    FilterPreset,
-    FilterPresetGroup,
-)
+
 from apps.landmatrix.models.investor import (
     HistoricalInvestor,
     HistoricalInvestorActivityInvolvement,

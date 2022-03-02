@@ -1,8 +1,0 @@
-{% load custom_tags %}
-<div class="row widget-gallery widget-gallery-columns-{% if columns == 1 %}1{% elif columns == 2 %}2{% elif columns == 3 %}3{% elif columns == 4 %}4{% elif columns == 5 %}5{% elif columns == 6 %}6{% else %}1{% endif %}">
-  {% for image in images %}
-    <div class="col-xs-{% if columns == 1 %}12{% elif columns == 2 %}6{% elif columns == 3 %}4{% elif columns == 4 %}3{% elif columns == 5 %}4 col-sm-2{% if forloop.counter0|divisibleby:5 %} col-sm-offset-{% if forloop.revcounter0 < 5 %}{{ 5|substract:forloop.revcounter0 }}{% else %}1{% endif %}{% endif %}{% elif columns == 6 %}4 col-sm-2{% else %}12{% endif %} col">
-      {% include 'widgets/image.html' with url=image.url name=image.name href=image.href %}
-    </div>
-  {% endfor %}
-</div><!-- widget-gallery -->

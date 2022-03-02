@@ -1,0 +1,6 @@
+{
+  "printWidth": 88,
+  "svelteStrictMode": false,
+  "svelteAllowShorthand": true,
+  "svelteIndentScriptAndStyle": true
+}

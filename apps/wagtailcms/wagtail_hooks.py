@@ -89,8 +89,7 @@ class MyPageLinkHandler(PageLinkHandler):
             page = cls.get_instance(attrs)
 
             page_url = escape(page.specific.url)
-            if settings.NEW_ROUTES:
-                page_url = page_url.replace("/legacy/", "/")
+            page_url = page_url.replace("/legacy/", "/")
 
             return f'<a href="{page_url}">'
         except Page.DoesNotExist:
