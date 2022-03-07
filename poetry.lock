@@ -1,13 +1,13 @@
 [[package]]
 name = "amqp"
-version = "5.0.9"
+version = "5.1.0"
 description = "Low-level AMQP client for Python (fork of amqplib)."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-vine = "5.0.0"
+vine = ">=5.0.0"
 
 [[package]]
 name = "anyascii"
@@ -664,7 +664,7 @@ pytz = "*"
 
 [[package]]
 name = "djangorestframework-gis"
-version = "0.15"
+version = "0.18"
 description = "Geographic add-ons for Django Rest Framework"
 category = "main"
 optional = false
@@ -773,11 +773,11 @@ python-versions = "*"
 
 [[package]]
 name = "geojson-rewind"
-version = "0.2.0"
+version = "1.0.2"
 description = "A Python library for enforcing polygon ring winding order in GeoJSON"
 category = "main"
 optional = false
-python-versions = ">=3.5,<4.0"
+python-versions = ">=3.6,<4.0"
 
 [[package]]
 name = "ghp-import"
@@ -899,7 +899,7 @@ toml = {version = ">=0.10.2", markers = "python_version > \"3.6\""}
 
 [[package]]
 name = "ipython"
-version = "8.1.0"
+version = "8.1.1"
 description = "IPython: Productive Interactive Computing"
 category = "dev"
 optional = false
@@ -993,7 +993,7 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kombu"
-version = "5.2.3"
+version = "5.2.4"
 description = "Messaging library for Python."
 category = "main"
 optional = false
@@ -1841,7 +1841,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "virtualenv"
-version = "20.13.2"
+version = "20.13.3"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -2004,12 +2004,12 @@ production = ["gunicorn", "sentry_sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e2d05d9a6b4b9ca381ab781bdf3b85b4e1323d7bd421d3fc39cb9dbfa32bfc11"
+content-hash = "827d43f96cd8cbcd165178312f45eb0fe03a729b9ee0faee32c648b010ce3f90"
 
 [metadata.files]
 amqp = [
-    {file = "amqp-5.0.9-py3-none-any.whl", hash = "sha256:9cd81f7b023fc04bbb108718fbac674f06901b77bfcdce85b10e2a5d0ee91be5"},
-    {file = "amqp-5.0.9.tar.gz", hash = "sha256:1e5f707424e544078ca196e72ae6a14887ce74e02bd126be54b7c03c971bef18"},
+    {file = "amqp-5.1.0-py3-none-any.whl", hash = "sha256:a575f4fa659a2290dc369b000cff5fea5c6be05fe3f2d5e511bcf56c7881c3ef"},
+    {file = "amqp-5.1.0.tar.gz", hash = "sha256:446b3e8a8ebc2ceafd424ffcaab1c353830d48161256578ed7a65448e601ebed"},
 ]
 anyascii = [
     {file = "anyascii-0.3.0-py3-none-any.whl", hash = "sha256:68f6917fe5b22caf7dde8551b838e5e17d5e3c96c55734485699bd03ad92237f"},
@@ -2285,8 +2285,8 @@ djangorestframework = [
     {file = "djangorestframework-3.13.1.tar.gz", hash = "sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee"},
 ]
 djangorestframework-gis = [
-    {file = "djangorestframework-gis-0.15.tar.gz", hash = "sha256:f388c159ab42ee2549c88de20655dc6020d01f0220b74c250a98735a26835f72"},
-    {file = "djangorestframework_gis-0.15-py2.py3-none-any.whl", hash = "sha256:63c253528a107bc77cd71506cd639a0489b05b763fa7c3190cfd4622bf094594"},
+    {file = "djangorestframework-gis-0.18.tar.gz", hash = "sha256:6ddd201a208e68f8f11ac71d2df2c030b1280818a4b54681be00e73057fcafb1"},
+    {file = "djangorestframework_gis-0.18-py2.py3-none-any.whl", hash = "sha256:7df5d5a32c3492d55837e2a695ef8f9a5c83dc163d90a0764eaa187091a9a633"},
 ]
 doit = [
     {file = "doit-0.34.2-py3-none-any.whl", hash = "sha256:a7f414de4c596a96a727890e0792709a103f1af48e8180e27e07862fff781238"},
@@ -2321,8 +2321,8 @@ geojson = [
     {file = "geojson-1.3.5.tar.gz", hash = "sha256:09be78fcc24bea204973f827e619becd6d46cf97498ccb86426524768ae60dc5"},
 ]
 geojson-rewind = [
-    {file = "geojson-rewind-0.2.0.tar.gz", hash = "sha256:212c10e8b675dd09749d837eef3d1fc958063f039836476d5266497302166ca9"},
-    {file = "geojson_rewind-0.2.0-py3-none-any.whl", hash = "sha256:8d802b07dc211df0f826c18dfcbcdc4303ad02fbc98a5216ee7330d22aba0888"},
+    {file = "geojson-rewind-1.0.2.tar.gz", hash = "sha256:3ba2c88b99855c6b8201834a476e7041fb04b377d4e5c1f3fb293daeac00f717"},
+    {file = "geojson_rewind-1.0.2-py3-none-any.whl", hash = "sha256:9465cba370bad373c00e9b015e6bb138ef656e7192f9318eee58eff5d64f5e59"},
 ]
 ghp-import = [
     {file = "ghp-import-2.0.2.tar.gz", hash = "sha256:947b3771f11be850c852c64b561c600fdddf794bab363060854c1ee7ad05e071"},
@@ -2364,8 +2364,8 @@ ipdb = [
     {file = "ipdb-0.13.9.tar.gz", hash = "sha256:951bd9a64731c444fd907a5ce268543020086a697f6be08f7cc2c9a752a278c5"},
 ]
 ipython = [
-    {file = "ipython-8.1.0-py3-none-any.whl", hash = "sha256:7bfeb6f298b2d7f3859c4f3e134082015cf34de90f89f5020e107a5a762ef6db"},
-    {file = "ipython-8.1.0.tar.gz", hash = "sha256:42c23e90b2deaae631266885de1656a517a1673d7e1db57e8eb3a4bb6cd5ce1b"},
+    {file = "ipython-8.1.1-py3-none-any.whl", hash = "sha256:6f56bfaeaa3247aa3b9cd3b8cbab3a9c0abf7428392f97b21902d12b2f42a381"},
+    {file = "ipython-8.1.1.tar.gz", hash = "sha256:8138762243c9b3a3ffcf70b37151a2a35c23d3a29f9743878c33624f4207be3d"},
 ]
 iso3166 = [
     {file = "iso3166-2.0.2-py3-none-any.whl", hash = "sha256:55e93c8a7587cae9479ad68c823390e33493d17d95b457271032594e5f1f7aae"},
@@ -2388,8 +2388,8 @@ jinja2 = [
     {file = "Jinja2-3.0.3.tar.gz", hash = "sha256:611bb273cd68f3b993fabdc4064fc858c5b47a973cb5aa7999ec1ba405c87cd7"},
 ]
 kombu = [
-    {file = "kombu-5.2.3-py3-none-any.whl", hash = "sha256:eeaeb8024f3a5cfc71c9250e45cddb8493f269d74ada2f74909a93c59c4b4179"},
-    {file = "kombu-5.2.3.tar.gz", hash = "sha256:81a90c1de97e08d3db37dbf163eaaf667445e1068c98bfd89f051a40e9f6dbbd"},
+    {file = "kombu-5.2.4-py3-none-any.whl", hash = "sha256:8b213b24293d3417bcf0d2f5537b7f756079e3ea232a8386dcc89a59fd2361a4"},
+    {file = "kombu-5.2.4.tar.gz", hash = "sha256:37cee3ee725f94ea8bb173eaab7c1760203ea53bbebae226328600f9d2799610"},
 ]
 l18n = [
     {file = "l18n-2021.3-py3-none-any.whl", hash = "sha256:78495d1df95b6f7dcc694d1ba8994df709c463a1cbac1bf016e1b9a5ce7280b9"},
@@ -2443,6 +2443,7 @@ libsass = [
     {file = "libsass-0.21.0-cp36-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:e2b1a7d093f2e76dc694c17c0c285e846d0b0deb0e8b21dc852ba1a3a4e2f1d6"},
     {file = "libsass-0.21.0-cp36-abi3-win32.whl", hash = "sha256:abc29357ee540849faf1383e1746d40d69ed5cb6d4c346df276b258f5aa8977a"},
     {file = "libsass-0.21.0-cp36-abi3-win_amd64.whl", hash = "sha256:659ae41af8708681fa3ec73f47b9735a6725e71c3b66ff570bfce78952f2314e"},
+    {file = "libsass-0.21.0-cp38-abi3-macosx_12_0_arm64.whl", hash = "sha256:c9ec490609752c1d81ff6290da33485aa7cb6d7365ac665b74464c1b7d97f7da"},
     {file = "libsass-0.21.0.tar.gz", hash = "sha256:d5ba529d9ce668be9380563279f3ffe988f27bc5b299c5a28453df2e0b0fbaf2"},
 ]
 macfsevents = [
@@ -2799,6 +2800,10 @@ requests-oauthlib = [
     {file = "ruamel.yaml-0.17.21.tar.gz", hash = "sha256:8b7ce697a2f212752a35c1ac414471dc16c424c9573be4926b56ff3f5d23b7af"},
 ]
 "ruamel.yaml.clib" = [
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e7be2c5bcb297f5b82fee9c665eb2eb7001d1050deaba8471842979293a80b0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:221eca6f35076c6ae472a531afa1c223b9c29377e62936f61bc8e6e8bdc5f9e7"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win32.whl", hash = "sha256:1070ba9dd7f9370d0513d649420c3b362ac2d687fe78c6e888f5b12bf8bc7bee"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:77df077d32921ad46f34816a9a16e6356d8100374579bc35e15bab5d4e9377de"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:7b2927e92feb51d830f531de4ccb11b320255ee95e791022555971c466af4527"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win32.whl", hash = "sha256:ada3f400d9923a190ea8b59c8f60680c4ef8a4b0dfae134d2f2ff68429adfab5"},
@@ -2960,8 +2965,8 @@ vine = [
     {file = "vine-5.0.0.tar.gz", hash = "sha256:7d3b1624a953da82ef63462013bbd271d3eb75751489f9807598e8f340bd637e"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.13.2-py2.py3-none-any.whl", hash = "sha256:e7b34c9474e6476ee208c43a4d9ac1510b041c68347eabfe9a9ea0c86aa0a46b"},
-    {file = "virtualenv-20.13.2.tar.gz", hash = "sha256:01f5f80744d24a3743ce61858123488e91cb2dd1d3bdf92adaf1bba39ffdedf0"},
+    {file = "virtualenv-20.13.3-py2.py3-none-any.whl", hash = "sha256:dd448d1ded9f14d1a4bfa6bfc0c5b96ae3be3f2d6c6c159b23ddcfd701baa021"},
+    {file = "virtualenv-20.13.3.tar.gz", hash = "sha256:e9dd1a1359d70137559034c0f5433b34caf504af2dc756367be86a5a32967134"},
 ]
 wagtail = [
     {file = "wagtail-2.15.4-py3-none-any.whl", hash = "sha256:7ee7a5b82669383e3e1fbe17fcaca8da8e14a23462fbf0cb0e57849f8a8c60e8"},

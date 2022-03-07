@@ -15,26 +15,31 @@ Django = "<4"
 djangorestframework = "<4"
 wagtail = "<2.16"
 psycopg2-binary = "*"
+django-environ = "*"
 django-cors-headers = "*"
 
 fastjsonschema = "*"
 pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
+djangorestframework-gis = "<1"
+
 # greennewdeal
-geojson-rewind = "^0.2.0"
+geojson-rewind = "*"
 ariadne = ">=0.14"
 ariadne_django = "*"
-django-redis = "^4.12.1"
+
 wagtail-orderable = ">=1.0.3"
 
+# celery - still need? - what about caching? redis? memcached?
+celery = "*"
 redis = "*"
+django-redis = "^4.12.1"
 python-memcached = "*"
 
 
-djangorestframework-gis = "<0.16"
 drf-yasg = "*"
 django-crispy-forms = "*"
-django-environ = "*"
+
 django-file-resubmit = "*"
 
 django-modeltranslation = "*"
@@ -59,7 +64,7 @@ python-dateutil = "*"
 
 #plumbing
 doit = "*"
-celery = "*"
+
 libsass = "*"
 gunicorn = { version = "*", optional = true }
 sentry_sdk = { version = "*", optional = true }
