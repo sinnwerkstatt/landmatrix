@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "lean_base.html" %}
 {% load i18n %}
 
 {% block page_title %}{% trans "Login" %}{% endblock %}
@@ -24,8 +24,7 @@
 <form class="form-horizontal" method="post" action="{% url 'login' %}">{% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
 
-    {% include "grid/form.html" with mandatory_label=" " %}
-
+    {{ form }}
     <div class="form-group">
         <div class="col-sm-3 col-sm-offset-3">
             <input class="btn btn-default" type="submit" value="{% trans "Login" %}" />

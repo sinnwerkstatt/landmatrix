@@ -1,10 +1,18 @@
 from typing import Any
 
+import requests
 from ariadne import ObjectType
 from ariadne.exceptions import HttpError
+from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.sites.shortcuts import get_current_site
+from django.core import signing
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_decode
 from graphql import GraphQLResolveInfo
 
+from apps.editor.models import UserRegionalInfo
 from apps.graphql.resolvers.user_utils import get_user_role
 
 User = auth.get_user_model()
@@ -72,6 +80,68 @@ user_regional_info_type = ObjectType("UserRegionalInfo")
 user_regional_info_type.set_field("country", lambda obj, info: obj.country.all())
 user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
 
+REGISTRATION_SALT = getattr(settings, "REGISTRATION_SALT", "registration")
+
+
+def send_activation_email(user, request):
+    activation_key = signing.dumps(obj=user.get_username(), salt=REGISTRATION_SALT)
+    context = {
+        "scheme": "https" if request.is_secure() else "http",
+        "activation_key": activation_key,
+        "expiration_days": settings.ACCOUNT_ACTIVATION_DAYS,
+        "site": get_current_site(request),
+        "user": user,
+    }
+    subject = render_to_string(
+        template_name="django_registration/activation_email_subject.txt",
+        context=context,
+        request=request,
+    )
+    # Force subject to a single line to avoid header-injection
+    # issues.
+    subject = "".join(subject.splitlines())
+    message = render_to_string(
+        template_name="django_registration/activation_email_body.txt",
+        context=context,
+        request=request,
+    )
+    user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+
+
+def resolve_register(
+    _, info, username, first_name, last_name, email, phone, information, password, token
+) -> dict:
+    hcaptcha_verify = requests.post(
+        "https://hcaptcha.com/siteverify",
+        data={
+            "response": token,
+            "secret": settings.HCAPTCHA_SECRETKEY,
+            "sitekey": settings.HCAPTCHA_SITEKEY,
+        },
+    ).json()
+    if not hcaptcha_verify["success"]:
+        return {"ok": False, "message": "captcha problems"}
+
+    new_user = User.objects.create(
+        username=username,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        is_active=False,
+    )
+    new_user.set_password(password)
+    new_user.save()
+    UserRegionalInfo.objects.create(user=new_user, phone=phone, information=information)
+
+    send_activation_email(new_user, info.context["request"])
+    return {"ok": True}
+    # request = info.context["request"]
+    # user = auth.authenticate(request, username=username, password=password)
+    # if user:
+    #     auth.login(request, user)
+    #     return {"status": True, "user": user}
+    # return {"status": False, "error": "Invalid username or password"}
+
 
 def resolve_login(_, info, username, password) -> dict:
     request = info.context["request"]
@@ -86,5 +156,37 @@ def resolve_logout(_, info: GraphQLResolveInfo) -> bool:
     request = info.context["request"]
     if request.user.is_authenticated:
         auth.logout(request)
+        return True
+    return False
+
+
+def resolve_password_reset(_, info: GraphQLResolveInfo, email) -> bool:
+    form = PasswordResetForm(data={"email": email})
+    if form.is_valid():
+        form.save()
+        return True
+    return False
+
+
+def resolve_password_reset_confirm(
+    _, info: GraphQLResolveInfo, token, new_password1, new_password2
+) -> bool:
+    # This is currently not used. We should probably use a good lib here
+    try:
+        # urlsafe_base64_decode() decodes to bytestring
+        uid = urlsafe_base64_decode(token).decode()
+        user = User.objects.get(pk=uid)
+
+    except User.DoesNotExist:
+        return False
+    form = SetPasswordForm(
+        user=user,
+        data={
+            "new_password1": new_password1,
+            "new_password2": new_password2,
+        },
+    )
+    if form.is_valid():
+        form.save()
         return True
     return False

@@ -30,7 +30,7 @@ urlpatterns = [
     # APIs
     path("graphql/", include("apps.graphql.urls")),
     path("wagtailapi/v2/", api_router.urls),
-    path("api/", include("apps.landmatrix.urlsapi")),
+    path("api/", include("apps.api.urls")),
 ]
 
 if settings.DEBUG:

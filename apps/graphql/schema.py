@@ -64,6 +64,9 @@ from apps.graphql.resolvers.user import (
     resolve_users,
     user_regional_info_type,
     user_type,
+    resolve_register,
+    resolve_password_reset,
+    resolve_password_reset_confirm,
 )
 from apps.graphql.scalars import geopoint_scalar, datetime_scalar
 
@@ -101,8 +104,11 @@ query.set_field("chart_descriptions", resolve_chart_descriptions)
 query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
+mutation.set_field("register", resolve_register)
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
+mutation.set_field("password_reset", resolve_password_reset)
+mutation.set_field("password_reset_confirm", resolve_password_reset_confirm)
 # deal
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)

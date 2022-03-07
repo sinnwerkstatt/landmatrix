@@ -150,9 +150,24 @@ const router = new Router({
     {
       path: "/login/",
       name: "login",
-      component: () => import("$views/Login.vue"),
+      component: () => import("$views/Account/Login.vue"),
     },
-
+    {
+      path: "/account/register/",
+      name: "register",
+      component: () => import("$views/Account/Register.vue"),
+    },
+    {
+      path: "/account/password_reset/",
+      name: "password_reset",
+      component: () => import("$views/Account/PasswordReset.vue"),
+    },
+    {
+      path: "/account/reset/:token/set-password/",
+      name: "password_reset",
+      props: true,
+      component: () => import("$views/Account/PasswordResetConfirm.vue"),
+    },
     // redirects
     { path: "/data/", redirect: { name: "list_deals" } },
     { path: "/data/investors/", redirect: { name: "list_investors" } },
