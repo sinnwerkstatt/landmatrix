@@ -271,10 +271,10 @@
                 <p class="mt-3 text-danger small">{login_failed_message}</p>
               </form>
               <hr />
-              <a href="/accounts/register/">
+              <a href="/account/register/">
                 {$_("New around here? Sign up")}
               </a>
-              <a href="/accounts/password_reset/">
+              <a href="/account/password_reset/">
                 {$_("Forgot password?")}
               </a>
             </div>

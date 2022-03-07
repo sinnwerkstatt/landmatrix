@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrapper">
     <div v-if="$store.getters.userAuthenticated">
-      {{ $t("You are already logged in.") }}
+      {{ $t("You are logged in.") }}
     </div>
     <div v-else class="login-container">
       <form @submit.prevent="dispatchLogin">
@@ -50,6 +50,7 @@
       if (this.$store.getters.userAuthenticated) {
         if (this.$route.query.next)
           this.$router.push(this.$route.query.next.toString());
+        else this.$router.push("/");
       }
     },
     methods: {

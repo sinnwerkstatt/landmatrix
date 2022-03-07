@@ -146,7 +146,7 @@
         information: null,
         password: null,
         password_confirm: null,
-        token: null,
+        token: "",
         submit_disabled: true,
         register_failed_message: "",
         registration_successful: false,
@@ -159,33 +159,16 @@
       if (this.$store.getters.userAuthenticated) {
         if (this.$route.query.next)
           this.$router.push(this.$route.query.next.toString());
+        else this.$router.push("/");
       }
     },
     methods: {
-      captchaVerified(token) {
+      captchaVerified(token: string) {
         this.token = token;
         this.submit_disabled = false;
       },
 
       async register() {
-        // let xx = await fetch("/api/accounts/register/", {
-        //   method: "POST",
-        //   body: JSON.stringify({
-        //     username: this.username,
-        //     first_name: this.first_name,
-        //     last_name: this.last_name,
-        //     email: this.email,
-        //     phone: this.phone,
-        //     information: this.information,
-        //     password: this.password,
-        //     password_confirm: this.password_confirm,
-        //     token: this.token,
-        //   }),
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        // });
-        // console.log(await xx.json());
         apolloClient
           .mutate({
             mutation: gql`

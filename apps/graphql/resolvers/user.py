@@ -5,9 +5,11 @@ from ariadne import ObjectType
 from ariadne.exceptions import HttpError
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_decode
 from graphql import GraphQLResolveInfo
 
 from apps.editor.models import UserRegionalInfo
@@ -125,11 +127,10 @@ def resolve_register(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        # phone=phone,
-        # information=information,
-        password=password,
         is_active=False,
     )
+    new_user.set_password(password)
+    new_user.save()
     UserRegionalInfo.objects.create(user=new_user, phone=phone, information=information)
 
     send_activation_email(new_user, info.context["request"])
@@ -155,5 +156,37 @@ def resolve_logout(_, info: GraphQLResolveInfo) -> bool:
     request = info.context["request"]
     if request.user.is_authenticated:
         auth.logout(request)
+        return True
+    return False
+
+
+def resolve_password_reset(_, info: GraphQLResolveInfo, email) -> bool:
+    form = PasswordResetForm(data={"email": email})
+    if form.is_valid():
+        form.save()
+        return True
+    return False
+
+
+def resolve_password_reset_confirm(
+    _, info: GraphQLResolveInfo, token, new_password1, new_password2
+) -> bool:
+    # This is currently not used. We should probably use a good lib here
+    try:
+        # urlsafe_base64_decode() decodes to bytestring
+        uid = urlsafe_base64_decode(token).decode()
+        user = User.objects.get(pk=uid)
+
+    except User.DoesNotExist:
+        return False
+    form = SetPasswordForm(
+        user=user,
+        data={
+            "new_password1": new_password1,
+            "new_password2": new_password2,
+        },
+    )
+    if form.is_valid():
+        form.save()
         return True
     return False

@@ -8,13 +8,23 @@
   {% block css %}
     <link rel="icon" href="{% static "img/favicon.ico" %}">
   {% endblock %}
+  <style>
+    label {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    input {
+      height: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
-
 <div style="
-          height: 100vh;
+    height: 100px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -22,7 +32,22 @@
           font-family: sans-serif;
         ">
   <div>
-    <img style="margin-bottom: 4rem;" src="/static/img/lm-logo.png">
+    <a href="/">
+    <img style="height: 60px;" src="/static/img/lm-logo.png">
+    </a>
+
+  </div>
+</div>
+
+<div style="
+  height: calc(100vh - 240px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  {#text-align: center;#}
+  font-family: sans-serif;
+  ">
+  <div>
     {% block content %}{% endblock %}
   </div>
 </div>
