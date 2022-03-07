@@ -88,4 +88,7 @@
   input {
     display: block;
   }
+  .btn-primary {
+    @apply text-white;
+  }
 </style>

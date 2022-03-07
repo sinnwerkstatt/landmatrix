@@ -152,7 +152,11 @@ const router = new Router({
       name: "login",
       component: () => import("$views/Login.vue"),
     },
-
+    {
+      path: "/account/register/",
+      name: "register",
+      component: () => import("$views/Register.vue"),
+    },
     // redirects
     { path: "/data/", redirect: { name: "list_deals" } },
     { path: "/data/investors/", redirect: { name: "list_investors" } },

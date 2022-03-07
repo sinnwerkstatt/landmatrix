@@ -257,9 +257,9 @@
                 <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
               </form>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/accounts/register/">{{
+              <router-link :to="{ name: 'register' }" class="dropdown-item">{{
                 $t("New around here? Sign up")
-              }}</a>
+              }}</router-link>
               <a class="dropdown-item" href="/accounts/password_reset/">{{
                 $t("Forgot password?")
               }}</a>

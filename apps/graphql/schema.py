@@ -64,6 +64,7 @@ from apps.graphql.resolvers.user import (
     resolve_users,
     user_regional_info_type,
     user_type,
+    resolve_register,
 )
 from apps.graphql.scalars import geopoint_scalar, datetime_scalar
 
@@ -101,6 +102,7 @@ query.set_field("chart_descriptions", resolve_chart_descriptions)
 query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
+mutation.set_field("register", resolve_register)
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 # deal
