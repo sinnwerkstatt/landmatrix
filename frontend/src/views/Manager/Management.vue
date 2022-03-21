@@ -384,6 +384,7 @@
               id
               current_draft {
                 id
+                created_at
               }
               deal_size
               created_at
@@ -504,9 +505,14 @@
       user_is_staff(): boolean {
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
-      region(): Region | null {
+      user_region(): Region | null {
         const regions = this.user.userregionalinfo?.region;
         if (regions?.length > 0) return regions[0];
+        return null;
+      },
+      user_country(): Country | null {
+        const countries = this.user.userregionalinfo?.country;
+        if (countries?.length > 0) return countries[0];
         return null;
       },
       country_options(): Country[] {
@@ -542,16 +548,26 @@
           this.sortField,
           this.sortAscending
         );
-        if (this.region)
+        if (this.user_region)
           if (this.showDeals)
             objects = objects.filter(
-              (o) => o.country?.fk_region?.id === this.region.id
+              (o: Deal) => o.country?.fk_region?.id === this.user_region.id
             );
           else
-            objects = objects.filter((o) => {
+            objects = objects.filter((o: Investor) => {
               const deal_regions = o.deals.map((d) => d.country?.fk_region?.id);
-              console.log(deal_regions, this.region.id);
-              return deal_regions.includes(this.region.id);
+              console.log(deal_regions, this.user_region.id);
+              return deal_regions.includes(this.user_region.id);
+            });
+        if (this.user_country)
+          if (this.showDeals)
+            objects = objects.filter(
+              (o: Deal) => o.country?.id === this.user_country.id
+            );
+          else
+            objects = objects.filter((investor: Investor) => {
+              const deal_regions = investor.deals.map((d) => d.country?.id);
+              return deal_regions.includes(this.user_country.id);
             });
 
         if (this.selected_country)
