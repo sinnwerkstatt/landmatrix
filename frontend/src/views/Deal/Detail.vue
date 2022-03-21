@@ -233,6 +233,13 @@
           if (!deal && !this.$store.getters.userAuthenticated)
             this.$router.push({ name: "login", query: { next: this.$route.fullPath } });
           if (!deal) this.$router.push({ name: "list_deals" });
+          if (
+            this.dealVersion == deal.versions[0].id &&
+            deal.status === 3 &&
+            deal.draft_status === null
+          )
+            this.$router.push({ name: "deal_detail", params: { dealId: this.dealId } });
+
           if (deal.status === 1 && !this.dealVersion)
             this.$router.push({
               name: "deal_detail",

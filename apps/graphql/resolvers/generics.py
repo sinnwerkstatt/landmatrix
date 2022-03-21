@@ -206,7 +206,12 @@ def object_edit(
     obj.modified_by = user
 
     # this is a live Object for which we create a new Version
-    if not obj_version_id:
+    # or it is the version of the currently active Deal
+    if not obj_version_id or (
+        ObjectVersion.objects.filter(object_id=obj_id).first().id == obj_version_id
+        and obj.draft_status is None
+        and obj.status == 3
+    ):
         obj.draft_status = DRAFT_STATUS["DRAFT"]
         if otype == "deal":
             obj.fully_updated = False
