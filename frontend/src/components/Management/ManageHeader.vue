@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div v-if="allow_editing" class="row workflow-buttons">
+          <div class="row workflow-buttons">
             <div class="col text-right">
               <a
                 v-if="object.draft_status === 1 && is_authorized(object)"
@@ -143,7 +143,7 @@
                 Show latest changes
               </router-link>
             </div>
-            <div v-if="allow_editing" class="action-buttons">
+            <div class="action-buttons">
               <div v-if="is_editable" class="action-button">
                 <div class="d-inline-block">
                   <router-link
@@ -186,24 +186,11 @@
                 </div>
               </div>
             </div>
-            <div
-              v-if="show_legacy_edit_link && $store.getters.userAuthenticated"
-              class="action-buttons"
-            >
-              <a
-                :href="`/legacy/${otype}/edit/${object.id}/`"
-                class="btn btn-primary"
-                target="_blank"
-              >
-                {{ $t("Edit") }}
-              </a>
-            </div>
           </div>
           <slot name="visibility" />
         </div>
       </div>
       <ManageHeaderComments
-        v-if="allow_editing"
         :object="object"
         :object-version="objectVersion"
         :users="users"
@@ -270,8 +257,6 @@
     },
     data() {
       return {
-        allow_editing: import.meta.env.VITE_ALLOW_EDITING.toLowerCase() === "true",
-        show_legacy_edit_link: import.meta.env.VITE_LEGACY_EDIT_LINK === "true",
         users: [],
         show_to_draft_overlay: false,
         show_to_delete_overlay: false,

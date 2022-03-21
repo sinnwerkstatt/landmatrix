@@ -175,7 +175,6 @@
         return !this.dealVersion && !!this.deal.draft_status;
       },
       is_editable(): boolean {
-        if (import.meta.env.VITE_ALLOW_EDITING.toLowerCase() !== "true") return false;
         // deal ist deleted
         if (!this.dealVersion && this.deal.status === 4) return false;
         if (this.is_active_with_draft) return false;
