@@ -26,6 +26,8 @@ interface ObjVersion {
   id: number;
   created_at: Date;
   created_by: User;
+  modified_at: Date;
+  modified_by: User;
   object_id: Int;
 }
 

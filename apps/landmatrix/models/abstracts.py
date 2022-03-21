@@ -34,6 +34,15 @@ class Version(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    modified_at = models.DateTimeField(null=True, blank=True)
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
     )
     serialized_data = models.JSONField()
 
@@ -47,6 +56,11 @@ class Version(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk and not self.created_at:
             self.created_at = timezone.now()
+        # NOTE: This ought to be refactored already.
+        # It's not very nice to just strip the modified_at timestamp out of
+        # the serialized data :S
+        self.modified_at = self.serialized_data["modified_at"]
+        self.modified_by_id = self.serialized_data["modified_by"]
         super().save(*args, **kwargs)
 
     @classmethod

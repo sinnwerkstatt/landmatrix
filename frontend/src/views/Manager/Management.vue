@@ -132,7 +132,7 @@
                 >{{ $t("Created by") }}</span
               >
             </th>
-            <th :class="{ selected: sortField === 'modified_at', asc: sortAscending }">
+            <th>
               <DatePicker
                 v-model="modified_daterange"
                 :max-date="new Date()"
@@ -182,14 +182,20 @@
                 track-by="id"
               />
               <span
-                :class="{ selected: sortField === 'modified_at', asc: sortAscending }"
-                @click="setSort('modified_at')"
+                :class="{
+                  selected: sortField === 'current_draft.modified_at',
+                  asc: sortAscending,
+                }"
+                @click="setSort('current_draft.modified_at')"
                 >{{ $t("Last modified at") }}</span
               >
               /
               <span
-                :class="{ selected: sortField === 'modified_by', asc: sortAscending }"
-                @click="setSort('modified_by')"
+                :class="{
+                  selected: sortField === 'current_draft.modified_by',
+                  asc: sortAscending,
+                }"
+                @click="setSort('current_draft.modified_by')"
                 >{{ $t("Last modified by") }}</span
               >
             </th>
@@ -272,7 +278,24 @@
               :key="`${obj.id}-${fieldName}`"
               :class="`field-${fieldName}`"
             >
+              <div v-if="fieldName === 'current_draft.modified_at'">
+                <div>
+                  {{
+                    obj.current_draft && obj.current_draft.modified_at
+                      ? dayjs(obj.current_draft.modified_at).format("YYYY-MM-DD")
+                      : ""
+                  }}
+                </div>
+                <div>
+                  {{
+                    obj.current_draft && obj.current_draft.modified_by
+                      ? obj.current_draft.modified_by.username
+                      : ""
+                  }}
+                </div>
+              </div>
               <DisplayField
+                v-else
                 :fieldname="fieldName"
                 :model="showDeals ? 'deal' : 'investor'"
                 :object-id="obj.id"
@@ -283,13 +306,13 @@
                 :value-classes="[]"
                 :wrapper-classes="[]"
               />
-              <div v-if="['created_at', 'modified_at'].includes(fieldName)">
+              <div v-if="fieldName === 'created_at'">
                 <DisplayField
-                  :fieldname="fieldName.replace('_at', '_by')"
+                  fieldname="created_by"
                   :model="showDeals ? 'deal' : 'investor'"
                   :object-id="obj.id"
                   :show-label="false"
-                  :value="obj[fieldName.replace('_at', '_by')]"
+                  :value="obj.created_by"
                   :value-classes="[]"
                   :wrapper-classes="[]"
                 />
@@ -365,6 +388,7 @@
         modified_by: null as User | null,
         fully_updated_daterange: null as Date | null,
         selected_combined_status: null as { id: string; name: string } | null,
+        dayjs,
       };
     },
     apollo: {
@@ -385,6 +409,11 @@
               current_draft {
                 id
                 created_at
+                modified_at
+                modified_by {
+                  id
+                  username
+                }
               }
               deal_size
               created_at
@@ -442,6 +471,15 @@
             investors(limit: 0, filters: $filters, subset: UNFILTERED) {
               id
               name
+              current_draft {
+                id
+                created_at
+                modified_at
+                modified_by {
+                  id
+                  username
+                }
+              }
               created_at
               created_by {
                 id
@@ -533,7 +571,6 @@
           const name = combined_status_fn(o.status, o.draft_status, true);
           const id = combined_status_fn(o.status, o.draft_status, false);
           if (seen_ids.includes(id)) return;
-          console.log(o.status, o.draft_status);
           status_options.push({ id, name });
           seen_ids.push(id);
         });
@@ -543,11 +580,6 @@
         let objects = this.showDeals ? this.deals : this.investors;
         if (!objects || objects.length === 0) return [];
 
-        objects = sortAnything(
-          objects.map((o) => ({ ...o, combined_status: [o.status, o.draft_status] })),
-          this.sortField,
-          this.sortAscending
-        );
         if (this.user_region)
           if (this.showDeals)
             objects = objects.filter(
@@ -556,7 +588,6 @@
           else
             objects = objects.filter((o: Investor) => {
               const deal_regions = o.deals.map((d) => d.country?.fk_region?.id);
-              console.log(deal_regions, this.user_region.id);
               return deal_regions.includes(this.user_region.id);
             });
         if (this.user_country)
@@ -577,6 +608,7 @@
           objects = objects.filter((o) => o.deal_size >= this.selected_from_size);
         if (this.showDeals && this.selected_to_size)
           objects = objects.filter((o) => o.deal_size <= this.selected_to_size);
+
         if (this.created_daterange)
           objects = objects.filter(
             (o) =>
@@ -587,13 +619,17 @@
           objects = objects.filter((o) => o.created_by?.id === this.created_by.id);
 
         if (this.modified_daterange)
-          objects = objects.filter(
-            (o) =>
-              dayjs(this.modified_daterange.start).isSameOrBefore(
-                o.modified_at,
-                "day"
-              ) &&
-              dayjs(this.modified_daterange.end).isSameOrAfter(o.modified_at, "day")
+          objects = objects.filter((o) =>
+            o.current_draft?.modified_at
+              ? dayjs(this.modified_daterange.start).isSameOrBefore(
+                  o.current_draft.modified_at,
+                  "day"
+                ) &&
+                dayjs(this.modified_daterange.end).isSameOrAfter(
+                  o.current_draft.modified_at,
+                  "day"
+                )
+              : false
           );
         if (this.modified_by)
           objects = objects.filter((o) => o.modified_by?.id === this.modified_by.id);
@@ -636,8 +672,12 @@
               );
               break;
           }
-          console.log(this.selected_combined_status);
         }
+        objects = sortAnything(
+          objects.map((o) => ({ ...o, combined_status: [o.status, o.draft_status] })),
+          this.sortField,
+          this.sortAscending
+        );
 
         return objects;
       },
@@ -766,7 +806,7 @@
               "country",
               "deal_size",
               "created_at",
-              "modified_at",
+              "current_draft.modified_at",
               "fully_updated_at",
               "workflowinfos",
               "combined_status",
@@ -776,7 +816,7 @@
               "name",
               "country",
               "created_at",
-              "modified_at",
+              "current_draft.modified_at",
               "workflowinfos",
               "combined_status",
               "deals",

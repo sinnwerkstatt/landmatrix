@@ -27,11 +27,20 @@ export function sortAnything<T extends { [key: string | number]: any }>(
   sortAscending: boolean
 ): Array<T> {
   function sortFunction(a: T, b: T) {
-    const fieldx = sortAscending ? a[sortField] : b[sortField];
-    const fieldy = sortAscending ? b[sortField] : a[sortField];
+    let fieldx;
+    let fieldy;
+    // NOTE: Nasty hack just to accomodate management.vue
+    if (sortField.startsWith("current_draft.")) {
+      const field = sortField.replace("current_draft.", "");
+      fieldx = sortAscending ? a.current_draft?.[field] : b.current_draft?.[field];
+      fieldy = sortAscending ? b.current_draft?.[field] : a.current_draft?.[field];
+    } else {
+      fieldx = sortAscending ? a[sortField] : b[sortField];
+      fieldy = sortAscending ? b[sortField] : a[sortField];
+    }
 
-    if (fieldx === null) return -1;
-    if (fieldy === null) return 1;
+    if (fieldx === null || fieldx === undefined) return -1;
+    if (fieldy === null || fieldy === undefined) return 1;
 
     switch (typeof fieldx) {
       case "number":
@@ -40,6 +49,11 @@ export function sortAnything<T extends { [key: string | number]: any }>(
         return fieldx.localeCompare(fieldy);
       case "object": {
         if (Array.isArray(fieldx)) return fieldx.length - fieldy.length;
+
+        if ("username" in fieldx && "username" in fieldy)
+          return fieldy.username
+            .toLocaleLowerCase()
+            .localeCompare(fieldx.username.toLocaleLowerCase());
 
         if ("name" in fieldx && "name" in fieldy)
           return fieldy.name.localeCompare(fieldx.name);

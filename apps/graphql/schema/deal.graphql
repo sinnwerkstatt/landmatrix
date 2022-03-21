@@ -263,6 +263,8 @@ type DealVersion {
   deal: Deal
   created_at: DateTime
   created_by: User
+  modified_at: DateTime
+  modified_by: User
   object_id: Int
 }
 
