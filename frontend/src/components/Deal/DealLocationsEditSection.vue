@@ -419,6 +419,13 @@
         this.actFG.eachLayer((lay) => {
           if (lay._leaflet_id === leafId) this.actFG.removeLayer(lay);
         });
+
+        let hasPoint = false;
+        this.actFG.eachLayer((lay) => {
+          if (lay.feature.geometry.type === "Point") hasPoint = true;
+        });
+        if (hasPoint) return;
+
         tmpfg.features[0].properties = {
           id: this.actLoc?.id,
           name: this.actLoc.name,
