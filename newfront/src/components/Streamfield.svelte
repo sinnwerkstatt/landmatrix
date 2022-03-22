@@ -5,7 +5,7 @@
   export let content: WagtailStreamfield = [];
 </script>
 
-<div class={$$props.class + " container mx-auto pt-6 pb-0 streamfield"}>
+<div class="container mx-auto pt-6 pb-0 streamfield {$$props.class ?? ''}">
   {#each content as { type, value }}
     {#if blockMap[type]}
       <svelte:component this={blockMap[type]} bind:value />

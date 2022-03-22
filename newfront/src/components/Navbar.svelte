@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
+  import { _, locale } from "svelte-i18n";
   import Cookies from "js-cookie";
   import {
     aboutPages,
     blogCategories,
     dispatchLogin,
     dispatchLogout,
+    fetchBasis,
     observatoryPages,
     user,
   } from "$lib/stores";
@@ -17,7 +18,7 @@
   import UserRegular from "$components/icons/UserRegular.svelte";
   import TranslateIcon from "$components/icons/TranslateIcon.svelte";
 
-  const language = Cookies.get("django_language") ?? "en";
+  let language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
   const dataLinks = [
     { name: "Map", href: "/map" },
@@ -33,7 +34,12 @@
     else observatoriesGroups.global.push(op);
   });
 
-  function switchLanguage(locale: string) {}
+  async function switchLanguage(lang: string) {
+    language = lang;
+    Cookies.set("django_language", lang);
+    await locale.set(lang);
+    await fetchBasis(lang);
+  }
 
   function showDropdown(e) {
     const referenceElement = e.currentTarget;

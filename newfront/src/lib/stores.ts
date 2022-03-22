@@ -52,13 +52,15 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
       }
     }
   `;
-  const variables = { language: "en" };
+  const variables = { language };
   const gqlres = await graphQLClient.request(query, variables);
   await blogCategories.set(gqlres.blogcategories);
   return gqlres.blogcategories;
 }
 
 export const user = writable(undefined);
+export const countries = writable([]);
+export const regions = writable([]);
 
 async function getMe(): Promise<User> {
   console.log("getMe");
@@ -89,10 +91,39 @@ async function getMe(): Promise<User> {
           name
         }
       }
+      countries {
+        id
+        name
+        code_alpha2
+        slug
+        point_lat
+        point_lon
+        point_lat_min
+        point_lon_min
+        point_lat_max
+        point_lon_max
+        observatory_page_id
+        high_income
+        deals {
+          id
+        }
+      }
+      regions {
+        id
+        name
+        slug
+        point_lat_min
+        point_lon_min
+        point_lat_max
+        point_lon_max
+        observatory_page_id
+      }
     }
   `;
   const gqlres = await graphQLClient.request(query);
   await user.set(gqlres.me);
+  await countries.set(gqlres.countries);
+  await regions.set(gqlres.regions);
 }
 
 export async function dispatchLogin(username, password) {
@@ -144,9 +175,10 @@ export async function dispatchLogout() {
   return data.logout;
 }
 
-export async function fetchBasis() {
-  await getObservatoryPages();
-  await getBlogCategories();
-  await getAboutPages();
+export async function fetchBasis(lang = "en") {
+  console.log("LANG", lang);
+  await getObservatoryPages(lang);
+  await getBlogCategories(lang);
+  await getAboutPages(lang);
   await getMe();
 }

@@ -3,8 +3,8 @@
   import type { WagtailPage } from "$lib/types/wagtail";
   import { pageQuery } from "$lib/queries";
 
-  export const load: Load = async ({ url, fetch }) => {
-    const page = await pageQuery(url, fetch);
+  export const load: Load = async ({ url }) => {
+    const page = await pageQuery(url);
     return { props: { page } };
   };
 </script>

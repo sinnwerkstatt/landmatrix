@@ -2,35 +2,16 @@
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import PageTitle from "$components/PageTitle.svelte";
   import { _ } from "svelte-i18n";
+  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
+  import Streamfield from "$components/Streamfield.svelte";
+  import MapDataCharts from "$components/MapDataCharts.svelte";
 
   export let page: ObservatoryPage;
-  // import gql from "graphql-tag";
-  // import Vue from "vue";
-  // import StatusPieChart from "$components/Charts/StatusPieChart.vue";
-  // import PageTitle from "$components/PageTitle.vue";
-  // import QuasiStaticMap from "$components/QuasiStaticMap.vue";
-  // import Streamfield from "$components/Streamfield.vue";
-  // import ArticleList from "$components/Wagtail/ArticleList.vue";
-  // import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
-  // import Twitter from "$components/Wagtail/Twitter.vue";
-  // import type { BlogPage, ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
-  // import type { DealAggregations } from "$types/deal";
-  // import type { GQLFilter } from "$types/filters";
 
-  // export default Vue.extend({
-  //   name: "ObservatoryPage",
-  //   components: {
-  //     PageTitle,
-  //     QuasiStaticMap,
-  //     StatusPieChart,
-  //     Streamfield,
-  //     MapDataCharts,
-  //     ArticleList,
-  //     Twitter,
-  //   },
+  let readMore = false;
+
   //   data() {
   //     return {
-  //       readMore: false,
   //       deals: [],
   //       deal_aggregations: {} as DealAggregations,
   //       articles: [] as BlogPage[],
@@ -88,16 +69,12 @@
   //       `,
   //     },
   //   },
-  //   computed: {
-  //     page(): ObservatoryPage {
-  //       return this.$store.state.wagtailPage;
-  //     },
-  //     region_id(): number | null {
-  //       return this.page.region ? this.page.region.id : null;
-  //     },
-  //     country_id(): number | null {
-  //       return this.page.country ? this.page.country.id : null;
-  //     },
+
+  let regionID = page.region ? page.region.id : undefined;
+  let countryID = page.country ? page.country.id : undefined;
+
+  let totalSize = 0;
+  let totalCount = 0;
   //     slug(): string {
   //       let ret;
   //       if (this.page.region) {
@@ -211,92 +188,94 @@
   //     },
   //   },
   //   methods: {
-  //     setGlobalLocationFilter() {
-  //       if (this.page.region) {
-  //         this.$store.dispatch("setFilter", {
-  //           filter: "country_id",
-  //           value: null,
-  //         });
-  //         this.$store.dispatch("setFilter", {
-  //           filter: "region_id",
-  //           value: this.page.region.id,
-  //         });
-  //       } else if (this.page.country) {
-  //         this.$store.dispatch("setFilter", {
-  //           filter: "region_id",
-  //           value: null,
-  //         });
-  //         this.$store.dispatch("setFilter", {
-  //           filter: "country_id",
-  //           value: this.page.country.id,
-  //         });
-  //       }
-  //     },
-  //   },
+
+  function setGlobalLocationFilter() {
+    //       if (this.page.region) {
+    //         this.$store.dispatch("setFilter", {
+    //           filter: "country_id",
+    //           value: null,
+    //         });
+    //         this.$store.dispatch("setFilter", {
+    //           filter: "region_id",
+    //           value: this.page.region.id,
+    //         });
+    //       } else if (this.page.country) {
+    //         this.$store.dispatch("setFilter", {
+    //           filter: "region_id",
+    //           value: null,
+    //         });
+    //         this.$store.dispatch("setFilter", {
+    //           filter: "country_id",
+    //           value: this.page.country.id,
+    //         });
+    //       }
+    //     },
+  }
   // });
 </script>
 
 <!--  <div class="observatory">-->
 <PageTitle>{$_(page.title)}</PageTitle>
 
-<!--    <div class="clamp-20-75p-56">-->
-<!--      <QuasiStaticMap :country-id="country_id" :region-id="region_id" />-->
+<div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+  <!--  <QuasiStaticMap {countryID} {regionID} />-->
 
-<!--      <div v-if="page.introduction_text" class="intro-text">-->
-<!--        <div class="intro">-->
-<!--          {{ page.introduction_text }}-->
-<!--        </div>-->
-<!--        <div v-if="!readMore" class="readmore">-->
-<!--          <p>-->
-<!--            <a href="" @click.prevent="readMore = true">{{ $t("Read more") }}</a>-->
-<!--          </p>-->
-<!--        </div>-->
-<!--        <div class="row">-->
-<!--          <Streamfield v-if="readMore" :content="content" />-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
+  {#if page.introduction_text}
+    <div class="pt-6 pb-3">
+      <div class="intro">
+        {page.introduction_text}
+      </div>
+      {#if !readMore}
+        <div class="mt-6">
+          <a on:click|preventDefault={() => (readMore = true)}>
+            {$_("Read more")}
+          </a>
+        </div>
+      {:else}
+        <div class="mx-auto max-w-[65ch]">
+          <Streamfield content={page.body} />
+        </div>
+      {/if}
+    </div>
+  {/if}
+</div>
 
-<!--    <div class="charts">-->
-<!--      <div class="clamp-20-75p-56">-->
-<!--        <div class="row">-->
-<!--          <div class="col-12">-->
-<!--            <h3>{{ $t("We currently have information about:") }}</h3>-->
-<!--            <div class="row">-->
-<!--              <div class="col-6 text-center">-->
-<!--                <label>Size</label>-->
-<!--                <div class="total">{{ totalSize }} ha</div>-->
-<!--                <StatusPieChart-->
-<!--                  v-if="negotiationStatusBuckets"-->
-<!--                  :deal-data="negotiationStatusBuckets"-->
-<!--                  :aspect-ratio="1"-->
-<!--                  :container-style="{ maxWidth: '70%' }"-->
-<!--                  unit="ha"-->
-<!--                  value-field="size"-->
-<!--                />-->
-<!--              </div>-->
-<!--              <div class="col-6 text-center">-->
-<!--                <label>{{ $t("Number of deals") }}</label>-->
-<!--                <div class="total">-->
-<!--                  {{ totalCount }}-->
-<!--                </div>-->
-<!--                <StatusPieChart-->
-<!--                  v-if="negotiationStatusBuckets"-->
-<!--                  :deal-data="negotiationStatusBuckets"-->
-<!--                  :aspect-ratio="1"-->
-<!--                  :container-style="{ maxWidth: '70%' }"-->
-<!--                  value-field="count"-->
-<!--                />-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
+<div class="charts bg-lm-light mt-0 mb-8 p-0 pb-6">
+  <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+    <h3>{$_("We currently have information about:")}</h3>
+    <div class="grid grid-cols-2 font-bold">
+      <div class="col-6 text-center">
+        <label class=" text-orange">{$_("Size")}</label>
+        <div class=" mb-2">{totalSize} ha</div>
+        <!--                <StatusPieChart-->
+        <!--                  v-if="negotiationStatusBuckets"-->
+        <!--                  :deal-data="negotiationStatusBuckets"-->
+        <!--                  :aspect-ratio="1"-->
+        <!--                  :container-style="{ maxWidth: '70%' }"-->
+        <!--                  unit="ha"-->
+        <!--                  value-field="size"-->
+        <!--                />-->
+      </div>
+      <div class="col-6 text-center">
+        <label class="text-orange">{$_("Number of deals")}</label>
+        <div class="  mb-2">
+          {totalCount}
+        </div>
+        <!--                <StatusPieChart-->
+        <!--                  v-if="negotiationStatusBuckets"-->
+        <!--                  :deal-data="negotiationStatusBuckets"-->
+        <!--                  :aspect-ratio="1"-->
+        <!--                  :container-style="{ maxWidth: '70%' }"-->
+        <!--                  value-field="count"-->
+        <!--                />-->
+      </div>
+    </div>
+  </div>
+</div>
 
-<!--    <div class="clamp-20-75p-56">-->
-<!--      <MapDataCharts @click.native="setGlobalLocationFilter" />-->
-<!--    </div>-->
+<div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+  <MapDataCharts on:click={setGlobalLocationFilter} />
+</div>
 
 <!--    <ArticleList-->
 <!--      :articles="filteredCountryProfiles"-->
@@ -326,51 +305,8 @@
 <!--      :articles="filteredNewsPubs"-->
 <!--      :articles-label="$t('News & publications')"-->
 <!--    />-->
-<!--    <div v-if="page.twitter_feed" class="clamp-20-75p-56 tweets">-->
+<!--    <div v-if="page.twitter_feed" class="w-[clamp(20rem,75%,56rem)] mb-8">-->
 <!--      <h3>{{ $t("Latest tweets") }}</h3>-->
 <!--      <Twitter :value="page.twitter_feed" />-->
 <!--    </div>-->
 <!--  </div>-->
-
-<!--<style lang="scss" scoped>-->
-<!--  .observatory {-->
-<!--    margin-bottom: 5em;-->
-
-<!--    h3 {-->
-<!--      font-size: 1.5rem;-->
-<!--    }-->
-
-<!--    .intro-text {-->
-<!--      padding-top: 1.5em;-->
-<!--      padding-bottom: 0.8em;-->
-
-<!--      .readmore {-->
-<!--        margin-top: 1.5em;-->
-<!--      }-->
-<!--    }-->
-
-<!--    .charts {-->
-<!--      background-color: var(&#45;&#45;color-lm-light);-->
-<!--      padding: 0 0 1.5em;-->
-<!--      margin-top: 0;-->
-<!--      margin-bottom: 2rem;-->
-
-<!--      label {-->
-<!--        color: var(&#45;&#45;color-lm-orange);-->
-<!--        font-weight: bold;-->
-<!--        font-size: 15px;-->
-<!--        margin-bottom: 0;-->
-<!--      }-->
-
-<!--      .total {-->
-<!--        font-weight: bold;-->
-<!--        font-size: 15px;-->
-<!--        margin-bottom: 0.5em;-->
-<!--      }-->
-<!--    }-->
-
-<!--    .tweets {-->
-<!--      margin-bottom: 2em;-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
