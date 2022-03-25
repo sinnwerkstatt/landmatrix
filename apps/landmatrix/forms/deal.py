@@ -70,4 +70,7 @@ class DealForm(VueForm):
                 "choices": {c.code: c.name for c in Animal.objects.all()},
                 "with_categories": False,
             },
+            "export_country1": {"class": "CountryForeignKey"},
+            "export_country2": {"class": "CountryForeignKey"},
+            "export_country3": {"class": "CountryForeignKey"},
         }
