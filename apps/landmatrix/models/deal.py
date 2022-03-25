@@ -190,6 +190,7 @@ class Deal(models.Model, OldDealMixin):
     )
     nature_of_deal = ArrayField(
         models.CharField(_("Nature of the deal"), max_length=100),
+        verbose_name=_("Nature of the deal"),
         choices=NATURE_OF_DEAL_CHOICES,
         blank=True,
         null=True,

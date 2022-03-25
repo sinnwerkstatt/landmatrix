@@ -102,7 +102,7 @@
         <FilterBarNegotiationStatusToggle />
 
         <FilterCollapse
-          :title="$t('Nature of deal')"
+          :title="$t('Nature of the deal')"
           :clearable="nature_of_deal.length > 0"
           @click="nature_of_deal = []"
         >

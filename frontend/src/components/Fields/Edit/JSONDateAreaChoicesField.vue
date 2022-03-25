@@ -3,10 +3,10 @@
     <table class="w-100">
       <thead>
         <tr>
-          <th>Current</th>
-          <th>Date</th>
-          <th>Area (ha)</th>
-          <th>Choices</th>
+          <th>{{ $t("Current") }}</th>
+          <th>{{ $t("Date") }}</th>
+          <th>{{ $t("Area (ha)") }}</th>
+          <th>{{ $t("Choices") }}</th>
           <th></th>
         </tr>
       </thead>
