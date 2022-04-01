@@ -66,8 +66,16 @@
               v-if="showDeals"
               :class="{ selected: sortField === 'deal_size', asc: sortAscending }"
             >
-              <input v-model="selected_from_size" placeholder="From size" /><br />
-              <input v-model="selected_to_size" placeholder="To size" /><br />
+              <input
+                v-model="selected_from_size"
+                placeholder="From size"
+                class="text-black"
+              /><br />
+              <input
+                v-model="selected_to_size"
+                placeholder="To size"
+                class="text-black"
+              /><br />
               <span @click="setSort('deal_size')">{{ $t("Deal size") }}</span>
             </th>
             <th>
