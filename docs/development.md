@@ -1,7 +1,7 @@
 # Development
 
-Code is formatted with **black**, we use **pylint** to some extend, as well as **isort**.
-The projects includes integration and unit tests.
+Code is formatted with **black**, we use **pylint** to some extent, as well as **isort**.
+The project includes integration and unit tests.
 
 For [up-to-date information](https://en.wikipedia.org/wiki/Self-documenting_code) see:
 
