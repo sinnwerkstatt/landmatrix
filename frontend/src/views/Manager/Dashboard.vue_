@@ -8,11 +8,11 @@
       <div class="col-md-6">
         <form class="form-inline justify-content-between">
           <label>Impersonate</label>
-          <multiselect
+          <multi-select
             v-model="userToImpersonate"
             :custom-label="(u) => `${u.full_name} (${u.username})`"
             :options="users"
-          ></multiselect>
+          />
           <a
             v-if="userToImpersonate"
             :href="`/impersonate/${userToImpersonate.id}/?next=/`"

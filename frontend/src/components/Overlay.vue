@@ -22,7 +22,7 @@
 
         <div v-if="assignToUserInput" class="assign-to-user">
           <label>{{ $t("Assign to user") }}</label>
-          <multiselect
+          <multi-select
             :value="selected_user"
             :options="users"
             :multiple="false"

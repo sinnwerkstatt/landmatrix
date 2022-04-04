@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
-import Multiselect from "vue-multiselect";
+import MultiSelect from "vue-multiselect";
 import VueApollo from "vue-apollo";
 import VueMeta from "vue-meta";
 import VueI18n from "vue-i18n";
@@ -57,7 +57,7 @@ Vue.use(VueMeta);
 Vue.use(VueI18n);
 Vue.use(VueApollo);
 Vue.use(ScrollLoader);
-Vue.component("Multiselect", Multiselect);
+Vue.component("MultiSelect", MultiSelect);
 
 Vue.use(VueMatomo, {
   host: "https://stats.landmatrix.org",

@@ -13,7 +13,7 @@
         </div>
         <div class="send">
           <span>{{ $t("Send to:") }}</span>
-          <multiselect
+          <multi-select
             v-model="send_to_user"
             :allow-empty="true"
             :close-on-select="true"

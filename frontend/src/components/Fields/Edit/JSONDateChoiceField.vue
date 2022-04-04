@@ -32,7 +32,7 @@
             />
           </td>
           <td>
-            <multiselect
+            <multi-select
               v-model="val.choice"
               :options="options"
               :placeholder="formfield.placeholder"

@@ -1,7 +1,7 @@
 /**
  *
  */
-import { axisLeft, max, range, scaleBand, scaleLinear, select } from "d3";
+import { max, range, scaleBand, scaleLinear, select } from "d3";
 import { flat_negotiation_status_map } from "$utils/choices";
 import { i18n } from "../../../main";
 

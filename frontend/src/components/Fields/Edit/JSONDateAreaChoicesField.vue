@@ -44,7 +44,7 @@
           </td>
 
           <td>
-            <multiselect
+            <multi-select
               v-model="val.choices"
               :options="options"
               :placeholder="formfield.placeholder"
