@@ -36,16 +36,12 @@ redis = "*"
 django-redis = "^4.12.1"
 python-memcached = "*"
 
-
-drf-yasg = "*"
-django-crispy-forms = "*"
+wagtail-font-awesome-svg = "*"
 
 django-file-resubmit = "*"
 
 django-modeltranslation = "*"
-django-contrib-comments = "*"
-django-threadedcomments = "*"
-django-bootstrap3-datetimepicker-2 = "*"
+
 django-impersonate = "*"
 django-multiselectfield = "*"
 django-recaptcha = "*"

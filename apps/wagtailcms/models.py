@@ -5,13 +5,69 @@ from wagtail.admin.edit_handlers import (
     StreamFieldPanel,
     FieldRowPanel,
 )
+from wagtail.admin.edit_handlers import RichTextFieldPanel
 from wagtail.api import APIField
+from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.core.fields import RichTextField
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
+from wagtail.core.models import Page
+from wagtail.core.rich_text import expand_db_html
 
 from apps.landmatrix.models import Region, Country
+from apps.landmatrix.models import Region as DataRegion
+from apps.landmatrix.models.country import Country as DataCountry
+from apps.wagtailcms.blocks import (
+    COLUMN_BLOCKS,
+    CONTENT_BLOCKS,
+    DATA_BLOCKS,
+    NoWrapsStreamField,
+)
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 from apps.wagtailcms.twitter import TwitterTimeline
+
+
+@register_setting(icon="radio-empty")
+class ChartDescriptionsSettings(BaseSetting):
+    web_of_transnational_deals = RichTextField()
+    dynamics_overview = RichTextField()
+    produce_info_map = RichTextField()
+
+    class Meta:
+        verbose_name = "Chart descriptions"
+
+    def to_dict(self):
+        return {
+            "web_of_transnational_deals": expand_db_html(
+                self.web_of_transnational_deals
+            ),
+            "dynamics_overview": expand_db_html(self.dynamics_overview),
+            "produce_info_map": expand_db_html(self.produce_info_map),
+        }
+
+    panels = [
+        RichTextFieldPanel("web_of_transnational_deals"),
+        RichTextFieldPanel("dynamics_overview"),
+        RichTextFieldPanel("produce_info_map"),
+    ]
+
+
+class WagtailRootPage(Page):
+    is_creatable = False
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+
+    content_panels = Page.content_panels + [
+        StreamFieldPanel("body"),
+    ]
+    api_fields = [
+        APIField("body"),
+    ]
+
+
+class WagtailPage(Page):
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    api_fields = [APIField("body")]
 
 
 class AboutIndexPage(Page):

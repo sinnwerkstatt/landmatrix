@@ -1,7 +1,7 @@
 from django.urls import path
 
 from apps.landmatrix.export import DataDownload
-from apps.landmatrix.views.greennewdeal import gis_export
+from .views import gis_export
 from apps.message.views import messages_json
 
 

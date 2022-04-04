@@ -66,15 +66,12 @@ INSTALLED_APPS = [
     "apps.blog",  # why here and not below?
     "modelcluster",
     "taggit",
-    "bootstrap3_datetime",
     # 'treebeard',
-    "crispy_forms",
     "wkhtmltopdf",
     "captcha",
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_gis",
-    "drf_yasg",
     "django.contrib.syndication",
     "file_resubmit",
     #   apps of the actual landmatrix project
@@ -89,6 +86,7 @@ INSTALLED_APPS = [
     "wagtail.api.v2",
     "ariadne_django",
     "corsheaders",
+    "wagtailfontawesomesvg",
 ]
 
 MIDDLEWARE = [

@@ -2,7 +2,14 @@ from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
 from apps.blog.models import BlogPage, BlogIndexPage
-from .models import *
+from apps.wagtailcms.models import (
+    WagtailRootPage,
+    WagtailPage,
+    AboutIndexPage,
+    ObservatoryIndexPage,
+    ObservatoryPage,
+    ChartDescriptionsSettings,
+)
 
 
 @register(WagtailRootPage)
@@ -13,26 +20,6 @@ class WagtailRootPageTR(TranslationOptions):
 @register(WagtailPage)
 class WagtailPageTR(TranslationOptions):
     fields = ("body",)
-
-
-@register(RegionIndex)
-class RegionIndexTR(TranslationOptions):
-    fields = ("body",)
-
-
-@register(RegionPage)
-class RegionPageTR(TranslationOptions):
-    fields = ("introduction_text", "body", "short_description")
-
-
-@register(CountryIndex)
-class CountryIndexTR(TranslationOptions):
-    fields = ("body",)
-
-
-@register(CountryPage)
-class CountryPageTR(TranslationOptions):
-    fields = ("introduction_text", "body", "short_description")
 
 
 @register(BlogIndexPage)

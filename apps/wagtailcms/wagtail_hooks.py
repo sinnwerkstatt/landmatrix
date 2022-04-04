@@ -13,39 +13,42 @@ from apps.message.models import Message
 
 @hooks.register("insert_editor_js")
 def editor_js():
-    js_files = [
-        "js/observatorypage.js",
-    ]
-    js_includes = format_html_join(
-        "\n",
-        '<script src="{0}"></script>',
-        ((static(filename),) for filename in js_files),
-    )
-
-    return js_includes + format_html(
-        """
+    return """
         <script>
           registerHalloPlugin('hallojustify');
+          $(function () {
+            const region_dd = document.querySelector(".region-or-country #id_region");
+            const country_dd = document.querySelector(".region-or-country #id_country");
+
+            if(region_dd && country_dd) {
+              region_dd.addEventListener("change", (event) => {
+                if (event.target.value) country_dd.value = "";
+              });
+              country_dd.addEventListener("change", (event) => {
+                if (event.target.value) region_dd.value = "";
+              });
+            }
+          });
         </script>
         """
-    )
 
 
-@hooks.register("insert_editor_css")
-def editor_css():
-    # Add extra CSS files to the admin like font-awesome
-    css_files = [
-        "font-awesome/css/font-awesome.min.css",
-        "css/wagtail-font-awesome.css",
+@hooks.register("register_icons")
+def register_icons(icons):
+    return icons + [
+        "wagtailfontawesomesvg/brands/twitter.svg",
+        "wagtailfontawesomesvg/solid/arrows-alt-h.svg",
+        "wagtailfontawesomesvg/solid/columns.svg",
+        "wagtailfontawesomesvg/solid/flag.svg",
+        "wagtailfontawesomesvg/solid/folder.svg",
+        "wagtailfontawesomesvg/solid/image.svg",
+        "wagtailfontawesomesvg/solid/link.svg",
+        "wagtailfontawesomesvg/solid/list.svg",
+        "wagtailfontawesomesvg/solid/map-marker.svg",
+        "wagtailfontawesomesvg/solid/medkit.svg",
+        "wagtailfontawesomesvg/solid/minus.svg",
+        "wagtailfontawesomesvg/solid/th.svg",
     ]
-
-    css_includes = format_html_join(
-        "\n",
-        '<link rel="stylesheet" href="{0}{1}">',
-        ((settings.STATIC_URL, filename) for filename in css_files),
-    )
-
-    return css_includes
 
 
 @hooks.register("construct_whitelister_element_rules")
