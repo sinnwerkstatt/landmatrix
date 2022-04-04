@@ -142,7 +142,6 @@ STATICFILES_FINDERS = [
     # 'compressor.finders.CompressorFinder',
 ]
 STATICFILES_DIRS = [
-    BASE_DIR("node_modules"),
     BASE_DIR("frontend", "dist"),
 ]
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"

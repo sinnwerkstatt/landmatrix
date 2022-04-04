@@ -22,8 +22,7 @@ __pycache__/
 
 
 # javascript
-/node_modules/
-webpack-stats.json
+
 /frontend/node_modules/
 /frontend/.cache/
 /frontend/.env

@@ -1,33 +1,17 @@
-<!DOCTYPE html>
+{% load static i18n  %}<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <title>BASE - Land Matrix</title>
-    <link rel="icon" href="/static/img/favicon.ico" />
-  </head>
-  <body>
-    <div id="app">
-      <div
-        style="
-          height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          font-family: sans-serif;
-        "
-      >
-        <div>
-          <img src="/static/img/lm-logo.png">
-        <h1>Maintenance</h1>
-        <p>Service is currently being updated. Please try again later.</p>
-          </div>
-      </div>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LAND MATRIX Base</title>
+</head>
 
-  </body>
+<body>
+<div class="wrap">
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+</body>
 </html>
