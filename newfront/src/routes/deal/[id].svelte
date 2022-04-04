@@ -8,21 +8,67 @@
     const variables = {
       id: +params.id,
     };
-    const deal = await request(GQLEndpoint, deal_gql_query, variables);
-    console.log(JSON.stringify(deal, undefined, 2));
-
-    return { props: { deal } };
+    const result = await request(GQLEndpoint, deal_gql_query, variables);
+    return { props: { deal: result.deal } };
   };
 </script>
 
 <script lang="ts">
   import { page } from "$app/stores";
   import type { Deal } from "$lib/types/deal";
+  import { _ } from "svelte-i18n";
+  import DealSection from "$components/Deal/DealSection.svelte";
+  import { deal_sections } from "./deal_sections";
 
   export let deal: Deal;
   const dealID = $page.params.id;
+
+  $: tabs = [
+    { target: "locations", name: $_("Locations") },
+    { target: "general", name: $_("General info") },
+    { target: "contracts", name: $_("Contracts") },
+    { target: "employment", name: $_("Employment") },
+    { target: "investor_info", name: $_("Investor info") },
+    { target: "data_sources", name: $_("Data sources") },
+    { target: "local_communities", name: $_("Local communities / indigenous peoples") },
+    { target: "former_use", name: $_("Former use") },
+    { target: "produce_info", name: $_("Produce info") },
+    { target: "water", name: $_("Water") },
+    { target: "gender_related_info", name: $_("Gender-related info") },
+    { target: "overall_comment", name: $_("Overall comment") },
+    { target: "blank1", name: null },
+    { target: "history", name: $_("Deal History") },
+    { target: "actions", name: $_("Actions") },
+  ];
+  let activeTab = "general";
 </script>
 
-Deal {dealID}
+<div class="container mx-auto">
+  <h1>Deal {dealID}</h1>
+  <div class="flex">
+    <nav class="p-2 flex-initial">
+      <ul>
+        {#each tabs as { target, name }}
+          <li
+            class="py-2 pr-4 border-orange {activeTab === target
+              ? 'border-r-4'
+              : 'border-r'}"
+          >
+            {#if name}
+              <a href="#{target}" class:text-black={activeTab === target}>{name}</a>
+            {:else}
+              <hr />
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </nav>
+    <div class="pl-4 flex-auto">
+      {#if activeTab === "general"}
+        <DealSection {deal} sections={deal_sections.general_info} />
+      {/if}
+    </div>
+  </div>
+</div>
 
 <pre>{JSON.stringify(deal, null, 2)}</pre>

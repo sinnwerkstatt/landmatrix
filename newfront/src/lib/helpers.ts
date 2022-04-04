@@ -10,3 +10,12 @@ export function getCountryOrRegion(
     ? get(regions).find((region) => region.id === +id)
     : get(countries).find((country) => country.id === +id);
 }
+
+export function isEmpty(field: unknown): boolean {
+  return (
+    field === undefined ||
+    field === null ||
+    field === "" ||
+    (Array.isArray(field) && field.length === 0)
+  );
+}
