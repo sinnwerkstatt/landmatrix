@@ -1,11 +1,7 @@
 from django.test import RequestFactory, TestCase
 
 from apps.wagtailcms.blocks import get_country_or_region_link, get_country_or_region
-from apps.wagtailcms.wagtail_hooks import (
-    editor_css,
-    editor_js,
-    whitelister_element_rules,
-)
+from apps.wagtailcms.wagtail_hooks import editor_js, whitelister_element_rules
 
 
 class AttrDict(dict):
@@ -43,9 +39,6 @@ class WagtailCMSModelsTestCase(TestCase):
 
     def test_editor_js(self):
         self.assertGreater(len(editor_js()), 0)
-
-    def test_editor_css(self):
-        self.assertGreater(len(editor_css()), 0)
 
     def test_whitelister_element_rules(self):
         rules = whitelister_element_rules()

@@ -39,13 +39,14 @@ python-memcached = "*"
 
 ariadne = ">=0.14"
 ariadne_django = "*"
+country-bounding-boxes = "*"
 fastjsonschema = "*"
 geojson-rewind = "*"
-unicodecsv = "*"
 openpyxl = "*"
-tweepy = "*"
-country-bounding-boxes = "*"
 python-dateutil = "*"
+simplejson = "*"
+tweepy = "*"
+unicodecsv = "*"
 
 #plumbing
 doit = "*"
