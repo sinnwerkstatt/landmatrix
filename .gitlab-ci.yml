@@ -11,7 +11,6 @@ variables:
   PRODUCTION_USER: landmatrix
   DJANGO_SETTINGS_MODULE: config.settings.ci
   DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
-  ELASTICSEARCH_URL: "http://elasticsearch"
 
 stages:
   - test
@@ -42,7 +41,6 @@ tests and coverage:
   services:
 #    - kartoza/postgis:12.1
     - mdillon/postgis:10
-    - elasticsearch:5
   script:
     # - poetry config experimental.new-installer false
     - poetry install -E production

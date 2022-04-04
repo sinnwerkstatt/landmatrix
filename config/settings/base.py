@@ -189,16 +189,6 @@ IMPERSONATE = {
     "REDIRECT_FIELD_NAME": "next",
 }
 
-ELASTICSEARCH_URL = env("ELASTICSEARCH_URL", default="http://localhost")
-try:
-    ELASTIC_INDEX_AB = open(".es_index_ab_switch", "r", encoding="UTF-8").read()
-except FileNotFoundError:
-    open(".es_index_ab_switch", "w", encoding="UTF-8").write("a")
-    ELASTIC_INDEX_AB = "a"
-ELASTICSEARCH_INDEX_BASENAME = env("ELASTICSEARCH_INDEX_NAME", default="landmatrix")
-ELASTICSEARCH_INDEX_NAME = f"{ELASTICSEARCH_INDEX_BASENAME}_{ELASTIC_INDEX_AB}"
-print(f"Using elasticsearch index {ELASTICSEARCH_INDEX_NAME}")
-sys.stdout.flush()
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

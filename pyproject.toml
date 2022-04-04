@@ -19,7 +19,6 @@ django-environ = "*"
 django-cors-headers = "*"
 
 fastjsonschema = "*"
-pyelasticsearch = {git = "https://github.com/sinnwerkstatt/pyelasticsearch", branch = "batteriesincluded" }
 
 djangorestframework-gis = "<1"
 
