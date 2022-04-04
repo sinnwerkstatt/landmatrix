@@ -126,8 +126,7 @@ def task_git_pull():
 
 def task_poetry_install():
     dev = "--no-dev" if not get_var("dev", False) else ""
-    prod = "-E production" if get_var("production", False) else ""
-    return {"actions": [f"poetry install {dev} {prod}"]}
+    return {"actions": [f"poetry install {dev}"]}
 
 
 def task_get_db_from_production():

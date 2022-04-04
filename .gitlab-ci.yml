@@ -21,7 +21,7 @@ django formatting and linting:
   interruptible: true
   script:
     # - poetry config experimental.new-installer false
-    - poetry install -E production
+    - poetry install
     - npm i --force
     - black . --check
     # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
@@ -43,7 +43,7 @@ tests and coverage:
     - mdillon/postgis:10
   script:
     # - poetry config experimental.new-installer false
-    - poetry install -E production
+    - poetry install
     - npm i --force
     - poetry run doit -n 4 update
     - poetry run pytest -x

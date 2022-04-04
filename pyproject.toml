@@ -12,45 +12,35 @@ description = "LandMatrix"
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "<4"
-djangorestframework = "<4"
 wagtail = "<2.16"
 psycopg2-binary = "*"
-django-environ = "*"
+
 django-cors-headers = "*"
-
-fastjsonschema = "*"
-
-djangorestframework-gis = "<1"
-
-# greennewdeal
-geojson-rewind = "*"
-ariadne = ">=0.14"
-ariadne_django = "*"
-
-wagtail-orderable = ">=1.0.3"
-
-# celery - still need? - what about caching? redis? memcached?
-celery = "*"
-redis = "*"
-django-redis = "^4.12.1"
-python-memcached = "*"
-
-wagtail-font-awesome-svg = "*"
-
+django-environ = "*"
 django-file-resubmit = "*"
-
-django-modeltranslation = "*"
-
 django-impersonate = "*"
+django-modeltranslation = "*"
 django-multiselectfield = "*"
 django-recaptcha = "*"
 django-registration = "*"
 django-wkhtmltopdf = "*"
+djangorestframework = "<4"
+djangorestframework-gis = "*"
 
-#wagtail-blog = "*"
 wagtail-modeltranslation = "*"
+wagtail-orderable = ">=1.0.3"
+wagtail-font-awesome-svg = "*"
 
-geojson = "<2"
+# TODO celery - still need? - what about caching? redis? memcached?
+celery = "*"
+redis = "*"
+django-redis = "*"
+python-memcached = "*"
+
+ariadne = ">=0.14"
+ariadne_django = "*"
+fastjsonschema = "*"
+geojson-rewind = "*"
 unicodecsv = "*"
 openpyxl = "*"
 tweepy = "*"
@@ -59,12 +49,8 @@ python-dateutil = "*"
 
 #plumbing
 doit = "*"
-
-libsass = "*"
-gunicorn = { version = "*", optional = true }
-sentry_sdk = { version = "*", optional = true }
-termtables = "^0.2.4"
-
+sentry_sdk = "*"
+gunicorn = "*"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
@@ -81,9 +67,6 @@ pylint-django = "*"
 pygments = "*"
 mkdocs = "*"
 pydot = "^1.4.1"
-
-[tool.poetry.extras]
-production = ["gunicorn", "sentry_sdk"]
 
 
 [tool.black]
