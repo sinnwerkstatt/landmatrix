@@ -1,52 +1,68 @@
 <script lang="ts">
-  import type { ObservatoryPage } from "$lib/types/wagtail";
+  import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail";
   import PageTitle from "$components/PageTitle.svelte";
   import { _ } from "svelte-i18n";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
   import Streamfield from "$components/Streamfield.svelte";
   import MapDataCharts from "$components/MapDataCharts.svelte";
+  import Pie from "svelte-chartjs/src/Pie.svelte";
+  import type { Deal, DealAggregations } from "$lib/types/deal";
+  import { gql, request } from "graphql-request";
+  import { GQLEndpoint } from "$lib";
+  import { defaultFilterValues, filters } from "$lib/filters";
 
   export let page: ObservatoryPage;
 
   let readMore = false;
 
-  //   data() {
-  //     return {
-  //       deals: [],
-  //       deal_aggregations: {} as DealAggregations,
-  //       articles: [] as BlogPage[],
-  //     };
-  //   },
-  //   apollo: {
-  //     deal_aggregations: {
-  //       query: gql`
-  //         query DealAggregations(
-  //           $fields: [String]!
-  //           $subset: Subset
-  //           $filters: [Filter]
-  //         ) {
-  //           deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
-  //             current_negotiation_status {
-  //               value
-  //               size
-  //               count
-  //             }
-  //           }
-  //         }
-  //       `,
-  //       variables() {
-  //         let extra_filter: GQLFilter[] = {
-  //           region_id: this.page.region ? this.page.region.id : null,
-  //           country_id: this.page.country ? this.page.country.id : null,
-  //           negotiation_status: [],
-  //         };
-  //         return {
-  //           fields: ["current_negotiation_status"],
-  //           filters: this.$store.getters.defaultFiltersForGQL(extra_filter),
-  //           subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
-  //         };
-  //       },
-  //     },
+  let regionID = page.region ? page.region.id : undefined;
+  let countryID = page.country ? page.country.id : undefined;
+
+  let deals: Deal[] = [];
+  let deal_aggregations: DealAggregations = {};
+  let articles: BlogPage[] = [];
+  let totalSize = "";
+  let totalCount = "";
+
+  async function getAggregations() {
+    const q = gql`
+      query DealAggregations($fields: [String]!, $subset: Subset, $filters: [Filter]) {
+        deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
+          current_negotiation_status {
+            value
+            size
+            count
+          }
+        }
+      }
+    `;
+
+    let filters = defaultFilterValues();
+    filters.negotiation_status = [];
+    filters.region_id = regionID;
+    filters.country_id = countryID;
+
+    const variables = {
+      fields: ["current_negotiation_status"],
+      filters: filters.toGQLFilterArray(),
+      // TODO
+      // subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
+      subset: "PUBLIC",
+    };
+    const result = await request(GQLEndpoint, q, variables);
+    deal_aggregations = result.deal_aggregations;
+    totalCount = deal_aggregations.current_negotiation_status
+      .map((ns) => ns.count)
+      .reduce((a, b) => +a + +b, 0)
+      .toLocaleString("fr");
+    totalSize = deal_aggregations.current_negotiation_status
+      .map((ns) => ns.size)
+      .reduce((a, b) => +a + +b, 0)
+      .toLocaleString("fr");
+  }
+
+  getAggregations();
+
   //     articles: {
   //       query: gql`
   //         query {
@@ -70,11 +86,6 @@
   //     },
   //   },
 
-  let regionID = page.region ? page.region.id : undefined;
-  let countryID = page.country ? page.country.id : undefined;
-
-  let totalSize = 0;
-  let totalCount = 0;
   //     slug(): string {
   //       let ret;
   //       if (this.page.region) {
@@ -93,20 +104,7 @@
   //     content(): WagtailStreamfield {
   //       return this.page ? this.page.body : [];
   //     },
-  //     totalCount(): string {
-  //       if (!this.deal_aggregations.current_negotiation_status) return "";
-  //       return this.deal_aggregations.current_negotiation_status
-  //         .map((ns) => ns.count)
-  //         .reduce((a, b) => +a + +b, 0)
-  //         .toLocaleString("fr");
-  //     },
-  //     totalSize(): string {
-  //       if (!this.deal_aggregations?.current_negotiation_status) return "";
-  //       return this.deal_aggregations.current_negotiation_status
-  //         .map((ns) => ns.size)
-  //         .reduce((a, b) => +a + +b, 0)
-  //         .toLocaleString("fr");
-  //     },
+
   //     negotiationStatusBuckets(): unknown {
   //       if (!this.deal_aggregations.current_negotiation_status) return;
   //       let retval = [
@@ -187,38 +185,71 @@
   //       },
   //     },
   //   },
-  //   methods: {
 
   function setGlobalLocationFilter() {
-    //       if (this.page.region) {
-    //         this.$store.dispatch("setFilter", {
-    //           filter: "country_id",
-    //           value: null,
-    //         });
-    //         this.$store.dispatch("setFilter", {
-    //           filter: "region_id",
-    //           value: this.page.region.id,
-    //         });
-    //       } else if (this.page.country) {
-    //         this.$store.dispatch("setFilter", {
-    //           filter: "region_id",
-    //           value: null,
-    //         });
-    //         this.$store.dispatch("setFilter", {
-    //           filter: "country_id",
-    //           value: this.page.country.id,
-    //         });
-    //       }
-    //     },
+    if (page.region) {
+      filters.set({ filter: "region_id", value: regionID });
+      filters.set({ filter: "country_id", value: null });
+    } else if (page.country) {
+      filters.set({ filter: "country_id", value: countryID });
+      filters.set({ filter: "region_id", value: null });
+    }
   }
-  // });
+
+  let dataLine = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [
+      {
+        label: "My First dataset",
+        fill: true,
+        lineTension: 0.3,
+        backgroundColor: "rgba(225, 204,230, .3)",
+        borderColor: "rgb(205, 130, 158)",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "rgb(205, 130,1 58)",
+        pointBackgroundColor: "rgb(255, 255, 255)",
+        pointBorderWidth: 10,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgb(0, 0, 0)",
+        pointHoverBorderColor: "rgba(220, 220, 220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: [65, 59, 80, 81, 56, 55, 40],
+      },
+      {
+        label: "My Second dataset",
+        fill: true,
+        lineTension: 0.3,
+        backgroundColor: "rgba(184, 185, 210, .3)",
+        borderColor: "rgb(35, 26, 136)",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "rgb(35, 26, 136)",
+        pointBackgroundColor: "rgb(255, 255, 255)",
+        pointBorderWidth: 10,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgb(0, 0, 0)",
+        pointHoverBorderColor: "rgba(220, 220, 220, 1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: [28, 48, 40, 19, 86, 27, 90],
+      },
+    ],
+  };
 </script>
 
 <!--  <div class="observatory">-->
 <PageTitle>{$_(page.title)}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <!--  <QuasiStaticMap {countryID} {regionID} />-->
+  <QuasiStaticMap {countryID} {regionID} />
 
   {#if page.introduction_text}
     <div class="pt-6 pb-3">
@@ -247,6 +278,7 @@
       <div class="col-6 text-center">
         <label class=" text-orange">{$_("Size")}</label>
         <div class=" mb-2">{totalSize} ha</div>
+        <Pie data={dataLine} options={{ responsive: true }} />
         <!--                <StatusPieChart-->
         <!--                  v-if="negotiationStatusBuckets"-->
         <!--                  :deal-data="negotiationStatusBuckets"-->
