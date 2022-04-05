@@ -603,31 +603,6 @@ class HistoricalInvestor(InvestorBase):
             involvement.fk_investor_id = self.id
             involvement.save()
 
-    # def save(self, *args, **kwargs):
-    #     update_elasticsearch = kwargs.pop("update_elasticsearch", True)
-    #     super().save(*args, **kwargs)
-    #     if update_elasticsearch and settings.OLD_ELASTIC:
-    #         from apps.landmatrix.tasks import index_investor, delete_historicalinvestor
-    #
-    #         if self.fk_status_id == self.STATUS_DELETED:
-    #             transaction.on_commit(
-    #                 lambda: delete_historicalinvestor.delay(self.investor_identifier)
-    #             )
-    #         else:
-    #             transaction.on_commit(
-    #                 lambda: index_investor.delay(self.investor_identifier)
-    #             )
-    #
-    #     from apps.landmatrix.synchronization.investor import histvestor_to_investor
-    #
-    #     if settings.DEBUG:
-    #         histvestor_to_investor(self.pk)
-    #     else:
-    #         try:
-    #             histvestor_to_investor(self.pk)
-    #         except:
-    #             capture_message("Could not sync HistVestor to Investor", level="error")
-
     class Meta:
         verbose_name = _("Historical investor")
         verbose_name_plural = _("Historical investors")

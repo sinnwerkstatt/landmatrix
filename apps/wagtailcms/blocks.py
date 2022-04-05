@@ -80,7 +80,7 @@ class FAQsBlock(StructBlock):
     faqs = blocks.ListBlock(FAQBlock())
 
     class Meta:
-        icon = "fa fa-medkit"
+        icon = "medkit"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -106,7 +106,7 @@ class TwitterBlock(StructBlock):
     # tweet_limit = CharBlock(required=True, max_length=2)
 
     class Meta:
-        icon = "fa fa-twitter"
+        icon = "twitter"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -174,7 +174,7 @@ class ImageBlock(ImageChooserBlock):
 
 class SectionDivider(StructBlock):
     class Meta:
-        icon = "fa fa-minus"
+        icon = "minus"
 
 
 class LinkedImageBlock(ExternalLinkMixin, StructBlock):
@@ -234,7 +234,7 @@ class SliderBlock(StructBlock):
         return context
 
     class Meta:
-        icon = "fa fa-picture-o"
+        icon = "image"
         label = "Slider"
 
 
@@ -248,7 +248,7 @@ class GalleryBlock(StructBlock):
             (5, "5 columns"),
             (6, "6 columns"),
         ],
-        icon="fa fa-columns",
+        icon="fa-columns",
     )
     images = blocks.ListBlock(LinkedImageBlock())
 
@@ -273,7 +273,7 @@ class GalleryBlock(StructBlock):
         return context
 
     class Meta:
-        icon = "fa fa-th"
+        icon = "th"
         label = "Gallery"
 
 
@@ -383,7 +383,7 @@ class LatestNewsBlock(StructBlock):
     limit = blocks.CharBlock()
 
     class Meta:
-        icon = "fa fa-list"
+        icon = "list"
         label = "Latest news"
 
     def get_context(self, value, parent_context={}):
@@ -413,7 +413,7 @@ class LatestNewsBlock(StructBlock):
 
 class StatisticsBlock(StructBlock):
     class Meta:
-        icon = "fa fa-list"
+        icon = "list"
         label = "Statistics"
 
     def get_context(self, value, parent_context={}):
@@ -428,7 +428,7 @@ class StatisticsBlock(StructBlock):
 
 class MapDataChartsBlock(StructBlock):
     class Meta:
-        icon = "fa fa-chain"
+        icon = "link"
         label = "Map / Grid / Charts"
 
     def get_context(self, value, parent_context={}):
@@ -531,7 +531,7 @@ class LinkMapBlock(StructBlock):
     """
 
     class Meta:
-        icon = "fa fa-map-marker"
+        icon = "map-marker"
         label = "Map"
 
     def get_context(self, value, parent_context=None):
@@ -558,7 +558,7 @@ class LatestDatabaseModificationsBlock(StructBlock):
     limit = blocks.CharBlock()
 
     class Meta:
-        icon = "fa fa-list"
+        icon = "list"
         label = "Latest database modifications"
 
     def get_context(self, value, parent_context=None):
@@ -574,7 +574,7 @@ class LatestDatabaseModificationsBlock(StructBlock):
 
 class RegionBlock(StructBlock):
     class Meta:
-        icon = "fa fa-map-marker"
+        icon = "map-marker"
         label = "Region"
 
     def get_context(self, value, parent_context=None):
@@ -591,7 +591,7 @@ class RegionBlock(StructBlock):
 
 class CountriesBlock(StructBlock):
     class Meta:
-        icon = "fa fa-flag"
+        icon = "flag"
         label = "Countries"
 
     def get_context(self, value, parent_context=None):
@@ -635,7 +635,8 @@ class Columns1To1Block(StructBlock):
 
     class Meta:
         label = "Two Columns"
-        icon = "fa fa-columns"
+        icon = "columns"
+        group = "Layout"
 
 
 class ThreeColumnsBlock(StructBlock):
@@ -655,7 +656,8 @@ class ThreeColumnsBlock(StructBlock):
 
     class Meta:
         label = "Three Columns"
-        icon = "fa fa-columns"
+        icon = "columns"
+        group = "Layout"
 
 
 COLUMN_BLOCKS = [
@@ -674,7 +676,7 @@ class TabsBlock(StructBlock):
     tabs = blocks.ListBlock(TabBlock())
 
     class Meta:
-        icon = "fa fa-folder"
+        icon = "folder"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -713,8 +715,9 @@ class FullWidthContainerBlock(StructBlock):
         return context
 
     class Meta:
-        icon = "fa fa-arrows-h"
+        icon = "arrows-alt-h"
         label = "Full width container"
+        group = "Layout"
 
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]

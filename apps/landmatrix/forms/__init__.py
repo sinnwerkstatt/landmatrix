@@ -2,12 +2,7 @@ from django.db.models import Model, Field
 from django.utils.functional import Promise
 from django.utils.translation import gettext
 
-from .oldforms import (
-    CustomRegistrationForm,
-    ActivityFilterForm,
-    ExportActivityForm,
-    InvestorFilterForm,
-)
+from .oldforms import CustomRegistrationForm
 
 
 class VueForm:

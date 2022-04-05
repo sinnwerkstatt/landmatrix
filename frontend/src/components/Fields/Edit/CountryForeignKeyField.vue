@@ -1,7 +1,7 @@
 <template>
   <div>
     <div @mouseover="showHint = true" @mouseout="showHint = false">
-      <multiselect
+      <multi-select
         v-model="val"
         :options="target_countries"
         label="name"

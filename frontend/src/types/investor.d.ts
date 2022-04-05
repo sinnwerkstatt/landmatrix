@@ -1,5 +1,4 @@
 import type { Obj, ObjVersion, WorkflowInfo } from "$types/generics";
-import type { Country } from "$types/wagtail";
 
 enum Role {
   PARENT,

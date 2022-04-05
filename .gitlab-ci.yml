@@ -11,7 +11,6 @@ variables:
   PRODUCTION_USER: landmatrix
   DJANGO_SETTINGS_MODULE: config.settings.ci
   DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
-  ELASTICSEARCH_URL: "http://elasticsearch"
 
 stages:
   - test
@@ -21,9 +20,7 @@ django formatting and linting:
   stage: test
   interruptible: true
   script:
-    # - poetry config experimental.new-installer false
-    - poetry install -E production
-    - npm i --force
+    - poetry install
     - black . --check
     # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
@@ -34,6 +31,7 @@ frontend formatting and linting:
   script:
     - cd frontend
     - npm ci
+    - npm run lint
     - npm run build
 
 tests and coverage:
@@ -42,11 +40,8 @@ tests and coverage:
   services:
 #    - kartoza/postgis:12.1
     - mdillon/postgis:10
-    - elasticsearch:5
   script:
-    # - poetry config experimental.new-installer false
-    - poetry install -E production
-    - npm i --force
+    - poetry install
     - poetry run doit -n 4 update
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/

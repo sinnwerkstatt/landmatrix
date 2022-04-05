@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --base=/static/; touch dist/.gitkeep; cp dist/index.html ../templates/vuebase.html",
-    "lint": "eslint --ext .js,.vue src",
-    "style": "prettier src/ --write"
+    "lint": "prettier --ignore-path .prettierignore --check --plugin-search-dir=. . && eslint --ignore-path .prettierignore src/",
+    "format": "prettier --ignore-path .prettierignore --write --plugin-search-dir=. ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",

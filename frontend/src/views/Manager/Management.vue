@@ -46,7 +46,7 @@
               </span>
             </th>
             <th :class="{ selected: sortField === 'country', asc: sortAscending }">
-              <multiselect
+              <multi-select
                 v-model="selected_country"
                 :options="country_options"
                 label="name"
@@ -116,7 +116,7 @@
               </DatePicker>
 
               <br />
-              <multiselect
+              <multi-select
                 v-if="user_is_staff"
                 v-model="created_by"
                 :allow-empty="true"
@@ -177,7 +177,7 @@
                 </template>
               </DatePicker>
               <br />
-              <multiselect
+              <multi-select
                 v-if="user_is_staff"
                 v-model="modified_by"
                 :allow-empty="true"
@@ -261,7 +261,7 @@
                 asc: sortAscending,
               }"
             >
-              <multiselect
+              <multi-select
                 v-model="selected_combined_status"
                 :allow-empty="true"
                 :close-on-select="true"

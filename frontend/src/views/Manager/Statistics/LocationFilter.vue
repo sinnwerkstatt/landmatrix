@@ -3,7 +3,7 @@
     <label>Country/Region</label>
     <div class="input-group">
       <div class="multiselect-div">
-        <multiselect
+        <multi-select
           :options="regions"
           :value="selectedRegion"
           label="name"
@@ -13,7 +13,7 @@
         />
       </div>
       <div class="multiselect-div">
-        <multiselect
+        <multi-select
           :options="countries"
           :value="selectedCountry"
           label="name"

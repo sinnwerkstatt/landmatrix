@@ -8,7 +8,7 @@
         type="text"
         style="width: 0; height: 0; position: absolute; z-index: -10"
       />
-      <multiselect
+      <multi-select
         v-model="val"
         :options="investors"
         label="name"

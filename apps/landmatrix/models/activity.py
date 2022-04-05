@@ -960,7 +960,7 @@ class HistoricalActivity(ActivityBase):
             self.fk_status_id = self.STATUS_OVERWRITTEN
         elif self.fk_status_id == self.STATUS_TO_DELETE:
             self.fk_status_id = self.STATUS_DELETED
-        self.save(update_elasticsearch=False)
+        self.save()
 
         # Activity has been deleted?
         if self.fk_status_id in [self.STATUS_DELETED, self.STATUS_REJECTED]:
@@ -997,21 +997,6 @@ class HistoricalActivity(ActivityBase):
         comment = changeset.comment if changeset else ""
 
         return comment
-
-    def save(self, *args, **kwargs):
-        kwargs.pop("update_elasticsearch", True)
-        super().save(*args, **kwargs)
-        # if update_elasticsearch and settings.OLD_ELASTIC:
-        #     from apps.landmatrix.tasks import index_activity, delete_historicalactivity
-        #
-        #     if self.fk_status_id == self.STATUS_DELETED:
-        #         transaction.on_commit(
-        #             lambda: delete_historicalactivity.delay(self.activity_identifier)
-        #         )
-        #     else:
-        #         transaction.on_commit(
-        #             lambda: index_activity.delay(self.activity_identifier)
-        #         )
 
     def trigger_gnd(self):
         return  # do nothing, we're migrating 🎉

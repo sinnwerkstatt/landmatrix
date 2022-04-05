@@ -2,7 +2,7 @@
 <template>
   <div>
     <div>
-      <multiselect
+      <multi-select
         v-model="val"
         :options="currencies"
         label="name"

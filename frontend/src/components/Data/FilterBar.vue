@@ -56,7 +56,7 @@
           :clearable="!!country"
           @click="country = null"
         >
-          <multiselect
+          <multi-select
             v-model="country"
             :options="countries_with_deals"
             label="name"
@@ -133,7 +133,7 @@
         >
           <div>
             {{ $t("Investor name") }}
-            <multiselect
+            <multi-select
               v-model="investor"
               :options="investors"
               :multiple="false"
@@ -144,7 +144,7 @@
               select-label=""
             />
             {{ $t("Country of registration") }}
-            <multiselect
+            <multi-select
               v-model="investor_country"
               :options="countries"
               label="name"
@@ -258,7 +258,7 @@
           :clearable="produce.length > 0"
           @click="produce = []"
         >
-          <multiselect
+          <multi-select
             v-model="produce"
             :options="produce_choices"
             :multiple="true"
