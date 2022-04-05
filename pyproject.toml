@@ -47,6 +47,7 @@ python-dateutil = "*"
 simplejson = "*"
 tweepy = "*"
 unicodecsv = "*"
+polib = "*"  # for PO to JSON
 
 #plumbing
 doit = "*"

@@ -1,6 +1,4 @@
 {
-  "{full_name} has addressed you in a comment on {obj_desc}:": "{full_name} has addressed you in a comment on {obj_desc}:",
-  "{full_name} has updated {obj_desc}:": "{full_name} has updated {obj_desc}:",
   "Please review at {url}": "Please review at {url}",
   "The deal has been submitted successfully (#{}). It will be reviewed and published soon.": "The deal has been submitted successfully (#{}). It will be reviewed and published soon.",
   "The deal has been added successfully (#{}).": "The deal has been added successfully (#{}).",
@@ -11,8 +9,5 @@
   "The investor has been added successfully (#{}).": "The investor has been added successfully (#{}).",
   "The investor #{} has been marked for deletion. It will be reviewed and deleted soon.": "The investor #{} has been marked for deletion. It will be reviewed and deleted soon.",
   "The investor #{} has been deleted successfully.": "The investor #{} has been deleted successfully.",
-  "The investor #{} has been recovered successfully.": "The investor #{} has been recovered successfully.",
-  "Countries investing in {country}": "Countries investing in {country}",
-  "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.": "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
-  "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.": "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type."
+  "The investor #{} has been recovered successfully.": "The investor #{} has been recovered successfully."
 }
