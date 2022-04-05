@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import BigMap from "$components/Map/BigMap.svelte";
-  import { FeatureGroup } from "leaflet";
+  // import { FeatureGroup } from "leaflet";
   import { countries } from "$lib/stores";
   import { getCountryOrRegion } from "$lib/helpers";
   // import { markers_query } from "$store/queries";
@@ -16,15 +16,15 @@
   const ZOOM_LEVEL_COUNTRY = 4;
 
   let map = null;
-  let featureGroup = new FeatureGroup();
+  // let featureGroup = new FeatureGroup();
   let markersReady = true;
   let markers = [];
 
-  console.log($countries);
+  // console.log($countries);
   const roc = regionID
     ? getCountryOrRegion(regionID, true)
     : getCountryOrRegion(countryID);
-  console.log(roc);
+  // console.log(roc);
   //   watch: {
   //     markers() {
   //       this.drawMarkers();
