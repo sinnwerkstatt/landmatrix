@@ -8,7 +8,7 @@ interface Produce {
   value: string;
 }
 
-enum NegotiationStatus {
+export enum NegotiationStatus {
   EXPRESSION_OF_INTEREST = "EXPRESSION_OF_INTEREST",
   UNDER_NEGOTIATION = "UNDER_NEGOTIATION",
   MEMORANDUM_OF_UNDERSTANDING = "MEMORANDUM_OF_UNDERSTANDING",
