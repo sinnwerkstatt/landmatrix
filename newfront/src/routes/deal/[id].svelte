@@ -18,7 +18,8 @@
   import type { Deal } from "$lib/types/deal";
   import { _ } from "svelte-i18n";
   import DealSection from "$components/Deal/DealSection.svelte";
-  import { deal_sections } from "./deal_sections";
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
 
   export let deal: Deal;
   const dealID = $page.params.id;
@@ -75,11 +76,29 @@
       {#if activeTab === "#general"}
         <DealSection {deal} sections={deal_sections.general_info} />
       {/if}
+      {#if activeTab === "#contracts"}
+        <DealSubmodelSection
+          {deal}
+          entries={deal.contracts}
+          fields={deal_submodel_sections.contract}
+          model="contract"
+          modelName="Contract"
+        />
+      {/if}
       {#if activeTab === "#employment"}
         <DealSection {deal} sections={deal_sections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
         <DealSection {deal} sections={deal_sections.investor_info} />
+      {/if}
+      {#if activeTab === "#data_sources"}
+        <DealSubmodelSection
+          {deal}
+          entries={deal.datasources}
+          fields={deal_submodel_sections.datasource}
+          model="datasource"
+          modelName="Data source"
+        />
       {/if}
       {#if activeTab === "#local_communities"}
         <DealSection {deal} sections={deal_sections.local_communities} />
@@ -114,5 +133,3 @@
     </div>
   </div>
 </div>
-
-<pre>{JSON.stringify(deal, null, 2)}</pre>
