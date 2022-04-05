@@ -61,6 +61,7 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
 export const user = writable(undefined);
 export const countries = writable([]);
 export const regions = writable([]);
+export const formfields = writable([]);
 
 async function getMe(): Promise<User> {
   console.log("getMe");
@@ -118,12 +119,21 @@ async function getMe(): Promise<User> {
         point_lon_max
         observatory_page_id
       }
+      formfields {
+        deal
+        location
+        contract
+        datasource
+        investor
+        involvement
+      }
     }
   `;
   const gqlres = await graphQLClient.request(query);
   await user.set(gqlres.me);
   await countries.set(gqlres.countries);
   await regions.set(gqlres.regions);
+  await formfields.set(gqlres.formfields);
 }
 
 export async function dispatchLogin(username, password) {
