@@ -141,12 +141,10 @@ class Deal(models.Model, OldDealMixin):
         ("LIVESTOCK", _("Livestock")),
         ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
         ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-
         ("TIMBER_PLANTATION", _("Timber plantation")),
         ("FOREST_LOGGING", _("Forest logging / management")),
         ("CARBON", _("For carbon sequestration/REDD")),
         ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-
         ("MINING", _("Mining")),
         ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
         ("TOURISM", _("Tourism")),
@@ -155,7 +153,7 @@ class Deal(models.Model, OldDealMixin):
         ("LAND_SPECULATION", _("Land speculation")),
         ("RENEWABLE_ENERGY", _("Renewable energy")),
         ("OTHER", _("Other")),
-   ]
+    ]
     intention_of_investment = models.JSONField(
         _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
     )
