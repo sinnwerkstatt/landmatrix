@@ -1,0 +1,23 @@
+<script lang="ts">
+  import {
+    date_and_current,
+    mapChoices,
+  } from "$components/Fields/Display/jsonHelpers.ts";
+  import type { FormField } from "$components/Fields/fields";
+
+  export let formfield: FormField;
+
+  export let value: boolean;
+  let vals = value ? value : [{ name: null, role: null }];
+</script>
+
+<div class="jsondatechoice_field whitespace-nowrap">
+  {#each vals as val}
+    <div class={() => (val.current ? "font-bold" : "")}>
+      <span>{date_and_current(val)} </span>
+      {#if val.choice}
+        {mapChoices(val.choice, formfield.choices)}
+      {/if}
+    </div>
+  {/each}
+</div>

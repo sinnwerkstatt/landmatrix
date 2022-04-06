@@ -7,6 +7,14 @@
   import BooleanField from "$components/Fields/Display/BooleanField.svelte";
   import ArrayField from "$components/Fields/Display/ArrayField.svelte";
   import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte";
+  import JSONDateAreaField from "./Display/JSONDateAreaField.svelte";
+  import JSONDateChoiceField from "./Display/JSONDateChoiceField.svelte";
+  import DateField from "./Display/DateField.svelte";
+  import JSONJobsField from "./Display/JSONJobsField.svelte";
+  import FileField from "./Display/FileField.svelte";
+  import JSONExportsField from "./Display/JSONExportsField.svelte";
+  import JSONField from "./Display/JSONField.svelte";
+  import JSONLeaseField from "./Display/JSONLeaseField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -38,13 +46,21 @@
 
   $: field = {
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONDateAreaField: JSONDateAreaField,
+    JSONDateChoiceField: JSONDateChoiceField,
+    JSONExportsField: JSONExportsField,
+    JSONField: JSONField,
+    JSONJobsField: JSONJobsField,
+    JSONLeaseField: JSONLeaseField,
     ArrayField: ArrayField,
     NullBooleanField: BooleanField,
     BooleanField: BooleanField,
     CharField: TextField,
     EmailField: TextField,
+    FileField: FileField,
     URLField: TextField,
     TextField: TextField,
+    DateField: DateField,
     DecimalField: DecimalField,
     FloatField: DecimalField,
     IntegerField: DecimalField,

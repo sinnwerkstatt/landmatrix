@@ -1,23 +1,25 @@
 <script lang="ts">
-  import { date_and_current, mapChoices } from "$components/Fields/Display/jsonHelpers";
+  import {
+    date_and_current,
+    mapChoices,
+  } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
-  import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
 
   export let formfield: FormField;
   export let value: boolean;
-  export let model: string;
+
   let vals = value ? value : [{ name: null, role: null }];
 </script>
 
-<div class="jsondateareachoices_field">
+<div class="json_field whitespace-nowrap">
   {#each vals as val}
     <div class={() => (val.current ? "font-bold" : "")}>
-      <span>{date_and_current(val)} </span>
+      {date_and_current(val)}
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}
       {/if}
       {#if val.area}
-        (<CircleNotchIcon /> {val.area.toLocaleString("fr")} ha)
+        ({val.area} ha)
       {/if}
     </div>
   {/each}

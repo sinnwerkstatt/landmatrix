@@ -11,6 +11,7 @@
 
   $: val = () => {
     if (value) {
+      console.log(value);
       // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
       // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
       if (value.length === 4) return value;
