@@ -86,16 +86,24 @@ def task_compilemessages():
     for pofile in glob("config/locale/**/LC_MESSAGES/*.po", recursive=True):
         mofile = pofile[:-2] + "mo"
         json_target = f"frontend/src/i18n_messages.{pofile[14:16]}.json"
+        new_target = f"newfront/src/lib/i18n/lang_{pofile[14:16]}.json"
         englishhack = "python plumbing/i18n_helpers.py" if "es" in pofile else ""
+        englishhack_newfront = (
+            f"cp frontend/src/i18n_messages.en.json newfront/src/lib/i18n/lang_en.json"
+            if "es" in pofile
+            else ""
+        )
 
         yield {
             "name": pofile,
             "file_dep": [pofile],
-            "targets": [mofile, json_target],
+            "targets": [mofile, json_target, new_target],
             "actions": [
                 f"msgfmt -o {mofile} {pofile}",
                 f"python plumbing/pojson.py {pofile} > {json_target}",
+                f"cp {json_target} {new_target}",
                 englishhack,
+                englishhack_newfront,
                 f"""sed -i -e '/.*: "",$/d' {json_target}""",
             ],
             "clean": True,

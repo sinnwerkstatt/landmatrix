@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import LeafletMap from "$components/Map/LeafletMap.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  // import LeafletMap from "$components/Map/LeafletMap.svelte";
   import { baseLayers } from "$components/Map/layers";
-  import { TileLayer } from "leaflet";
+  // import { TileLayer } from "leaflet";
+  import { browser } from "$app/env";
   // import iconRetinaUrl from "static/images/marker-icon-2x.png";
   // import iconUrl from "$static/images/marker-icon.png";
   // import shadowUrl from "$static/images/marker-shadow.png";
-
   const dispatch = createEventDispatcher();
 
   let lmap;
@@ -15,9 +15,9 @@
     dispatch("ready", lmap);
     console.log(lmap);
     baseLayers.forEach((lay) => {
-      new TileLayer(lay.url, {
-        attribution: lay.attribution,
-      }).addTo(lmap);
+      // new TileLayer(lay.url, {
+      //   attribution: lay.attribution,
+      // }).addTo(lmap);
     });
   }
 
@@ -52,9 +52,19 @@
     gestureHandling: true,
     ...options,
   };
+
+  let LeafletContainer;
+  onMount(async () => {
+    if (browser) {
+      LeafletContainer = (await import("$components/Map/LeafletMap.svelte")).default;
+    }
+  });
 </script>
 
 <div class="mx-auto relative {containerClass}">
-  <LeafletMap options={mapOptions} on:ready={mapReady} />
+  {#if browser}
+    <svelte:component this={LeafletContainer} />
+  {/if}
+  <!--  <LeafletMap options={mapOptions} on:ready={mapReady} />-->
   <!--    <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />-->
 </div>

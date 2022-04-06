@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
 </script>
 
-<div class="map-data-charts my-8 flex gap-8">
+<div class="map-data-charts my-8 flex gap-8" on:click>
   <a href="/map" class="square">
     <div>
       <h3>{$_("Map")}</h3>
