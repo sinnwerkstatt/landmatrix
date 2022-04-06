@@ -318,6 +318,6 @@ function createFilters() {
 
 export const filters = createFilters();
 
-filters.subscribe((x) => {
-  console.log("FILTER UPDATE", x);
-});
+// filters.subscribe((x) => {
+//   console.log("FILTER UPDATE", x);
+// });

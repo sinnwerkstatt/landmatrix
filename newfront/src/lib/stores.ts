@@ -58,7 +58,7 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
   return gqlres.blogcategories;
 }
 
-export const user = writable(undefined);
+export const user = writable(undefined as User);
 export const countries = writable([]);
 export const regions = writable([]);
 export const formfields = writable([]);

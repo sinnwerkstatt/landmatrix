@@ -6,22 +6,18 @@
   import Streamfield from "$components/Streamfield.svelte";
   import MapDataCharts from "$components/MapDataCharts.svelte";
   import Pie from "svelte-chartjs/src/Pie.svelte";
-  import type { Deal, DealAggregations } from "$lib/types/deal";
   import { gql, request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
   import { getCountryOrRegion } from "../lib/helpers";
   import { afterNavigate } from "$app/navigation";
   import ArticleList from "../components/Wagtail/ArticleList.svelte";
+  import { user } from "$lib/stores";
+  import LoadingPulse from "$components/LoadingPulse.svelte";
 
   export let page: ObservatoryPage;
 
   let readMore = false;
-
-  afterNavigate(() => {
-    readMore = false;
-  });
-
   let articles: BlogPage[] = [];
   let totalSize = "";
   let totalCount = "";
@@ -58,9 +54,7 @@
     const variables = {
       fields: ["current_negotiation_status"],
       filters: filters.toGQLFilterArray(),
-      // TODO
-      // subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
-      subset: "PUBLIC",
+      subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
     const result = await request(GQLEndpoint, q, variables);
     const curNegStat = result.deal_aggregations.current_negotiation_status;
@@ -180,8 +174,11 @@
     console.log(filteredNewsPubs);
   }
 
-  getAggregations();
-  getArticles();
+  afterNavigate(() => {
+    readMore = false;
+    getAggregations();
+    getArticles();
+  });
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
@@ -206,9 +203,9 @@
       </div>
       {#if !readMore}
         <div class="mt-6">
-          <a on:click|preventDefault={() => (readMore = true)}>
+          <button on:click|preventDefault={() => (readMore = true)} class="text-orange">
             {$_("Read more")}
-          </a>
+          </button>
         </div>
       {:else}
         <div class="mx-auto max-w-[65ch]">
@@ -222,7 +219,7 @@
 <div class="charts bg-lm-light mt-0 mb-8 p-0 pb-6">
   <div class="mx-auto w-[clamp(20rem,75%,56rem)] min-h-[300px]">
     {#if totalSize === ""}
-      huhu
+      <LoadingPulse class="h-[300px]" />
     {:else}
       <h3>{$_("We currently have information about:")}</h3>
       <div class="grid grid-cols-2 font-bold">
