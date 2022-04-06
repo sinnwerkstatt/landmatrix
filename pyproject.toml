@@ -2,10 +2,7 @@
 name = "landmatrix"
 version = "0.1.0"
 license = "AGPL-3.0+"
-authors = [
-  "Simon Liedtke <simon.liedtke@gmail.com>",
-  "Andreas Nüßlein <andreas@nuessle.in>",
-]
+authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
 readme = 'README.md'
 description = "LandMatrix"
 
@@ -27,9 +24,9 @@ django-wkhtmltopdf = "*"
 djangorestframework = "<4"
 djangorestframework-gis = "*"
 
-wagtail-modeltranslation = "*"
-wagtail-orderable = ">=1.0.3"
 wagtail-font-awesome-svg = "*"
+wagtail-modeltranslation = "*"
+wagtail-orderable = "*"
 
 # TODO celery - still need? - what about caching? redis? memcached?
 celery = "*"
@@ -42,12 +39,13 @@ ariadne_django = "*"
 country-bounding-boxes = "*"
 fastjsonschema = "*"
 geojson-rewind = "*"
+nanoid = "*"
 openpyxl = "*"
+polib = "*"  # for PO to JSON
 python-dateutil = "*"
 simplejson = "*"
 tweepy = "*"
 unicodecsv = "*"
-polib = "*"  # for PO to JSON
 
 #plumbing
 doit = "*"
