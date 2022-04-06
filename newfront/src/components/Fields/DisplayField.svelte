@@ -15,6 +15,13 @@
   import JSONExportsField from "./Display/JSONExportsField.svelte";
   import JSONField from "./Display/JSONField.svelte";
   import JSONLeaseField from "./Display/JSONLeaseField.svelte";
+  import AutoField from "./Display/AutoField.svelte";
+  import JSONActorsField from "./Display/JSONActorsField.svelte";
+  import LengthField from "./Display/LengthField.svelte";
+  import ManyToManyField from "./Display/ManyToManyField.svelte";
+  import OCIDField from "./Display/OCIDField.svelte";
+  import PointField from "./Display/PointField.svelte";
+  import StatusField from "./Display/StatusField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -45,6 +52,7 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
+    JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
@@ -53,17 +61,23 @@
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
     ArrayField: ArrayField,
+    AutoField: AutoField,
     NullBooleanField: BooleanField,
     BooleanField: BooleanField,
     CharField: TextField,
-    EmailField: TextField,
-    FileField: FileField,
-    URLField: TextField,
-    TextField: TextField,
     DateField: DateField,
     DecimalField: DecimalField,
+    EmailField: TextField,
+    FileField: FileField,
     FloatField: DecimalField,
     IntegerField: DecimalField,
+    LengthField: LengthField,
+    ManyToManyField: ManyToManyField,
+    OCIDField: OCIDField,
+    PointField: PointField,
+    StatusField: StatusField,
+    TextField: TextField,
+    URLField: TextField,
   }[formfield.class];
 </script>
 
