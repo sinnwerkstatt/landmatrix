@@ -134,41 +134,28 @@ class Deal(models.Model, OldDealMixin):
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
-    INTENTION_CHOICES = (
-        (
-            _("Agriculture"),
-            (
-                ("BIOFUELS", _("Biofuels")),
-                ("FOOD_CROPS", _("Food crops")),
-                ("FODDER", _("Fodder")),
-                ("LIVESTOCK", _("Livestock")),
-                ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
-                ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-            ),
-        ),
-        (
-            _("Forestry"),
-            (
-                ("TIMBER_PLANTATION", _("Timber plantation")),
-                ("FOREST_LOGGING", _("Forest logging / management")),
-                ("CARBON", _("For carbon sequestration/REDD")),
-                ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-            ),
-        ),
-        (
-            _("Other"),
-            (
-                ("MINING", _("Mining")),
-                ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
-                ("TOURISM", _("Tourism")),
-                ("INDUSTRY", _("Industry")),
-                ("CONVERSATION", _("Conservation")),
-                ("LAND_SPECULATION", _("Land speculation")),
-                ("RENEWABLE_ENERGY", _("Renewable energy")),
-                ("OTHER", _("Other")),
-            ),
-        ),
-    )
+    INTENTION_CHOICES = [
+        ("BIOFUELS", _("Biofuels")),
+        ("FOOD_CROPS", _("Food crops")),
+        ("FODDER", _("Fodder")),
+        ("LIVESTOCK", _("Livestock")),
+        ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
+        ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
+
+        ("TIMBER_PLANTATION", _("Timber plantation")),
+        ("FOREST_LOGGING", _("Forest logging / management")),
+        ("CARBON", _("For carbon sequestration/REDD")),
+        ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
+
+        ("MINING", _("Mining")),
+        ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
+        ("TOURISM", _("Tourism")),
+        ("INDUSTRY", _("Industry")),
+        ("CONVERSATION", _("Conservation")),
+        ("LAND_SPECULATION", _("Land speculation")),
+        ("RENEWABLE_ENERGY", _("Renewable energy")),
+        ("OTHER", _("Other")),
+   ]
     intention_of_investment = models.JSONField(
         _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
     )
@@ -200,32 +187,17 @@ class Deal(models.Model, OldDealMixin):
     )
 
     # # Negotiation status
-    NEGOTIATION_STATUS_CHOICES = (
-        (
-            _("Intended"),
-            (
-                ("EXPRESSION_OF_INTEREST", "Expression of interest"),
-                ("UNDER_NEGOTIATION", "Under negotiation"),
-                ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
-            ),
-        ),
-        (
-            _("Concluded"),
-            (
-                ("ORAL_AGREEMENT", "Oral agreement"),
-                ("CONTRACT_SIGNED", "Contract signed"),
-            ),
-        ),
-        (
-            _("Failed"),
-            (
-                ("NEGOTIATIONS_FAILED", "Negotiations failed"),
-                ("CONTRACT_CANCELED", "Contract canceled"),
-            ),
-        ),
+    NEGOTIATION_STATUS_CHOICES = [
+        ("EXPRESSION_OF_INTEREST", "Expression of interest"),
+        ("UNDER_NEGOTIATION", "Under negotiation"),
+        ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
+        ("ORAL_AGREEMENT", "Oral agreement"),
+        ("CONTRACT_SIGNED", "Contract signed"),
+        ("NEGOTIATIONS_FAILED", "Negotiations failed"),
+        ("CONTRACT_CANCELED", "Contract canceled"),
         ("CONTRACT_EXPIRED", "Contract expired"),
         ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
-    )
+    ]
     negotiation_status = models.JSONField(
         _("Negotiation status"),
         choices=NEGOTIATION_STATUS_CHOICES,
