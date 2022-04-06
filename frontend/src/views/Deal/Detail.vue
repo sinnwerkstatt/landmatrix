@@ -397,29 +397,44 @@
           });
       },
       copyDeal(): void {
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: Int!) {
-                object_copy(otype: "deal", obj_id: $id) {
-                  objId
-                  objVersion
-                }
-              }
-            `,
-            variables: { id: +this.dealId },
-          })
-          .then(({ data }) => {
-            window.open(
-              this.$router.resolve({
-                name: "deal_detail",
-                params: {
-                  dealId: data.object_copy.objId,
-                  dealVersion: data.object_copy.objVersion,
-                },
-              }).href,
-              "_blank"
-            );
+        this.$bvModal
+          .msgBoxConfirm(
+            "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates.",
+            {
+              title: "Do you really want to duplicate the deal?",
+              size: "lg",
+              okTitle: this.$t("Copy").toString(),
+              cancelTitle: this.$t("Cancel").toString(),
+              centered: true,
+            }
+          )
+          .then((confirmed) => {
+            if (confirmed) {
+              this.$apollo
+                .mutate({
+                  mutation: gql`
+                    mutation ($id: Int!) {
+                      object_copy(otype: "deal", obj_id: $id) {
+                        objId
+                        objVersion
+                      }
+                    }
+                  `,
+                  variables: { id: +this.dealId },
+                })
+                .then(({ data }) => {
+                  window.open(
+                    this.$router.resolve({
+                      name: "deal_detail",
+                      params: {
+                        dealId: data.object_copy.objId,
+                        dealVersion: data.object_copy.objVersion,
+                      },
+                    }).href,
+                    "_blank"
+                  );
+                });
+            }
           });
       },
       setConfidential(data): void {
