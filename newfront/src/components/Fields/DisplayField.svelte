@@ -5,6 +5,8 @@
   import DecimalField from "$components/Fields/Display/DecimalField.svelte";
   import { _ } from "svelte-i18n";
   import BooleanField from "$components/Fields/Display/BooleanField.svelte";
+  import ArrayField from "$components/Fields/Display/ArrayField.svelte";
+  import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -35,6 +37,8 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
+    JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    ArrayField: ArrayField,
     NullBooleanField: BooleanField,
     BooleanField: BooleanField,
     CharField: TextField,

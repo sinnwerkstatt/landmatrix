@@ -31,6 +31,5 @@
 
 <div class="array_field">
   <!-- eslint-disable-next-line vue/no-v-html -->
-  ${parseValues(value)}
+  {parseValues(value)}
 </div>
-template>

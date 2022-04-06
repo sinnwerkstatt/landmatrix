@@ -14,12 +14,15 @@
 //     }
 //   },
 
+import { get } from "svelte/store";
+import { _ } from "svelte-i18n";
+
 export function date_and_current(value) {
   if (!value.date && !value.current) return;
   let ret = "[";
   if (value.date) ret += value.date;
   if (value.date && value.current) ret += ", ";
-  if (value.current) ret += this.$t("current");
+  if (value.current) ret += get(_)("current");
   ret += "]";
   return ret;
 }
