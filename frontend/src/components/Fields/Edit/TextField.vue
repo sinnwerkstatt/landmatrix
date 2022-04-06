@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text_field">
     <div class="input-group">
       <!--        :id="`type-${formfield.name}`"-->
       <textarea

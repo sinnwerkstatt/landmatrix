@@ -169,6 +169,7 @@ deal_fields = {
 }
 
 location_fields = {
+    "id": "ID",
     "deal_id": "Deal ID",
     "level_of_accuracy": "Spatial accuracy level",
     "name": "Location",
@@ -178,6 +179,7 @@ location_fields = {
     "comment": "Comment on location",
 }
 contract_fields = {
+    "id": "ID",
     "deal_id": "Deal ID",
     "number": "Contract number",
     "date": "Contract date",
@@ -187,6 +189,7 @@ contract_fields = {
 }
 
 datasource_fields = {
+    "id": "ID",
     "deal_id": "Deal ID",
     "type": "Data source type",
     "url": "URL",

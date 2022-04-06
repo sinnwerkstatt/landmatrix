@@ -171,6 +171,8 @@
 </template>
 
 <script lang="ts">
+  import Vue from "vue";
+  import gql from "graphql-tag";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import DealEditSection from "$components/Deal/DealEditSection.vue";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.vue";
@@ -179,14 +181,11 @@
   import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
   import Overlay from "$components/Overlay.vue";
   import { deal_gql_query } from "$store/queries";
-  import { removeEmptyEntries } from "$utils";
-  import gql from "graphql-tag";
-
+  import { newNanoid, removeEmptyEntries } from "$utils";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
-  import Vue from "vue";
   import type { LocaleMessages } from "vue-i18n";
-  import type { Contract, DataSource, Deal } from "$types/deal";
+  import type { Deal, Location, Contract, DataSource } from "$types/deal";
 
   export default Vue.extend({
     name: "DealEdit",
@@ -350,28 +349,25 @@
           });
       },
       addContract() {
-        let maxid = 0;
-        this.deal.contracts.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        this.deal.contracts.push(Object.create({ id: maxid + 1 }));
+        const currentIDs = this.deal.contracts.map((x) => x.id);
+        this.deal.contracts.push({ id: newNanoid(currentIDs) });
       },
-      removeContract(index: number) {
-        this.removeSubmodelEntry(this.deal.contracts, index, "contract");
+      removeContract(id: string) {
+        this.removeSubmodelEntry(this.deal.contracts, id, "contract");
       },
       addDataSource() {
-        let maxid = 0;
-        this.deal.datasources.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        this.deal.datasources.push(Object.create({ id: maxid + 1 }));
+        const currentIDs = this.deal.datasources.map((x) => x.id);
+        this.deal.datasources.push({ id: newNanoid(currentIDs) });
       },
-      removeDataSource(index: number) {
-        this.removeSubmodelEntry(this.deal.datasources, index, "data source");
+      removeDataSource(id: string) {
+        this.removeSubmodelEntry(this.deal.datasources, id, "data source");
       },
       removeSubmodelEntry(
         submodels: DataSource[] | Location[] | Contract[],
-        index: number,
+        id: string,
         label: string
       ) {
-        let message =
-          this.$t("Do you really want to remove " + label) + ` #${index + 1}?`;
+        let message = `${this.$t("Remove")} ${this.$t(label)} ${id}?`;
         this.$bvModal
           .msgBoxConfirm(message, {
             size: "sm",
@@ -381,7 +377,8 @@
           })
           .then((confirmed) => {
             if (confirmed) {
-              submodels.splice(index, 1);
+              let idx = submodels.findIndex((x) => x.id === id);
+              submodels.splice(idx, 1);
             }
           });
       },

@@ -7,7 +7,12 @@ locations_schema_def = {
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "id": {"type": "integer"},
+            "id": {
+                "anyOf": [
+                    {"type": "integer"},
+                    {"type": "string", "minLength": 8, "maxLength": 8},
+                ]
+            },
             "old_group_id": {"type": "integer"},
             "name": {"type": "string"},
             "description": {"type": "string"},
@@ -44,7 +49,12 @@ contracts_schema_def = {
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "id": {"type": "integer"},
+            "id": {
+                "anyOf": [
+                    {"type": "integer"},
+                    {"type": "string", "minLength": 8, "maxLength": 8},
+                ]
+            },
             "old_group_id": {"type": "integer"},
             "number": {"type": "string"},
             "date": {
@@ -71,7 +81,12 @@ datasources_schema_def = {
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "id": {"type": "integer"},
+            "id": {
+                "anyOf": [
+                    {"type": "integer"},
+                    {"type": "string", "minLength": 8, "maxLength": 8},
+                ]
+            },
             "old_group_id": {"type": "integer"},
             "type": {
                 "type": "string",
