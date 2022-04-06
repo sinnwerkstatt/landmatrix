@@ -4,6 +4,7 @@
   import type { FormField } from "$components/Fields/fields";
   import DecimalField from "$components/Fields/Display/DecimalField.svelte";
   import { _ } from "svelte-i18n";
+  import BooleanField from "$components/Fields/Display/BooleanField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -34,6 +35,8 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
+    NullBooleanField: BooleanField,
+    BooleanField: BooleanField,
     CharField: TextField,
     EmailField: TextField,
     URLField: TextField,
