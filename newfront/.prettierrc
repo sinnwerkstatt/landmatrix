@@ -2,5 +2,8 @@
   "printWidth": 88,
   "svelteStrictMode": false,
   "svelteAllowShorthand": true,
-  "svelteIndentScriptAndStyle": true
+  "svelteIndentScriptAndStyle": true,
+  "importOrder": ["^\\$app/(.*)$", "^\\$lib(.*)$", "^\\$components/(.*)$", "^[./]"],
+  "importOrderCaseInsensitive": true,
+  "importOrderSortSpecifiers": true
 }

@@ -1,19 +1,19 @@
 <script lang="ts">
-  import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail";
-  import PageTitle from "$components/PageTitle.svelte";
-  import { _ } from "svelte-i18n";
-  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
-  import Streamfield from "$components/Streamfield.svelte";
-  import MapDataCharts from "$components/MapDataCharts.svelte";
-  import Pie from "svelte-chartjs/src/Pie.svelte";
   import { gql, request } from "graphql-request";
+  import Pie from "svelte-chartjs/src/Pie.svelte";
+  import { _ } from "svelte-i18n";
+  import { afterNavigate } from "$app/navigation";
   import { GQLEndpoint } from "$lib";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
-  import { getCountryOrRegion } from "../lib/helpers";
-  import { afterNavigate } from "$app/navigation";
-  import ArticleList from "../components/Wagtail/ArticleList.svelte";
+  import { getCountryOrRegion } from "$lib/helpers";
   import { user } from "$lib/stores";
+  import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
+  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
+  import MapDataCharts from "$components/MapDataCharts.svelte";
+  import PageTitle from "$components/PageTitle.svelte";
+  import Streamfield from "$components/Streamfield.svelte";
+  import ArticleList from "$components/Wagtail/ArticleList.svelte";
 
   export let page: ObservatoryPage;
 
@@ -171,7 +171,6 @@
         )
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
-    console.log(filteredNewsPubs);
   }
 
   afterNavigate(() => {
