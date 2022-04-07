@@ -52,7 +52,7 @@
 <!--    h5 {-->
 <!--      font-size: 18px;-->
 <!--      a {-->
-<!--        color: var(&#45;&#45;color-lm-orange);-->
+color: var(--color-lm-orange);
 <!--      }-->
 <!--    }-->
 <!--    img {-->

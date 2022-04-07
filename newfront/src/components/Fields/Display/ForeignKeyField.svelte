@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { FormField } from "$components/Fields/fields";
-  import type { Country } from "$types/wagtail";
+  import type { Country } from "$lib/types/wagtail";
+  import { countries } from "$lib/stores";
 
   export let formfield: FormField;
   export let value: object;
@@ -8,8 +9,8 @@
 
   $: calc_name = () => {
     if (!value || !value.id) return "";
-    if (formfield.related_model === "Country" && $store.state.countries) {
-      return $store.state.countries.find((c: Country) => c.id === this.value.id).name;
+    if (formfield.related_model === "Country" && $countries) {
+      return $countries.find((c: Country) => c.id === this.value.id).name;
     }
     return value.username ?? value.name ?? value.id;
   };

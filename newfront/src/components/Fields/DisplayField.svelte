@@ -13,6 +13,14 @@
   import JSONJobsField from "./Display/JSONJobsField.svelte";
   import FileField from "./Display/FileField.svelte";
   import JSONExportsField from "./Display/JSONExportsField.svelte";
+  import AutoField from "./Display/AutoField.svelte";
+  import JSONActorsField from "./Display/JSONActorsField.svelte";
+  import ForeignKeyField from "./Display/ForeignKeyField.svelte";
+  import ManyToManyField from "./Display/ManyToManyField.svelte";
+  import OCIDField from "./Display/OCIDField.svelte";
+  import PointField from "./Display/PointField.svelte";
+  import StatusField from "./Display/StatusField.svelte";
+  import LengthField from "./Display/LengthField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -43,23 +51,33 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
+    ArrayField: ArrayField,
+    AutoField: AutoField,
+    BooleanField: BooleanField,
+    CharField: TextField,
+    CountryForeignKey: ForeignKeyField,
+    DateField: DateField,
+    DecimalField: DecimalField,
+    EmailField: TextField,
+    FileField: FileField,
+    FloatField: DecimalField,
+    ForeignKey: ForeignKeyField,
+    IntegerField: DecimalField,
+    InvestorForeignKey: ForeignKeyField,
+    JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
-    ArrayField: ArrayField,
+    LengthField: LengthField,
+    ManyToManyField: ManyToManyField,
     NullBooleanField: BooleanField,
-    BooleanField: BooleanField,
-    CharField: TextField,
-    EmailField: TextField,
-    FileField: FileField,
-    URLField: TextField,
+    OCIDField: OCIDField,
+    PointField: PointField,
+    StatusField: StatusField,
     TextField: TextField,
-    DateField: DateField,
-    DecimalField: DecimalField,
-    FloatField: DecimalField,
-    IntegerField: DecimalField,
+    URLField: TextField,
   }[formfield.class];
 </script>
 

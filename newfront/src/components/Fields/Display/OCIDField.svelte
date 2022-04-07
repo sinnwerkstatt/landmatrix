@@ -1,17 +1,10 @@
 <script lang="ts">
-  import { FormField } from "$components/Fields/fields";
+  import type { FormField } from "$components/Fields/fields";
   import { _ } from "svelte-i18n";
 
   export let formfield: FormField;
   export let value: string;
   export let model: string;
-
-  // export default Vue.extend({
-  //   props: {
-  //     formfield: { type: Object, required: true },
-  //     value: { type: String, required: true },
-  //     model: { type: String, required: true },
-  //   },
 
   $: ocidUrl = `https://www.openlandcontracts.org/contract/${value}/view#/pdf`;
 </script>

@@ -11,7 +11,7 @@
 
 <div class="jsondateareachoices_field">
   {#each vals as val}
-    <div class={() => (val.current ? "font-bold" : "")}>
+    <div class:font-bold={val.current}>
       <span>{date_and_current(val)} </span>
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { combined_status_fn } from "$utils/choices";
-  import { FormField } from "$components/Fields/fields";
+  import type { FormField } from "$components/Fields/fields";
   import { _ } from "svelte-i18n";
+  import { combined_status_fn } from "./choices";
 
   export let formfield: FormField;
   export let value: number[];
