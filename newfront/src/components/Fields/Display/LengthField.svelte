@@ -1,8 +1,14 @@
 <script lang="ts">
   import type { FormField } from "$components/Fields/fields";
 
+  type ForeignKey = {
+    id: number;
+    name?: string;
+    username?: string;
+  };
+
   export let formfield: FormField;
-  export let value: object[];
+  export let value: ForeignKey;
   export let model: string;
   export let displayDeals = false;
 </script>
@@ -12,10 +18,8 @@
   {#if displayDeals}
     <div>
       {#each value as val (val.id)}
-        <br /> <a href="/deal/{val.id}"> #{val.id}</a>
+        <br /> <a href="/deal/{value.id}"> #{val.id}</a>
       {/each}
     </div>
   {/if}
 </div>
-
-<!--:to="{ name: 'deal_detail', params: { dealId: val.id } }">-->
