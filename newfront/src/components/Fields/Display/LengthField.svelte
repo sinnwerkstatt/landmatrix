@@ -4,13 +4,7 @@
   export let formfield: FormField;
   export let value: object[];
   export let model: string;
-
   export let displayDeals = false;
-  // const data = () => {
-  //     return {
-  //       displayDeals: false,
-  //     };
-  //   }
 </script>
 
 <div class="length_field">
@@ -23,3 +17,5 @@
     </div>
   {/if}
 </div>
+
+<!--:to="{ name: 'deal_detail', params: { dealId: val.id } }">-->

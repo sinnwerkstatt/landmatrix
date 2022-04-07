@@ -1,21 +1,21 @@
 <script lang="ts">
   import {
+    JSONExportsFieldType,
     date_and_current,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
-  import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
-  import WeightIcon from "../../icons/WeightIcon.svelte";
+  import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
+  import WeightIcon from "$components/icons/WeightIcon.svelte";
   import type { FormField } from "$components/Fields/fields";
-  import PlaneIcon from "../../icons/PlaneIcon.svelte";
+  import PlaneIcon from "$components/icons/PlaneIcon.svelte";
 
-  export let value: boolean;
+  export let value: JSONExportsFieldType[] = [];
   export let formfield: FormField;
-  let vals = value ? value : [{ name: null, role: null }];
 </script>
 
 <div class="jsonexports_field whitespace-nowrap">
-  {#each vals as val}
-    <div class={() => (val.current ? "font-bold" : "")}>
+  {#each value as val}
+    <div class:font-bold={val.current}>
       <span>{date_and_current(val)}</span>
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}

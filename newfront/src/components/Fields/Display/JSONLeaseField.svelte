@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     date_and_current,
-    mapChoices,
+    JSONLeaseFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
@@ -9,14 +9,12 @@
   import HouseholdIcon from "../../icons/HouseholdIcon.svelte";
 
   export let formfield: FormField;
-  export let value: boolean;
-
-  let vals = value ? value : [{ name: null, role: null }];
+  export let value: JSONLeaseFieldType[] = [];
 </script>
 
 <div class="jsonlease_field whitespace-nowrap">
-  {#each vals as val}
-    <div class={() => (val.current ? "font-bold" : "")}>
+  {#each value as val}
+    <div class:font-bold={val.current}>
       <span>{date_and_current(val)}</span>
       {#if val.area}
         <span class="mx-2">

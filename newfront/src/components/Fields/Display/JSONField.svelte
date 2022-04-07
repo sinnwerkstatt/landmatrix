@@ -1,19 +1,18 @@
 <script lang="ts">
   import {
+    JSONFieldType,
     date_and_current,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;
-  export let value: boolean;
-
-  let vals = value ? value : [{ name: null, role: null }];
+  export let value: JSONFieldType[] = [];
 </script>
 
 <div class="json_field whitespace-nowrap">
-  {#each vals as val}
-    <div class={() => (val.current ? "font-bold" : "")}>
+  {#each value as val}
+    <div class:font-bold={val.current}>
       {date_and_current(val)}
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}

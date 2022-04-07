@@ -4,49 +4,22 @@
   export let formfield: FormField;
   export let value: number;
   export let model: string;
-  export let targetBlank: boolean; //default false
-  export let objectVersion: number; //required false
+  export let targetBlank = false;
+  export let objectVersion: number;
 
-  // export default Vue.extend({
-  //   props: {
-  //     formfield: { type: Object as PropType<FormField>, required: true },
-  //     value: { type: Number, required: true },
-  //     model: { type: String, required: true },
-  //     targetBlank: { type: Boolean, default: false },
-  //     objectVersion: { type: Number, default: null, required: false },
-  //   },
-  // });
+  let href = (model === "deal" ? "/deal/" : "/investor/") + value;
+  if (objectVersion) href += "/" + objectVersion;
 </script>
 
 <div class="auto_field">
-  {#if model === "deal"}
-    <a
-      class="id-display deal-id-display"
-      target={() => {
-        $targetBlank ? "_blank" : "_self";
-      }}
-    >
-      <!--      :to="{-->
-      <!--        name: 'deal_detail',-->
-      <!--        params: { dealId: value, dealVersion: objectVersion },-->
-      <!--      }"-->
-
-      {value}
-    </a>
-  {:else if model === "investor"}
-    <a
-      class="id-display investor-id-display"
-      target={() => {
-        $targetBlank ? "_blank" : "_self";
-      }}
-    >
-      <!--      :to="{-->
-      <!--        name: 'investor_detail',-->
-      <!--        params: { investorId: value, investorVersion: objectVersion },-->
-      <!--      }"-->
-
-      {value}</a
-    >
-  {:else}{value}
-  {/if}
+  <a
+    class="inline py-2 px-3 text-white text-xs font-bold text-center whitespace-nowrap align-baseline rounded {model ===
+    'deal'
+      ? 'bg-orange hover:bg-orange-600'
+      : 'bg-pelorous hover:bg-pelorous-600'}"
+    {href}
+    target={targetBlank ? "_blank" : "_self"}
+  >
+    {value}
+  </a>
 </div>

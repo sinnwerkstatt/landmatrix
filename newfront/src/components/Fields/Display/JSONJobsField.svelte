@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { date_and_current } from "$components/Fields/Display/jsonHelpers.ts";
+  import {
+    date_and_current,
+    JSONJobsFieldType,
+  } from "$components/Fields/Display/jsonHelpers.ts";
 
-  export let value: boolean;
-  let vals = value ? value : [{ name: null, role: null }];
+  export let value: JSONJobsFieldType[] = [];
 </script>
 
 <div class="jsonjobs_field whitespace-nowrap">
-  {#each vals as val}
-    <div class={() => (val.current ? "font-bold" : "")}>
-      <span>{date_and_current(val)}</span>
+  {#each value as val}
+    <div class:font-bold={val.current}>
+      {date_and_current(val)}
       {#if val.jobs}
         <span class="mx-2">
           {val.jobs.toLocaleString("fr")} jobs

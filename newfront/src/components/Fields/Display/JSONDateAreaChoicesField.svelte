@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { date_and_current, mapChoices } from "$components/Fields/Display/jsonHelpers";
+  import {
+    date_and_current,
+    JSONDateAreaChoicesFieldType,
+    mapChoices,
+  } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
-  import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
+  import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
 
   export let formfield: FormField;
-  export let value: boolean;
+  export let value: JSONDateAreaChoicesFieldType[] = [];
   export let model: string;
-  let vals = value ? value : [{ name: null, role: null }];
 </script>
 
 <div class="jsondateareachoices_field">
