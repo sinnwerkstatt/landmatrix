@@ -2,7 +2,13 @@ import { get, writable } from "svelte/store";
 import { gql, GraphQLClient } from "graphql-request";
 
 import { GQLEndpoint, RESTEndpoint } from "$lib/index";
-import type { BlogCategory, ObservatoryPage, WagtailPage } from "$lib/types/wagtail";
+import type {
+  BlogCategory,
+  Country,
+  ObservatoryPage,
+  Region,
+  WagtailPage,
+} from "$lib/types/wagtail";
 import type { User } from "$lib/types/user";
 
 const graphQLClient = new GraphQLClient(GQLEndpoint, {
@@ -59,12 +65,12 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
 }
 
 export const user = writable(undefined);
-export const countries = writable([]);
-export const regions = writable([]);
+export const countries = writable([] as Country[]);
+export const regions = writable([] as Region[]);
 export const formfields = writable([]);
 
-async function getMe(): Promise<User> {
-  console.log("getMe");
+async function getBasics(): Promise<User> {
+  console.log("getBasics");
   const userStore = get(user);
   if (userStore !== undefined) return userStore;
   const query = gql`
@@ -190,5 +196,5 @@ export async function fetchBasis(lang = "en") {
   await getObservatoryPages(lang);
   await getBlogCategories(lang);
   await getAboutPages(lang);
-  await getMe();
+  await getBasics();
 }

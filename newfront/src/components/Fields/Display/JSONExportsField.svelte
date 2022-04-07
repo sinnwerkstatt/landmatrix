@@ -20,7 +20,10 @@
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}
       {/if}{#if val.area}
-        <span> <CircleNotchIcon /> {val.area.toLocaleString("fr")} ha</span>
+        <span>
+          <CircleNotchIcon />
+          {val.area.toLocaleString("fr")} ha
+        </span>
       {/if}{#if val.yield}
         <span class="mx-2">
           <WeightIcon />

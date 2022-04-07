@@ -16,9 +16,14 @@
 
 import { get } from "svelte/store";
 import { _ } from "svelte-i18n";
+import type {
+  ImplementationStatus,
+  IntentionOfInvestment,
+  NegotiationStatus,
+} from "../../../lib/filters";
 
-export function date_and_current(value) {
-  if (!value.date && !value.current) return;
+export function date_and_current(value: { date: string; current?: boolean }): string {
+  if (!value.date && !value.current) return "";
   let ret = "[";
   if (value.date) ret += value.date;
   if (value.date && value.current) ret += ", ";
@@ -76,3 +81,67 @@ export function removeEntry(index) {
   this.vals.splice(index, 1);
   this.updateEntries();
 }
+
+enum ActorRole {
+  TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES = "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+  GOVERNMENT_OR_STATE_INSTITUTIONS = "GOVERNMENT_OR_STATE_INSTITUTIONS",
+  TRADITIONAL_LOCAL_AUTHORITY = "TRADITIONAL_LOCAL_AUTHORITY",
+  BROKER = "BROKER",
+  INTERMEDIARY = "INTERMEDIARY",
+  OTHER = "OTHER",
+}
+
+export type JSONActorsFieldType = {
+  name: string;
+  role: ActorRole;
+};
+
+export type JSONDateAreaChoicesFieldType = {
+  current?: boolean;
+  name: string;
+  area?: string;
+  choices: Array<IntentionOfInvestment | { [key: string]: string }>;
+};
+
+export type JSONDateAreaFieldType = {
+  area: string;
+  date: string;
+  current?: boolean;
+};
+
+export type JSONDateChoiceFieldType = {
+  current?: boolean;
+  date: string;
+  choice: NegotiationStatus | ImplementationStatus;
+};
+export type JSONExportsFieldType = {
+  current?: boolean;
+  area?: string;
+  yield?: string;
+  export?: string;
+  choices: Array<{ [key: string]: string }>;
+};
+
+// folgende types möglicherweise fehlerhaft oder unvollständig
+export type JSONFieldType = {
+  current?: boolean;
+  area?: string;
+  choices?: Array<{ [key: string]: string }>;
+};
+
+export type JSONJobsFieldType = {
+  current?: boolean;
+  date: string;
+  jobs?: string;
+  employees?: string;
+  workers?: string;
+  choices?: Array<{ [key: string]: string }>;
+};
+
+export type JSONLeaseFieldType = {
+  current?: boolean;
+  date: string;
+  area?: string;
+  farmers: string;
+  households: string;
+};

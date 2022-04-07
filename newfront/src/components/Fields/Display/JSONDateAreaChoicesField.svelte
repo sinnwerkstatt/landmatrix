@@ -13,7 +13,7 @@
 </script>
 
 <div class="jsondateareachoices_field">
-  {#each vals as val}
+  {#each value as val}
     <div class:font-bold={val.current}>
       <span>{date_and_current(val)} </span>
       {#if val.choices}

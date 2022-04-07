@@ -4,7 +4,7 @@
     JSONDateAreaFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
 
-  let vals = value ? value : [{ name: null, role: null }];
+  export let value: JSONDateAreaFieldType[] = [];
 </script>
 
 <div class="jsondatearea_field whitespace-nowrap">
