@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { request } from "graphql-request";
   import type { Load } from "@sveltejs/kit";
-  import { investor_gql_query } from "./queries";
+  import { request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
+  import { investor_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
     const variables = {

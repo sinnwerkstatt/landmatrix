@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { _, locale } from "svelte-i18n";
+  import { computePosition } from "@floating-ui/dom";
   import Cookies from "js-cookie";
+  import { _, locale } from "svelte-i18n";
   import {
     aboutPages,
     blogCategories,
@@ -11,12 +12,11 @@
     user,
   } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
+  import TranslateIcon from "$components/icons/TranslateIcon.svelte";
   import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
   import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
-  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
-  import { computePosition } from "@floating-ui/dom";
   import UserRegular from "$components/icons/UserRegular.svelte";
-  import TranslateIcon from "$components/icons/TranslateIcon.svelte";
+  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
 
   let language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };

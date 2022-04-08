@@ -13,9 +13,8 @@
 //       this.current = this.value.map((e) => e.current).indexOf(true);
 //     }
 //   },
-
-import { get } from "svelte/store";
 import { _ } from "svelte-i18n";
+import { get } from "svelte/store";
 import type {
   ImplementationStatus,
   IntentionOfInvestment,
@@ -44,7 +43,7 @@ export function mapChoices(choices, formfieldChoices) {
 
 export function parseValues(jsonval) {
   let ret = "";
-  let choices = this.formfield.choices;
+  const choices = this.formfield.choices;
 
   if (jsonval.value instanceof Array) {
     if (choices) {
@@ -64,7 +63,7 @@ export function updateCurrent(i) {
 
 export function updateEntries() {
   this.vals = this.vals.map((v, i) => {
-    let current = i === this.current ? { current: true } : {};
+    const current = i === this.current ? { current: true } : {};
     delete v.current;
     return { ...v, ...current };
   });

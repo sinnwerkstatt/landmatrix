@@ -1,5 +1,4 @@
-import { waitLocale, init, register } from "svelte-i18n";
-
+import { init, register, waitLocale } from "svelte-i18n";
 import { browser } from "$app/env";
 
 export const supportedLanguages = ["en", "es", "fr", "ru"];

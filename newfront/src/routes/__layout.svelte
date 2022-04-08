@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { i18nload } from "$lib/i18n/i18n";
   import type { Load } from "@sveltejs/kit";
-  import { fetchBasis } from "$lib/stores";
   import Cookies from "js-cookie";
+  import { i18nload } from "$lib/i18n/i18n";
+  import { fetchBasis } from "$lib/stores";
 
   export const load: Load = async ({ params }) => {
     const lang = Cookies.get("django_language") ?? "en";

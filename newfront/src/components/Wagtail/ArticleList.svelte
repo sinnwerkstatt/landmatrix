@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { BlogPage } from "$lib/types/wagtail";
   import { _ } from "svelte-i18n";
+  import type { BlogPage } from "$lib/types/wagtail";
 
   export let articles: BlogPage[] = [];
   export let articlesLabel: string;

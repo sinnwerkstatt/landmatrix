@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ImageBlock from "$components/Wagtail/ImageBlock.svelte";
   import type { BlockImage } from "$lib/types/custom";
+  import ImageBlock from "$components/Wagtail/ImageBlock.svelte";
 
   export let value: {
     images: BlockImage[];

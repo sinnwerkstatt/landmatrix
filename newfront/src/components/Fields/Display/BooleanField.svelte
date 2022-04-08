@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
   import { _ } from "svelte-i18n";
+  import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;
   export let value: boolean;
@@ -12,6 +12,7 @@
     {$_("Yes")}
   {:else if value === false}
     {$_("No")}
-  {:else}NULL
+  {:else}
+    NULL
   {/if}
 </div>

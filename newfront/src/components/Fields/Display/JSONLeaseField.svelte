@@ -5,8 +5,8 @@
   } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
-  import TractorIcon from "../../icons/TractorIcon.svelte";
   import HouseholdIcon from "../../icons/HouseholdIcon.svelte";
+  import TractorIcon from "../../icons/TractorIcon.svelte";
 
   export let formfield: FormField;
   export let value: JSONLeaseFieldType[] = [];

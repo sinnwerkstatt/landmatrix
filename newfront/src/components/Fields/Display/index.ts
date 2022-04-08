@@ -1,26 +1,3 @@
-interface Choi {
-  [key: string | number]: string | { [key: string | number]: string };
-}
-export function flatten_choices(
-  choices: Choi,
-  append_group = false
-): { [key: string]: string } {
-  if (choices) {
-    const newchoices: { [key: string]: string } = {};
-    for (const [key, value] of Object.entries(choices)) {
-      if (typeof value === "string") {
-        newchoices[key] = value;
-      } else {
-        for (const [k, v] of Object.entries(value)) {
-          newchoices[k] = append_group ? `${key} (${v})` : v;
-        }
-      }
-    }
-    return newchoices;
-  }
-  return {};
-}
-
 export function sortAnything<T extends { [key: string | number]: any }>(
   list: Array<T>,
   sortField: string,

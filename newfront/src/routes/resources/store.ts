@@ -1,7 +1,7 @@
-import { get, writable } from "svelte/store";
 import { gql, request } from "graphql-request";
-import type { BlogPage } from "$lib/types/wagtail";
+import { get, writable } from "svelte/store";
 import { GQLEndpoint } from "$lib";
+import type { BlogPage } from "$lib/types/wagtail";
 
 const blogpages = writable(undefined);
 

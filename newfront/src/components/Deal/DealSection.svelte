@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
   import { isEmpty } from "$lib/helpers";
+  import DisplayField from "$components/Fields/DisplayField.svelte";
 
   export let deal;
   export let sections = [];

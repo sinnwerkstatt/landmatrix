@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
   import { _ } from "svelte-i18n";
+  import type { FormField } from "$components/Fields/fields";
 
   export let value: string;
   export let model: string;

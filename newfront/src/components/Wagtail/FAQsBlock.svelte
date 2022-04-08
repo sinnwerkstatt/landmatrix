@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { browser } from "$app/env";
   import { slide } from "svelte/transition";
+  import { browser } from "$app/env";
 
   export let value;
 

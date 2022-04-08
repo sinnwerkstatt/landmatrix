@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
-    JSONFieldType,
     date_and_current,
+    JSONFieldType,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";

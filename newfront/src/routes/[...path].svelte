@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import type { WagtailPage } from "$lib/types/wagtail";
   import { pageQuery } from "$lib/queries";
+  import type { WagtailPage } from "$lib/types/wagtail";
 
   export const load: Load = async ({ url }) => {
     const page = await pageQuery(url);

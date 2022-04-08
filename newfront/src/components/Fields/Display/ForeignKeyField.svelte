@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
   import { countries } from "$lib/stores";
+  import type { FormField } from "$components/Fields/fields";
 
   type ForeignKey = {
     id: number;

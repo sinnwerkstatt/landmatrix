@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { request } from "graphql-request";
   import type { Load } from "@sveltejs/kit";
-  import { deal_gql_query } from "./queries";
+  import { request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
+  import { deal_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
     const variables = {
@@ -14,12 +14,12 @@
 </script>
 
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Deal } from "$lib/types/deal";
-  import { _ } from "svelte-i18n";
   import DealSection from "$components/Deal/DealSection.svelte";
-  import { deal_sections, deal_submodel_sections } from "./deal_sections";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
+  import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export let deal: Deal;
   const dealID = $page.params.id;
