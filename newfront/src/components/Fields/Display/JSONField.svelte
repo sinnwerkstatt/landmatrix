@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    date_and_current,
+    dateCurrentFormat,
     JSONFieldType,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
@@ -13,7 +13,7 @@
 <div class="json_field whitespace-nowrap">
   {#each value as val}
     <div class:font-bold={val.current}>
-      {date_and_current(val)}
+      {dateCurrentFormat(val)}
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}
       {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    date_and_current,
+    dateCurrentFormat,
     JSONLeaseFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
@@ -15,7 +15,7 @@
 <div class="jsonlease_field whitespace-nowrap">
   {#each value as val}
     <div class:font-bold={val.current}>
-      <span>{date_and_current(val)}</span>
+      <span>{dateCurrentFormat(val)}</span>
       {#if val.area}
         <span class="mx-2">
           <CircleNotchIcon />

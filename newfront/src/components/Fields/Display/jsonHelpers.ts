@@ -21,7 +21,7 @@ import type {
   NegotiationStatus,
 } from "../../../lib/filters";
 
-export function date_and_current(value: { date: string; current?: boolean }): string {
+export function dateCurrentFormat(value: { date: string; current?: boolean }): string {
   if (!value.date && !value.current) return "";
   let ret = "[";
   if (value.date) ret += value.date;

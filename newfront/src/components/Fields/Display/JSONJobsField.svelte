@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    date_and_current,
+    dateCurrentFormat,
     JSONJobsFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
 
@@ -10,7 +10,7 @@
 <div class="jsonjobs_field whitespace-nowrap">
   {#each value as val}
     <div class:font-bold={val.current}>
-      {date_and_current(val)}
+      {dateCurrentFormat(val)}
       {#if val.jobs}
         <span class="mx-2">
           {val.jobs.toLocaleString("fr")} jobs
