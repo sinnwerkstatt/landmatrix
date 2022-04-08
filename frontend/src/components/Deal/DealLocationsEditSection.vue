@@ -17,9 +17,9 @@
             @mouseover="hoverLocID = loc.id"
             @mouseout="hoverLocID = null"
           >
-            {{ $t("Location") }} <small>#{{ loc.id }}</small>
+            {{ $t("Location") }} <small class="font-mono">{{ loc.id }}</small>
           </h3>
-          <a class="trashbin" @click="removeLocation(index)">
+          <a class="trashbin" @click="removeLocation(loc.id)">
             <i class="fas fa-trash"></i>
           </a>
         </div>
@@ -108,17 +108,20 @@
 </template>
 
 <script lang="ts">
+  import Vue from "vue";
+  import type L from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker } from "leaflet";
+  import "@geoman-io/leaflet-geoman-free";
+
   import BigMap from "$components/BigMap.vue";
   import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.vue";
   import PointField from "$components/Fields/Edit/PointField.vue";
   import EditField from "$components/Fields/EditField.vue";
-  import "@geoman-io/leaflet-geoman-free";
-  import { GeoJSON, LatLngBounds, Marker } from "leaflet";
-  import Vue from "vue";
+  import { newNanoid } from "$utils";
+
   import type { PropType } from "vue";
   import type { Country } from "$types/wagtail";
   import type { Location } from "$types/deal";
-  import type L from "leaflet";
   import type { Feature, GeoJsonObject } from "geojson";
 
   export default Vue.extend({
@@ -235,16 +238,14 @@
         if (this.locs.length === 1) this.actLoc = this.locs[0];
       },
       addLocation() {
-        let maxid = 0;
-        this.locs.forEach((l) => (maxid = Math.max(l.id, maxid)));
-        let newloc = new Object({ id: maxid + 1 }) as Location;
+        const currentIDs = this.locs.map((x) => `${x.id}`);
+        let newloc = new Object({ id: newNanoid(currentIDs) }) as Location;
         this.actLoc = newloc;
         this.locs.push(newloc);
         this._features_changed();
       },
-      removeLocation(index: number) {
-        let message =
-          this.$t("Do you really want to remove location") + ` #${index + 1}?`;
+      removeLocation(id: string) {
+        let message = `${this.$t("Remove")} ${this.$t("location")} ${id}?`;
         this.$bvModal;
         this.$bvModal
           .msgBoxConfirm(message, {
@@ -255,7 +256,8 @@
           })
           .then((confirmed) => {
             if (confirmed) {
-              let loc = this.locs.splice(index, 1)[0];
+              let idx = this.locs.findIndex((x) => x.id === id);
+              let loc = this.locs.splice(idx, 1)[0];
               let fg = this.locationFGs.get(loc.id);
               this.locationFGs.delete(loc.id);
               this.bigmap.removeLayer(fg);

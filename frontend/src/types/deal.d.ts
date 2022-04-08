@@ -11,7 +11,7 @@ enum ACCURACY_LEVEL {
   COORDINATES,
 }
 interface Location {
-  id: number;
+  id: string;
   name: string;
   description: string;
   point: {
@@ -25,10 +25,10 @@ interface Location {
 }
 
 interface Contract {
-  id: number;
+  id: string;
 }
 interface DataSource {
-  id: number;
+  id: string;
   type: string;
   url: string;
   file: string;

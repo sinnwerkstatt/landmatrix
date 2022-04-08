@@ -1,3 +1,5 @@
+import { nanoid } from "nanoid";
+
 interface Choi {
   [key: string | number]: string | { [key: string | number]: string };
 }
@@ -77,4 +79,14 @@ export function removeEmptyEntries<T extends { [key: string]: string }>(
       .filter(([k, v]) => (k === "id" ? false : !!v))
       .some((x) => !!x);
   });
+}
+
+export function newNanoid(existingIDs: string[]): string {
+  let newID: string;
+  let matching: boolean;
+  do {
+    newID = nanoid(8);
+    matching = existingIDs.includes(newID);
+  } while (matching);
+  return newID;
 }

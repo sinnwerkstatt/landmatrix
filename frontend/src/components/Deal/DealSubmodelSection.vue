@@ -4,7 +4,7 @@
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
-            {{ $t(modelName) }} <small>#{{ entry.id }}</small>
+            {{ $t(modelName) }} <small class="font-mono">{{ entry.id }}</small>
           </h3>
           <template v-for="fieldname in fields">
             <DisplayField

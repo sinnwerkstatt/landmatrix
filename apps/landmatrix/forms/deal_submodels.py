@@ -93,6 +93,7 @@ datasource_fields = {
         "label": "Url",
         "class": "URLField",
         "required": False,
+        "type": "url",
     },
     "file": {
         "label": "File",

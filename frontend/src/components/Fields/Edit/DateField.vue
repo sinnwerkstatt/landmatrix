@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="date_field">
     <LowLevelDateYearField v-model="val" />
   </div>
 </template>

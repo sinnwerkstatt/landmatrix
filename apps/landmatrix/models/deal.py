@@ -6,7 +6,7 @@ from django.contrib.gis.geos import Point
 from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -45,6 +45,40 @@ class DealQuerySet(models.QuerySet):
         elif subset == "ACTIVE":
             return self.active()
         return self
+
+    @staticmethod
+    def _remove_filter(name, queryset):
+        query = queryset.query
+        query.where.children = [
+            qx
+            for qx in query.where.children
+            if not hasattr(qx, "lhs")
+            or (hasattr(qx, "lhs") and qx.lhs.target.name != name)
+        ]
+
+    def default_filtered(self, unset_filters: list = None):
+        qs = (
+            self.filter(deal_size__gte="200")
+            .filter(
+                current_negotiation_status__in=[
+                    "ORAL_AGREEMENT",
+                    "CONTRACT_SIGNED",
+                ]
+            )
+            .exclude(nature_of_deal__contained_by=["PURE_CONTRACT_FARMING"])
+            .filter(initiation_year__gte=2000)
+            .exclude(
+                current_intention_of_investment__overlap=[
+                    "MINING",
+                    "OIL_GAS_EXTRACTION",
+                ]
+            )
+            .filter(transnational=True)
+            .filter(forest_concession=False)
+        )
+        if unset_filters:
+            [self._remove_filter(fltr, qs) for fltr in unset_filters]
+        return qs
 
     def get_deal_country_rankings(self, country_id: int = None):
         rankings = (

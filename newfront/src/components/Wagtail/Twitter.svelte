@@ -1,14 +1,16 @@
-<script>
+<script lang="ts">
   import dayjs from "dayjs";
-  export let value;
+  import type { TwitterFeed } from "$lib/types/wagtail";
 
-  $: timeline = value?.timeline || [];
+  export let twitterFeed: TwitterFeed;
+
+  let timeline = twitterFeed?.timeline || [];
 </script>
 
-<div class="widget-twitter-timeline">
+<div class="twitter-timeline">
   {#each timeline as status}
-    <div class="twitter-timeline-update my-3">
-      <div class="twitter-timeline-meta">
+    <div class="my-3">
+      <div>
         <a
           href="https://twitter.com/{status.screen_name}"
           target="_blank"
@@ -25,35 +27,22 @@
           @{status.screen_name}
         </a>
         ·
-        <a target="_blank" href={status.deep_link} class="twitter-timeline-time">
-          {dayjs(status.created_at).format("MMM. DD, YYYY, H:mm")}
+        <a target="_blank" href={status.deep_link}>
+          {dayjs(status.created_at).format("YYYY-MM-DD HH:mm")}
         </a>
       </div>
-      <div class="twitter-timeline-text">{@html status.text}</div>
+      <div>{@html status.text}</div>
     </div>
   {/each}
   {#if timeline.length === 0}
-    <div class="twitter-timeline-empty">Feed currently not available.</div>
+    <div>Feed currently not available.</div>
   {/if}
 
   <a
-    href="https://twitter.com/{value.username}"
+    href="https://twitter.com/{twitterFeed.username}"
     target="_blank"
-    class="btn tweets-by-btn"
+    class="btn border-orange font-bold"
   >
-    Tweets by @{value.username}
+    Tweets by {twitterFeed.username}
   </a>
 </div>
-
-<style>
-  .tweets-by-btn {
-    /*@apply text-orange;*/
-    /*border-color: var(--color-lm-orange);*/
-    border-width: 2px;
-    background: #fcfcfc;
-    font-weight: bold;
-    /* opacity: 0.5; */
-    box-shadow: none;
-    text-shadow: none;
-  }
-</style>

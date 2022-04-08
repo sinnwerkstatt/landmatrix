@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.db.models import F, Count, Sum
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -14,7 +15,8 @@ from wagtail.core.models import Page
 from wagtail.core.models import Page
 from wagtail.core.rich_text import expand_db_html
 
-from apps.landmatrix.models import Region, Country
+from apps.blog.models import BlogPage
+from apps.landmatrix.models import Region, Country, Deal
 from apps.landmatrix.models import Region as DataRegion
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.wagtailcms.blocks import (
@@ -122,7 +124,6 @@ class ObservatoryPage(Page):
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 
-    @property
     def twitter_feed(self):
         if self.twitter_username:
             tweets = TwitterTimeline().get_timeline(self.twitter_username)
@@ -132,6 +133,36 @@ class ObservatoryPage(Page):
                     "timeline": tweets,
                 }
 
+    def related_blogpages(self):
+        if not self.region and not self.country:
+            return []
+        slug = self.country.slug if self.country else self.region.slug
+
+        return [
+            article.get_dict("fill-500x500|jpegquality-60")
+            for article in BlogPage.objects.live()
+            .order_by("-date")
+            .filter(tags__slug=slug)
+            .filter(
+                blog_categories__slug__in=[
+                    "country-profile",
+                    "news",
+                    "publications",
+                ]
+            )
+        ]
+
+    # @staticmethod
+    # def current_negotiation_status_metrics():
+    #     deals = Deal.objects.visible(subset="PUBLIC").default_filtered(
+    #         unset_filters=["current_negotiation_status"]
+    #     )
+    #     return (
+    #         deals.values(value=F("current_negotiation_status"))
+    #         .annotate(count=Count("pk"))
+    #         .annotate(size=Sum("deal_size"))
+    #     )
+
     api_fields = [
         APIField("short_description"),
         APIField("introduction_text"),
@@ -139,4 +170,6 @@ class ObservatoryPage(Page):
         APIField("region"),
         APIField("country"),
         APIField("twitter_feed"),
+        APIField("related_blogpages"),
+        # APIField("current_negotiation_status_metrics"),
     ]

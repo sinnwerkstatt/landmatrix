@@ -1,6 +1,6 @@
-import type { Investor } from "./types/investor";
-import type { GQLFilter } from "./types/filters";
 import { writable } from "svelte/store";
+import type { GQLFilter } from "./types/filters";
+import type { Investor } from "./types/investor";
 
 interface Produce {
   name: string;
@@ -115,6 +115,7 @@ export class FilterValues {
     this.forest_concession = false;
     return this;
   }
+
   public toGQLFilterArray(): GQLFilter[] {
     const filterArray: GQLFilter[] = [];
 
@@ -165,11 +166,11 @@ export class FilterValues {
     if (this.nature_of_deal.length > 0) {
       //TODO use enum
       const nature_of_deal_choices = [
-        "OUTRIGHT_PURCHASE",
-        "LEASE",
-        "CONCESSION",
-        "EXPLOITATION_PERMIT",
-        "PURE_CONTRACT_FARMING",
+        NatureOfDeal.OUTRIGHT_PURCHASE,
+        NatureOfDeal.LEASE,
+        NatureOfDeal.CONCESSION,
+        NatureOfDeal.EXPLOITATION_PERMIT,
+        NatureOfDeal.PURE_CONTRACT_FARMING,
       ];
 
       const diflist = nature_of_deal_choices.filter(
@@ -202,24 +203,24 @@ export class FilterValues {
 
     if (this.intention_of_investment.length > 0) {
       const intention_of_investment_choices = [
-        "BIOFUELS",
-        "FOOD_CROPS",
-        "FODDER",
-        "LIVESTOCK",
-        "NON_FOOD_AGRICULTURE",
-        "AGRICULTURE_UNSPECIFIED",
-        "TIMBER_PLANTATION",
-        "FOREST_LOGGING",
-        "CARBON",
-        "FORESTRY_UNSPECIFIED",
-        "MINING",
-        "OIL_GAS_EXTRACTION",
-        "TOURISM",
-        "INDUSTRY",
-        "CONVERSATION",
-        "LAND_SPECULATION",
-        "RENEWABLE_ENERGY",
-        "OTHER",
+        IntentionOfInvestment.BIOFUELS,
+        IntentionOfInvestment.FOOD_CROPS,
+        IntentionOfInvestment.FODDER,
+        IntentionOfInvestment.LIVESTOCK,
+        IntentionOfInvestment.NON_FOOD_AGRICULTURE,
+        IntentionOfInvestment.AGRICULTURE_UNSPECIFIED,
+        IntentionOfInvestment.TIMBER_PLANTATION,
+        IntentionOfInvestment.FOREST_LOGGING,
+        IntentionOfInvestment.CARBON,
+        IntentionOfInvestment.FORESTRY_UNSPECIFIED,
+        IntentionOfInvestment.MINING,
+        IntentionOfInvestment.OIL_GAS_EXTRACTION,
+        IntentionOfInvestment.TOURISM,
+        IntentionOfInvestment.INDUSTRY,
+        IntentionOfInvestment.CONVERSATION,
+        IntentionOfInvestment.LAND_SPECULATION,
+        IntentionOfInvestment.RENEWABLE_ENERGY,
+        IntentionOfInvestment.OTHER,
       ];
       const diflist = intention_of_investment_choices.filter(
         (x) => !this.intention_of_investment.includes(x)
@@ -301,7 +302,7 @@ export const defaultFilterValues = () => new FilterValues().default();
 //
 
 function createFilters() {
-  const { subscribe, set, update } = writable(new FilterValues());
+  const { subscribe, update } = writable(new FilterValues());
 
   return {
     subscribe,
@@ -310,14 +311,12 @@ function createFilters() {
         fltrs[filter] = value;
         return fltrs;
       }),
-    // increment: () => update((n) => n + 1),
-    // decrement: () => update((n) => n - 1),
     // reset: () => set(new FilterValues()),
   };
 }
 
 export const filters = createFilters();
 
-filters.subscribe((x) => {
-  console.log("FILTER UPDATE", x);
-});
+// filters.subscribe((x) => {
+//   console.log("FILTER UPDATE", x);
+// });
