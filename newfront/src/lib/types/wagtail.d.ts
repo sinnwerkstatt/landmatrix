@@ -36,12 +36,23 @@ export interface WagtailPage {
   body: WagtailStreamfield;
 }
 
+export interface TwitterFeed {
+  username: string;
+  timeline: {
+    name: string;
+    screen_name: string;
+    created_at: Date;
+    deep_link: URL;
+    text: string;
+  }[];
+}
 export interface ObservatoryPage extends WagtailPage {
   short_description: string;
   introduction_text: string;
-  twitter_feed: unknown;
+  twitter_feed: TwitterFeed;
   region?: Region;
   country?: Country;
+  related_blogpages?: BlogPage[];
 }
 
 export interface BlogPage extends WagtailPage {

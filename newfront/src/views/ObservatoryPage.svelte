@@ -14,6 +14,7 @@
   import PageTitle from "$components/PageTitle.svelte";
   import Streamfield from "$components/Streamfield.svelte";
   import ArticleList from "$components/Wagtail/ArticleList.svelte";
+  import Twitter from "$components/Wagtail/Twitter.svelte";
 
   export let page: ObservatoryPage;
 
@@ -58,7 +59,7 @@
     };
     const result = await request(GQLEndpoint, q, variables);
     const curNegStat = result.deal_aggregations.current_negotiation_status;
-
+    // const curNegStat = page.current_negotiation_status_metrics
     totalCount = curNegStat
       .map((ns) => ns.count)
       .reduce((a, b) => +a + +b, 0)
@@ -128,56 +129,16 @@
     };
   }
 
-  async function getArticles() {
-    const q = gql`
-      query {
-        articles: blogpages {
-          id
-          title
-          slug
-          date
-          header_image
-          excerpt
-          categories {
-            slug
-          }
-          tags {
-            slug
-          }
-          url
-        }
-      }
-    `;
-
-    const result = await request(GQLEndpoint, q);
-    articles = result.articles;
-    // console.log(articles);
-    if (slug) {
-      filteredCountryProfiles = articles
-        .filter(
-          (a) =>
-            a.tags.find((t) => t.slug === slug) &&
-            a.categories.find((c) => c.slug === "country-profile")
-        )
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-      filteredNewsPubs = articles
-        .filter(
-          (a) =>
-            a.tags.find((t) => t.slug === slug) &&
-            a.categories.find(
-              (c) => c.slug && (c.slug === "news" || c.slug === "publications")
-            )
-        )
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }
-  }
-
   afterNavigate(() => {
     readMore = false;
     getAggregations();
-    getArticles();
   });
+  filteredCountryProfiles = page.related_blogpages.filter((p) =>
+    p.categories.find((c) => c.slug && c.slug === "country-profile")
+  );
+  filteredNewsPubs = page.related_blogpages.filter((p) =>
+    p.categories.find((c) => c.slug && (c.slug === "news" || c.slug === "publications"))
+  );
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
@@ -221,17 +182,17 @@
       <LoadingPulse class="h-[300px]" />
     {:else}
       <h3>{$_("We currently have information about:")}</h3>
-      <div class="grid grid-cols-2 font-bold">
-        <div class="col-6 text-center">
-          <label class=" text-orange">{$_("Size")}</label>
+      <div class="grid md:grid-cols-2 font-bold">
+        <div class="text-center">
+          <div class="text-orange">{$_("Size")}</div>
           <div class=" mb-2">{totalSize} ha</div>
           <div class="mx-auto max-w-[80%]">
             <Pie data={chartDatSize} options={{ responsive: true, aspectRatio: 1 }} />
             <!-- <StatusPieChart unit="ha" />-->
           </div>
         </div>
-        <div class="col-6 text-center">
-          <label class="text-orange">{$_("Number of deals")}</label>
+        <div class="text-center">
+          <div class="text-orange">{$_("Number of deals")}</div>
           <div class="  mb-2">{totalCount}</div>
           <div class="mx-auto max-w-[80%]">
             <Pie data={chartDatCount} options={{ responsive: true, aspectRatio: 1 }} />
@@ -267,9 +228,8 @@
 <ArticleList articles={filteredNewsPubs} articlesLabel={$_("News & publications")} />
 
 {#if page.twitter_feed}
-  <!--    <div class="w-[clamp(20rem,75%,56rem)] mb-8">-->
-  <!--      <h3>{ $_("Latest tweets") }</h3>-->
-  <!--      <Twitter value={page.twitter_feed} />-->
-  <!--    </div>-->
-  <!--  </div>-->
+  <div class="mx-auto container w-[clamp(20rem,75%,56rem)] mb-8">
+    <h3>{$_("Latest tweets")}</h3>
+    <Twitter twitterFeed={page.twitter_feed} />
+  </div>
 {/if}

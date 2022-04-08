@@ -178,8 +178,7 @@ class BlogPage(BlogPageAbstract):
                 for tag in self.tags.all()
             ],
             "categories": list(self.blog_categories.all().values()),
-            # TODO remove "legacy" hack later.
-            "url": self.get_url().replace("/legacy", ""),
+            "url": self.get_url(),
         }
 
     parent_page_types = ["blog.BlogIndexPage"]

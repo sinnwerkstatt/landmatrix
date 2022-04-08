@@ -30,10 +30,13 @@ class TwitterTimeline:
             r'<a href="https://twitter.com/\g<username>">@\g<username></a>'
         )
 
-    def connect(self):
+    @staticmethod
+    def connect():
         tset = getattr(settings, "TWITTER_TIMELINE", None)
         if tset:
-            auth = tweepy.AppAuthHandler(tset["consumer_key"], tset["consumer_secret"])
+            auth = tweepy.OAuth2AppHandler(
+                tset["consumer_key"], tset["consumer_secret"]
+            )
             # auth.set_access_token(tset["access_token"], tset["access_token_secret"])
             return tweepy.API(auth)
         raise Exception("NO TWITTER_TIMELINE in django settings.py")
@@ -104,7 +107,7 @@ class TwitterTimeline:
         if not result or cached_username != username:
             try:
                 api = self.connect()
-                timeline = api.user_timeline(username, count=self.count)
+                timeline = api.user_timeline(screen_name=username, count=self.count)
                 result = self.extract_tweets(timeline)
                 cache.set(self.KEY, result, self.cache_timeout)
                 cache.set(self.KEY_LT, result, self.cache_long_term_timeout)
