@@ -1,4 +1,4 @@
-export function sortAnything<T extends { [key: string | number]: any }>(
+export function sortAnything<T extends { [key: string | number]: unknown }>(
   list: Array<T>,
   sortField: string,
   sortAscending: boolean

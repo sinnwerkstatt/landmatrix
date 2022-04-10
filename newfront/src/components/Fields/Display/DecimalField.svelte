@@ -3,7 +3,6 @@
 
   export let formfield: FormField;
   export let value: number;
-  export let model: string;
 </script>
 
 <div class="decimal_field whitespace-nowrap">

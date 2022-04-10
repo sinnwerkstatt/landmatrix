@@ -3,16 +3,17 @@
   import type { FormField } from "$components/Fields/fields";
 
   export let value: string;
-  export let model: string;
   export let formfield: FormField;
-
-  $: val = !value ? "n/a" : formfield?.choices ? $_(formfield.choices[value]) : value;
 </script>
 
 <div class="text_field">
-  {#if formfield.class === "URLField"}
-    <a href="value" target="_blank">{new URL(value).hostname}</a>
+  {#if !value}
+    n/a
+  {:else if formfield.class === "URLField"}
+    <a href={value} target="_blank">{new URL(value).hostname}</a>
+  {:else if formfield?.choices}
+    {$_(formfield.choices[value])}
   {:else}
-    {val}
+    {value}
   {/if}
 </div>

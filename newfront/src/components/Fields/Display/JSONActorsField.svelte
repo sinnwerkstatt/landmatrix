@@ -7,7 +7,6 @@
 
   export let formfield: FormField;
   export let value: JSONActorsFieldType[] = [];
-  export let model: string;
 </script>
 
 <div class="jsonactors_field whitespace-nowrap">

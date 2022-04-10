@@ -5,7 +5,6 @@
 
   export let formfield: FormField;
   export let value: string[];
-  export let model: string;
 
   export function parseValues(value) {
     if (formfield.name === "current_intention_of_investment") {

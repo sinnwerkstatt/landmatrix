@@ -9,7 +9,6 @@
   };
   export let formfield: FormField;
   export let value: ForeignKey;
-  export let model: string;
 </script>
 
 <div class="foreignkey_field">

@@ -3,12 +3,10 @@
     dateCurrentFormat,
     JSONLeaseFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
-  import type { FormField } from "$components/Fields/fields";
-  import CircleNotchIcon from "../../icons/CircleNotchIcon.svelte";
-  import HouseholdIcon from "../../icons/HouseholdIcon.svelte";
-  import TractorIcon from "../../icons/TractorIcon.svelte";
+  import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
+  import HouseholdIcon from "$components/icons/HouseholdIcon.svelte";
+  import TractorIcon from "$components/icons/TractorIcon.svelte";
 
-  export let formfield: FormField;
   export let value: JSONLeaseFieldType[] = [];
 </script>
 

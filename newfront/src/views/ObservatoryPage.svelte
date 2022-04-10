@@ -19,7 +19,6 @@
   export let page: ObservatoryPage;
 
   let readMore = false;
-  let articles: BlogPage[] = [];
   let totalSize = "";
   let totalCount = "";
   let chartDatSize;

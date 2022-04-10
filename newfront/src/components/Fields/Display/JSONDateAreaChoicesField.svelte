@@ -9,7 +9,6 @@
 
   export let formfield: FormField;
   export let value: JSONDateAreaChoicesFieldType[] = [];
-  export let model: string;
 </script>
 
 <div class="jsondateareachoices_field">

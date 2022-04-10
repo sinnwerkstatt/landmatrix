@@ -7,7 +7,6 @@
   import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;
-
   export let value: JSONDateChoiceFieldType[] = [];
 </script>
 
