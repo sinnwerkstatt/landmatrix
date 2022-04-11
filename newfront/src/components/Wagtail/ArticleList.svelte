@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { BlogPage } from "$lib/types/wagtail";
   import { _ } from "svelte-i18n";
+  import type { BlogPage } from "$lib/types/wagtail";
 
   export let articles: BlogPage[] = [];
   export let articlesLabel: string;
@@ -10,19 +10,23 @@
 </script>
 
 {#if articles.length > 0}
-  <div class="articles clamp-20-75p-56">
+  <div class=" my-8 m-auto w-[clamp(20rem, 75%, 56rem)]">
     <h3>{$_(articlesLabel)}</h3>
     <slot />
     {#each limitedArticles as article}
-      <div class="article row">
+      <div class="h-auto row">
         <div class="col-3">
           {#if article.header_image}
-            <img src={article.header_image} alt="Header image for {article.title}" />
+            <img
+              src={article.header_image}
+              alt="Header image for {article.title}"
+              class="mb-4"
+            />
           {/if}
         </div>
         <div class="col-9">
-          <h5 class="title">
-            <a href={article.url}>{article.title}</a>
+          <h5 class="title font-bold text-lg">
+            <a href={article.url} class="text-orange-500">{article.title}</a>
           </h5>
           <div class="excerpt">
             {@html article.excerpt}
@@ -31,7 +35,7 @@
       </div>
     {/each}
     {#if limit && limit < articles.length}
-      <button type="button" on:click={() => (limit = 0)}>
+      <button type="button" class="btn-white" on:click={() => (limit = 0)}>
         {$_("Show all")}
         {articles.length}
         {articlesLabel.toLowerCase()}
@@ -39,37 +43,3 @@
     {/if}
   </div>
 {/if}
-
-<!--TODO Charlotte-->
-<!--<style lang="scss" scoped>-->
-<!--  .articles {-->
-<!--    margin-top: 2em;-->
-<!--    margin-bottom: 2em;-->
-<!--    h4 {-->
-<!--      font-size: 18px;-->
-<!--      margin-bottom: 1.2em;-->
-<!--    }-->
-<!--    h5 {-->
-<!--      font-size: 18px;-->
-<!--      a {-->
-color: var(--color-lm-orange);
-<!--      }-->
-<!--    }-->
-<!--    img {-->
-<!--      max-width: 100%;-->
-<!--    }-->
-<!--    .article {-->
-<!--      img {-->
-<!--        height: auto;-->
-<!--      }-->
-<!--      margin-bottom: 1em;-->
-<!--    }-->
-<!--    button {-->
-<!--      border: 1px solid black;-->
-<!--      padding: 0.2em 1.2em;-->
-<!--      font-size: 14px;-->
-<!--      text-transform: uppercase;-->
-<!--      color: black;-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
