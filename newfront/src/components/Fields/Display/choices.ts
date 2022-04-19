@@ -94,6 +94,7 @@ export const intention_of_investment_choices = {
   },
 };
 
+// TODO: SVGs reinbasteln
 export const intention_of_investment_map: { [key: string]: string[] } = {
   BIOFUELS: ["Biofuels", "fas fa-leaf"],
   FOOD_CROPS: ["Food crops", "fas fa-carrot"],

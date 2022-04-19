@@ -1,9 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  // import LeafletMap from "$components/Map/LeafletMap.svelte";
-  import { baseLayers } from "$components/Map/layers";
   // import { TileLayer } from "leaflet";
   import { browser } from "$app/env";
+  // import LeafletMap from "$components/Map/LeafletMap.svelte";
+  import { baseLayers } from "$components/Map/layers";
+
   // import iconRetinaUrl from "static/images/marker-icon-2x.png";
   // import iconUrl from "$static/images/marker-icon.png";
   // import shadowUrl from "$static/images/marker-shadow.png";

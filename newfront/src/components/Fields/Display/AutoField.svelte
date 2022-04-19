@@ -1,7 +1,4 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
-
-  export let formfield: FormField;
   export let value: number;
   export let model: string;
   export let targetBlank = false;

@@ -1,7 +1,6 @@
-import { get, writable } from "svelte/store";
 import { gql, GraphQLClient } from "graphql-request";
-
-import { GQLEndpoint, RESTEndpoint } from "$lib/index";
+import { get, writable } from "svelte/store";
+import type { User } from "$lib/types/user";
 import type {
   BlogCategory,
   Country,
@@ -9,7 +8,7 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail";
-import type { User } from "$lib/types/user";
+import { GQLEndpoint, RESTEndpoint } from "./index";
 
 const graphQLClient = new GraphQLClient(GQLEndpoint, {
   credentials: "include",

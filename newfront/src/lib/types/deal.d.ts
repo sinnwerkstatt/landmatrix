@@ -1,6 +1,6 @@
+import type { GeoJSONObject } from "geojson";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
-import type { GeoJSONObject } from "geojson";
 
 enum ACCURACY_LEVEL {
   "",

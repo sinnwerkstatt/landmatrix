@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { dispatchLogin, user } from "$lib/stores";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { dispatchLogin, user } from "$lib/stores";
 
   let username = "";
   let password = "";

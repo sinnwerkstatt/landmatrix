@@ -1,9 +1,5 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
-
-  export let formfield: FormField;
-  export let value: object[];
-  export let model: string;
+  export let value: { lat: number; lng: number };
 </script>
 
 <div class="point_field">

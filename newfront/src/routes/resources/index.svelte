@@ -13,10 +13,10 @@
 </script>
 
 <script lang="ts">
-  import PageTitle from "$components/PageTitle.svelte";
-  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
-  import { blogCategories } from "$lib/stores";
   import { _ } from "svelte-i18n";
+  import { blogCategories } from "$lib/stores";
+  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
+  import PageTitle from "$components/PageTitle.svelte";
 
   export let page: WagtailPage;
   export let blogpages: BlogPage[] = [];

@@ -1,13 +1,12 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
   import {
     JSONActorsFieldType,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers";
+  import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;
   export let value: JSONActorsFieldType[] = [];
-  export let model: string;
 </script>
 
 <div class="jsonactors_field whitespace-nowrap">

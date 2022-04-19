@@ -1,6 +1,5 @@
 import { gql } from "graphql-request";
 
-
 export const investor_gql_query = gql`
   query Investor(
     $id: Int!

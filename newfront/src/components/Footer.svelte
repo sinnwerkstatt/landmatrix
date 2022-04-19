@@ -1,7 +1,7 @@
 <script lang="ts">
-  import TwitterIcon from "$components/icons/TwitterIcon.svelte";
-  import FacebookIcon from "$components/icons/FacebookIcon.svelte";
   import { _ } from "svelte-i18n";
+  import FacebookIcon from "$components/icons/FacebookIcon.svelte";
+  import TwitterIcon from "$components/icons/TwitterIcon.svelte";
 </script>
 
 <footer class="px-4 py-1.5 relative bg-lm-dark text-sm text-white">

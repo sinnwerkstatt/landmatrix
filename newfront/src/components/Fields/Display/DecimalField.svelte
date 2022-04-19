@@ -3,13 +3,10 @@
 
   export let formfield: FormField;
   export let value: number;
-  export let model: string;
-
-  $: val = formfield?.choices ? formfield.choices[value] : value.toLocaleString("fr");
 </script>
 
 <div class="decimal_field whitespace-nowrap">
-  {val}
+  {formfield?.choices ? formfield.choices[value] : value.toLocaleString("fr")}
   {#if formfield.unit}
     <span>{formfield.unit}</span>
   {/if}

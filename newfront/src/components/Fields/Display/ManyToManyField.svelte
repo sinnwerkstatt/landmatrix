@@ -9,7 +9,6 @@
 
   export let formfield: FormField;
   export let value: ForeignKey;
-  export let model: string;
 </script>
 
 <div class="manytomany_field">
@@ -18,7 +17,7 @@
       <a class="investor" target="_blank" href="/investor/{value.id}">
         {val.name} (#{val.id})
       </a>
-      <br key="val.id" />
+      <br />
     {/each}
   {:else}
     {value}

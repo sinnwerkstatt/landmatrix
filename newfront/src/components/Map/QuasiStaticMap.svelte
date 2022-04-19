@@ -1,9 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import BigMap from "$components/Map/BigMap.svelte";
+  import { getCountryOrRegion } from "$lib/helpers";
   // import { FeatureGroup } from "leaflet";
   import { countries } from "$lib/stores";
-  import { getCountryOrRegion } from "$lib/helpers";
+  import BigMap from "$components/Map/BigMap.svelte";
+
   // import { markers_query } from "$store/queries";
   // import { styleCircle } from "./map_helper";
   // import { DivIcon, FeatureGroup, Marker } from "leaflet";

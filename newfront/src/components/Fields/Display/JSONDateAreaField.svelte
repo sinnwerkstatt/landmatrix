@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    date_and_current,
+    dateCurrentFormat,
     JSONDateAreaFieldType,
   } from "$components/Fields/Display/jsonHelpers.ts";
 
@@ -10,7 +10,7 @@
 <div class="jsondatearea_field whitespace-nowrap">
   {#each value as val}
     <div class:font-bold={val.current}>
-      <span>{date_and_current(val)} </span>
+      <span>{dateCurrentFormat(val)} </span>
       {#if val.area}
         {val.area.toLocaleString("fr")} ha
       {/if}

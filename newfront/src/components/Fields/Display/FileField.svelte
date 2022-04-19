@@ -1,11 +1,8 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
-  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
+  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
 
-  export let formfield: FormField;
   export let value: string;
-  export let model: string;
   export let fileNotPublic = false;
 </script>
 

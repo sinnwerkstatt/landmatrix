@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Streamfield from "$components/Streamfield.svelte";
-  import PageTitle from "$components/PageTitle.svelte";
   import type { WagtailPage } from "$lib/types/wagtail";
+  import PageTitle from "$components/PageTitle.svelte";
+  import Streamfield from "$components/Streamfield.svelte";
 
   export let page: WagtailPage;
 </script>
