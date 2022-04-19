@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script context="module" lang="ts" xmlns="http://www.w3.org/1999/html">
   import type { Load } from "@sveltejs/kit";
   import { request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
@@ -14,6 +14,7 @@
 </script>
 
 <script lang="ts">
+  import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Deal } from "$lib/types/deal";
@@ -53,7 +54,26 @@
 </script>
 
 <div class="container mx-auto">
-  <h1>Deal {dealID}</h1>
+  <div class="flex flex-row justify-between">
+    <h1>
+      Deal {dealID}
+      {#if deal.country}in {deal.country.name}{/if}
+    </h1>
+    <div class="flex items-center bg-gray-100 rounded m-3">
+      <div class="mx-5  text-sm text-lm-dark">
+        Created<br />
+        {dayjs(deal.created_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="mx-5 text-sm text-lm-dark">
+        Last update<br />
+        {dayjs(deal.modified_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="mx-5 text-sm text-lm-dark">
+        Last full update<br />
+        {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
+      </div>
+    </div>
+  </div>
   <div class="flex">
     <nav class="p-2 flex-initial">
       <ul>
@@ -133,3 +153,7 @@
     </div>
   </div>
 </div>
+
+<pre>
+    {JSON.stringify(deal, null, 2)}
+</pre>
