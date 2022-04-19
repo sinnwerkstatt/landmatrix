@@ -306,23 +306,11 @@ export const defaultFilterValues = () => new FilterValues().default();
 // };
 //
 
-function createFilters() {
-  const lSfilters = browser ? localStorage.getItem("filters") : undefined;
-  const { subscribe, update } = writable<FilterValues>(
-    lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default()
-  );
-
-  return {
-    subscribe,
-    set: ({ filter, value }) =>
-      update((fltrs) => {
-        fltrs[filter] = value;
-        return fltrs;
-      }),
-    // reset: () => set(new FilterValues()),
-  };
-}
-
-export const filters = createFilters();
+const lSfilters = browser ? localStorage.getItem("filters") : undefined;
+export const filters = writable<FilterValues>(
+  lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default()
+);
 
 filters.subscribe((x) => browser && localStorage.setItem("filters", JSON.stringify(x)));
+
+export const publicOnly = writable(true);

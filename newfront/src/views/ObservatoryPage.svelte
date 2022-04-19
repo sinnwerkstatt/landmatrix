@@ -141,11 +141,11 @@
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
-      filters.set({ filter: "region_id", value: regionID });
-      filters.set({ filter: "country_id", value: null });
+      $filters.region_id = regionID;
+      $filters.country_id = undefined;
     } else if (page.country) {
-      filters.set({ filter: "country_id", value: countryID });
-      filters.set({ filter: "region_id", value: null });
+      $filters.region_id = undefined;
+      $filters.country_id = countryID;
     }
   };
 </script>

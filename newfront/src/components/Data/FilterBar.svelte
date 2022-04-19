@@ -4,10 +4,11 @@
   import { _ } from "svelte-i18n";
   import { GQLEndpoint } from "$lib";
   import { filters } from "$lib/filters";
+  import { publicOnly } from "$lib/filters";
   import { countries, regions, user } from "$lib/stores";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
-  import { isDefaultFilter, publicOnly, showFilterBar } from "$components/Data";
+  import { isDefaultFilter, showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
@@ -192,7 +193,7 @@
       <FilterCollapse
         title={$_("Nature of the deal")}
         clearable={$filters.nature_of_deal.length > 0}
-        on:click={($filters.nature_of_deal = [])}
+        on:click={() => ($filters.nature_of_deal = [])}
       >
         {#each Object.entries(choices.nature_of_deal) as [isval, isname]}
           <label class="block">

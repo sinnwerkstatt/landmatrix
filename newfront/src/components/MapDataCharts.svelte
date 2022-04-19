@@ -29,7 +29,7 @@
     </div>
   </a>
 
-  <a href="/deals" class="square">
+  <a href="/list/deals" class="square">
     <div>
       <h3>{$_("Data")}</h3>
       <div class="mt-4 mx-auto h-24">
