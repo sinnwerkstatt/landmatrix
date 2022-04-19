@@ -3,7 +3,7 @@ import { get, writable } from "svelte/store";
 import { GQLEndpoint } from "$lib";
 import type { BlogPage } from "$lib/types/wagtail";
 
-const blogpages = writable(undefined);
+const blogpages = writable<BlogPage[]>(undefined);
 
 export async function getBlogPages(language = "en"): Promise<BlogPage[]> {
   console.log("getBlogPages", { language });

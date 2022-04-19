@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { browser } from "$app/env";
 import type { GQLFilter } from "./types/filters";
 import type { Investor } from "./types/investor";
 
@@ -68,8 +69,12 @@ export class FilterValues {
   implementation_status: ImplementationStatus[] = [];
   intention_of_investment: IntentionOfInvestment[] = [];
   produce: Produce[] = [];
-  transnational: boolean;
-  forest_concession: boolean; // Forest concession False
+  transnational: boolean | null;
+  forest_concession: boolean | null;
+
+  constructor(data: Partial<FilterValues> = {}) {
+    Object.assign(this, data);
+  }
 
   public default() {
     // Deal size greater or equal 200ha
@@ -302,7 +307,10 @@ export const defaultFilterValues = () => new FilterValues().default();
 //
 
 function createFilters() {
-  const { subscribe, update } = writable(new FilterValues());
+  const lSfilters = browser ? localStorage.getItem("filters") : undefined;
+  const { subscribe, update } = writable<FilterValues>(
+    lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default()
+  );
 
   return {
     subscribe,
@@ -317,6 +325,4 @@ function createFilters() {
 
 export const filters = createFilters();
 
-// filters.subscribe((x) => {
-//   console.log("FILTER UPDATE", x);
-// });
+filters.subscribe((x) => browser && localStorage.setItem("filters", JSON.stringify(x)));

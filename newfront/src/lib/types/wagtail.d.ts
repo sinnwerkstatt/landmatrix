@@ -1,3 +1,5 @@
+import type { Deal } from "./deal";
+
 type WagtailStreamfieldBlock = {
   type: string;
   value: string;
@@ -27,6 +29,8 @@ export type Region = CountryOrRegion;
 
 export interface Country extends CountryOrRegion {
   code_alpha2: string;
+  high_income: boolean;
+  deals: Deal[];
 }
 
 export interface WagtailPage {
