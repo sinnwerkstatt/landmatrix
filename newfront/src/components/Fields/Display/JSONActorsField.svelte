@@ -1,8 +1,6 @@
 <script lang="ts">
-  import {
-    JSONActorsFieldType,
-    mapChoices,
-  } from "$components/Fields/Display/jsonHelpers";
+  import { mapChoices } from "$components/Fields/Display/jsonHelpers";
+  import type { JSONActorsFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;

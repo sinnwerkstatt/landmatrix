@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     dateCurrentFormat,
-    JSONExportsFieldType,
     mapChoices,
-  } from "$components/Fields/Display/jsonHelpers.ts";
+  } from "$components/Fields/Display/jsonHelpers";
+  import type { JSONExportsFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
   import PlaneIcon from "$components/icons/PlaneIcon.svelte";

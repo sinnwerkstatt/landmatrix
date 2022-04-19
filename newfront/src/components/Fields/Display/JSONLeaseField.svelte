@@ -1,8 +1,6 @@
 <script lang="ts">
-  import {
-    dateCurrentFormat,
-    JSONLeaseFieldType,
-  } from "$components/Fields/Display/jsonHelpers.ts";
+  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
+  import type { JSONLeaseFieldType } from "$components/Fields/Display/jsonHelpers";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
   import HouseholdIcon from "$components/icons/HouseholdIcon.svelte";
   import TractorIcon from "$components/icons/TractorIcon.svelte";
