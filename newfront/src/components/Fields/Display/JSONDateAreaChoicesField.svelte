@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     dateCurrentFormat,
-    JSONDateAreaChoicesFieldType,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers";
+  import type { JSONDateAreaChoicesFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
 

@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     dateCurrentFormat,
-    JSONDateChoiceFieldType,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
+  import type { JSONDateChoiceFieldType } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
 
   export let formfield: FormField;
