@@ -20,6 +20,7 @@
   import type { Deal } from "$lib/types/deal";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
+  import DownloadIcon from "../../components/icons/DownloadIcon.svelte";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export let deal: Deal;
@@ -145,15 +146,14 @@
       {/if}
       {#if activeTab === "#actions"}
         <section>
-          <h4><i class="fa fa-download" /> Download</h4>
-          <a target="_blank" href={download_link("xlsx")}>XLSX</a><br />
-          <a target="_blank" href={download_link("csv")}>CSV</a>
+          <h3>Download</h3>
+
+          <a target="_blank" href={download_link("xlsx")}
+            ><DownloadIcon /> Excel-Dokument</a
+          ><br />
+          <a target="_blank" href={download_link("csv")}><DownloadIcon /> CSV-Datei</a>
         </section>
       {/if}
     </div>
   </div>
 </div>
-
-<pre>
-    {JSON.stringify(deal, null, 2)}
-</pre>
