@@ -14,8 +14,8 @@
     <h3>{$_(articlesLabel)}</h3>
     <slot />
     {#each limitedArticles as article}
-      <div class="h-auto row">
-        <div class="col-3">
+      <div class="h-auto flex flex-row">
+        <div class="col-3 w-56 h-full mr-8">
           {#if article.header_image}
             <img
               src={article.header_image}

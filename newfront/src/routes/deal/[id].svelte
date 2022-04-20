@@ -55,21 +55,21 @@
 </script>
 
 <div class="container mx-auto">
-  <div class="flex flex-row justify-between">
+  <div class="md:flex md:flex-row md:justify-between">
     <h1>
       Deal {dealID}
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
-    <div class="flex items-center bg-gray-100 rounded m-3">
-      <div class="mx-5  text-sm text-lm-dark">
+    <div class="flex items-center bg-gray-100 rounded p-3 my-2 w-auto">
+      <div class="dates-header">
         Created<br />
         {dayjs(deal.created_at).format("DD/MM/YYYY")}
       </div>
-      <div class="mx-5 text-sm text-lm-dark">
+      <div class="dates-header">
         Last update<br />
         {dayjs(deal.modified_at).format("DD/MM/YYYY")}
       </div>
-      <div class="mx-5 text-sm text-lm-dark">
+      <div class="dates-header">
         Last full update<br />
         {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
       </div>
@@ -157,3 +157,9 @@
     </div>
   </div>
 </div>
+
+<style>
+  .dates-header {
+    @apply mr-10 md:mx-5 text-xs md:text-sm text-lm-dark;
+  }
+</style>

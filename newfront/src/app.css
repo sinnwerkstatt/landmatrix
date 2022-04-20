@@ -42,6 +42,10 @@
   h3 a {
     @apply text-lm-dark;
   }
+
+  h4 {
+    @apply text-lm-dark text-lg  my-5 font-bold;
+  }
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
     @apply border border-gray-500 py-1.5 px-3 bg-white w-full;
