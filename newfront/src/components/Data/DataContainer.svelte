@@ -1,6 +1,5 @@
 <script lang="ts">
-  // import ContextBarMap from "$components/Data/ContextBarMap.vue";
-  // import ViewSwitcher from "$components/Data/ViewSwitcher.vue";
+  import ContextBarMap from "./ContextBarMap.svelte";
   import FilterBar from "./FilterBar.svelte";
 </script>
 
@@ -9,7 +8,7 @@
   <FilterBar>
     <slot name="FilterBar" />
   </FilterBar>
-  <!--    <ContextBarMap />-->
+  <ContextBarMap />
   <div class="w-full h-full">
     <slot />
   </div>

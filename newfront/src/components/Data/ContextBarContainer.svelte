@@ -8,7 +8,7 @@
 </script>
 
 <div
-  class="absolute bg-white/95 top-0 right-0 bottom-0 z-10 flex text-sm drop-shadow-[-3px_3px_3px_rgba(0,0,0,0.3)] {$showContextBar
+  class="absolute bg-white/90 top-0 right-0 bottom-0 z-10 flex text-sm drop-shadow-[-3px_3px_3px_rgba(0,0,0,0.3)] {$showContextBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >

@@ -8,3 +8,8 @@ declare namespace App {
   // interface Session {}
   // interface Stuff {}
 }
+
+declare module "leaflet?client" {
+  import all from "leaflet";
+  export = all;
+}

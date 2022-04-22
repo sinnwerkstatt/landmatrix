@@ -1,23 +1,20 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import type { MarkerOptions } from "leaflet";
+  import { DivIcon, FeatureGroup, Marker } from "leaflet?client";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { filters } from "$lib/filters";
   import { countries, regions } from "$lib/stores";
-  import type { Marker } from "$lib/types/wagtail";
+  import type { Marker as MarkerType } from "$lib/types/wagtail";
   import BigMap from "$components/Map/BigMap.svelte";
   import { styleCircle } from "./map_helper";
 
   export let countryID: number;
   export let regionID: number;
-  export let markers: Marker[] = [];
+  export let markers: MarkerType[] = [];
 
-  let L;
   let map;
   let featureGroup;
-  onMount(async () => {
-    L = (await import("leaflet")).default;
-  });
 
   function focusMap() {
     if (regionID) {
@@ -37,15 +34,14 @@
     } else map.fitWorld({ animate: false });
   }
 
-  $: if (map && L && markers) {
-    if (!featureGroup) featureGroup = new L.FeatureGroup();
+  $: if (map && markers) {
+    if (!featureGroup) featureGroup = new FeatureGroup();
     else featureGroup.clearLayers();
-
     featureGroup.addTo(map);
-    console.log("adding further layer", featureGroup);
-    if (regionID) drawRegionMarkers(featureGroup);
-    else if (countryID) drawCountryMarkers(featureGroup);
-    else drawGlobalMarkers(featureGroup);
+
+    if (regionID) drawRegionMarkers();
+    else if (countryID) drawCountryMarkers();
+    else drawGlobalMarkers();
 
     focusMap();
   }
@@ -53,31 +49,31 @@
   const LMCircleClass =
     "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker";
 
-  function drawGlobalMarkers(featureGroup) {
+  function drawGlobalMarkers() {
     for (let mark of markers) {
-      let circle = new L.Marker(mark.coordinates, {
-        icon: new L.DivIcon({ className: LMCircleClass }),
+      let circle = new Marker(mark.coordinates, {
+        icon: new DivIcon({ className: LMCircleClass }),
         regionId: mark.region_id,
-      });
+      } as MarkerOptions);
       featureGroup.addLayer(circle);
       const country_name = $regions.find((r) => r.id === mark.region_id).name;
       styleCircle(circle, mark.count / 50, country_name, true, 30);
     }
   }
 
-  function drawRegionMarkers(featureGroup) {
+  function drawRegionMarkers() {
     for (let mark of markers) {
-      let circle = new L.Marker(mark.coordinates, {
-        icon: new L.DivIcon({ className: LMCircleClass }),
+      let circle = new Marker(mark.coordinates, {
+        icon: new DivIcon({ className: LMCircleClass }),
         countryId: mark.country_id,
-      });
+      } as MarkerOptions);
       featureGroup.addLayer(circle);
       styleCircle(circle, mark.count / 20, mark.count.toString(), true, 15);
     }
   }
 
-  function drawCountryMarkers(featureGroup) {
-    for (let mark of markers) featureGroup.addLayer(new L.Marker(mark.coordinates));
+  function drawCountryMarkers() {
+    for (let mark of markers) featureGroup.addLayer(new Marker(mark.coordinates));
   }
 
   const onClickMap = async () => {

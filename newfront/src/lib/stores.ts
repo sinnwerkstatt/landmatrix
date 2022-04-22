@@ -15,7 +15,7 @@ const graphQLClient = new GraphQLClient(GQLEndpoint, {
   mode: "cors",
 });
 
-export const observatoryPages = writable(undefined);
+export const observatoryPages = writable<ObservatoryPage[]>(undefined);
 
 async function getObservatoryPages(language = "en"): Promise<ObservatoryPage[]> {
   console.log("getObservatoryPages", { language });
