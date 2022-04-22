@@ -10,7 +10,7 @@
     <slot name="FilterBar" />
   </FilterBar>
   <!--    <ContextBarMap />-->
-  <div class="w-full h-full bg-red-200">
+  <div class="w-full h-full">
     <slot />
   </div>
 </div>

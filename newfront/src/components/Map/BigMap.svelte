@@ -52,7 +52,8 @@
 </script>
 
 <div class="mx-auto relative {containerClass}">
-  <div id="bigmap" class="h-full w-full" />
+  <!--  z-0 is important to capture and contextualize leaflet's "400" z-index -->
+  <div id="bigmap" class="h-full w-full z-0" />
   {#if showLayerSwitcher}
     <div>huhu</div>
   {/if}
