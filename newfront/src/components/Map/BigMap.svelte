@@ -4,7 +4,12 @@
   import { Icon, Map } from "leaflet?client";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";
-  import { baseLayers, visibleLayer } from "$components/Map/layers";
+  import {
+    baseLayers,
+    contextLayers,
+    visibleContextLayers,
+    visibleLayer,
+  } from "$components/Map/layers";
 
   export let options: MapOptions = {};
   export let containerClass = "";
@@ -43,6 +48,13 @@
   $: if (map && $visibleLayer) {
     baseLayers.forEach((l) => {
       if (l.name === $visibleLayer) l.layer.addTo(map);
+      else l.layer.remove();
+    });
+  }
+
+  $: if (map && $visibleContextLayers) {
+    contextLayers.forEach((l) => {
+      if ($visibleContextLayers.includes(l.name)) l.layer.addTo(map);
       else l.layer.remove();
     });
   }

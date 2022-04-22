@@ -91,6 +91,23 @@
   onMount(() => {
     getInvestors();
   });
+
+  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray());
+  $: dataDownloadURL = `/api/legacy_export/?filters=${jsonFilters}&subset=${
+    $publicOnly ? "PUBLIC" : "ACTIVE"
+  }&format=`;
+
+  function trackDownload(format) {
+    let name = "Global";
+    if ($filters.country_id) {
+      name = $countries.find((c) => c.id === $filters.country_id).name;
+    }
+    if ($filters.region_id) {
+      name = $regions.find((r) => r.id === $filters.region_id).name;
+    }
+    // noinspection TypeScriptUnresolvedVariable
+    window._paq.push(["trackEvent", "Downloads", format, name]);
+  }
 </script>
 
 <div
@@ -371,6 +388,34 @@
     </div>
     <div class="self-end mt-auto pt-10 w-full">
       <slot />
+      <FilterCollapse title={$_("Download")}>
+        <ul>
+          <li>
+            <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
+              <i class="fas fa-file-download" />
+              {$_("All attributes (xlsx)")}
+            </a>
+          </li>
+          <li>
+            <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
+              <i class="fas fa-file-download" />
+              {$_("All attributes (csv)")}
+            </a>
+          </li>
+          <li>
+            <a href="/api/data.geojson?type=points&filters={jsonFilters}">
+              <i class="fas fa-file-download" />
+              {$_("Locations (as geojson)")}
+            </a>
+          </li>
+          <li>
+            <a href="/api/data.geojson?type=areas&filters={jsonFilters}">
+              <i class="fas fa-file-download" />
+              {$_("Areas (as geojson)")}
+            </a>
+          </li>
+        </ul>
+      </FilterCollapse>
     </div>
   </div>
 </div>

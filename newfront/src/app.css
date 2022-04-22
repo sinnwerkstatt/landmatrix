@@ -91,7 +91,7 @@
 
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply border border-gray-300 py-1.5 px-3 rounded bg-white w-full;
+    @apply border border-gray-300 py-1.5 px-3 bg-white w-full;
   }
 
   .inpt[readonly] {
@@ -102,12 +102,12 @@
   }
 
   .field-has-appendix > input:not([type="checkbox"]):not([type="radio"]) {
-    @apply rounded-r-none border-r-0;
+    @apply border-r-0;
   }
 
   .field-has-appendix > :not(input) {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply flex justify-center items-center border border-gray-300 py-1.5 px-3 rounded-r bg-gray-200 text-gray-600;
+    @apply flex justify-center items-center border border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600;
   }
 }
 

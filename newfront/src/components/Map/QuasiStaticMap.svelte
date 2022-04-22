@@ -89,7 +89,7 @@
 </script>
 
 <div
-  class="mt-6 w-full min-h-[300px] h-[30vh] relative border border-orange shadow-md rounded cursor-pointer hover:border-orange-300"
+  class="mt-6 w-full min-h-[300px] h-[30vh] relative border border-orange shadow-md cursor-pointer hover:border-orange-300"
   on:click={onClickMap}
 >
   <div
