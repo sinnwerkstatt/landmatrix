@@ -1,26 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
-  // import { TileLayer } from "leaflet";
-  import { browser } from "$app/env";
-  // import LeafletMap from "$components/Map/LeafletMap.svelte";
+  import "leaflet/dist/leaflet.css";
+  import { createEventDispatcher, onDestroy, onMount, setContext } from "svelte";
   import { baseLayers } from "$components/Map/layers";
 
-  // import iconRetinaUrl from "static/images/marker-icon-2x.png";
-  // import iconUrl from "$static/images/marker-icon.png";
-  // import shadowUrl from "$static/images/marker-shadow.png";
+  export let options = {};
+  export let containerClass = "";
+  export let showLayerSwitcher = true;
+
   const dispatch = createEventDispatcher();
 
-  let lmap;
-  function mapReady(map) {
-    lmap = map.detail;
-    dispatch("ready", lmap);
-    console.log(lmap);
-    baseLayers.forEach((lay) => {
-      // new TileLayer(lay.url, {
-      //   attribution: lay.attribution,
-      // }).addTo(lmap);
-    });
-  }
+  let map;
+  setContext("BigMap", { getMap: () => map });
 
   // import { Icon, Map } from "leaflet";
   // import { GestureHandling } from "leaflet-gesture-handling";
@@ -29,43 +19,42 @@
 
   // Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
-  // @ts-ignore
-  // delete Icon.Default.prototype._getIconUrl;
-  // let shadowSize = [0, 0];
-  // Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
+  async function initializeMap() {
+    const L = (await import("leaflet")).default;
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/images/marker-icon-2x.png",
+      iconUrl: "/images/marker-icon.png",
+      shadowUrl: "/images/marker-shadow.png",
+      shadowSize: [0, 0],
+    });
 
-  export let options = {};
-  export let containerClass = "";
-  export let hideLayerSwitcher = false;
+    map = L.map("bigmap", {
+      zoomSnap: 0.5,
+      minZoom: 1,
+      zoom: 3,
+      zoomControl: true,
+      gestureHandling: true,
+      ...options,
+    });
 
-  let LMap;
+    map.whenReady(() => dispatch("ready", map));
 
-  // computed: {
+    baseLayers.forEach((lay) => {
+      new L.TileLayer(lay.url, {
+        attribution: lay.attribution,
+      }).addTo(map);
+    });
+  }
 
-  //   visibleLayer() {
-  //     return this.$store.state.visibleLayer;
-  //   },
-  let mapOptions = {
-    zoomSnap: 0.5,
-    minZoom: 1,
-    zoom: 3,
-    zoomControl: true,
-    gestureHandling: true,
-    ...options,
-  };
-
-  let LeafletContainer;
-  onMount(async () => {
-    if (browser) {
-      LeafletContainer = (await import("$components/Map/LeafletMap.svelte")).default;
-    }
-  });
+  onMount(() => initializeMap());
+  onDestroy(() => map && map.remove());
 </script>
 
 <div class="mx-auto relative {containerClass}">
-  {#if browser}
-    <svelte:component this={LeafletContainer} />
+  <div id="bigmap" class="h-full w-full" />
+  {#if showLayerSwitcher}
+    <div>huhu</div>
   {/if}
-  <!--  <LeafletMap options={mapOptions} on:ready={mapReady} />-->
   <!--    <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />-->
 </div>

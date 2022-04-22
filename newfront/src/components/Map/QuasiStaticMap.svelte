@@ -1,140 +1,100 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { getCountryOrRegion } from "$lib/helpers";
-  // import { FeatureGroup } from "leaflet";
-  import { countries } from "$lib/stores";
+  import { goto } from "$app/navigation";
+  import { filters } from "$lib/filters";
+  import { countries, regions } from "$lib/stores";
+  import type { Marker } from "$lib/types/wagtail";
   import BigMap from "$components/Map/BigMap.svelte";
-
-  // import { markers_query } from "$store/queries";
-  // import { styleCircle } from "./map_helper";
-  // import { DivIcon, FeatureGroup, Marker } from "leaflet";
-  // import { MarkerClusterGroup } from "leaflet.markercluster/src";
+  import { styleCircle } from "./map_helper";
 
   export let countryID: number;
   export let regionID: number;
-  console.log(countryID, regionID);
+  export let markers: Marker[] = [];
 
-  const ZOOM_LEVEL_COUNTRY = 4;
+  let L;
+  let map;
+  let featureGroup;
+  onMount(async () => {
+    L = (await import("leaflet")).default;
+  });
 
-  let map = null;
-  // let featureGroup = new FeatureGroup();
-  let markersReady = true;
-  let markers = [];
-
-  // console.log($countries);
-  const roc = regionID
-    ? getCountryOrRegion(regionID, true)
-    : getCountryOrRegion(countryID);
-  // console.log(roc);
-  //   watch: {
-  //     markers() {
-  //       this.drawMarkers();
-  //     },
-  //     roc() {
-  //       this.clearMap();
-  //       this.focusMap();
-  //     },
-  //   },
-  //   methods: {
-  async function bigMapReady(map) {
-    // map.addLayer(this.featureGroup);
-    this.map = map;
-    // this.drawMarkers();
-    // this.focusMap();
+  function focusMap() {
+    if (regionID) {
+      const reg = $regions.find((r) => r.id === regionID);
+      map.fitBounds(
+        [
+          [reg.point_lat_min, reg.point_lon_min],
+          [reg.point_lat_max, reg.point_lon_max],
+        ],
+        { animate: false }
+      );
+    } else if (countryID) {
+      const country = $countries.find((c) => c.id === countryID);
+      map.setView([country.point_lat, country.point_lon], 4, {
+        animate: false,
+      });
+    } else map.fitWorld({ animate: false });
   }
-  //     clearMap() {
-  //       this.featureGroup.clearLayers();
-  //     },
-  //     focusMap() {
-  //       if (this.roc) {
-  //         if (this.regionId) {
-  //           this.map.fitBounds(
-  //             [
-  //               [this.roc.point_lat_min, this.roc.point_lon_min],
-  //               [this.roc.point_lat_max, this.roc.point_lon_max],
-  //             ],
-  //             { animate: false }
-  //           );
-  //         } else {
-  //           this.map.setView(
-  //             [this.roc.point_lat, this.roc.point_lon],
-  //             ZOOM_LEVEL_COUNTRY,
-  //             { animate: false }
-  //           );
-  //         }
-  //       } else {
-  //         this.map.fitWorld({ animate: false });
-  //       }
-  //     },
-  //     _drawGlobalMarkers() {
-  //       for (let mark of this.markers) {
-  //         let circle = new Marker(mark.coordinates, {
-  //           icon: new DivIcon({ className: "landmatrix-custom-circle" }),
-  //           regionId: mark.region_id,
-  //         });
-  //         this.featureGroup.addLayer(circle);
-  //
-  //         let coun_reg = this.$store.getters.getCountryOrRegion({
-  //           type: "region",
-  //           id: mark.region_id,
-  //         }).name;
-  //
-  //         styleCircle(circle, mark.count / 50, coun_reg, true, 30);
-  //       }
-  //     },
-  //     _drawRegionMarkers() {
-  //       for (let mark of this.markers) {
-  //         let circle = new Marker(mark.coordinates, {
-  //           icon: new DivIcon({ className: "landmatrix-custom-circle" }),
-  //           countryId: mark.country_id,
-  //         });
-  //         this.featureGroup.addLayer(circle);
-  //         styleCircle(circle, mark.count / 20, mark.count, true, 15);
-  //       }
-  //     },
-  //     _drawCountryMarkers() {
-  //       // noinspection JSCheckFunctionSignatures
-  //       let mcluster = new MarkerClusterGroup({ maxClusterRadius: 20 });
-  //       for (let mark of this.markers) {
-  //         let circle = new Marker(mark.coordinates);
-  //         // this.featureGroup.addLayer(circle);
-  //         mcluster.addLayer(circle);
-  //       }
-  //       this.featureGroup.addLayer(mcluster);
-  //     },
-  //     drawMarkers() {
-  //       if (!this.map || this.markers.length === 0) return;
-  //       if (!this.regionId && !this.countryId) this._drawGlobalMarkers();
-  //       if (this.regionId) this._drawRegionMarkers();
-  //       if (this.countryId) this._drawCountryMarkers();
-  //     },
-  async function goToGlobalMap() {
-    // if (countryID) {
-    //   this.$store.dispatch("setFilter", {
-    //     filter: "region_id",
-    //     value: null,
-    //   });
-    //   this.$store.dispatch("setFilter", {
-    //     filter: "country_id",
-    //     value: this.countryId,
-    //   });
-    // } else {
-    //   this.$store.dispatch("setFilter", {
-    //     filter: "country_id",
-    //     value: null,
-    //   });
-    //   this.$store.dispatch("setFilter", {
-    //     filter: "region_id",
-    //     value: this.regionId,
-    //   });
-    // }
-    // this.$router.push({ name: "map" });
+
+  $: if (map && L && markers) {
+    if (!featureGroup) featureGroup = new L.FeatureGroup();
+    else featureGroup.clearLayers();
+
+    featureGroup.addTo(map);
+    console.log("adding further layer", featureGroup);
+    if (regionID) drawRegionMarkers(featureGroup);
+    else if (countryID) drawCountryMarkers(featureGroup);
+    else drawGlobalMarkers(featureGroup);
+
+    focusMap();
   }
+
+  const LMCircleClass =
+    "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker";
+
+  function drawGlobalMarkers(featureGroup) {
+    for (let mark of markers) {
+      let circle = new L.Marker(mark.coordinates, {
+        icon: new L.DivIcon({ className: LMCircleClass }),
+        regionId: mark.region_id,
+      });
+      featureGroup.addLayer(circle);
+      const country_name = $regions.find((r) => r.id === mark.region_id).name;
+      styleCircle(circle, mark.count / 50, country_name, true, 30);
+    }
+  }
+
+  function drawRegionMarkers(featureGroup) {
+    for (let mark of markers) {
+      let circle = new L.Marker(mark.coordinates, {
+        icon: new L.DivIcon({ className: LMCircleClass }),
+        countryId: mark.country_id,
+      });
+      featureGroup.addLayer(circle);
+      styleCircle(circle, mark.count / 20, mark.count.toString(), true, 15);
+    }
+  }
+
+  function drawCountryMarkers(featureGroup) {
+    for (let mark of markers) featureGroup.addLayer(new L.Marker(mark.coordinates));
+  }
+
+  const onClickMap = async () => {
+    if (regionID) {
+      $filters.region_id = regionID;
+      $filters.country_id = undefined;
+    } else if (countryID) {
+      $filters.region_id = undefined;
+      $filters.country_id = countryID;
+    }
+    await goto("/map");
+  };
 </script>
 
 <div
   class="mt-6 w-full min-h-[300px] h-[30vh] relative border border-orange shadow-md rounded cursor-pointer hover:border-orange-300"
-  on:click={goToGlobalMap}
+  on:click={onClickMap}
 >
   <div
     class="group absolute w-full h-full z-[1000] bg-transparent flex hover:bg-orange/20 transition duration-300"
@@ -154,7 +114,7 @@
       center: [12, 30],
     }}
     containerClass="min-h-full h-full"
-    hideLayerSwitcher={true}
-    on:ready={bigMapReady}
+    showLayerSwitcher={false}
+    on:ready={(m) => (map = m.detail)}
   />
 </div>

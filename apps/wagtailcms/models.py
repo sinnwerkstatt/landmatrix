@@ -163,6 +163,9 @@ class ObservatoryPage(Page):
     #         .annotate(size=Sum("deal_size"))
     #     )
 
+    def markers(self):
+        return Deal.get_geo_markers(self.region_id, self.country_id)
+
     api_fields = [
         APIField("short_description"),
         APIField("introduction_text"),
@@ -171,5 +174,6 @@ class ObservatoryPage(Page):
         APIField("country"),
         APIField("twitter_feed"),
         APIField("related_blogpages"),
+        APIField("markers"),
         # APIField("current_negotiation_status_metrics"),
     ]

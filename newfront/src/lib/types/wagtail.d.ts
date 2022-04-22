@@ -25,11 +25,18 @@ export interface CountryOrRegion {
   slug?: string;
   observatory_page_id?: number;
 }
-export type Region = CountryOrRegion;
+export interface Region extends CountryOrRegion {
+  point_lat_min: number;
+  point_lat_max: number;
+  point_lon_min: number;
+  point_lon_max: number;
+}
 
 export interface Country extends CountryOrRegion {
   code_alpha2: string;
   high_income: boolean;
+  point_lat: number;
+  point_lon: number;
   deals: Deal[];
 }
 
@@ -50,6 +57,13 @@ export interface TwitterFeed {
     text: string;
   }[];
 }
+
+export interface Marker {
+  region_id?: number;
+  country_id?: number;
+  count?: number;
+  coordinates: [number, number];
+}
 export interface ObservatoryPage extends WagtailPage {
   short_description: string;
   introduction_text: string;
@@ -57,6 +71,7 @@ export interface ObservatoryPage extends WagtailPage {
   region?: Region;
   country?: Country;
   related_blogpages?: BlogPage[];
+  markers: Marker[];
 }
 
 export interface BlogPage extends WagtailPage {
