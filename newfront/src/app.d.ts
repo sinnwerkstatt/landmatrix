@@ -10,6 +10,6 @@ declare namespace App {
 }
 
 declare module "leaflet?client" {
-  import all from "leaflet";
-  export = all;
+  import * as L from "leaflet";
+  export = L;
 }

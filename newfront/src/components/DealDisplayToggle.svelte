@@ -1,32 +1,20 @@
-<script>
-  let displayDealsCount;
-  // export default {
-  //   name: "DealDisplayToggle",
-  //   computed: {
-  //     displayDealsCount: {
-  //       get() {
-  //         return this.$store.state.displayDealsCount;
-  //       },
-  //       set(value) {
-  //         this.$store.commit("setDisplayDealsCount", value);
-  //       },
-  //     },
-  //   },
-  // };
+<script lang="ts">
+  import { _ } from "svelte-i18n";
+  import { displayDealsCount } from "$components/Map/map_helper";
 </script>
 
 <div class="toggle-buttons">
   <button
-    class:active={displayDealsCount}
-    on:click|preventDefault={() => (displayDealsCount = true)}
+    class:active={$displayDealsCount}
+    on:click|preventDefault={() => displayDealsCount.set(true)}
   >
-    No. of deals
+    {$_("No. of deals")}
   </button>
   <button
-    class:active={!displayDealsCount}
-    on:click|preventDefault={() => (displayDealsCount = false)}
+    class:active={!$displayDealsCount}
+    on:click|preventDefault={() => displayDealsCount.set(false)}
   >
-    Deal size
+    {$_("Deal size")}
   </button>
 </div>
 

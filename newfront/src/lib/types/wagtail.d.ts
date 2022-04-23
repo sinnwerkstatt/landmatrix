@@ -39,6 +39,7 @@ export interface Country extends CountryOrRegion {
   point_lat: number;
   point_lon: number;
   deals: Deal[];
+  fk_region: Region;
 }
 
 export interface WagtailPage {

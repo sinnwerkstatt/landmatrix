@@ -35,13 +35,11 @@
   //     dealsWithProduceInfo: data_deal_produce_query,
   //   },
   //   computed: {
-  //     ...mapState({
-  //       displayDealsCount: (state) => state.displayDealsCount,
-  //     }),
+
   //     ...mapGetters(["getCountryOrRegion"]),
   //     },
   //     totalCount() {
-  //       if (this.displayDealsCount) {
+  //       if ($displayDealsCount) {
   //         return Math.round(this.deals.length).toLocaleString("fr");
   //       } else {
   //         return `${Math.round(sum(this.deals, "deal_size")).toLocaleString("fr")} ha`;
@@ -51,7 +49,7 @@
   //       return prepareNegotianStatusData(this.deals);
   //     },
   //     negotiationStatusData() {
-  //       if (this.displayDealsCount) {
+  //       if ($displayDealsCount) {
   //         return this.dealsFilteredByNegStatus.map((d) => {
   //           return { value: d.count, unit: "deals", ...d };
   //         });
@@ -78,10 +76,10 @@
   //           data.push({
   //             label: label,
   //             color: colors[i],
-  //             value: this.displayDealsCount
+  //             value: $displayDealsCount
   //               ? filteredDeals.length
   //               : sum(filteredDeals, "deal_size"),
-  //             unit: this.displayDealsCount ? "deals" : "ha",
+  //             unit: $displayDealsCount ? "deals" : "ha",
   //           });
   //           i++;
   //         }
@@ -191,8 +189,8 @@
         <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
         <!--        <StatusPieChart-->
         <!--          :deal-data="dealsFilteredByNegStatus"-->
-        <!--          :value-field="displayDealsCount ? 'count' : 'size'"-->
-        <!--          :unit="displayDealsCount ? 'deals' : 'ha'"-->
+        <!--          :value-field="$displayDealsCount ? 'count' : 'size'"-->
+        <!--          :unit="$displayDealsCount ? 'deals' : 'ha'"-->
         <!--        />-->
       </div>
       <div class="w-full mb-3">
@@ -200,7 +198,7 @@
         <!--        <StatusPieChart-->
         <!--          :deal-data="implementationStatusData"-->
         <!--          value-field="value"-->
-        <!--          :unit="displayDealsCount ? 'deals' : 'ha'"-->
+        <!--          :unit="$displayDealsCount ? 'deals' : 'ha'"-->
         <!--        />-->
       </div>
       <div class="w-full mb-3">

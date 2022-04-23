@@ -7,7 +7,7 @@
   import { countries, regions } from "$lib/stores";
   import type { Marker as MarkerType } from "$lib/types/wagtail";
   import BigMap from "$components/Map/BigMap.svelte";
-  import { styleCircle } from "./map_helper";
+  import { LMCircleClass, styleCircle } from "./map_helper";
 
   export let countryID: number;
   export let regionID: number;
@@ -45,9 +45,6 @@
 
     focusMap();
   }
-
-  const LMCircleClass =
-    "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker";
 
   function drawGlobalMarkers() {
     for (let mark of markers) {

@@ -1,6 +1,12 @@
 import type { Marker } from "leaflet";
+import { writable } from "svelte/store";
 
 const primary_color = "#fc941f";
+
+export const LMCircleClass =
+  "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker";
+
+export const displayDealsCount = writable(true);
 
 export function styleCircle(
   circle: Marker,

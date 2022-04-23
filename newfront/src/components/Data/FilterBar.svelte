@@ -64,7 +64,7 @@
 
   $: regionsWithGlobal = [
     {
-      id: null,
+      id: undefined,
       name: "Global",
     },
     ...$regions,

@@ -9,7 +9,7 @@
 <style>
   .n {
     @apply bg-orange w-4 inline-block absolute;
-    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    animation: lds-facebook 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
   }
   .n1 {
     left: 8px;
