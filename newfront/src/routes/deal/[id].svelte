@@ -60,7 +60,7 @@
       Deal {dealID}
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
-    <div class="flex items-center bg-gray-100 rounded p-3 my-2 w-auto">
+    <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
       <div class="dates-header">
         Created<br />
         {dayjs(deal.created_at).format("DD/MM/YYYY")}
