@@ -19,11 +19,7 @@
     name: "ContextBarContainer",
     components: { Wimpel },
     data() {
-      return {
-        showDealCount: true,
-        deals: [],
-        dealsWithProduceInfo: [],
-      };
+      return {};
     },
     computed: {
       showContextBar: {

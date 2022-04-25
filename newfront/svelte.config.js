@@ -1,6 +1,7 @@
 import adapter from "@sveltejs/adapter-node";
 import { resolve } from "path";
 import preprocess from "svelte-preprocess";
+import { isoImport } from "vite-plugin-iso-import";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -15,6 +16,7 @@ const config = {
   kit: {
     adapter: adapter(),
     vite: {
+      plugins: [isoImport()],
       resolve: {
         alias: {
           $components: resolve("src/components"),

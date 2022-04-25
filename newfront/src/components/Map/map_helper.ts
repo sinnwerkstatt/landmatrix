@@ -1,6 +1,12 @@
 import type { Marker } from "leaflet";
+import { writable } from "svelte/store";
 
 const primary_color = "#fc941f";
+
+export const LMCircleClass =
+  "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker";
+
+export const displayDealsCount = writable(true);
 
 export function styleCircle(
   circle: Marker,
@@ -13,13 +19,13 @@ export function styleCircle(
   if (!circle_elem) return;
 
   const innertextnode = document.createElement("span");
-  innertextnode.className = "landmatrix-custom-circle-text";
+  innertextnode.className = "inline group-hover:hidden";
 
   innertextnode.innerHTML = innerHTML;
   circle_elem.append(innertextnode);
 
   const hoverlabel = document.createElement("span");
-  hoverlabel.className = "landmatrix-custom-circle-hover-text";
+  hoverlabel.className = "hidden p-1 group-hover:inline";
   circle_elem.append(hoverlabel);
 
   let factor;

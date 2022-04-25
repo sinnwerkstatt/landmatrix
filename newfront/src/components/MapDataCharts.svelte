@@ -29,7 +29,7 @@
     </div>
   </a>
 
-  <a href="/deals" class="square">
+  <a href="/list/deals" class="square">
     <div>
       <h3>{$_("Data")}</h3>
       <div class="mt-4 mx-auto h-24">
@@ -83,6 +83,6 @@
 
 <style>
   .square {
-    @apply block bg-lm-light text-center rounded-xl p-4 text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
+    @apply block bg-lm-light text-center p-4 text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
   }
 </style>

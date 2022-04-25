@@ -1,71 +1,74 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
-  // import { TileLayer } from "leaflet";
-  import { browser } from "$app/env";
-  // import LeafletMap from "$components/Map/LeafletMap.svelte";
-  import { baseLayers } from "$components/Map/layers";
+  import type { MapOptions } from "leaflet";
+  import "leaflet/dist/leaflet.css";
+  import { Icon, Map } from "leaflet?client";
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import LoadingPulse from "$components/LoadingPulse.svelte";
+  import {
+    baseLayers,
+    contextLayers,
+    visibleContextLayers,
+    visibleLayer,
+  } from "$components/Map/layers";
 
-  // import iconRetinaUrl from "static/images/marker-icon-2x.png";
-  // import iconUrl from "$static/images/marker-icon.png";
-  // import shadowUrl from "$static/images/marker-shadow.png";
+  export let options: MapOptions = {};
+  export let containerClass = "";
+  export let showLayerSwitcher = true;
+
   const dispatch = createEventDispatcher();
 
-  let lmap;
-  function mapReady(map) {
-    lmap = map.detail;
-    dispatch("ready", lmap);
-    console.log(lmap);
-    baseLayers.forEach((lay) => {
-      // new TileLayer(lay.url, {
-      //   attribution: lay.attribution,
-      // }).addTo(lmap);
+  let map;
+
+  // import { GestureHandling } from "leaflet-gesture-handling";
+  // import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+  // Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+  if (!import.meta.env.SSR) {
+    delete Icon.Default.prototype._getIconUrl;
+    Icon.Default.mergeOptions({
+      iconRetinaUrl: "/images/marker-icon-2x.png",
+      iconUrl: "/images/marker-icon.png",
+      shadowUrl: "/images/marker-shadow.png",
+      shadowSize: [0, 0],
     });
   }
 
-  // import { Icon, Map } from "leaflet";
-  // import { GestureHandling } from "leaflet-gesture-handling";
-  // import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-  // import "leaflet/dist/leaflet.css";
-
-  // Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
-
-  // @ts-ignore
-  // delete Icon.Default.prototype._getIconUrl;
-  // let shadowSize = [0, 0];
-  // Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl, shadowSize });
-
-  export let options = {};
-  export let containerClass = "";
-  export let hideLayerSwitcher = false;
-
-  let LMap;
-
-  // computed: {
-
-  //   visibleLayer() {
-  //     return this.$store.state.visibleLayer;
-  //   },
-  let mapOptions = {
-    zoomSnap: 0.5,
-    minZoom: 1,
-    zoom: 3,
-    zoomControl: true,
-    gestureHandling: true,
-    ...options,
-  };
-
-  let LeafletContainer;
-  onMount(async () => {
-    if (browser) {
-      LeafletContainer = (await import("$components/Map/LeafletMap.svelte")).default;
-    }
+  onMount(() => {
+    map = new Map("bigmap", {
+      zoomSnap: 0.5,
+      minZoom: 1,
+      zoom: 3,
+      zoomControl: true,
+      // gestureHandling: true,
+      ...options,
+    });
+    map.whenReady(() => dispatch("ready", map));
   });
+  onDestroy(() => map && map.remove());
+
+  $: if (map && $visibleLayer) {
+    baseLayers.forEach((l) => {
+      if (l.name === $visibleLayer) l.layer.addTo(map);
+      else l.layer.remove();
+    });
+  }
+
+  $: if (map && $visibleContextLayers) {
+    contextLayers.forEach((l) => {
+      if ($visibleContextLayers.includes(l.name)) l.layer.addTo(map);
+      else l.layer.remove();
+    });
+  }
 </script>
 
 <div class="mx-auto relative {containerClass}">
-  {#if browser}
-    <svelte:component this={LeafletContainer} />
+  <!--  z-0 is important to capture and contextualize leaflet's "400" z-index -->
+  <div id="bigmap" class="h-full w-full z-0">
+    {#if !map}
+      <LoadingPulse class="h-[300px]" />
+    {/if}
+  </div>
+  {#if showLayerSwitcher}
+    <div>huhu</div>
+    <!--    <BigMapStandaloneLayerSwitcher />-->
   {/if}
-  <!--  <LeafletMap options={mapOptions} on:ready={mapReady} />-->
-  <!--    <BigMapStandaloneLayerSwitcher v-if="!hideLayerSwitcher" />-->
 </div>

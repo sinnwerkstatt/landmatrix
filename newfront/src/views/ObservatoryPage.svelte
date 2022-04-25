@@ -5,9 +5,8 @@
   import { afterNavigate } from "$app/navigation";
   import { GQLEndpoint } from "$lib";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
-  import { getCountryOrRegion } from "$lib/helpers";
   import { user } from "$lib/stores";
-  import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail";
+  import type { ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
   import MapDataCharts from "$components/MapDataCharts.svelte";
@@ -28,10 +27,6 @@
 
   $: regionID = page.region ? page.region.id : undefined;
   $: countryID = page.country ? page.country.id : undefined;
-  $: roc = regionID
-    ? getCountryOrRegion(regionID, true)
-    : getCountryOrRegion(countryID);
-  $: slug = roc?.slug ?? "";
 
   async function getAggregations() {
     const q = gql`
@@ -141,11 +136,11 @@
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
-      filters.set({ filter: "region_id", value: regionID });
-      filters.set({ filter: "country_id", value: null });
+      $filters.region_id = regionID;
+      $filters.country_id = undefined;
     } else if (page.country) {
-      filters.set({ filter: "country_id", value: countryID });
-      filters.set({ filter: "region_id", value: null });
+      $filters.region_id = undefined;
+      $filters.country_id = countryID;
     }
   };
 </script>
@@ -153,7 +148,7 @@
 <PageTitle>{$_(page.title)}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <QuasiStaticMap {countryID} {regionID} />
+  <QuasiStaticMap {countryID} {regionID} markers={page.markers} />
 
   {#if page.introduction_text}
     <div class="pt-6 pb-3">
