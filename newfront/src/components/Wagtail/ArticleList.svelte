@@ -10,23 +10,22 @@
 </script>
 
 {#if articles.length > 0}
-  <div class=" my-8 m-auto w-[clamp(20rem, 75%, 56rem)]">
+  <div class=" my-8 m-auto ">
     <h3>{$_(articlesLabel)}</h3>
     <slot />
     {#each limitedArticles as article}
       <div class="h-auto flex flex-row">
-        <div class="col-3 w-56 h-full mr-8">
-          {#if article.header_image}
-            <img
-              src={article.header_image}
-              alt="Header image for {article.title}"
-              class="mb-4"
-            />
-          {/if}
-        </div>
+        {#if article.header_image}
+          <img
+            src={article.header_image}
+            alt="Header image for {article.title}"
+            class="mb-4 w-56 h-56 mr-8"
+          />
+        {/if}
+
         <div class="col-9">
           <h5 class="title font-bold text-lg">
-            <a href={article.url} class="text-orange-500">{article.title}</a>
+            <a href={article.url} class="text-orange">{article.title}</a>
           </h5>
           <div class="excerpt">
             {@html article.excerpt}

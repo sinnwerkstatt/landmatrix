@@ -3,16 +3,15 @@
   // import { prepareNegotianStatusData, sum } from "$utils/data_processing";
   // import { data_deal_produce_query, data_deal_query } from "$views/Data/query";
   import { _ } from "svelte-i18n";
+  import { deals } from "$lib/data";
   import { filters } from "$lib/filters";
   import { countries, formfields, observatoryPages, regions } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { CountryOrRegion } from "$lib/types/wagtail";
   import DealDisplayToggle from "../DealDisplayToggle.svelte";
+  import { displayDealsCount } from "../Map/map_helper";
   import ContextBarContainer from "./ContextBarContainer.svelte";
 
-  let totalCount;
-
-  let deals: Deal[] = [];
   let dealsWithProduceInfo: Deal[] = [];
 
   let currentItem: CountryOrRegion;
@@ -30,21 +29,12 @@
     );
   }
 
-  //   apollo: {
-  //     deals: data_deal_query,
-  //     dealsWithProduceInfo: data_deal_produce_query,
-  //   },
-  //   computed: {
+  console.log($deals);
+  let totalCount = "fixme, import sum";
+  // $: totalCount = $displayDealsCount
+  // ? Math.round($deals?.length).toLocaleString("fr")
+  // : `${Math.round(sum($deals, "deal_size")).toLocaleString("fr")} ha`;
 
-  //     ...mapGetters(["getCountryOrRegion"]),
-  //     },
-  //     totalCount() {
-  //       if ($displayDealsCount) {
-  //         return Math.round(this.deals.length).toLocaleString("fr");
-  //       } else {
-  //         return `${Math.round(sum(this.deals, "deal_size")).toLocaleString("fr")} ha`;
-  //       }
-  //     },
   //     dealsFilteredByNegStatus() {
   //       return prepareNegotianStatusData(this.deals);
   //     },

@@ -7,14 +7,16 @@
   export let initExpanded = false;
 </script>
 
-<div class="filter-collapse">
+<div
+  class="-mx-[0.5em] pt-[5px] px-[0.5em] border-[rgba(0, 0, 0, 0.1)] bordercolor-  border-solid hover:cursor-pointer form-check"
+>
   <div
-    class="toggle"
+    class="pb-[5px] relative"
     class:text-orange={clearable}
     class:collapsed={!initExpanded}
     data-toggle="collapse"
   >
-    <i class="expand-toggle fas fa-chevron-up" />
+    <i class="expand-toggle fas fa-chevron-up transform rotate-180" />
     <span class="pr-0">{$_(title)}</span>
     {#if clearable}
       <ClearFilter on:click />
@@ -26,20 +28,6 @@
 </div>
 
 <style>
-  .filter-collapse {
-    margin-left: -0.5em;
-    margin-right: -0.5em;
-    padding: 5px 0.5em 0 0.5em;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-  .filter-collapse:hover {
-    cursor: pointer;
-  }
-  .filter-collapse .toggle {
-    padding-bottom: 5px;
-    position: relative;
-  }
-
   .filter-collapse .toggle .expand-toggle {
     color: rgba(0, 0, 0, 0.3);
     font-weight: bold;
@@ -47,9 +35,9 @@
     margin-right: 3px;
     transition: all 0.1s ease;
   }
-  .filter-collapse .toggle.collapsed .expand-toggle {
-    transform: rotate(-180deg);
-  }
+  /*.filter-collapse .toggle.collapsed .expand-toggle {*/
+  /*  transform: rotate(-180deg);*/
+  /*}*/
 
   ul {
     padding-left: 0.3em;
@@ -68,23 +56,4 @@
   .expand-slot > * {
     margin-bottom: 0;
   }
-
-  /*.expand-slot .custom-radio {*/
-  /*  padding-left: 1.5em;*/
-  /*  .custom-control-label {*/
-  /*    &:before,*/
-  /*    &:after {*/
-  /*      width: 1em;*/
-  /*      height: 1em;*/
-  /*      top: 0.25em;*/
-  /*      left: -1.5em;*/
-  /*    }*/
-  /*    &:after {*/
-  /*      top: 0.2em;*/
-  /*      width: 0;*/
-  /*      height: 0;*/
-  /*      left: -1.53em;*/
-  /*    }*/
-  /*  }*/
-  /*}*/
 </style>

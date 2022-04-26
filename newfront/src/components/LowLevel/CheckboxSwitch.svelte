@@ -1,13 +1,19 @@
 <script lang="ts">
   export let checked = false;
+  export let label = "label";
 </script>
 
-<label class="switch align-middle relative block flex justify-center items-center">
-  <input class="opacity-0 w-0 h-0" type="checkbox" bind:checked />
-  <span class="slider absolute cursor-pointer inset-0" />
-</label>
-<slot />
+<div class="flex">
+  <label class="switch align-middle relative block flex justify-center items-center">
+    <input class="opacity-0 w-0 h-0" type="checkbox" bind:checked />
+    <span
+      class="slider transition-transform delay-300 bg-gray-300 absolute cursor-pointer inset-0"
+    /></label
+  >
+  <p class={checked ? "text-orange" : "text-gray-500"}>{label}</p>
+</div>
 
+<!-- muss oben mit rein -->
 <style>
   /* The switch - the box around the slider */
   .switch {
@@ -19,8 +25,7 @@
 
   /* The slider */
   .slider {
-    --color-highlight: #73c229ff;
-    background-color: #ccc;
+    --color-highlight: orange;
     transition: transform 400ms, background-color 400ms;
   }
 
