@@ -14,16 +14,16 @@
     <h3>{$_(articlesLabel)}</h3>
     <slot />
     {#each limitedArticles as article}
-      <div class="h-auto flex flex-row">
+      <div class="h-auto sm:flex sm:flex-row">
         {#if article.header_image}
           <img
             src={article.header_image}
             alt="Header image for {article.title}"
-            class="mb-4 w-56 h-56 mr-8"
+            class="mb-4 w-56 h-56 sm:mr-8"
           />
         {/if}
 
-        <div class="col-9">
+        <div class="col-9 mb-10 sm:mb-0">
           <h5 class="title font-bold text-lg">
             <a href={article.url} class="text-orange">{article.title}</a>
           </h5>

@@ -126,9 +126,9 @@
     class:hidden={!$showFilterBar}
   >
     <div class="w-full self-start">
-      <h3 class="mt-2 mb-1 text-black">{$_("Filter")}</h3>
+      <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <span style="font-size: 0.8em">
-        <label class="mt-2">
+        <label>
           <CheckboxSwitch checked={$isDefaultFilter} label={$_("Default filter")} />
         </label>
       </span>
@@ -323,7 +323,7 @@
           )}
         </div>
         {#each Object.entries(choices.intention_of_investment) as [name, options]}
-          <div>
+          <div class="mb-2">
             <strong>{$_(name)}</strong>
             {#each Object.entries(options) as [isval, isname]}
               <label class="block">
