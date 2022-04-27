@@ -1,18 +1,23 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { displayDealsCount } from "$components/Map/map_helper";
+
+  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "";
+  $: displaySize = $displayDealsCount ? "" : "bg-orange text-white";
 </script>
 
-<div class="toggle-buttons">
+<div class="text-center flex justify-around mt-8 ">
   <button
     class:active={$displayDealsCount}
     on:click|preventDefault={() => displayDealsCount.set(true)}
+    class={`font-bold hover:underline my-2 py-2 px-3 transform duration-100 ${displayDeals}`}
   >
     {$_("No. of deals")}
   </button>
   <button
     class:active={!$displayDealsCount}
     on:click|preventDefault={() => displayDealsCount.set(false)}
+    class={`font-bold hover:underline my-2 py-2 px-3 transform duration-100 ${displaySize}`}
   >
     {$_("Deal size")}
   </button>

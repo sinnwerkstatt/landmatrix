@@ -133,5 +133,6 @@
   @apply h-4 w-4 bg-white appearance-none rounded-full border border-gray-400 checked:bg-orange checked:border-orange-200 checked:border-2 transition duration-200;
 }
 .checkbox-btn {
-  @apply h-4 w-4 appearance-none rounded border border-gray-400 checked:bg-orange checked:border-2 checked:border-orange-200 transition duration-200;
+  @apply h-4 w-4 border appearance-none border-gray-400 checked:bg-orange checked:border-2 checked:border-orange-200 transition duration-200;
 }
+/*form-check-input*/

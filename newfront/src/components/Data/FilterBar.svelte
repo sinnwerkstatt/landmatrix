@@ -331,7 +331,7 @@
                   type="checkbox"
                   bind:group={$filters.intention_of_investment}
                   value={isval}
-                  class="checkbox-btn"
+                  class="checkbox-btn form-checkbox"
                 />
                 {$_(isname)}
               </label>

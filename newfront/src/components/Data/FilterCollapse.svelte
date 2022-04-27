@@ -33,33 +33,36 @@
     {/if}
   </div>
   {#if initExpanded}
-    <div class="expand-slot collapse py-1" class:show={initExpanded}>
+    <div
+      class="shadow-inner bg-lm-light -ml-[0.5em] py-1 pl-2 transition-[all 0.1s ease]"
+      class:show={initExpanded}
+    >
       <slot />
     </div>
   {/if}
 </div>
 
 <style>
-  .filter-collapse .toggle .expand-toggle {
-    color: rgba(0, 0, 0, 0.3);
-    font-weight: bold;
-    font-size: 12px;
-    margin-right: 3px;
-    transition: all 0.1s ease;
-  }
+  /*<!--  .filter-collapse .toggle .expand-toggle {-->*/
+  /*<!--    color: rgba(0, 0, 0, 0.3);-->*/
+  /*<!--    font-weight: bold;-->*/
+  /*<!--    font-size: 12px;-->*/
+  /*<!--    margin-right: 3px;-->*/
+  /*<!--    transition: all 0.1s ease;-->*/
+  /*<!--  }-->*/
 
-  ul {
-    padding-left: 0.3em;
-    list-style: none;
-  }
+  /*ul {*/
+  /*  padding-left: 0.3em;*/
+  /*  list-style: none;*/
+  /*}*/
 
-  .expand-slot {
-    box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),
-      inset 0 -2px 5px -2px rgba(0, 0, 0, 0.1);
-    background-color: rgba(0, 0, 0, 0.01);
-    /*padding: 0.5em 0.5em;*/
-    margin: 0 -0.5em;
-    transition: all 0.1s ease;
-    font-size: 14px;
-  }
+  /*.expand-slot {*/
+  /*box-shadow: inset 0 3px 7px -3px rgba(0, 0, 0, 0.1),*/
+  /*  inset 0 -2px 5px -2px rgba(0, 0, 0, 0.1);*/
+  /*background-color: rgba(0, 0, 0, 0.01);*/
+  /*padding: 0.5em 0.5em;*/
+  /*margin: 0 -0.5em;*/
+  /*transition: all 0.1s ease;*/
+  /*font-size: 14px;*/
+  /*}*/
 </style>

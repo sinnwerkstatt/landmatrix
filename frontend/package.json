@@ -16,6 +16,7 @@
     "@hcaptcha/vue-hcaptcha": "^0.3.2",
     "@sentry/tracing": "^6.16.1",
     "@sentry/vue": "^6.16.1",
+    "@tailwindcss/forms": "^0.5.0",
     "@turf/turf": "^6.5.0",
     "@types/d3": "^7.1.0",
     "@types/d3-sankey": "^0.11.2",

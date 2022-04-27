@@ -1,6 +1,7 @@
 import type { GeoJSONObject } from "geojson";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
+import { ImplementationStatus, NegotiationStatus } from "../filters";
 
 enum ACCURACY_LEVEL {
   "",
@@ -10,6 +11,7 @@ enum ACCURACY_LEVEL {
   EXACT_LOCATION,
   COORDINATES,
 }
+
 interface Location {
   id: number;
   name: string;
@@ -51,8 +53,8 @@ interface Deal extends Obj {
   versions: DealVersion[];
   workflowinfos: DealWorkflowInfo[];
   current_intention_of_investment: string[];
-  current_negotiation_status: string;
-  current_implementation_status: string;
+  current_negotiation_status: NegotiationStatus;
+  current_implementation_status: ImplementationStatus;
   fully_updated_at: Date;
   top_investors: Investor[];
   deal_size: number;
