@@ -11,12 +11,43 @@
     : "transition transition-duration-300 mr-1";
   function toggle() {
     initExpanded = !initExpanded;
-    console.log(initExpanded);
+  }
+
+  //$: paddingCollapse = ;
+
+  function accordion(node) {
+    let initialHeight = node.offsetHeight + 16;
+    node.style.height = initExpanded ? "auto" : 0;
+    node.style.overflow = "hidden";
+    return {
+      update(isOpen) {
+        let animation = node.animate(
+          [
+            {
+              height: initialHeight + "px",
+              overflow: "hidden",
+            },
+            {
+              height: 0,
+
+              overflow: "hidden",
+            },
+          ],
+          { duration: 100, fill: "both" }
+        );
+        animation.pause();
+        if (!isOpen) {
+          animation.play();
+        } else {
+          animation.reverse();
+        }
+      },
+    };
   }
 </script>
 
 <div
-  class="-mx-[0.5em] px-[0.5em] border-[rgba(0, 0, 0, 0.1)] text-lm-dark border border-solid hover:cursor-pointer"
+  class="-mx-[0.5em] px-[0.5em] border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
 >
   <div
     class="py-2 relative flex justify-between"
@@ -32,14 +63,13 @@
       <ClearFilter on:click />
     {/if}
   </div>
-  {#if initExpanded}
-    <div
-      class="shadow-inner bg-lm-light -ml-[0.5em] py-1 pl-2 transition-[all 0.1s ease]"
-      class:show={initExpanded}
-    >
-      <slot />
-    </div>
-  {/if}
+  <div
+    use:accordion={initExpanded}
+    class={`shadow-inner bg-lm-light -ml-[0.5em] pl-2 ${initExpanded ? "py-2" : ""}`}
+    class:show={initExpanded}
+  >
+    <slot />
+  </div>
 </div>
 
 <style>

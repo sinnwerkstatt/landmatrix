@@ -113,7 +113,7 @@
 </script>
 
 <div
-  class="absolute bg-white/90 top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute bg-lm-lightgray top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -122,10 +122,10 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
+    class="w-full h-full  overflow-y-auto overflow-x-hidden p-2 flex flex-col"
     class:hidden={!$showFilterBar}
   >
-    <div class="w-full self-start">
+    <div class="w-full self-start ">
       <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <span style="font-size: 0.8em">
         <label>
@@ -317,7 +317,7 @@
         clearable={$filters.intention_of_investment.length > 0}
         on:click={() => ($filters.intention_of_investment = [])}
       >
-        <div class="hint p-1 mb-2 rounded bg-white text-xs italic">
+        <div class="hint p-1 my-1 mr-1 rounded bg-white shadow-md text-xs italic">
           {$_(
             "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
           )}

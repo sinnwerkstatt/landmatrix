@@ -37,7 +37,7 @@ const config = {
         },
         "lm-dark": "#4a4a4a",
         "lm-light": "#f9f9f9",
-        "lm-lightgray": "#f3f7f9",
+        "lm-lightgray": "#fbfcfc",
       },
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
