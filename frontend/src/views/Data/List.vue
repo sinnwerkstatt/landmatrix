@@ -21,12 +21,30 @@
           <ul>
             <li>
               <a :href="download_link('xlsx')" @click="trackDownload('xlsx')">
-                <i class="fas fa-file-download" /> XLSX
+                <i class="fas fa-file-download" /> {{ $t("All attributes (xlsx)") }}
               </a>
             </li>
             <li>
               <a :href="download_link('csv')" @click="trackDownload('csv')">
-                <i class="fas fa-file-download" /> CSV
+                <i class="fas fa-file-download" /> {{ $t("All attributes (csv)") }}
+              </a>
+            </li>
+            <li>
+              <a
+                :href="`/api/data.geojson?type=points&filters=${JSON.stringify(
+                  $store.getters.filtersForGQL
+                )}`"
+              >
+                <i class="fas fa-file-download" /> {{ $t("Locations (geojson)") }}
+              </a>
+            </li>
+            <li>
+              <a
+                :href="`/api/data.geojson?type=areas&filters=${JSON.stringify(
+                  $store.getters.filtersForGQL
+                )}`"
+              >
+                <i class="fas fa-file-download" /> {{ $t("Areas (geojson)") }}
               </a>
             </li>
           </ul>
