@@ -79,12 +79,20 @@
               </a>
             </li>
             <li>
-              <a :href="`/api/data.geojson?type=points&filters=${filters}`">
+              <a
+                :href="`/api/data.geojson?type=points&filters=${filters}&subset=${
+                  $store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'
+                }`"
+              >
                 <i class="fas fa-file-download" /> {{ $t("Locations (geojson)") }}
               </a>
             </li>
             <li>
-              <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
+              <a
+                :href="`/api/data.geojson?type=areas&filters=${filters}&subset=${
+                  $store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'
+                }`"
+              >
                 <i class="fas fa-file-download" /> {{ $t("Areas (geojson)") }}
               </a>
             </li>

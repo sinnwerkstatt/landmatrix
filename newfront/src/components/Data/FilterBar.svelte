@@ -403,13 +403,21 @@
             </a>
           </li>
           <li>
-            <a href="/api/data.geojson?type=points&filters={jsonFilters}">
+            <a
+              href="/api/data.geojson?type=points&filters={jsonFilters}&subset={$publicOnly
+                ? 'PUBLIC'
+                : 'ACTIVE'}"
+            >
               <i class="fas fa-file-download" />
               {$_("Locations (as geojson)")}
             </a>
           </li>
           <li>
-            <a href="/api/data.geojson?type=areas&filters={jsonFilters}">
+            <a
+              href="/api/data.geojson?type=areas&filters={jsonFilters}&subset={$publicOnly
+                ? 'PUBLIC'
+                : 'ACTIVE'}"
+            >
               <i class="fas fa-file-download" />
               {$_("Areas (as geojson)")}
             </a>

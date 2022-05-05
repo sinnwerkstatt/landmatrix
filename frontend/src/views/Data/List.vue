@@ -33,7 +33,7 @@
               <a
                 :href="`/api/data.geojson?type=points&filters=${JSON.stringify(
                   $store.getters.filtersForGQL
-                )}`"
+                )}&subset=${$store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'}`"
               >
                 <i class="fas fa-file-download" /> {{ $t("Locations (geojson)") }}
               </a>
@@ -42,7 +42,7 @@
               <a
                 :href="`/api/data.geojson?type=areas&filters=${JSON.stringify(
                   $store.getters.filtersForGQL
-                )}`"
+                )}&subset=${$store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'}`"
               >
                 <i class="fas fa-file-download" /> {{ $t("Areas (geojson)") }}
               </a>
