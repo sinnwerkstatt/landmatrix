@@ -13,7 +13,6 @@
   <p class={checked ? "text-orange" : "text-gray-500"}>{label}</p>
 </div>
 
-<!-- muss oben mit rein -->
 <style>
   /* The switch - the box around the slider */
   .switch {

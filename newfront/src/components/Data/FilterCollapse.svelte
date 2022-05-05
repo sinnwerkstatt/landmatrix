@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import ChevronUpIcon from "$components/icons/ChevronUpIcon.svelte";
   import ClearFilter from "$components/icons/ClearFilter.svelte";
-  import ChevronUpIcon from "../icons/ChevronUpIcon.svelte";
 
   export let title: string;
   export let clearable = false;
@@ -47,7 +47,7 @@
 </script>
 
 <div
-  class="-mx-[0.5em] pl-1 border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
+  class="-mx-2 pl-1 border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
 >
   <div
     class="py-1.5 pr-2 relative flex justify-between"

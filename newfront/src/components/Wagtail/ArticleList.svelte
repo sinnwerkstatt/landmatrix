@@ -10,7 +10,7 @@
 </script>
 
 {#if articles.length > 0}
-  <div class=" my-8 m-auto ">
+  <div class=" my-8">
     <h3>{$_(articlesLabel)}</h3>
     <slot />
     {#each limitedArticles as article}
