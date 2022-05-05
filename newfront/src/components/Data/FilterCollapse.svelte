@@ -33,7 +33,7 @@
               overflow: "hidden",
             },
           ],
-          { duration: 100, fill: "both" }
+          { duration: 300, fill: "both" }
         );
         animation.pause();
         if (!isOpen) {
@@ -47,10 +47,10 @@
 </script>
 
 <div
-  class="-mx-[0.5em] px-[0.5em] border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
+  class="-mx-[0.5em] pl-1 border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
 >
   <div
-    class="py-2 relative flex justify-between"
+    class="py-1.5 pr-2 relative flex justify-between"
     class:text-orange={clearable}
     class:collapsed={!initExpanded}
     data-toggle="collapse"
