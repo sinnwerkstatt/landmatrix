@@ -5,7 +5,7 @@
     username?: string;
   };
 
-  export let value: ForeignKey;
+  export let value: ForeignKey[];
   export let displayDeals = false;
 </script>
 

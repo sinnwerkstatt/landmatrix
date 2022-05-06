@@ -1,13 +1,14 @@
 <script lang="ts">
   import { area } from "@turf/turf";
+  import type { Layer, Map } from "leaflet";
   import { GeoJSON, LatLngBounds } from "leaflet?client";
   import BigMap from "$components/Map/BigMap.svelte";
   import DealSubmodelSection from "./DealSubmodelSection.svelte";
 
   export let deal;
 
-  let bigmap;
-  let layer;
+  let bigmap: Map;
+  let layer: Layer;
 
   let styles = {
     contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
@@ -76,7 +77,7 @@
     bigmap.addLayer(layer);
   }
 
-  const onMapReady = async (event) => {
+  const onMapReady = async (event: CustomEvent<Map>) => {
     bigmap = event.detail;
     await refreshMap();
   };

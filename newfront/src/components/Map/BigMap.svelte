@@ -15,7 +15,7 @@
   export let containerClass = "";
   export let showLayerSwitcher = true;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ ready: Map }>();
 
   let map: Map;
 

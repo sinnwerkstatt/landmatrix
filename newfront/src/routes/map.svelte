@@ -39,11 +39,11 @@
   };
 
   let bigmap: Map;
-  let markers = [];
+  let markers: Marker[] = [];
 
   let current_zoom: number;
 
-  let markersFeatureGroup;
+  let markersFeatureGroup: FeatureGroup;
   let skipMapRefresh = false;
 
   $: country_coords = Object.fromEntries(
@@ -155,7 +155,7 @@
   async function refreshMarkers() {
     if (import.meta.env.SSR) return;
     console.log("computing markers ...");
-    let markers_list = [];
+    markers = [];
     for (let deal of $deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
@@ -174,10 +174,9 @@
             return marker;
           });
 
-      markers_list.push(..._dealLocationMarkersCache[deal.id]);
+      markers.push(..._dealLocationMarkersCache[deal.id]);
     }
-    console.log(`computing markers: done - ${markers_list.length}`);
-    markers = markers_list;
+    console.log(`computing markers: done - ${markers.length}`);
     refreshMap();
   }
 

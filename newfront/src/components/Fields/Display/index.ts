@@ -1,4 +1,6 @@
-export function sortAnything<T extends { [key: string | number]: unknown }>(
+import type { Deal } from "$lib/types/deal";
+
+export function sortAnything<T extends { [key: string | number]: unknown } | Deal>(
   list: Array<T>,
   sortField: string,
   sortAscending: boolean

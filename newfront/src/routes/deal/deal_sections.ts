@@ -1,4 +1,8 @@
-export const deal_sections = {
+export type DealSection = {
+  name: string;
+  fields: string[];
+};
+export const deal_sections: { [key: string]: DealSection[] } = {
   general_info: [
     {
       name: "Land area",
