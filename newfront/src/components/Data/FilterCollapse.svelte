@@ -6,9 +6,6 @@
   export let title: string;
   export let clearable = false;
   export let initExpanded = false;
-  $: rotation = initExpanded
-    ? "transition transition-duration-300 rotate-180 mr-1"
-    : "transition transition-duration-300 mr-1";
   function toggle() {
     initExpanded = !initExpanded;
   }
@@ -56,9 +53,13 @@
     data-toggle="collapse"
   >
     <span class="pr-0" on:click={toggle}>
-      <ChevronUpIcon {rotation} />
-      {$_(title)}</span
-    >
+      <ChevronUpIcon
+        class="{initExpanded
+          ? 'rotate-180'
+          : ''} transition transition-duration-300 mr-1 h-3 w-3 inline rounded"
+      />
+      {$_(title)}
+    </span>
     {#if clearable}
       <ClearFilter on:click />
     {/if}
