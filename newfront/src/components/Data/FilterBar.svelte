@@ -14,6 +14,8 @@
     intention_of_investment_choices,
     nature_of_deal_choices,
   } from "$components/Fields/Display/choices";
+  import DownloadIcon from "../icons/DownloadIcon.svelte";
+  import CheckboxSwitch from "../LowLevel/CheckboxSwitch.svelte";
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
@@ -111,7 +113,7 @@
 </script>
 
 <div
-  class="absolute bg-white/90 top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute bg-lm-lightgray top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -120,15 +122,14 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
+    class="w-full h-full  overflow-y-auto overflow-x-hidden p-2 flex flex-col"
     class:hidden={!$showFilterBar}
   >
-    <div class="w-full self-start">
-      <h3 class="mt-2 mb-1 text-black">{$_("Filter")}</h3>
+    <div class="w-full self-start ">
+      <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <span style="font-size: 0.8em">
         <label>
-          <input type="checkbox" checked={$isDefaultFilter} />
-          {$_("Default filter")}
+          <CheckboxSwitch checked={$isDefaultFilter} label={$_("Default filter")} />
         </label>
       </span>
       {#if $user?.bigrole}
@@ -150,6 +151,7 @@
           <label class="block">
             <input
               type="radio"
+              class="radio-btn"
               bind:group={$filters.region_id}
               value={reg.id}
               on:change={() => ($filters.country_id = undefined)}
@@ -214,7 +216,12 @@
       >
         {#each Object.entries(choices.nature_of_deal) as [isval, isname]}
           <label class="block">
-            <input type="checkbox" bind:group={$filters.nature_of_deal} value={isval} />
+            <input
+              type="checkbox"
+              bind:group={$filters.nature_of_deal}
+              value={isval}
+              class="checkbox-btn"
+            />
             {$_(isname)}
           </label>
         {/each}
@@ -296,7 +303,7 @@
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
-              class="form-check-input custom-control-input"
+              class="form-check-input custom-control-input checkbox-btn"
               type="checkbox"
               value={isval}
             />
@@ -310,13 +317,13 @@
         clearable={$filters.intention_of_investment.length > 0}
         on:click={() => ($filters.intention_of_investment = [])}
       >
-        <div class="hint p-1 mb-2 rounded bg-white text-xs italic">
+        <div class="hint p-1 my-1 mr-1 rounded bg-white shadow-md text-xs italic">
           {$_(
             "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
           )}
         </div>
         {#each Object.entries(choices.intention_of_investment) as [name, options]}
-          <div>
+          <div class="mb-2">
             <strong>{$_(name)}</strong>
             {#each Object.entries(options) as [isval, isname]}
               <label class="block">
@@ -324,6 +331,7 @@
                   type="checkbox"
                   bind:group={$filters.intention_of_investment}
                   value={isval}
+                  class="checkbox-btn form-checkbox"
                 />
                 {$_(isname)}
               </label>
@@ -358,11 +366,21 @@
         on:click={() => ($filters.transnational = null)}
       >
         <label class="block">
-          <input type="radio" bind:group={$filters.transnational} value={true} />
+          <input
+            type="radio"
+            bind:group={$filters.transnational}
+            value={true}
+            class="radio-btn"
+          />
           {$_("Transnational")}
         </label>
         <label class="block">
-          <input type="radio" bind:group={$filters.transnational} value={false} />
+          <input
+            type="radio"
+            bind:group={$filters.transnational}
+            value={false}
+            class="radio-btn"
+          />
           {$_("Domestic")}
         </label>
       </FilterCollapse>
@@ -373,15 +391,30 @@
         on:click={() => ($filters.forest_concession = null)}
       >
         <label class="block">
-          <input type="radio" bind:group={$filters.forest_concession} value={null} />
+          <input
+            type="radio"
+            bind:group={$filters.forest_concession}
+            value={null}
+            class="radio-btn"
+          />
           {$_("Included")}
         </label>
         <label class="block">
-          <input type="radio" bind:group={$filters.forest_concession} value={false} />
+          <input
+            type="radio"
+            bind:group={$filters.forest_concession}
+            value={false}
+            class="radio-btn"
+          />
           {$_("Excluded")}
         </label>
         <label class="block">
-          <input type="radio" bind:group={$filters.forest_concession} value={true} />
+          <input
+            type="radio"
+            bind:group={$filters.forest_concession}
+            value={true}
+            class="radio-btn"
+          />
           {$_("Only")}
         </label>
       </FilterCollapse>
@@ -392,13 +425,14 @@
         <ul>
           <li>
             <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
-              <i class="fas fa-file-download" />
+              <DownloadIcon />
               {$_("All attributes (xlsx)")}
             </a>
           </li>
           <li>
             <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
               <i class="fas fa-file-download" />
+              <DownloadIcon />
               {$_("All attributes (csv)")}
             </a>
           </li>
@@ -409,6 +443,7 @@
                 : 'ACTIVE'}"
             >
               <i class="fas fa-file-download" />
+              <DownloadIcon />
               {$_("Locations (as geojson)")}
             </a>
           </li>
@@ -419,6 +454,7 @@
                 : 'ACTIVE'}"
             >
               <i class="fas fa-file-download" />
+              <DownloadIcon />
               {$_("Areas (as geojson)")}
             </a>
           </li>
@@ -427,7 +463,6 @@
     </div>
   </div>
 </div>
-
 <!--<style lang="scss">-->
 
 <!--    .default-filter-switch {-->
@@ -523,4 +558,5 @@
 <!--      }-->
 <!--    }-->
 <!--  }-->
+
 <!--</style>-->

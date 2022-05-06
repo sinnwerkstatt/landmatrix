@@ -7,11 +7,12 @@
   export const load: Load = async ({ params }) => {
     const variables = {
       id: +params.id,
+      includeDeals: true,
     };
-    const deal = await request(GQLEndpoint, investor_gql_query, variables);
-    console.log(JSON.stringify(deal, undefined, 2));
+    const investor = await request(GQLEndpoint, investor_gql_query, variables);
+    console.log(JSON.stringify(investor, undefined, 2));
 
-    return { props: { deal } };
+    return { props: { investor } };
   };
 </script>
 

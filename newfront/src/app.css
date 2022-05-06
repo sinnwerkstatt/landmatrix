@@ -32,11 +32,19 @@
     @apply mb-4;
   }
 
+  h1 {
+    @apply text-3xl text-lm-dark my-5 font-bold;
+  }
+
   h3 {
     @apply text-lm-dark text-[22px] my-5 font-bold;
   }
   h3 a {
     @apply text-lm-dark;
+  }
+
+  h4 {
+    @apply text-lm-dark text-lg  my-5 font-bold;
   }
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
@@ -60,14 +68,11 @@
     @apply hover:bg-orange-300 hover:text-white hover:border-orange-300;
     @apply active:bg-orange-700;
   }
-  /*  .btn-secondary {*/
-  /*  background-color: #b1b1b1;*/
 
-  /*  &:hover {*/
-  /*    color: white;*/
-  /*    background-color: darken(#b1b1b1, 5%);*/
-  /*  }*/
-  /*}*/
+  .btn-white {
+    @apply border border-black px-5 py-1 text-sm text-black uppercase;
+  }
+
   .btn-link {
     @apply bg-none text-orange shadow-none border-none;
     @apply hover:text-orange-200;
@@ -123,3 +128,11 @@
 .richtext-image.fullwidth {
   @apply text-center max-w-full max-h-[700px] w-auto block mx-auto;
 }
+
+.radio-btn {
+  @apply h-4 w-4 bg-white appearance-none rounded-full border border-gray-400 checked:bg-orange checked:border-orange-200 checked:border-2 transition duration-200;
+}
+.checkbox-btn {
+  @apply h-4 w-4 border appearance-none border-gray-400 checked:bg-orange checked:border-2 checked:border-orange-200 transition duration-200;
+}
+/*form-check-input*/

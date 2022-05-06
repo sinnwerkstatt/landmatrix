@@ -201,26 +201,31 @@
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
   <MapDataCharts on:click={setGlobalLocationFilter} />
 </div>
-
-<ArticleList articles={filteredCountryProfiles} articlesLabel={$_("Country profiles")}>
-  <div class="description">
-    <p>
-      {$_(
-        "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
-      )}
-    </p>
-    <p>
-      {$_(
-        "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
-      )}
-      <a href="/contribute">{$_("here")}</a>
-      .
-    </p>
-    <h4>{$_("Download country profiles for")}:</h4>
-  </div>
-</ArticleList>
-<ArticleList articles={filteredNewsPubs} articlesLabel={$_("News & publications")} />
-
+<div class="mx-auto container w-[clamp(20rem,75%,56rem)] mb-8">
+  <ArticleList
+    articles={filteredCountryProfiles}
+    articlesLabel={$_("Country profiles")}
+  >
+    <div class="description">
+      <p>
+        {$_(
+          "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+        )}
+      </p>
+      <p>
+        {$_(
+          "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+        )}
+        <a href="/contribute">{$_("here")}</a>
+        .
+      </p>
+      <h4>{$_("Download country profiles for")}:</h4>
+    </div>
+  </ArticleList>
+</div>
+<div class="mx-auto container w-[clamp(20rem,75%,56rem)] mb-8">
+  <ArticleList articles={filteredNewsPubs} articlesLabel={$_("News & publications")} />
+</div>
 {#if page.twitter_feed}
   <div class="mx-auto container w-[clamp(20rem,75%,56rem)] mb-8">
     <h3>{$_("Latest tweets")}</h3>

@@ -235,18 +235,33 @@
     <h4>{$_("Map settings")}</h4>
     <FilterCollapse initExpanded={true} title={$_("Displayed data")}>
       <label class="block">
-        <input type="radio" bind:group={$displayDealsCount} value={true} />
+        <input
+          type="radio"
+          bind:group={$displayDealsCount}
+          value={true}
+          class="radio-btn"
+        />
         {$_("Number of deal locations")}
       </label>
       <label class="block">
-        <input type="radio" bind:group={$displayDealsCount} value={false} />
+        <input
+          type="radio"
+          bind:group={$displayDealsCount}
+          value={false}
+          class="radio-btn"
+        />
         {$_("Area (ha)")}
       </label>
     </FilterCollapse>
     <FilterCollapse initExpanded={true} title={$_("Base layer")}>
       {#each baseLayers as layer}
         <label class="block">
-          <input type="radio" bind:group={$visibleLayer} value={layer.name} />
+          <input
+            type="radio"
+            bind:group={$visibleLayer}
+            value={layer.name}
+            class="radio-btn"
+          />
           {$_(layer.name)}
         </label>
       {/each}
@@ -259,6 +274,7 @@
             type="checkbox"
             bind:group={$visibleContextLayers}
             value={layer.name}
+            class="checkbox-btn"
           />
           {$_(layer.name)}
           {#if $visibleContextLayers.includes(layer)}

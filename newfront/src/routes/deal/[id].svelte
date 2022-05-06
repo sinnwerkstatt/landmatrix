@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script context="module" lang="ts" xmlns="http://www.w3.org/1999/html">
   import type { Load } from "@sveltejs/kit";
   import { request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
@@ -14,11 +14,13 @@
 </script>
 
 <script lang="ts">
+  import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Deal } from "$lib/types/deal";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
+  import DownloadIcon from "../../components/icons/DownloadIcon.svelte";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export let deal: Deal;
@@ -53,7 +55,26 @@
 </script>
 
 <div class="container mx-auto">
-  <h1>Deal {dealID}</h1>
+  <div class="md:flex md:flex-row md:justify-between">
+    <h1>
+      Deal {dealID}
+      {#if deal.country}in {deal.country.name}{/if}
+    </h1>
+    <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
+      <div class="dates-header">
+        Created<br />
+        {dayjs(deal.created_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="dates-header">
+        Last update<br />
+        {dayjs(deal.modified_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="dates-header">
+        Last full update<br />
+        {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
+      </div>
+    </div>
+  </div>
   <div class="flex">
     <nav class="p-2 flex-initial">
       <ul>
@@ -125,11 +146,20 @@
       {/if}
       {#if activeTab === "#actions"}
         <section>
-          <h4><i class="fa fa-download" /> Download</h4>
-          <a target="_blank" href={download_link("xlsx")}>XLSX</a><br />
-          <a target="_blank" href={download_link("csv")}>CSV</a>
+          <h3>Download</h3>
+
+          <a target="_blank" href={download_link("xlsx")}
+            ><DownloadIcon /> Excel-Dokument</a
+          ><br />
+          <a target="_blank" href={download_link("csv")}><DownloadIcon /> CSV-Datei</a>
         </section>
       {/if}
     </div>
   </div>
 </div>
+
+<style>
+  .dates-header {
+    @apply mr-10 md:mx-5 text-xs md:text-sm text-lm-dark;
+  }
+</style>
