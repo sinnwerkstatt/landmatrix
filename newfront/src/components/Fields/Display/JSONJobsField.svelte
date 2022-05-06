@@ -1,6 +1,14 @@
 <script lang="ts">
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
-  import type { JSONJobsFieldType } from "$components/Fields/Display/jsonHelpers";
+
+  type JSONJobsFieldType = {
+    current?: boolean;
+    date: string;
+    jobs?: string;
+    employees?: string;
+    workers?: string;
+    choices?: Array<{ [key: string]: string }>;
+  };
 
   export let value: JSONJobsFieldType[] = [];
 </script>

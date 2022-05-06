@@ -14,8 +14,8 @@
     intention_of_investment_choices,
     nature_of_deal_choices,
   } from "$components/Fields/Display/choices";
-  import DownloadIcon from "../icons/DownloadIcon.svelte";
-  import CheckboxSwitch from "../LowLevel/CheckboxSwitch.svelte";
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
+  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 

@@ -1,11 +1,18 @@
 <script lang="ts">
+  import type { IntentionOfInvestment } from "$lib/filters";
   import {
     dateCurrentFormat,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers";
-  import type { JSONDateAreaChoicesFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
+
+  type JSONDateAreaChoicesFieldType = {
+    current?: boolean;
+    name: string;
+    area?: string;
+    choices: Array<IntentionOfInvestment | { [key: string]: string }>;
+  };
 
   export let formfield: FormField;
   export let value: JSONDateAreaChoicesFieldType[] = [];

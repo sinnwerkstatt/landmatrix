@@ -1,10 +1,16 @@
 <script lang="ts">
+  import type { ImplementationStatus, NegotiationStatus } from "$lib/filters";
   import {
     dateCurrentFormat,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers.ts";
-  import type { JSONDateChoiceFieldType } from "$components/Fields/Display/jsonHelpers.ts";
   import type { FormField } from "$components/Fields/fields";
+
+  type JSONDateChoiceFieldType = {
+    current?: boolean;
+    date: string;
+    choice: NegotiationStatus | ImplementationStatus;
+  };
 
   export let formfield: FormField;
   export let value: JSONDateChoiceFieldType[] = [];

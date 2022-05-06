@@ -9,10 +9,9 @@
   import { countries, formfields, observatoryPages, regions } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { CountryOrRegion } from "$lib/types/wagtail";
-  import { prepareNegotianStatusData, sum } from "../../utils/data_processing";
-  import DealDisplayToggle from "../DealDisplayToggle.svelte";
-  import { implementation_status_choices } from "../Fields/Display/choices";
-  import { displayDealsCount } from "../Map/map_helper";
+  import { prepareNegotianStatusData, sum } from "$lib/utils/data_processing";
+  import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
+  import { displayDealsCount } from "$components/Map/map_helper";
   import ContextBarContainer from "./ContextBarContainer.svelte";
 
   let dealsWithProduceInfo: Deal[] = [];

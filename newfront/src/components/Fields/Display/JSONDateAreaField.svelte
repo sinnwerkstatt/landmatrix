@@ -1,6 +1,11 @@
 <script lang="ts">
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
-  import type { JSONDateAreaFieldType } from "$components/Fields/Display/jsonHelpers";
+
+  type JSONDateAreaFieldType = {
+    area: string;
+    date: string;
+    current?: boolean;
+  };
 
   export let value: JSONDateAreaFieldType[] = [];
 </script>

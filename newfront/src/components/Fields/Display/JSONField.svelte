@@ -3,8 +3,14 @@
     dateCurrentFormat,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers";
-  import type { JSONFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
+
+  // folgende types möglicherweise fehlerhaft oder unvollständig
+  type JSONFieldType = {
+    current?: boolean;
+    area?: string;
+    choices?: Array<{ [key: string]: string }>;
+  };
 
   export let formfield: FormField;
   export let value: JSONFieldType[] = [];

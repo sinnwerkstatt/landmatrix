@@ -3,11 +3,18 @@
     dateCurrentFormat,
     mapChoices,
   } from "$components/Fields/Display/jsonHelpers";
-  import type { JSONExportsFieldType } from "$components/Fields/Display/jsonHelpers";
   import type { FormField } from "$components/Fields/fields";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
   import PlaneIcon from "$components/icons/PlaneIcon.svelte";
   import WeightIcon from "$components/icons/WeightIcon.svelte";
+
+  type JSONExportsFieldType = {
+    current?: boolean;
+    area?: string;
+    yield?: string;
+    export?: string;
+    choices: Array<{ [key: string]: string }>;
+  };
 
   export let value: JSONExportsFieldType[] = [];
   export let formfield: FormField;

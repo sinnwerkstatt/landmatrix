@@ -1,5 +1,5 @@
-import { negotiation_status_choices } from "../components/Fields/Display/choices";
-import type { Deal } from "../lib/types/deal";
+import type { Deal } from "$lib/types/deal";
+import { negotiation_status_choices } from "$components/Fields/Display/choices";
 
 export function sum(items: Deal[], prop: string): number {
   return items.reduce(function (a, b) {

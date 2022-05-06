@@ -1,7 +1,7 @@
 import type { GeoJSONObject } from "geojson";
+import { ImplementationStatus, NegotiationStatus } from "$lib/filters";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
-import { ImplementationStatus, NegotiationStatus } from "../filters";
 
 enum ACCURACY_LEVEL {
   "",
