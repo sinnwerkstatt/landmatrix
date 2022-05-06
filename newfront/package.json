@@ -17,6 +17,7 @@
     "@sveltejs/kit": "^1.0.0-next.320",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+    "@turf/turf": "^6.5.0",
     "@types/js-cookie": "^3.0.2",
     "@types/leaflet": "^1.7.9",
     "@typescript-eslint/eslint-plugin": "^5.20.0",

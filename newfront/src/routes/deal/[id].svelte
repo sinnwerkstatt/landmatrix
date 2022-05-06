@@ -18,9 +18,10 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Deal } from "$lib/types/deal";
+  import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
-  import DownloadIcon from "../../components/icons/DownloadIcon.svelte";
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
 
   export let deal: Deal;
@@ -54,7 +55,7 @@
   };
 </script>
 
-<div class="container mx-auto">
+<div class="container mx-auto min-h-full">
   <div class="md:flex md:flex-row md:justify-between">
     <h1>
       Deal {dealID}
@@ -75,7 +76,7 @@
       </div>
     </div>
   </div>
-  <div class="flex">
+  <div class="flex min-h-full">
     <nav class="p-2 flex-initial">
       <ul>
         {#each tabs as { target, name }}
@@ -94,6 +95,9 @@
       </ul>
     </nav>
     <div class="pl-4 flex-auto w-full">
+      {#if activeTab === "#locations"}
+        <DealLocationsSection {deal} fields={deal_submodel_sections.location} />
+      {/if}
       {#if activeTab === "#general"}
         <DealSection {deal} sections={deal_sections.general_info} />
       {/if}
