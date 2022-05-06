@@ -25,7 +25,7 @@ class DealForm(VueForm):
             "production_size": {"class": "JSONDateAreaField"},
             "intention_of_investment": {
                 "class": "JSONDateAreaChoicesField",
-                "with_categories": True,
+                # "with_categories": True,
             },
             "negotiation_status": {
                 "class": "JSONDateChoiceField",
