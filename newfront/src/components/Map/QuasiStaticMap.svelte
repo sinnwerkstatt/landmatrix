@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MarkerOptions } from "leaflet";
+  import type { Map, MarkerOptions } from "leaflet";
   import { DivIcon, FeatureGroup, Marker } from "leaflet?client";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -13,8 +13,8 @@
   export let regionID: number;
   export let markers: MarkerType[] = [];
 
-  let map;
-  let featureGroup;
+  let map: Map;
+  let featureGroup: FeatureGroup;
 
   function focusMap() {
     if (regionID) {

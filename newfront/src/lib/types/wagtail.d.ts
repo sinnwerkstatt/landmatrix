@@ -55,7 +55,7 @@ export interface TwitterFeed {
     name: string;
     screen_name: string;
     created_at: Date;
-    deep_link: URL;
+    deep_link: string;
     text: string;
   }[];
 }

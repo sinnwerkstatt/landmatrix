@@ -17,7 +17,7 @@
 
   const dispatch = createEventDispatcher();
 
-  let map;
+  let map: Map;
 
   // import { GestureHandling } from "leaflet-gesture-handling";
   // import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
@@ -61,7 +61,7 @@
 </script>
 
 <div class="mx-auto relative {containerClass}">
-  <!--  z-0 is important to capture and contextualize leaflet's "400" z-index -->
+  <!-- ! z-0 is important to capture and contextualize leaflet's "400" z-index -->
   <div id="bigmap" class="h-full w-full z-0">
     {#if !map}
       <LoadingPulse class="h-[300px]" />
@@ -72,3 +72,9 @@
     <!--    <BigMapStandaloneLayerSwitcher />-->
   {/if}
 </div>
+
+<style>
+  :global(.leaflet-container a) {
+    @apply text-orange;
+  }
+</style>

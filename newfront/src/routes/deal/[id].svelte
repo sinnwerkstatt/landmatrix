@@ -62,15 +62,15 @@
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
     <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
-      <div class="dates-header">
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
         Created<br />
         {dayjs(deal.created_at).format("DD/MM/YYYY")}
       </div>
-      <div class="dates-header">
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
         Last update<br />
         {dayjs(deal.modified_at).format("DD/MM/YYYY")}
       </div>
-      <div class="dates-header">
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
         Last full update<br />
         {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
       </div>
@@ -157,9 +157,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .dates-header {
-    @apply mr-10 md:mx-5 text-xs md:text-sm text-lm-dark;
-  }
-</style>

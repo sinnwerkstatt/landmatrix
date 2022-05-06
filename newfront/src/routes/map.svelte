@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { MarkerOptions } from "leaflet";
-  import { DivIcon, FeatureGroup, Marker } from "leaflet?client";
+  import type { LeafletEvent, Map, MarkerOptions } from "leaflet";
+  import { DivIcon, FeatureGroup, Marker, Popup } from "leaflet?client";
   import { groupBy } from "lodash";
   import { onDestroy } from "svelte";
   import { _ } from "svelte-i18n";
@@ -21,6 +21,7 @@
     LMCircleClass,
     styleCircle,
   } from "$components/Map/map_helper";
+  import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte";
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -28,7 +29,7 @@
     DEAL_CLUSTERS: 5,
     DEAL_PINS: 8,
   };
-  const REGION_COORDINATES = {
+  const REGION_COORDINATES: { [key: number]: [number, number] } = {
     2: [6.06433, 17.082249],
     9: [-22.7359, 140.0188],
     21: [54.526, -105.2551],
@@ -37,10 +38,10 @@
     419: [-4.442, -61.3269],
   };
 
-  let bigmap;
+  let bigmap: Map;
   let markers = [];
-  let _dealLocationMarkersCache = [];
-  let current_zoom;
+
+  let current_zoom: number;
 
   let markersFeatureGroup;
   let skipMapRefresh = false;
@@ -150,6 +151,7 @@
     console.log("Refreshing map done.");
   }
 
+  let _dealLocationMarkersCache: { [key: number]: Marker[] } = {};
   async function refreshMarkers() {
     if (import.meta.env.SSR) return;
     console.log("computing markers ...");
@@ -168,6 +170,7 @@
               marker.region_id = deal.country.fk_region.id;
               marker.country_id = deal.country.id;
             }
+            marker.on("click", createMarkerPopup);
             return marker;
           });
 
@@ -178,10 +181,24 @@
     refreshMap();
   }
 
-  async function flyToCountryOrRegion(country_id, region_id) {
+  async function createMarkerPopup(event: LeafletEvent) {
+    const marker = event.target as Marker;
+
+    const markerContainerDiv = document.createElement("div");
+    new MapMarkerPopup({
+      target: markerContainerDiv,
+      props: { deal: marker.deal, location: marker.loc },
+    });
+    new Popup()
+      .setContent(markerContainerDiv)
+      .setLatLng(marker.getLatLng())
+      .openOn(bigmap);
+  }
+
+  async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
     if (import.meta.env.SSR || !bigmap) return;
     console.log("Flying to country or region now");
-    let coords = [0, 0];
+    let coords: [number, number] = [0, 0];
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
     if (country_id) {
       coords = country_coords[country_id];
@@ -222,7 +239,7 @@
         minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
         zoom: ZOOM_LEVEL.REGION_CLUSTERS,
         zoomControl: false,
-        gestureHandling: false,
+        //gestureHandling: false,
         center: [12, 30],
       }}
       containerClass="min-h-full h-full"
