@@ -4,7 +4,8 @@
       <div :class="wrapperClasses">
         <div v-for="(entry, index) in entries" :key="index" class="panel-body">
           <h3>
-            {{ $t(modelName) }} <small class="font-mono">{{ entry.id }}</small>
+            {{ index + 1 }}. {{ $t(modelName) }}
+            <!--            <small class="font-mono">{{ entry.id }}</small>-->
           </h3>
           <template v-for="fieldname in fields">
             <DisplayField
@@ -26,9 +27,9 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
   import DisplayField from "$components/Fields/DisplayField.vue";
   import { custom_is_null } from "$utils/data_processing";
+  import Vue from "vue";
 
   export default Vue.extend({
     components: { DisplayField },
