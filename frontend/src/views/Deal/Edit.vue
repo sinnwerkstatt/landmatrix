@@ -50,9 +50,7 @@
               <div class="container">
                 <EditField
                   v-model="deal.country"
-                  :disabled="
-                    false /*TODO reenable this soon deal.locations && deal.locations.length > 0*/
-                  "
+                  :disabled="deal.locations && deal.locations.length > 0"
                   :label-classes="['col-md-3']"
                   :value-classes="['col-md-9']"
                   :wrapper-classes="['row', 'my-3']"

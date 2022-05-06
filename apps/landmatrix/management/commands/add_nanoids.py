@@ -11,13 +11,16 @@ class Command(BaseCommand):
             print(deal.id)
             for x in deal.locations:
                 if not x.get("id") or isinstance(x["id"], int):
+                    x["old_id"] = x.get("id")
                     x["id"] = generate(size=8)
             for x in deal.datasources:
                 if not x.get("id") or isinstance(x["id"], int):
+                    x["old_id"] = x.get("id")
                     x["id"] = generate(size=8)
 
             for x in deal.contracts:
                 if not x.get("id") or isinstance(x["id"], int):
+                    x["old_id"] = x.get("id")
                     x["id"] = generate(size=8)
 
             deal.save()

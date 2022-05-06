@@ -65,27 +65,32 @@
           </div>
           <div class="row">
             <form enctype="multipart/form-data" novalidate class="mt-3">
-              <div class="col-12 mb-1">{{ $t("Add intended area") }}</div>
+              <div class="col-12 mb-1">{{ $t("Add intended area (as GeoJSON)") }}</div>
               <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"
+                  accept=".geojson,application/geo+json,application/json"
                   @change="uploadFiles('intended_area', $event)"
                 />
               </div>
-              <div class="col-12 mb-1">{{ $t("Add contract area") }}</div>
+              <div class="col-12 mb-1">{{ $t("Add contract area (as GeoJSON)") }}</div>
               <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"
+                  accept=".geojson,application/geo+json,application/json"
                   @change="uploadFiles('contract_area', $event)"
                 />
               </div>
-              <div class="col-12 mb-1">{{ $t("Add production area") }}</div>
+              <div class="col-12 mb-1">
+                {{ $t("Add production area (as GeoJSON)") }}
+              </div>
               <div class="col-12 mb-2">
                 <input
                   type="file"
                   class="input-file"
+                  accept=".geojson,application/geo+json,application/json"
                   @change="uploadFiles('production_area', $event)"
                 />
               </div>
@@ -108,21 +113,19 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
-  import type L from "leaflet";
-  import { GeoJSON, LatLngBounds, Marker } from "leaflet";
-  import "@geoman-io/leaflet-geoman-free";
-
   import BigMap from "$components/BigMap.vue";
   import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.vue";
   import PointField from "$components/Fields/Edit/PointField.vue";
   import EditField from "$components/Fields/EditField.vue";
-  import { newNanoid } from "$utils";
-
-  import type { PropType } from "vue";
-  import type { Country } from "$types/wagtail";
   import type { Location } from "$types/deal";
+  import type { Country } from "$types/wagtail";
+  import { newNanoid } from "$utils";
+  import "@geoman-io/leaflet-geoman-free";
   import type { Feature, GeoJsonObject } from "geojson";
+  import type L from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker } from "leaflet";
+  import Vue from "vue";
+  import type { PropType } from "vue";
 
   export default Vue.extend({
     components: { PointField, LocationGoogleField, EditField, BigMap },

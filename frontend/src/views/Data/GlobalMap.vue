@@ -69,13 +69,31 @@
         <FilterCollapse title="Download">
           <ul>
             <li>
-              <a :href="`/api/data.geojson?type=points&filters=${filters}`">
-                <i class="fas fa-file-download" /> {{ $t("Locations (as geojson)") }}
+              <a :href="download_link('xlsx')" @click="trackDownload('xlsx')">
+                <i class="fas fa-file-download" /> {{ $t("All attributes (xlsx)") }}
               </a>
             </li>
             <li>
-              <a :href="`/api/data.geojson?type=areas&filters=${filters}`">
-                <i class="fas fa-file-download" /> {{ $t("Areas (as geojson)") }}
+              <a :href="download_link('csv')" @click="trackDownload('csv')">
+                <i class="fas fa-file-download" /> {{ $t("All attributes (csv)") }}
+              </a>
+            </li>
+            <li>
+              <a
+                :href="`/api/data.geojson?type=points&filters=${filters}&subset=${
+                  $store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'
+                }`"
+              >
+                <i class="fas fa-file-download" /> {{ $t("Locations (geojson)") }}
+              </a>
+            </li>
+            <li>
+              <a
+                :href="`/api/data.geojson?type=areas&filters=${filters}&subset=${
+                  $store.state.publicOnly ? 'PUBLIC' : 'ACTIVE'
+                }`"
+              >
+                <i class="fas fa-file-download" /> {{ $t("Areas (geojson)") }}
               </a>
             </li>
           </ul>
@@ -92,13 +110,12 @@
   import DataContainer from "$components/DataContainer.vue";
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.vue";
   import { styleCircle } from "$utils/map_helper";
-
+  import { data_deal_query } from "./query";
   import { DivIcon, FeatureGroup, LayerGroup, Marker, Popup } from "leaflet";
   import { MarkerClusterGroup } from "leaflet.markercluster/src";
   import { groupBy } from "lodash-es";
   import Vue from "vue";
   import { mapState } from "vuex";
-  import { data_deal_query } from "./query";
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -226,6 +243,30 @@
       },
     },
     methods: {
+      download_link(format) {
+        let filters = JSON.stringify(this.$store.getters.filtersForGQL);
+        let subset = this.$store.state.publicOnly ? "PUBLIC" : "ACTIVE";
+        return `/api/legacy_export/?filters=${filters}&subset=${subset}&format=${format}`;
+      },
+      trackDownload(format: string) {
+        let name = "Global";
+        const country_id = this.$store.state.filters.country_id;
+        const region_id = this.$store.state.filters.region_id;
+        if (country_id) {
+          name = this.$store.getters.getCountryOrRegion({
+            type: "country",
+            id: country_id,
+          }).name;
+        }
+        if (region_id) {
+          name = this.$store.getters.getCountryOrRegion({
+            type: "region",
+            id: region_id,
+          }).name;
+        }
+
+        window._paq.push(["trackEvent", "Downloads", format, name]);
+      },
       async refreshMarkers() {
         console.log("computing markers ...");
         let markers_list = [];
