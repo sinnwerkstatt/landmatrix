@@ -270,30 +270,3 @@ export const deal_sections = {
     },
   ],
 };
-
-export const deal_submodel_sections = {
-  location: [
-    "level_of_accuracy",
-    "name",
-    "description",
-    "point",
-    "facility_name",
-    "comment",
-  ],
-  contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
-  datasource: [
-    "type",
-    "url",
-    "file",
-    "file_not_public",
-    "publication_title",
-    "date",
-    "name",
-    "company",
-    "email",
-    "phone",
-    "includes_in_country_verified_information",
-    "open_land_contracts_id",
-    "comment",
-  ],
-};

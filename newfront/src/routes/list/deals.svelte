@@ -16,7 +16,7 @@
     <div class="p-4 bg-green-300 w-full">
       {$deals?.length}
       <VirtualList items={$deals ?? []} let:item>
-        <p>{item.id}: {item.country.name}</p>
+        <p><a href="/deal/{item.id}">{item.id}: {item.country.name}</a></p>
       </VirtualList>
     </div>
     <div

@@ -22,7 +22,7 @@
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import { deal_sections } from "./deal_sections";
 
   export let deal: Deal;
   const dealID = $page.params.id;
@@ -96,18 +96,16 @@
     </nav>
     <div class="pl-4 flex-auto w-full">
       {#if activeTab === "#locations"}
-        <DealLocationsSection {deal} fields={deal_submodel_sections.location} />
+        <DealLocationsSection {deal} />
       {/if}
       {#if activeTab === "#general"}
         <DealSection {deal} sections={deal_sections.general_info} />
       {/if}
       {#if activeTab === "#contracts"}
         <DealSubmodelSection
-          {deal}
-          entries={deal.contracts}
-          fields={deal_submodel_sections.contract}
           model="contract"
           modelName="Contract"
+          entries={deal.contracts}
         />
       {/if}
       {#if activeTab === "#employment"}
@@ -118,11 +116,9 @@
       {/if}
       {#if activeTab === "#data_sources"}
         <DealSubmodelSection
-          {deal}
-          entries={deal.datasources}
-          fields={deal_submodel_sections.datasource}
           model="datasource"
           modelName="Data source"
+          entries={deal.datasources}
         />
       {/if}
       {#if activeTab === "#local_communities"}

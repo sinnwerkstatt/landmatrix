@@ -55,22 +55,22 @@ export enum IntentionOfInvestment {
 }
 
 export class FilterValues {
-  region_id: number;
-  country_id: number;
-  investor_country_id: number;
-  deal_size_min: number;
-  deal_size_max: number;
+  region_id?: number;
+  country_id?: number;
+  investor_country_id?: number;
+  deal_size_min?: number;
+  deal_size_max?: number;
   negotiation_status: NegotiationStatus[] = [];
   nature_of_deal: NatureOfDeal[] = [];
-  investor: Investor;
-  initiation_year_min: number;
-  initiation_year_max: number;
+  investor?: Investor;
+  initiation_year_min?: number;
+  initiation_year_max?: number;
   initiation_year_unknown = true;
   implementation_status: ImplementationStatus[] = [];
   intention_of_investment: IntentionOfInvestment[] = [];
   produce: Produce[] = [];
-  transnational: boolean | null;
-  forest_concession: boolean | null;
+  transnational: boolean | null = null;
+  forest_concession: boolean | null = null;
 
   constructor(data: Partial<FilterValues> = {}) {
     Object.assign(this, data);

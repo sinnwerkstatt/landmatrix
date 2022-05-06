@@ -5,7 +5,6 @@
   import DealSubmodelSection from "./DealSubmodelSection.svelte";
 
   export let deal;
-  export let fields;
 
   let bigmap;
   let layer;
@@ -83,12 +82,7 @@
   };
 </script>
 
-<DealSubmodelSection
-  model="location"
-  modelName="Location"
-  entries={deal.locations}
-  {fields}
->
+<DealSubmodelSection model="location" modelName="Location" entries={deal.locations}>
   <div class="min-h-[20rem] w-full lg:w-1/2">
     <BigMap
       containerClass="min-h-full h-full mt-5"

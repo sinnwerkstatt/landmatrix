@@ -50,9 +50,10 @@
       {#each blogCategoriesWithAll as cat}
         <li>
           <a
-            class:activePill={category === cat.slug}
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="block px-4 py-2 whitespace-nowrap"
+            class="block px-4 py-2 whitespace-nowrap {category === cat.slug
+              ? 'text-white bg-orange'
+              : ''}"
           >
             {$_(cat.name)}
           </a>
@@ -82,9 +83,3 @@
     {/each}
   </div>
 </div>
-
-<style>
-  .activePill {
-    @apply text-white bg-orange;
-  }
-</style>

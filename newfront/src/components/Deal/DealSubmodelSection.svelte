@@ -1,12 +1,39 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { isEmpty } from "$lib/helpers";
+  import type { Contract, DataSource, Location } from "$lib/types/deal";
   import DisplayField from "$components/Fields/DisplayField.svelte";
 
-  export let model;
-  export let modelName;
-  export let entries = [];
-  export let fields: string[];
+  export let model: string;
+  export let modelName: string;
+  export let entries: Array<Contract | DataSource | Location> = [];
+
+  $: fields = {
+    location: [
+      "level_of_accuracy",
+      "name",
+      "description",
+      "point",
+      "facility_name",
+      "comment",
+    ],
+    contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
+    datasource: [
+      "type",
+      "url",
+      "file",
+      "file_not_public",
+      "publication_title",
+      "date",
+      "name",
+      "company",
+      "email",
+      "phone",
+      "includes_in_country_verified_information",
+      "open_land_contracts_id",
+      "comment",
+    ],
+  }[model];
 
   let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full";
 </script>

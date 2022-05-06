@@ -42,7 +42,7 @@ async function getAboutPages(language = "en"): Promise<WagtailPage[]> {
   return res_children.items;
 }
 
-export const blogCategories = writable(undefined);
+export const blogCategories = writable<BlogCategory[]>(undefined);
 
 async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
   console.log("getBlogCategories", { language });
@@ -58,7 +58,10 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
     }
   `;
   const variables = { language };
-  const gqlres = await graphQLClient.request(query, variables);
+  const gqlres = await graphQLClient.request<{ blogcategories: BlogCategory[] }>(
+    query,
+    variables
+  );
   await blogCategories.set(gqlres.blogcategories);
   return gqlres.blogcategories;
 }
@@ -68,7 +71,7 @@ export const countries = writable<Country[]>([]);
 export const regions = writable<Region[]>([]);
 export const formfields = writable([]);
 
-async function getBasics(): Promise<User> {
+async function getBasics() {
   console.log("getBasics");
   const userStore = get(user);
   if (userStore !== undefined) return userStore;
@@ -141,7 +144,7 @@ async function getBasics(): Promise<User> {
   await formfields.set(gqlres.formfields);
 }
 
-export async function dispatchLogin(username, password) {
+export async function dispatchLogin(username: string, password: string) {
   const mutation = gql`
     mutation Login($username: String!, $password: String!) {
       login(username: $username, password: $password) {
