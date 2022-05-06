@@ -4,7 +4,7 @@
 
   export let twitterFeed: TwitterFeed;
 
-  let timeline = twitterFeed?.timeline || [];
+  $: timeline = twitterFeed?.timeline || [];
 </script>
 
 <div class="twitter-timeline">

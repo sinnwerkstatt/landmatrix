@@ -127,10 +127,10 @@
     readMore = false;
     getAggregations();
   });
-  filteredCountryProfiles = page.related_blogpages.filter((p) =>
+  $: filteredCountryProfiles = page.related_blogpages.filter((p) =>
     p.categories.find((c) => c.slug && c.slug === "country-profile")
   );
-  filteredNewsPubs = page.related_blogpages.filter((p) =>
+  $: filteredNewsPubs = page.related_blogpages.filter((p) =>
     p.categories.find((c) => c.slug && (c.slug === "news" || c.slug === "publications"))
   );
 
