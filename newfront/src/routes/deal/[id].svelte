@@ -1,4 +1,4 @@
-<script context="module" lang="ts" xmlns="http://www.w3.org/1999/html">
+<script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { request } from "graphql-request";
   import { GQLEndpoint } from "$lib";
