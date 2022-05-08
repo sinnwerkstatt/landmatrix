@@ -5,11 +5,11 @@
   import Pie from "svelte-chartjs/src/Pie.svelte";
   import { _ } from "svelte-i18n";
   import { deals } from "$lib/data";
-  import { filters } from "$lib/filters";
+  import { filters, NegotiationStatus } from "$lib/filters";
   import { countries, formfields, observatoryPages, regions } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { CountryOrRegion } from "$lib/types/wagtail";
-  import { prepareNegotianStatusData, sum } from "$lib/utils/data_processing";
+  import { sum } from "$lib/utils/data_processing";
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
   import { displayDealsCount } from "$components/Map/map_helper";
   import ContextBarContainer from "./ContextBarContainer.svelte";
@@ -24,13 +24,13 @@
   $: if (!$filters.region_id && !$filters.country_id) {
     currentItem = {
       name: "Global",
-      observatory: $observatoryPages.find((o) => !o.country && !o.region),
+      observatory_page: $observatoryPages.find((o) => !o.country && !o.region),
     };
   } else {
     currentItem = $filters.region_id
       ? $regions.find((r) => r.id === $filters.region_id)
       : $countries.find((c) => c.id === $filters.country_id);
-    currentItem.observatory = $observatoryPages.find(
+    currentItem.observatory_page = $observatoryPages.find(
       (o) => o.id === currentItem.observatory_page_id
     );
   }
@@ -38,16 +38,47 @@
   let negStatBuckets = [
     { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
     { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
-    { color: "rgb(44,28,5)", label: "Failed", count: 0, size: 0 },
-    //{ color: "rgb(59,36,8)", label: "Change of ownership", count: 0, size: 0 },
-    //{ color: "rgb(44,28,5)", label: "Contract expired", count: 0, size: 0 },
+    { color: "rgba(125,74,15,1)", label: "Failed", count: 0, size: 0 },
+    { color: "rgb(59,36,8)", label: "Change of ownership", count: 0, size: 0 },
+    { color: "rgb(44,28,5)", label: "Contract expired", count: 0, size: 0 },
   ];
 
-  chartNegStat = {
+  $: for (let d of $deals ?? []) {
+    switch (d.current_negotiation_status) {
+      case NegotiationStatus.EXPRESSION_OF_INTEREST:
+      case NegotiationStatus.UNDER_NEGOTIATION:
+      case NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING:
+        negStatBuckets[0].count += 1;
+        negStatBuckets[0].size += d.deal_size;
+        break;
+      case NegotiationStatus.ORAL_AGREEMENT:
+      case NegotiationStatus.CONTRACT_SIGNED:
+        negStatBuckets[1].count += 1;
+        negStatBuckets[1].size += d.deal_size;
+        break;
+
+      case NegotiationStatus.NEGOTIATIONS_FAILED:
+      case NegotiationStatus.CONTRACT_CANCELED:
+        negStatBuckets[2].count += 1;
+        negStatBuckets[2].size += d.deal_size;
+        break;
+      case NegotiationStatus.CHANGE_OF_OWNERSHIP:
+        negStatBuckets[4].count += 1;
+        negStatBuckets[4].size += d.deal_size;
+        break;
+      case NegotiationStatus.CONTRACT_EXPIRED:
+        negStatBuckets[4].count += 1;
+        negStatBuckets[4].size += d.deal_size;
+        break;
+      default:
+        console.warn({ d });
+    }
+  }
+  $: chartNegStat = {
     labels: negStatBuckets.map((n) => n.label),
     datasets: [
       {
-        data: negStatBuckets.map((n) => n["size"]),
+        data: negStatBuckets.map((n) => ($displayDealsCount ? n["count"] : n["size"])),
         backgroundColor: negStatBuckets.map((n) => n.color),
       },
     ],
@@ -57,18 +88,6 @@
     ? `${Math.round($deals?.length).toLocaleString("fr")}`
     : `${Math.round(sum($deals, "deal_size")).toLocaleString("fr")} ha`;
 
-  //$: dealsFilteredByNegStatus = prepareNegotianStatusData($deals);
-  // $: negotiationStatusData = () => {
-  //   if ($displayDealsCount) {
-  //     return this.dealsFilteredByNegStatus.map((d) => {
-  //       return { value: d.count, unit: "deals", ...d };
-  //     });
-  //   } else {
-  //     return this.dealsFilteredByNegStatus.map((d) => {
-  //       return { value: d.size, unit: "ha", ...d };
-  //     });
-  //   }
-  // };
   // $: implementationStatusData = () => {
   //   let data = [];
   //   if (this.deals.length) {
@@ -178,11 +197,11 @@
 <ContextBarContainer>
   {#if currentItem}
     <h2 class="font-bold text-lg my-3 leading-5">{currentItem.name}</h2>
-    {#if currentItem?.observatory}
+    {#if currentItem?.observatory_page}
       <p class="mb-1">
-        {currentItem.observatory.short_description}
+        {currentItem.observatory_page.short_description}
         <br />
-        <a href="/observatory/{currentItem.observatory.meta.slug}/">
+        <a href="/observatory/{currentItem.observatory_page.meta.slug}/">
           {$_("Read more")}
         </a>
       </p>

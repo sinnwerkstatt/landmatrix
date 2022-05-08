@@ -8,6 +8,7 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail";
+import type { FormField } from "$components/Fields/fields";
 import { GQLEndpoint, RESTEndpoint } from "./index";
 
 const graphQLClient = new GraphQLClient(GQLEndpoint, {
@@ -66,10 +67,19 @@ async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
   return gqlres.blogcategories;
 }
 
+type FormFields = {
+  deal: { [key: string]: FormField };
+  location: { [key: string]: FormField };
+  contract: { [key: string]: FormField };
+  datasource: { [key: string]: FormField };
+  investor: { [key: string]: FormField };
+  involvement: { [key: string]: FormField };
+};
+
 export const user = writable<User>(undefined);
 export const countries = writable<Country[]>([]);
 export const regions = writable<Region[]>([]);
-export const formfields = writable([]);
+export const formfields = writable<FormFields>(undefined);
 
 async function getBasics() {
   console.log("getBasics");

@@ -24,7 +24,7 @@ export interface CountryOrRegion {
   name: string;
   slug?: string;
   observatory_page_id?: number;
-  observatory?: ObservatoryPage;
+  observatory_page?: ObservatoryPage;
 }
 export interface Region extends CountryOrRegion {
   point_lat_min: number;

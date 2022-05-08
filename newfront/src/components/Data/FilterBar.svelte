@@ -16,6 +16,7 @@
   } from "$components/Fields/Display/choices";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
+  import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte";
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
@@ -207,7 +208,7 @@
         </div>
       </FilterCollapse>
 
-      <!--        <FilterBarNegotiationStatusToggle />-->
+      <FilterBarNegotiationStatusToggle />
 
       <FilterCollapse
         title={$_("Nature of the deal")}
