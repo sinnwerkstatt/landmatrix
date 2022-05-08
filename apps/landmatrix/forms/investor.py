@@ -1,9 +1,26 @@
+from django.forms import ModelForm
+
 from apps.landmatrix.forms import VueForm
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
 from django.utils.translation import gettext as _
 
 
-class InvestorForm(VueForm):
+class InvestorForm(ModelForm):
+    class Meta:
+        model = Investor
+        exclude = [
+            "involvements",
+            "current_draft",
+            "created_at",
+            "created_by",
+            "modified_at",
+            "modified_by",
+            "old_id",
+            "is_actually_unknown",
+        ]
+
+
+class InvestorFrontendForm(VueForm):
     model = Investor
     extra_display_fields = {
         "deals": {"class": "LengthField", "label": _("Deals")},

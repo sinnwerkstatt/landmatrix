@@ -6,11 +6,16 @@ from django.contrib.gis.geos import Point
 from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Sum, F, Q, Count
+from django.db.models import Sum, F, Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import Investor
+from apps.landmatrix.models._choices import (
+    INTENTION_CHOICES,
+    NEGOTIATION_STATUS_CHOICES,
+    IMPLEMENTATION_STATUS_CHOICES,
+)
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
     DRAFT_STATUS_CHOICES,
@@ -133,7 +138,7 @@ class Deal(models.Model, OldDealMixin):
     """Deal"""
 
     """ Locations """
-    locations = LocationsField(_("Locations"), default=list)
+    locations = LocationsField(_("Locations"), default=list, blank=True)
 
     """ General info """
     # Land area
@@ -168,28 +173,8 @@ class Deal(models.Model, OldDealMixin):
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
-    INTENTION_CHOICES = [
-        ("BIOFUELS", _("Biofuels")),
-        ("FOOD_CROPS", _("Food crops")),
-        ("FODDER", _("Fodder")),
-        ("LIVESTOCK", _("Livestock")),
-        ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
-        ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-        ("TIMBER_PLANTATION", _("Timber plantation")),
-        ("FOREST_LOGGING", _("Forest logging / management")),
-        ("CARBON", _("For carbon sequestration/REDD")),
-        ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-        ("MINING", _("Mining")),
-        ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
-        ("TOURISM", _("Tourism")),
-        ("INDUSTRY", _("Industry")),
-        ("CONVERSATION", _("Conservation")),
-        ("LAND_SPECULATION", _("Land speculation")),
-        ("RENEWABLE_ENERGY", _("Renewable energy")),
-        ("OTHER", _("Other")),
-    ]
     intention_of_investment = models.JSONField(
-        _("Intention of investment"), choices=INTENTION_CHOICES, blank=True, null=True
+        _("Intention of investment"), blank=True, null=True
     )
     intention_of_investment_comment = models.TextField(
         _("Comment on intention of investment"), blank=True
@@ -208,9 +193,10 @@ class Deal(models.Model, OldDealMixin):
         ("OTHER", _("Other")),
     )
     nature_of_deal = ArrayField(
-        models.CharField(_("Nature of the deal"), max_length=100),
+        models.CharField(
+            _("Nature of the deal"), max_length=100, choices=NATURE_OF_DEAL_CHOICES
+        ),
         verbose_name=_("Nature of the deal"),
-        choices=NATURE_OF_DEAL_CHOICES,
         blank=True,
         null=True,
     )
@@ -219,20 +205,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     # # Negotiation status
-    NEGOTIATION_STATUS_CHOICES = [
-        ("EXPRESSION_OF_INTEREST", "Expression of interest"),
-        ("UNDER_NEGOTIATION", "Under negotiation"),
-        ("MEMORANDUM_OF_UNDERSTANDING", "Memorandum of understanding"),
-        ("ORAL_AGREEMENT", "Oral agreement"),
-        ("CONTRACT_SIGNED", "Contract signed"),
-        ("NEGOTIATIONS_FAILED", "Negotiations failed"),
-        ("CONTRACT_CANCELED", "Contract canceled"),
-        ("CONTRACT_EXPIRED", "Contract expired"),
-        ("CHANGE_OF_OWNERSHIP", "Change of ownership"),
-    ]
     negotiation_status = models.JSONField(
         _("Negotiation status"),
-        choices=NEGOTIATION_STATUS_CHOICES,
         blank=True,
         null=True,
     )
@@ -241,15 +215,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     # # Implementation status
-    IMPLEMENTATION_STATUS_CHOICES = (
-        ("PROJECT_NOT_STARTED", "Project not started"),
-        ("STARTUP_PHASE", "Startup phase (no production)"),
-        ("IN_OPERATION", "In operation (production)"),
-        ("PROJECT_ABANDONED", "Project abandoned"),
-    )
     implementation_status = models.JSONField(
         _("Implementation status"),
-        choices=IMPLEMENTATION_STATUS_CHOICES,
         blank=True,
         null=True,
     )
@@ -354,7 +321,7 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ Contracts """
-    contracts = ContractsField(_("Contracts"), default=list)
+    contracts = ContractsField(_("Contracts"), default=list, blank=True)
 
     """ Employment """
     total_jobs_created = models.BooleanField(_("Jobs created (total)"), null=True)
@@ -458,28 +425,8 @@ class Deal(models.Model, OldDealMixin):
         null=True,
         related_name="deals",
     )
-    ACTOR_MAP = (
-        (
-            "GOVERNMENT_OR_STATE_INSTITUTIONS",
-            _(
-                "Government / state institutions (government, ministries, departments, agencies etc.)"
-            ),
-        ),
-        (
-            "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
-            _("Traditional land-owners / communities"),
-        ),
-        (
-            "TRADITIONAL_LOCAL_AUTHORITY",
-            _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
-        ),
-        ("BROKER", _("Broker")),
-        ("INTERMEDIARY", _("Intermediary")),
-        ("OTHER", _("Other (please specify)")),
-    )
     involved_actors = models.JSONField(
         _("Actors involved in the negotiation / admission process"),
-        choices=ACTOR_MAP,
         blank=True,
         null=True,
     )
@@ -491,7 +438,7 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ Data sources """
-    datasources = DatasourcesField(_("Data sources"), default=list)
+    datasources = DatasourcesField(_("Data sources"), default=list, blank=True)
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
@@ -769,13 +716,13 @@ class Deal(models.Model, OldDealMixin):
     )
 
     contract_farming_crops = models.JSONField(
-        _("Contract farming crops"), help_text=_("ha"), blank=True, null=True
+        _("Contract farming crops"), blank=True, null=True
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
     contract_farming_animals = models.JSONField(
-        _("Contract farming livestock"), help_text=_("ha"), blank=True, null=True
+        _("Contract farming livestock"), blank=True, null=True
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
@@ -966,8 +913,7 @@ class Deal(models.Model, OldDealMixin):
         null=True,
     )
     current_intention_of_investment = ArrayField(
-        models.CharField(max_length=100),
-        choices=INTENTION_CHOICES,
+        models.CharField(max_length=100, choices=INTENTION_CHOICES),
         blank=True,
         null=True,
     )

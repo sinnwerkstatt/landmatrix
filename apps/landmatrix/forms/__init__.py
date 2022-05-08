@@ -36,6 +36,12 @@ class VueForm:
                 elif isinstance(choice, (list, tuple)):
                     choices[gettext(name)] = {cn: gettext(cv) for (cn, cv) in choice}
             richfield["choices"] = choices
+        if (
+            hasattr(mfield, "base_field")
+            and hasattr(mfield.base_field, "choices")
+            and mfield.base_field.choices
+        ):
+            richfield["choices"] = {x[0]: x[1] for x in mfield.base_field.choices}
         if mfield.help_text:
             richfield["help_text"] = gettext(mfield.help_text)
         if mfield.max_length:

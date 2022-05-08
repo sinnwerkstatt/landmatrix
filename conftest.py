@@ -9,3 +9,8 @@ def django_db_setup(django_db_setup, django_db_blocker):
         call_command("loaddata", "apps/landmatrix/fixtures/status.json")
         call_command("loaddata", "apps/landmatrix/fixtures/languages.json")
         call_command("loaddata", "apps/landmatrix/fixtures/users_and_groups.json")
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    pass

@@ -21,6 +21,7 @@ from apps.landmatrix.models import (
     Animal,
     Mineral,
 )
+from apps.landmatrix.models._choices import ACTOR_MAP
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -767,7 +768,7 @@ class DataDownload:
                     "#".join(
                         [
                             x.get("name", "") or "",
-                            dict(Deal.ACTOR_MAP)[x["role"]] if x.get("role") else "",
+                            dict(ACTOR_MAP)[x["role"]] if x.get("role") else "",
                         ]
                     )
                     for x in data["involved_actors"]
