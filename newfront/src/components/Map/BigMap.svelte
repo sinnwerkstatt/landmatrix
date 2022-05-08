@@ -10,6 +10,7 @@
     visibleContextLayers,
     visibleLayer,
   } from "$components/Map/layers";
+  import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte";
 
   export let options: MapOptions = {};
   export let containerClass = "";
@@ -68,8 +69,7 @@
     {/if}
   </div>
   {#if showLayerSwitcher}
-    <div>huhu</div>
-    <!--    <BigMapStandaloneLayerSwitcher />-->
+    <BigMapStandaloneLayerSwitcher />
   {/if}
 </div>
 
