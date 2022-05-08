@@ -3,10 +3,9 @@
 </template>
 
 <script lang="ts">
-  import dayjs from "dayjs";
+  import type { FormField } from "$components/Fields/fields";
   import Vue from "vue";
   import type { PropType } from "vue";
-  import type { FormField } from "$components/Fields/fields";
 
   export default Vue.extend({
     name: "DateField",
@@ -17,15 +16,9 @@
     },
     computed: {
       val(): string {
-        if (this.value) {
-          // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
-          // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
-          if (this.value.length === 4) return this.value;
-          if (this.value.length === 7) return this.value;
-          return dayjs(this.value).format("YYYY-MM-DD");
-        } else {
-          return "n/a";
-        }
+        // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
+        // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
+        return this.value ?? "n/a";
       },
     },
   });
