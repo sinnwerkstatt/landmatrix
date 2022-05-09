@@ -15,23 +15,12 @@ class CountryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Region)
-admin.site.register(models.Status)
 admin.site.register(models.HistoricalActivity)
 admin.site.register(models.ActivityAttributeGroup)
 admin.site.register(models.HistoricalActivityAttribute)
 admin.site.register(models.ActivityChangeset)
 admin.site.register(models.ReviewDecision)
 admin.site.register(models.ActivityFeedback)
-admin.site.register(models.Animal)
-admin.site.register(models.Mineral)
-
-
-@admin.register(models.Crop)
-class CropAdmin(admin.ModelAdmin):
-    list_display = ("code", "name", "slug", "fk_agricultural_produce")
-    list_filter = ("fk_agricultural_produce",)
-
-
 admin.site.register(models.Currency)
 
 

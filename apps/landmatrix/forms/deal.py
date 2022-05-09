@@ -12,17 +12,23 @@ from apps.landmatrix.forms.fields import (
     JSONJobsField,
 )
 from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
-from apps.landmatrix.models import Deal, Crop, Animal, Mineral
+from apps.landmatrix.models import Deal
 from apps.landmatrix.models._choices import (
     INTENTION_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
     ACTOR_MAP,
+    CROPS_CHOICES,
+    ANIMALS_CHOICES,
+    MINERALS_CHOICES,
+    CROPS,
+    ANIMALS,
+    MINERALS,
 )
 
 
 class DealForm(JSONFormOutputMixin, ModelForm):
-    id = IntegerField(label=_("ID"))
+    id = IntegerField(label=_("ID"), required=False)
     contract_size = JSONDateAreaField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
@@ -71,26 +77,27 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         required=False,
     )
     crops = JSONExportsField(
-        label=_("Crops area/yield/export"),
-        required=False,
+        label=_("Crops area/yield/export"), required=False, choices=CROPS_CHOICES
     )
     animals = JSONExportsField(
-        label=_("Livestock area/yield/export"),
-        required=False,
+        label=_("Livestock area/yield/export"), required=False, choices=ANIMALS_CHOICES
     )
     mineral_resources = JSONExportsField(
         label=_("Mineral resources area/yield/export"),
         required=False,
+        choices=MINERALS_CHOICES,
     )
     contract_farming_crops = JSONDateAreaChoicesField(
         label=_("Contract farming crops"),
         help_text=_("ha"),
         required=False,
+        choices=CROPS_CHOICES,
     )
     contract_farming_animals = JSONDateAreaChoicesField(
         label=_("Contract farming livestock"),
         help_text=_("ha"),
         required=False,
+        choices=ANIMALS_CHOICES,
     )
 
     class Meta:
@@ -114,23 +121,8 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "forest_concession",
             "transnational",
             "geojson",
+            "status",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # print(self.fields["contract_size"])
-        # print(self.fields["production_size"])
-        # breakpoint()
-        self.fields["operating_company"].choices = []
-        crops_choices = [(x.code, x.name) for x in Crop.objects.all()]
-        animals_choices = [(x.code, x.name) for x in Animal.objects.all()]
-        self.fields["crops"].choices = crops_choices
-        self.fields["animals"].choices = animals_choices
-        self.fields["mineral_resources"].choices = [
-            (x.code, x.name) for x in Mineral.objects.all()
-        ]
-        self.fields["contract_farming_crops"].choices = crops_choices
-        self.fields["contract_farming_animals"].choices = animals_choices
 
     @property
     def attributes(self):
@@ -190,25 +182,25 @@ class DealFrontendForm(VueForm):
             },
             "crops": {
                 "class": "JSONExportsField",
-                "choices": {c.code: c.name for c in Crop.objects.all()},
+                "choices": {k: v["name"] for k, v in CROPS.items()},
             },
             "animals": {
                 "class": "JSONExportsField",
-                "choices": {c.code: c.name for c in Animal.objects.all()},
+                "choices": {k: v["name"] for k, v in ANIMALS.items()},
             },
             "mineral_resources": {
                 "class": "JSONExportsField",
-                "choices": {c.code: c.name for c in Mineral.objects.all()},
+                "choices": {k: v["name"] for k, v in MINERALS.items()},
             },
             "contract_farming_crops": {
                 "class": "JSONDateAreaChoicesField",
-                "choices": {c.code: c.name for c in Crop.objects.all()},
+                "choices": {k: v["name"] for k, v in CROPS.items()},
                 "with_categories": False,
                 "help_text": _("ha"),
             },
             "contract_farming_animals": {
                 "class": "JSONDateAreaChoicesField",
-                "choices": {c.code: c.name for c in Animal.objects.all()},
+                "choices": {k: v["name"] for k, v in ANIMALS.items()},
                 "with_categories": False,
                 "help_text": _("ha"),
             },

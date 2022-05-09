@@ -463,21 +463,6 @@ class ActivityBase(models.Model):
             return int(float(production_size))
         return 0
 
-    def get_agricultural_produce(self):
-        from apps.landmatrix.models import Crop
-
-        crop_ids = set(a.value for a in self.attributes.filter(name="crops"))
-        crops = Crop.objects.select_related("fk_agricultural_produce").filter(
-            id__in=crop_ids
-        )
-        agricultural_produce = set(
-            c.fk_agricultural_produce.name for c in crops if c.fk_agricultural_produce
-        )
-        if len(agricultural_produce) > 1:
-            return self.AGRICULTURAL_PRODUCE_MULTI
-        else:
-            return list(agricultural_produce)
-
     def is_public_deal(self):
         # 1. Flag „not public“ set?
         if self.has_flag_not_public():

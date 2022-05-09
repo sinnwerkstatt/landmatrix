@@ -51,9 +51,6 @@ from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
     resolve_countries,
     resolve_regions,
-    resolve_minerals,
-    resolve_crops,
-    resolve_animals,
     resolve_chart_descriptions,
     resolve_currencies,
 )
@@ -88,9 +85,6 @@ query.set_field("investorversions", resolve_investorversions)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)
 query.set_field("currencies", resolve_currencies)
-query.set_field("animals", resolve_animals)
-query.set_field("crops", resolve_crops)
-query.set_field("minerals", resolve_minerals)
 query.set_field("formfields", resolve_formfields)
 query.set_field("statistics", resolve_statistics)
 query.set_field("blogpages", resolve_blogpages)

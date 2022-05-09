@@ -936,7 +936,7 @@ class Deal(models.Model, OldDealMixin):
     )
 
     """ # Timestamps """
-    created_at = models.DateTimeField(_("Created"), default=timezone.now)
+    created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,

@@ -7,7 +7,7 @@ from apps.landmatrix.models._choices import ACTOR_MAP
 
 class JSONDateAreaChoicesField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
-        self.choices = kwargs.pop("choices", [])
+        self.choices = kwargs.pop("choices")
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):
@@ -82,7 +82,7 @@ class JSONDateAreaField(JSONField):
 
 class JSONDateChoiceField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
-        self.choices = kwargs.pop("choices", [])
+        self.choices = kwargs.pop("choices")
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):
@@ -154,7 +154,7 @@ class JSONActorsField(JSONField):
 
 class JSONExportsField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
-        self.choices = kwargs.pop("choices", [])
+        self.choices = kwargs.pop("choices")
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):

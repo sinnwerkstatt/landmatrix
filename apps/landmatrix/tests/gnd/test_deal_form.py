@@ -1,8 +1,8 @@
 from apps.landmatrix.forms.deal import DealForm
 
 
-def test_get_deal_size():
-    assert DealForm({}).is_valid()
+def test_deal_form():
+    assert DealForm({}).errors == {}
 
     assert DealForm({"locations": [{"id": 12}]}).is_valid()
     assert not DealForm({"locations": [{"id": "12"}]}).is_valid()

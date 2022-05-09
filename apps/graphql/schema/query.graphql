@@ -40,9 +40,6 @@ type Query {
   countries: [Country]
   regions: [Region]
   currencies: [Currency]
-  animals: [Animal]
-  crops: [Crop]
-  minerals: [Mineral]
 
   formfields(language: String = "en"): FormFieldSet
 

@@ -17,11 +17,14 @@ from apps.landmatrix.models import (
     InvestorVentureInvolvement,
     Currency,
     Country,
-    Crop,
-    Animal,
-    Mineral,
 )
-from apps.landmatrix.models._choices import ACTOR_MAP, NATURE_OF_DEAL_CHOICES
+from apps.landmatrix.models._choices import (
+    ACTOR_MAP,
+    NATURE_OF_DEAL_CHOICES,
+    CROPS,
+    ANIMALS,
+    MINERALS,
+)
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -265,11 +268,11 @@ class Choices:
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
             if name == "crops":
-                self.choices[name] = dict(Crop.objects.values_list("code", "name"))
+                self.choices[name] = {k: v["name"] for k, v in CROPS.items()}
             if name == "animals":
-                self.choices[name] = dict(Animal.objects.values_list("code", "name"))
+                self.choices[name] = {k: v["name"] for k, v in ANIMALS.items()}
             if name == "mineral_resources":
-                self.choices[name] = dict(Mineral.objects.values_list("code", "name"))
+                self.choices[name] = {k: v["name"] for k, v in MINERALS.items()}
         return self.choices[name]
 
 
