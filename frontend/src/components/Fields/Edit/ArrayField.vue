@@ -5,7 +5,7 @@
         {{ formfield.label }}
       </label>
       <select v-model="val" multiple :name="formfield.name" class="form-control">
-        <option v-if="!formfield.required" :value="null">--------</option>
+        <!-- <option v-if="!formfield.required" :value="null">--------</option> -->
         <option v-for="(v, k) in formfield.choices" :key="k" :value="k">{{ v }}</option>
       </select>
     </div>

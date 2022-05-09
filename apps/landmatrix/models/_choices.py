@@ -20,6 +20,17 @@ INTENTION_CHOICES = [
     ("RENEWABLE_ENERGY", _("Renewable energy")),
     ("OTHER", _("Other")),
 ]
+NATURE_OF_DEAL_CHOICES = (
+    ("OUTRIGHT_PURCHASE", _("Outright purchase")),
+    ("LEASE", _("Lease")),
+    ("CONCESSION", _("Concession")),
+    (
+        "EXPLOITATION_PERMIT",
+        _("Exploitation permit / license / concession (for mineral resources)"),
+    ),
+    ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
+    ("OTHER", _("Other")),
+)
 
 NEGOTIATION_STATUS_CHOICES = [
     ("EXPRESSION_OF_INTEREST", _("Intended (Expression of interest)")),

@@ -21,7 +21,7 @@ from apps.landmatrix.models import (
     Animal,
     Mineral,
 )
-from apps.landmatrix.models._choices import ACTOR_MAP
+from apps.landmatrix.models._choices import ACTOR_MAP, NATURE_OF_DEAL_CHOICES
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -675,7 +675,7 @@ class DataDownload:
                 ]
             )
 
-        flatten_array_choices(data, "nature_of_deal", dict(Deal.NATURE_OF_DEAL_CHOICES))
+        flatten_array_choices(data, "nature_of_deal", dict(NATURE_OF_DEAL_CHOICES))
 
         if data.get("negotiation_status"):
             data["negotiation_status"] = "|".join(

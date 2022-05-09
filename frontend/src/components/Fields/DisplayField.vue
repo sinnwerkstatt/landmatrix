@@ -23,7 +23,10 @@
 </template>
 
 <script lang="ts">
+  import type { FormField } from "$components/Fields/fields";
+  import { custom_is_null } from "$utils/data_processing";
   import ArrayField from "./Display/ArrayField.vue";
+  import SimpleArrayField from "./Display/ArrayField.vue";
   import AutoField from "./Display/AutoField.vue";
   import BooleanField from "./Display/BooleanField.vue";
   import NullBooleanField from "./Display/BooleanField.vue";
@@ -34,10 +37,9 @@
   import IntegerField from "./Display/DecimalField.vue";
   import FileField from "./Display/FileField.vue";
   import ForeignKey from "./Display/ForeignKeyField.vue";
+  import ModelChoiceField from "./Display/ForeignKeyField.vue";
   import CountryForeignKey from "./Display/ForeignKeyField.vue";
   import InvestorForeignKey from "./Display/ForeignKeyField.vue";
-  import WorkflowInfosField from "./Display/WorkflowInfosField.vue";
-
   import JSONActorsField from "./Display/JSONActorsField.vue";
   import JSONDateAreaChoicesField from "./Display/JSONDateAreaChoicesField.vue";
   import JSONDateAreaField from "./Display/JSONDateAreaField.vue";
@@ -50,19 +52,22 @@
   import ManyToManyField from "./Display/ManyToManyField.vue";
   import OCIDField from "./Display/OCIDField.vue";
   import PointField from "./Display/PointField.vue";
+  import StatusField from "./Display/StatusField.vue";
   import CharField from "./Display/TextField.vue";
   import EmailField from "./Display/TextField.vue";
   import TextField from "./Display/TextField.vue";
-  import StatusField from "./Display/StatusField.vue";
   import URLField from "./Display/TextField.vue";
+  import TypedChoiceField from "./Display/TypedChoiceField.vue";
+  import WorkflowInfosField from "./Display/WorkflowInfosField.vue";
   import FieldLabel from "./FieldLabel.vue";
   import Vue from "vue";
-  import type { FormField } from "$components/Fields/fields";
-  import { custom_is_null } from "$utils/data_processing";
 
   export default Vue.extend({
     name: "DisplayField",
     components: {
+      TypedChoiceField,
+      SimpleArrayField,
+      ModelChoiceField,
       ArrayField,
       AutoField,
       BooleanField,

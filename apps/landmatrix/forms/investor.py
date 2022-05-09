@@ -1,23 +1,24 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, IntegerField
 
 from apps.landmatrix.forms import VueForm
+from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
 from django.utils.translation import gettext as _
 
 
-class InvestorForm(ModelForm):
+class InvestorForm(JSONFormOutputMixin, ModelForm):
+    id = IntegerField(label=_("ID"))
+
     class Meta:
         model = Investor
         exclude = [
             "involvements",
             "current_draft",
-            "created_at",
-            "created_by",
-            "modified_at",
-            "modified_by",
             "old_id",
             "is_actually_unknown",
         ]
+
+    attributes = {"country": {"class": "CountryForeignKey"}}
 
 
 class InvestorFrontendForm(VueForm):
@@ -33,7 +34,21 @@ class InvestorFrontendForm(VueForm):
     attributes = {"country": {"class": "CountryForeignKey"}}
 
 
-class InvestorVentureInvolvementForm(VueForm):
+class InvestorVentureInvolvementForm(JSONFormOutputMixin, ModelForm):
+    class Meta:
+        model = InvestorVentureInvolvement
+        fields = "__all__"
+
+    attributes = {
+        "involvement_type": {"class": "TextField", "label": _("Involvement type")},
+        "investor": {"class": "InvestorForeignKey"},
+        "venture": {"class": "InvestorForeignKey"},
+        "percentage": {"unit": "%"},
+        "loans_date": {"class": "DateField"},
+    }
+
+
+class InvestorVentureInvolvementFrontendForm(VueForm):
     model = InvestorVentureInvolvement
     attributes = {
         "involvement_type": {"class": "TextField", "label": _("Involvement type")},

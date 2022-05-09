@@ -19,43 +19,37 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
   import ManyToManyField from "./Display/ManyToManyField.vue";
-
-  // import AutoField from "./Display/AutoField";
+  import SimpleArrayField from "./Edit/ArrayField.vue";
   import ArrayField from "./Edit/ArrayField.vue";
-
   import BooleanField from "./Edit/BooleanField.vue";
   import NullBooleanField from "./Edit/BooleanField.vue";
-
+  import CountryForeignKey from "./Edit/CountryForeignKeyField.vue";
   import DateField from "./Edit/DateField.vue";
-  // import DateTimeField from "./Display/DateField";
   import DecimalField from "./Edit/DecimalField.vue";
   import FloatField from "./Edit/DecimalField.vue";
   import IntegerField from "./Edit/DecimalField.vue";
-
   import FileField from "./Edit/FileField.vue";
   import ForeignKey from "./Edit/ForeignKeyField.vue";
-  import CountryForeignKey from "./Edit/CountryForeignKeyField.vue";
+  import ModelChoiceField from "./Edit/ForeignKeyField.vue";
   import InvestorForeignKey from "./Edit/InvestorForeignKeyField.vue";
   import JSONActorsField from "./Edit/JSONActorsField.vue";
   import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.vue";
   import JSONDateAreaField from "./Edit/JSONDateAreaField.vue";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.vue";
   import JSONExportsField from "./Edit/JSONExportsField.vue";
-
   import JSONField from "./Edit/JSONField.vue";
   import JSONJobsField from "./Edit/JSONJobsField.vue";
   import JSONLeaseField from "./Edit/JSONLeaseField.vue";
   import PointField from "./Edit/PointField.vue";
-
   import CharField from "./Edit/TextField.vue";
   import EmailField from "./Edit/TextField.vue";
   import TextField from "./Edit/TextField.vue";
   import URLField from "./Edit/TextField.vue";
   import OCIDField from "./Edit/TextField.vue";
-
+  import TypedChoiceField from "./Edit/TypedChoiceField.vue";
   import FieldLabel from "./FieldLabel.vue";
+  import Vue from "vue";
 
   export default Vue.extend({
     name: "EditField",
@@ -63,6 +57,9 @@
       // AutoField,
       FieldLabel,
       ArrayField,
+      SimpleArrayField,
+      ModelChoiceField,
+      TypedChoiceField,
       BooleanField,
       CharField,
       DateField,

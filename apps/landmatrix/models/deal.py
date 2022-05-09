@@ -15,6 +15,7 @@ from apps.landmatrix.models._choices import (
     INTENTION_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
+    NATURE_OF_DEAL_CHOICES,
 )
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
@@ -181,21 +182,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     # Nature of the deal
-    NATURE_OF_DEAL_CHOICES = (
-        ("OUTRIGHT_PURCHASE", _("Outright purchase")),
-        ("LEASE", _("Lease")),
-        ("CONCESSION", _("Concession")),
-        (
-            "EXPLOITATION_PERMIT",
-            _("Exploitation permit / license / concession (for mineral resources)"),
-        ),
-        ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
-        ("OTHER", _("Other")),
-    )
     nature_of_deal = ArrayField(
-        models.CharField(
-            _("Nature of the deal"), max_length=100, choices=NATURE_OF_DEAL_CHOICES
-        ),
+        models.CharField(max_length=100, choices=NATURE_OF_DEAL_CHOICES),
         verbose_name=_("Nature of the deal"),
         blank=True,
         null=True,
@@ -442,10 +430,14 @@ class Deal(models.Model, OldDealMixin):
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
-        models.CharField(_("Name of community"), max_length=255), blank=True, null=True
+        models.CharField(max_length=255),
+        verbose_name=_("Name of community"),
+        blank=True,
+        null=True,
     )
     name_of_indigenous_people = ArrayField(
-        models.CharField(_("Name of indigenous people"), max_length=255),
+        models.CharField(max_length=255),
+        verbose_name=_("Name of indigenous people"),
         blank=True,
         null=True,
     )
@@ -476,11 +468,8 @@ class Deal(models.Model, OldDealMixin):
         ),
     )
     recognition_status = ArrayField(
-        models.CharField(
-            _("Recognition status of community land tenure"),
-            max_length=100,
-        ),
-        choices=RECOGNITION_STATUS_CHOICES,
+        models.CharField(max_length=100, choices=RECOGNITION_STATUS_CHOICES),
+        verbose_name=_("Recognition status of community land tenure"),
         blank=True,
         null=True,
     )
@@ -576,8 +565,8 @@ class Deal(models.Model, OldDealMixin):
         ("OTHER", _("Other")),
     )
     negative_impacts = ArrayField(
-        models.CharField(_("Negative impacts for local communities"), max_length=100),
-        choices=NEGATIVE_IMPACTS_CHOICES,
+        models.CharField(max_length=100, choices=NEGATIVE_IMPACTS_CHOICES),
+        verbose_name=_("Negative impacts for local communities"),
         blank=True,
         null=True,
     )
@@ -606,8 +595,8 @@ class Deal(models.Model, OldDealMixin):
         ("OTHER", _("Other")),
     )
     promised_benefits = ArrayField(
-        models.CharField(_("Promised benefits for local communities"), max_length=100),
-        choices=BENEFITS_CHOICES,
+        models.CharField(max_length=100, choices=BENEFITS_CHOICES),
+        verbose_name=_("Promised benefits for local communities"),
         blank=True,
         null=True,
     )
@@ -616,11 +605,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     materialized_benefits = ArrayField(
-        models.CharField(
-            _("Materialized benefits for local communities"),
-            max_length=100,
-        ),
-        choices=BENEFITS_CHOICES,
+        models.CharField(max_length=100, choices=BENEFITS_CHOICES),
+        verbose_name=_("Materialized benefits for local communities"),
         blank=True,
         null=True,
     )
@@ -645,9 +631,8 @@ class Deal(models.Model, OldDealMixin):
         ("OTHER", _("Other")),
     )
     former_land_owner = ArrayField(
-        models.CharField(max_length=100),
+        models.CharField(max_length=100, choices=FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
-        choices=FORMER_LAND_OWNER_CHOICES,
         blank=True,
         null=True,
     )
@@ -667,9 +652,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     former_land_use = ArrayField(
-        models.CharField(max_length=100),
+        models.CharField(max_length=100, choices=FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
-        choices=FORMER_LAND_USE_CHOICES,
         blank=True,
         null=True,
     )
@@ -691,9 +675,8 @@ class Deal(models.Model, OldDealMixin):
     )
 
     former_land_cover = ArrayField(
-        models.CharField(max_length=100),
+        models.CharField(max_length=100, choices=FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),
-        choices=FORMER_LAND_COVER_CHOICES,
         blank=True,
         null=True,
     )
@@ -828,9 +811,8 @@ class Deal(models.Model, OldDealMixin):
         ("LAKE", "Lake"),
     )
     source_of_water_extraction = ArrayField(
-        models.CharField(max_length=100),
+        models.CharField(max_length=100, choices=WATER_SOURCE_CHOICES),
         verbose_name=_("Source of water extraction"),
-        choices=WATER_SOURCE_CHOICES,
         blank=True,
         null=True,
     )
