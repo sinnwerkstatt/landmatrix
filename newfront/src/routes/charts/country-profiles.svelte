@@ -11,6 +11,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
+  import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte";
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte";
   import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte";
 </script>
@@ -26,7 +27,7 @@
     <!--    <LoadingPulse v-if="$apollo.loading" />-->
     <IntentionsPerCategory />
     <LSLAByNegotiation />
-    <!--    <DynamicsOfDeal />-->
+    <DynamicsOfDeal />
   </div>
 </ChartsContainer>
 
