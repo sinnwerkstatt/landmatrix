@@ -1,10 +1,6 @@
 <script lang="ts">
   import { showContextBar } from "./index";
   import Wimpel from "./Wimpel.svelte";
-
-  // showContextBar(state) {
-  //   this.$emit("visibility-changed", state);
-  // },
 </script>
 
 <div

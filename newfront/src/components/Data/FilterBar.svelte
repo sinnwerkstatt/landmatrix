@@ -47,12 +47,7 @@
       ]
     : [];
 
-  //   watch: {
-  //     showFilterBar(state) {
-  //       this.$emit("visibility-changed", state);
-  //     },
-  //   },
-  $: console.log(produce_choices);
+  // $: console.log(produce_choices);
 
   $: countriesWithDeals = $countries.filter((c) => c.deals.length > 0);
 

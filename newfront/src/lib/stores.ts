@@ -154,6 +154,23 @@ async function getBasics() {
   await formfields.set(gqlres.formfields);
 }
 
+export const chartDescriptions = writable(undefined);
+async function getChartDescriptions(language = "en") {
+  console.log("getChartDescriptions", { language });
+  if (get(chartDescriptions)) return;
+  const query = gql`
+    query chart_descriptions($language: String) {
+      chart_descriptions(language: $language) {
+        web_of_transnational_deals
+        dynamics_overview
+        produce_info_map
+      }
+    }
+  `;
+  const gqlres = await graphQLClient.request(query);
+  await chartDescriptions.set(gqlres.chart_descriptions);
+}
+
 export async function dispatchLogin(username: string, password: string) {
   const mutation = gql`
     mutation Login($username: String!, $password: String!) {
@@ -208,5 +225,6 @@ export async function fetchBasis(lang = "en") {
   await getObservatoryPages(lang);
   await getBlogCategories(lang);
   await getAboutPages(lang);
+  await getChartDescriptions(lang);
   await getBasics();
 }
