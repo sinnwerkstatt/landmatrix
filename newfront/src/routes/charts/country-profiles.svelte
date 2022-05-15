@@ -12,6 +12,7 @@
   import { _ } from "svelte-i18n";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte";
+  import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte";
 </script>
 
 <svelte:head>
@@ -19,11 +20,13 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div class="country-profile mt-20 overflow-visible flex flex-col">
+  <div
+    class="country-profile mt-20 overflow-visible flex flex-col w-[clamp(500px,90%,1000px)]"
+  >
     <!--    <LoadingPulse v-if="$apollo.loading" />-->
     <IntentionsPerCategory />
-    <!--    <LSLAByNegotiation :deals="deals" />-->
-    <!--    <DynamicsOfDeal :deals="deals" />-->
+    <LSLAByNegotiation />
+    <!--    <DynamicsOfDeal />-->
   </div>
 </ChartsContainer>
 

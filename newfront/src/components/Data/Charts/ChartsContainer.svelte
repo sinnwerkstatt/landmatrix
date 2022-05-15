@@ -11,22 +11,16 @@
     <slot name="ContextBar" />
   </ContextBarContainer>
   <div class="w-full h-full">
-    <div class="h-full">
-      <div
-        class="{$showFilterBar
-          ? 'w-[clamp(220px,20%,300px)]'
-          : 'w-0'} h-full float-left"
-      />
-      <div
-        class="{$showContextBar
-          ? 'w-[clamp(220px,20%,300px)]'
-          : 'w-0'} h-full float-right"
-      />
-      <div
-        class="text-center h-full flex justify-center overflow-y-auto overflow-x-auto"
-      >
-        <slot />
-      </div>
+    <div
+      class="{$showFilterBar ? 'w-[clamp(220px,20%,300px)]' : 'w-0'} h-full float-left"
+    />
+    <div
+      class="{$showContextBar
+        ? 'w-[clamp(220px,20%,300px)]'
+        : 'w-0'} h-full float-right"
+    />
+    <div class="text-center h-full flex justify-center overflow-y-auto overflow-x-auto">
+      <slot />
     </div>
   </div>
 </div>

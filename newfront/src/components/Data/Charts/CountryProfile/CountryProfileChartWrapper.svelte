@@ -20,9 +20,9 @@
   }
 </script>
 
-<div class="min-h-[75vh] mx-4 my-12 p-1 flex flex-col flex-nowrap bg-orange-50">
+<div class="drop-shadow mx-4 my-12 p-1 flex flex-col flex-nowrap bg-orange-50">
   <slot name="heading">
-    <h2 class="text-lg">{title}</h2>
+    <h2 class="text-lg font-bold my-3">{title}</h2>
   </slot>
   <div
     class="max-w-full bg-white flex justify-center items-center flex-auto	svg-wrapper"
