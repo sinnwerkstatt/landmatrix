@@ -1,6 +1,7 @@
 import base64
 import os
 
+from django.contrib.gis.geos import Point
 from django.core.files.storage import DefaultStorage
 from graphql import GraphQLResolveInfo, GraphQLError
 
@@ -174,8 +175,27 @@ def resolve_change_deal_status(
     return {"dealId": dealId, "dealVersion": dealVersion}
 
 
+def _clean_payload(payload):
+    foreignkeys = {
+        x.name: x.related_model
+        for x in Deal._meta.fields
+        if x.__class__.__name__ == "ForeignKey"
+    }
+    for key, value in payload.items():
+        if key in foreignkeys:
+            if value:
+                payload[key] = foreignkeys[key].objects.get(id=value["id"])
+        elif key == "point":
+            payload["point"] = Point(value["lng"], value["lat"])
+        elif key in ["locations", "datasources", "contracts"]:
+            new_value = [
+                val for val in value if any([v for k, v in val.items() if k != "id"])
+            ]
+            payload[key] = new_value
+
+
 def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
-    print(payload)
+    _clean_payload(payload)
     dealId, dealVersion = object_edit(
         otype="deal",
         user=info.context["request"].user,

@@ -1023,24 +1023,7 @@ class Deal(models.Model, OldDealMixin):
                 "__typename",
             ]:
                 continue  # ignore these fields
-            elif key in [
-                x.name
-                for x in self._meta.fields
-                if x.__class__.__name__ == "ForeignKey"
-            ]:
-                self.__setattr__(f"{key}_id", value["id"] if value else None)
-            elif key == "point":
-                self.point = Point(value["lng"], value["lat"])
-            elif key in ["locations", "datasources", "contracts"]:
-                new_value = [
-                    val
-                    for val in value
-                    if any([v for k, v in val.items() if k != "id"])
-                ]
-                self.__setattr__(key, new_value)
-
-            else:
-                self.__setattr__(key, value)
+            self.__setattr__(key, value)
 
     def serialize_for_version(self) -> dict:
         serialized_json = serializers.serialize("json", (self,))

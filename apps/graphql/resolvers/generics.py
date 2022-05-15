@@ -5,6 +5,8 @@ from django.utils import timezone
 from graphql import GraphQLError, GraphQLResolveInfo
 
 from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
+from apps.landmatrix.forms.deal import DealForm
+from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
 from apps.landmatrix.models.gndinvestor import (
@@ -177,6 +179,13 @@ def object_edit(
         raise GraphQLError("not authorized")
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
+
+    # verify that the form is correct
+    ObjectForm = DealForm if otype == "deal" else InvestorForm
+    form = ObjectForm(payload)
+    if not form.is_valid():
+        return form.errors
+
     # this is a new Object
     if obj_id == -1:
         obj = Object()
