@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { computePosition } from "@floating-ui/dom";
   import Cookies from "js-cookie";
   import { _, locale } from "svelte-i18n";
   import {
@@ -17,6 +16,7 @@
   import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
   import UserRegular from "$components/icons/UserRegular.svelte";
   import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
+  import NavDropDown from "./LowLevel/NavDropDown.svelte";
 
   let language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
@@ -41,32 +41,6 @@
     await fetchBasis(lang);
   }
 
-  function showDropdown(e) {
-    const referenceElement = e.currentTarget;
-    const dropdownMenu = e.currentTarget.parentNode.querySelector(".dropdown-menu");
-
-    function applyStyles({ x = 0, y = 0 }) {
-      Object.assign(dropdownMenu.style, {
-        display: "block",
-        left: `${x}px`,
-        top: `${y}px`,
-      });
-    }
-
-    computePosition(referenceElement, dropdownMenu, {
-      placement: "bottom",
-    }).then(applyStyles);
-
-    dropdownMenu.style.display = "block";
-
-    const closeMenuClick = (e) => {
-      if (e.target === dropdownMenu || dropdownMenu.contains(e.target)) return;
-      dropdownMenu.style.display = "none";
-      document.removeEventListener("click", closeMenuClick, true);
-    };
-    setTimeout(() => document.addEventListener("click", closeMenuClick, true), 100);
-  }
-
   let username = "";
   let password = "";
   let login_failed_message = "";
@@ -77,7 +51,6 @@
   async function logout() {
     if (await dispatchLogout()) location.reload();
   }
-  function closeMenu() {}
 </script>
 
 <nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex px-2">
@@ -111,90 +84,96 @@
     </button>
     <div class="hidden w-full flex-grow items-center lg:flex lg:w-auto">
       <ul class="flex w-full items-center">
-        <li class="nav-item dropdown">
-          <a class="nav-link" on:click={showDropdown} role="button">
-            {$_("Data")}
-          </a>
-          <div class="dropdown-menu">
+        <NavDropDown title={$_("Data")}>
+          <ul class="border border-orange bg-white">
             {#each dataLinks as { name, href }}
-              <a {href} on:click={closeMenu}>
-                {$_(name)}
-              </a>
+              <li class="whitespace-nowrap">
+                <a {href} class="nav-link">
+                  {$_(name)}
+                </a>
+              </li>
             {/each}
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" on:click={showDropdown} role="button">
-            {$_("Observatories")}
-          </a>
-          <div class="dropdown-menu divide-y divide-solid">
+          </ul>
+        </NavDropDown>
+
+        <NavDropDown title={$_("Observatories")}>
+          <div class="divide-y divide-solid border border-orange bg-white">
             {#each Object.values(observatoriesGroups) as obs}
-              <div>
+              <ul>
                 {#each obs as observatory}
-                  <a href="/observatory/{observatory.meta.slug}" on:click={closeMenu}>
-                    {observatory.title}
-                  </a>
+                  <li class="whitespace-nowrap">
+                    <a class="nav-link" href="/observatory/{observatory.meta.slug}">
+                      {observatory.title}
+                    </a>
+                  </li>
                 {/each}
-              </div>
+              </ul>
             {/each}
           </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" on:click={showDropdown} role="button">
-            {$_("Resources")}
-          </a>
-          <div class="dropdown-menu">
+        </NavDropDown>
+
+        <NavDropDown title={$_("Resources")}>
+          <ul class="border border-orange bg-white">
             {#each $blogCategories as cat}
-              <a href="/resources/?category={cat.slug}" on:click={closeMenu}>
-                {$_(cat.name)}
-              </a>
+              <li class="whitespace-nowrap">
+                <a class="nav-link" href="/resources/?category={cat.slug}">
+                  {$_(cat.name)}
+                </a>
+              </li>
             {/each}
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" on:click={showDropdown} role="button">
-            {$_("About")}
-          </a>
-          <div class="dropdown-menu">
+          </ul>
+        </NavDropDown>
+
+        <NavDropDown title={$_("About")}>
+          <ul class="border border-orange bg-white">
             {#each $aboutPages as { title, meta }}
-              <a href="/about/{meta.slug}/" on:click={closeMenu}>
-                {$_(title)}
-              </a>
+              <li class="whitespace-nowrap">
+                <a class="nav-link" href="/about/{meta.slug}/">
+                  {$_(title)}
+                </a>
+              </li>
             {/each}
-          </div>
-        </li>
+          </ul>
+        </NavDropDown>
+
         <li class="nav-item">
-          <a class="nav-link" href="/faq/" on:click={closeMenu}>
+          <a class="nav-link" href="/faq/">
             {$_("FAQ")}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/contribute/" on:click={closeMenu}>
+          <a class="nav-link" href="/contribute/">
             {$_("Contribute")}
           </a>
         </li>
       </ul>
       <ul class="flex items-center ml-auto">
         <!--          <NavbarSearch />-->
-        <li class="nav-item dropdown">
-          <a class="nav-link" on:click={showDropdown} role="button">
+
+        <NavDropDown placement="bottom-end">
+          <div slot="title" class="whitespace-nowrap">
             <TranslateIcon class="h-4 w-4 inline" />
             {languages[language]}
-          </a>
-          <div class="dropdown-menu">
-            {#each Object.entries(languages) as [lcode, lingo]}
-              <a
-                class:active={lcode === language}
-                on:click={() => switchLanguage(lcode)}
-              >
-                {lingo} ({lcode})
-              </a>
-            {/each}
           </div>
-        </li>
+
+          <ul class="border border-orange bg-white">
+            {#each Object.entries(languages) as [lcode, lingo]}
+              <li class="whitespace-nowrap">
+                <a
+                  class="nav-link"
+                  class:active={lcode === language}
+                  on:click={() => switchLanguage(lcode)}
+                >
+                  {lingo} ({lcode})
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </NavDropDown>
+
         {#if $user}
-          <li class="nav-item dropdown">
-            <a on:click={showDropdown} class="nav-link flex items-center" role="button">
+          <NavDropDown placement="bottom-end">
+            <div slot="title" class="whitespace-nowrap">
               {$user.initials}
               {#if $user.role === "ADMINISTRATOR"}
                 <UserAstronautSolid class="h-4 w-4 inline" />
@@ -208,83 +187,91 @@
               {:else}
                 <i class="fa fa-user" />
               {/if}
-            </a>
-            <div aria-labelledby="#navbarDropdown" class="dropdown-menu ">
+            </div>
+
+            <div class="divide-y divide-solid border border-orange bg-white">
               <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
                 {$user.full_name}
                 <br />
                 <small>{$_($user.bigrole)}</small>
               </p>
-              <hr />
-              <!--suppress HtmlUnknownTarget -->
+
               {#if $user.is_impersonate}
-                <a href="/impersonate/stop/?next=/dashboard/">
-                  {$_("Stop impersonation")}
-                </a>
-                <hr />
+                <ul>
+                  <li>
+                    <a class="nav-link" href="/impersonate/stop/?next=/dashboard/">
+                      {$_("Stop impersonation")}
+                    </a>
+                  </li>
+                </ul>
               {/if}
 
-              <a href="/manager/">
-                {$_("Manage")}
-              </a>
-              <a href="/case_statistics/">
-                {$_("Case statistics")}
-              </a>
-              <hr />
-              <a href="/deal/add">
-                {$_("Add a deal")}
-              </a>
-              <a on:click|preventDefault={logout}>
-                {$_("Logout")}
-              </a>
+              <ul>
+                <li>
+                  <a class="nav-link" href="/manager/">
+                    {$_("Manage")}
+                  </a>
+                </li>
+                <li class="whitespace-nowrap">
+                  <a class="nav-link" href="/case_statistics/">
+                    {$_("Case statistics")}
+                  </a>
+                </li>
+              </ul>
+              <ul>
+                <li>
+                  <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
+                </li>
+                <li>
+                  <a class="nav-link" on:click|preventDefault={logout}>
+                    {$_("Logout")}
+                  </a>
+                </li>
+              </ul>
             </div>
-          </li>
+          </NavDropDown>
         {:else}
-          <li class="nav-item dropdown">
-            <a
-              on:click={showDropdown}
-              class="nav-link"
-              role="button"
-              title="Login/Register"
-            >
+          <NavDropDown placement="bottom-end">
+            <div slot="title" class="whitespace-nowrap" title="Login/Register">
               <UserRegular class="h-4 w-4 inline mx-1" />
-            </a>
-            <div class="dropdown-menu right-0">
-              <form on:submit|preventDefault={login} class="px-4 pt-3">
-                <div class="form-group">
-                  <input
-                    autocomplete="username"
-                    class="inpt"
-                    id="username"
-                    placeholder="Username"
-                    type="text"
-                    bind:value={username}
-                  />
-                </div>
-                <div class="form-group">
-                  <input
-                    autocomplete="current-password"
-                    class="inpt"
-                    id="password"
-                    placeholder="Password"
-                    type="password"
-                    bind:value={password}
-                  />
-                </div>
+            </div>
+            <div class="divide-y divide-solid border border-orange bg-white">
+              <form on:submit|preventDefault={login} class="px-4 pt-3 space-y-2">
+                <input
+                  autocomplete="username"
+                  class="inpt"
+                  id="username"
+                  placeholder="Username"
+                  type="text"
+                  bind:value={username}
+                />
+                <input
+                  autocomplete="current-password"
+                  class="inpt"
+                  id="password"
+                  placeholder="Password"
+                  type="password"
+                  bind:value={password}
+                />
                 <button class="btn btn-secondary" type="submit">
                   {$_("Login")}
                 </button>
                 <p class="mt-3 text-danger small">{login_failed_message}</p>
               </form>
-              <hr />
-              <a href="/account/register/">
-                {$_("New around here? Sign up")}
-              </a>
-              <a href="/account/password_reset/">
-                {$_("Forgot password?")}
-              </a>
+              <ul>
+                <li class="whitespace-nowrap">
+                  <a class="nav-link" href="/account/register/">
+                    {$_("New around here? Sign up")}
+                  </a>
+                </li>
+                <li class="whitespace-nowrap">
+                  <a class="nav-link" href="/account/password_reset/">
+                    {$_("Forgot password?")}
+                  </a>
+                </li>
+              </ul>
             </div>
-          </li>
+          </NavDropDown>
         {/if}
       </ul>
     </div>
@@ -292,54 +279,12 @@
 </nav>
 
 <style>
-  .dropdown-menu {
-    @apply absolute border border-orange bg-white hidden absolute;
-    /*background-clip: padding-box;*/
-    /*color: #212529;*/
-    /*float: left;*/
-    /*left: 0;*/
-    /*list-style: none;*/
-    /*margin: 0.125rem 0 0;*/
-    /*min-width: 10rem;*/
-
-    /*text-align: left;*/
-    /*top: 100%;*/
-    /*z-index: 1000;*/
-  }
-
-  .dropdown-menu a {
+  :global(.nav-link) {
     @apply px-4 py-2 block text-black;
     @apply hover:bg-gray-200;
     @apply active:bg-orange active:text-white;
   }
-
-  .nav-link {
-    @apply text-black py-2 px-5 hover:text-orange;
-  }
-
-  .nav-item {
-    @apply whitespace-nowrap;
-  }
-
-  /*.nav-item.dropdown {*/
-  /*  @apply relative;*/
-  /*}*/
-
-  .nav-item.dropdown > a {
-    @apply relative pr-[20px];
-    @apply hover:text-orange;
-  }
-
-  .nav-item.dropdown > a::after {
-    @apply inline-block;
-    content: url("data:image/svg+xml; utf8, <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 12l-8 8-8-8' /></svg>");
-  }
-
-  .nav-item.dropdown > a:hover::after {
-    content: url("data:image/svg+xml; utf8, <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23fc941f'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 12l-8 8-8-8' /></svg>");
-  }
-
-  ul .a-exact-active {
+  :global(.nav-link.active) {
     @apply bg-orange text-white;
   }
 </style>

@@ -1,15 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  // if (this.$route.name === "list_deals") {
-  //   return this.label.deals;
-  // } else if (this.$route.name === "list_investors") {
-  //   return this.label.investors;
-  // } else {
-  //   return $_("Table");
-  // }
-  // }
-  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
-  import DropDown from "../LowLevel/DropDown.svelte";
+  import { page } from "$app/stores";
+  import NavDropDown from "$components/LowLevel/NavDropDown.svelte";
 
   const label = { deals: $_("Deals"), investors: $_("Investors") };
   const chartEntries = [
@@ -17,81 +9,63 @@
       title: $_("Web of transnational deals"),
       route: "/charts/web-of-transnational-deals",
     },
-    {
-      title: $_("Dynamics overview"),
-      route: "/charts/dynamics-overview",
-    },
-    {
-      title: $_("Produce info map"),
-      route: "/charts/produce-info",
-    },
-    {
-      title: $_("Country profiles"),
-      route: "/charts/country-profiles",
-    },
+    { title: $_("Dynamics overview"), route: "/charts/dynamics-overview" },
+    { title: $_("Produce info map"), route: "/charts/produce-info" },
+    { title: $_("Country profiles"), route: "/charts/country-profiles" },
   ];
 
-  // $: isListRoute = return ["list_deals", "list_investors"].includes($route.name);
-
-  let isListRoute = false;
-  let isChartRoute = false;
-  // let isChartRoute() {
-  //   return this.chartEntries.map((e) => e.route_name).includes(this.$route.name);
-
+  console.log($page.url.pathname);
   $: dataItemName = {};
 </script>
 
 <div class="absolute mx-auto top-3 inset-x-0 text-center z-30 drop-shadow">
-  <nav>
-    <ul class="inline-flex drop-shadow">
-      <li class="bg-white px-4 py-1">
-        <a href="/map" class="text-black">
+  <nav id="data-navigation">
+    <ul class="inline-flex drop-shadow bg-white text-left">
+      <li>
+        <a
+          href="/map"
+          class="nav-link"
+          class:active={$page.url.pathname.startsWith("/map")}
+        >
           {$_("Map")}
         </a>
       </li>
-      <li class="bg-white px-4 py-1">
-        <DropDown>
-          <div slot="button" class="flex items-center gap-2 hover:text-orange">
-            {$_("Table")}
-            <ChevronDownIcon class="h-3 w-3" />
-          </div>
-          <div class="bg-white border-orange-50 p-2 text-left">
-            <div class="bg-white border-orange-50 p-2 text-left">
-              {#if dataItemName !== label.deals}
-                <a href="/deals" class="block">
-                  {label.deals}
-                </a>
-              {/if}
-              {#if dataItemName !== label.investors}
-                <a href="/investors" class="block">
-                  {label.investors}
-                </a>
-              {/if}
-            </div>
-          </div>
-        </DropDown>
-      </li>
+      <NavDropDown
+        title={$_("Table")}
+        class={$page.url.pathname.startsWith("/list") ? "bg-orange text-white" : ""}
+      >
+        <ul class="border border-orange bg-white">
+          {#if dataItemName !== label.deals}
+            <li>
+              <a href="/list/deals" class="nav-link">
+                {label.deals}
+              </a>
+            </li>
+          {/if}
+          {#if dataItemName !== label.investors}
+            <li>
+              <a href="/list/investors" class="nav-link">
+                {label.investors}
+              </a>
+            </li>
+          {/if}
+        </ul>
+      </NavDropDown>
 
-      <li class="bg-white px-4 py-1">
-        <DropDown>
-          <div slot="button" class="flex items-center gap-2 hover:text-orange">
-            {$_("Charts")}
-            <ChevronDownIcon class="h-3 w-3" />
-          </div>
-          <div class="bg-white border-orange-50 p-2 text-left">
-            <div class="bg-white border-orange-50 p-2 text-left">
-              <div class="bg-white border-orange-50 p-2 text-left">
-                {#each chartEntries as entry}
-                  <a href={entry.route} class="block">
-                    {entry.title}
-                  </a>
-                {/each}
-                <div id="arrow" data-popper-arrow />
-              </div>
-            </div>
-          </div>
-        </DropDown>
-      </li>
+      <NavDropDown
+        title={$_("Charts")}
+        class={$page.url.pathname.startsWith("/charts") ? "bg-orange text-white" : ""}
+      >
+        <ul class="border border-orange bg-white">
+          {#each chartEntries as entry}
+            <li class="whitespace-nowrap">
+              <a href={entry.route} class="nav-link">
+                {entry.title}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </NavDropDown>
     </ul>
   </nav>
 </div>
