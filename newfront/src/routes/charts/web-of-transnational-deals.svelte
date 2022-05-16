@@ -9,10 +9,10 @@
 </script>
 
 <script lang="ts">
-  import { gql, request } from "graphql-request";
+  import { gql } from "@apollo/client/core";
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { GQLEndpoint } from "$lib";
+  import { client } from "$lib/apolloClient";
   import { filters } from "$lib/filters";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte";
@@ -31,22 +31,21 @@
   }
 
   const grabTransnationalDeals = async () => {
-    const result = await request(
-      GQLEndpoint,
-      gql`
+    const { data } = await client.query<{ transnational_deals: unknown[] }>({
+      query: gql`
         query WebOfTransnationalDeals($filters: [Filter]) {
           transnational_deals(filters: $filters)
         }
       `,
-      {
+      variables: {
         filters: $filters
           .toGQLFilterArray()
           .filter(
             (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
           ),
-      }
-    );
-    transnational_deals = result.transnational_deals;
+      },
+    });
+    transnational_deals = data.transnational_deals;
   };
 
   $: $filters && grabTransnationalDeals();
@@ -69,7 +68,7 @@
   </div>
 
   <div slot="ContextBar">
-    <ContextBarWebOfTransnationalDeals filters="filtered_filtersForGQL" />
+    <ContextBarWebOfTransnationalDeals />
   </div>
 </ChartsContainer>
 

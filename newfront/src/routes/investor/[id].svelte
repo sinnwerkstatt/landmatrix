@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import { request } from "graphql-request";
-  import { GQLEndpoint } from "$lib";
+  import { client } from "$lib/apolloClient";
+  import type { Investor } from "$lib/types/investor";
   import { investor_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
@@ -9,16 +9,18 @@
       id: +params.id,
       includeDeals: true,
     };
-    const investor = await request(GQLEndpoint, investor_gql_query, variables);
-    console.log(JSON.stringify(investor, undefined, 2));
+    const { data } = await client.query<{ investor: Investor }>({
+      query: investor_gql_query,
+      variables,
+    });
+    console.log(JSON.stringify(data.investor, undefined, 2));
 
-    return { props: { investor } };
+    return { props: { investor: data.investor } };
   };
 </script>
 
 <script lang="ts">
   import { page } from "$app/stores";
-  import type { Investor } from "$lib/types/investor";
 
   export let investor: Investor;
   const investorID = $page.params.id;

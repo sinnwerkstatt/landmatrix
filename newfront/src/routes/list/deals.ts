@@ -1,18 +1,18 @@
 import type { RequestHandler } from "@sveltejs/kit";
-import { request } from "graphql-request";
-import { GQLEndpoint } from "$lib";
+import { client } from "$lib/apolloClient";
 import { FilterValues } from "$lib/filters";
 import { data_deal_query_gql } from "./query";
 
 export const get: RequestHandler = async () => {
-  const variables = {
-    limit: 100,
-    filters: new FilterValues().default().toGQLFilterArray(),
-    subset: "PUBLIC",
-  };
-
-  const ret = await request(GQLEndpoint, data_deal_query_gql, variables);
-  const deals = ret.deals;
+  const { data } = await client.query({
+    query: data_deal_query_gql,
+    variables: {
+      limit: 100,
+      filters: new FilterValues().default().toGQLFilterArray(),
+      subset: "PUBLIC",
+    },
+  });
+  const deals = data.deals;
 
   if (deals) {
     return {

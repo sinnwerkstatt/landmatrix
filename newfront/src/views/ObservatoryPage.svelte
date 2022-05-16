@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { gql, request } from "graphql-request";
+  import { gql } from "@apollo/client/core";
   import Pie from "svelte-chartjs/src/Pie.svelte";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
-  import { GQLEndpoint } from "$lib";
+  import { client } from "$lib/apolloClient";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
   import { user } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
@@ -29,30 +29,34 @@
   $: countryID = page.country ? page.country.id : undefined;
 
   async function getAggregations() {
-    const q = gql`
-      query DealAggregations($fields: [String]!, $subset: Subset, $filters: [Filter]) {
-        deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
-          current_negotiation_status {
-            value
-            size
-            count
-          }
-        }
-      }
-    `;
-
     let filters = defaultFilterValues();
     filters.negotiation_status = [];
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const variables = {
-      fields: ["current_negotiation_status"],
-      filters: filters.toGQLFilterArray(),
-      subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
-    };
-    const result = await request(GQLEndpoint, q, variables);
-    const curNegStat = result.deal_aggregations.current_negotiation_status;
+    const { data } = await client.query({
+      query: gql`
+        query DealAggregations(
+          $fields: [String]!
+          $subset: Subset
+          $filters: [Filter]
+        ) {
+          deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
+            current_negotiation_status {
+              value
+              size
+              count
+            }
+          }
+        }
+      `,
+      variables: {
+        fields: ["current_negotiation_status"],
+        filters: filters.toGQLFilterArray(),
+        subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
+      },
+    });
+    const curNegStat = data.deal_aggregations.current_negotiation_status;
     // const curNegStat = page.current_negotiation_status_metrics
     totalCount = curNegStat
       .map((ns) => ns.count)

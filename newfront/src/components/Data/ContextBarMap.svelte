@@ -27,9 +27,11 @@
       observatory_page: $observatoryPages.find((o) => !o.country && !o.region),
     };
   } else {
-    currentItem = $filters.region_id
-      ? $regions.find((r) => r.id === $filters.region_id)
-      : $countries.find((c) => c.id === $filters.country_id);
+    currentItem = {
+      ...($filters.region_id
+        ? $regions.find((r) => r.id === $filters.region_id)
+        : $countries.find((c) => c.id === $filters.country_id)),
+    };
     currentItem.observatory_page = $observatoryPages.find(
       (o) => o.id === currentItem.observatory_page_id
     );

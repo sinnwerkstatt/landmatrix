@@ -52,14 +52,12 @@
   on:downloadJSON={downloadJSON}
   on:downloadCSV={downloadCSV}
 >
-  <template slot="default">
-    <svg id="dynamicsofdeal" />
-  </template>
+  <svg id="dynamicsofdeal" />
 
-  <template slot="legend">
+  <div slot="legend">
     {$_(
       "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.",
-      { value: { number: multideals } }
+      { values: { number: multideals } }
     )}
-  </template>
+  </div>
 </CountryProfileChartWrapper>

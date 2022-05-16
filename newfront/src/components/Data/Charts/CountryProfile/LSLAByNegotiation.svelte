@@ -102,8 +102,7 @@
   on:downloadJSON={downloadJSON}
   on:downloadCSV={downloadCSV}
 >
-  <template slot="default">
-    <svg id="lslabyneg" />
-  </template>
+  <svg id="lslabyneg" />
+
   <!--    <template slot="legend"> Legende </template>-->
 </CountryProfileChartWrapper>

@@ -1,6 +1,6 @@
-import { gql, request } from "graphql-request";
+import { gql } from "@apollo/client/core";
 import { get, writable } from "svelte/store";
-import { GQLEndpoint } from "$lib";
+import { client } from "$lib/apolloClient";
 import type { BlogPage } from "$lib/types/wagtail";
 
 const blogpages = writable<BlogPage[]>(undefined);
@@ -29,7 +29,9 @@ export async function getBlogPages(language = "en"): Promise<BlogPage[]> {
       }
     }
   `;
-  const res = await request(GQLEndpoint, blogpages_query);
-  await blogpages.set(res.blogpages);
-  return res.blogpages;
+  const { data } = await client.query<{ blogpages: BlogPage[] }>({
+    query: blogpages_query,
+  });
+  await blogpages.set(data.blogpages);
+  return data.blogpages;
 }

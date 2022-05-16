@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import { gql } from "@apollo/client/core";
 
 export const data_deal_query_gql = gql`
   query ($limit: Int!, $subset: Subset, $filters: [Filter]) {

@@ -1,4 +1,4 @@
-import { gql, GraphQLClient } from "graphql-request";
+import { gql } from "@apollo/client/core";
 import { get, writable } from "svelte/store";
 import type { User } from "$lib/types/user";
 import type {
@@ -9,23 +9,18 @@ import type {
   WagtailPage,
 } from "$lib/types/wagtail";
 import type { FormField } from "$components/Fields/fields";
-import { GQLEndpoint, RESTEndpoint } from "./index";
+import { client } from "./apolloClient";
+import { RESTEndpoint } from "./index";
 
-const graphQLClient = new GraphQLClient(GQLEndpoint, {
-  credentials: "include",
-  mode: "cors",
-});
+export const observatoryPages = writable<ObservatoryPage[]>([]);
 
-export const observatoryPages = writable<ObservatoryPage[]>(undefined);
-
-async function getObservatoryPages(language = "en"): Promise<ObservatoryPage[]> {
+async function getObservatoryPages(language = "en") {
   console.log("getObservatoryPages", { language });
   const observatoriesStore = get(observatoryPages);
   if (observatoriesStore !== undefined) return observatoriesStore;
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
   const res = await (await fetch(url)).json();
   await observatoryPages.set(res.items);
-  return res.items;
 }
 
 export const aboutPages = writable(undefined);
@@ -44,27 +39,21 @@ async function getAboutPages(language = "en"): Promise<WagtailPage[]> {
 }
 
 export const blogCategories = writable<BlogCategory[]>(undefined);
-
-async function getBlogCategories(language = "en"): Promise<BlogCategory[]> {
+async function getBlogCategories(language = "en") {
   console.log("getBlogCategories", { language });
-  const blogcategoriesStore = get(blogCategories);
-  if (blogcategoriesStore !== undefined) return blogcategoriesStore;
-  const query = gql`
-    query ($language: String) {
-      blogcategories(language: $language) {
-        id
-        name
-        slug
+  const { data } = await client.query<{ blogcategories: BlogCategory[] }>({
+    query: gql`
+      query ($language: String) {
+        blogcategories(language: $language) {
+          id
+          name
+          slug
+        }
       }
-    }
-  `;
-  const variables = { language };
-  const gqlres = await graphQLClient.request<{ blogcategories: BlogCategory[] }>(
-    query,
-    variables
-  );
-  await blogCategories.set(gqlres.blogcategories);
-  return gqlres.blogcategories;
+    `,
+    variables: { language },
+  });
+  await blogCategories.set(data.blogcategories);
 }
 
 type FormFields = {
@@ -85,90 +74,95 @@ async function getBasics() {
   console.log("getBasics");
   const userStore = get(user);
   if (userStore !== undefined) return userStore;
-  const query = gql`
-    query {
-      me {
-        id
-        full_name
-        username
-        initials
-        is_authenticated
-        is_impersonate
-        role
-        userregionalinfo {
-          country {
-            id
-            name
+  const { data } = await client.query({
+    query: gql`
+      query {
+        me {
+          id
+          full_name
+          username
+          initials
+          is_authenticated
+          is_impersonate
+          role
+          userregionalinfo {
+            country {
+              id
+              name
+            }
+            region {
+              id
+              name
+            }
           }
-          region {
+          groups {
             id
             name
           }
         }
-        groups {
+        countries {
           id
           name
+          code_alpha2
+          slug
+          point_lat
+          point_lon
+          point_lat_min
+          point_lon_min
+          point_lat_max
+          point_lon_max
+          observatory_page_id
+          high_income
+          deals {
+            id
+          }
         }
-      }
-      countries {
-        id
-        name
-        code_alpha2
-        slug
-        point_lat
-        point_lon
-        point_lat_min
-        point_lon_min
-        point_lat_max
-        point_lon_max
-        observatory_page_id
-        high_income
-        deals {
+        regions {
           id
+          name
+          slug
+          point_lat_min
+          point_lon_min
+          point_lat_max
+          point_lon_max
+          observatory_page_id
+        }
+        formfields {
+          deal
+          location
+          contract
+          datasource
+          investor
+          involvement
         }
       }
-      regions {
-        id
-        name
-        slug
-        point_lat_min
-        point_lon_min
-        point_lat_max
-        point_lon_max
-        observatory_page_id
-      }
-      formfields {
-        deal
-        location
-        contract
-        datasource
-        investor
-        involvement
-      }
-    }
-  `;
-  const gqlres = await graphQLClient.request(query);
-  await user.set(gqlres.me);
-  await countries.set(gqlres.countries);
-  await regions.set(gqlres.regions);
-  await formfields.set(gqlres.formfields);
+    `,
+  });
+  await user.set(data.me);
+  await countries.set(data.countries);
+  await regions.set(data.regions);
+  await formfields.set(data.formfields);
 }
 
-export const chartDescriptions = writable(undefined);
+export const chartDescriptions = writable<{
+  web_of_transnational_deals: string;
+  dynamics_overview: string;
+  produce_info_map: string;
+}>(undefined);
 async function getChartDescriptions(language = "en") {
   console.log("getChartDescriptions", { language });
-  if (get(chartDescriptions)) return;
-  const query = gql`
-    query chart_descriptions($language: String) {
-      chart_descriptions(language: $language) {
-        web_of_transnational_deals
-        dynamics_overview
-        produce_info_map
+  const { data } = await client.query({
+    query: gql`
+      query chart_descriptions($language: String) {
+        chart_descriptions(language: $language) {
+          web_of_transnational_deals
+          dynamics_overview
+          produce_info_map
+        }
       }
-    }
-  `;
-  const gqlres = await graphQLClient.request(query);
-  await chartDescriptions.set(gqlres.chart_descriptions);
+    `,
+  });
+  await chartDescriptions.set(data.chart_descriptions);
 }
 
 export async function dispatchLogin(username: string, password: string) {
@@ -204,19 +198,20 @@ export async function dispatchLogin(username: string, password: string) {
     }
   `;
   const variables = { username, password };
-  const data = await graphQLClient.request(mutation, variables);
+  const { data } = await client.mutate({ mutation, variables });
   if (data.login.status === true) {
     user.set(data.login.user);
   }
   return data.login;
 }
 export async function dispatchLogout() {
-  const mutation = gql`
-    mutation {
-      logout
-    }
-  `;
-  const data = await graphQLClient.request(mutation);
+  const { data } = await client.mutate({
+    mutation: gql`
+      mutation {
+        logout
+      }
+    `,
+  });
   return data.logout;
 }
 

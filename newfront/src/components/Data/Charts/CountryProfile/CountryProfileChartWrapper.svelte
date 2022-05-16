@@ -1,8 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { browser } from "$app/env";
+  import { deals } from "$lib/data";
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
   import FileImageIcon from "$components/icons/FileImageIcon.svelte";
+  import LoadingPulse from "$components/LoadingPulse.svelte";
   import { chart_download, fileName } from "../utils";
 
   export let title: string;
@@ -27,7 +29,8 @@
   <div
     class="max-w-full bg-white flex justify-center items-center flex-auto	svg-wrapper"
   >
-    <slot class="flex-auto" />
+    {#if !$deals} <div class="absolute"><LoadingPulse /></div> {/if}
+    <slot />
   </div>
   <div class="bg-[#2d2d2d] text-lm-light text-sm">
     <button on:click={() => downloadImage("svg")} class="pb-1 px-3">

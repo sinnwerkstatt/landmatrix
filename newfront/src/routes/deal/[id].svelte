@@ -1,15 +1,18 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import { request } from "graphql-request";
-  import { GQLEndpoint } from "$lib";
+  import { client } from "$lib/apolloClient";
+  import type { Deal } from "$lib/types/deal";
   import { deal_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
     const variables = {
       id: +params.id,
     };
-    const result = await request(GQLEndpoint, deal_gql_query, variables);
-    return { props: { deal: result.deal } };
+    const { data } = await client.query<{ deal: Deal[] }>({
+      query: deal_gql_query,
+      variables,
+    });
+    return { props: { deal: data.deal } };
   };
 </script>
 
@@ -17,7 +20,6 @@
   import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import type { Deal } from "$lib/types/deal";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";

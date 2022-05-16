@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { gql, request } from "graphql-request";
+  import { gql } from "@apollo/client/core";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { GQLEndpoint } from "$lib";
+  import { client } from "$lib/apolloClient";
   import { filters } from "$lib/filters";
   import { publicOnly } from "$lib/filters";
   import { countries, regions, user } from "$lib/stores";
@@ -82,8 +82,8 @@
       limit: 0,
       subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
-    const res = await request(GQLEndpoint, query, variables);
-    investors = res.investors;
+    const res = await client.query<{ investors: Investor[] }>({ query, variables });
+    investors = res.data.investors;
   }
 
   onMount(() => {
@@ -123,19 +123,18 @@
   >
     <div class="w-full self-start ">
       <h3 class="my-2 text-black">{$_("Filter")}</h3>
-      <span style="font-size: 0.8em">
-        <label>
-          <CheckboxSwitch checked={$isDefaultFilter} label={$_("Default filter")} />
-        </label>
-      </span>
-      {#if $user?.bigrole}
-        <!--v-if="$store.getters.userInGroup(['Administrators', 'Editors'])"-->
-        <span style="font-size: 0.8em">
-          <label>
-            <input type="checkbox" checked={$publicOnly} />
-            {$_("Public deals only")}
-          </label>
-        </span>
+      <CheckboxSwitch
+        class="text-sm"
+        checked={$isDefaultFilter}
+        label={$_("Default filter")}
+      />
+
+      {#if ["ADMINISTRATOR", "EDITOR"].includes($user?.role)}
+        <CheckboxSwitch
+          class="text-sm"
+          bind:checked={$publicOnly}
+          label={$_("Public deals only")}
+        />
       {/if}
 
       <FilterCollapse

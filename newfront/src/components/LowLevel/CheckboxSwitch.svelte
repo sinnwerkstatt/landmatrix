@@ -3,13 +3,13 @@
   export let label = "label";
 </script>
 
-<div class="flex">
+<div class="flex {$$props.class}">
   <label class="switch align-middle relative block flex justify-center items-center">
     <input class="opacity-0 w-0 h-0" type="checkbox" bind:checked />
     <span
       class="slider transition-transform delay-300 bg-gray-300 absolute cursor-pointer inset-0"
-    /></label
-  >
+    />
+  </label>
   <p class={checked ? "text-orange" : "text-gray-500"}>{label}</p>
 </div>
 

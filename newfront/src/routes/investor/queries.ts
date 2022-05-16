@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import { gql } from "@apollo/client/core";
 
 export const investor_gql_query = gql`
   query Investor(

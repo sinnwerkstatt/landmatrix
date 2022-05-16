@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { gql, request } from "graphql-request";
-  import { onMount } from "svelte";
+  import { gql } from "@apollo/client/core";
   import { _ } from "svelte-i18n";
-  import { filters } from "$lib/filters";
+  import { client } from "$lib/apolloClient";
+  import { filters, FilterValues } from "$lib/filters";
   import { chartDescriptions, countries } from "$lib/stores";
-  import { GQLEndpoint } from "../../../lib";
 
   $: country =
     $filters.country_id && $countries.find((c) => c.id === $filters.country_id);
@@ -19,40 +18,37 @@
   let investing_countries = [];
   let invested_countries = [];
 
-  const grabInvestmentsAndRankings = async () => {
-    const result = await request(
-      GQLEndpoint,
-      gql`
+  async function _grabInvestmentsAndRankings(countryID: number, fltrs: FilterValues) {
+    if (!countryID) return;
+    const { data } = await client.query({
+      query: gql`
         query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
           country_investments_and_rankings(id: $id, filters: $filters)
         }
       `,
-      {
-        id: $filters.country_id,
-        filters: $filters
+      variables: {
+        id: countryID,
+        filters: fltrs
           .toGQLFilterArray()
           .filter(
             (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
           ),
-      }
-    );
-    let country_investments_and_rankings = result.country_investments_and_rankings;
-    investing_countries = country_investments_and_rankings.investing.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id).name,
-      ...x,
-    }));
-    invested_countries = country_investments_and_rankings.invested.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id).name,
-      ...x,
-    }));
-  };
-  onMount(() => {
-    grabInvestmentsAndRankings();
-  });
+      },
+    });
 
-  // props: {
-  // filters: { type: Array, required: true },
-  // },
+    let countryInvestmentsAndRankings = data.country_investments_and_rankings;
+    investing_countries = countryInvestmentsAndRankings.investing.map((x) => ({
+      country_name: $countries.find((c) => c.id === x.country_id).name,
+      ...x,
+    }));
+    invested_countries = countryInvestmentsAndRankings.invested.map((x) => ({
+      country_name: $countries.find((c) => c.id === x.country_id).name,
+      ...x,
+    }));
+  }
+
+  $: _grabInvestmentsAndRankings($filters.country_id, $filters);
+
   //     apollo: {
   //     global_rankings: {
   //       query: gql`
