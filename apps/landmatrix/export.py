@@ -410,13 +410,25 @@ class DataDownload:
             )
         ]
 
-        [loc.update({"deal_id": deal_id}) for loc in deal.locations]
+        # temporarily set an incrementing number
+        [
+            loc.update({"deal_id": deal_id, "id": i + 1})
+            for i, loc in enumerate(deal.locations)
+        ]
         self.locations = [self.location_download_format(x) for x in deal.locations]
 
-        [d.update({"deal_id": deal_id}) for d in deal.contracts]
+        # temporarily set an incrementing number
+        [
+            d.update({"deal_id": deal_id, "id": i + 1})
+            for i, d in enumerate(deal.contracts)
+        ]
         self.contracts = [self.contracts_download_format(x) for x in deal.contracts]
 
-        [d.update({"deal_id": deal_id}) for d in deal.datasources]
+        # temporarily set an incrementing number
+        [
+            d.update({"deal_id": deal_id, "id": i + 1})
+            for i, d in enumerate(deal.datasources)
+        ]
         self.datasources = [
             self.datasource_download_format(x) for x in deal.datasources
         ]
@@ -447,22 +459,25 @@ class DataDownload:
         self.locations = []
         for d in qs:
             if d.locations:
-                for loc in d.locations:
-                    loc.update({"deal_id": d.id})
+                # temporarily set an incrementing number
+                for i, loc in enumerate(d.locations):
+                    loc.update({"deal_id": d.id, "id": i + 1})
                     self.locations += [self.location_download_format(loc)]
 
         self.contracts = []
         for d in qs:
             if d.contracts:
-                for con in d.contracts:
-                    con.update({"deal_id": d.id})
+                # temporarily set an incrementing number
+                for i, con in enumerate(d.contracts):
+                    con.update({"deal_id": d.id, "id": i + 1})
                     self.contracts += [self.contracts_download_format(con)]
 
         self.datasources = []
         for d in qs:
             if d.datasources:
-                for ds in d.datasources:
-                    ds.update({"deal_id": d.id})
+                # temporarily set an incrementing number
+                for i, ds in enumerate(d.datasources):
+                    ds.update({"deal_id": d.id, "id": i + 1})
                     self.datasources += [self.datasource_download_format(ds)]
 
         qs = Investor.objects.visible(self.user).order_by("id")
