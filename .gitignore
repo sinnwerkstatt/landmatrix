@@ -34,3 +34,6 @@ __pycache__/
 # IDEs
 .idea/
 .vscode/
+
+node_modules/
+playwright-storageState.json
