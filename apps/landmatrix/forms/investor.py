@@ -1,9 +1,8 @@
 from django.forms import ModelForm, IntegerField
+from django.utils.translation import gettext as _
 
-from apps.landmatrix.forms import VueForm
 from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
 from apps.landmatrix.models import Investor, InvestorVentureInvolvement
-from django.utils.translation import gettext as _
 
 
 class InvestorForm(JSONFormOutputMixin, ModelForm):

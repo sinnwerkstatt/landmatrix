@@ -5,7 +5,7 @@ from django.urls import include, path, re_path
 from django_registration.backends.activation.views import RegistrationView
 
 from apps.api.views import vuebase
-from apps.landmatrix.forms import CustomRegistrationForm
+from apps.landmatrix.forms.oldforms import CustomRegistrationForm
 from apps.landmatrix.views import SwitchLanguageView
 from apps.wagtailcms.api import api_router
 

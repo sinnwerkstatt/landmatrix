@@ -1,7 +1,6 @@
 from django.forms import ModelForm, IntegerField
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.forms import VueForm
 from apps.landmatrix.forms.fields import (
     JSONDateAreaChoicesField,
     JSONDateAreaField,
@@ -17,13 +16,9 @@ from apps.landmatrix.models._choices import (
     INTENTION_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
-    ACTOR_MAP,
     CROPS_CHOICES,
     ANIMALS_CHOICES,
     MINERALS_CHOICES,
-    CROPS,
-    ANIMALS,
-    MINERALS,
 )
 
 
