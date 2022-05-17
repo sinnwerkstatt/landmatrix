@@ -33,6 +33,8 @@ def test_deal_form():
     ).is_valid()
     assert not DealForm({"contract_size": [{"current": "No"}]}).is_valid()
     assert not DealForm({"contract_size": [{"date": "12.12.2022"}]}).is_valid()
+    assert not DealForm({"contract_size": [{"date": "2022-13"}]}).is_valid()
+    assert not DealForm({"contract_size": [{"date": "2022-13-12"}]}).is_valid()
     assert not DealForm({"contract_size": [{"area": "100 ha"}]}).is_valid()
 
     assert DealForm({"land_area_comment": "Hallo"}).is_valid()

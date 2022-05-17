@@ -22,7 +22,7 @@ class JSONDateAreaChoicesField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "area": {"type": ["number", "null"]},
                         "choices": {
@@ -61,7 +61,7 @@ class JSONDateAreaField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "area": {"type": ["number", "null"]},
                     },
@@ -97,7 +97,7 @@ class JSONDateChoiceField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "choice": {
                             "type": "string",
@@ -169,7 +169,7 @@ class JSONExportsField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "choices": {
                             "type": "array",
@@ -210,7 +210,7 @@ class JSONLeaseField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "area": {"type": ["number", "null"]},
                         "farmers": {"type": ["number", "null"]},
@@ -244,7 +244,7 @@ class JSONJobsField(JSONField):
                         "current": {"type": ["boolean", "null"]},
                         "date": {
                             "type": ["string", "null"],
-                            "pattern": r"^\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$",
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
                         "jobs": {"type": ["number", "null"]},
                         "employees": {"type": ["number", "null"]},
