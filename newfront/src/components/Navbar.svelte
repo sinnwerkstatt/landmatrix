@@ -17,6 +17,7 @@
   import UserRegular from "$components/icons/UserRegular.svelte";
   import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
+  import NavbarSearch from "./NavbarSearch.svelte";
 
   let language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
@@ -148,10 +149,10 @@
         </li>
       </ul>
       <ul class="flex items-center ml-auto">
-        <!--          <NavbarSearch />-->
+        <NavbarSearch />
 
         <NavDropDown placement="bottom-end">
-          <div slot="title" class="whitespace-nowrap">
+          <div slot="title" class="whitespace-nowrap flex items-center gap-1">
             <TranslateIcon class="h-4 w-4 inline" />
             {languages[language]}
           </div>
@@ -173,7 +174,7 @@
 
         {#if $user}
           <NavDropDown placement="bottom-end">
-            <div slot="title" class="whitespace-nowrap">
+            <div slot="title" class="whitespace-nowrap flex items-center gap-1">
               {$user.initials}
               {#if $user.role === "ADMINISTRATOR"}
                 <UserAstronautSolid class="h-4 w-4 inline" />
@@ -193,7 +194,7 @@
               <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
                 {$user.full_name}
                 <br />
-                <small>{$_($user.bigrole)}</small>
+                <small>{$_($user?.role)}</small>
               </p>
 
               {#if $user.is_impersonate}
