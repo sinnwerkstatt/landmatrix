@@ -63,4 +63,6 @@ class JSONFormOutputMixin:
 
             ret[name] = field_json
 
+        if hasattr(self, "extra_display_fields"):
+            ret.update(self.extra_display_fields)
         return ret

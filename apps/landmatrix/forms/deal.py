@@ -100,6 +100,14 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         choices=ANIMALS_CHOICES,
     )
 
+    extra_display_fields = {
+        "workflowinfos": {
+            "class": "WorkflowInfosField",
+            "label": _("Comments / History"),
+        },
+        "combined_status": {"class": "StatusField"},
+    }
+
     class Meta:
         model = Deal
         exclude = [
@@ -133,78 +141,10 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "intended_size": {"unit": "ha"},
             "domestic_use": {"unit": "%", "min_value": 0, "max_value": 100},
             "export": {"unit": "%", "min_value": 0, "max_value": 100},
-            "export_country1_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
-            "export_country2_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
-            "export_country3_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
-        }
-
-
-class DealFrontendForm(VueForm):
-    model = Deal
-    extra_display_fields = {
-        "workflowinfos": {
-            "class": "WorkflowInfosField",
-            "label": _("Comments / History"),
-        },
-        "combined_status": {"class": "StatusField"},
-    }
-
-    @property
-    def attributes(self):
-        return {
-            "country": {"class": "CountryForeignKey"},
-            "operating_company": {"class": "InvestorForeignKey"},
-            "deal_size": {"unit": "ha"},
-            "intended_size": {"unit": "ha"},
-            "export": {"unit": "%"},
-            "contract_size": {"class": "JSONDateAreaField"},
-            "production_size": {"class": "JSONDateAreaField"},
-            "intention_of_investment": {
-                "class": "JSONDateAreaChoicesField",
-                "choices": {x[0]: x[1] for x in INTENTION_CHOICES},
-            },
-            "negotiation_status": {
-                "class": "JSONDateChoiceField",
-                "choices": {x[0]: x[1] for x in NEGOTIATION_STATUS_CHOICES},
-            },
-            "implementation_status": {
-                "class": "JSONDateChoiceField",
-                "choices": {x[0]: x[1] for x in IMPLEMENTATION_STATUS_CHOICES},
-            },
-            "on_the_lease": {"class": "JSONLeaseField"},
-            "off_the_lease": {"class": "JSONLeaseField"},
-            "total_jobs_current": {"class": "JSONJobsField"},
-            "foreign_jobs_current": {"class": "JSONJobsField"},
-            "domestic_jobs_current": {"class": "JSONJobsField"},
-            "involved_actors": {
-                "class": "JSONActorsField",
-                "choices": {x[0]: x[1] for x in ACTOR_MAP},
-            },
-            "crops": {
-                "class": "JSONExportsField",
-                "choices": {k: v["name"] for k, v in CROPS.items()},
-            },
-            "animals": {
-                "class": "JSONExportsField",
-                "choices": {k: v["name"] for k, v in ANIMALS.items()},
-            },
-            "mineral_resources": {
-                "class": "JSONExportsField",
-                "choices": {k: v["name"] for k, v in MINERALS.items()},
-            },
-            "contract_farming_crops": {
-                "class": "JSONDateAreaChoicesField",
-                "choices": {k: v["name"] for k, v in CROPS.items()},
-                "with_categories": False,
-                "help_text": _("ha"),
-            },
-            "contract_farming_animals": {
-                "class": "JSONDateAreaChoicesField",
-                "choices": {k: v["name"] for k, v in ANIMALS.items()},
-                "with_categories": False,
-                "help_text": _("ha"),
-            },
             "export_country1": {"class": "CountryForeignKey"},
+            "export_country1_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
             "export_country2": {"class": "CountryForeignKey"},
+            "export_country2_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
             "export_country3": {"class": "CountryForeignKey"},
+            "export_country3_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
         }

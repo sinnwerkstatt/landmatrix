@@ -19,10 +19,6 @@ class InvestorForm(JSONFormOutputMixin, ModelForm):
         ]
 
     attributes = {"country": {"class": "CountryForeignKey"}}
-
-
-class InvestorFrontendForm(VueForm):
-    model = Investor
     extra_display_fields = {
         "deals": {"class": "LengthField", "label": _("Deals")},
         "workflowinfos": {
@@ -31,7 +27,6 @@ class InvestorFrontendForm(VueForm):
         },
         "combined_status": {"class": "StatusField"},
     }
-    attributes = {"country": {"class": "CountryForeignKey"}}
 
 
 class InvestorVentureInvolvementForm(JSONFormOutputMixin, ModelForm):
@@ -43,17 +38,6 @@ class InvestorVentureInvolvementForm(JSONFormOutputMixin, ModelForm):
         "involvement_type": {"class": "TextField", "label": _("Involvement type")},
         "investor": {"class": "InvestorForeignKey"},
         "venture": {"class": "InvestorForeignKey"},
-        "percentage": {"unit": "%"},
-        "loans_date": {"class": "DateField"},
-    }
-
-
-class InvestorVentureInvolvementFrontendForm(VueForm):
-    model = InvestorVentureInvolvement
-    attributes = {
-        "involvement_type": {"class": "TextField", "label": _("Involvement type")},
-        "investor": {"class": "InvestorForeignKey"},
-        "venture": {"class": "InvestorForeignKey"},
-        "percentage": {"unit": "%"},
+        "percentage": {"unit": "%", "min_value": 0, "max_value": 100},
         "loans_date": {"class": "DateField"},
     }
