@@ -1015,7 +1015,7 @@ class DataDownload:
             if field not in data:
                 # empty fields
                 data[field] = ""
-            elif field in involvement_choices_fields:
+            elif field in involvement_choices_fields and data[field] != "":
                 # fields with choices
                 data[field] = str(involvement_choices_fields[field][data[field]])
             row.append(data[field])
