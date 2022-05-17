@@ -56,7 +56,7 @@ def test_deal_form():
     }
     assert DealForm({"intention_of_investment": [{"date": "2022-126"}]}).errors == {
         "intention_of_investment": [
-            "data[0].date must match pattern ^\\d{4}(-(0?[1-9]|1[012]))?(-(0?[1-9]|[12][0-9]|3[01]))?$"
+            "data[0].date must match pattern ^\\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$"
         ]
     }
     assert DealForm({"intention_of_investment": [{"area": "ab"}]}).errors == {
