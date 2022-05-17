@@ -27,7 +27,7 @@
   import { deal_sections } from "./deal_sections";
 
   export let deal: Deal;
-  const dealID = $page.params.id;
+  $: dealID = $page.params.id;
 
   $: activeTab = $page.url.hash || "#locations";
 
@@ -150,9 +150,9 @@
         <section>
           <h3>Download</h3>
 
-          <a target="_blank" href={download_link("xlsx")}
-            ><DownloadIcon /> Excel-Dokument</a
-          ><br />
+          <a target="_blank" href={download_link("xlsx")}>
+            <DownloadIcon /> Excel-Dokument
+          </a><br />
           <a target="_blank" href={download_link("csv")}><DownloadIcon /> CSV-Datei</a>
         </section>
       {/if}
