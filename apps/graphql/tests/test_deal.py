@@ -10,13 +10,12 @@ from apps.graphql.resolvers.generics import (
     change_object_status,
     object_delete,
 )
-from apps.landmatrix.models import Deal, DealVersion
+from apps.landmatrix.models import Deal, DealVersion, Country
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
 payload: Dict[str, any] = {
-    "country": {"id": 450},
     "locations": [
         {
             "id": 1,
@@ -32,6 +31,7 @@ payload: Dict[str, any] = {
 
 @pytest.fixture()
 def deal_draft(db) -> List[int]:
+    payload["country"] = Country.objects.get(id=450)
     # new draft
     return object_edit(
         otype="deal",
@@ -85,7 +85,7 @@ def test_edit_deal_draft(deal_draft):
     pl2 = dict(
         payload,
         **{
-            "country": {"id": 450},
+            "country": Country.objects.get(id=450),
             "locations": [
                 {
                     "id": 1,

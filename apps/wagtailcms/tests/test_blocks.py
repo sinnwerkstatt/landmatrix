@@ -57,7 +57,7 @@ class TwitterBlockTestCase(TestCase):
     def test_get_context(self):
         block = TwitterBlock()
         context = block.get_context({"count": 3, "username": "Land_Matrix"})
-        self.assertEqual("", context.get("timeline"))
+        self.assertNotEqual("", context.get("timeline"))
         self.assertEqual("Land_Matrix", context.get("username"))
 
 

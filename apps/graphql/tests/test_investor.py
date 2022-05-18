@@ -9,15 +9,15 @@ from apps.graphql.resolvers.generics import (
     change_object_status,
     object_delete,
 )
-from apps.landmatrix.models import Investor, InvestorVersion
+from apps.graphql.resolvers.investor import _clean_payload
+from apps.landmatrix.models import Investor, InvestorVersion, Country
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
 payload: Dict[str, any] = {
-    "investors": [],
+    # "investors": [],
     "name": "Sinnwerkstatt GmbH",
-    "country": {"id": 276},
     "classification": "NON_PROFIT",
     "homepage": "sinnwerkstatt.com",
 }
@@ -25,6 +25,7 @@ payload: Dict[str, any] = {
 
 @pytest.fixture()
 def investor_draft(db) -> List[int]:
+    payload["country"] = Country.objects.get(id=276)
     # new draft
     return object_edit(
         otype="investor",
@@ -248,7 +249,8 @@ def test_add_involvements(test_edit_investor_draft):
     }
 
     # this "dict" hack is here because of weird race conditions in pytest apparently
-    pl = dict(payload, investors=[involvement1])
+    pl = dict(payload, country={"id": "304"}, investors=[involvement1])
+    pl = _clean_payload(pl, investorId)
 
     invId, invV = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
     assert invId == investorId

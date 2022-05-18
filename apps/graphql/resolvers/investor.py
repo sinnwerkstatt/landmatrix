@@ -173,7 +173,47 @@ def resolve_change_investor_status(
     return {"investorId": investorId, "investorVersion": investorVersion}
 
 
+def _clean_payload(payload: dict, investor_id: int) -> dict:
+    foreignkeys = {
+        x.name: x.related_model
+        for x in Deal._meta.fields
+        if x.__class__.__name__ == "ForeignKey"
+    }
+    ret = {}
+    for key, value in payload.items():
+        if key in foreignkeys:
+            if value:
+                ret[key] = foreignkeys[key].objects.get(id=value["id"])
+        elif key == "investors":
+            ivis = []
+            for entry in value:
+                ivi = InvestorVentureInvolvement()
+                if entry.get("id"):
+                    ivi.id = entry["id"]
+                ivi.venture_id = investor_id
+                ivi.investor_id = entry["investor"]["id"]
+                ivi.role = entry["role"]
+                ivi.investment_type = entry.get("investment_type")
+                ivi.percentage = entry.get("percentage")
+                ivi.loans_amount = entry.get("loans_amount")
+                ivi.loans_currency_id = (
+                    entry["loans_currency"]["id"]
+                    if entry.get("loans_currency")
+                    else None
+                )
+                ivi.loans_date = entry.get("loans_date", "")
+                ivi.parent_relation = entry.get("parent_relation")
+                ivi.comment = entry.get("comment", "")
+                ivis += [ivi]
+            ret["_investors"] = ivis
+        else:
+            ret[key] = value
+    return ret
+
+
 def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> dict:
+    payload = _clean_payload(payload, investor_id=id)
+
     investorId, investorVersion = object_edit(
         otype="investor",
         user=info.context["request"].user,

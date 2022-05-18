@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="investorforeignkey_field">
     <div>
       <input
         v-if="formfield.required"
@@ -19,6 +19,7 @@
         :allow-empty="false"
         deselect-label=""
         select-label=""
+        placeholder="Choose Investor"
         @tag="openNewInvestorDialog"
       />
     </div>

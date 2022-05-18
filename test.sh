@@ -1,15 +1,21 @@
 #!/bin/bash
 
-poetry run ./manage.py runserver &
-RUNSERVER_PID=$!
+poetry run ./manage.py shell << E=O=F
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='shakespeare').exists():
+ will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
+ will.groups.set([Group.objects.get(name='Administrators')])
+E=O=F
 
 echo "Waiting django to launch on 8000..."
+poetry run ./manage.py runserver &
+RUNSERVER_PID=$!
 while ! nc -z localhost 8000; do
   sleep 0.3 # wait for 3/10 of the second before check again
 done
 echo "Django launched"
 
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')" | poetry run ./manage.py shell
 
 npx playwright test
 

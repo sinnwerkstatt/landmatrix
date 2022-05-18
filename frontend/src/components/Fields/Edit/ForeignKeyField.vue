@@ -1,17 +1,16 @@
 <!-- this field is only used for Currency at the moment-->
 <template>
-  <div>
-    <div>
-      <multi-select
-        v-model="val"
-        :options="currencies"
-        label="name"
-        select-label=""
-        :custom-label="(mdl) => `${mdl.name} (${mdl.code})`"
-        track-by="id"
-        :allow-empty="!formfield.required"
-      />
-    </div>
+  <div class="foreignkey_field">
+    <multi-select
+      v-model="val"
+      :options="currencies"
+      label="name"
+      select-label=""
+      :custom-label="(mdl) => `${mdl.name} (${mdl.code})`"
+      track-by="id"
+      :allow-empty="!formfield.required"
+      placeholder="Currency"
+    />
   </div>
 </template>
 

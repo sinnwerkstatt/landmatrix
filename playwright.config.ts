@@ -6,7 +6,7 @@ const config: PlaywrightTestConfig = {
   retries: process.env.CI ? 2 : 0,
   use: {
     headless: false,
-    viewport: { width: 1280, height: 720 },
+    viewport: { width: 1920, height: 1080 },
     baseURL: "http://localhost:3000/",
     ignoreHTTPSErrors: true,
     trace: "on-first-retry",

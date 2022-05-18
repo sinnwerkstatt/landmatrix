@@ -314,36 +314,7 @@ class Investor(models.Model):
                 "__typename",
             ]:
                 continue  # ignore these fields
-            elif key in [
-                x.name
-                for x in self._meta.fields
-                if x.__class__.__name__ == "ForeignKey"
-            ]:
-                self.__setattr__(f"{key}_id", value["id"] if value else None)
-            elif key == "investors":
-                _ivis = []
-                for entry in value:
-                    _ivi = InvestorVentureInvolvement()
-                    if entry.get("id"):
-                        _ivi.id = entry["id"]
-                    _ivi.venture_id = self.id
-                    _ivi.investor_id = entry["investor"]["id"]
-                    _ivi.role = entry["role"]
-                    _ivi.investment_type = entry.get("investment_type")
-                    _ivi.percentage = entry.get("percentage")
-                    _ivi.loans_amount = entry.get("loans_amount")
-                    _ivi.loans_currency_id = (
-                        entry["loans_currency"]["id"]
-                        if entry.get("loans_currency")
-                        else None
-                    )
-                    _ivi.loans_date = entry.get("loans_date", "")
-                    _ivi.parent_relation = entry.get("parent_relation")
-                    _ivi.comment = entry.get("comment", "")
-                    _ivis += [_ivi]
-                self._investors = _ivis
-            else:
-                self.__setattr__(key, value)
+            self.__setattr__(key, value)
 
     def to_dict(self):
         country = (
@@ -447,8 +418,8 @@ class InvestorVentureInvolvement(models.Model):
         ("DEBT_FINANCING", _("Debt financing")),
     )
     investment_type = ArrayField(
-        models.CharField(_("Investment type"), max_length=100),
-        choices=INVESTMENT_TYPE_CHOICES,
+        models.CharField(max_length=100, choices=INVESTMENT_TYPE_CHOICES),
+        verbose_name=_("Investment type"),
         blank=True,
         null=True,
     )

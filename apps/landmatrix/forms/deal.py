@@ -23,7 +23,6 @@ from apps.landmatrix.models._choices import (
 
 
 class DealForm(JSONFormOutputMixin, ModelForm):
-    id = IntegerField(label=_("ID"), required=False)
     contract_size = JSONDateAreaField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
@@ -96,6 +95,7 @@ class DealForm(JSONFormOutputMixin, ModelForm):
     )
 
     extra_display_fields = {
+        "id": {"label": "ID", "class": "AutoField"},
         "workflowinfos": {
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),

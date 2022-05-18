@@ -6,19 +6,21 @@ from apps.landmatrix.models import Investor, InvestorVentureInvolvement
 
 
 class InvestorForm(JSONFormOutputMixin, ModelForm):
-    id = IntegerField(label=_("ID"))
-
     class Meta:
         model = Investor
         exclude = [
             "involvements",
+            "investors",
             "current_draft",
             "old_id",
             "is_actually_unknown",
+            "status",
+            "created_at",
         ]
 
     attributes = {"country": {"class": "CountryForeignKey"}}
     extra_display_fields = {
+        "id": {"label": "ID", "class": "AutoField"},
         "deals": {"class": "LengthField", "label": _("Deals")},
         "workflowinfos": {
             "class": "WorkflowInfosField",
