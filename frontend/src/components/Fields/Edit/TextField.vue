@@ -22,7 +22,7 @@
       <input
         v-else
         v-model="val"
-        :type="formfield.type || `text`"
+        :type="formfield.class === 'URLField' ? 'url' : formfield.type || 'text'"
         :placeholder="formfield.placeholder || formfield.label"
         :aria-label="formfield.placeholder || formfield.label"
         :name="formfield.name"

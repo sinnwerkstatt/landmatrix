@@ -249,8 +249,8 @@ def test_add_involvements(test_edit_investor_draft):
     }
 
     # this "dict" hack is here because of weird race conditions in pytest apparently
-    pl = dict(payload, country={"id": "304"}, investors=[involvement1])
-    pl = _clean_payload(pl, investorId)
+    pl1 = dict(payload, country={"id": "304"}, investors=[involvement1])
+    pl = _clean_payload(pl1, investorId)
 
     invId, invV = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
     assert invId == investorId
@@ -282,7 +282,8 @@ def test_add_involvements(test_edit_investor_draft):
         "investment_type": ["EQUITY"],
         "percentage": 23,
     }
-    pl["investors"] += [involvement2]
+    pl1 = dict(payload, country={"id": "304"}, investors=[involvement1, involvement2])
+    pl = _clean_payload(pl1, investorId)
 
     invId, invV2 = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
 
@@ -307,7 +308,8 @@ def test_add_involvements(test_edit_investor_draft):
     assert involvement1["id"] == invos[1].id
 
     # remove an investor
-    pl["investors"] = [involvement2]
+    pl1 = dict(payload, country={"id": "304"}, investors=[involvement2])
+    pl = _clean_payload(pl1, investorId)
     invId, invV3 = object_edit("investor", land_reporter, obj_id=i1.id, payload=pl)
     assert invV3 >= invV2
     change_object_status("investor", land_admin, invId, invV3, "TO_REVIEW")
