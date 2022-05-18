@@ -31,6 +31,7 @@
   import IntegerField from "./Edit/DecimalField.vue";
   import FileField from "./Edit/FileField.vue";
   import ForeignKey from "./Edit/ForeignKeyField.vue";
+  import CurrencyForeignKey from "./Edit/ForeignKeyField.vue";
   import ModelChoiceField from "./Edit/ForeignKeyField.vue";
   import InvestorForeignKey from "./Edit/InvestorForeignKeyField.vue";
   import JSONActorsField from "./Edit/JSONActorsField.vue";
@@ -63,6 +64,7 @@
       BooleanField,
       CharField,
       DateField,
+      CurrencyForeignKey,
       // DateTimeField,
       DecimalField,
       EmailField,

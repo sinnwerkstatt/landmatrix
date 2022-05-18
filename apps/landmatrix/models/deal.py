@@ -2,7 +2,6 @@ import json
 from typing import Optional
 
 from django.conf import settings
-from django.contrib.gis.geos import Point
 from django.core import serializers
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -10,7 +9,7 @@ from django.db.models import Sum, F, Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.models import Investor
+from apps.landmatrix.models import Investor, Currency
 from apps.landmatrix.models._choices import (
     INTENTION_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
@@ -217,7 +216,7 @@ class Deal(models.Model, OldDealMixin):
         _("Purchase price"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     purchase_price_currency = models.ForeignKey(
-        "Currency",
+        Currency,
         verbose_name=_("Purchase price currency"),
         on_delete=models.PROTECT,
         blank=True,
@@ -251,7 +250,7 @@ class Deal(models.Model, OldDealMixin):
         _("Annual leasing fee"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     annual_leasing_fee_currency = models.ForeignKey(
-        "Currency",
+        Currency,
         verbose_name=_("Annual leasing fee currency"),
         on_delete=models.PROTECT,
         blank=True,

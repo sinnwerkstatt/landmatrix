@@ -22,7 +22,7 @@ def resolve_regions(obj: Any, info: GraphQLResolveInfo):
 
 def resolve_currencies(obj: Any, info: GraphQLResolveInfo):
     fields = get_fields(info, recursive=True, exclude=["__typename"])
-    return qs_values_to_dict(Currency.objects.all(), fields)
+    return qs_values_to_dict(Currency.objects.all().order_by("name"), fields)
 
 
 def resolve_chart_descriptions(obj: Any, info: GraphQLResolveInfo, language="en"):

@@ -58,10 +58,7 @@
   h4 {
     @apply text-lm-dark text-lg  my-5 font-bold;
   }
-  .inpt {
-    height: calc(1.5em + 0.75rem + 2px);
-    @apply border border-gray-500 py-1.5 px-3 bg-white w-full;
-  }
+
   .btn {
     @apply inline-block border m-0.5 px-4 py-2 shadow whitespace-nowrap transform transition;
     @apply focus:outline-none focus:ring;
@@ -109,6 +106,9 @@
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
     @apply border border-gray-300 py-1.5 px-3 bg-white w-full;
+  }
+  textarea.inpt, select[multiple].inpt {
+    height: unset;
   }
 
   .inpt[readonly] {

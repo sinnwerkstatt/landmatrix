@@ -38,6 +38,7 @@
   import FileField from "./Display/FileField.vue";
   import ForeignKey from "./Display/ForeignKeyField.vue";
   import ModelChoiceField from "./Display/ForeignKeyField.vue";
+  import CurrencyForeignKey from "./Display/ForeignKeyField.vue";
   import CountryForeignKey from "./Display/ForeignKeyField.vue";
   import InvestorForeignKey from "./Display/ForeignKeyField.vue";
   import JSONActorsField from "./Display/JSONActorsField.vue";
@@ -68,6 +69,7 @@
       TypedChoiceField,
       SimpleArrayField,
       ModelChoiceField,
+      CurrencyForeignKey,
       ArrayField,
       AutoField,
       BooleanField,

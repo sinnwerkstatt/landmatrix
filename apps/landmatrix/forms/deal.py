@@ -135,6 +135,8 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "deal_size": {"unit": "ha"},
             "intended_size": {"unit": "ha"},
             "domestic_use": {"unit": "%", "min_value": 0, "max_value": 100},
+            "purchase_price_currency": {"class": "CurrencyForeignKey"},
+            "annual_leasing_fee_currency": {"class": "CurrencyForeignKey"},
             "export": {"unit": "%", "min_value": 0, "max_value": 100},
             "export_country1": {"class": "CountryForeignKey"},
             "export_country1_ratio": {"unit": "%", "min_value": 0, "max_value": 100},

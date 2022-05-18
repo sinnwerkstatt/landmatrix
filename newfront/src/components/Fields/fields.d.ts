@@ -7,4 +7,7 @@ export interface FormField {
   choices?: { [key: string | number]: string };
   unit?: string;
   help_text?: string;
+  max_length?: number;
+  min_value?: number;
+  max_value?: number;
 }
