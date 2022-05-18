@@ -81,8 +81,8 @@ test.describe.serial("group", () => {
     );
 
     await page.goto(`/investor/${childID}/`);
-    const involvements = await page.locator("h3").first().innerText();
-    expect(involvements === "Involvements (1)");
+    const involvements = await page.locator(".investor-id-display").innerText();
+    expect(involvements === parentID);
     await page.pause();
   });
 });
