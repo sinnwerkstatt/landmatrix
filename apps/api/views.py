@@ -19,9 +19,9 @@ def gis_export(request):
     point_res = {"type": "FeatureCollection", "features": []}
     area_res = {"type": "FeatureCollection", "features": []}
 
-    deals = Deal.objects.visible(user=request.user, subset="ACTIVE").exclude(
-        geojson=None
-    )
+    deals = Deal.objects.visible(
+        user=request.user, subset=request.GET.get("subset", "PUBLIC")
+    ).exclude(geojson=None)
 
     filters = request.GET.get("filters")
     if filters:
