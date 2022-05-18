@@ -26,7 +26,7 @@ test.describe.serial("group", () => {
     await expect(p2saveButton).toBeDisabled();
     const headline = await page.locator(".investor-edit-heading > h1");
     await expect(headline).toContainText("Editing Investor #");
-    parentID = (await headline.innerText()).replace("Editing Investor #");
+    parentID = (await headline.innerText()).replace("Editing Investor #", "");
     await page.close();
   });
 
