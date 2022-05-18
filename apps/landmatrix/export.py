@@ -1020,9 +1020,7 @@ class DataDownload:
             data["investment_type"] = "|".join(
                 arrayfield_choices_display(
                     data["investment_type"],
-                    InvestorVentureInvolvement._meta.get_field(
-                        "investment_type"
-                    ).choices,
+                    InvestorVentureInvolvement.INVESTMENT_TYPE_CHOICES,
                 )
             )
         row = []
