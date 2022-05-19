@@ -2,9 +2,7 @@
   import { gql } from "@apollo/client/core";
   import Select from "svelte-select";
   import { client } from "$lib/apolloClient";
-  import type { FormField } from "../fields";
 
-  export let formfield: FormField;
   export let value: number;
 
   type Currency = {
@@ -30,22 +28,18 @@
     currencies = data.currencies;
   }
   getCurrencies();
-
-  //       set(v) {
-  //         let em = v ? { id: v.id, name: v.name, code: v.code } : null;
-  //         this.$emit("input", em);
-  //       },
-  //     },
-  //   },
-  // };
 </script>
 
 <div class="currency_foreignkey_field">
   {#if currencies}
     <Select
-      items={currencies.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+      items={currencies}
       bind:value
       placeholder="Currency"
+      optionIdentifier="id"
+      labelIdentifier="name"
+      getOptionLabel={(o) => `${o.name} (${o.code})`}
+      getSelectionLabel={(o) => `${o.name} (${o.code})`}
       showChevron
     />
   {/if}

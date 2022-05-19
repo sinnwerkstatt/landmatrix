@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
@@ -26,12 +25,11 @@
     // this.$emit("input", this.filteredVals);
   }
   function updateCurrent(i) {
-    this.current = i;
+    current = i;
     updateEntries();
   }
   function addEntry() {
-    current = null;
-    value.push({});
+    value = [...value, []];
     updateEntries();
   }
   function removeEntry(index) {
@@ -57,12 +55,9 @@
           <td class="text-center p-1" on:click={() => updateCurrent(i)}>
             <div class="form-check form-check-inline">
               <input
-                id="{formfield.name}_current_{i}"
-                bind:group={current}
-                name="{formfield.name}_current"
                 required={value.length > 0 && (value[0].date || value[0].choice)}
-                type="radio"
-                value={i}
+                type="checkbox"
+                bind:checked={val.current}
               />
             </div>
           </td>

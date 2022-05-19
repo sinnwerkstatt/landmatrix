@@ -57,6 +57,7 @@
     CharField: TextField,
     TypedChoiceField: TextField,
     CountryForeignKey: ForeignKeyField,
+    CurrencyForeignKey: ForeignKeyField,
     DateField: DateField,
     DecimalField: DecimalField,
     EmailField: TextField,
