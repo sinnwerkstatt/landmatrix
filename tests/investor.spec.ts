@@ -80,9 +80,31 @@ test.describe.serial("group", () => {
       ""
     );
 
+    await page.locator("text=Tertiary investors/lenders").click();
+    await page.locator("text=Add Tertiary investor/lender").click();
+
+    await page.locator("text=Investor Choose Investor >> div").nth(1).click();
+    await page.locator('[placeholder="Choose Investor"]').fill("Mom");
+    await page.locator(`text=MomCorp (#${parentID})`).click();
+    await page.locator('[placeholder="\\30  – 100"]').fill("300");
+    await page.locator('[placeholder="\\31 00\\.23"]').fill("1000001");
+
+    await page.locator("text=Loan currency Currency >> div").nth(1).click();
+    await page.locator('span:has-text("US Dollar (USD)")').first().click();
+    await page.locator('[placeholder="YYYY-MM-DD"]').click();
+    await page.locator('[placeholder="YYYY-MM-DD"]').fill("1990");
+    await page.locator('select[name="parent_relation"]').selectOption("SUBSIDIARY");
+    await page.locator(".submodel-body").click();
+    await page.locator('[aria-label="Comment"]').fill("alternative names: e-corp");
+    await saveButton.click();
+    await page.waitForLoadState("networkidle");
+    await expect(saveButton).toBeDisabled();
+
     await page.goto(`/investor/${childID}/`);
-    const involvements = await page.locator(".investor-id-display").innerText();
+    await page.locator("text=Tertiary investor/lender");
+    await page.locator("text=Parent company");
+
+    const involvements = await page.locator(".investor-id-display").first().innerText();
     expect(involvements === parentID);
-    await page.pause();
   });
 });
