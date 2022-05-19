@@ -1,4 +1,4 @@
-import { derived } from "svelte/store";
+import { derived, get } from "svelte/store";
 import type { Readable } from "svelte/store";
 import { client } from "$lib/apolloClient";
 import { filters, publicOnly } from "$lib/filters";
@@ -19,7 +19,7 @@ export const deals: Readable<Deal[]> = derived(
     };
     if (debounceTimeOut) clearTimeout(debounceTimeOut);
     debounceTimeOut = setTimeout(() => {
-      client
+      get(client)
         .query<{ deals: Deal[] }>({ query: data_deal_query_gql, variables })
         .then(({ data }) => set(data.deals));
     }, 300);

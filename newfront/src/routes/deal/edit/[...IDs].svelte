@@ -117,7 +117,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2">
+    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
       {#if activeTab === "#locations"}
         <DealLocationsSection {deal} />
       {/if}

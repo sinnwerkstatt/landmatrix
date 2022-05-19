@@ -157,7 +157,7 @@
   /*height: calc(1.5em + 0.75rem);*/
   --border-radius: 0;
   --input-font-size: 1rem;
-  --selected-item-color: var(--color-orange-600);
+  /*--selected-item-color: var(--color-orange-600);*/
   --item-is-active-bg: var(--color-lm-orange);
   --border-focus-color: var(--color-orange-600);
   --item-is-active-color: black;

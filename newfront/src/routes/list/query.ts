@@ -16,6 +16,9 @@ export const data_deal_query_gql = gql`
       current_negotiation_status
       current_contract_size
       current_implementation_status
+      current_crops
+      current_animals
+      current_mineral_resources
       intended_size
       locations
       fully_updated_at # for listing
