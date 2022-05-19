@@ -29,7 +29,7 @@ export async function getBlogPages(language = "en"): Promise<BlogPage[]> {
       }
     }
   `;
-  const { data } = await client.query<{ blogpages: BlogPage[] }>({
+  const { data } = await get(client).query<{ blogpages: BlogPage[] }>({
     query: blogpages_query,
   });
   await blogpages.set(data.blogpages);

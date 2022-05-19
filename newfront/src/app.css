@@ -1,5 +1,5 @@
 :root {
-  --color-lm-orange: hsl(32, 97%, 55%);  /*#fc941f  // tree poppy */
+  --color-lm-orange: hsl(32, 97%, 55%); /*#fc941f  // tree poppy */
   /*--color-lm-orange-dark: hsl(32, 97%, 45%); // mango tango*/
   /*--color-lm-orange-light: hsl(32, 97%, 65%); // texas rose*/
   /*--color-lm-orange-light-10: hsl(32, 97%, 95%);*/
@@ -8,6 +8,8 @@
   /*--color-lm-investor-light: hsl(179, 46%, 59%); // downy*/
   /*--color-lm-dark: #4a4a4a;*/
   /*--color-lm-light: #f9f9f9;*/
+
+  accent-color: var(--color-lm-orange);
 }
 
 @font-face {
@@ -107,7 +109,8 @@
     height: calc(1.5em + 0.75rem + 2px);
     @apply border border-gray-300 py-1.5 px-3 bg-white w-full;
   }
-  textarea.inpt, select[multiple].inpt {
+  textarea.inpt,
+  select[multiple].inpt {
     height: unset;
   }
 
@@ -148,3 +151,15 @@
   @apply h-4 w-4 border appearance-none border-gray-400 checked:bg-orange checked:border-2 checked:border-orange-200 transition duration-200;
 }
 /*form-check-input*/
+
+.svelte-select,
+.svelte-select + .list {
+  /*height: calc(1.5em + 0.75rem);*/
+  --border-radius: 0;
+  --input-font-size: 1rem;
+  --selected-item-color: var(--color-orange-600);
+  --item-is-active-bg: var(--color-lm-orange);
+  --border-focus-color: var(--color-orange-600);
+  --item-is-active-color: black;
+  --item-hover-bg: var(--color-orange-100);
+}

@@ -16,7 +16,7 @@
   let investors: Investor[] = [];
 
   async function getDeals() {
-    const { data } = await client.query<{ deals: Deal[] }>({
+    const { data } = await $client.query<{ deals: Deal[] }>({
       query: gql`
         query SDeals($subset: Subset) {
           deals(limit: 0, subset: $subset) {
@@ -37,7 +37,7 @@
   }
 
   async function getInvestors() {
-    const { data } = await client.query<{ investors: Investor[] }>({
+    const { data } = await $client.query<{ investors: Investor[] }>({
       query: gql`
         query SInvestors($subset: Subset) {
           investors(limit: 0, subset: $subset) {

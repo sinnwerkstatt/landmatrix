@@ -1,32 +1,34 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { get } from "svelte/store";
   import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "../queries";
+  import { deal_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
-    const variables = {
-      id: +params.id,
-    };
-    const { data } = await client.query<{ deal: Deal[] }>({
+    let [dealID, versionID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
+
+    const { data } = await get(client).query<{ deal: Deal }>({
       query: deal_gql_query,
-      variables,
+      variables: { id: dealID, version: versionID },
     });
-    return { props: { deal: { ...data.deal } } };
+    return { props: { dealID, versionID, deal: data.deal } };
   };
 </script>
 
 <script lang="ts">
+  import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
+  import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import { deal_sections } from "../deal_sections";
+  import { deal_sections } from "./deal_sections";
 
   export let deal: Deal;
-  $: dealID = $page.params.id;
+  export let dealID: number;
+  export let versionID: number;
 
   $: activeTab = $page.url.hash || "#locations";
 
@@ -59,9 +61,23 @@
 <div class="container mx-auto min-h-full">
   <div class="md:flex md:flex-row md:justify-between">
     <h1>
-      Editing deal {dealID}
+      Deal {dealID}
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
+    <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        Created<br />
+        {dayjs(deal.created_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        Last update<br />
+        {dayjs(deal.modified_at).format("DD/MM/YYYY")}
+      </div>
+      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        Last full update<br />
+        {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
+      </div>
+    </div>
   </div>
   <div class="flex min-h-full">
     <nav class="p-2 flex-initial">
@@ -86,7 +102,7 @@
         <DealLocationsSection {deal} />
       {/if}
       {#if activeTab === "#general"}
-        <DealEditSection {deal} sections={deal_sections.general_info} />
+        <DealSection {deal} sections={deal_sections.general_info} />
       {/if}
       {#if activeTab === "#contracts"}
         <DealSubmodelSection
@@ -96,10 +112,10 @@
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealEditSection {deal} sections={deal_sections.employment} />
+        <DealSection {deal} sections={deal_sections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealEditSection {deal} sections={deal_sections.investor_info} />
+        <DealSection {deal} sections={deal_sections.investor_info} />
       {/if}
       {#if activeTab === "#data_sources"}
         <DealSubmodelSection
@@ -109,22 +125,22 @@
         />
       {/if}
       {#if activeTab === "#local_communities"}
-        <DealEditSection {deal} sections={deal_sections.local_communities} />
+        <DealSection {deal} sections={deal_sections.local_communities} />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealEditSection {deal} sections={deal_sections.former_use} />
+        <DealSection {deal} sections={deal_sections.former_use} />
       {/if}
       {#if activeTab === "#produce_info"}
-        <DealEditSection {deal} sections={deal_sections.produce_info} />
+        <DealSection {deal} sections={deal_sections.produce_info} />
       {/if}
       {#if activeTab === "#water"}
-        <DealEditSection {deal} sections={deal_sections.water} />
+        <DealSection {deal} sections={deal_sections.water} />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <DealEditSection {deal} sections={deal_sections.gender_related_info} />
+        <DealSection {deal} sections={deal_sections.gender_related_info} />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <DealEditSection {deal} sections={deal_sections.overall_comment} />
+        <DealSection {deal} sections={deal_sections.overall_comment} />
       {/if}
       {#if activeTab === "#overall_comment"}
         <section>

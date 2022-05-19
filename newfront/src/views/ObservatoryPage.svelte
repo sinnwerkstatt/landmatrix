@@ -34,7 +34,7 @@
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const { data } = await client.query({
+    const { data } = await $client.query({
       query: gql`
         query DealAggregations(
           $fields: [String]!

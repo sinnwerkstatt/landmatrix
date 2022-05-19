@@ -1,33 +1,36 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { get } from "svelte/store";
   import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "./queries";
+  import { deal_gql_query } from "../queries";
 
   export const load: Load = async ({ params }) => {
-    const variables = {
-      id: +params.id,
-    };
-    const { data } = await client.query<{ deal: Deal[] }>({
+    let [dealID, versionID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
+
+    const { data } = await get(client).query<{ deal: Deal[] }>({
       query: deal_gql_query,
-      variables,
+      variables: { id: +dealID, version: versionID },
     });
-    return { props: { deal: data.deal } };
+    return {
+      props: { dealID, versionID, deal: JSON.parse(JSON.stringify(data.deal)) },
+    };
   };
 </script>
 
 <script lang="ts">
-  import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
-  import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import { deal_sections } from "./deal_sections";
+  import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
+  import { deal_sections } from "../deal_sections";
 
   export let deal: Deal;
-  $: dealID = $page.params.id;
+  export let dealID: number;
+  export let versionID: number;
 
   $: activeTab = $page.url.hash || "#locations";
 
@@ -52,33 +55,51 @@
     { target: "#actions", name: $_("Actions") },
   ];
 
-  const download_link = function (format: string): string {
-    return `/api/legacy_export/?deal_id=${dealID}&subset=UNFILTERED&format=${format}`;
-  };
+  let original_deal = "";
+  let saving_in_progress = false;
+  let show_really_quit_overlay = false;
+
+  $: form_changed = JSON.stringify(deal) !== original_deal;
+  function saveButtonPressed() {
+    console.log("x");
+  }
+  function quitEditor() {
+    console.log("y");
+  }
 </script>
 
-<div class="container mx-auto min-h-full">
-  <div class="md:flex md:flex-row md:justify-between">
+<div class="container mx-auto min-h-full h-full flex flex-col">
+  <div class="md:flex md:flex-row md:justify-between border-b border-orange">
     <h1>
-      Deal {dealID}
+      Editing deal {dealID}
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
-    <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Created<br />
-        {dayjs(deal.created_at).format("DD/MM/YYYY")}
-      </div>
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Last update<br />
-        {dayjs(deal.modified_at).format("DD/MM/YYYY")}
-      </div>
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Last full update<br />
-        {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
-      </div>
+    <div class="flex items-center my-5">
+      <button
+        type="submit"
+        class="btn btn-primary mx-2 flex items-center gap-2"
+        class:disabled={!form_changed || saving_in_progress}
+        on:click={saveButtonPressed}
+      >
+        {#if saving_in_progress}
+          <LoadingSpinner /> {$_("Saving...")}
+        {:else}
+          {$_("Save")}
+        {/if}
+      </button>
+      {#if dealID}
+        <button class="btn btn-secondary mx-2" on:click={() => quitEditor(false)}>
+          {$_("Close")}
+        </button>
+      {:else}
+        <a class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+          {$_("Cancel")}
+        </a>
+      {/if}
+      <!--            <span>{{ $t("Leaves edit mode") }}</span>-->
     </div>
   </div>
-  <div class="flex min-h-full">
+  <div class="flex h-full overflow-y-hidden">
     <nav class="p-2 flex-initial">
       <ul>
         {#each tabs as { target, name }}
@@ -96,12 +117,12 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full">
+    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2">
       {#if activeTab === "#locations"}
         <DealLocationsSection {deal} />
       {/if}
       {#if activeTab === "#general"}
-        <DealSection {deal} sections={deal_sections.general_info} />
+        <DealEditSection {deal} sections={deal_sections.general_info} />
       {/if}
       {#if activeTab === "#contracts"}
         <DealSubmodelSection
@@ -111,10 +132,10 @@
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealSection {deal} sections={deal_sections.employment} />
+        <DealEditSection {deal} sections={deal_sections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealSection {deal} sections={deal_sections.investor_info} />
+        <DealEditSection {deal} sections={deal_sections.investor_info} />
       {/if}
       {#if activeTab === "#data_sources"}
         <DealSubmodelSection
@@ -124,37 +145,22 @@
         />
       {/if}
       {#if activeTab === "#local_communities"}
-        <DealSection {deal} sections={deal_sections.local_communities} />
+        <DealEditSection {deal} sections={deal_sections.local_communities} />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealSection {deal} sections={deal_sections.former_use} />
+        <DealEditSection {deal} sections={deal_sections.former_use} />
       {/if}
       {#if activeTab === "#produce_info"}
-        <DealSection {deal} sections={deal_sections.produce_info} />
+        <DealEditSection {deal} sections={deal_sections.produce_info} />
       {/if}
       {#if activeTab === "#water"}
-        <DealSection {deal} sections={deal_sections.water} />
+        <DealEditSection {deal} sections={deal_sections.water} />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <DealSection {deal} sections={deal_sections.gender_related_info} />
+        <DealEditSection {deal} sections={deal_sections.gender_related_info} />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <DealSection {deal} sections={deal_sections.overall_comment} />
-      {/if}
-      {#if activeTab === "#overall_comment"}
-        <section>
-          <!--          <DealHistory {deal} {dealId} {dealVersion} />-->
-        </section>
-      {/if}
-      {#if activeTab === "#actions"}
-        <section>
-          <h3>Download</h3>
-
-          <a target="_blank" href={download_link("xlsx")}>
-            <DownloadIcon /> Excel-Dokument
-          </a><br />
-          <a target="_blank" href={download_link("csv")}><DownloadIcon /> CSV-Datei</a>
-        </section>
+        <DealEditSection {deal} sections={deal_sections.overall_comment} />
       {/if}
     </div>
   </div>

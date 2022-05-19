@@ -16,7 +16,7 @@
   let currencies: Currency[] = [];
 
   async function getCurrencies() {
-    const { data } = await client.query<{ currencies: Currency[] }>({
+    const { data } = await $client.query<{ currencies: Currency[] }>({
       query: gql`
         query {
           currencies {
@@ -47,7 +47,6 @@
       bind:value
       placeholder="Currency"
       showChevron
-      --input-font-size="1rem"
     />
   {/if}
 </div>

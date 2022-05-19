@@ -41,7 +41,7 @@ async function getAboutPages(language = "en"): Promise<WagtailPage[]> {
 export const blogCategories = writable<BlogCategory[]>(undefined);
 async function getBlogCategories(language = "en") {
   console.log("getBlogCategories", { language });
-  const { data } = await client.query<{ blogcategories: BlogCategory[] }>({
+  const { data } = await get(client).query<{ blogcategories: BlogCategory[] }>({
     query: gql`
       query ($language: String) {
         blogcategories(language: $language) {
@@ -74,7 +74,7 @@ async function getBasics() {
   console.log("getBasics");
   const userStore = get(user);
   if (userStore !== undefined) return userStore;
-  const { data } = await client.query({
+  const { data } = await get(client).query({
     query: gql`
       query {
         me {
@@ -151,7 +151,7 @@ export const chartDescriptions = writable<{
 }>(undefined);
 async function getChartDescriptions(language = "en") {
   console.log("getChartDescriptions", { language });
-  const { data } = await client.query({
+  const { data } = await get(client).query({
     query: gql`
       query chart_descriptions($language: String) {
         chart_descriptions(language: $language) {
@@ -198,14 +198,14 @@ export async function dispatchLogin(username: string, password: string) {
     }
   `;
   const variables = { username, password };
-  const { data } = await client.mutate({ mutation, variables });
+  const { data } = await get(client).mutate({ mutation, variables });
   if (data.login.status === true) {
     user.set(data.login.user);
   }
   return data.login;
 }
 export async function dispatchLogout() {
-  const { data } = await client.mutate({
+  const { data } = await get(client).mutate({
     mutation: gql`
       mutation {
         logout

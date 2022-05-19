@@ -6,6 +6,7 @@
   import type { FormField } from "$components/Fields/fields";
   import BooleanField from "./Edit/BooleanField.svelte";
   import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte";
+  import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
   import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
 
@@ -46,6 +47,7 @@
     SimpleArrayField: SimpleArrayField,
     TextField: TextField,
     TypedChoiceField: TypedChoiceField,
+    JSONDateChoiceField: JSONDateChoiceField,
   }[formfield.class];
 </script>
 
