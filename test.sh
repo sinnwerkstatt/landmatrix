@@ -2,10 +2,12 @@
 
 poetry run ./manage.py shell << E=O=F
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 User = get_user_model()
 if not User.objects.filter(username='shakespeare').exists():
  will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
  will.groups.set([Group.objects.get(name='Administrators')])
+ will.save()
 E=O=F
 
 echo "Waiting django to launch on 8000..."
