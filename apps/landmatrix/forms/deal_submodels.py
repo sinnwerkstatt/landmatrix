@@ -1,5 +1,5 @@
 location_fields = {
-    "id": {"label": "ID", "class": "AutoField", "required": False},
+    "id": {"label": "ID", "class": "NanoIDField"},
     "name": {
         "label": "Location",
         "class": "TextField",
@@ -49,7 +49,7 @@ location_fields = {
 
 
 contract_fields = {
-    "id": {"label": "ID", "class": "AutoField", "required": False},
+    "id": {"label": "ID", "class": "NanoIDField"},
     "old_group_id": {"label": "", "class": "IntegerField", "required": False},
     "number": {"label": "Contract number", "class": "CharField", "required": False},
     "date": {"label": "Date", "class": "DateField", "required": False},
@@ -72,7 +72,7 @@ contract_fields = {
 
 
 datasource_fields = {
-    "id": {"label": "ID", "class": "AutoField", "required": False},
+    "id": {"label": "ID", "class": "NanoIDField"},
     "type": {
         "label": "Type",
         "class": "CharField",

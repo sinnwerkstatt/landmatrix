@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+  import NanoIDField from "$components/Fields/Display/NanoIDField.vue";
   import type { FormField } from "$components/Fields/fields";
   import { custom_is_null } from "$utils/data_processing";
   import ArrayField from "./Display/ArrayField.vue";
@@ -66,6 +67,7 @@
   export default Vue.extend({
     name: "DisplayField",
     components: {
+      NanoIDField,
       TypedChoiceField,
       SimpleArrayField,
       ModelChoiceField,

@@ -15,7 +15,7 @@
               ></i>
               <h3 @click="active_entry = active_entry !== entry ? entry : null">
                 {{ index + 1 }}. {{ $t(modelName) }}
-                <!--                <small class="font-mono">{{ entry.id }}</small>-->
+                <small class="font-mono">({{ entry.id }})</small>
               </h3>
               <a class="trashbin" @click="$emit('removeEntry', entry.id)">
                 <i class="fas fa-trash"></i>

@@ -19,10 +19,9 @@
 
 <script lang="ts">
   import BigMap from "$components/BigMap.vue";
-
+  import DealSubmodelSection from "./DealSubmodelSection.vue";
   import { area } from "@turf/turf";
   import { GeoJSON, LatLngBounds } from "leaflet";
-  import DealSubmodelSection from "./DealSubmodelSection.vue";
   import Vue from "vue";
 
   let styles = {

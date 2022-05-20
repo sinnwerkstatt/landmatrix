@@ -2,23 +2,35 @@
   <section v-if="entries.length">
     <div class="flex">
       <div :class="wrapperClasses">
-        <div v-for="(entry, index) in entries" :key="index" class="panel-body">
-          <h3>
-            {{ index + 1 }}. {{ $t(modelName) }}
-            <!--            <small class="font-mono">{{ entry.id }}</small>-->
-          </h3>
-          <template v-for="fieldname in fields">
-            <DisplayField
-              v-if="!custom_is_null(entry[fieldname])"
-              :key="fieldname"
-              :fieldname="fieldname"
-              :value="entry[fieldname]"
-              :model="model"
-              :label-classes="labelClasses"
-              :value-classes="valueClasses"
-              :file-not-public="entry.file_not_public"
-            />
-          </template>
+        <div
+          v-for="(entry, index) in entries"
+          :id="entry.id"
+          :key="index"
+          class="panel-body px-1 py-0.5"
+          :class="
+            nanoIDHighlight === entry.id ? 'bg-orange-100 animate-fadeToWhite' : ''
+          "
+        >
+          <h3>{{ index + 1 }}. {{ $t(modelName) }}</h3>
+          <DisplayField
+            fieldname="id"
+            :value="entry.id"
+            :model="model"
+            :label-classes="labelClasses"
+            :value-classes="valueClasses"
+          />
+
+          <DisplayField
+            v-for="fieldname in fields"
+            v-if="!custom_is_null(entry[fieldname])"
+            :key="fieldname"
+            :fieldname="fieldname"
+            :value="entry[fieldname]"
+            :model="model"
+            :label-classes="labelClasses"
+            :value-classes="valueClasses"
+            :file-not-public="entry.file_not_public"
+          />
         </div>
       </div>
       <slot />
@@ -48,15 +60,21 @@
       },
     },
     data() {
-      return {
-        custom_is_null,
-      };
+      return { custom_is_null };
     },
     computed: {
+      nanoIDHighlight(): string {
+        const [, nanoID] = this.$route.hash.split("/");
+        return nanoID;
+      },
       wrapperClasses() {
         if (this.$slots.default) return ["col-md-12", "col-lg-7", "col-xl-6"];
         else return ["w-full"];
       },
+    },
+    mounted() {
+      if (this.nanoIDHighlight)
+        document.getElementById(this.nanoIDHighlight)?.scrollIntoView();
     },
   });
 </script>
