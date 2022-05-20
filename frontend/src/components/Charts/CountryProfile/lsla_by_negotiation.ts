@@ -1,9 +1,9 @@
 /**
  *
  */
-import { max, range, scaleBand, scaleLinear, select } from "d3";
 import { flat_negotiation_status_map } from "$utils/choices";
 import { i18n } from "../../../main";
+import { max, range, scaleBand, scaleLinear, select } from "d3";
 
 export class LSLAData {
   public name: string;
@@ -33,7 +33,7 @@ export class LSLAByNegotiation {
 
     const svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
-      .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
+      .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10 + 24}`)
       .attr("height", "100%")
       .attr("width", "100%")
       .style("background-color", "white");
@@ -51,22 +51,25 @@ export class LSLAByNegotiation {
     svg
       .append("text")
       .attr("x", "300")
-      .attr("y", "0")
+      .attr("y", "20")
+      .style("font-size", "20px")
       .text(i18n.t("Number of deals").toString());
     svg
       .append("text")
       .attr("x", "610")
-      .attr("y", "0")
+      .attr("y", "20")
+      .style("font-size", "20px")
       .text(i18n.t("Size under contract").toString());
     svg
       .append("text")
       .attr("x", "920")
-      .attr("y", "0")
+      .attr("y", "20")
+      .style("font-size", "20px")
       .text(i18n.t("Intended size").toString());
 
     const y = scaleBand()
       .domain(range(data.length))
-      .rangeRound([0, this.height])
+      .rangeRound([24, this.height])
       .padding(0.1);
 
     const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`;
