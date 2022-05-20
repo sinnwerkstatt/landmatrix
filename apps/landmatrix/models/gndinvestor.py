@@ -15,6 +15,7 @@ from apps.landmatrix.models.abstracts import (
     Version,
     WorkflowInfo,
 )
+from apps.landmatrix.models.fields import DatasourcesField
 
 from apps.utils import ecma262
 
@@ -121,6 +122,9 @@ class Investor(models.Model):
     opencorporates = models.URLField(
         _("Opencorporates link"), blank=True
     )  # opencorporates_link
+
+    """ Data sources """
+    datasources = DatasourcesField(_("Data sources"), default=list, blank=True)
 
     comment = models.TextField(_("Comment"), blank=True)
 

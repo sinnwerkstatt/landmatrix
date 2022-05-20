@@ -71,6 +71,100 @@ ACTOR_MAP = [
     ("OTHER", _("Other (please specify)")),
 ]
 
+RECOGNITION_STATUS_CHOICES = (
+    (
+        "INDIGENOUS_RIGHTS_RECOGNIZED",
+        _(
+            "Indigenous Peoples traditional or customary rights recognized by government"
+        ),
+    ),
+    (
+        "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
+        _(
+            "Indigenous Peoples traditional or customary rights not recognized by government"
+        ),
+    ),
+    (
+        "COMMUNITY_RIGHTS_RECOGNIZED",
+        _("Community traditional or customary rights recognized by government"),
+    ),
+    (
+        "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+        _("Community traditional or customary rights not recognized by government"),
+    ),
+)
+
+NEGATIVE_IMPACTS_CHOICES = (
+    ("ENVIRONMENTAL_DEGRADATION", _("Environmental degradation")),
+    ("SOCIO_ECONOMIC", _("Socio-economic")),
+    ("CULTURAL_LOSS", _("Cultural loss")),
+    ("EVICTION", _("Eviction")),
+    ("DISPLACEMENT", _("Displacement")),
+    ("VIOLENCE", _("Violence")),
+    ("OTHER", _("Other")),
+)
+
+BENEFITS_CHOICES = (
+    ("HEALTH", _("Health")),
+    ("EDUCATION", _("Education")),
+    (
+        "PRODUCTIVE_INFRASTRUCTURE",
+        _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
+    ),
+    ("ROADS", _("Roads")),
+    ("CAPACITY_BUILDING", _("Capacity building")),
+    ("FINANCIAL_SUPPORT", _("Financial support")),
+    ("COMMUNITY_SHARES", _("Community shares in the investment project")),
+    ("OTHER", _("Other")),
+)
+
+FORMER_LAND_OWNER_CHOICES = (
+    ("STATE", _("State")),
+    ("PRIVATE_SMALLHOLDERS", _("Private (smallholders)")),
+    ("PRIVATE_LARGE_SCALE", _("Private (large-scale farm)")),
+    ("COMMUNITY", _("Community")),
+    ("INDIGENOUS_PEOPLE", _("Indigenous people")),
+    ("OTHER", _("Other")),
+)
+
+FORMER_LAND_USE_CHOICES = (
+    ("COMMERCIAL_AGRICULTURE", _("Commercial (large-scale) agriculture")),
+    ("SMALLHOLDER_AGRICULTURE", _("Smallholder agriculture")),
+    ("SHIFTING_CULTIVATION", _("Shifting cultivation")),
+    ("PASTORALISM", _("Pastoralism")),
+    ("HUNTING_GATHERING", _("Hunting/Gathering")),
+    ("FORESTRY", _("Forestry")),
+    ("CONSERVATION", _("Conservation")),
+    ("OTHER", _("Other")),
+)
+
+HA_AREA_CHOICES = (("PER_HA", _("per ha")), ("PER_AREA", _("for specified area")))
+
+COMMUNITY_CONSULTATION_CHOICES = (
+    ("NOT_CONSULTED", _("Not consulted")),
+    ("LIMITED_CONSULTATION", _("Limited consultation")),
+    ("FPIC", _("Free, Prior and Informed Consent (FPIC)")),
+    ("OTHER", _("Other")),
+)
+COMMUNITY_REACTION_CHOICES = (
+    ("CONSENT", _("Consent")),
+    ("MIXED_REACTION", _("Mixed reaction")),
+    ("REJECTION", _("Rejection")),
+)
+
+FORMER_LAND_COVER_CHOICES = (
+    ("CROPLAND", _("Cropland")),
+    ("FOREST_LAND", _("Forest land")),
+    ("PASTURE", _("Pasture")),
+    ("RANGELAND", _("Shrub land/Grassland (Rangeland)")),
+    ("MARGINAL_LAND", _("Marginal land")),
+    ("WETLAND", _("Wetland")),
+    (
+        "OTHER_LAND",
+        _("Other land (e.g. developed land – specify in comment field)"),
+    ),
+)
+
 CROPS = {
     "ACC": {"name": _("Accacia"), "produce": "NON_FOOD"},
     "ALF": {"name": _("Alfalfa"), "produce": "NON_FOOD"},
@@ -178,7 +272,6 @@ ANIMALS = {
 }
 ANIMALS_CHOICES = [(k, v["name"]) for k, v in ANIMALS.items()]
 
-
 MINERALS = {
     "ALU": {"name": _("Aluminum")},
     "ASP": {"name": _("Asphaltite")},
@@ -232,3 +325,25 @@ MINERALS = {
     "ZNC": {"name": _("Zinc")},
 }
 MINERALS_CHOICES = [(k, v["name"]) for k, v in MINERALS.items()]
+
+WATER_SOURCE_CHOICES = (
+    ("GROUNDWATER", "Groundwater"),
+    ("SURFACE_WATER", "Surface water"),
+    ("RIVER", "River"),
+    ("LAKE", "Lake"),
+)
+
+CONFIDENTIAL_REASON_CHOICES = (
+    ("TEMPORARY_REMOVAL", _("Temporary removal from PI after criticism")),
+    ("RESEARCH_IN_PROGRESS", _("Research in progress")),
+    ("LAND_OBSERVATORY_IMPORT", _("Land Observatory Import")),
+)
+
+NOT_PUBLIC_REASON_CHOICES = (
+    ("CONFIDENTIAL", _("Confidential flag")),
+    ("NO_COUNTRY", _("No country")),
+    ("HIGH_INCOME_COUNTRY", _("High-income country")),
+    ("NO_DATASOURCES", _("No datasources")),
+    ("NO_OPERATING_COMPANY", _("No operating company")),
+    ("NO_KNOWN_INVESTOR", _("No known investor")),
+)
