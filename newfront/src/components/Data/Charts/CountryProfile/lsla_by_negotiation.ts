@@ -6,6 +6,8 @@ import { t } from "svelte-i18n";
 import { get } from "svelte/store";
 import { flat_negotiation_status_map } from "$components/Fields/Display/choices";
 
+const $_ = get(t);
+
 export class LSLAData {
   public name: string;
   public amount = 0;
@@ -13,7 +15,7 @@ export class LSLAData {
   public intended_size = 0;
   public bold?: boolean;
   constructor(name: string, bold = false) {
-    this.name = get(t)(flat_negotiation_status_map[name]).toString();
+    this.name = $_(flat_negotiation_status_map[name]).toString();
     this.bold = bold;
   }
   add(contract_size: number, intended_size: number): void {
@@ -34,7 +36,7 @@ export class LSLAByNegotiation {
 
     const svg = select(selector)
       // there is a little extra padding at the bottom (+ 10)
-      .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
+      .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10 + 24}`)
       .attr("height", "100%")
       .attr("width", "100%")
       .style("background-color", "white");
@@ -52,22 +54,25 @@ export class LSLAByNegotiation {
     svg
       .append("text")
       .attr("x", "300")
-      .attr("y", "0")
-      .text(get(t)("Number of deals").toString());
+      .attr("y", "20")
+      .style("font-size", "20px")
+      .text($_("Number of deals").toString());
     svg
       .append("text")
       .attr("x", "610")
-      .attr("y", "0")
-      .text(get(t)("Size under contract").toString());
+      .attr("y", "20")
+      .style("font-size", "20px")
+      .text($_("Size under contract").toString());
     svg
       .append("text")
       .attr("x", "920")
-      .attr("y", "0")
-      .text(get(t)("Intended size").toString());
+      .attr("y", "20")
+      .style("font-size", "20px")
+      .text($_("Intended size").toString());
 
     const y = scaleBand()
       .domain(range(data.length))
-      .rangeRound([0, this.height])
+      .rangeRound([24, this.height])
       .padding(0.1);
 
     const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`;
