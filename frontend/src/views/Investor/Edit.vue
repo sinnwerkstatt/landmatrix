@@ -67,10 +67,24 @@
         </section>
 
         <InvestorSubmodelEditSection
+          v-if="active_tab === '#data_sources'"
+          id="data_sources"
+          :entries="investor.datasources"
+          :fields="deal_submodel_sections.datasource"
+          model="datasource"
+          model-name="Data source"
+          title="Data sources"
+          @addEntry="addDataSource"
+          @removeEntry="removeDataSource"
+        />
+
+        <InvestorSubmodelEditSection
           v-if="active_tab === '#parents'"
           id="parents"
           :entries="parents"
+          model="involvement"
           model-name="Parent company"
+          :fields="involvement_parent_fields"
           title="Parent companies"
           @addEntry="addInvestor('PARENT')"
           @removeEntry="removeInvestor"
@@ -80,7 +94,9 @@
           v-if="active_tab === '#tertiaries'"
           id="tertiaries"
           :entries="lenders"
+          model="involvement"
           model-name="Tertiary investor/lender"
+          :fields="involvement_tertiary_fields"
           title="Tertiary investors/lenders"
           @addEntry="addInvestor('LENDER')"
           @removeEntry="removeInvestor"
@@ -107,6 +123,8 @@
   import EditField from "$components/Fields/EditField";
   import Overlay from "$components/Overlay";
   import { investor_edit_query } from "$store/queries";
+  import { newNanoid } from "$utils";
+  import { deal_submodel_sections } from "$views/Deal/deal_sections";
   import gql from "graphql-tag";
   import Vue from "vue";
 
@@ -143,6 +161,7 @@
         active_tab: "#general",
         tabs: {
           general: this.$t("General"),
+          data_sources: this.$t("Data sources"),
           parents: this.$t("Parent companies"),
           tertiaries: this.$t("Tertiary investors/lenders"),
         },
@@ -154,6 +173,26 @@
           "opencorporates",
           "comment",
         ],
+        involvement_parent_fields: [
+          "investor",
+          "investment_type",
+          "percentage",
+          "loans_amount",
+          "loans_currency",
+          "loans_date",
+          "parent_relation",
+          "comment",
+        ],
+        involvement_tertiary_fields: [
+          "investor",
+          "investment_type",
+          "percentage",
+          "loans_amount",
+          "loans_currency",
+          "loans_date",
+          "comment",
+        ],
+        deal_submodel_sections,
       };
     },
     apollo: {
@@ -260,6 +299,28 @@
               +this.investorVersion !== +investor_edit.investorVersion
             )
               this.$router.push({ name: "investor_edit", params: investor_edit, hash });
+          });
+      },
+      addDataSource() {
+        console.log("adding DS");
+        const currentIDs = this.investor.datasources.map((x) => x.id);
+        this.investor.datasources.push({ id: newNanoid(currentIDs) });
+        console.log(this.investor.datasources);
+      },
+      removeDataSource(id: string) {
+        let message = `${this.$t("Remove")} ${this.$t("data source")} ${id}?`;
+        this.$bvModal
+          .msgBoxConfirm(message, {
+            size: "sm",
+            okTitle: this.$t("Delete").toString(),
+            cancelTitle: this.$t("Cancel").toString(),
+            centered: true,
+          })
+          .then((confirmed) => {
+            if (confirmed) {
+              let idx = this.investor.datasources.findIndex((x) => x.id === id);
+              this.investor.datasources.splice(idx, 1);
+            }
           });
       },
       addInvestor(role) {

@@ -184,6 +184,11 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
         if key in foreignkeys:
             if value:
                 ret[key] = foreignkeys[key].objects.get(id=value["id"])
+        elif key in "datasources":
+            new_value = [
+                val for val in value if any([v for k, v in val.items() if k != "id"])
+            ]
+            ret[key] = new_value
         elif key == "investors":
             ivis = []
             for entry in value:

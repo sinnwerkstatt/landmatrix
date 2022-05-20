@@ -62,6 +62,33 @@
         </div>
       </div>
 
+      <div v-if="investor.datasources.length > 0">
+        <h3>{{ $t("Data sources") }} ({{ investor.datasources.length }})</h3>
+        <table class="bigtable">
+          <thead>
+            <tr>
+              <th v-for="field in deal_submodel_sections.datasource" :key="field">
+                <FieldLabel :fieldname="field" model="datasource" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="ds in investor.datasources" :key="ds.id">
+              <td v-for="field in deal_submodel_sections.datasource" :key="field">
+                <DisplayField
+                  :show-label="false"
+                  :value="ds[field]"
+                  :value-classes="[]"
+                  :wrapper-classes="['text-center']"
+                  :fieldname="field"
+                  model="datasource"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h3>{{ $t("Involvements") }} ({{ simple_involvements.length }})</h3>
       <table class="bigtable">
         <thead>
@@ -242,17 +269,20 @@
 <script lang="ts">
   import LoadingPulse from "$components/Data/LoadingPulse";
   import DisplayField from "$components/Fields/DisplayField";
+  import FieldLabel from "$components/Fields/FieldLabel.vue";
   import HeaderDates from "$components/HeaderDates";
   import InvestorGraph from "$components/Investor/InvestorGraph";
   import InvestorManageHeader from "$components/Investor/InvestorManageHeader";
   import store from "$store";
   import { investor_gql_query } from "$store/queries";
+  import { deal_submodel_sections } from "$views/Deal/deal_sections";
   import gql from "graphql-tag";
   import Vue from "vue";
 
   export default Vue.extend({
     name: "InvestorDetail",
     components: {
+      FieldLabel,
       DisplayField,
       HeaderDates,
       InvestorGraph,
@@ -280,6 +310,7 @@
         depth: 0,
         includeDealsInQuery: false,
         title: "Investor",
+        deal_submodel_sections,
       };
     },
     apollo: {
