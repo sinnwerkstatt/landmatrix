@@ -1,4 +1,5 @@
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
+import { DataSource } from "./deal";
 
 enum Role {
   PARENT,
@@ -29,6 +30,7 @@ interface Investor extends Obj {
   classification: Classification;
   homepage: string;
   opencorporates: string;
+  datasources: DataSource[];
   comment: string;
   involvements: Involvement[];
   versions: InvestorVersion[];

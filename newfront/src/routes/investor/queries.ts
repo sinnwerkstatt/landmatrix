@@ -24,6 +24,7 @@ export const investor_gql_query = gql`
       classification
       homepage
       opencorporates
+      datasources
       comment
       status
       draft_status
