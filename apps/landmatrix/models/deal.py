@@ -1091,7 +1091,7 @@ class Deal(AbstractDealBase):
             150: [52.0055, 37.9587],
             419: [-4.442, -61.3269],
         }
-        deals = cls.objects.visible().exclude(country=None)
+        deals = cls.objects.public().exclude(country=None)
         if region_id:
             return [
                 {

@@ -5,7 +5,6 @@
   import { afterNavigate } from "$app/navigation";
   import { client } from "$lib/apolloClient";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
-  import { user } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
@@ -53,7 +52,7 @@
       variables: {
         fields: ["current_negotiation_status"],
         filters: filters.toGQLFilterArray(),
-        subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
+        subset: "PUBLIC",
       },
     });
     const curNegStat = data.deal_aggregations.current_negotiation_status;
