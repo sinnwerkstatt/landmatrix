@@ -2,8 +2,10 @@ import { test, expect } from "@playwright/test";
 
 test.use({ storageState: "playwright-storageState.json" });
 
-test.describe.serial("group", () => {
+test.describe.serial("investor creation tests", () => {
   let parentID;
+  let childID;
+  let tertaryID;
   test("create parent investor", async ({ context, page }) => {
     await page.goto("/investor/add/");
 
@@ -30,6 +32,32 @@ test.describe.serial("group", () => {
     await page.close();
   });
 
+  test("create tertiary investor", async ({ context, page }) => {
+    await page.goto("/investor/add/");
+
+    await page.locator('[placeholder="Name"]').fill("TertCorp");
+    await page.locator("text=Select option Afghanistan >> div").nth(1).click();
+    await page.locator('[placeholder="Select option"]').fill("united states");
+    await page.locator('span:has-text("United States of America")').first().click();
+    await page
+      .locator('select[name="classification"]')
+      .selectOption("PRIVATE_EQUITY_FIRM");
+    await page.locator('[placeholder="Investor homepage"]').fill("http://tertcorp.com");
+    await page
+      .locator('[placeholder="Opencorporates link"]')
+      .fill("https://opencorporates.com/companies/gb/04366849");
+    await page.locator('[aria-label="Comment"]').fill("testing comment");
+
+    const p2saveButton = await page.locator("text=Save");
+    await p2saveButton.click();
+    await page.waitForLoadState("networkidle");
+    await expect(p2saveButton).toBeDisabled();
+    const headline = await page.locator(".investor-edit-heading > h1");
+    await expect(headline).toContainText("Editing Investor #");
+    tertaryID = (await headline.innerText()).replace("Editing Investor #", "");
+    await page.close();
+  });
+
   test("create child investor", async ({ context, page }) => {
     await page.goto("/investor/add/");
 
@@ -38,6 +66,12 @@ test.describe.serial("group", () => {
     await page.locator('[placeholder="Select option"]').fill("ger");
     await page.locator('span:has-text("Germany")').first().click();
     await page.locator('select[name="classification"]').selectOption("PRIVATE_COMPANY");
+    await page
+      .locator('[placeholder="Investor homepage"]')
+      .fill("http://planetexpresscom");
+
+    //ToDo: form validation only checking on https://x , no alert trying "http://" or leaving out ".com"
+
     await page
       .locator('[placeholder="Investor homepage"]')
       .fill("http://planetexpress.com");
@@ -60,7 +94,19 @@ test.describe.serial("group", () => {
     await page.locator("text=Investor Choose Investor >> div").nth(1).click();
     await page.locator('[placeholder="Choose Investor"]').fill("Mom");
     await page.locator(`text=MomCorp (#${parentID})`).click();
-    await page.locator('[placeholder="\\30  – 100"]').fill("300");
+
+    const decimalfeld = await page.locator('[placeholder="\\30  – 100"]');
+    await decimalfeld.fill("300");
+    await expect(decimalfeld).toHaveValue("100");
+
+    // ToDo: decimalfield allows neg values, should we use js to enforce pos values?
+    // await decimalfeld.fill("-5");
+    // await page.pause();
+    // await expect(decimalfeld).toHaveValue("0");
+
+    await decimalfeld.fill("23");
+    await expect(decimalfeld).toHaveValue("23");
+
     await page.locator('[placeholder="\\31 00\\.23"]').fill("1000001");
 
     await page.locator("text=Loan currency Currency >> div").nth(1).click();
@@ -75,17 +121,14 @@ test.describe.serial("group", () => {
     await page.waitForLoadState("networkidle");
     await expect(saveButton).toBeDisabled();
     const headline_child = await page.locator(".investor-edit-heading > h1");
-    const childID = (await headline_child.innerText()).replace(
-      "Editing Investor #",
-      ""
-    );
+    childID = (await headline_child.innerText()).replace("Editing Investor #", "");
 
     await page.locator("text=Tertiary investors/lenders").click();
     await page.locator("text=Add Tertiary investor/lender").click();
 
     await page.locator("text=Investor Choose Investor >> div").nth(1).click();
-    await page.locator('[placeholder="Choose Investor"]').fill("Mom");
-    await page.locator(`text=MomCorp (#${parentID})`).click();
+    await page.locator('[placeholder="Choose Investor"]').fill("Tert");
+    await page.locator(`text=TertCorp (#${tertaryID})`).click();
     await page.locator('[placeholder="\\30  – 100"]').fill("300");
     await page.locator('[placeholder="\\31 00\\.23"]').fill("1000001");
 
@@ -99,12 +142,24 @@ test.describe.serial("group", () => {
     await saveButton.click();
     await page.waitForLoadState("networkidle");
     await expect(saveButton).toBeDisabled();
+  });
 
+  test("checkout child investor detail page", async ({ context, page }) => {
     await page.goto(`/investor/${childID}/`);
+    // check all basic facts about child inv
     await page.locator("text=Tertiary investor/lender");
     await page.locator("text=Parent company");
+    await page.locator("h1", { hasText: `Planet Express, Inc. ${childID}` });
 
     const involvements = await page.locator(".investor-id-display").first().innerText();
     expect(involvements === parentID);
+
+    const involvements_tertial = await page
+      .locator(".investor-id-display")
+      .nth(1)
+      .innerText();
+    expect(involvements_tertial === tertaryID);
+    await page.locator(`text=${tertaryID}`).click();
+    page.locator("h1", { hasText: `TertCorp ${tertaryID}` });
   });
 });
