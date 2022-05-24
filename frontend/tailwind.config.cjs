@@ -21,7 +21,7 @@ const config = {
         "lm-light": "#f9f9f9",
       },
       animation: {
-        "fadeToWhite": "fadeToWhite 1s ease-in-out normal forwards",
+        fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",
       },
 
       // that is actual animation
