@@ -39,7 +39,6 @@
   import JSONDateAreaField from "./Edit/JSONDateAreaField.vue";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.vue";
   import JSONExportsField from "./Edit/JSONExportsField.vue";
-  import JSONField from "./Edit/JSONField.vue";
   import JSONJobsField from "./Edit/JSONJobsField.vue";
   import JSONLeaseField from "./Edit/JSONLeaseField.vue";
   import PointField from "./Edit/PointField.vue";
@@ -80,7 +79,6 @@
       JSONDateAreaField,
       JSONDateChoiceField,
       JSONExportsField,
-      JSONField,
       JSONJobsField,
       JSONLeaseField,
       NullBooleanField,
