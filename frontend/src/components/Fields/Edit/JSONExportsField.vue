@@ -3,34 +3,24 @@
     <table class="w-100">
       <thead>
         <tr>
-          <th>Current</th>
-          <th>Date</th>
-          <th>Choices</th>
-          <th>Area (ha)</th>
-          <th>Yield (tons)</th>
-          <th>Export (%)</th>
+          <th>{{ $t("Current") }}</th>
+          <th>{{ $t("Date") }}</th>
+          <th>{{ $t("Choices") }}</th>
+          <th>{{ $t("Area (ha)") }}</th>
+          <th>{{ $t("Yield (tons)") }}</th>
+          <th>{{ $t("Export (%)") }}</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(val, i) in vals" :key="i" :class="{ 'is-current': val.current }">
-          <td class="text-center" @click="updateCurrent(i)">
+          <td class="text-center">
             <div class="form-check form-check-inline">
               <input
-                :id="`${formfield.name}_current_${i}`"
-                v-model="current"
+                v-model="val.current"
                 class="form-check-input"
-                type="radio"
-                :name="`${formfield.name}_current`"
-                :required="
-                  vals.length > 0 &&
-                  (vals[0].date ||
-                    vals[0].area ||
-                    vals[0].yield ||
-                    vals[0].export ||
-                    vals[0].choices)
-                "
-                :value="i"
+                type="checkbox"
+                @change="updateEntries"
               />
             </div>
           </td>
@@ -110,7 +100,6 @@
         labels: {},
       };
     },
-
     computed: {
       filteredVals() {
         return this.vals.filter(
@@ -123,6 +112,11 @@
         this.labels[k] = this.$t(v);
         return k;
       });
+    },
+    methods: {
+      updateEntries() {
+        this.$emit("input", this.filteredVals);
+      },
     },
   };
 </script>
