@@ -89,6 +89,11 @@
         labels: {},
       };
     },
+    computed: {
+      filteredVals() {
+        return this.vals.filter((x) => x.date || x.area || x.choices);
+      },
+    },
     created() {
       if (this.formfield.with_categories) {
         this.options = Object.entries(this.formfield.choices).map(([k, v]) => {
