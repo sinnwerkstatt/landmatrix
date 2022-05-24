@@ -31,7 +31,7 @@
   export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
   export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
 
-  //   fileNotPublic: { type: Boolean, default: false },
+  export let fileNotPublic = false;
   //   visible: { type: Boolean, default: true },
   //   targetBlank: { type: Boolean, default: false },
   //   objectId: { type: Number, default: null, required: false },
@@ -42,7 +42,7 @@
   //       if (!this.visible) return false;
   //       if (this.fieldname === "file_not_public") return false;
   //       if (this.formfield.class === "FileField") {
-  //         return !this.fileNotPublic || this.$store.getters.userAuthenticated;
+  //         return !fileNotPublic || this.$store.getters.userAuthenticated;
   //       }
   //       return true;
   //     },
@@ -93,10 +93,9 @@
   {/if}
   <div class={valueClasses}>
     {#if field}
-      <svelte:component this={field} {value} {model} {formfield} />
+      <svelte:component this={field} {value} {model} {formfield} {fileNotPublic} />
       <!--  <div>-->
       <!--    <component-->
-      <!--      :file-not-public="fileNotPublic"-->
       <!--      :target-blank="targetBlank"-->
       <!--      :object-id="objectId"-->
       <!--      :object-version="objectVersion"-->
