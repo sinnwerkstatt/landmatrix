@@ -41,6 +41,7 @@
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
               select-label=""
+              :limit="3"
               @input="updateEntries"
             />
           </td>

@@ -270,6 +270,7 @@
             track-by="id"
             label="name"
             select-label=""
+            :limit="3"
           />
         </FilterCollapse>
         <FilterCollapse

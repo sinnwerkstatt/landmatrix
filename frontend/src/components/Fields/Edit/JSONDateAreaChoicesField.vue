@@ -51,6 +51,7 @@
               :close-on-select="false"
               select-label=""
               @input="updateEntries"
+              :limit="3"
             />
           </td>
 
