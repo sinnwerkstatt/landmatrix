@@ -4,6 +4,7 @@
       v-model="val"
       type="number"
       class="form-control"
+      :name = "name"
       :placeholder="placeholder"
       :required="required"
       :min="minValue"
@@ -22,6 +23,7 @@
   export default {
     name: "LowLevelDecimalField",
     props: {
+      name: { type: String, required: false, default: "" },
       unit: { type: String, required: false, default: "" },
       required: { type: Boolean, default: false },
       value: { type: Number, required: false, default: null },
