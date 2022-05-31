@@ -6,6 +6,7 @@
 
   export let required = false;
   export let value: string | Date;
+  export let name: string;
 
   let valid_state = "";
   let inputfield;
@@ -42,6 +43,7 @@
     class="inpt {valid_state}"
     placeholder="YYYY-MM-DD"
     {required}
+    {name}
     on:input={onChange}
   />
 </div>

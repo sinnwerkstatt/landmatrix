@@ -5,10 +5,15 @@
   import TextField from "$components/Fields/Edit/TextField.svelte";
   import type { FormField } from "$components/Fields/fields";
   import BooleanField from "./Edit/BooleanField.svelte";
+  import CharField from "./Edit/CharField.svelte";
   import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte";
+  import DateField from "./Edit/DateField.svelte";
+  import EmailField from "./Edit/EmailField.svelte";
+  import FileField from "./Edit/FileField.svelte";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
   import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
+  import URLField from "./Edit/URLField.svelte";
 
   export let fieldname: string;
   export let value;
@@ -39,15 +44,21 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
-    CurrencyForeignKey: CurrencyForeignKey,
     BooleanField: BooleanField,
-    NullBooleanField: BooleanField,
+    CharField: CharField,
+    OCIDField: CharField,
+    CurrencyForeignKey: CurrencyForeignKey,
+    DateField: DateField,
     DecimalField: DecimalField,
+    EmailField: EmailField,
+    FileField: FileField,
     IntegerField: DecimalField,
+    JSONDateChoiceField: JSONDateChoiceField,
+    NullBooleanField: BooleanField,
     SimpleArrayField: SimpleArrayField,
     TextField: TextField,
     TypedChoiceField: TypedChoiceField,
-    JSONDateChoiceField: JSONDateChoiceField,
+    URLField: URLField,
   }[formfield.class];
 </script>
 
@@ -59,7 +70,7 @@
   {/if}
   <div class={valueClasses}>
     {#if field}
-      <svelte:component this={field} {value} {model} {formfield} />
+      <svelte:component this={field} bind:value {model} {formfield} />
       <!--  <div>-->
       <!--    <component-->
       <!--      :file-not-public="fileNotPublic"-->

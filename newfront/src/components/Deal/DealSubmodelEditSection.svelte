@@ -1,0 +1,66 @@
+<script lang="ts">
+  import { _ } from "svelte-i18n";
+  import { slide } from "svelte/transition";
+  import { dealSubsections } from "$lib/deal_sections";
+  import { newNanoid } from "$lib/helpers";
+  import type { Contract, DataSource, Location } from "$lib/types/deal";
+  import { isEmptySubmodel } from "$lib/utils/data_processing";
+  import EditField from "$components/Fields/EditField.svelte";
+  import PlusIcon from "$components/icons/PlusIcon.svelte";
+  import TrashIcon from "$components/icons/TrashIcon.svelte";
+
+  export let model: string;
+  export let modelName: string;
+  export let entries: Array<Contract | DataSource | Location> = [];
+
+  $: fields = dealSubsections[model];
+
+  let activeEntry: number;
+  $: activeEntry = entries.length - 1;
+
+  function addEntry() {
+    const currentIDs = entries.map((x) => x.id.toString());
+    const newEntry = { id: newNanoid(currentIDs) } as Contract | DataSource | Location;
+    entries = [...entries, newEntry];
+  }
+
+  function removeEntry(entry: Contract | DataSource | Location) {
+    if (isEmptySubmodel(entry)) {
+      entries = entries.filter((x) => x.id !== entry.id);
+      return;
+    }
+    const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+    if (areYouSure === true) entries = entries.filter((x) => x.id !== entry.id);
+  }
+</script>
+
+<section class="flex flex-wrap">
+  <div class="w-full">
+    {#each entries as entry, index}
+      <div class="{model}-entry">
+        <h3 on:click={() => (activeEntry = activeEntry === index ? -1 : index)}>
+          {index + 1}. {$_(modelName)}
+          <small class="text-sm text-gray-500">#{entry.id}</small>
+          <TrashIcon
+            class="w-6 h-6 text-red-600 float-right cursor-pointer"
+            on:click={() => removeEntry(entry)}
+          />
+        </h3>
+        {#if activeEntry === index}
+          <div transition:slide={{ duration: 200 }}>
+            {#each fields as fieldname}
+              <EditField {fieldname} bind:value={entry[fieldname]} {model} />
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/each}
+  </div>
+  <div class="mt-6">
+    <button type="button" class="btn btn-primary flex items-center" on:click={addEntry}>
+      <PlusIcon class="w-5 h-6 mr-2 -ml-2" />
+      {$_("Add")}
+      {$_(modelName)}
+    </button>
+  </div>
+</section>

@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
+
   export let value: number;
+  export let name: string;
   export let unit = "";
   export let required = false;
-
   export let max: number;
   export let min: number;
   export let decimals = 2;
@@ -59,12 +61,13 @@
     {min}
     {max}
     {step}
+    {name}
   />
   {#if unit}
     <div
       class="flex justify-center items-center border border-l-0 border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600"
     >
-      {unit}
+      {$_(unit)}
     </div>
   {/if}
 </div>

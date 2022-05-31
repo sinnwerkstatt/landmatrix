@@ -1,4 +1,4 @@
-import type { Deal } from "$lib/types/deal";
+import type { Contract, DataSource, Deal } from "$lib/types/deal";
 import { negotiation_status_choices } from "$components/Fields/Display/choices";
 
 export function sum(items: Deal[], prop: string): number {
@@ -37,4 +37,11 @@ export function prepareNegotianStatusData(deals: Deal[]): Array<unknown> {
     }
   }
   return data;
+}
+
+export function isEmptySubmodel(entry: Contract | DataSource | Location) {
+  const fieldsWithValues = Object.entries(entry).filter(([k, v]) =>
+    k === "id" ? false : !custom_is_null(v)
+  );
+  return fieldsWithValues.length === 0;
 }

@@ -6,12 +6,13 @@
   export let value: string;
 </script>
 
-<div class="text_field">
-  <textarea
+<div class="char_field">
+  <input
     bind:value
+    type="text"
+    class="inpt"
     placeholder={$_(formfield.label)}
     name={formfield.name}
-    rows="5"
-    class="inpt"
+    maxlength={formfield.max_length}
   />
 </div>

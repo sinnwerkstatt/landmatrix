@@ -16,7 +16,7 @@
 <div class="simplearray_field">
   {#if formfield.choices}
     <div>
-      <select bind:value multiple class="inpt">
+      <select bind:value multiple class="inpt" name={formfield.name}>
         {#each Object.entries(formfield.choices) as [v, label]}
           <option value={v}>{label}</option>
         {/each}
@@ -29,6 +29,7 @@
         on:input={(x) => (value = x.target.value.split("\n"))}
         class="inpt"
         rows="5"
+        name={formfield.name}
       />
       <small class="form-text text-muted">
         {$_("Put each value on a new line, i.e. press enter between each name")}

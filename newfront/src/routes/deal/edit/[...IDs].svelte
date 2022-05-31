@@ -22,10 +22,10 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { deal_sections } from "$lib/deal_sections";
+  import { dealSections } from "$lib/deal_sections";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
+  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
 
   export let deal: Deal;
@@ -92,9 +92,9 @@
           {$_("Close")}
         </button>
       {:else}
-        <a class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+        <button class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
           {$_("Cancel")}
-        </a>
+        </button>
       {/if}
       <!--            <span>{{ $t("Leaves edit mode") }}</span>-->
     </div>
@@ -119,48 +119,48 @@
     </nav>
     <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
       {#if activeTab === "#locations"}
-        <DealLocationsSection {deal} />
+        <DealLocationsSection bind:deal />
       {/if}
       {#if activeTab === "#general"}
-        <DealEditSection {deal} sections={deal_sections.general_info} />
+        <DealEditSection bind:deal sections={dealSections.general_info} />
       {/if}
       {#if activeTab === "#contracts"}
-        <DealSubmodelSection
+        <DealSubmodelEditSection
           model="contract"
           modelName="Contract"
-          entries={deal.contracts}
+          bind:entries={deal.contracts}
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealEditSection {deal} sections={deal_sections.employment} />
+        <DealEditSection bind:deal sections={dealSections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealEditSection {deal} sections={deal_sections.investor_info} />
+        <DealEditSection bind:deal sections={dealSections.investor_info} />
       {/if}
       {#if activeTab === "#data_sources"}
-        <DealSubmodelSection
+        <DealSubmodelEditSection
           model="datasource"
           modelName="Data source"
-          entries={deal.datasources}
+          bind:entries={deal.datasources}
         />
       {/if}
       {#if activeTab === "#local_communities"}
-        <DealEditSection {deal} sections={deal_sections.local_communities} />
+        <DealEditSection bind:deal sections={dealSections.local_communities} />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealEditSection {deal} sections={deal_sections.former_use} />
+        <DealEditSection bind:deal sections={dealSections.former_use} />
       {/if}
       {#if activeTab === "#produce_info"}
-        <DealEditSection {deal} sections={deal_sections.produce_info} />
+        <DealEditSection bind:deal sections={dealSections.produce_info} />
       {/if}
       {#if activeTab === "#water"}
-        <DealEditSection {deal} sections={deal_sections.water} />
+        <DealEditSection bind:deal sections={dealSections.water} />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <DealEditSection {deal} sections={deal_sections.gender_related_info} />
+        <DealEditSection bind:deal sections={dealSections.gender_related_info} />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <DealEditSection {deal} sections={deal_sections.overall_comment} />
+        <DealEditSection bind:deal sections={dealSections.overall_comment} />
       {/if}
     </div>
   </div>

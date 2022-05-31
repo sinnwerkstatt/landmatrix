@@ -1,5 +1,6 @@
 <script lang="ts">
   import { gql } from "@apollo/client/core";
+  import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import { client } from "$lib/apolloClient";
 
@@ -35,7 +36,7 @@
     <Select
       items={currencies}
       bind:value
-      placeholder="Currency"
+      placeholder={$_("Currency")}
       optionIdentifier="id"
       labelIdentifier="name"
       getOptionLabel={(o) => `${o.name} (${o.code})`}
