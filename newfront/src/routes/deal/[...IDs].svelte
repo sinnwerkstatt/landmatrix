@@ -20,11 +20,11 @@
   import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
+  import { deal_sections } from "$lib/deal_sections";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import { deal_sections } from "./deal_sections";
 
   export let deal: Deal;
   export let dealID: number;

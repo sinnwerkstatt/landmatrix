@@ -22,11 +22,11 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { deal_sections } from "$lib/deal_sections";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
-  import { deal_sections } from "../deal_sections";
 
   export let deal: Deal;
   export let dealID: number;

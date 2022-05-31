@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import type { DealSection } from "$lib/deal_sections";
   import type { Deal } from "$lib/types/deal";
   import EditField from "$components/Fields/EditField.svelte";
-  import type { DealSection } from "../../routes/deal/deal_sections";
 
   export let deal: Deal;
   export let sections: DealSection[] = [];
