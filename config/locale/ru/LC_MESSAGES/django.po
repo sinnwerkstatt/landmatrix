@@ -766,8 +766,8 @@ msgstr "Дата заключения контракта"
 msgid "Contract expiration date"
 msgstr "Дата окончания действия контракта"
 
-msgid "Duration of the agreement (in years)"
-msgstr "Длительность соглашения (в годах)"
+msgid "Duration of the agreement"
+msgstr "Длительность соглашения"
 
 msgid "years"
 msgstr "годы"

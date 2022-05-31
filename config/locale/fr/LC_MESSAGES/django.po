@@ -739,8 +739,8 @@ msgstr "Date du contrat"
 msgid "Contract expiration date"
 msgstr "Date d’expiration du contrat"
 
-msgid "Duration of the agreement (in years)"
-msgstr "Durée de l’accord (en nombre d’années)"
+msgid "Duration of the agreement"
+msgstr "Durée de l’accord"
 
 msgid "years"
 msgstr "années"

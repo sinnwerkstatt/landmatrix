@@ -184,7 +184,7 @@ contract_fields = {
     "number": "Contract number",
     "date": "Contract date",
     "expiration_date": "Contract expiration date",
-    "agreement_duration": "Duration of the agreement (in years)",
+    "agreement_duration": "Duration of the agreement",
     "comment": "Comment on contract",
 }
 
