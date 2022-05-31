@@ -50,8 +50,8 @@
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
               select-label=""
-              @input="updateEntries"
               :limit="3"
+              @input="updateEntries"
             />
           </td>
 

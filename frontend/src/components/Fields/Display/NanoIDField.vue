@@ -17,7 +17,7 @@
   export default Vue.extend({
     props: {
       formfield: { type: Object as PropType<FormField>, required: true },
-      value: { type: String, required: true },
+      value: { type: [String, Number], required: true },
       model: { type: String, required: true },
       targetBlank: { type: Boolean, default: false },
       objectVersion: { type: Number, default: null, required: false },

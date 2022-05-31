@@ -333,17 +333,17 @@
 </template>
 
 <script lang="ts">
+  import FilterBarNegotiationStatusToggle from "$components/Data/FilterBarNegotiationStatusToggle.vue";
+  import Wimpel from "$components/Wimpel.vue";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
   } from "$utils/choices";
-  import gql from "graphql-tag";
-  import { mapState } from "vuex";
   import FilterCollapse from "./FilterCollapse.vue";
-  import Wimpel from "$components/Wimpel.vue";
+  import gql from "graphql-tag";
   import Vue from "vue";
-  import FilterBarNegotiationStatusToggle from "$components/Data/FilterBarNegotiationStatusToggle.vue";
+  import { mapState } from "vuex";
 
   export default Vue.extend({
     name: "FilterBar",
