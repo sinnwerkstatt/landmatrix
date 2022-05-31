@@ -132,7 +132,7 @@ class JSONActorsField(JSONField):
                     "additionalProperties": False,
                     "properties": {
                         "name": {"type": "string"},
-                        "choice": {
+                        "role": {
                             "type": "string",
                             "enum": [x[0] for x in self.choices],
                         },

@@ -392,7 +392,15 @@ export const deal_gql_query = gql`
       overall_comment
       # Meta
       created_at
+      created_by {
+        id
+        username
+      }
       modified_at
+      modified_by {
+        id
+        username
+      }
       fully_updated
       fully_updated_at
       confidential

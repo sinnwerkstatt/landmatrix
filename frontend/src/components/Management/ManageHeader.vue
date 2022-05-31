@@ -147,11 +147,19 @@
               <div v-if="is_editable" class="action-button">
                 <div class="d-inline-block">
                   <router-link
+                    v-if="$store.state.user.id === object.modified_by.id"
                     :class="{ disabled: is_old_draft }"
                     :to="object_edit_path(object.id, objectVersion)"
                     class="btn btn-primary"
                     >{{ $t("Edit") }}
                   </router-link>
+                  <button
+                    v-else
+                    class="btn btn-primary"
+                    @click.prevent="show_new_draft_overlay = true"
+                  >
+                    {{ $t("Edit") }}
+                  </button>
                 </div>
                 <div class="d-inline-block button-description">
                   {{ get_edit_description }}
@@ -199,6 +207,19 @@
     </div>
     <slot name="overlays"></slot>
     <Overlay
+      v-if="show_new_draft_overlay"
+      :comment-input="false"
+      :title="$t('Create a new draft').toString()"
+      @cancel="show_new_draft_overlay = false"
+      @submit="() => $router.push(object_edit_path(object.id, objectVersion))"
+    >
+      {{
+        $t(
+          "You are not the author of this version. Therefore, a new version will be created if you proceed."
+        )
+      }}
+    </Overlay>
+    <Overlay
       v-if="show_to_draft_overlay"
       :assign-to-user-input="true"
       :comment-input="true"
@@ -235,12 +256,12 @@
   import HeaderDates from "$components/HeaderDates.vue";
   import ManageHeaderComments from "$components/Management/ManageHeaderComments.vue";
   import Overlay from "$components/Overlay.vue";
-  import Vue from "vue";
-  import type { PropType } from "vue";
-  import { is_authorized } from "$utils/user";
-  import gql from "graphql-tag";
   import type { Obj, ObjVersion } from "$types/generics";
   import type { User } from "$types/user";
+  import { is_authorized } from "$utils/user";
+  import gql from "graphql-tag";
+  import Vue from "vue";
+  import type { PropType } from "vue";
   import type { Location } from "vue-router/types/router";
 
   export default Vue.extend({
@@ -262,6 +283,7 @@
         show_to_delete_overlay: false,
         show_send_to_activation_overlay: false,
         show_activate_overlay: false,
+        show_new_draft_overlay: false,
         is_authorized,
         submit_for_review_link_title:
           this.otype === "deal"

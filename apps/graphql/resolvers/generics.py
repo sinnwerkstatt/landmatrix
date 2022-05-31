@@ -184,6 +184,7 @@ def object_edit(
     ObjectForm = DealForm if otype == "deal" else InvestorForm
     form = ObjectForm(payload)
     if not form.is_valid():
+        print("FORM ERRORS", form.errors)
         return form.errors
 
     # this is a new Object
@@ -208,13 +209,13 @@ def object_edit(
         )
 
         return [obj.id, obj_version.id]
+
     obj = Object.objects.get(id=obj_id)
     obj.update_from_dict(payload)
     obj.recalculate_fields()
     obj.modified_at = timezone.now()
-    obj.modified_by = user
 
-    # this is a live Object for which we create a new Version
+    # this is a live Object for which we create a new Version,
     # or it is the version of the currently active Deal
     if not obj_version_id or (
         ObjectVersion.objects.filter(object_id=obj_id).first().id == obj_version_id
@@ -248,12 +249,19 @@ def object_edit(
 
         obj_version.serialized_data = obj.serialize_for_version()
 
-        if obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]:
+        # we create a new version if the Draft is already Review or Activation,
+        # or the author is not the current user
+        if (
+            obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]
+        ) or obj.modified_by_id != user.id:
+
             oldstatus = obj.draft_status
 
             obj_version.id = None
             obj_version.created_by = user
             obj_version.created_at = timezone.now()
+            obj_version.modified_by = user
+
             obj_version.serialized_data["draft_status"] = DRAFT_STATUS["DRAFT"]
             obj_version.save()
 
