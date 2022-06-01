@@ -13,6 +13,9 @@
   export let modelName: string;
   export let entries: Array<Contract | DataSource | Location> = [];
 
+  // TODO: build something to filter out empty entries
+  // $: _entries = JSON.parse(JSON.stringify(entries));
+
   $: fields = dealSubsections[model];
 
   let activeEntry: number;

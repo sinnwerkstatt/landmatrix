@@ -51,16 +51,18 @@
     { target: "#gender_related_info", name: $_("Gender-related info") },
     { target: "#overall_comment", name: $_("Overall comment") },
     { target: "#blank1", name: null },
-    { target: "#history", name: $_("Deal History") },
+    { target: "#history", name: $_("Deal history") },
     { target: "#actions", name: $_("Actions") },
   ];
 
-  let original_deal = "";
-  let saving_in_progress = false;
+  let originalDeal = JSON.stringify(deal);
+
+  let savingInProgress = false;
   let show_really_quit_overlay = false;
 
-  $: form_changed = JSON.stringify(deal) !== original_deal;
+  $: formChanged = JSON.stringify(deal) !== originalDeal;
   function saveButtonPressed() {
+    savingInProgress = true;
     console.log("x");
   }
   function quitEditor() {
@@ -75,13 +77,16 @@
       {#if deal.country}in {deal.country.name}{/if}
     </h1>
     <div class="flex items-center my-5">
+      <!--{originalDeal}<br /><br />-->
+      <!--{JSON.stringify(deal)}<br /><br />-->
+      x{formChanged}x
       <button
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
-        class:disabled={!form_changed || saving_in_progress}
+        class:disabled={!formChanged || savingInProgress}
         on:click={saveButtonPressed}
       >
-        {#if saving_in_progress}
+        {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
         {:else}
           {$_("Save")}

@@ -33,9 +33,11 @@
 
 <div class="currency_foreignkey_field">
   {#if currencies}
+    <!-- removing "code" here, for "has deal changed" logic -->
     <Select
       items={currencies}
-      bind:value
+      {value}
+      on:select={(x) => (value = { ...x.detail, code: undefined })}
       placeholder={$_("Currency")}
       optionIdentifier="id"
       labelIdentifier="name"

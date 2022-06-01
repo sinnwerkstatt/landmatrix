@@ -48,5 +48,5 @@
   {:else}
     <input type="file" on:change={uploadFile} />
   {/if}
-  <span class="text-gray-400 text-sm block pt-2">{$_("Maximum file size: 10MB")}</span>
+  <small class="text-gray-500 block pt-2">{$_("Maximum file size: 10MB")}</small>
 </div>
