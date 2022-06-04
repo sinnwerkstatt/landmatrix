@@ -10,7 +10,7 @@ from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
-from apps.landmatrix.models.gndinvestor import (
+from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     Investor,
     InvestorVersion,
