@@ -14,14 +14,10 @@ psycopg2-binary = "*"
 
 django-cors-headers = "*"
 django-environ = "*"
-django-file-resubmit = "*"
 django-impersonate = "*"
 django-modeltranslation = "*"
-django-multiselectfield = "*"
-django-recaptcha = "*"
+django-multiselectfield = "*"  # delete this after squashing migrations
 django-registration = "*"
-djangorestframework = "<4"
-djangorestframework-gis = "*"
 
 wagtail-font-awesome-svg = "*"
 wagtail-modeltranslation = "*"
@@ -35,7 +31,6 @@ python-memcached = "*"
 
 ariadne = ">=0.14"
 ariadne_django = "*"
-country-bounding-boxes = "*"
 fastjsonschema = "*"
 geojson-rewind = "*"
 nanoid = "*"
