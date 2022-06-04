@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     "modelcluster",
     "taggit",
     # 'treebeard',
-    "wkhtmltopdf",
     "captcha",
     "rest_framework",
     "rest_framework.authtoken",
@@ -79,7 +78,6 @@ INSTALLED_APPS = [
     "apps.landmatrix",
     "apps.editor",
     "apps.wagtailcms",
-    "apps.notifications",
     "impersonate",
     "celery",
     # green new deal
@@ -198,8 +196,6 @@ BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
-
-WKHTMLTOPDF_CMD = env("DJANGO_WKHTMLTOPDF_CMD", default="wkhtmltopdf")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
