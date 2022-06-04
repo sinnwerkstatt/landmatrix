@@ -165,25 +165,42 @@
     >
       You have unsaved changes. Are you sure you want to exit the edit mode?
     </Overlay>
+    <Overlay
+      v-if="saving_error"
+      :title="$t('Saving failed!')"
+      :show-submit="false"
+      cancel-button-title="Close"
+      @cancel="saving_error = ''"
+    >
+      <div class="font-bold mb-3">
+        There seems to be an old error somewhere on this deal. <br /><br />
+        At the moment, the best solution to solve this is:
+        <ol class="list-decimal pl-4">
+          <li>reload this page</li>
+          <li>go the section with the error and fix it</li>
+          <li>afterwards resume what you were actually working on</li>
+        </ol>
+      </div>
+      {{ saving_error }}
+    </Overlay>
   </div>
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
-  import gql from "graphql-tag";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import DealEditSection from "$components/Deal/DealEditSection.vue";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.vue";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.vue";
   import EditField from "$components/Fields/EditField.vue";
-  import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
   import Overlay from "$components/Overlay.vue";
+  import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
   import { deal_gql_query } from "$store/queries";
+  import type { Contract, DataSource, Deal, Location } from "$types/deal";
   import { newNanoid, removeEmptyEntries } from "$utils";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
-
+  import gql from "graphql-tag";
+  import Vue from "vue";
   import type { LocaleMessages } from "vue-i18n";
-  import type { Deal, Location, Contract, DataSource } from "$types/deal";
 
   export default Vue.extend({
     name: "DealEdit",
@@ -217,6 +234,7 @@
         deal: {} as Deal,
         original_deal: "",
         saving_in_progress: false,
+        saving_error: "",
         show_really_quit_overlay: false,
         active_tab: "#locations",
         deal_sections,
@@ -344,6 +362,10 @@
             this.saving_in_progress = false;
             if (location.hash !== hash || +this.dealVersion !== +deal_edit.dealVersion)
               this.$router.push({ name: "deal_edit", params: deal_edit, hash });
+          })
+          .catch((er) => {
+            this.saving_in_progress = false;
+            this.saving_error = er.graphQLErrors;
           });
       },
       addContract() {
