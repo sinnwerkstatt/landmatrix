@@ -6,12 +6,7 @@ from django_registration.signals import user_registered
 
 from apps.editor.models import UserRegionalInfo
 
-
-# pylint: disable=unused-argument
-from apps.landmatrix.models import (
-    Investor,
-    InvestorVentureInvolvement,
-)
+from apps.landmatrix.models import Investor, InvestorVentureInvolvement
 
 
 def create_userregionalinfo(sender, user, request, **kwargs):
@@ -27,26 +22,12 @@ def create_userregionalinfo(sender, user, request, **kwargs):
 user_registered.connect(create_userregionalinfo)
 
 
-##### GREEN NEW DEAL SIGNALS ######
-###################################
-
-
 def invalidate_cache(sender, instance, **kwargs):
     # FIXME it is quite brute force to just empty the whole cache. fixme "some day"™️
     cache.clear()
 
 
 post_save.connect(invalidate_cache)
-
-
-# @receiver(post_save, sender=Location)
-# @receiver(post_delete, sender=Location)
-# @receiver(post_save, sender=Contract)
-# @receiver(post_delete, sender=Contract)
-# @receiver(post_save, sender=DataSource)
-# @receiver(post_delete, sender=DataSource)
-# def deal_submodels_trigger_refresh_calculated_deal_fields(sender, instance, **kwargs):
-#     instance.deal.save(recalculate_independent=False)
 
 
 @receiver(post_save, sender=Investor)
