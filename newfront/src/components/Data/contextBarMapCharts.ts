@@ -1,18 +1,17 @@
-import { _, t } from "svelte-i18n";
+import { t } from "svelte-i18n";
 import { get } from "svelte/store";
-import { ImplementationStatus, NegotiationStatusGroupMap } from "$lib/filters";
+import { NegotiationStatusGroup, NegotiationStatusGroupMap } from "$lib/filters";
+import { formfields } from "$lib/stores";
 import type { Deal } from "$lib/types/deal";
-import { formfields } from "../../lib/stores";
 
 export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boolean) {
   const $_ = get(t);
 
   const negStatBuckets = {
-    INTENDED: { count: 0, size: 0 },
-    CONCLUDED: { count: 0, size: 0 },
-    FAILED: { count: 0, size: 0 },
-    CHANGE_OF_OWNERSHIP: { count: 0, size: 0 },
-    CONTRACT_EXPIRED: { count: 0, size: 0 },
+    [NegotiationStatusGroup.INTENDED]: { count: 0, size: 0 },
+    [NegotiationStatusGroup.CONCLUDED]: { count: 0, size: 0 },
+    [NegotiationStatusGroup.FAILED]: { count: 0, size: 0 },
+    [NegotiationStatusGroup.CONTRACT_EXPIRED]: { count: 0, size: 0 },
   };
   for (const d of deals ?? []) {
     const group = NegotiationStatusGroupMap[d.current_negotiation_status];
@@ -23,13 +22,7 @@ export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boo
     }
   }
   return {
-    labels: [
-      $_("Intended"),
-      $_("Concluded"),
-      $_("Failed"),
-      $_("Change of ownership"),
-      $_("Contract expired"),
-    ],
+    labels: [$_("Intended"), $_("Concluded"), $_("Failed"), $_("Contract expired")],
     datasets: [
       {
         data: Object.values(negStatBuckets).map((n) =>
@@ -40,7 +33,6 @@ export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boo
           "rgba(252,148,31,1)",
           "rgba(125,74,15,1)",
           "rgb(59,36,8)",
-          "rgb(44,28,5)",
         ],
       },
     ],

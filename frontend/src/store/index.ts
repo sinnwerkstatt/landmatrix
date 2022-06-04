@@ -1,18 +1,3 @@
-import { apolloClient } from "$utils/apolloclient";
-import gql from "graphql-tag";
-import Cookies from "js-cookie";
-import Vue from "vue";
-import Vuex from "vuex";
-import {
-  DEFAULT_FILTER_IGNORED_KEYS,
-  DEFAULT_FILTERS,
-  emptyFilters,
-  isDefaultFilter,
-  prepareFilters,
-} from "./filters";
-import { contextLayers, mapLayers } from "./map";
-import type { FilterValues } from "./filters";
-import type { BaseLayer, ContextLayer } from "./map";
 import type { User } from "$types/user";
 import type {
   Country,
@@ -21,6 +6,21 @@ import type {
   Region,
   WagtailPage,
 } from "$types/wagtail";
+import { apolloClient } from "$utils/apolloclient";
+import {
+  DEFAULT_FILTER_IGNORED_KEYS,
+  DEFAULT_FILTERS,
+  emptyFilters,
+  isDefaultFilter,
+  prepareFilters,
+} from "./filters";
+import type { FilterValues } from "./filters";
+import { contextLayers, mapLayers } from "./map";
+import type { BaseLayer, ContextLayer } from "./map";
+import gql from "graphql-tag";
+import Cookies from "js-cookie";
+import Vue from "vue";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 
@@ -458,10 +458,10 @@ const store = new Vuex.Store({
           "MEMORANDUM_OF_UNDERSTANDING",
           "ORAL_AGREEMENT",
           "CONTRACT_SIGNED",
+          "CHANGE_OF_OWNERSHIP",
           "NEGOTIATIONS_FAILED",
           "CONTRACT_CANCELED",
           "CONTRACT_EXPIRED",
-          "CHANGE_OF_OWNERSHIP",
         ];
         filter.value = filter.value.filter((f: string) => valid_choices.includes(f));
       }

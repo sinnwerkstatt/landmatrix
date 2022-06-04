@@ -50,6 +50,7 @@
       options: [
         { value: NegotiationStatus.ORAL_AGREEMENT, name: "Oral agreement" },
         { value: NegotiationStatus.CONTRACT_SIGNED, name: "Contract signed" },
+        { value: NegotiationStatus.CHANGE_OF_OWNERSHIP, name: "Change of ownership" },
       ],
     },
     {
@@ -61,7 +62,6 @@
       ],
     },
     { value: NegotiationStatus.CONTRACT_EXPIRED, name: "Contract expired" },
-    { value: NegotiationStatus.CHANGE_OF_OWNERSHIP, name: "Change of ownership" },
   ];
 
   //   watch: {

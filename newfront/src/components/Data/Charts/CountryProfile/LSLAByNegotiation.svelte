@@ -2,8 +2,7 @@
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
   import { deals } from "$lib/data";
-  import { filters, NegotiationStatus } from "$lib/filters";
-  import { negotiation_status_group_map } from "$components/Fields/Display/choices";
+  import { filters, NegotiationStatus, NegotiationStatusGroupMap } from "$lib/filters";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
   import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation";
 
@@ -21,10 +20,10 @@
             NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING,
             NegotiationStatus.ORAL_AGREEMENT,
             NegotiationStatus.CONTRACT_SIGNED,
+            NegotiationStatus.CHANGE_OF_OWNERSHIP,
             NegotiationStatus.NEGOTIATIONS_FAILED,
             NegotiationStatus.CONTRACT_CANCELED,
             NegotiationStatus.CONTRACT_EXPIRED,
-            NegotiationStatus.CHANGE_OF_OWNERSHIP,
           ];
     let pots: { [key: string]: LSLAData } = {};
     if (selected_neg_stat.includes(NegotiationStatus.EXPRESSION_OF_INTEREST))
@@ -49,7 +48,8 @@
       pots.CONTRACT_SIGNED = new LSLAData(NegotiationStatus.CONTRACT_SIGNED);
     if (
       selected_neg_stat.includes(NegotiationStatus.ORAL_AGREEMENT) &&
-      selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED)
+      selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED) &&
+      selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP)
     )
       pots.CONCLUDED = new LSLAData("CONCLUDED", true);
     if (selected_neg_stat.includes(NegotiationStatus.NEGOTIATIONS_FAILED))
@@ -63,11 +63,6 @@
       pots.FAILED = new LSLAData("FAILED", true);
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_EXPIRED))
       pots.CONTRACT_EXPIRED = new LSLAData(NegotiationStatus.CONTRACT_EXPIRED, true);
-    if (selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP))
-      pots.CHANGE_OF_OWNERSHIP = new LSLAData(
-        NegotiationStatus.CHANGE_OF_OWNERSHIP,
-        true
-      );
 
     $deals.forEach((d) => {
       if (!d.current_negotiation_status) return;
@@ -75,7 +70,7 @@
         d.current_contract_size,
         d.intended_size
       );
-      const ngrp = negotiation_status_group_map[d.current_negotiation_status];
+      const ngrp = NegotiationStatusGroupMap[d.current_negotiation_status];
       if (ngrp && pots[ngrp])
         (pots[ngrp] as LSLAData).add(d.current_contract_size, d.intended_size);
     });

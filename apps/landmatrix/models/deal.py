@@ -893,33 +893,26 @@ class Deal(AbstractDealBase):
         contract_size = self.current_contract_size or 0.0
         production_size = self.current_production_size or 0.0
 
-        # 1) IF Negotiation status IS Intended
-        if negotiation_status in (
-            "EXPRESSION_OF_INTEREST",
-            "UNDER_NEGOTIATION",
-            "MEMORANDUM_OF_UNDERSTANDING",
+        if (
+            negotiation_status
+            in (
+                "EXPRESSION_OF_INTEREST",
+                "UNDER_NEGOTIATION",
+                "MEMORANDUM_OF_UNDERSTANDING",
+            )
+            or negotiation_status == "NEGOTIATIONS_FAILED"
         ):
-            # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size
-        # 2) IF Negotiation status IS Concluded
-        elif negotiation_status in ("ORAL_AGREEMENT", "CONTRACT_SIGNED"):
-            # USE Contract size or Production size (in the given order)
-            value = contract_size or production_size
-        # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif negotiation_status == "NEGOTIATIONS_FAILED":
-            # USE Intended size OR Contract size OR Production size (in the given order)
-            value = intended_size or contract_size or production_size
-        # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif negotiation_status == "CONTRACT_CANCELED":
-            # USE Contract size OR Production size (in the given order)
-            value = contract_size or production_size
-        # 5) IF Negotiation status IS Contract expired
-        elif negotiation_status == "CONTRACT_EXPIRED":
-            # USE Contract size OR Production size (in the given order)
-            value = contract_size or production_size
-        # 6) IF Negotiation status IS Change of ownership
-        elif negotiation_status == "CHANGE_OF_OWNERSHIP":
-            # USE Contract size OR Production size (in the given order)
+        elif (
+            negotiation_status
+            in (
+                "ORAL_AGREEMENT",
+                "CONTRACT_SIGNED",
+                "CHANGE_OF_OWNERSHIP",
+            )
+            or negotiation_status == "CONTRACT_CANCELED"
+            or negotiation_status == "CONTRACT_EXPIRED"
+        ):
             value = contract_size or production_size
         else:
             value = 0.0

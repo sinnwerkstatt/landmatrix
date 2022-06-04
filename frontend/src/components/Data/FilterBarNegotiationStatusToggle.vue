@@ -54,8 +54,8 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
   import FilterCollapse from "$components/Data/FilterCollapse.vue";
+  import Vue from "vue";
 
   interface Choice {
     group?: string;
@@ -107,6 +107,7 @@
             options: [
               { value: "ORAL_AGREEMENT", name: "Oral agreement" },
               { value: "CONTRACT_SIGNED", name: "Contract signed" },
+              { value: "CHANGE_OF_OWNERSHIP", name: "Change of ownership" },
             ],
           },
           {
@@ -118,7 +119,6 @@
             ],
           },
           { value: "CONTRACT_EXPIRED", name: "Contract expired" },
-          { value: "CHANGE_OF_OWNERSHIP", name: "Change of ownership" },
         ] as Choice[],
       };
     },
