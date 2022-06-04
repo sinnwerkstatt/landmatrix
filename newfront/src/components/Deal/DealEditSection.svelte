@@ -6,16 +6,19 @@
 
   export let deal: Deal;
   export let sections: DealSection[] = [];
+  export let id: string;
 </script>
 
 <section>
-  {#each sections as subsection}
-    <div class="space-y-4 mt-2">
-      <h3 class="my-0">{$_(subsection.name)}</h3>
-      {#each subsection.fields as fieldname}
-        <EditField {fieldname} bind:value={deal[fieldname]} />
-      {/each}
-    </div>
-  {/each}
-  <slot />
+  <form {id}>
+    {#each sections as subsection}
+      <div class="space-y-4 mt-2">
+        <h3 class="my-0">{$_(subsection.name)}</h3>
+        {#each subsection.fields as fieldname}
+          <EditField {fieldname} bind:value={deal[fieldname]} />
+        {/each}
+      </div>
+    {/each}
+    <slot />
+  </form>
 </section>

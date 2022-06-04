@@ -39,9 +39,19 @@ export function prepareNegotianStatusData(deals: Deal[]): Array<unknown> {
   return data;
 }
 
-export function isEmptySubmodel(entry: Contract | DataSource | Location) {
-  const fieldsWithValues = Object.entries(entry).filter(([k, v]) =>
+function sieveSubmodel(entry: Contract | DataSource | Location) {
+  return Object.entries(entry).filter(([k, v]) =>
     k === "id" ? false : !custom_is_null(v)
   );
+}
+
+export function isEmptySubmodel(entry: Contract | DataSource | Location): boolean {
+  const fieldsWithValues = sieveSubmodel(entry);
   return fieldsWithValues.length === 0;
+}
+export function removeEmptyEntries<T extends Contract | DataSource | Location>(
+  objectlist: T[]
+): T[] {
+  // this function throws out any entries that have only an ID field and otherwise empty values.
+  return objectlist.filter((con) => sieveSubmodel(con).some((x) => !!x));
 }

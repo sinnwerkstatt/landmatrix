@@ -12,6 +12,7 @@
   export let model: string;
   export let modelName: string;
   export let entries: Array<Contract | DataSource | Location> = [];
+  export let id: string;
 
   // TODO: build something to filter out empty entries
   // $: _entries = JSON.parse(JSON.stringify(entries));
@@ -38,7 +39,7 @@
 </script>
 
 <section class="flex flex-wrap">
-  <div class="w-full">
+  <form {id} class="w-full">
     {#each entries as entry, index}
       <div class="{model}-entry">
         <h3 on:click={() => (activeEntry = activeEntry === index ? -1 : index)}>
@@ -58,12 +59,16 @@
         {/if}
       </div>
     {/each}
-  </div>
-  <div class="mt-6">
-    <button type="button" class="btn btn-primary flex items-center" on:click={addEntry}>
-      <PlusIcon class="w-5 h-6 mr-2 -ml-2" />
-      {$_("Add")}
-      {$_(modelName)}
-    </button>
-  </div>
+    <div class="mt-6">
+      <button
+        type="button"
+        class="btn btn-primary flex items-center"
+        on:click={addEntry}
+      >
+        <PlusIcon class="w-5 h-6 mr-2 -ml-2" />
+        {$_("Add")}
+        {$_(modelName)}
+      </button>
+    </div>
+  </form>
 </section>

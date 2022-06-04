@@ -49,7 +49,7 @@
     { target: "#gender_related_info", name: $_("Gender-related info") },
     { target: "#overall_comment", name: $_("Overall comment") },
     { target: "#blank1", name: null },
-    { target: "#history", name: $_("Deal History") },
+    { target: "#history", name: $_("Deal history") },
     { target: "#actions", name: $_("Actions") },
   ];
 

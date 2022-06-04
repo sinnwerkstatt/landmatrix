@@ -12,6 +12,12 @@
       query: deal_gql_query,
       variables: { id: +dealID, version: versionID },
     });
+    if (data.deal === null)
+      return {
+        status: 404,
+        error: versionID ? "Deal version not found" : "Deal not found",
+      };
+
     return {
       props: { dealID, versionID, deal: JSON.parse(JSON.stringify(data.deal)) },
     };
@@ -19,10 +25,13 @@
 </script>
 
 <script lang="ts">
+  import { gql } from "@apollo/client/core";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { dealSections } from "$lib/deal_sections";
+  import type { Contract, DataSource, Location } from "$lib/types/deal";
+  import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
@@ -32,8 +41,11 @@
   export let dealID: number;
   export let versionID: number;
 
+  let originalDeal = JSON.stringify(deal);
+  let savingInProgress = false;
+  let show_really_quit_overlay = false;
   $: activeTab = $page.url.hash || "#locations";
-
+  $: formChanged = JSON.stringify(deal) !== originalDeal;
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
     { target: "#general", name: $_("General info") },
@@ -50,24 +62,47 @@
     { target: "#water", name: $_("Water") },
     { target: "#gender_related_info", name: $_("Gender-related info") },
     { target: "#overall_comment", name: $_("Overall comment") },
-    { target: "#blank1", name: null },
-    { target: "#history", name: $_("Deal history") },
-    { target: "#actions", name: $_("Actions") },
   ];
 
-  let originalDeal = JSON.stringify(deal);
-
-  let savingInProgress = false;
-  let show_really_quit_overlay = false;
-
-  $: formChanged = JSON.stringify(deal) !== originalDeal;
-  function saveButtonPressed() {
+  async function saveDeal(hash: string) {
+    const currentForm = document.querySelector(activeTab);
+    console.log(currentForm);
+    if (!currentForm.checkValidity()) {
+      currentForm.reportValidity();
+      return;
+    }
     savingInProgress = true;
-    console.log("x");
+    deal.locations = removeEmptyEntries<Location>(deal.locations);
+    deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
+    deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
+
+    const { data } = await $client.mutate({
+      mutation: gql`
+        mutation ($id: Int!, $version: Int, $payload: Payload) {
+          deal_edit(id: $id, version: $version, payload: $payload) {
+            dealId
+            dealVersion
+          }
+        }
+      `,
+      variables: {
+        id: dealID ? +dealID : -1,
+        version: versionID ? +versionID : null,
+        payload: { ...deal, versions: null, comments: null, workflowinfos: null },
+      },
+    });
+    const { deal_edit } = data;
+    originalDeal = JSON.stringify(deal);
+    savingInProgress = false;
+
+    // if (location.hash !== hash || +versionID !== +deal_edit.dealVersion)
+    //           await goto({ name: "deal_edit", params: deal_edit, hash });
+    console.log(deal_edit);
   }
-  function quitEditor() {
+
+  const onClickClose = () => {
     console.log("y");
-  }
+  };
 </script>
 
 <div class="container mx-auto min-h-full h-full flex flex-col">
@@ -84,7 +119,7 @@
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
-        on:click={saveButtonPressed}
+        on:click={() => saveDeal(location.hash)}
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
@@ -93,7 +128,7 @@
         {/if}
       </button>
       {#if dealID}
-        <button class="btn btn-secondary mx-2" on:click={() => quitEditor(false)}>
+        <button class="btn btn-secondary mx-2" on:click={() => onClickClose(false)}>
           {$_("Close")}
         </button>
       {:else}
@@ -124,48 +159,70 @@
     </nav>
     <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
       {#if activeTab === "#locations"}
-        <DealLocationsSection bind:deal />
+        <DealLocationsSection bind:deal id="locations" />
       {/if}
       {#if activeTab === "#general"}
-        <DealEditSection bind:deal sections={dealSections.general_info} />
+        <DealEditSection bind:deal sections={dealSections.general_info} id="general" />
       {/if}
       {#if activeTab === "#contracts"}
         <DealSubmodelEditSection
           model="contract"
           modelName="Contract"
           bind:entries={deal.contracts}
+          id="contracts"
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealEditSection bind:deal sections={dealSections.employment} />
+        <DealEditSection bind:deal sections={dealSections.employment} id="employment" />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealEditSection bind:deal sections={dealSections.investor_info} />
+        <DealEditSection
+          bind:deal
+          sections={dealSections.investor_info}
+          id="investor_info"
+        />
       {/if}
       {#if activeTab === "#data_sources"}
         <DealSubmodelEditSection
           model="datasource"
           modelName="Data source"
           bind:entries={deal.datasources}
+          id="data_sources"
         />
       {/if}
       {#if activeTab === "#local_communities"}
-        <DealEditSection bind:deal sections={dealSections.local_communities} />
+        <DealEditSection
+          bind:deal
+          sections={dealSections.local_communities}
+          id="local_communities"
+        />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealEditSection bind:deal sections={dealSections.former_use} />
+        <DealEditSection bind:deal sections={dealSections.former_use} id="former_use" />
       {/if}
       {#if activeTab === "#produce_info"}
-        <DealEditSection bind:deal sections={dealSections.produce_info} />
+        <DealEditSection
+          bind:deal
+          sections={dealSections.produce_info}
+          id="produce_info"
+        />
       {/if}
       {#if activeTab === "#water"}
-        <DealEditSection bind:deal sections={dealSections.water} />
+        <DealEditSection bind:deal sections={dealSections.water} id="water" />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <DealEditSection bind:deal sections={dealSections.gender_related_info} />
+        <DealEditSection
+          bind:deal
+          sections={dealSections.gender_related_info}
+          id="gender_related_info"
+        />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <DealEditSection bind:deal sections={dealSections.overall_comment} />
+        <DealEditSection
+          bind:deal
+          sections={dealSections.overall_comment}
+          id="overall_comment"
+        />
       {/if}
     </div>
   </div>
