@@ -453,14 +453,6 @@ python-versions = ">=3.6"
 Django = ">=2.2"
 
 [[package]]
-name = "django-file-resubmit"
-version = "0.5.2"
-description = "Keeps submited files when validation errors occur."
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "django-filter"
 version = "21.1"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -1830,7 +1822,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1238547cdacc17ca85bcaf974c323a09ed0e43fcb11a595e23b5b729680bfa83"
+content-hash = "550f59ef0afe158d7c0d5de59f91685baec921267e0c8ecaf27fea510a616158"
 
 [metadata.files]
 amqp = [
@@ -2037,10 +2029,6 @@ django-environ = [
 django-extensions = [
     {file = "django-extensions-3.1.5.tar.gz", hash = "sha256:28e1e1bf49f0e00307ba574d645b0af3564c981a6dfc87209d48cb98f77d0b1a"},
     {file = "django_extensions-3.1.5-py3-none-any.whl", hash = "sha256:9238b9e016bb0009d621e05cf56ea8ce5cce9b32e91ad2026996a7377ca28069"},
-]
-django-file-resubmit = [
-    {file = "django-file-resubmit-0.5.2.tar.gz", hash = "sha256:f4c9edf27bb6956d06987e4376cd09fb0175dd8ce6dc640e593c09ddd959016f"},
-    {file = "django_file_resubmit-0.5.2-py3-none-any.whl", hash = "sha256:2b21516b88f5202cb56077c199883f2d8c93e28338f984b630e3d6be870f9a3e"},
 ]
 django-filter = [
     {file = "django-filter-21.1.tar.gz", hash = "sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e"},
