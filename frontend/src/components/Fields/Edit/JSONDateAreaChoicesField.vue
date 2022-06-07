@@ -106,9 +106,24 @@
         });
       }
     },
+    mounted() {
+      this.updateEntries();
+    },
     methods: {
       updateEntries() {
-        this.$emit("input", this.filteredVals);
+        let fVals = this.filteredVals;
+        this.$emit("input", fVals);
+        const checkboxes = this.$el.querySelectorAll('input[type="checkbox"]');
+
+        if (fVals.length > 0 && fVals.filter((x) => x.current).length === 0) {
+          checkboxes.forEach((checkbox) =>
+            checkbox.setCustomValidity(
+              this.$t("You need to set at least one dataset 'current'.")
+            )
+          );
+        } else {
+          checkboxes.forEach((checkbox) => checkbox.setCustomValidity(""));
+        }
       },
     },
   };
@@ -120,5 +135,8 @@
   }
   td {
     padding: 0.4em;
+  }
+  [type="checkbox"].form-check-input:invalid {
+    @apply outline outline-2 outline-red-500;
   }
 </style>
