@@ -3,6 +3,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import Sum, F, Count
@@ -882,7 +883,7 @@ class Deal(AbstractDealBase):
             print(self)
             print(attribute)
             print(attributes)
-            raise Exception("We should always have a current, now.")
+            raise ValidationError('At least one value needs to be "current".')
 
     def _calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
