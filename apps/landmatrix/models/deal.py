@@ -127,7 +127,7 @@ class DealVersion(Version):
 
 
 class AbstractDealBase(models.Model):
-    """Deal Paylod"""
+    """Deal Payload"""
 
     """ Locations """
     locations = LocationsField(_("Locations"), default=list, blank=True)
