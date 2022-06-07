@@ -18,7 +18,7 @@
             @mouseout="hoverLocID = null"
           >
             {{ index + 1 }}. {{ $t("Location") }}
-            <!--            <small class="font-mono">{{ loc.id }}</small>-->
+            <small class="font-mono">({{ loc.id }})</small>
           </h3>
           <a class="trashbin" @click="removeLocation(loc.id)">
             <i class="fas fa-trash"></i>

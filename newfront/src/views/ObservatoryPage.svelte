@@ -5,7 +5,6 @@
   import { afterNavigate } from "$app/navigation";
   import { client } from "$lib/apolloClient";
   import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
-  import { user } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
@@ -34,7 +33,7 @@
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const { data } = await client.query({
+    const { data } = await $client.query({
       query: gql`
         query DealAggregations(
           $fields: [String]!
@@ -53,7 +52,7 @@
       variables: {
         fields: ["current_negotiation_status"],
         filters: filters.toGQLFilterArray(),
-        subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
+        subset: "PUBLIC",
       },
     });
     const curNegStat = data.deal_aggregations.current_negotiation_status;
@@ -69,11 +68,10 @@
       .toLocaleString("fr");
 
     let negStatBuckets = [
-      { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
-      { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
-      { color: "rgba(125,74,15,1)", label: "Failed", count: 0, size: 0 },
-      { color: "rgb(59,36,8)", label: "Change of ownership", count: 0, size: 0 },
-      { color: "rgb(44,28,5)", label: "Contract expired", count: 0, size: 0 },
+      { color: "rgba(252,148,31,0.4)", label: $_("Intended"), count: 0, size: 0 },
+      { color: "rgba(252,148,31,1)", label: $_("Concluded"), count: 0, size: 0 },
+      { color: "rgba(125,74,15,1)", label: $_("Failed"), count: 0, size: 0 },
+      { color: "rgb(44,28,5)", label: $_("Contract expired"), count: 0, size: 0 },
     ];
 
     for (let agg of curNegStat) {
@@ -86,22 +84,18 @@
           break;
         case NegotiationStatus.ORAL_AGREEMENT:
         case NegotiationStatus.CONTRACT_SIGNED:
+        case NegotiationStatus.CHANGE_OF_OWNERSHIP:
           negStatBuckets[1].count += agg.count;
           negStatBuckets[1].size += +agg.size;
           break;
-
         case NegotiationStatus.NEGOTIATIONS_FAILED:
         case NegotiationStatus.CONTRACT_CANCELED:
           negStatBuckets[2].count += agg.count;
           negStatBuckets[2].size += +agg.size;
           break;
-        case NegotiationStatus.CHANGE_OF_OWNERSHIP:
-          negStatBuckets[4].count += agg.count;
-          negStatBuckets[4].size += +agg.size;
-          break;
         case NegotiationStatus.CONTRACT_EXPIRED:
-          negStatBuckets[4].count += agg.count;
-          negStatBuckets[4].size += +agg.size;
+          negStatBuckets[3].count += agg.count;
+          negStatBuckets[3].size += +agg.size;
           break;
         default:
           console.warn({ agg });

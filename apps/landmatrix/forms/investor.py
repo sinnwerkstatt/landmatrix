@@ -41,4 +41,5 @@ class InvestorVentureInvolvementForm(JSONFormOutputMixin, ModelForm):
         "venture": {"class": "InvestorForeignKey"},
         "percentage": {"unit": "%", "min_value": 0, "max_value": 100},
         "loans_date": {"class": "DateField"},
+        "loans_currency": {"class": "CurrencyForeignKey"},
     }

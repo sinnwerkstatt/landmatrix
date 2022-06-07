@@ -81,6 +81,7 @@ export const investor_gql_query = gql`
       classification
       homepage
       opencorporates
+      datasources
       comment
       status
       draft_status
@@ -179,6 +180,7 @@ export const investor_edit_query = gql`
       classification
       homepage
       opencorporates
+      datasources
       comment
       status
       created_at

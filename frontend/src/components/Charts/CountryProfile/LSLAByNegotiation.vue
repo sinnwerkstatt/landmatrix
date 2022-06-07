@@ -13,8 +13,6 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
-  import type { PropType } from "vue";
   import CountryProfileChartWrapper from "$components/Charts/CountryProfile/CountryProfileChartWrapper.vue";
   import {
     LSLAByNegotiation,
@@ -22,6 +20,8 @@
   } from "$components/Charts/CountryProfile/lsla_by_negotiation";
   import type { Deal } from "$types/deal";
   import { negotiation_status_group_map } from "$utils/choices";
+  import Vue from "vue";
+  import type { PropType } from "vue";
 
   export default Vue.extend({
     name: "LSLAByNegotiation",
@@ -48,10 +48,10 @@
                 "MEMORANDUM_OF_UNDERSTANDING",
                 "ORAL_AGREEMENT",
                 "CONTRACT_SIGNED",
+                "CHANGE_OF_OWNERSHIP",
                 "NEGOTIATIONS_FAILED",
                 "CONTRACT_CANCELED",
                 "CONTRACT_EXPIRED",
-                "CHANGE_OF_OWNERSHIP",
               ];
 
         let pots: { [key: string]: LSLAData } = {};
@@ -75,7 +75,8 @@
           pots.CONTRACT_SIGNED = new LSLAData("CONTRACT_SIGNED");
         if (
           selected_neg_stat.includes("ORAL_AGREEMENT") &&
-          selected_neg_stat.includes("CONTRACT_SIGNED")
+          selected_neg_stat.includes("CONTRACT_SIGNED") &&
+          selected_neg_stat.includes("CHANGE_OF_OWNERSHIP")
         )
           pots.CONCLUDED = new LSLAData("CONCLUDED", true);
         if (selected_neg_stat.includes("NEGOTIATIONS_FAILED"))
@@ -89,8 +90,6 @@
           pots.FAILED = new LSLAData("FAILED", true);
         if (selected_neg_stat.includes("CONTRACT_EXPIRED"))
           pots.CONTRACT_EXPIRED = new LSLAData("CONTRACT_EXPIRED", true);
-        if (selected_neg_stat.includes("CHANGE_OF_OWNERSHIP"))
-          pots.CHANGE_OF_OWNERSHIP = new LSLAData("CHANGE_OF_OWNERSHIP", true);
 
         this.deals.forEach((d: Deal) => {
           if (!d.current_negotiation_status) return;

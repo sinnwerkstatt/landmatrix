@@ -12,18 +12,13 @@
       </thead>
       <tbody>
         <tr v-for="(val, i) in vals" :key="i" :class="{ 'is-current': val.current }">
-          <td class="text-center" @click="updateCurrent(i)">
+          <td class="text-center">
             <div class="form-check form-check-inline">
               <input
-                :id="`${formfield.name}_current_${i}`"
-                v-model="current"
-                :name="`${formfield.name}_current`"
-                :required="
-                  vals.length > 0 && (vals[0].date || vals[0].area || vals[0].choices)
-                "
+                v-model="val.current"
                 class="form-check-input"
-                type="radio"
-                :value="i"
+                type="checkbox"
+                @change="updateEntries"
               />
             </div>
           </td>
@@ -55,8 +50,8 @@
               :custom-label="(x) => labels[x]"
               :close-on-select="false"
               select-label=""
-              @input="updateEntries"
               :limit="3"
+              @input="updateEntries"
             />
           </td>
 
@@ -110,6 +105,11 @@
           return k;
         });
       }
+    },
+    methods: {
+      updateEntries() {
+        this.$emit("input", this.filteredVals);
+      },
     },
   };
 </script>

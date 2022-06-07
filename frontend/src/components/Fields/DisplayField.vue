@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+  import NanoIDField from "$components/Fields/Display/NanoIDField.vue";
   import type { FormField } from "$components/Fields/fields";
   import { custom_is_null } from "$utils/data_processing";
   import ArrayField from "./Display/ArrayField.vue";
@@ -38,6 +39,7 @@
   import FileField from "./Display/FileField.vue";
   import ForeignKey from "./Display/ForeignKeyField.vue";
   import ModelChoiceField from "./Display/ForeignKeyField.vue";
+  import CurrencyForeignKey from "./Display/ForeignKeyField.vue";
   import CountryForeignKey from "./Display/ForeignKeyField.vue";
   import InvestorForeignKey from "./Display/ForeignKeyField.vue";
   import JSONActorsField from "./Display/JSONActorsField.vue";
@@ -45,7 +47,6 @@
   import JSONDateAreaField from "./Display/JSONDateAreaField.vue";
   import JSONDateChoiceField from "./Display/JSONDateChoiceField.vue";
   import JSONExportsField from "./Display/JSONExportsField.vue";
-  import JSONField from "./Display/JSONField.vue";
   import JSONJobsField from "./Display/JSONJobsField.vue";
   import JSONLeaseField from "./Display/JSONLeaseField.vue";
   import LengthField from "./Display/LengthField.vue";
@@ -65,9 +66,11 @@
   export default Vue.extend({
     name: "DisplayField",
     components: {
+      NanoIDField,
       TypedChoiceField,
       SimpleArrayField,
       ModelChoiceField,
+      CurrencyForeignKey,
       ArrayField,
       AutoField,
       BooleanField,
@@ -88,7 +91,6 @@
       JSONDateAreaField,
       JSONDateChoiceField,
       JSONExportsField,
-      JSONField,
       JSONJobsField,
       JSONLeaseField,
       LengthField,

@@ -26,12 +26,10 @@ class DealForm(JSONFormOutputMixin, ModelForm):
     contract_size = JSONDateAreaField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
-        help_text=_("ha"),
     )
     production_size = JSONDateAreaField(
         required=False,
         label=_("Size in operation (production, in ha)"),
-        help_text=_("ha"),
     )
     intention_of_investment = JSONDateAreaChoicesField(
         required=False, label=_("Intention of investment"), choices=INTENTION_CHOICES
@@ -125,6 +123,8 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "transnational",
             "geojson",
             "status",
+            "draft_status",
+            "current_draft",
         ]
 
     @property
@@ -132,8 +132,19 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         return {
             "country": {"class": "CountryForeignKey"},
             "operating_company": {"class": "InvestorForeignKey"},
-            "deal_size": {"unit": "ha"},
-            "intended_size": {"unit": "ha"},
+            "deal_size": {"unit": _("ha")},
+            "intended_size": {"unit": _("ha")},
+            "purchase_price_currency": {"class": "CurrencyForeignKey"},
+            "annual_leasing_fee_currency": {"class": "CurrencyForeignKey"},
+            "total_jobs_planned": {"unit": _("jobs")},
+            "total_jobs_planned_employees": {"unit": _("employees")},
+            "total_jobs_planned_daily_workers": {"unit": _("workers")},
+            "foreign_jobs_planned": {"unit": _("jobs")},
+            "foreign_jobs_planned_employees": {"unit": _("employees")},
+            "foreign_jobs_planned_daily_workers": {"unit": _("workers")},
+            "domestic_jobs_planned": {"unit": _("jobs")},
+            "domestic_jobs_planned_employees": {"unit": _("employees")},
+            "domestic_jobs_planned_daily_workers": {"unit": _("workers")},
             "domestic_use": {"unit": "%", "min_value": 0, "max_value": 100},
             "export": {"unit": "%", "min_value": 0, "max_value": 100},
             "export_country1": {"class": "CountryForeignKey"},
@@ -142,4 +153,5 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "export_country2_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
             "export_country3": {"class": "CountryForeignKey"},
             "export_country3_ratio": {"unit": "%", "min_value": 0, "max_value": 100},
+            "water_extraction_amount": {"unit": _("m3/year")},
         }

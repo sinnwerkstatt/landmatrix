@@ -1,4 +1,4 @@
-import type { Deal } from "$lib/types/deal";
+import type { Contract, DataSource, Deal } from "$lib/types/deal";
 import { negotiation_status_choices } from "$components/Fields/Display/choices";
 
 export function sum(items: Deal[], prop: string): number {
@@ -37,4 +37,21 @@ export function prepareNegotianStatusData(deals: Deal[]): Array<unknown> {
     }
   }
   return data;
+}
+
+function sieveSubmodel(entry: Contract | DataSource | Location) {
+  return Object.entries(entry).filter(([k, v]) =>
+    k === "id" ? false : !custom_is_null(v)
+  );
+}
+
+export function isEmptySubmodel(entry: Contract | DataSource | Location): boolean {
+  const fieldsWithValues = sieveSubmodel(entry);
+  return fieldsWithValues.length === 0;
+}
+export function removeEmptyEntries<T extends Contract | DataSource | Location>(
+  objectlist: T[]
+): T[] {
+  // this function throws out any entries that have only an ID field and otherwise empty values.
+  return objectlist.filter((con) => sieveSubmodel(con).some((x) => !!x));
 }

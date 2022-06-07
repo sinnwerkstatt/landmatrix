@@ -1,15 +1,13 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { get } from "svelte/store";
   import { client } from "$lib/apolloClient";
   import type { Investor } from "$lib/types/investor";
   import { investor_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
-    const variables = {
-      id: +params.id,
-      includeDeals: true,
-    };
-    const { data } = await client.query<{ investor: Investor }>({
+    const variables = { id: +params.id, includeDeals: true };
+    const { data } = await get(client).query<{ investor: Investor }>({
       query: investor_gql_query,
       variables,
     });

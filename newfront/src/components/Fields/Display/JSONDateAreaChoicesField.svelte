@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import type { IntentionOfInvestment } from "$lib/filters";
   import {
     dateCurrentFormat,
@@ -26,7 +27,7 @@
         {mapChoices(val.choices, formfield.choices)}
       {/if}
       {#if val.area}
-        (<CircleNotchIcon /> {val.area.toLocaleString("fr")} ha)
+        (<CircleNotchIcon /> {val.area.toLocaleString("fr")} {$_("ha")})
       {/if}
     </div>
   {/each}

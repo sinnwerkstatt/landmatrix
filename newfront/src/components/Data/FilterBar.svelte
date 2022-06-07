@@ -82,7 +82,7 @@
       limit: 0,
       subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
-    const res = await client.query<{ investors: Investor[] }>({ query, variables });
+    const res = await $client.query<{ investors: Investor[] }>({ query, variables });
     investors = res.data.investors;
   }
 

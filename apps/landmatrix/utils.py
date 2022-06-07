@@ -84,6 +84,7 @@ class InvolvementNetwork:
             ),
             investor_dict.get("homepage", ""),
             investor_dict.get("opencorporates", ""),
+            investor_dict.get("datasources", ""),
             investor_dict.get("comment", ""),
             "",  # TODO. get action comment here? really? :S
         ]

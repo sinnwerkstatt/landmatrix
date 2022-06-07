@@ -1,10 +1,11 @@
 import type { RequestHandler } from "@sveltejs/kit";
+import { get as storeGet } from "svelte/store";
 import { client } from "$lib/apolloClient";
+import { data_deal_query_gql } from "$lib/deal_query";
 import { FilterValues } from "$lib/filters";
-import { data_deal_query_gql } from "./query";
 
 export const get: RequestHandler = async () => {
-  const { data } = await client.query({
+  const { data } = await storeGet(client).query({
     query: data_deal_query_gql,
     variables: {
       limit: 100,

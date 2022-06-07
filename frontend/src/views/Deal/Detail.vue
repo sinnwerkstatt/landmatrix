@@ -148,7 +148,6 @@
 
 <script lang="ts">
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
-
   import DealHistory from "$components/Deal/DealHistory.vue";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.vue";
   import DealManageHeader from "$components/Deal/DealManageHeader.vue";
@@ -158,8 +157,8 @@
   import InvestorGraph from "$components/Investor/InvestorGraph.vue";
   import SideTabsMenu from "$components/Shared/SideTabsMenu.vue";
   import { deal_gql_query } from "$store/queries";
-  import gql from "graphql-tag";
   import { deal_sections, deal_submodel_sections } from "./deal_sections";
+  import gql from "graphql-tag";
   import Vue from "vue";
   import type { LocaleMessages } from "vue-i18n";
 
@@ -483,7 +482,7 @@
         console.log("Deal detail: update page context");
         if (to.hash) {
           // only update if hash is present (otherwise #locations are active by default)
-          this.activeTab = to.hash;
+          this.activeTab = to.hash.split("/")[0];
         }
         this.title = `Deal #${to.params.dealId}`;
         this.$store.dispatch("setPageContext", {

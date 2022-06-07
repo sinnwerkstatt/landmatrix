@@ -5,6 +5,7 @@ type Investor {
   classification: String
   homepage: String
   opencorporates: String
+  datasources: [DataSource]
   comment: String
 
   ventures: [Involvement]

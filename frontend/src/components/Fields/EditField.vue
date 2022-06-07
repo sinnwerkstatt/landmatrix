@@ -31,6 +31,7 @@
   import IntegerField from "./Edit/DecimalField.vue";
   import FileField from "./Edit/FileField.vue";
   import ForeignKey from "./Edit/ForeignKeyField.vue";
+  import CurrencyForeignKey from "./Edit/ForeignKeyField.vue";
   import ModelChoiceField from "./Edit/ForeignKeyField.vue";
   import InvestorForeignKey from "./Edit/InvestorForeignKeyField.vue";
   import JSONActorsField from "./Edit/JSONActorsField.vue";
@@ -38,7 +39,6 @@
   import JSONDateAreaField from "./Edit/JSONDateAreaField.vue";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.vue";
   import JSONExportsField from "./Edit/JSONExportsField.vue";
-  import JSONField from "./Edit/JSONField.vue";
   import JSONJobsField from "./Edit/JSONJobsField.vue";
   import JSONLeaseField from "./Edit/JSONLeaseField.vue";
   import PointField from "./Edit/PointField.vue";
@@ -63,6 +63,7 @@
       BooleanField,
       CharField,
       DateField,
+      CurrencyForeignKey,
       // DateTimeField,
       DecimalField,
       EmailField,
@@ -78,7 +79,6 @@
       JSONDateAreaField,
       JSONDateChoiceField,
       JSONExportsField,
-      JSONField,
       JSONJobsField,
       JSONLeaseField,
       NullBooleanField,

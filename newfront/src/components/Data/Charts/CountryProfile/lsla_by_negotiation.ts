@@ -15,7 +15,7 @@ export class LSLAData {
   public intended_size = 0;
   public bold?: boolean;
   constructor(name: string, bold = false) {
-    this.name = $_(flat_negotiation_status_map[name]).toString();
+    this.name = $_(flat_negotiation_status_map[name]);
     this.bold = bold;
   }
   add(contract_size: number, intended_size: number): void {

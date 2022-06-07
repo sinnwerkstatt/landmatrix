@@ -18,13 +18,9 @@ from apps.landmatrix.models import (
     Currency,
     Country,
 )
-from apps.landmatrix.models._choices import (
-    ACTOR_MAP,
-    NATURE_OF_DEAL_CHOICES,
-    CROPS,
-    ANIMALS,
-    MINERALS,
-)
+
+# noinspection PyProtectedMember
+from apps.landmatrix.models import _choices
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -188,7 +184,7 @@ contract_fields = {
     "number": "Contract number",
     "date": "Contract date",
     "expiration_date": "Contract expiration date",
-    "agreement_duration": "Duration of the agreement (in years)",
+    "agreement_duration": "Duration of the agreement",
     "comment": "Comment on contract",
 }
 
@@ -214,10 +210,10 @@ current_negotiation_status_map = {
     "MEMORANDUM_OF_UNDERSTANDING": "Intended (Memorandum of understanding)",
     "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
     "CONTRACT_SIGNED": "Concluded (Contract signed)",
+    "CHANGE_OF_OWNERSHIP": "Concluded (Change of ownership)",
     "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
     "CONTRACT_CANCELED": "Failed (Contract cancelled)",
     "CONTRACT_EXPIRED": "Contract expired",
-    "CHANGE_OF_OWNERSHIP": "Change of ownership",
     None: "None",
 }
 
@@ -268,11 +264,13 @@ class Choices:
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
             if name == "crops":
-                self.choices[name] = {k: v["name"] for k, v in CROPS.items()}
+                self.choices[name] = {k: v["name"] for k, v in _choices.CROPS.items()}
             if name == "animals":
-                self.choices[name] = {k: v["name"] for k, v in ANIMALS.items()}
+                self.choices[name] = {k: v["name"] for k, v in _choices.ANIMALS.items()}
             if name == "mineral_resources":
-                self.choices[name] = {k: v["name"] for k, v in MINERALS.items()}
+                self.choices[name] = {
+                    k: v["name"] for k, v in _choices.MINERALS.items()
+                }
         return self.choices[name]
 
 
@@ -410,25 +408,13 @@ class DataDownload:
             )
         ]
 
-        # temporarily set an incrementing number
-        [
-            loc.update({"deal_id": deal_id, "id": i + 1})
-            for i, loc in enumerate(deal.locations)
-        ]
+        [loc.update({"deal_id": deal_id}) for loc in deal.locations]
         self.locations = [self.location_download_format(x) for x in deal.locations]
 
-        # temporarily set an incrementing number
-        [
-            d.update({"deal_id": deal_id, "id": i + 1})
-            for i, d in enumerate(deal.contracts)
-        ]
+        [d.update({"deal_id": deal_id}) for d in deal.contracts]
         self.contracts = [self.contracts_download_format(x) for x in deal.contracts]
 
-        # temporarily set an incrementing number
-        [
-            d.update({"deal_id": deal_id, "id": i + 1})
-            for i, d in enumerate(deal.datasources)
-        ]
+        [d.update({"deal_id": deal_id}) for d in deal.datasources]
         self.datasources = [
             self.datasource_download_format(x) for x in deal.datasources
         ]
@@ -447,7 +433,7 @@ class DataDownload:
         if filters:
             qs = qs.filter(parse_filters(json.loads(filters)))
 
-        deal_ids = qs.values_list("id", flat=True)
+        # deal_ids = qs.values_list("id", flat=True)
 
         self.deals = [
             self.deal_download_format(qs_dict)
@@ -459,25 +445,22 @@ class DataDownload:
         self.locations = []
         for d in qs:
             if d.locations:
-                # temporarily set an incrementing number
-                for i, loc in enumerate(d.locations):
-                    loc.update({"deal_id": d.id, "id": i + 1})
+                for loc in d.locations:
+                    loc.update({"deal_id": d.id})
                     self.locations += [self.location_download_format(loc)]
 
         self.contracts = []
         for d in qs:
             if d.contracts:
-                # temporarily set an incrementing number
-                for i, con in enumerate(d.contracts):
-                    con.update({"deal_id": d.id, "id": i + 1})
+                for con in d.contracts:
+                    con.update({"deal_id": d.id})
                     self.contracts += [self.contracts_download_format(con)]
 
         self.datasources = []
         for d in qs:
             if d.datasources:
-                # temporarily set an incrementing number
-                for i, ds in enumerate(d.datasources):
-                    ds.update({"deal_id": d.id, "id": i + 1})
+                for ds in d.datasources:
+                    ds.update({"deal_id": d.id})
                     self.datasources += [self.datasource_download_format(ds)]
 
         qs = Investor.objects.visible(self.user).order_by("id")
@@ -533,17 +516,17 @@ class DataDownload:
                     [str(i).encode("unicode_escape").decode("utf-8") for i in item]
                 )
 
-        ## Locations tab
+        # # Locations tab
         ws = wb.create_sheet(title="Locations")
         ws.append(list(location_fields.values()))
         [ws.append(item) for item in self.locations]
 
-        ## Contracts tab
+        # # Contracts tab
         ws = wb.create_sheet(title="Contracts")
         ws.append(list(contract_fields.values()))
         [ws.append(item) for item in self.contracts]
 
-        ## DataSources tab
+        # # DataSources tab
         ws = wb.create_sheet(title="Data sources")
         ws.append(list(datasource_fields.values()))
         [ws.append(item) for item in self.datasources]
@@ -693,7 +676,9 @@ class DataDownload:
                 ]
             )
 
-        flatten_array_choices(data, "nature_of_deal", dict(NATURE_OF_DEAL_CHOICES))
+        flatten_array_choices(
+            data, "nature_of_deal", dict(_choices.NATURE_OF_DEAL_CHOICES)
+        )
 
         if data.get("negotiation_status"):
             data["negotiation_status"] = "|".join(
@@ -730,7 +715,7 @@ class DataDownload:
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
-            data["purchase_price_type"] = dict(Deal.HA_AREA_CHOICES)[
+            data["purchase_price_type"] = dict(_choices.HA_AREA_CHOICES)[
                 data["purchase_price_type"]
             ]
         # if data.get("purchase_price_area"):
@@ -743,7 +728,7 @@ class DataDownload:
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
-            data["annual_leasing_fee_type"] = dict(Deal.HA_AREA_CHOICES)[
+            data["annual_leasing_fee_type"] = dict(_choices.HA_AREA_CHOICES)[
                 data["annual_leasing_fee_type"]
             ]
         # if data.get("annual_leasing_fee_area"):
@@ -773,12 +758,16 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "recognition_status", dict(Deal.RECOGNITION_STATUS_CHOICES)
+            data, "recognition_status", dict(_choices.RECOGNITION_STATUS_CHOICES)
         )
         single_choice(
-            data, "community_consultation", dict(Deal.COMMUNITY_CONSULTATION_CHOICES)
+            data,
+            "community_consultation",
+            dict(_choices.COMMUNITY_CONSULTATION_CHOICES),
         )
-        single_choice(data, "community_reaction", dict(Deal.COMMUNITY_REACTION_CHOICES))
+        single_choice(
+            data, "community_reaction", dict(_choices.COMMUNITY_REACTION_CHOICES)
+        )
 
         if data.get("involved_actors"):
             data["involved_actors"] = "|".join(
@@ -786,7 +775,9 @@ class DataDownload:
                     "#".join(
                         [
                             x.get("name", "") or "",
-                            dict(ACTOR_MAP)[x["role"]] if x.get("role") else "",
+                            dict(_choices.ACTOR_MAP)[x["role"]]
+                            if x.get("role")
+                            else "",
                         ]
                     )
                     for x in data["involved_actors"]
@@ -831,20 +822,22 @@ class DataDownload:
         bool_cast(data, "displacement_of_people")
 
         flatten_array_choices(
-            data, "negative_impacts", dict(Deal.NEGATIVE_IMPACTS_CHOICES)
-        )
-        flatten_array_choices(data, "promised_benefits", dict(Deal.BENEFITS_CHOICES))
-        flatten_array_choices(
-            data, "materialized_benefits", dict(Deal.BENEFITS_CHOICES)
+            data, "negative_impacts", dict(_choices.NEGATIVE_IMPACTS_CHOICES)
         )
         flatten_array_choices(
-            data, "former_land_owner", dict(Deal.FORMER_LAND_OWNER_CHOICES)
+            data, "promised_benefits", dict(_choices.BENEFITS_CHOICES)
         )
         flatten_array_choices(
-            data, "former_land_use", dict(Deal.FORMER_LAND_USE_CHOICES)
+            data, "materialized_benefits", dict(_choices.BENEFITS_CHOICES)
         )
         flatten_array_choices(
-            data, "former_land_cover", dict(Deal.FORMER_LAND_COVER_CHOICES)
+            data, "former_land_owner", dict(_choices.FORMER_LAND_OWNER_CHOICES)
+        )
+        flatten_array_choices(
+            data, "former_land_use", dict(_choices.FORMER_LAND_USE_CHOICES)
+        )
+        flatten_array_choices(
+            data, "former_land_cover", dict(_choices.FORMER_LAND_COVER_CHOICES)
         )
 
         bool_cast(data, "has_domestic_use")
@@ -910,12 +903,12 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "source_of_water_extraction", dict(Deal.WATER_SOURCE_CHOICES)
+            data, "source_of_water_extraction", dict(_choices.WATER_SOURCE_CHOICES)
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
 
         if data.get("confidential_reason"):
-            data["confidential_reason"] = dict(Deal.CONFIDENTIAL_REASON_CHOICES)[
+            data["confidential_reason"] = dict(_choices.CONFIDENTIAL_REASON_CHOICES)[
                 data["confidential_reason"]
             ]
 

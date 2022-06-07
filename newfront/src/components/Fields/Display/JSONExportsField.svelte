@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import {
     dateCurrentFormat,
     mapChoices,
@@ -23,18 +24,20 @@
 <div class="jsonexports_field whitespace-nowrap">
   {#each value as val}
     <div class:font-bold={val.current}>
-      <span>{dateCurrentFormat(val)}</span>
+      <span>{dateCurrentFormat(val)} </span>
       {#if val.choices}
         {mapChoices(val.choices, formfield.choices)}
       {/if}{#if val.area}
         <span>
           <CircleNotchIcon />
-          {val.area.toLocaleString("fr")} ha
+          {val.area.toLocaleString("fr")}
+          {$_("ha")}
         </span>
       {/if}{#if val.yield}
         <span class="mx-2">
           <WeightIcon />
-          {val.yield.toLocaleString("fr")} tons
+          {val.yield.toLocaleString("fr")}
+          {$_("tons")}
         </span>
       {/if}{#if val.export}
         <span class="mx-2">

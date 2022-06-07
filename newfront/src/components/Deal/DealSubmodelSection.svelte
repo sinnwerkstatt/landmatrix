@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { dealSubsections } from "$lib/deal_sections";
   import { isEmpty } from "$lib/helpers";
   import type { Contract, DataSource, Location } from "$lib/types/deal";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -8,32 +9,7 @@
   export let modelName: string;
   export let entries: Array<Contract | DataSource | Location> = [];
 
-  $: fields = {
-    location: [
-      "level_of_accuracy",
-      "name",
-      "description",
-      "point",
-      "facility_name",
-      "comment",
-    ],
-    contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
-    datasource: [
-      "type",
-      "url",
-      "file",
-      "file_not_public",
-      "publication_title",
-      "date",
-      "name",
-      "company",
-      "email",
-      "phone",
-      "includes_in_country_verified_information",
-      "open_land_contracts_id",
-      "comment",
-    ],
-  }[model];
+  $: fields = dealSubsections[model];
 
   let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full";
 </script>
@@ -53,7 +29,7 @@
                 {fieldname}
                 value={entry[fieldname]}
                 {model}
-                :file-not-public="entry.file_not_public"
+                fileNotPublic={entry.file_not_public}
               />
             {/if}
           {/each}

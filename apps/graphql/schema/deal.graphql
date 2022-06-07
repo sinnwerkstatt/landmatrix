@@ -1,5 +1,6 @@
 type Deal {
   id: Int!
+  locations: [Location]
   # General Info
   ## Land area
   country: Country
@@ -39,6 +40,8 @@ type Deal {
   off_the_lease_state: Boolean
   off_the_lease: [Dict]
   contract_farming_comment: String
+  # Contracts
+  contracts: [Contract]
   # Employment
   total_jobs_created: Boolean
   total_jobs_planned: Int
@@ -63,6 +66,8 @@ type Deal {
   involved_actors: Dict
   project_name: String
   investment_chain_comment: String
+  # Data sources
+  datasources: [DataSource]
   # Local communities / indigenous peoples
   name_of_community: [String]
   name_of_indigenous_people: [String]
@@ -156,11 +161,6 @@ type Deal {
   confidential_reason: String
   #confidential_reason_display: String
   confidential_comment: String
-
-  # Foreign Keys - not anymore
-  locations(version: Int): [Location]
-  contracts(version: Int): [Contract]
-  datasources(version: Int): [DataSource]
 
   #### Calculated fields
   is_public: Boolean

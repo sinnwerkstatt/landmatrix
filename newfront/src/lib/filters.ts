@@ -15,11 +15,29 @@ export enum NegotiationStatus {
   MEMORANDUM_OF_UNDERSTANDING = "MEMORANDUM_OF_UNDERSTANDING",
   ORAL_AGREEMENT = "ORAL_AGREEMENT",
   CONTRACT_SIGNED = "CONTRACT_SIGNED",
+  CHANGE_OF_OWNERSHIP = "CHANGE_OF_OWNERSHIP",
   NEGOTIATIONS_FAILED = "NEGOTIATIONS_FAILED",
   CONTRACT_CANCELED = "CONTRACT_CANCELED",
   CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
-  CHANGE_OF_OWNERSHIP = "CHANGE_OF_OWNERSHIP",
 }
+export enum NegotiationStatusGroup {
+  INTENDED = "INTENDED",
+  CONCLUDED = "CONCLUDED",
+  FAILED = "FAILED",
+  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
+}
+export const NegotiationStatusGroupMap = {
+  [NegotiationStatus.EXPRESSION_OF_INTEREST]: NegotiationStatusGroup.INTENDED,
+  [NegotiationStatus.UNDER_NEGOTIATION]: NegotiationStatusGroup.INTENDED,
+  [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: NegotiationStatusGroup.INTENDED,
+  [NegotiationStatus.ORAL_AGREEMENT]: NegotiationStatusGroup.CONCLUDED,
+  [NegotiationStatus.CONTRACT_SIGNED]: NegotiationStatusGroup.CONCLUDED,
+  [NegotiationStatus.CHANGE_OF_OWNERSHIP]: NegotiationStatusGroup.CONCLUDED,
+  [NegotiationStatus.NEGOTIATIONS_FAILED]: NegotiationStatusGroup.FAILED,
+  [NegotiationStatus.CONTRACT_CANCELED]: NegotiationStatusGroup.FAILED,
+  [NegotiationStatus.CONTRACT_EXPIRED]: NegotiationStatusGroup.CONTRACT_EXPIRED,
+};
+
 export enum NatureOfDeal {
   OUTRIGHT_PURCHASE = "OUTRIGHT_PURCHASE",
   LEASE = "LEASE",

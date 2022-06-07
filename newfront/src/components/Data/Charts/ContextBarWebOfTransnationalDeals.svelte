@@ -20,7 +20,7 @@
 
   async function _grabInvestmentsAndRankings(countryID: number, fltrs: FilterValues) {
     if (!countryID) return;
-    const { data } = await client.query({
+    const { data } = await $client.query({
       query: gql`
         query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
           country_investments_and_rankings(id: $id, filters: $filters)

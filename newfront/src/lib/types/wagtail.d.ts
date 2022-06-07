@@ -25,21 +25,22 @@ export interface CountryOrRegion {
   slug?: string;
   observatory_page_id?: number;
   observatory_page?: ObservatoryPage;
-}
-export interface Region extends CountryOrRegion {
   point_lat_min: number;
   point_lat_max: number;
   point_lon_min: number;
   point_lon_max: number;
 }
+export interface Region extends CountryOrRegion {
+  placeholder?: string;
+}
 
 export interface Country extends CountryOrRegion {
   code_alpha2: string;
-  high_income: boolean;
-  point_lat: number;
-  point_lon: number;
-  deals: Deal[];
-  fk_region: Region;
+  high_income?: boolean;
+  point_lat?: number;
+  point_lon?: number;
+  deals?: Deal[];
+  fk_region?: Region;
 }
 
 export interface WagtailPage {

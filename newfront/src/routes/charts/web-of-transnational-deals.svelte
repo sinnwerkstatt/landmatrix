@@ -31,7 +31,7 @@
   }
 
   const grabTransnationalDeals = async () => {
-    const { data } = await client.query<{ transnational_deals: unknown[] }>({
+    const { data } = await $client.query<{ transnational_deals: unknown[] }>({
       query: gql`
         query WebOfTransnationalDeals($filters: [Filter]) {
           transnational_deals(filters: $filters)

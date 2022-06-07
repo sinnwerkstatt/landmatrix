@@ -33,26 +33,24 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 INSTALLED_APPS = [
+    # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.humanize",
-    "django.contrib.postgres",
+    "django.contrib.admin",
+    "django.contrib.sites",
+    "django.contrib.gis",
+    # modeltranslation
     "wagtail_modeltranslation",
     "wagtail_modeltranslation.makemigrations",
     "wagtail_modeltranslation.migrate",
-    "django.contrib.admin",
-    "django.contrib.sites",
-    # OL3 widgets must come before GIS
-    "django.contrib.gis",
-    # wagtail and dependencies
+    # wagtail
     "wagtail.contrib.modeladmin",
-    "wagtail.contrib.forms",
+    "wagtail.contrib.forms",  # TODO delete this after squashing migrations
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
-    # "wagtail.contrib.styleguide",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -62,31 +60,24 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
+    "wagtail.api.v2",
+    "rest_framework",
+    "wagtailfontawesomesvg",
     "wagtailorderable",
-    "apps.blog",  # why here and not below?
     "modelcluster",
     "taggit",
-    # 'treebeard',
-    "wkhtmltopdf",
-    "captcha",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "rest_framework_gis",
-    "django.contrib.syndication",
-    "file_resubmit",
+    "captcha",  # TODO delete this after squashing migrations
     #   apps of the actual landmatrix project
+    "apps.blog",
     "apps.message",
     "apps.landmatrix",
     "apps.editor",
     "apps.wagtailcms",
-    "apps.notifications",
+    # plumbing
     "impersonate",
     "celery",
-    # green new deal
-    "wagtail.api.v2",
     "ariadne_django",
     "corsheaders",
-    "wagtailfontawesomesvg",
 ]
 
 MIDDLEWARE = [
@@ -126,7 +117,7 @@ TEMPLATES = [
     }
 ]
 
-LOGIN_REDIRECT_URL = "/editor/"
+LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520
 DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
@@ -155,10 +146,6 @@ LOCALE_PATHS = [BASE_DIR("config/locale")]
 
 CACHES = {
     "default": env.cache("DJANGO_CACHE_URL", default="dummycache://"),
-    "file_resubmit": {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "/tmp/file_resubmit/",
-    },
 }
 
 CORS_ALLOWED_ORIGINS = [
@@ -199,11 +186,7 @@ BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
 
-WKHTMLTOPDF_CMD = env("DJANGO_WKHTMLTOPDF_CMD", default="wkhtmltopdf")
-
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
-
-LANDMATRIX_INVESTOR_GRAPH_ENABLED = True
 
 TWITTER_TIMELINE = (
     {
@@ -215,6 +198,5 @@ TWITTER_TIMELINE = (
     if env("DJANGO_TWITTER_CONSUMER_KEY", default="")
     else None
 )
-
 TWITTER_DEFAULT_USERNAME = "land_matrix"
 TWITTER_DEFAULT_COUNT = 5

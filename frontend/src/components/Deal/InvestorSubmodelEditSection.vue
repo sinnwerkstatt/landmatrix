@@ -14,23 +14,23 @@
                 @click="active_entry = active_entry !== entry ? entry : null"
               ></i>
               <h3 @click="active_entry = active_entry !== entry ? entry : null">
-                {{ $t(modelName) }}
-                <small>#{{ entry.investor && entry.investor.id }}</small>
+                {{ index + 1 }}. {{ $t(modelName) }}
+                <small v-if="entry.investor">(Investor #{{ entry.investor.id }})</small>
               </h3>
               <a class="trashbin" @click="$emit('removeEntry', entry.id)">
                 <i class="fas fa-trash"></i>
               </a>
             </div>
             <div v-if="active_entry === entry" class="submodel-body">
-              <div v-for="fieldname in fields" :key="fieldname">
-                <EditField
-                  v-model="entry[fieldname]"
-                  :fieldname="fieldname"
-                  model="involvement"
-                  :label-classes="['display-field-value', 'col-md-3']"
-                  :value-classes="['display-field-label', 'col-md-9']"
-                />
-              </div>
+              <EditField
+                v-for="fieldname in fields"
+                :key="fieldname"
+                v-model="entry[fieldname]"
+                :fieldname="fieldname"
+                :model="model"
+                :label-classes="['display-field-value', 'col-md-3']"
+                :value-classes="['display-field-label', 'col-md-9']"
+              />
             </div>
           </div>
         </div>
@@ -55,25 +55,14 @@
     props: {
       id: { type: String, required: true },
       title: { type: String, required: true },
+      model: { type: String, required: true },
       modelName: { type: String, required: true },
       entries: { type: Array, required: true },
+      fields: { type: Array, required: true },
       active: { type: Boolean, default: false },
     },
     data() {
-      let fields = [
-        "investor",
-        "investment_type",
-        "percentage",
-        "loans_amount",
-        "loans_currency",
-        "loans_date",
-      ];
-      if (this.id === "parents") fields.push("parent_relation");
-      fields.push("comment");
-      return {
-        active_entry: null,
-        fields,
-      };
+      return { active_entry: null };
     },
     computed: {
       wrapperClasses() {
