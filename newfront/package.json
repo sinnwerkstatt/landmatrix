@@ -14,6 +14,7 @@
   "devDependencies": {
     "@apollo/client": "^3.6.6",
     "@floating-ui/dom": "^0.5.2",
+    "@googlemaps/js-api-loader": "^1.14.3",
     "@sveltejs/adapter-node": "^1.0.0-next.78",
     "@sveltejs/kit": "^1.0.0-next.347",
     "@sveltejs/svelte-virtual-list": "^3.0.1",

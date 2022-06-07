@@ -6,6 +6,7 @@
   import type { FormField } from "$components/Fields/fields";
   import BooleanField from "./Edit/BooleanField.svelte";
   import CharField from "./Edit/CharField.svelte";
+  import CountryForeignKey from "./Edit/CountryForeignKey.svelte";
   import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte";
   import DateField from "./Edit/DateField.svelte";
   import EmailField from "./Edit/EmailField.svelte";
@@ -23,6 +24,7 @@
   export let wrapperClasses = "mb-3 leading-5 flex flex-wrap";
   export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
   export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
+  export let disabled = false;
 
   //   fileNotPublic: { type: Boolean, default: false },
   //   visible: { type: Boolean, default: true },
@@ -47,6 +49,7 @@
     BooleanField: BooleanField,
     CharField: CharField,
     OCIDField: CharField,
+    CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
     DecimalField: DecimalField,
@@ -70,7 +73,14 @@
   {/if}
   <div class={valueClasses}>
     {#if field}
-      <svelte:component this={field} bind:value {model} {formfield} />
+      <svelte:component
+        this={field}
+        bind:value
+        {model}
+        {disabled}
+        {formfield}
+        on:change
+      />
       <!--  <div>-->
       <!--    <component-->
       <!--      :file-not-public="fileNotPublic"-->

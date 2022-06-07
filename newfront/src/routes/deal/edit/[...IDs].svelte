@@ -33,7 +33,7 @@
   import type { Contract, DataSource, Location } from "$lib/types/deal";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
-  import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
+  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
 
@@ -113,6 +113,7 @@
     </h1>
     <div class="flex items-center my-5">
       <!--{originalDeal}<br /><br />-->
+      <!--{JSON.stringify(deal.negotiation_status)}<br />-->
       <!--{JSON.stringify(deal)}<br /><br />-->
       x{formChanged}x
       <button
@@ -159,7 +160,10 @@
     </nav>
     <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
       {#if activeTab === "#locations"}
-        <DealLocationsSection bind:deal id="locations" />
+        <DealLocationsEditSection
+          bind:locations={deal.locations}
+          bind:country={deal.country}
+        />
       {/if}
       {#if activeTab === "#general"}
         <DealEditSection bind:deal sections={dealSections.general_info} id="general" />

@@ -11,7 +11,7 @@
     bind:value
     placeholder={$_(formfield.label)}
     name={formfield.name}
-    rows="5"
+    rows="3"
     class="inpt"
   />
 </div>

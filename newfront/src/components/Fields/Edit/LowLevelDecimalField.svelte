@@ -62,6 +62,7 @@
     {max}
     {step}
     {name}
+    on:input
   />
   {#if unit}
     <div

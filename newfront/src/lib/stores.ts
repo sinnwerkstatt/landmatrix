@@ -17,7 +17,7 @@ export const observatoryPages = writable<ObservatoryPage[]>([]);
 async function getObservatoryPages(language = "en") {
   console.log("getObservatoryPages", { language });
   const observatoriesStore = get(observatoryPages);
-  if (observatoriesStore !== undefined) return observatoriesStore;
+  if (observatoriesStore.length > 0) return observatoriesStore;
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
   const res = await (await fetch(url)).json();
   await observatoryPages.set(res.items);

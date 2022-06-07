@@ -3,7 +3,7 @@
   import { slide } from "svelte/transition";
   import { dealSubsections } from "$lib/deal_sections";
   import { newNanoid } from "$lib/helpers";
-  import type { Contract, DataSource, Location } from "$lib/types/deal";
+  import type { Contract, DataSource } from "$lib/types/deal";
   import { isEmptySubmodel } from "$lib/utils/data_processing";
   import EditField from "$components/Fields/EditField.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
@@ -11,7 +11,7 @@
 
   export let model: string;
   export let modelName: string;
-  export let entries: Array<Contract | DataSource | Location> = [];
+  export let entries: Array<Contract | DataSource> = [];
   export let id: string;
 
   // TODO: build something to filter out empty entries
@@ -20,15 +20,15 @@
   $: fields = dealSubsections[model];
 
   let activeEntry: number;
-  $: activeEntry = entries.length - 1;
+  $: activeEntry = 0; //entries.length - 1;
 
   function addEntry() {
     const currentIDs = entries.map((x) => x.id.toString());
-    const newEntry = { id: newNanoid(currentIDs) } as Contract | DataSource | Location;
+    const newEntry = { id: newNanoid(currentIDs) } as Contract | DataSource;
     entries = [...entries, newEntry];
   }
 
-  function removeEntry(entry: Contract | DataSource | Location) {
+  function removeEntry(entry: Contract | DataSource) {
     if (isEmptySubmodel(entry)) {
       entries = entries.filter((x) => x.id !== entry.id);
       return;

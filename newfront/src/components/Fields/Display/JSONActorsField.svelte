@@ -20,15 +20,15 @@
   export let value: JSONActorsFieldType[] = [];
 </script>
 
-<div class="jsonactors_field whitespace-nowrap">
+<ul class="jsonactors_field list-disc pl-5">
   {#each value as val}
-    <div>
+    <li>
       <span>{val.name}</span>
       {#if val.role}
-        <span class="font-weight-light">
+        <span class="font-light text-sm">
           ({mapChoices(val.role, formfield.choices)})
         </span>
       {/if}
-    </div>
+    </li>
   {/each}
-</div>
+</ul>

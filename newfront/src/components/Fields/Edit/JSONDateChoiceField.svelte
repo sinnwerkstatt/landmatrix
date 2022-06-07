@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
@@ -46,9 +47,9 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>Current</th>
-        <th>Date</th>
-        <th>Choice</th>
+        <th>{$_("Current")}</th>
+        <th>{$_("Date")}</th>
+        <th>{$_("Choice")}</th>
         <th />
       </tr>
     </thead>

@@ -5,12 +5,13 @@
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
 
   export let value;
+  export let accept;
 
   function removeFile() {
     if (confirm($_("Do you really want to remove this file?")) === true) value = "";
   }
 
-  function uploadFile({ target: { files = [] } }) {
+  export let uploadFunction = ({ target: { files = [] } }) => {
     if (!files.length) return;
     let fr = new FileReader();
     fr.onload = async () => {
@@ -25,7 +26,7 @@
       value = data.upload_datasource_file;
     };
     fr.readAsDataURL(files[0]);
-  }
+  };
 </script>
 
 <div class="file_field">
@@ -38,7 +39,7 @@
         </a>
         <br />
         {$_("Change")}:
-        <input type="file" on:change={uploadFile} />
+        <input type="file" on:change={uploadFunction} {accept} />
       </div>
 
       <button class="btn btn-danger" on:click|preventDefault={removeFile}>
@@ -46,7 +47,7 @@
       </button>
     </div>
   {:else}
-    <input type="file" on:change={uploadFile} />
+    <input type="file" on:change={uploadFunction} {accept} />
   {/if}
   <small class="text-gray-500 block pt-2">{$_("Maximum file size: 10MB")}</small>
 </div>
