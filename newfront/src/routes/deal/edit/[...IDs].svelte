@@ -44,7 +44,7 @@
   let originalDeal = JSON.stringify(deal);
   let savingInProgress = false;
   let show_really_quit_overlay = false;
-  $: activeTab = $page.url.hash || "#locations";
+  $: activeTab = $page.url.hash || "#general";
   $: formChanged = JSON.stringify(deal) !== originalDeal;
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
