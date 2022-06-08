@@ -50,19 +50,19 @@ interface Deal extends Obj {
   locations: Location[];
   contracts: Contract[];
   datasources: DataSource[];
-  versions: DealVersion[];
-  workflowinfos: DealWorkflowInfo[];
-  current_intention_of_investment: string[];
-  current_negotiation_status: NegotiationStatus;
-  current_implementation_status: ImplementationStatus;
-  fully_updated_at: Date;
-  top_investors: Investor[];
-  deal_size: number;
-  current_contract_size: number;
-  intended_size: number;
+  versions?: DealVersion[];
+  workflowinfos?: DealWorkflowInfo[];
+  current_intention_of_investment?: string[];
+  current_negotiation_status?: NegotiationStatus;
+  current_implementation_status?: ImplementationStatus;
+  fully_updated_at?: Date;
+  top_investors?: Investor[];
+  deal_size?: number;
+  current_contract_size?: number;
+  intended_size?: number;
   operating_company?: Investor;
-  confidential: boolean;
-  is_public: boolean;
+  confidential?: boolean;
+  is_public?: boolean;
   [key: string];
 }
 
