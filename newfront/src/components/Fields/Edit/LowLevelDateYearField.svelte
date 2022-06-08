@@ -34,7 +34,7 @@
   };
 </script>
 
-<div class="whitespace-nowrap">
+npm <div class="whitespace-nowrap">
   <input
     bind:this={inputfield}
     bind:value

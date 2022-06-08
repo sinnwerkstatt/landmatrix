@@ -1,8 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import type { FormField } from "$components/Fields/fields";
-  import { intention_of_investment_map } from "./choices";
-  import { flat_intention_of_investment_map } from "./choices.js";
+  import {
+    flat_intention_of_investment_map,
+    intention_of_investment_map,
+  } from "./choices";
 
   export let formfield: FormField;
   export let value: string[];
