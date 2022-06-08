@@ -2,7 +2,8 @@ export type DealSection = {
   name: string;
   fields: string[];
 };
-export const deal_sections: { [key: string]: DealSection[] } = {
+
+export const dealSections: { [key: string]: DealSection[] } = {
   general_info: [
     {
       name: "Land area",
@@ -272,5 +273,32 @@ export const deal_sections: { [key: string]: DealSection[] } = {
       name: "Confidential",
       fields: ["confidential", "confidential_reason", "confidential_comment"],
     },
+  ],
+};
+
+export const dealSubsections = {
+  location: [
+    "level_of_accuracy",
+    "name",
+    "description",
+    "point",
+    "facility_name",
+    "comment",
+  ],
+  contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
+  datasource: [
+    "type",
+    "url",
+    "file",
+    "file_not_public",
+    "publication_title",
+    "date",
+    "name",
+    "company",
+    "email",
+    "phone",
+    "includes_in_country_verified_information",
+    "open_land_contracts_id",
+    "comment",
   ],
 };

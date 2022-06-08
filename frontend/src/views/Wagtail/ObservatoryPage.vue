@@ -97,8 +97,6 @@
 </template>
 
 <script lang="ts">
-  import gql from "graphql-tag";
-  import Vue from "vue";
   import StatusPieChart from "$components/Charts/StatusPieChart.vue";
   import PageTitle from "$components/PageTitle.vue";
   import QuasiStaticMap from "$components/QuasiStaticMap.vue";
@@ -106,9 +104,11 @@
   import ArticleList from "$components/Wagtail/ArticleList.vue";
   import MapDataCharts from "$components/Wagtail/MapDataCharts.vue";
   import Twitter from "$components/Wagtail/Twitter.vue";
-  import type { BlogPage, ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
   import type { DealAggregations } from "$types/deal";
   import type { GQLFilter } from "$types/filters";
+  import type { BlogPage, ObservatoryPage, WagtailStreamfield } from "$types/wagtail";
+  import gql from "graphql-tag";
+  import Vue from "vue";
 
   export default Vue.extend({
     name: "ObservatoryPage",
@@ -229,12 +229,6 @@
           { color: "rgba(252,148,31,0.4)", label: "Intended", count: 0, size: 0 },
           { color: "rgba(252,148,31,1)", label: "Concluded", count: 0, size: 0 },
           { color: "rgba(125,74,15,1)", label: "Failed", count: 0, size: 0 },
-          {
-            color: "rgb(59,36,8)",
-            label: "Change of ownership",
-            count: 0,
-            size: 0,
-          },
           { color: "rgb(44,28,5)", label: "Contract expired", count: 0, size: 0 },
         ];
         for (let agg of this.deal_aggregations.current_negotiation_status) {
@@ -247,22 +241,18 @@
               break;
             case "ORAL_AGREEMENT":
             case "CONTRACT_SIGNED":
+            case "CHANGE_OF_OWNERSHIP":
               retval[1].count += agg.count;
               retval[1].size += +agg.size;
               break;
-
             case "NEGOTIATIONS_FAILED":
             case "CONTRACT_CANCELED":
               retval[2].count += agg.count;
               retval[2].size += +agg.size;
               break;
-            case "CHANGE_OF_OWNERSHIP":
-              retval[4].count += agg.count;
-              retval[4].size += +agg.size;
-              break;
             case "CONTRACT_EXPIRED":
-              retval[4].count += agg.count;
-              retval[4].size += +agg.size;
+              retval[3].count += agg.count;
+              retval[3].size += +agg.size;
               break;
             default:
               console.warn({ agg });

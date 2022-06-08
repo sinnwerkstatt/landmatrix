@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
@@ -31,21 +32,24 @@
   function addEntry() {
     value = [...value, []];
     updateEntries();
+    // TODO
   }
   function removeEntry(index) {
     if (current === value.length - 1) this.current = null;
-    value.splice(index, 1);
+    value = value.splice(index, 1);
     updateEntries();
+    // TODO
   }
 </script>
 
 <div class="json_date_choice_field whitespace-nowrap">
+  {JSON.stringify(value)}
   <table class="w-full">
     <thead>
       <tr>
-        <th>Current</th>
-        <th>Date</th>
-        <th>Choice</th>
+        <th>{$_("Current")}</th>
+        <th>{$_("Date")}</th>
+        <th>{$_("Choice")}</th>
         <th />
       </tr>
     </thead>
@@ -81,14 +85,16 @@
           </td>
 
           <td class="buttons p-1">
-            <button type="button" on:click={addEntry}
-              ><PlusIcon class="w-5 h-5" /></button
-            >
+            <button type="button" on:click={addEntry}>
+              <PlusIcon class="w-5 h-5" />
+            </button>
             <button
               type="button"
               disabled={value.length <= 1}
-              on:click={() => removeEntry(i)}><MinusIcon class="w-5 h-5" /></button
+              on:click={() => removeEntry(i)}
             >
+              <MinusIcon class="w-5 h-5" />
+            </button>
           </td>
         </tr>
       {/each}

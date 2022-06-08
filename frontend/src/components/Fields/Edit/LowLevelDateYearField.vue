@@ -44,15 +44,26 @@
           return;
         }
         v = v.replace("/", "-").replace(".", "-").replace(",", "-");
-
-        let field_valid = dayjs(
-          this.val,
-          ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
-          true
-        ).isValid();
+        this.checkValidity();
+        this.$emit("input", v);
+      },
+    },
+    mounted() {
+      this.checkValidity();
+    },
+    methods: {
+      checkValidity() {
+        let field_valid =
+          this.val === "" ||
+          this.val === null ||
+          dayjs(
+            this.val,
+            ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
+            true
+          ).isValid();
 
         if (field_valid) {
-          this.valid_state = "is-valid";
+          this.valid_state = "";
           this.$refs.inputfield.setCustomValidity("");
         } else {
           this.valid_state = "is-invalid";
@@ -60,8 +71,6 @@
             "Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"
           );
         }
-
-        this.$emit("input", v);
       },
     },
   };

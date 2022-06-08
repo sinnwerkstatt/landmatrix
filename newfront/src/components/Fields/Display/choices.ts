@@ -37,6 +37,7 @@ export const negotiation_status_choices: {
   Concluded: {
     ORAL_AGREEMENT: "Oral agreement",
     CONTRACT_SIGNED: "Contract signed",
+    CHANGE_OF_OWNERSHIP: "Change of ownership",
   },
   Failed: {
     NEGOTIATIONS_FAILED: "Negotiations failed",
@@ -44,20 +45,6 @@ export const negotiation_status_choices: {
   },
 
   CONTRACT_EXPIRED: "Contract expired",
-  CHANGE_OF_OWNERSHIP: "Change of ownership",
-};
-export const negotiation_status_group_map: {
-  [key: string]: string | null;
-} = {
-  EXPRESSION_OF_INTEREST: "INTENDED",
-  UNDER_NEGOTIATION: "INTENDED",
-  MEMORANDUM_OF_UNDERSTANDING: "INTENDED",
-  ORAL_AGREEMENT: "CONCLUDED",
-  CONTRACT_SIGNED: "CONCLUDED",
-  NEGOTIATIONS_FAILED: "FAILED",
-  CONTRACT_CANCELED: "FAILED",
-  CONTRACT_EXPIRED: null,
-  CHANGE_OF_OWNERSHIP: null,
 };
 
 export const flat_negotiation_status_map: {
@@ -70,11 +57,11 @@ export const flat_negotiation_status_map: {
   ORAL_AGREEMENT: "Oral agreement",
   CONTRACT_SIGNED: "Contract signed",
   CONCLUDED: "Concluded",
+  CHANGE_OF_OWNERSHIP: "Change of ownership",
   NEGOTIATIONS_FAILED: "Negotiations failed",
   CONTRACT_CANCELED: "Contract canceled",
   FAILED: "Failed",
   CONTRACT_EXPIRED: "Contract expired",
-  CHANGE_OF_OWNERSHIP: "Change of ownership",
 };
 
 export const intention_of_investment_choices = {

@@ -1,4 +1,4 @@
-import type { GeoJSONObject } from "geojson";
+import type { GeoJsonObject } from "geojson";
 import { ImplementationStatus, NegotiationStatus } from "$lib/filters";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
@@ -13,7 +13,7 @@ enum ACCURACY_LEVEL {
 }
 
 interface Location {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   point: {
@@ -23,14 +23,14 @@ interface Location {
   facility_name: string;
   level_of_accuracy: ACCURACY_LEVEL;
   comment: string;
-  areas: GeoJSONObject;
+  areas: GeoJsonObject;
 }
 
 interface Contract {
-  id: number;
+  id: number | string;
 }
 interface DataSource {
-  id: number;
+  id: number | string;
   type: string;
   url: string;
   file: string;

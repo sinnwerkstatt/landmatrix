@@ -6,7 +6,7 @@
 </script>
 
 <div class="typed_choice_field">
-  <select bind:value class="inpt">
+  <select bind:value class="inpt" name={formfield.name}>
     {#each Object.entries(formfield.choices) as [value, label]}
       <option {value}>{label}</option>
     {/each}

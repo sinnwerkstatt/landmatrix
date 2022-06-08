@@ -38,10 +38,10 @@ NEGOTIATION_STATUS_CHOICES = [
     ("MEMORANDUM_OF_UNDERSTANDING", _("Intended (Memorandum of understanding)")),
     ("ORAL_AGREEMENT", _("Concluded (Oral Agreement)")),
     ("CONTRACT_SIGNED", _("Concluded (Contract signed)")),
+    ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
     ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
     ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
     ("CONTRACT_EXPIRED", _("Contract expired")),
-    ("CHANGE_OF_OWNERSHIP", _("Change of ownership")),
 ]
 
 IMPLEMENTATION_STATUS_CHOICES = [

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte";
   import HouseholdIcon from "$components/icons/HouseholdIcon.svelte";
@@ -22,7 +23,8 @@
       {#if val.area}
         <span class="mx-2">
           <CircleNotchIcon />
-          {val.area.toLocaleString("fr")} ha
+          {val.area.toLocaleString("fr")}
+          {$_("ha")}
         </span>
       {/if}{#if val.farmers}
         <span class="mx-2">

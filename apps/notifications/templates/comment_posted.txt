@@ -1,9 +1,0 @@
-{% load i18n %}
-
-{{ comment.name }} {% trans "has posted a new comment on" %} {% trans "Deal" %} {{ comment.content_object.activity_identifier }}:
-
-{{ comment.title }}
-{{ comment.comment }}
-
-{% trans "Yours" %},
-Land Matrix

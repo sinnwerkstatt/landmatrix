@@ -118,10 +118,10 @@ def test_deal_form():
     ).is_valid()
 
     assert DealForm(
-        {"involved_actors": [{"name": "Sinnwerkstatt", "choice": "BROKER"}]}
+        {"involved_actors": [{"name": "Sinnwerkstatt", "role": "BROKER"}]}
     ).is_valid()
     assert not DealForm(
-        {"involved_actors": [{"name": "Sinnwerkstatt", "choice": "GEEKS"}]}
+        {"involved_actors": [{"name": "Sinnwerkstatt", "role": "GEEKS"}]}
     ).is_valid()
 
     assert (

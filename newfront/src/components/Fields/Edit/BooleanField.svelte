@@ -6,14 +6,21 @@
   export let value: number;
 </script>
 
-<div class="boolean_field">
+<div class="boolean_field space-x-6">
   {#if formfield.class === "NullBooleanField"}
-    <select bind:value class="inpt">
-      {#if !formfield.required}<option value={null}>--------</option>{/if}
-      <option value={true}>{$_("Yes")}</option>
-      <option value={false}>{$_("No")}</option>
-    </select>
+    <label>
+      <input type="radio" bind:group={value} value={true} name={formfield.name} />
+      {$_("Yes")}
+    </label>
+    <label>
+      <input type="radio" bind:group={value} value={false} name={formfield.name} />
+      {$_("No")}
+    </label>
+    <label>
+      <input type="radio" bind:group={value} value={null} name={formfield.name} />
+      {$_("Unknown")}
+    </label>
   {:else}
-    <input bind:checked={value} type="checkbox" class="inpt" />
+    <input bind:checked={value} type="checkbox" name={formfield.name} />
   {/if}
 </div>

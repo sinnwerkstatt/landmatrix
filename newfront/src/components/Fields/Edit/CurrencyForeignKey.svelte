@@ -1,5 +1,6 @@
 <script lang="ts">
   import { gql } from "@apollo/client/core";
+  import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import { client } from "$lib/apolloClient";
 
@@ -32,10 +33,12 @@
 
 <div class="currency_foreignkey_field">
   {#if currencies}
+    <!-- removing "code" here, for "has deal changed" logic -->
     <Select
       items={currencies}
-      bind:value
-      placeholder="Currency"
+      {value}
+      on:select={(x) => (value = { ...x.detail, code: undefined })}
+      placeholder={$_("Currency")}
       optionIdentifier="id"
       labelIdentifier="name"
       getOptionLabel={(o) => `${o.name} (${o.code})`}

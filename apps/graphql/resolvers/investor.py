@@ -4,7 +4,7 @@ from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models import Investor, Deal
-from apps.landmatrix.models.gndinvestor import (
+from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorWorkflowInfo,
     InvestorVentureInvolvement,

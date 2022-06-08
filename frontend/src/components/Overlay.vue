@@ -37,11 +37,11 @@
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary">
+          <button v-if="showSubmit" type="submit" class="btn btn-primary">
             {{ title || $t("Submit") }}
           </button>
           <button class="btn btn-secondary" @click.stop="$emit('cancel')">
-            {{ $t("Cancel") }}
+            {{ $t(cancelButtonTitle) }}
           </button>
         </div>
       </form>
@@ -50,9 +50,9 @@
 </template>
 
 <script lang="ts">
+  import type { User } from "$types/user";
   import gql from "graphql-tag";
   import Vue from "vue";
-  import type { User } from "$types/user";
 
   export default Vue.extend({
     name: "Overlay",
@@ -62,6 +62,8 @@
       commentRequired: { type: Boolean, default: false },
       assignToUserInput: { type: Boolean, default: false },
       toUser: { type: Object, default: null },
+      showSubmit: { type: Boolean, default: true },
+      cancelButtonTitle: { type: String, default: "Cancel" },
     },
     data() {
       return {

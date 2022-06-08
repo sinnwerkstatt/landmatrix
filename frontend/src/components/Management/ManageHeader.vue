@@ -147,7 +147,9 @@
               <div v-if="is_editable" class="action-button">
                 <div class="d-inline-block">
                   <router-link
-                    v-if="$store.state.user.id === object.modified_by.id"
+                    v-if="
+                      !objectVersion || $store.state.user.id === object.modified_by.id
+                    "
                     :class="{ disabled: is_old_draft }"
                     :to="object_edit_path(object.id, objectVersion)"
                     class="btn btn-primary"

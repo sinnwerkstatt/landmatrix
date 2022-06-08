@@ -194,7 +194,7 @@
               <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
                 {$user.full_name}
                 <br />
-                <small>{$_($user?.role)}</small>
+                <small>{$user?.role ? $_($user?.role) : ""}</small>
               </p>
 
               {#if $user.is_impersonate}
@@ -219,6 +219,7 @@
                   </a>
                 </li>
               </ul>
+              <div>{$_("aölsdkj hallo")}</div>
               <ul>
                 <li>
                   <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>

@@ -161,7 +161,7 @@
         active_tab: "#general",
         tabs: {
           general: this.$t("General"),
-          data_sources: this.$t("Data sources"),
+          // data_sources: this.$t("Data sources"),
           parents: this.$t("Parent companies"),
           tertiaries: this.$t("Tertiary investors/lenders"),
         },

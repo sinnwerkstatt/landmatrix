@@ -1,6 +1,7 @@
 from typing import List, Union
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from graphql import GraphQLError, GraphQLResolveInfo
 
@@ -9,7 +10,7 @@ from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
-from apps.landmatrix.models.gndinvestor import (
+from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     Investor,
     InvestorVersion,
@@ -184,8 +185,7 @@ def object_edit(
     ObjectForm = DealForm if otype == "deal" else InvestorForm
     form = ObjectForm(payload)
     if not form.is_valid():
-        print("FORM ERRORS", form.errors)
-        return form.errors
+        raise ValidationError(dict(form.errors.items()))
 
     # this is a new Object
     if obj_id == -1:
