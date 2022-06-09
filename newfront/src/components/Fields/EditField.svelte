@@ -11,6 +11,7 @@
   import DateField from "./Edit/DateField.svelte";
   import EmailField from "./Edit/EmailField.svelte";
   import FileField from "./Edit/FileField.svelte";
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
   import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
   import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
@@ -65,6 +66,7 @@
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
     JSONDateAreaField: JSONDateAreaField,
+    JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONLeaseField: JSONLeaseField,
   }[formfield.class];
 </script>
