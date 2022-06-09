@@ -9,8 +9,8 @@
   interface JSONLeaseField {
     date?: string;
     area?: number;
-    farmers?: string;
-    households?: string;
+    farmers?: number;
+    households?: number;
     current?: boolean;
   }
 
@@ -46,7 +46,9 @@
 </script>
 
 <div className="json_date_area_field whitespace-nowrap">
-  <!--{JSON.stringify(value)}-->
+  {JSON.stringify(value)}
+  {JSON.stringify(valueCopy)}
+
   <table className="w-full">
     <thead>
       <tr>
