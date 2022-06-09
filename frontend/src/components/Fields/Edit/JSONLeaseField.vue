@@ -48,20 +48,18 @@
             />
           </td>
           <td>
-            <input
+            <LowLevelDecimalField
               v-model="val.farmers"
-              type="number"
-              class="form-control"
               :required="formfield.required"
+              :decimals="0"
               @input="updateEntries"
             />
           </td>
           <td>
-            <input
+            <LowLevelDecimalField
               v-model="val.households"
-              type="number"
-              class="form-control"
               :required="formfield.required"
+              :decimals="0"
               @input="updateEntries"
             />
           </td>
