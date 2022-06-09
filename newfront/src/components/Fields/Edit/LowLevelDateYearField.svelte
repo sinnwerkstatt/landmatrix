@@ -42,7 +42,7 @@
   };
 </script>
 
-npm <div class="whitespace-nowrap">
+<div class="whitespace-nowrap">
   <input
     bind:this={inputfield}
     bind:value
