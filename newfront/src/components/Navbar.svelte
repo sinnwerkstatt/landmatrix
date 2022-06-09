@@ -219,7 +219,6 @@
                   </a>
                 </li>
               </ul>
-              <div>{$_("aölsdkj hallo")}</div>
               <ul>
                 <li>
                   <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
