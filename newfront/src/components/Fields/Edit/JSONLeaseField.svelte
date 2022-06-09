@@ -46,8 +46,7 @@
 </script>
 
 <div className="json_date_area_field whitespace-nowrap">
-  {JSON.stringify(value)}
-  {JSON.stringify(valueCopy)}
+  <!--{JSON.stringify(value)}-->
 
   <table className="w-full">
     <thead>

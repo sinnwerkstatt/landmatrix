@@ -11,9 +11,11 @@
   import DateField from "./Edit/DateField.svelte";
   import EmailField from "./Edit/EmailField.svelte";
   import FileField from "./Edit/FileField.svelte";
+  import JSONActorsField from "./Edit/JSONActorsField.svelte";
   import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
   import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
+  import JSONJobsField from "./Edit/JSONJobsField.svelte";
   import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
   import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
@@ -65,9 +67,11 @@
     TextField: TextField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
+    JSONActorsField: JSONActorsField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONLeaseField: JSONLeaseField,
+    JSONJobsField: JSONJobsField,
   }[formfield.class];
 </script>
 

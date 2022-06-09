@@ -5,74 +5,107 @@
   import type { FormField } from "../fields";
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TypedChoiceField from "./TypedChoiceField.svelte";
 
-  interface JSONDateAreaChoicesField {
+  interface JSONJobsField {
     date?: string;
-    area?: number;
-    choices?: string;
+    jobs?: string;
+    employees?: string;
+    workers?: string;
+    current?: boolean;
   }
 
   export let formfield: FormField;
-  export let value: Array<JSONDateAreaChoicesField>;
-  // let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
+  export let value: Array<JSONJobsField>;
+  let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
 
   // create valueCopy to avoid overwriting null in db by [] or so
-  let valueCopy: Array<JSONDateAreaChoicesField> = JSON.parse(
-    JSON.stringify(value ?? [{}])
+  let valueCopy: Array<JSONJobsField> = JSON.parse(JSON.stringify(value ?? [{}]));
+  $: filteredValueCopy = valueCopy.filter(
+    (val) => val.date || val.jobs || val.employees || val.workers
   );
-  $: filteredValueCopy = valueCopy.filter((val) => val.date || val.area || val.choices);
   $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
 
+  function updateCurrent(index) {
+    valueCopy = valueCopy.map((val) => ({ ...val, current: undefined }));
+    valueCopy[index].current = true;
+    valueCopy = valueCopy;
+  }
   function addEntry() {
     valueCopy = [...valueCopy, {}];
   }
   function removeEntry(index) {
+    if (current === index) {
+      current = -1;
+    } else if (current > index) {
+      current--;
+    }
     valueCopy = valueCopy.filter((val, i) => i == index);
   }
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
+  <!--{JSON.stringify(current)}-->
+  <!--{JSON.stringify(valueCopy)}-->
   <!--{JSON.stringify(value)}-->
   <table class="w-full">
     <thead>
       <tr>
         <th>{$_("Current")}</th>
         <th>{$_("Date")}</th>
-        <th>{$_("Area (ha)")}</th>
-        <th>{$_("Choices")}</th>
+        <th>{$_("Jobs")}</th>
+        <th>{$_("Employees")}</th>
+        <th>{$_("Workers")}</th>
         <th />
       </tr>
     </thead>
     <tbody>
       {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td class="text-center p-1">
+          <td class="text-center p-1" on:click={() => updateCurrent(i)}>
             <input
-              type="checkbox"
-              bind:checked={val.current}
+              type="radio"
+              bind:group={current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date && !val.area && !val.choices}
+              disabled={!val.date &&
+                !val.area &&
+                !val.jobs &&
+                !val.employees &&
+                !val.workers}
+              value={i}
             />
           </td>
 
-          <td class="w-1/3 p-1">
+          <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
             />
           </td>
 
-          <td class="w-1/3 p-1">
+          <td class="w-1/4 p-1">
             <LowLevelDecimalField
-              bind:value={val.area}
+              bind:value={val.jobs}
               required={formfield.required}
-              unit="ha"
+              decimals=""
+              unit=""
             />
           </td>
-          <td>
-            <TypedChoiceField bind:value={val.choices} {formfield} />
+          <td class="w-1/4 p-1">
+            <LowLevelDecimalField
+              bind:value={val.employees}
+              required={formfield.required}
+              decimals=""
+              unit=""
+            />
+          </td>
+          <td class="w-1/4 p-1">
+            <LowLevelDecimalField
+              bind:value={val.workers}
+              required={formfield.required}
+              decimals=""
+              unit=""
+            />
           </td>
 
           <td class="p-1">
