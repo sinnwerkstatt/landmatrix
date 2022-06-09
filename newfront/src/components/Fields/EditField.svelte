@@ -15,6 +15,7 @@
   import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
   import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
+  import JSONExportsField from "./Edit/JSONExportsField.svelte";
   import JSONJobsField from "./Edit/JSONJobsField.svelte";
   import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
@@ -70,6 +71,7 @@
     JSONActorsField: JSONActorsField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONExportsField: JSONExportsField,
     JSONLeaseField: JSONLeaseField,
     JSONJobsField: JSONJobsField,
   }[formfield.class];
