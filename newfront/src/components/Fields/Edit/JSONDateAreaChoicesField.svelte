@@ -19,7 +19,7 @@
 
   // create valueCopy to avoid overwriting null in db by [] or so
   let valueCopy: Array<JSONDateAreaField> = JSON.parse(JSON.stringify(value ?? [{}]));
-  $: filteredValueCopy = valueCopy.filter((val) => val.date || val.area);
+  $: filteredValueCopy = valueCopy.filter((val) => val.date || val.area || val.choices);
   $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
 
   function addEntry() {
@@ -51,7 +51,7 @@
               bind:checked={val.current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date && !val.area}
+              disabled={!val.date && !val.area && !val.choices}
             />
           </td>
 
