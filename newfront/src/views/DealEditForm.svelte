@@ -88,8 +88,8 @@
 <div class="container mx-auto min-h-full h-full flex flex-col">
   <div class="md:flex md:flex-row md:justify-between border-b border-orange">
     <h1>
-      Editing deal {dealID}
-      {#if deal.country}in {deal.country.name}{/if}
+      {dealID ? $_("Editing Deal #") + dealID : $_("Adding new deal")}
+      {#if deal.country}{$_("in")} {deal.country.name}{/if}
     </h1>
     <div class="flex items-center my-5">
       <!--{originalDeal}<br /><br />-->

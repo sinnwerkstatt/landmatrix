@@ -13,24 +13,24 @@ enum ACCURACY_LEVEL {
 }
 
 interface Location {
-  id: number | string;
-  name: string;
-  description: string;
-  point: {
+  id: string;
+  name?: string;
+  description?: string;
+  point?: {
     lat: number;
     lng: number;
   };
-  facility_name: string;
-  level_of_accuracy: ACCURACY_LEVEL;
-  comment: string;
-  areas: GeoJsonObject;
+  facility_name?: string;
+  level_of_accuracy?: ACCURACY_LEVEL;
+  comment?: string;
+  areas?: GeoJsonObject;
 }
 
 interface Contract {
-  id: number | string;
+  id: string;
 }
 interface DataSource {
-  id: number | string;
+  id: string;
   type: string;
   url: string;
   file: string;

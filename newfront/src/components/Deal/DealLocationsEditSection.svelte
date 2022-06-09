@@ -25,13 +25,13 @@
   export let country: Country;
 
   let activeFeatureGroup: GeoJSON;
-  let hoverLocationID: number;
-  let activeLocationID: number | string;
+  let hoverLocationID: string;
+  let activeLocationID: string;
   let bigmap: LMap;
   let showAddAreaOverlay = false;
   let toAddArea = { file: undefined, area: "" };
 
-  let locationFGs = new Map<number | string, GeoJSON>();
+  let locationFGs = new Map<string, GeoJSON>();
   // const geoman_opts = {
   //   position: "topleft" as ControlPosition,
   //   drawCircle: false,
@@ -61,28 +61,10 @@
     },
   };
 
-  onMount(() => {
-    if (locations?.length > 0) onActivateLocation(locations[0]);
-  });
-
-  function removeEntry(entry: Location) {
-    if (isEmptySubmodel(entry)) {
-      locations = locations.filter((x) => x.id !== entry.id);
-      return;
-    }
-    const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
-    if (areYouSure === true) locations = locations.filter((x) => x.id !== entry.id);
-  }
-  function addEntry() {
-    const currentIDs = locations.map((x) => x.id.toString());
-    const newEntry = { id: newNanoid(currentIDs) } as Location;
-    locations = [...locations, newEntry];
-  }
-
-  const onMapReady = async (event: CustomEvent<LMap>) => {
-    bigmap = event.detail;
+  function _updateGeoJSON() {
     locations?.forEach((loc) => {
-      let fg = _addNewLayerGroup(loc.id);
+      const fg = locationFGs.get(loc.id) ?? _addNewLayerGroup(loc.id);
+      fg.clearLayers();
       if (loc.areas) fg.addData(loc.areas);
       if (loc.point) {
         let pt = new Marker(loc.point).toGeoJSON();
@@ -90,77 +72,6 @@
         fg.addData(pt);
       }
     });
-    _fitBounds();
-  };
-
-  function locationGoogleAutocomplete(
-    event: CustomEvent<{ latLng: [number, number]; viewport: unknown }>
-  ) {
-    console.log("CHANGE", event.detail.latLng);
-    let hasMarker = false;
-    activeFeatureGroup?.eachLayer((l: Layer) => {
-      if (l?._icon && l.feature.properties.id === activeLocationID) {
-        hasMarker = true;
-        (l as Marker).setLatLng(event.detail.latLng);
-      }
-    });
-    if (!hasMarker) {
-      let lpoint = new Marker(event.detail.latLng).toGeoJSON();
-      const activeLocation = locations.find((l) => l.id === activeLocationID);
-      lpoint.properties = { id: activeLocationID, name: activeLocation.name };
-      activeFeatureGroup?.addData(lpoint);
-    }
-    if (!bigmap.getBounds().contains(event.detail.latLng)) {
-      if (event.detail.viewport) {
-        let vp_json = event.detail.viewport.toJSON();
-        bigmap.fitBounds([
-          [vp_json.south, vp_json.west],
-          [vp_json.north, vp_json.east],
-        ]);
-      } else {
-        bigmap.setView(event.detail.latLng);
-      }
-    }
-    _featuresChanged();
-  }
-
-  function pointChange() {
-    const activeLocation = locations.find((l) => l.id === activeLocationID);
-    if (!activeLocation) return;
-
-    let hasMarker = false;
-    activeFeatureGroup?.eachLayer((l: Marker) => {
-      if (l?._icon && l.feature.properties.id === activeLocationID) {
-        hasMarker = true;
-        l.setLatLng(activeLocation.point);
-      }
-    });
-    if (!hasMarker) {
-      if (!activeLocation.point.lat || !activeLocation.point.lng) return;
-      let lpoint = new Marker(activeLocation.point).toGeoJSON();
-      lpoint.properties = { id: activeLocationID, name: activeLocation.name };
-      activeFeatureGroup?.addData(lpoint);
-    }
-    _featuresChanged();
-  }
-  function _featuresChanged() {
-    locations.forEach((l) => {
-      let lfg = locationFGs.get(l.id);
-      if (lfg && lfg.getLayers().length > 0) {
-        let lfggeo = lfg.toGeoJSON();
-
-        let pointIndex = lfggeo.features.findIndex((f) => f.geometry.type === "Point");
-        if (pointIndex >= 0) {
-          let lpoint = lfggeo.features.splice(pointIndex, 1);
-          const [lng, lat] = lpoint[0].geometry.coordinates;
-          l.point = { lat, lng };
-        } else {
-          l.point = {};
-        }
-        l.areas = lfggeo;
-      }
-    });
-    // $emit("input", locs);
     _fitBounds();
   }
 
@@ -179,7 +90,7 @@
     bigmap.fitBounds(bounds);
   }
 
-  function _addNewLayerGroup(id: number | string): GeoJSON {
+  function _addNewLayerGroup(id: string): GeoJSON {
     let fg = new GeoJSON(undefined, geojsonOptions);
     // console.log(fg);
     // fg.on("pm:update", _featuresChanged);
@@ -190,7 +101,41 @@
     return fg;
   }
 
-  function onActivateLocation(location: Location) {
+  function removeEntry(entry: Location) {
+    if (isEmptySubmodel(entry)) {
+      locations = locations.filter((x) => x.id !== entry.id);
+      return;
+    }
+    const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+    if (areYouSure === true) locations = locations.filter((x) => x.id !== entry.id);
+  }
+  function addEntry() {
+    const currentIDs = locations.map((x) => x.id.toString());
+    const newEntry: Location = { id: newNanoid(currentIDs) };
+    locations = [...locations, newEntry];
+    activeLocationID = newEntry.id;
+    _updateGeoJSON();
+  }
+
+  const onMapReady = (event: CustomEvent<LMap>) => {
+    bigmap = event.detail;
+    _updateGeoJSON();
+    _fitBounds();
+  };
+
+  const onGoogleLocationAutocomplete = (
+    event: CustomEvent<{ latLng: [number, number]; viewport: unknown }>
+  ) => {
+    const activeLocation = locations.find((l) => l.id === activeLocationID);
+    activeLocation.point = {
+      lat: parseFloat(event.detail.latLng[0].toFixed(5)),
+      lng: parseFloat(event.detail.latLng[1].toFixed(5)),
+    };
+    locations = locations;
+    _updateGeoJSON();
+  };
+
+  const onActivateLocation = (location: Location) => {
     if (activeLocationID === location.id) {
       activeLocationID = undefined;
       // bigmap?.pm?.removeControls();
@@ -200,12 +145,12 @@
 
     if (!locationFGs.get(activeLocationID)) _addNewLayerGroup(activeLocationID);
     activeFeatureGroup = locationFGs.get(activeLocationID);
-    console.log(activeFeatureGroup);
+    // console.log(activeFeatureGroup);
 
-    let drawMarker = true;
-    activeFeatureGroup.eachLayer((l) => {
-      if (l.feature.geometry.type === "Point") drawMarker = false;
-    });
+    // let drawMarker = true;
+    // activeFeatureGroup.eachLayer((l) => {
+    //   if (l.feature.geometry.type === "Point") drawMarker = false;
+    // });
 
     // bigmap?.pm?.setGlobalOptions({ layerGroup: activeFeatureGroup });
     // bigmap?.pm?.addControls({ ...geoman_opts, drawMarker });
@@ -217,7 +162,7 @@
         else relevant_element.classList.remove("leaflet-hidden");
       });
     });
-  }
+  };
 
   const onCountryChange = () =>
     country &&
@@ -229,6 +174,10 @@
   const onLocationAreaHover = (loc) => {
     console.log(loc);
   };
+
+  onMount(() => {
+    if (locations?.length > 0) onActivateLocation(locations[0]);
+  });
 </script>
 
 <form id="locations">
@@ -276,7 +225,7 @@
                     <LocationGoogleField
                       bind:value={loc.name}
                       countryCode={country.code_alpha2}
-                      on:change={locationGoogleAutocomplete}
+                      on:change={onGoogleLocationAutocomplete}
                     />
                   </div>
                 </div>
@@ -284,7 +233,7 @@
                 <div class="flex flex-col">
                   <div class="mb-1">{$_("Point")}</div>
                   <div class="mb-3">
-                    <PointField bind:value={loc.point} on:input={pointChange} />
+                    <PointField bind:value={loc.point} on:input={_updateGeoJSON} />
                   </div>
                 </div>
                 {#each ["description", "facility_name", "comment"] as fieldname}
@@ -320,56 +269,58 @@
           on:ready={onMapReady}
         />
         <div>
-          <div>Areas</div>
-          <table>
-            <thead>
-              <tr>
-                <th>{$_("Current")}</th>
-                <th>{$_("Date")}</th>
-                <th>{$_("Type")}</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {#each locations.find((l) => l.id === activeLocationID)?.areas?.features ?? [] as feat}
-                <tr
-                  on:mouseover={() => onLocationAreaHover(feat)}
-                  on:focus={() => onLocationAreaHover(feat)}
-                  class="px-1"
-                >
-                  <td class="text-center px-1">
-                    <input type="checkbox" bind:checked={feat.properties.current} />
-                  </td>
-                  <td class="px-1">
-                    <LowLevelDateYearField bind:value={feat.properties.date} />
-                  </td>
-                  <td class="px-1">
-                    <select bind:value={feat.properties.type} class="inpt w-auto">
-                      <option value="contract_area">{$_("Contract area")}</option>
-                      <option value="intended_area">{$_("Intended area")}</option>
-                      <option value="production_area">{$_("Production area")}</option>
-                    </select>
-                  </td>
-                  <td class="px-2">
-                    <TrashIcon
-                      class="w-6 h-6 text-red-600 float-right cursor-pointer"
-                    />
-                  </td>
+          {#if activeLocationID}
+            <div>{$_("Areas")}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>{$_("Current")}</th>
+                  <th>{$_("Date")}</th>
+                  <th>{$_("Type")}</th>
+                  <th />
                 </tr>
-              {/each}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {#each locations.find((l) => l.id === activeLocationID)?.areas?.features ?? [] as feat}
+                  <tr
+                    on:mouseover={() => onLocationAreaHover(feat)}
+                    on:focus={() => onLocationAreaHover(feat)}
+                    class="px-1"
+                  >
+                    <td class="text-center px-1">
+                      <input type="checkbox" bind:checked={feat.properties.current} />
+                    </td>
+                    <td class="px-1">
+                      <LowLevelDateYearField bind:value={feat.properties.date} />
+                    </td>
+                    <td class="px-1">
+                      <select bind:value={feat.properties.type} class="inpt w-auto">
+                        <option value="contract_area">{$_("Contract area")}</option>
+                        <option value="intended_area">{$_("Intended area")}</option>
+                        <option value="production_area">{$_("Production area")}</option>
+                      </select>
+                    </td>
+                    <td class="px-2">
+                      <TrashIcon
+                        class="w-6 h-6 text-red-600 float-right cursor-pointer"
+                      />
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
 
-          <div class="mt-4">
-            <button
-              type="button"
-              class="btn btn-slim btn-secondary flex justify-center items-center"
-              on:click={() => (showAddAreaOverlay = true)}
-            >
-              <PlusIcon />
-              {$_("Add")}
-            </button>
-          </div>
+            <div class="mt-4">
+              <button
+                type="button"
+                class="btn btn-slim btn-secondary flex justify-center items-center"
+                on:click={() => (showAddAreaOverlay = true)}
+              >
+                <PlusIcon />
+                {$_("Add")}
+              </button>
+            </div>
+          {/if}
         </div>
       </div>
     </section>
