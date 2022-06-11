@@ -2,7 +2,11 @@ import type { GetSession, Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.cookie = event.request.headers.get("cookie") ?? undefined;
-  return resolve(event, {});
+
+  const nonSSRPaths = ["/deal/edit", "/deal/add"];
+  const ssr = !nonSSRPaths.find((p) => event.url.pathname.startsWith(p));
+
+  return resolve(event, { ssr });
 };
 
 export const getSession: GetSession = (event) => {

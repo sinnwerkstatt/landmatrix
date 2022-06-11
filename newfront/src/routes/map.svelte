@@ -249,7 +249,7 @@
 
   <div slot="FilterBar">
     <h4>{$_("Map settings")}</h4>
-    <FilterCollapse initExpanded={true} title={$_("Displayed data")}>
+    <FilterCollapse initExpanded title={$_("Displayed data")}>
       <label class="block">
         <input
           type="radio"
@@ -269,7 +269,7 @@
         {$_("Area (ha)")}
       </label>
     </FilterCollapse>
-    <FilterCollapse initExpanded={true} title={$_("Base layer")}>
+    <FilterCollapse initExpanded title={$_("Base layer")}>
       {#each baseLayers as layer}
         <label class="block">
           <input

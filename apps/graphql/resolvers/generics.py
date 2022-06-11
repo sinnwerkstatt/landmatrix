@@ -178,14 +178,15 @@ def object_edit(
     role = get_user_role(user)
     if not role:
         raise GraphQLError("not authorized")
-    Object = Deal if otype == "deal" else Investor
-    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
 
     # verify that the form is correct
     ObjectForm = DealForm if otype == "deal" else InvestorForm
     form = ObjectForm(payload)
     if not form.is_valid():
         raise ValidationError(dict(form.errors.items()))
+
+    Object = Deal if otype == "deal" else Investor
+    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
 
     # this is a new Object
     if obj_id == -1:
@@ -210,6 +211,7 @@ def object_edit(
 
         return [obj.id, obj_version.id]
 
+    # retrieve the live object; update it with the payload - don't save.
     obj = Object.objects.get(id=obj_id)
     obj.update_from_dict(payload)
     obj.recalculate_fields()
@@ -253,7 +255,7 @@ def object_edit(
         # or the author is not the current user
         if (
             obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]
-        ) or obj.modified_by_id != user.id:
+        ) or obj_version.created_by_id != user.id:
 
             oldstatus = obj.draft_status
 

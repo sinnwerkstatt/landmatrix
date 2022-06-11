@@ -17,7 +17,6 @@
     "@googlemaps/js-api-loader": "^1.14.3",
     "@sveltejs/adapter-node": "^1.0.0-next.78",
     "@sveltejs/kit": "^1.0.0-next.347",
-    "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@turf/turf": "^6.5.0",
     "@types/d3": "^7.4.0",

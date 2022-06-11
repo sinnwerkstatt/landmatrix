@@ -6,13 +6,16 @@
   import { deal_gql_query } from "./queries";
 
   export const load: Load = async ({ params }) => {
-    let [dealID, versionID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
+    let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
+    if (!dealID) {
+      return { status: 404, error: `Deal not found` };
+    }
 
     const { data } = await get(client).query<{ deal: Deal }>({
       query: deal_gql_query,
-      variables: { id: dealID, version: versionID },
+      variables: { id: dealID, version: dealVersion },
     });
-    return { props: { dealID, versionID, deal: data.deal } };
+    return { props: { dealID, dealVersion, deal: data.deal } };
   };
 </script>
 
@@ -28,7 +31,7 @@
 
   export let deal: Deal;
   export let dealID: number;
-  export let versionID: number;
+  export let dealVersion: number;
 
   $: activeTab = $page.url.hash || "#locations";
 

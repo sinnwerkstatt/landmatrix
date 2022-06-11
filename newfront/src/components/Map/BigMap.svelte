@@ -71,6 +71,7 @@
   {#if showLayerSwitcher}
     <BigMapStandaloneLayerSwitcher />
   {/if}
+  <slot />
 </div>
 
 <style>
