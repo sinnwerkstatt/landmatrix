@@ -1,3 +1,4 @@
+// TODO Note: this is old Vue code - butcher and delete this.
 import { flatten_choices } from "$utils";
 
 const myMixin = {
@@ -31,7 +32,7 @@ const myMixin = {
       return ret;
     },
     mapChoices(choices) {
-      let choices_i18n = flatten_choices(this.formfield.choices);
+      const choices_i18n = flatten_choices(this.formfield.choices);
       let ret = "";
       if (choices instanceof Array) {
         ret += choices.map((v) => choices_i18n[v]).join(", ");
@@ -42,7 +43,7 @@ const myMixin = {
     },
     parseValues: function (jsonval) {
       let ret = "";
-      let choices = flatten_choices(this.formfield.choices);
+      const choices = flatten_choices(this.formfield.choices);
 
       if (jsonval.value instanceof Array) {
         if (choices) {
@@ -60,7 +61,7 @@ const myMixin = {
     },
     updateEntries() {
       this.vals = this.vals.map((v, i) => {
-        let current = i === this.current ? { current: true } : {};
+        const current = i === this.current ? { current: true } : {};
         delete v.current;
         return { ...v, ...current };
       });
