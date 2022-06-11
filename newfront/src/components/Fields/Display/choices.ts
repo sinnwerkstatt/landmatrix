@@ -92,29 +92,7 @@ export const intention_of_investment_choices = {
   },
 };
 
-// TODO: SVGs reinbasteln
-export const intention_of_investment_map: { [key: string]: object | null } = {
-  BIOFUELS: AgricultureIcon,
-  FOOD_CROPS: FoodCropsIcon,
-  FODDER: FoodCropsIcon,
-  LIVESTOCK: LifestockIcon,
-  NON_FOOD_AGRICULTURE: AgricultureIcon,
-  AGRICULTURE_UNSPECIFIED: AgricultureIcon,
-  TIMBER_PLANTATION: ForestIcon,
-  FOREST_LOGGING: ForestIcon,
-  CARBON: ForestIcon,
-  FORESTRY_UNSPECIFIED: ForestIcon,
-  MINING: MiningIcon,
-  OIL_GAS_EXTRACTION: OilIcon,
-  TOURISM: PlaneIcon,
-  INDUSTRY: IndustryIcon,
-  CONVERSATION: null,
-  LAND_SPECULATION: LandSpeculationIcon,
-  RENEWABLE_ENERGY: RenewableEnergyIcon,
-  OTHER: null,
-};
-
-export const flat_intention_of_investment_map: { [key: string]: string } = {
+export const flat_intention_of_investment_map = {
   BIOFUELS: "Biofuels",
   FOOD_CROPS: "Food crops",
   FODDER: "Fodder",

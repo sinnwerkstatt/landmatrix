@@ -7,7 +7,8 @@
 
 <div class="typed_choice_field">
   <select bind:value class="inpt" name={formfield.name}>
-    <option>Select...</option>
+    <!--   TODO is this really relevant? should definitely be connected to "required: true / false"  -->
+    <!--    <option>Select...</option>-->
     {#each Object.entries(formfield.choices) as [value, label]}
       <option {value}>{label}</option>
     {/each}

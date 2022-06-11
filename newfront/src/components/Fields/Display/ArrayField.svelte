@@ -1,15 +1,41 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import type { FormField } from "$components/Fields/fields";
-  import {
-    flat_intention_of_investment_map,
-    intention_of_investment_map,
-  } from "./choices";
+  import AgricultureIcon from "$components/icons/AgricultureIcon.svelte";
+  import FoodCropsIcon from "$components/icons/FoodCropsIcon.svelte";
+  import ForestIcon from "$components/icons/ForestIcon.svelte";
+  import IndustryIcon from "$components/icons/IndustryIcon.svelte";
+  import LandSpeculationIcon from "$components/icons/LandSpeculationIcon.svelte";
+  import LifestockIcon from "$components/icons/LifestockIcon.svelte";
+  import MiningIcon from "$components/icons/MiningIcon.svelte";
+  import OilIcon from "$components/icons/OilIcon.svelte";
+  import PlaneIcon from "$components/icons/PlaneIcon.svelte";
+  import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte";
+  import { flat_intention_of_investment_map } from "./choices";
 
   export let formfield: FormField;
   export let value: string[];
 
-  //  BIOFUELS: ["Biofuels", PlaneIcon],
+  const intention_of_investment_map = {
+    BIOFUELS: AgricultureIcon,
+    FOOD_CROPS: FoodCropsIcon,
+    FODDER: FoodCropsIcon,
+    LIVESTOCK: LifestockIcon,
+    NON_FOOD_AGRICULTURE: AgricultureIcon,
+    AGRICULTURE_UNSPECIFIED: AgricultureIcon,
+    TIMBER_PLANTATION: ForestIcon,
+    FOREST_LOGGING: ForestIcon,
+    CARBON: ForestIcon,
+    FORESTRY_UNSPECIFIED: ForestIcon,
+    MINING: MiningIcon,
+    OIL_GAS_EXTRACTION: OilIcon,
+    TOURISM: PlaneIcon,
+    INDUSTRY: IndustryIcon,
+    CONVERSATION: null,
+    LAND_SPECULATION: LandSpeculationIcon,
+    RENEWABLE_ENERGY: RenewableEnergyIcon,
+    OTHER: null,
+  };
 
   export function parseValues(value) {
     let ret = "";
