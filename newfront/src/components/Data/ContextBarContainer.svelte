@@ -10,7 +10,7 @@
 >
   <Wimpel
     showing={$showContextBar}
-    flipped={true}
+    flipped
     on:click={() => showContextBar.set(!$showContextBar)}
   />
   <div

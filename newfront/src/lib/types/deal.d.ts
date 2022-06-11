@@ -63,7 +63,7 @@ interface Deal extends Obj {
   operating_company?: Investor;
   confidential?: boolean;
   is_public?: boolean;
-  [key: string];
+  [key: string]: unknown;
 }
 
 interface DealVersion extends ObjVersion {
