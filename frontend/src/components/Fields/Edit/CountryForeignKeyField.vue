@@ -36,15 +36,20 @@
           return this.value;
         },
         set(v) {
-          this.$emit("input", {
-            id: v.id,
-            name: v.name,
-            code_alpha2: v.code_alpha2,
-            point_lat_min: v.point_lat_min,
-            point_lat_max: v.point_lat_max,
-            point_lon_min: v.point_lon_min,
-            point_lon_max: v.point_lon_max,
-          });
+          this.$emit(
+            "input",
+            v
+              ? {
+                  id: v.id,
+                  name: v.name,
+                  code_alpha2: v.code_alpha2,
+                  point_lat_min: v.point_lat_min,
+                  point_lat_max: v.point_lat_max,
+                  point_lon_min: v.point_lon_min,
+                  point_lon_max: v.point_lon_max,
+                }
+              : null
+          );
         },
       },
       target_countries() {
