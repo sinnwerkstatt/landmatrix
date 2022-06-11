@@ -796,21 +796,25 @@ class Deal(AbstractDealBase):
 
     def recalculate_fields(self, independent=True, dependent=True):
         if independent:
-            self.current_contract_size = self._get_current("contract_size", "area")
-            self.current_production_size = self._get_current("production_size", "area")
+            self.current_contract_size = self._get_current(self.contract_size, "area")
+            self.current_production_size = self._get_current(
+                self.production_size, "area"
+            )
             self.current_intention_of_investment = self._get_current(
-                "intention_of_investment", "choices"
+                self.intention_of_investment, "choices", multi=True
             )
             self.current_negotiation_status = self._get_current(
-                "negotiation_status", "choice"
+                self.negotiation_status, "choice"
             )
             self.current_implementation_status = self._get_current(
-                "implementation_status", "choice"
+                self.implementation_status, "choice"
             )
-            self.current_crops = self._get_current("crops", "choices")
-            self.current_animals = self._get_current("animals", "choices")
+            self.current_crops = self._get_current(self.crops, "choices", multi=True)
+            self.current_animals = self._get_current(
+                self.animals, "choices", multi=True
+            )
             self.current_mineral_resources = self._get_current(
-                "mineral_resources", "choices"
+                self.mineral_resources, "choices", multi=True
             )
 
             # these only depend on the _get_current calls right above.
@@ -871,17 +875,21 @@ class Deal(AbstractDealBase):
         obj.save()
         return obj
 
-    def _get_current(self, attribute, field):
-        attributes: list = self.__getattribute__(attribute)
+    def _get_current(self, attributes, field, multi=False):
         if not attributes:
             return None
+        if multi:
+            currents = []
+            for attr in attributes:
+                if attr.get("current") and (values := attr.get(field)):
+                    currents += values
+            return currents or None
         # prioritize "current" checkbox if present
         current = [x for x in attributes if x.get("current")]
         if current:
             return current[0].get(field)
         else:
             print(self)
-            print(attribute)
             print(attributes)
             raise ValidationError('At least one value needs to be "current".')
 
