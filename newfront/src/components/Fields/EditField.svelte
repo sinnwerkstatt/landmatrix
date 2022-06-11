@@ -54,7 +54,6 @@
   $: field = {
     BooleanField: BooleanField,
     CharField: CharField,
-    OCIDField: CharField,
     CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
@@ -62,18 +61,19 @@
     EmailField: EmailField,
     FileField: FileField,
     IntegerField: DecimalField,
+    JSONActorsField: JSONActorsField,
+    JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
+    JSONExportsField: JSONExportsField,
+    JSONJobsField: JSONJobsField,
+    JSONLeaseField: JSONLeaseField,
     NullBooleanField: BooleanField,
+    OCIDField: CharField,
     SimpleArrayField: SimpleArrayField,
     TextField: TextField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
-    JSONActorsField: JSONActorsField,
-    JSONDateAreaField: JSONDateAreaField,
-    JSONDateAreaChoicesField: JSONDateAreaChoicesField,
-    JSONExportsField: JSONExportsField,
-    JSONLeaseField: JSONLeaseField,
-    JSONJobsField: JSONJobsField,
   }[formfield.class];
 </script>
 
@@ -93,14 +93,10 @@
         {formfield}
         on:change
       />
-      <!--  <div>-->
-      <!--    <component-->
-      <!--      :file-not-public="fileNotPublic"-->
-      <!--      :target-blank="targetBlank"-->
-      <!--      :object-id="objectId"-->
-      <!--      :object-version="objectVersion"-->
-      <!--    />-->
-      <!--  </div>-->
+      <!-- :file-not-public="fileNotPublic"-->
+      <!-- :target-blank="targetBlank"-->
+      <!-- :object-id="objectId"-->
+      <!-- :object-version="objectVersion"-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

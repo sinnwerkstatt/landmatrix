@@ -165,15 +165,18 @@
   --input-font-size: 1rem;
   /*--selected-item-color: var(--color-orange-600);*/
   --item-is-active-bg: var(--color-lm-orange);
-  --border-focus-color: var(--color-orange-600);
   --item-is-active-color: black;
+  /* the following colors are auto-generated via tailwind.config.cjs */
+  /*noinspection CssUnresolvedCustomProperty*/
+  --border-focus-color: var(--color-orange-600);
+  /*noinspection CssUnresolvedCustomProperty*/
   --item-hover-bg: var(--color-orange-100);
 }
 
 
 /* sort table stuff*/
  th[data-sortby] {
-    @apply pr-5 relative;
+    @apply pr-5;
   }
 
   th[data-sortby]::after {
