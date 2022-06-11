@@ -1,16 +1,31 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import { deals } from "$lib/data";
   import { formfields } from "$lib/stores";
   import { showContextBar, showFilterBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
+  import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import Table from "$components/table/Table.svelte";
 
-  const columns = [
+  let columns = [
     "fully_updated_at",
     "id",
     "country",
     "current_intention_of_investment",
+    "operating_company",
+  ];
+
+  const allColumns = [
+    "fully_updated_at",
+    "deal_size",
+    "id",
+    "country",
+    "current_intention_of_investment",
+    "current_negotiation_status",
+    "current_contract_size",
+    "current_implementation_status",
+    "intended_size",
     "operating_company",
   ];
 
@@ -38,16 +53,16 @@
                 class="p-1 sticky top-0 text-white bg-gray-700 font-medium whitespace-nowrap"
                 data-sortby={col}
               >
-                {$formfields.deal[col].label}
+                {$_($formfields.deal[col].label)}
               </th>
             {/each}
           </tr>
         </thead>
         <tbody slot="tbody" let:objects>
           {#each objects as obj}
-            <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 px-1 py-3">
+            <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
               {#each columns as col}
-                <td>
+                <td class="px-1">
                   <DisplayField
                     valueClasses=""
                     wrapperClasses="py-1"
@@ -67,5 +82,18 @@
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />
+  </div>
+
+  <div slot="FilterBar">
+    <FilterCollapse title={$_("Table columns")}>
+      <div class="flex flex-col">
+        {#each allColumns as opt}
+          <label>
+            <input type="checkbox" bind:group={columns} value={opt} />
+            {$_($formfields.deal[opt]?.label)}
+          </label>
+        {/each}
+      </div>
+    </FilterCollapse>
   </div>
 </DataContainer>
