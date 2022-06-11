@@ -3,11 +3,11 @@
     <table class="w-100">
       <thead>
         <tr>
-          <th>Current</th>
-          <th>Date</th>
-          <th>Jobs</th>
-          <th>Employees</th>
-          <th>Workers</th>
+          <th>{{ $t("Current") }}</th>
+          <th>{{ $t("Date") }}</th>
+          <th>{{ $t("Jobs") }}</th>
+          <th>{{ $t("Employees") }}</th>
+          <th>{{ $t("Workers") }}</th>
           <th></th>
         </tr>
       </thead>
@@ -37,29 +37,29 @@
             />
           </td>
           <td>
-            <input
+            <LowLevelDecimalField
               v-model="val.jobs"
-              type="number"
-              class="form-control"
               :required="formfield.required"
+              :decimals="0"
+              :min-value="0"
               @input="updateEntries"
             />
           </td>
           <td>
-            <input
+            <LowLevelDecimalField
               v-model="val.employees"
-              type="number"
-              class="form-control"
               :required="formfield.required"
+              :decimals="0"
+              :min-value="0"
               @input="updateEntries"
             />
           </td>
           <td>
-            <input
+            <LowLevelDecimalField
               v-model="val.workers"
-              type="number"
-              class="form-control"
               :required="formfield.required"
+              :decimals="0"
+              :min-value="0"
               @input="updateEntries"
             />
           </td>
@@ -83,9 +83,10 @@
 <script>
   import JSONFieldMixin from "../JSONFieldMixin";
   import LowLevelDateYearField from "./LowLevelDateYearField";
+  import LowLevelDecimalField from "./LowLevelDecimalField";
 
   export default {
-    components: { LowLevelDateYearField },
+    components: { LowLevelDateYearField, LowLevelDecimalField },
     mixins: [JSONFieldMixin],
     computed: {
       filteredVals() {
