@@ -48,8 +48,10 @@
 
 <div class="array_field">
   {#if formfield.name === "current_intention_of_investment"}
-    {#each value as ioi}
-      <span class="ioi-label">
+    {#each value ?? [] as ioi}
+      <span
+        class="whitespace-nowrap mx-1 my-0.5 px-1 py-0.5 border border-black/10 text-gray-900 bg-black/5 inline-flex items-center gap-1"
+      >
         {#if intention_of_investment_map[ioi] != null}
           <svelte:component this={intention_of_investment_map[ioi]} />
         {/if}

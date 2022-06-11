@@ -7,14 +7,13 @@
 
   export let objects: Array<Deal | Investor>;
 
-  let sortBy;
+  export let sortBy;
   const sortLogic = () => {
     const allTHs = document.querySelectorAll("th");
     allTHs.forEach((th) => {
       th.addEventListener("click", () => {
         allTHs.forEach((th) => {
-          th.classList.remove("asc");
-          th.classList.remove("desc");
+          th.classList.remove("asc", "desc");
         });
 
         if (sortBy === th.dataset.sortby) {
@@ -30,10 +29,21 @@
 
   let _objects;
 
-  $: _objects = objects ? (sortBy ? objects.sort(sortFn(sortBy)) : objects) : [];
+  $: _objects = objects ? (sortBy ? [...objects].sort(sortFn(sortBy)) : objects) : [];
 
   onMount(() => {
     sortLogic();
+
+    // if sortBy is set on mount, apply it as well.
+    if (sortBy) {
+      if (sortBy.startsWith("-")) {
+        document
+          .querySelector(`th[data-sortby="${sortBy.substring(1)}"]`)
+          ?.classList?.add("asc");
+      } else {
+        document.querySelector(`th[data-sortby="${sortBy}"]`)?.classList?.add("desc");
+      }
+    }
   });
 </script>
 

@@ -27,6 +27,7 @@
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
 
   export let deal: Deal;
@@ -69,16 +70,16 @@
     </h1>
     <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
       <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Created<br />
-        {dayjs(deal.created_at).format("DD/MM/YYYY")}
+        {$_("Created")}<br />
+        <DateTimeField value={deal.created_at} />
       </div>
       <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Last update<br />
-        {dayjs(deal.modified_at).format("DD/MM/YYYY")}
+        {$_("Last update")}<br />
+        <DateTimeField value={deal.modified_at} />
       </div>
       <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        Last full update<br />
-        {dayjs(deal.fully_updated_at).format("DD/MM/YYYY")}
+        {$_("Last full update")}<br />
+        <DateTimeField value={deal.fully_updated_at} />
       </div>
     </div>
   </div>
@@ -152,12 +153,16 @@
       {/if}
       {#if activeTab === "#actions"}
         <section>
-          <h3>Download</h3>
+          <h3>{$_("Download")}</h3>
 
           <a target="_blank" href={download_link("xlsx")}>
-            <DownloadIcon /> Excel-Dokument
+            <DownloadIcon />
+            {$_("Excel document")}
           </a><br />
-          <a target="_blank" href={download_link("csv")}><DownloadIcon /> CSV-Datei</a>
+          <a target="_blank" href={download_link("csv")}>
+            <DownloadIcon />
+            {$_("CSV file")}
+          </a>
         </section>
       {/if}
     </div>

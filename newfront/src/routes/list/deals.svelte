@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { afterNavigate } from "$app/navigation";
   import { deals } from "$lib/data";
-  import { formfields } from "$lib/stores.js";
+  import { formfields } from "$lib/stores";
   import { showContextBar, showFilterBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -31,11 +30,14 @@
         {$deals?.length}
       </div>
 
-      <Table objects={$deals}>
+      <Table sortBy="fully_updated_at" objects={$deals}>
         <thead slot="thead">
           <tr>
             {#each columns as col}
-              <th class="p-1 sticky top-0 text-white bg-gray-700 font-medium">
+              <th
+                class="p-1 sticky top-0 text-white bg-gray-700 font-medium whitespace-nowrap"
+                data-sortby={col}
+              >
                 {$formfields.deal[col].label}
               </th>
             {/each}

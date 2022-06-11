@@ -1,8 +1,9 @@
 <script lang="ts">
   import { navigating } from "$app/stores";
+  import { dealsLoading } from "$lib/data.js";
 </script>
 
-{#if $navigating}
+{#if $navigating || $dealsLoading}
   <div class="h-1 fixed top-0 left-0 right-0 w-full z-[1000000]">
     <div class="w-full h-1 bg-orange-100 overflow-hidden relative">
       <div class="bg-orange h-1 absolute inc" />

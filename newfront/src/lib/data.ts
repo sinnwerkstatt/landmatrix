@@ -1,4 +1,4 @@
-import { derived, get } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { Readable } from "svelte/store";
 import { client } from "$lib/apolloClient";
 import { data_deal_query_gql } from "$lib/deal_query";
@@ -8,10 +8,13 @@ import type { Deal } from "$lib/types/deal";
 
 let debounceTimeOut: NodeJS.Timeout;
 
+export const dealsLoading = writable(false);
+
 export const deals: Readable<Deal[]> = derived(
   [filters, publicOnly, user],
   ([$filters, $publicOnly, $user], set) => {
     // set([]); // setting "initial" value here.
+    dealsLoading.set(true);
     const variables = {
       limit: 0,
       filters: $filters.toGQLFilterArray(),
@@ -21,7 +24,10 @@ export const deals: Readable<Deal[]> = derived(
     debounceTimeOut = setTimeout(() => {
       get(client)
         .query<{ deals: Deal[] }>({ query: data_deal_query_gql, variables })
-        .then(({ data }) => set(data.deals));
+        .then(({ data }) => {
+          dealsLoading.set(false);
+          set(data.deals);
+        });
     }, 300);
   }
 );
