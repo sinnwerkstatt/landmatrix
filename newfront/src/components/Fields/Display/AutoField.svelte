@@ -10,7 +10,7 @@
 
 <div class="auto_field">
   <a
-    class="inline py-2 px-3 text-white text-xs font-bold text-center whitespace-nowrap align-baseline rounded {model ===
+    class="inline py-1 px-2 text-white text-xs font-bold text-center whitespace-nowrap align-baseline {model ===
     'deal'
       ? 'bg-orange hover:bg-orange-600'
       : 'bg-pelorous hover:bg-pelorous-600'}"
