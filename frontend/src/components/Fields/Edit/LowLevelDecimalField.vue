@@ -4,7 +4,7 @@
       v-model="val"
       type="number"
       class="form-control"
-      :name = "name"
+      :name="name"
       :placeholder="placeholder"
       :required="required"
       :min="minValue"
