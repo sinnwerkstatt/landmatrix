@@ -8,7 +8,7 @@
 
 <div class="text_field">
   {#if !value}
-    n/a
+    —
   {:else if formfield.class === "URLField"}
     <a href={value} target="_blank">{new URL(value).hostname}</a>
   {:else if formfield?.choices}

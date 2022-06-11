@@ -8,5 +8,5 @@
 </script>
 
 <div class="date_field whitespace-nowrap">
-  {value ? dayjs(value).format("YYYY‑MM‑DD") : "-"}
+  {value ? dayjs(value).format("YYYY‑MM‑DD") : "—"}
 </div>
