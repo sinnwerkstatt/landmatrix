@@ -9,15 +9,14 @@
   import type { Location } from "$lib/types/deal";
   import type { Country } from "$lib/types/wagtail";
   import { isEmptySubmodel } from "$lib/utils/data_processing";
+  import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.svelte";
+  import PointField from "$components/Fields/Edit/PointField.svelte";
   import EditField from "$components/Fields/EditField.svelte";
+  import CursorMoveIcon from "$components/icons/CursorMoveIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import TrashIcon from "$components/icons/TrashIcon.svelte";
   import BigMap from "$components/Map/BigMap.svelte";
-  import FileField from "../Fields/Edit/FileField.svelte";
-  import LocationGoogleField from "../Fields/Edit/LocationGoogleField.svelte";
-  import LowLevelDateYearField from "../Fields/Edit/LowLevelDateYearField.svelte";
-  import PointField from "../Fields/Edit/PointField.svelte";
-  import Overlay from "../Overlay.svelte";
+  import DealLocationsAreaField from "./DealLocationsAreaField.svelte";
 
   export let model = "location";
   export let modelName = "Location";
@@ -28,8 +27,8 @@
   let hoverLocationID: string;
   let activeLocationID: string;
   let bigmap: LMap;
-  let showAddAreaOverlay = false;
-  let toAddArea = { file: undefined, area: "" };
+
+  let cursorsMovable = false;
 
   let locationFGs = new Map<string, GeoJSON>();
   // const geoman_opts = {
@@ -43,13 +42,31 @@
   //   drawMarker: false,
   // };
   const geojsonOptions = {
-    onEachFeature: (feature: Feature, layer: Layer) => {
+    style: (feature: Feature) => {
+      const colormap = {
+        contract_area: "#ff00ff",
+        intended_area: "#66ff33",
+        production_area: "#ff0000",
+        "": "#ffe600",
+      };
+      return { color: colormap[feature.properties.type] };
+    },
+    onEachFeature: (feature: Feature, layer: Marker) => {
       // highlight location in list on map-hover
       layer.addEventListener(
         "mouseover",
         () => (hoverLocationID = feature.properties?.id)
       );
       layer.addEventListener("mouseout", () => (hoverLocationID = null));
+      layer.addEventListener("dragend", () => {
+        const activeLocation = locations.find((l) => l.id === activeLocationID);
+        const latlng = layer.getLatLng();
+        activeLocation.point = {
+          lat: parseFloat(latlng.lat.toFixed(5)),
+          lng: parseFloat(latlng.lng.toFixed(5)),
+        };
+        locations = locations;
+      });
 
       if (feature.geometry.type === "Point") {
         layer.addEventListener("click", () => {
@@ -92,10 +109,6 @@
 
   function _addNewLayerGroup(id: string): GeoJSON {
     let fg = new GeoJSON(undefined, geojsonOptions);
-    // console.log(fg);
-    // fg.on("pm:update", _featuresChanged);
-    // fg.on("pm:dragend", _featuresChanged);
-    // fg.on("pm:rotateend", _featuresChanged);
     locationFGs.set(id, fg);
     bigmap.addLayer(fg);
     return fg;
@@ -138,22 +151,12 @@
   const onActivateLocation = (location: Location) => {
     if (activeLocationID === location.id) {
       activeLocationID = undefined;
-      // bigmap?.pm?.removeControls();
       return;
     }
     activeLocationID = location.id;
 
     if (!locationFGs.get(activeLocationID)) _addNewLayerGroup(activeLocationID);
     activeFeatureGroup = locationFGs.get(activeLocationID);
-    // console.log(activeFeatureGroup);
-
-    // let drawMarker = true;
-    // activeFeatureGroup.eachLayer((l) => {
-    //   if (l.feature.geometry.type === "Point") drawMarker = false;
-    // });
-
-    // bigmap?.pm?.setGlobalOptions({ layerGroup: activeFeatureGroup });
-    // bigmap?.pm?.addControls({ ...geoman_opts, drawMarker });
 
     locationFGs.forEach((value, key) => {
       value.eachLayer((l: Layer) => {
@@ -171,8 +174,18 @@
       [country.point_lat_max, country.point_lon_max],
     ]);
 
-  const onLocationAreaHover = (loc) => {
-    console.log(loc);
+  const onToggleMarkerMovable = () => {
+    cursorsMovable = !cursorsMovable;
+    bigmap.eachLayer((l: Marker) => {
+      if (l?._icon) {
+        console.log(l);
+        if (cursorsMovable) l.dragging.enable();
+        else l.dragging.disable();
+      }
+
+      // if (key !== activeLocationID) relevant_element.classList.add("leaflet-hidden");
+      // else relevant_element.classList.remove("leaflet-hidden");
+    });
   };
 
   onMount(() => {
@@ -262,88 +275,52 @@
           </button>
         </div>
       </div>
-      <div class="min-h-[52rem] w-full lg:w-2/3">
+      <div class="min-h-[30rem] w-full lg:w-2/3">
         <BigMap
-          containerClass="min-h-[50%] h-[50%] mt-5"
+          containerClass="min-h-[30rem] h-[50%] mt-5"
           options={{ center: [0, 0] }}
           on:ready={onMapReady}
-        />
+        >
+          <div class="absolute bottom-2 left-2">
+            <button
+              type="button"
+              class="absolute bottom-[10px] z-10 px-2 pt-0.5 pb-1.5 rounded border-2 border-black/30 {cursorsMovable
+                ? 'bg-orange text-white'
+                : 'bg-white text-orange'}"
+              on:click={onToggleMarkerMovable}
+              title={(cursorsMovable ? "Disable" : "Enable") +
+                " " +
+                $_("moving of markers")}
+            >
+              <CursorMoveIcon />
+            </button>
+          </div>
+        </BigMap>
         <div>
           {#if activeLocationID}
-            <div>{$_("Areas")}</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>{$_("Current")}</th>
-                  <th>{$_("Date")}</th>
-                  <th>{$_("Type")}</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {#each locations.find((l) => l.id === activeLocationID)?.areas?.features ?? [] as feat}
-                  <tr
-                    on:mouseover={() => onLocationAreaHover(feat)}
-                    on:focus={() => onLocationAreaHover(feat)}
-                    class="px-1"
-                  >
-                    <td class="text-center px-1">
-                      <input type="checkbox" bind:checked={feat.properties.current} />
-                    </td>
-                    <td class="px-1">
-                      <LowLevelDateYearField bind:value={feat.properties.date} />
-                    </td>
-                    <td class="px-1">
-                      <select bind:value={feat.properties.type} class="inpt w-auto">
-                        <option value="contract_area">{$_("Contract area")}</option>
-                        <option value="intended_area">{$_("Intended area")}</option>
-                        <option value="production_area">{$_("Production area")}</option>
-                      </select>
-                    </td>
-                    <td class="px-2">
-                      <TrashIcon
-                        class="w-6 h-6 text-red-600 float-right cursor-pointer"
-                      />
-                    </td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
+            <DealLocationsAreaField
+              areaType="production_area"
+              bind:locations
+              bind:activeLocationID
+              on:change={_updateGeoJSON}
+            />
 
-            <div class="mt-4">
-              <button
-                type="button"
-                class="btn btn-slim btn-secondary flex justify-center items-center"
-                on:click={() => (showAddAreaOverlay = true)}
-              >
-                <PlusIcon />
-                {$_("Add")}
-              </button>
-            </div>
+            <DealLocationsAreaField
+              areaType="contract_area"
+              bind:locations
+              bind:activeLocationID
+              on:change={_updateGeoJSON}
+            />
+
+            <DealLocationsAreaField
+              areaType="intended_area"
+              bind:locations
+              bind:activeLocationID
+              on:change={_updateGeoJSON}
+            />
           {/if}
         </div>
       </div>
     </section>
   {/if}
 </form>
-
-<Overlay bind:visible={showAddAreaOverlay} title={$_("Add GeoJSON")}>
-  <div class="mb-2 font-bold">{$_("File")}</div>
-  <FileField
-    bind:value={toAddArea.file}
-    uploadFunction={() => {}}
-    accept=".geojson,application/geo+json,application/json"
-  />
-
-  <select bind:value={toAddArea.type} class="inpt w-auto">
-    <option value="contract_area">{$_("Contract area")}</option>
-    <option value="intended_area">{$_("Intended area")}</option>
-    <option value="production_area">{$_("Production area")}</option>
-  </select>
-
-  <div class="block mt-6 text-right flex items-center">
-    <button type="button" class="btn btn-primary"
-      ><PlusIcon /> {$_("Add GeoJSON")}</button
-    >
-  </div>
-</Overlay>

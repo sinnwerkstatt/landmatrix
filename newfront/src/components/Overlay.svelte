@@ -1,14 +1,19 @@
 <script>
-  import { onDestroy, onMount } from "svelte";
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
   import { browser } from "$app/env";
+
+  const dispatch = createEventDispatcher();
 
   export let visible = false;
   export let hideable = true;
   export let title = null;
 
   function close() {
-    if (hideable) visible = false;
+    if (hideable) {
+      dispatch("close");
+      visible = false;
+    }
   }
 
   function escape_key(e) {

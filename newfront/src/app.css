@@ -65,7 +65,7 @@
     @apply inline-block border m-0.5 px-4 py-2 shadow whitespace-nowrap transform transition;
     @apply focus:outline-none focus:ring;
   }
-  .btn.disabled {
+  .btn.disabled, .btn:disabled {
     @apply pointer-events-none opacity-60;
   }
   .btn-slim {
