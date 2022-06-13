@@ -5,7 +5,7 @@
   import type { FormField } from "../fields";
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TypedChoiceField from "./TypedChoiceField.svelte";
+  import TypedChoicesField from "./TypedChoiceField.svelte";
 
   interface JSONDateAreaChoicesField {
     date?: string;
@@ -32,8 +32,9 @@
   }
 </script>
 
+{JSON.stringify(formfield)}
+
 <div class="json_date_area_field whitespace-nowrap">
-  <!--{JSON.stringify(value)}-->
   <table class="w-full">
     <thead>
       <tr>
@@ -57,25 +58,23 @@
             />
           </td>
 
-          <td class="w-1/3 p-1">
+          <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
             />
           </td>
 
-          <td class="w-1/3 p-1">
+          <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
               required={formfield.required}
               unit="ha"
             />
           </td>
-          <td>
-            <TypedChoiceField bind:value={val.choices} {formfield} />
-          </td>
-
-          <td class="p-1">
+          <td class="w-2/4">
+            <TypedChoicesField bind:value={val.choices} {formfield} />
+          </td><td class="p-1">
             <button type="button" on:click={addEntry}>
               <PlusIcon class="w-5 h-5 text-black" />
             </button>
