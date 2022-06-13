@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MapOptions } from "leaflet";
-  import { GestureHandling } from "leaflet-gesture-handling";
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+  import { GestureHandling } from "leaflet-gesture-handling?client";
   import "leaflet/dist/leaflet.css";
   import { Icon, Map } from "leaflet?client";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
