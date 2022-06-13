@@ -32,8 +32,12 @@
   }
 </script>
 
-{JSON.stringify(formfield)}
-
+<!--{JSON.stringify(-->
+<!--  Object.entries(formfield.choices).map(([value, label]) => ({-->
+<!--    value,-->
+<!--    label,-->
+<!--  }))-->
+)}
 <div class="json_date_area_field whitespace-nowrap">
   <table class="w-full">
     <thead>

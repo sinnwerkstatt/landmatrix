@@ -4,16 +4,16 @@
 
   export let formfield: FormField;
   export let value: string;
-  let array = [];
-  array.push(formfield.choices);
-  array.map((element) => {});
 </script>
 
 <div class="typed_choice_field">
   <Select
     bind:value
     class="inpt"
-    items={formfield}
+    items={Object.entries(formfield.choices).map(([value, label]) => ({
+      value,
+      label,
+    }))}
     name={formfield.name}
     isMulti={true}
   />
