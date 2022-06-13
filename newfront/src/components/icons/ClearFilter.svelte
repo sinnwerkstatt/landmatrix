@@ -1,9 +1,3 @@
-<script lang="ts">
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-</script>
-
 <svg
   xmlns="http://www.w3.org/2000/svg"
   class={$$props.class ?? "h-4 w-4 inline"}
@@ -11,7 +5,7 @@
   viewBox="0 0 24 24"
   stroke="currentColor"
   stroke-width="2"
-  on:click|stopPropagation={() => dispatch("click")}
+  on:click|stopPropagation
 >
   <path
     stroke-linecap="round"

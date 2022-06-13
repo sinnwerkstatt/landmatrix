@@ -45,10 +45,10 @@
   }
 </script>
 
-<div className="json_date_area_field whitespace-nowrap">
+<div class="json_date_area_field whitespace-nowrap">
   <!--{JSON.stringify(value)}-->
 
-  <table className="w-full">
+  <table class="w-full">
     <thead>
       <tr>
         <th>{$_("Current")}</th>
@@ -61,7 +61,7 @@
     <tbody>
       {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td className="text-center p-1" on:click={() => updateCurrent(i)}>
+          <td class="text-center p-1" on:click={() => updateCurrent(i)}>
             <input
               type="radio"
               bind:group={current}
@@ -72,21 +72,21 @@
             />
           </td>
 
-          <td className="w-1/3 p-1">
+          <td class="w-1/3 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
             />
           </td>
 
-          <td className="w-1/3 p-1">
+          <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
               required={formfield.required}
               unit="ha"
             />
           </td>
-          <td className="w-1/3 p-1">
+          <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.farmers}
               required={formfield.required}
@@ -94,7 +94,7 @@
               min="0"
             />
           </td>
-          <td className="w-1/3 p-1">
+          <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.households}
               required={formfield.required}
@@ -103,7 +103,7 @@
             />
           </td>
 
-          <td className="p-1">
+          <td class="p-1">
             <button type="button" on:click={addEntry}>
               <PlusIcon class="w-5 h-5 text-black" />
             </button>

@@ -34,7 +34,7 @@
         <input
           bind:value={username}
           autocomplete="username"
-          class="form-control"
+          class="inpt"
           placeholder="Username"
           type="text"
         />
@@ -44,7 +44,7 @@
         <input
           bind:value={password}
           autocomplete="current-password"
-          class="form-control"
+          class="inpt"
           placeholder="Password"
           type="password"
         />

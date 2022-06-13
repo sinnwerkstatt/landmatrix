@@ -109,7 +109,7 @@
 
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply border border-gray-300 py-1.5 px-3 bg-white w-full;
+    @apply border border-gray-300 py-1.5 px-3 bg-white w-full text-black;
   }
   textarea.inpt,
   select[multiple].inpt {
