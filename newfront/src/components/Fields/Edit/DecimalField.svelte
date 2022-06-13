@@ -10,9 +10,9 @@
   <LowLevelDecimalField
     bind:value
     required={formfield.required}
-    unit={formfield.unit}
+    unit={formfield.unit === "FloatField" ? "" : "%"}
     max={formfield.max_value}
-    min={formfield.min_value}
+    min={formfield.min_value === "FloatField" ? "" : "0"}
     decimals={formfield.class === "IntegerField" ? 0 : 2}
   />
 </div>

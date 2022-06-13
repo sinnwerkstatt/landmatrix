@@ -60,6 +60,7 @@
     DecimalField: DecimalField,
     EmailField: EmailField,
     FileField: FileField,
+    FloatField: DecimalField,
     IntegerField: DecimalField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
