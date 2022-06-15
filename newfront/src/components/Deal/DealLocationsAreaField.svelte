@@ -65,6 +65,7 @@
       {$_("Add")}
     </button>
   </div>
+
   <table class="flex-auto col-span-8">
     <thead>
       <tr>
@@ -85,7 +86,7 @@
         >
           <td class="text-center px-1">
             <input
-              type="checkbox"
+              type="radio"
               checked={feat.properties.current}
               on:input={(e) =>
                 (feat.properties.current = e.target.checked || undefined)}
