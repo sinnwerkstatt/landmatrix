@@ -5,7 +5,7 @@
   import type { FormField } from "../fields";
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TypedChoiceField from "./TypedChoiceField.svelte";
+  import TypedChoicesField from "./TypedChoicesField.svelte";
 
   interface JSONExportsField {
     date?: string;
@@ -30,13 +30,17 @@
   function addEntry() {
     valueCopy = [...valueCopy, {}];
   }
+
   function removeEntry(index) {
     valueCopy = valueCopy.filter((val, i) => i !== index);
   }
+
+  const anySelectedAsCurrent = (values) => values.some((val) => val.current);
+  const isCurrentRequired = (values): boolean =>
+    values.length > 0 && !anySelectedAsCurrent(values);
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
-  {JSON.stringify(value)}
   <table class="w-full">
     <thead>
       <tr>
@@ -57,7 +61,7 @@
               type="checkbox"
               bind:checked={val.current}
               name="{formfield.name}_current"
-              required={valueCopy.length > 0}
+              required={isCurrentRequired(valueCopy)}
               disabled={!val.date &&
                 !val.area &&
                 !val.choices &&
@@ -80,7 +84,11 @@
             />
           </td>
           <td class="w-1/5 p-1">
-            <TypedChoiceField bind:value={val.choices} {formfield} />
+            <TypedChoicesField
+              bind:value={val.choices}
+              {formfield}
+              required={formfield.required}
+            />
           </td>
           <td class="w-1/5 p-1">
             <LowLevelDecimalField
