@@ -5,14 +5,14 @@
   export let formfield: FormField;
   export let value: string;
 
-  let valCopy = JSON.parse(JSON.stringify(value));
+  let valueCopy = JSON.parse(JSON.stringify(value));
 
-  $: value = (valCopy ?? []).map((item) => item.value);
+  $: value = (valueCopy ?? []).map((item) => item.value) ?? null;
 </script>
 
-<div class="typed_choice_field">
+<div class="typed_choices_field">
   <Select
-    bind:value={valCopy}
+    bind:value={valueCopy}
     class="inpt"
     items={Object.entries(formfield.choices).map(([value, label]) => ({
       value,
@@ -20,5 +20,6 @@
     }))}
     name={formfield.name}
     isMulti={true}
+    required={true}
   />
 </div>
