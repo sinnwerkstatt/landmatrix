@@ -8,6 +8,7 @@
   let username = "";
   let password = "";
   let login_failed_message = "";
+  let logged_in = false;
 
   onMount(() => {
     const next = $page.url.searchParams.get("next");
@@ -20,7 +21,7 @@
     console.log(res);
     if (res.status === true) {
       console.log("juchu!");
-      window.location = "/";
+      logged_in = true;
     } else {
       login_failed_message = res.error;
     }
@@ -53,7 +54,11 @@
       <button class="btn btn-primary" type="submit">
         {$_("Login")}
       </button>
-      <p class="mt-3 text-danger small">{login_failed_message}</p>
+      {#if logged_in}
+        <p class="mt-3 text-danger small">You are logged in!</p>
+      {:else}
+        <p class="mt-3 text-danger small">{login_failed_message}</p>
+      {/if}
     </form>
   </div>
 </div>

@@ -31,8 +31,8 @@
 
 <div class="currency_foreignkey_field">
   {#if investors}
-    <!--{JSON.stringify(investors)}-->
-    <!--{JSON.stringify(value)}-->
+    {JSON.stringify(investors)}
+    {JSON.stringify(value)}
     <Select
       items={investors}
       {value}
@@ -54,8 +54,11 @@
       <!--        <span class="text-black">{value.name}</span></a-->
       <!--      >-->
       <a href={`../../investor/${value.id}`} class="">
-        Show details for #{value.id} {value.name}...</a
+        Show details for investor #{value.id} {value.name}</a
       >
     </div>
+  {/if}
+  {#if investors.includes(value) === false}
+    <!--    <div>Investor does not exist</div>-->
   {/if}
 </div>
