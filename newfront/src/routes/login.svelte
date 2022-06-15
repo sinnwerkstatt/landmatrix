@@ -20,6 +20,7 @@
     console.log(res);
     if (res.status === true) {
       console.log("juchu!");
+      window.location = "/";
     } else {
       login_failed_message = res.error;
     }
