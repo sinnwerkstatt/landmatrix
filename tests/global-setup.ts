@@ -1,4 +1,4 @@
-import { chromium, expect, FullConfig } from "@playwright/test";
+import { chromium, FullConfig } from "@playwright/test";
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();

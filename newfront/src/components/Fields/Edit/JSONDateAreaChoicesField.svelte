@@ -5,7 +5,7 @@
   import type { FormField } from "../fields";
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TypedChoicesField from "./TypedChoiceField.svelte";
+  import TypedChoicesField from "./TypedChoicesField.svelte";
 
   interface JSONDateAreaChoicesField {
     date?: string;
@@ -27,17 +27,12 @@
   function addEntry() {
     valueCopy = [...valueCopy, {}];
   }
+
   function removeEntry(index) {
     valueCopy = valueCopy.filter((val, i) => i == index);
   }
 </script>
 
-<!--{JSON.stringify(-->
-<!--  Object.entries(formfield.choices).map(([value, label]) => ({-->
-<!--    value,-->
-<!--    label,-->
-<!--  }))-->
-)}
 <div class="json_date_area_field whitespace-nowrap">
   <table class="w-full">
     <thead>
@@ -78,7 +73,8 @@
           </td>
           <td class="w-2/4">
             <TypedChoicesField bind:value={val.choices} {formfield} />
-          </td><td class="p-1">
+          </td>
+          <td class="p-1">
             <button type="button" on:click={addEntry}>
               <PlusIcon class="w-5 h-5 text-black" />
             </button>
