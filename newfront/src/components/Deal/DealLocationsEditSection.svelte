@@ -214,11 +214,11 @@
               ? 'border-orange-300'
               : 'border-white'}"
           >
-            <h3 on:click={() => onActivateLocation(loc)}>
+            <h3 on:click={() => onActivateLocation(loc)} class="bg-gray-200 p-2">
               {index + 1}. {$_(modelName)}
               <small class="text-sm text-gray-500">#{loc.id}</small>
               <TrashIcon
-                class="w-6 h-6 text-red-600 float-right cursor-pointer"
+                class="w-6 h-8 text-red-600 float-right cursor-pointer"
                 on:click={() => removeEntry(loc)}
               />
             </h3>
