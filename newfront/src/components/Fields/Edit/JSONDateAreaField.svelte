@@ -35,7 +35,7 @@
     } else if (current > index) {
       current--;
     }
-    valueCopy = valueCopy.filter((val, i) => i == index);
+    valueCopy = valueCopy.filter((val, i) => i !== index);
   }
 </script>
 

@@ -31,7 +31,7 @@
     valueCopy = [...valueCopy, {}];
   }
   function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i == index);
+    valueCopy = valueCopy.filter((val, i) => i !== index);
   }
 </script>
 
