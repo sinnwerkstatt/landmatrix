@@ -15,7 +15,7 @@
   export let formfield: FormField;
   export let value;
 
-  let valueCopy: JSONDateChoiceField[] = JSON.parse(JSON.stringify(value)) || [{}];
+  let valueCopy: JSONDateChoiceField[] = JSON.parse(JSON.stringify(value ?? [{}]));
 
   $: filteredValueCopy = valueCopy.filter((val) => val.date || val.choice);
   $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
@@ -29,6 +29,8 @@
   }
 
   const anySelectedAsCurrent = (values) => values.some((val) => val.current);
+  const isCurrentRequired = (values) =>
+    values.length > 0 && !anySelectedAsCurrent(values);
 </script>
 
 <div class="json_date_choice_field whitespace-nowrap">
@@ -47,9 +49,10 @@
           <td class="text-center p-1">
             <div class="form-check form-check-inline">
               <input
-                required={value.length > 0 && !anySelectedAsCurrent(value)}
+                required={isCurrentRequired(valueCopy)}
                 type="checkbox"
                 bind:checked={val.current}
+                disabled={!val.date || !val.choice}
               />
             </div>
           </td>

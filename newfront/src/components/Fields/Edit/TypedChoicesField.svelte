@@ -4,10 +4,16 @@
 
   export let formfield: FormField;
   export let value: string;
+  export let required: boolean;
 
-  let valueCopy = JSON.parse(JSON.stringify(value));
+  let valueCopy = JSON.parse(JSON.stringify(value ?? []));
 
-  $: value = (valueCopy ?? []).map((item) => item.value) ?? null;
+  $: value = formatValue(valueCopy);
+
+  const formatValue = (valueCopy) => {
+    const mapped = (valueCopy ?? []).map((item) => item.value);
+    return mapped.length > 0 ? mapped : null;
+  };
 </script>
 
 <div class="typed_choices_field">
@@ -20,6 +26,6 @@
     }))}
     name={formfield.name}
     isMulti={true}
-    required={true}
+    hasError={required && !value}
   />
 </div>

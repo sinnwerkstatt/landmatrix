@@ -10,14 +10,13 @@
   interface JSONDateAreaChoicesField {
     date?: string;
     area?: number;
-    choices?: string;
+    choices?: string[];
+    current?: boolean;
   }
 
   export let formfield: FormField;
   export let value: Array<JSONDateAreaChoicesField>;
-  // let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
 
-  // create valueCopy to avoid overwriting null in db by [] or so
   let valueCopy: Array<JSONDateAreaChoicesField> = JSON.parse(
     JSON.stringify(value ?? [{}])
   );
@@ -31,6 +30,10 @@
   function removeEntry(index) {
     valueCopy = valueCopy.filter((val, i) => i == index);
   }
+
+  const anySelectedAsCurrent = (values) => values.some((val) => val.current);
+  const isCurrentRequired = (values) =>
+    values.length > 0 && !anySelectedAsCurrent(values);
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
@@ -52,7 +55,7 @@
               type="checkbox"
               bind:checked={val.current}
               name="{formfield.name}_current"
-              required={valueCopy.length > 0}
+              required={isCurrentRequired(valueCopy)}
               disabled={!val.date && !val.area && !val.choices}
             />
           </td>
@@ -60,19 +63,23 @@
           <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
+              required={val.area || val.choices}
             />
           </td>
 
           <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
-              required={formfield.required}
+              required={val.date || val.choices}
               unit="ha"
             />
           </td>
           <td class="w-2/4">
-            <TypedChoicesField bind:value={val.choices} {formfield} />
+            <TypedChoicesField
+              bind:value={val.choices}
+              {formfield}
+              required={val.date || val.area}
+            />
           </td>
           <td class="p-1">
             <button type="button" on:click={addEntry}>
