@@ -16,7 +16,7 @@
     },
     computed: {
       label() {
-        return this.$store.state.formfields[this.model][this.fieldname].label;
+        return this.$store.state.formfields[this.model][this.fieldname]?.label;
       },
     },
   });
