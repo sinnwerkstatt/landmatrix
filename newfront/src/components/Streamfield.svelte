@@ -19,3 +19,15 @@
     {/if}
   {/each}
 </div>
+
+<style>
+  :global(.streamfield ol) {
+    @apply list-decimal pl-4;
+  }
+  :global(.streamfield ul) {
+    @apply list-disc pl-4;
+  }
+  :global(.streamfield h2) {
+    @apply text-3xl font-bold;
+  }
+</style>
