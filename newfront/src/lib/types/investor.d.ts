@@ -35,6 +35,7 @@ interface Investor extends Obj {
   involvements: Involvement[];
   versions: InvestorVersion[];
   workflowinfos: InvestorWorkflowInfo[];
+  [key: string]: unknown;
 }
 
 interface InvestorVersion extends ObjVersion {

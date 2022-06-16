@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="decimal_field">
     <LowLevelDecimalField
       v-model="val"
+      :name="formfield.name"
       :required="formfield.required"
       :unit="formfield.unit"
       :max-value="formfield.max_value"

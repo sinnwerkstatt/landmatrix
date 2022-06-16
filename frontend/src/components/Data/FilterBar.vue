@@ -236,16 +236,23 @@
           </div>
           <div v-for="(options, name) in choices.intention_of_investment" :key="name">
             <strong>{{ $t(name) }}</strong>
-            <div v-for="(isname, isval) in options" :key="isname" class="form-check">
+            <div
+              v-for="(isname, isval) in options"
+              :key="`ioi_${isname}`"
+              class="form-check"
+            >
               <div class="custom-control custom-checkbox">
                 <input
-                  :id="isval"
+                  :id="`ioi_${isval}`"
                   v-model="intention_of_investment"
                   class="form-check-input custom-control-input"
                   type="checkbox"
                   :value="isval"
                 />
-                <label class="form-check-label custom-control-label" :for="isval">
+                <label
+                  class="form-check-label custom-control-label"
+                  :for="`ioi_${isval}`"
+                >
                   {{ $t(isname) }}
                 </label>
               </div>

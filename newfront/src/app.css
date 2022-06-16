@@ -65,7 +65,7 @@
     @apply inline-block border m-0.5 px-4 py-2 shadow whitespace-nowrap transform transition;
     @apply focus:outline-none focus:ring;
   }
-  .btn.disabled {
+  .btn.disabled, .btn:disabled {
     @apply pointer-events-none opacity-60;
   }
   .btn-slim {
@@ -109,7 +109,7 @@
 
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply border border-gray-300 py-1.5 px-3 bg-white w-full;
+    @apply border border-gray-300 py-1.5 px-3 bg-white w-full text-black;
   }
   textarea.inpt,
   select[multiple].inpt {
@@ -165,7 +165,31 @@
   --input-font-size: 1rem;
   /*--selected-item-color: var(--color-orange-600);*/
   --item-is-active-bg: var(--color-lm-orange);
-  --border-focus-color: var(--color-orange-600);
   --item-is-active-color: black;
+  /* the following colors are auto-generated via tailwind.config.cjs */
+  /*noinspection CssUnresolvedCustomProperty*/
+  --border-focus-color: var(--color-orange-600);
+  /*noinspection CssUnresolvedCustomProperty*/
   --item-hover-bg: var(--color-orange-100);
 }
+
+
+/* sort table stuff*/
+ th[data-sortby] {
+    @apply pr-5;
+  }
+
+  th[data-sortby]::after {
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20" fill="gray"><path d="m 14.707,8.707 a 1,1 0 0 1 -1.414,0 L 10,5.414 6.707,8.707 A 1,1 0 0 1 5.293,7.293 l 4,-4 a 1,1 0 0 1 1.414,0 l 4,4 a 1,1 0 0 1 0,1.414 z" /> <path     d="m 5.293,11.293 a 1,1 0 0 1 1.414,0 L 10,14.586 13.293,11.293 a 1,1 0 1 1 1.414,1.414 l -4,4 a 1,1 0 0 1 -1.414,0 l -4,-4 a 1,1 0 0 1 0,-1.414 z" /></svg>');
+    position: absolute;
+    top: 25%;
+  }
+
+  th[data-sortby].asc::after {
+    /*content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20" fill="%230c5e9c"> <path d="m 14.707,8.707 a 1,1 0 0 1 -1.414,0 L 10,5.414 6.707,8.707 A 1,1 0 0 1 5.293,7.293 l 4,-4 a 1,1 0 0 1 1.414,0 l 4,4 a 1,1 0 0 1 0,1.414 z" /></svg>');*/
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20" fill="%23fc941f"> <path d="m 14.707,8.707 a 1,1 0 0 1 -1.414,0 L 10,5.414 6.707,8.707 A 1,1 0 0 1 5.293,7.293 l 4,-4 a 1,1 0 0 1 1.414,0 l 4,4 a 1,1 0 0 1 0,1.414 z" /></svg>');
+  }
+
+  th[data-sortby].desc::after {
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20" fill="%23fc941f"><path d="m 5.293,11.293 a 1,1 0 0 1 1.414,0 L 10,14.586 13.293,11.293 a 1,1 0 1 1 1.414,1.414 l -4,4 a 1,1 0 0 1 -1.414,0 l -4,-4 a 1,1 0 0 1 0,-1.414 z" /></svg>');
+  }

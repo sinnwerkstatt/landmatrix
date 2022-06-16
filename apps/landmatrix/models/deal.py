@@ -708,6 +708,7 @@ class Deal(AbstractDealBase):
         Investor, verbose_name=_("Top parent companies"), related_name="+"
     )
     current_contract_size = models.DecimalField(
+        verbose_name=_("Current contract size"),
         max_digits=18,
         decimal_places=2,
         blank=True,

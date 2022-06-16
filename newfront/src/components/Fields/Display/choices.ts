@@ -1,3 +1,14 @@
+import AgricultureIcon from "../../icons/AgricultureIcon.svelte";
+import FoodCropsIcon from "../../icons/FoodCropsIcon.svelte";
+import ForestIcon from "../../icons/ForestIcon.svelte";
+import IndustryIcon from "../../icons/IndustryIcon.svelte";
+import LandSpeculationIcon from "../../icons/LandSpeculationIcon.svelte";
+import LifestockIcon from "../../icons/LifestockIcon.svelte";
+import MiningIcon from "../../icons/MiningIcon.svelte";
+import OilIcon from "../../icons/OilIcon.svelte";
+import PlaneIcon from "../../icons/PlaneIcon.svelte";
+import RenewableEnergyIcon from "../../icons/RenewableEnergyIcon.svelte";
+
 export const implementation_status_choices: { [key: string]: string } = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
@@ -81,31 +92,7 @@ export const intention_of_investment_choices = {
   },
 };
 
-// TODO: SVGs reinbasteln
-export const intention_of_investment_map: { [key: string]: string[] } = {
-  BIOFUELS: ["Biofuels", "fas fa-leaf"],
-  FOOD_CROPS: ["Food crops", "fas fa-carrot"],
-  FODDER: ["Fodder", "fas fa-leaf"],
-  LIVESTOCK: ["Livestock", "fas fa-paw"],
-  NON_FOOD_AGRICULTURE: ["Non-food agricultural commodities", "fas fa-leaf"],
-  AGRICULTURE_UNSPECIFIED: ["Agriculture unspecified", "fas fa-leaf"],
-
-  TIMBER_PLANTATION: ["Timber plantation", "fas fa-tree"],
-  FOREST_LOGGING: ["Forest logging / management", "fas fa-tree"],
-  CARBON: ["For carbon sequestration/REDD", "fas fa-tree"],
-  FORESTRY_UNSPECIFIED: ["Forestry unspecified", "fas fa-tree"],
-
-  MINING: ["Mining", "fas fa-mountain"],
-  OIL_GAS_EXTRACTION: ["Oil / Gas extraction", "fas fa-oil-can"],
-  TOURISM: ["Tourism", "fas fa-plane"],
-  INDUSTRY: ["Industry", "fas fa-industry"],
-  CONVERSATION: ["Conservation", ""],
-  LAND_SPECULATION: ["Land speculation", "fas fa-chart-line"],
-  RENEWABLE_ENERGY: ["Renewable energy", "fas fa-wind"],
-  OTHER: ["Other", ""],
-};
-
-export const flat_intention_of_investment_map: { [key: string]: string } = {
+export const flat_intention_of_investment_map = {
   BIOFUELS: "Biofuels",
   FOOD_CROPS: "Food crops",
   FODDER: "Fodder",

@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { MapOptions } from "leaflet";
+  import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+  import { GestureHandling } from "leaflet-gesture-handling?client";
   import "leaflet/dist/leaflet.css";
   import { Icon, Map } from "leaflet?client";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
@@ -20,9 +22,6 @@
 
   let map: Map;
 
-  // import { GestureHandling } from "leaflet-gesture-handling";
-  // import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-  // Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
   if (!import.meta.env.SSR) {
     delete Icon.Default.prototype._getIconUrl;
     Icon.Default.mergeOptions({
@@ -34,12 +33,14 @@
   }
 
   onMount(() => {
+    Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
     map = new Map("bigmap", {
       zoomSnap: 0.5,
       minZoom: 1,
       zoom: 3,
       zoomControl: true,
-      // gestureHandling: true,
+      gestureHandling: true,
       ...options,
     });
     map.whenReady(() => dispatch("ready", map));
@@ -71,6 +72,7 @@
   {#if showLayerSwitcher}
     <BigMapStandaloneLayerSwitcher />
   {/if}
+  <slot />
 </div>
 
 <style>

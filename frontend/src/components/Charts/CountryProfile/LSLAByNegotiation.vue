@@ -73,6 +73,8 @@
           pots.ORAL_AGREEMENT = new LSLAData("ORAL_AGREEMENT");
         if (selected_neg_stat.includes("CONTRACT_SIGNED"))
           pots.CONTRACT_SIGNED = new LSLAData("CONTRACT_SIGNED");
+        if (selected_neg_stat.includes("CHANGE_OF_OWNERSHIP"))
+          pots.CHANGE_OF_OWNERSHIP = new LSLAData("CHANGE_OF_OWNERSHIP");
         if (
           selected_neg_stat.includes("ORAL_AGREEMENT") &&
           selected_neg_stat.includes("CONTRACT_SIGNED") &&

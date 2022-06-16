@@ -21,7 +21,7 @@ django-multiselectfield = "*"  # TODO delete this after squashing migrations
 django-registration = "*"
 
 wagtail-font-awesome-svg = "*"
-wagtail-modeltranslation = "*"
+wagtail-modeltranslation = ">=0.11rc3"
 wagtail-orderable = "*"
 
 # TODO celery - still need? - what about caching? redis? memcached?

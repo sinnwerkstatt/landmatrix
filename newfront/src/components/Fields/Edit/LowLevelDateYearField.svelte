@@ -10,6 +10,8 @@
   export let value: string;
   export let name: string;
 
+  export let emitUndefinedOnEmpty = false;
+
   let inputfield;
 
   function checkValidity() {
@@ -34,6 +36,7 @@
 
   const onInput = async () => {
     if (!value) {
+      if (emitUndefinedOnEmpty && value === "") value = undefined;
       inputfield.setCustomValidity("");
       return;
     }

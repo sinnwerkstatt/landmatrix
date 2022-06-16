@@ -11,7 +11,13 @@
   import DateField from "./Edit/DateField.svelte";
   import EmailField from "./Edit/EmailField.svelte";
   import FileField from "./Edit/FileField.svelte";
+  import JSONActorsField from "./Edit/JSONActorsField.svelte";
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
+  import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
+  import JSONExportsField from "./Edit/JSONExportsField.svelte";
+  import JSONJobsField from "./Edit/JSONJobsField.svelte";
+  import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
   import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
   import URLField from "./Edit/URLField.svelte";
@@ -48,7 +54,6 @@
   $: field = {
     BooleanField: BooleanField,
     CharField: CharField,
-    OCIDField: CharField,
     CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
@@ -56,8 +61,15 @@
     EmailField: EmailField,
     FileField: FileField,
     IntegerField: DecimalField,
+    JSONActorsField: JSONActorsField,
+    JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
+    JSONExportsField: JSONExportsField,
+    JSONJobsField: JSONJobsField,
+    JSONLeaseField: JSONLeaseField,
     NullBooleanField: BooleanField,
+    OCIDField: CharField,
     SimpleArrayField: SimpleArrayField,
     TextField: TextField,
     TypedChoiceField: TypedChoiceField,
@@ -81,14 +93,10 @@
         {formfield}
         on:change
       />
-      <!--  <div>-->
-      <!--    <component-->
-      <!--      :file-not-public="fileNotPublic"-->
-      <!--      :target-blank="targetBlank"-->
-      <!--      :object-id="objectId"-->
-      <!--      :object-version="objectVersion"-->
-      <!--    />-->
-      <!--  </div>-->
+      <!-- :file-not-public="fileNotPublic"-->
+      <!-- :target-blank="targetBlank"-->
+      <!-- :object-id="objectId"-->
+      <!-- :object-version="objectVersion"-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

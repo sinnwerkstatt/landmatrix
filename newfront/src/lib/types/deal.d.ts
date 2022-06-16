@@ -13,24 +13,24 @@ enum ACCURACY_LEVEL {
 }
 
 interface Location {
-  id: number | string;
-  name: string;
-  description: string;
-  point: {
+  id: string;
+  name?: string;
+  description?: string;
+  point?: {
     lat: number;
     lng: number;
   };
-  facility_name: string;
-  level_of_accuracy: ACCURACY_LEVEL;
-  comment: string;
-  areas: GeoJsonObject;
+  facility_name?: string;
+  level_of_accuracy?: ACCURACY_LEVEL;
+  comment?: string;
+  areas?: GeoJsonObject;
 }
 
 interface Contract {
-  id: number | string;
+  id: string;
 }
 interface DataSource {
-  id: number | string;
+  id: string;
   type: string;
   url: string;
   file: string;
@@ -50,20 +50,20 @@ interface Deal extends Obj {
   locations: Location[];
   contracts: Contract[];
   datasources: DataSource[];
-  versions: DealVersion[];
-  workflowinfos: DealWorkflowInfo[];
-  current_intention_of_investment: string[];
-  current_negotiation_status: NegotiationStatus;
-  current_implementation_status: ImplementationStatus;
-  fully_updated_at: Date;
-  top_investors: Investor[];
-  deal_size: number;
-  current_contract_size: number;
-  intended_size: number;
+  versions?: DealVersion[];
+  workflowinfos?: DealWorkflowInfo[];
+  current_intention_of_investment?: string[];
+  current_negotiation_status?: NegotiationStatus;
+  current_implementation_status?: ImplementationStatus;
+  fully_updated_at?: Date;
+  top_investors?: Investor[];
+  deal_size?: number;
+  current_contract_size?: number;
+  intended_size?: number;
   operating_company?: Investor;
-  confidential: boolean;
-  is_public: boolean;
-  [key: string];
+  confidential?: boolean;
+  is_public?: boolean;
+  [key: string]: unknown;
 }
 
 interface DealVersion extends ObjVersion {

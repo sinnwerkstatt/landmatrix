@@ -9,6 +9,7 @@
   import type { FormField } from "$components/Fields/fields";
   import AutoField from "./Display/AutoField.svelte";
   import DateField from "./Display/DateField.svelte";
+  import DateTimeField from "./Display/DateTimeField.svelte";
   import FileField from "./Display/FileField.svelte";
   import ForeignKeyField from "./Display/ForeignKeyField.svelte";
   import JSONActorsField from "./Display/JSONActorsField.svelte";
@@ -59,6 +60,7 @@
     CountryForeignKey: ForeignKeyField,
     CurrencyForeignKey: ForeignKeyField,
     DateField: DateField,
+    DateTimeField: DateTimeField,
     DecimalField: DecimalField,
     EmailField: TextField,
     FileField: FileField,
