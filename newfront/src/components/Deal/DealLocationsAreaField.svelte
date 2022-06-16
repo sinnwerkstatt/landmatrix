@@ -2,27 +2,35 @@
   import type { Feature } from "geojson";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import type { Location } from "$lib/types/deal";
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import TrashIcon from "$components/icons/TrashIcon.svelte";
   import Overlay from "$components/Overlay.svelte";
   import MinusIcon from "../icons/MinusIcon.svelte";
 
   const dispatch = createEventDispatcher();
 
-  export let areaType: string;
-  export let locations;
-  export let activeLocationID;
+  type Area = "production_area" | "contract_area" | "intended_area";
+
+  export let areaType: Area;
+  export let locations: Location[];
+  export let activeLocationID: string;
 
   let showAddAreaOverlay = false;
   let toAddFiles;
-  let current = -1;
 
   $: title = {
     production_area: $_("Production areas"),
     contract_area: $_("Contract areas"),
     intended_area: $_("Intended areas"),
   }[areaType];
+
+  $: areaFeatures =
+    locations
+      .find((loc) => loc.id === activeLocationID)
+      .areas?.features?.filter((feature) => feature.properties.type === areaType) ?? [];
+
+  $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
   const onLocationAreaHover = (loc) => {
     // console.log(loc);
@@ -54,55 +62,39 @@
     dispatch("change");
   }
 
-  function hasFeatures(locations) {
-    return getFeatures(locations).length !== 0;
+  function updateCurrent(index: number) {
+    const activeIndex = locations.findIndex((l) => l.id === activeLocationID);
+
+    locations[activeIndex] = updateCurrentForLocation(locations[activeIndex], index);
+    locations = locations;
   }
 
-  function getActiveLocation(locations) {
-    return locations.find((l) => l.id === activeLocationID);
-  }
-
-  function getFeatures(locations) {
-    return (
-      getActiveLocation(locations)?.areas?.features.filter(
-        (f) => f.properties.type === areaType
-      ) ?? []
+  function updateCurrentForLocation(location: Location, index: number): Location {
+    let otherFeatures = location.areas.features.filter(
+      (f) => f.properties.type !== areaType
     );
-  }
 
-  function updateCurrentLocation(locations, index) {
-    let activeLocation = getActiveLocation(locations);
-    let otherFeatures =
-      activeLocation.areas.features.filter((f) => f.properties.type !== areaType) ?? [];
-
-    let currentFeatures = activeLocation.areas.features
+    let areaFeatures = location.areas.features
       .filter((f) => f.properties.type === areaType)
-      .map((feature) => ({
+      .map((feature, i) => ({
         ...feature,
         properties: {
           ...feature.properties,
-          current: undefined,
+          current: i === index ? true : undefined,
         },
       }));
 
-    currentFeatures[index].properties.current = true;
-    activeLocation.areas.features = [...otherFeatures, ...currentFeatures];
-    return activeLocation;
-  }
-
-  function updateCurrent(index) {
-    let otherLocations = locations.filter((l) => l.id !== activeLocationID);
-
-    locations = [...otherLocations, updateCurrentLocation(locations, index)];
+    return {
+      ...location,
+      areas: { ...location.areas, features: [...otherFeatures, ...areaFeatures] },
+    } as Location;
   }
 </script>
-
-{JSON.stringify(getFeatures(locations))}
 
 <div class="grid grid-cols-10 justify-between my-3">
   <div class="pr-2 col-span-2">
     <div class="text-lg font-medium">{title}</div>
-    {#if !hasFeatures(locations)}
+    {#if areaFeatures.length === 0}
       <button
         type="button"
         class="btn btn-slim btn-secondary flex justify-center items-center"
@@ -115,7 +107,7 @@
   </div>
   <table class="flex-auto col-span-8">
     <thead>
-      {#if hasFeatures(locations)}
+      {#if areaFeatures.length > 0}
         <tr>
           <th class="font-normal">{$_("Current")}</th>
           <th class="font-normal">{$_("Date")}</th>
@@ -125,7 +117,7 @@
       {/if}
     </thead>
     <tbody>
-      {#each getFeatures(locations) as feat, i}
+      {#each areaFeatures as feat, i}
         <tr
           on:mouseover={() => onLocationAreaHover(feat)}
           on:focus={() => onLocationAreaHover(feat)}
@@ -158,7 +150,7 @@
             </button>
             <button
               type="button"
-              disabled={feat.length <= 1}
+              disabled={areaFeatures.length <= 1}
               on:click={() => removeFeature(feat)}
             >
               <MinusIcon class="w-5 h-5 text-red-600" />
