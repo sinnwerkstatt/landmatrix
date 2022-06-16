@@ -6,6 +6,7 @@
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import TrashIcon from "$components/icons/TrashIcon.svelte";
   import Overlay from "$components/Overlay.svelte";
+  import MinusIcon from "../icons/MinusIcon.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -15,6 +16,7 @@
 
   let showAddAreaOverlay = false;
   let toAddFiles;
+  let current = -1;
 
   $: title = {
     production_area: $_("Production areas"),
@@ -51,45 +53,90 @@
     locations = locations;
     dispatch("change");
   }
+
+  function hasFeatures(locations) {
+    return getFeatures(locations).length !== 0;
+  }
+
+  function getActiveLocation(locations) {
+    return locations.find((l) => l.id === activeLocationID);
+  }
+
+  function getFeatures(locations) {
+    return (
+      getActiveLocation(locations)?.areas?.features.filter(
+        (f) => f.properties.type === areaType
+      ) ?? []
+    );
+  }
+
+  function updateCurrentLocation(locations, index) {
+    let activeLocation = getActiveLocation(locations);
+    let otherFeatures =
+      activeLocation.areas.features.filter((f) => f.properties.type !== areaType) ?? [];
+
+    let currentFeatures = activeLocation.areas.features
+      .filter((f) => f.properties.type === areaType)
+      .map((feature) => ({
+        ...feature,
+        properties: {
+          ...feature.properties,
+          current: undefined,
+        },
+      }));
+
+    currentFeatures[index].properties.current = true;
+    activeLocation.areas.features = [...otherFeatures, ...currentFeatures];
+    return activeLocation;
+  }
+
+  function updateCurrent(index) {
+    let otherLocations = locations.filter((l) => l.id !== activeLocationID);
+
+    locations = [...otherLocations, updateCurrentLocation(locations, index)];
+  }
 </script>
+
+{JSON.stringify(getFeatures(locations))}
 
 <div class="grid grid-cols-10 justify-between my-3">
   <div class="pr-2 col-span-2">
     <div class="text-lg font-medium">{title}</div>
-    <button
-      type="button"
-      class="btn btn-slim btn-secondary flex justify-center items-center"
-      on:click={() => (showAddAreaOverlay = true)}
-    >
-      <PlusIcon />
-      {$_("Add")}
-    </button>
+    {#if !hasFeatures(locations)}
+      <button
+        type="button"
+        class="btn btn-slim btn-secondary flex justify-center items-center"
+        on:click={() => (showAddAreaOverlay = true)}
+      >
+        <PlusIcon />
+        {$_("Add")}
+      </button>
+    {/if}
   </div>
-
   <table class="flex-auto col-span-8">
     <thead>
-      <tr>
-        <th class="font-normal">{$_("Current")}</th>
-        <th class="font-normal">{$_("Date")}</th>
-        <th class="font-normal">{$_("Type")}</th>
-        <th />
-      </tr>
+      {#if hasFeatures(locations)}
+        <tr>
+          <th class="font-normal">{$_("Current")}</th>
+          <th class="font-normal">{$_("Date")}</th>
+          <th class="font-normal">{$_("Type")}</th>
+          <th />
+        </tr>
+      {/if}
     </thead>
     <tbody>
-      {#each locations
-        .find((l) => l.id === activeLocationID)
-        ?.areas?.features.filter((f) => f.properties.type === areaType) ?? [] as feat}
+      {#each getFeatures(locations) as feat, i}
         <tr
           on:mouseover={() => onLocationAreaHover(feat)}
           on:focus={() => onLocationAreaHover(feat)}
           class="px-1"
         >
-          <td class="text-center px-1">
+          <td class="text-center px-1" on:click={() => updateCurrent(i)}>
             <input
               type="radio"
-              checked={feat.properties.current}
-              on:input={(e) =>
-                (feat.properties.current = e.target.checked || undefined)}
+              bind:group={current}
+              value={i}
+              name="{areaType}_current"
             />
           </td>
           <td class="px-1">
@@ -105,9 +152,16 @@
               <option value="intended_area">{$_("Intended area")}</option>
             </select>
           </td>
-          <td class="px-2">
-            <button type="button" on:click={() => removeFeature(feat)}>
-              <TrashIcon class="w-6 h-6 text-red-600 float-right cursor-pointer" />
+          <td class="p-1">
+            <button type="button" on:click={() => (showAddAreaOverlay = true)}>
+              <PlusIcon class="w-5 h-5 text-black" />
+            </button>
+            <button
+              type="button"
+              disabled={feat.length <= 1}
+              on:click={() => removeFeature(feat)}
+            >
+              <MinusIcon class="w-5 h-5 text-red-600" />
             </button>
           </td>
         </tr>
