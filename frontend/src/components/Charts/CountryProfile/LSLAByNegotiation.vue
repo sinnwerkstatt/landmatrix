@@ -73,6 +73,8 @@
           pots.ORAL_AGREEMENT = new LSLAData("ORAL_AGREEMENT");
         if (selected_neg_stat.includes("CONTRACT_SIGNED"))
           pots.CONTRACT_SIGNED = new LSLAData("CONTRACT_SIGNED");
+        if (selected_neg_stat.includes("CHANGE_OF_OWNERSHIP"))
+          pots.CHANGE_OF_OWNERSHIP = new LSLAData("CHANGE_OF_OWNERSHIP");
         if (
           selected_neg_stat.includes("ORAL_AGREEMENT") &&
           selected_neg_stat.includes("CONTRACT_SIGNED") &&
@@ -93,6 +95,8 @@
 
         this.deals.forEach((d: Deal) => {
           if (!d.current_negotiation_status) return;
+          console.log(pots);
+          console.log(d.current_negotiation_status);
           (pots[d.current_negotiation_status] as LSLAData).add(
             d.current_contract_size,
             d.intended_size

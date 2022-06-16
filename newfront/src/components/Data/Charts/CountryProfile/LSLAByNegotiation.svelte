@@ -46,6 +46,8 @@
       pots.ORAL_AGREEMENT = new LSLAData(NegotiationStatus.ORAL_AGREEMENT);
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED))
       pots.CONTRACT_SIGNED = new LSLAData(NegotiationStatus.CONTRACT_SIGNED);
+    if (selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP))
+      pots.CHANGE_OF_OWNERSHIP = new LSLAData(NegotiationStatus.CHANGE_OF_OWNERSHIP);
     if (
       selected_neg_stat.includes(NegotiationStatus.ORAL_AGREEMENT) &&
       selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED) &&
