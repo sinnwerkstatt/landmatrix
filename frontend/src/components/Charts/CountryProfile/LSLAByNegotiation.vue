@@ -95,8 +95,6 @@
 
         this.deals.forEach((d: Deal) => {
           if (!d.current_negotiation_status) return;
-          console.log(pots);
-          console.log(d.current_negotiation_status);
           (pots[d.current_negotiation_status] as LSLAData).add(
             d.current_contract_size,
             d.intended_size
