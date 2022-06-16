@@ -15,6 +15,7 @@
   export let areaType: Area;
   export let locations: Location[];
   export let activeLocationID: string;
+  export let currentHoverFeature: Feature | null;
 
   let showAddAreaOverlay = false;
   let toAddFiles;
@@ -32,8 +33,13 @@
 
   $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
-  const onLocationAreaHover = (loc) => {
-    // console.log(loc);
+  const onLocationAreaHover = (feature) => {
+    currentHoverFeature = feature;
+    dispatch("hoverFeature");
+  };
+  const onLocationAreaMouseOut = () => {
+    currentHoverFeature = null;
+    dispatch("hoverFeature");
   };
 
   function uploadFiles() {
@@ -120,8 +126,8 @@
       {#each areaFeatures as feat, i}
         <tr
           on:mouseover={() => onLocationAreaHover(feat)}
-          on:focus={() => onLocationAreaHover(feat)}
-          class="px-1"
+          on:mouseout={() => onLocationAreaMouseOut()}
+          class="px-1 {feat === currentHoverFeature ? 'border border-orange-400' : ''}"
         >
           <td class="text-center px-1" on:click={() => updateCurrent(i)}>
             <input
