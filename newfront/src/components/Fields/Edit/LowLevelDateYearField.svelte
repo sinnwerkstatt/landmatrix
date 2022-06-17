@@ -40,7 +40,7 @@
       inputfield.setCustomValidity("");
       return;
     }
-    value = value.replace("/", "-").replace(".", "-").replace(",", "-");
+    value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim();
     checkValidity();
   };
 </script>
