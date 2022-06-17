@@ -997,28 +997,29 @@ class Deal(AbstractDealBase):
 
     def _combine_geojson(self):
         features = []
-        for i, loc in enumerate(self.locations or [], 1):  # type: dict
+        for loc in self.locations or []:  # type: dict
             if loc.get("point"):
-                point = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [loc["point"]["lng"], loc["point"]["lat"]],
-                    },
-                    "properties": {
-                        "id": i,
-                        "name": loc.get("name"),
-                        "type": "point",
-                        "spatial_accuracy": loc.get("level_of_accuracy"),
-                    },
-                }
-                features += [point]
+                features += [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [loc["point"]["lng"], loc["point"]["lat"]],
+                        },
+                        "properties": {
+                            "type": "point",
+                            "id": loc["id"],
+                            "name": loc.get("name"),
+                            "spatial_accuracy": loc.get("level_of_accuracy"),
+                        },
+                    }
+                ]
             areas = loc.get("areas")
             if areas:
                 feats = areas["features"]
                 for feat in feats:
                     feat["properties"]["name"] = loc.get("name")
-                    feat["properties"]["id"] = i
+                    feat["properties"]["id"] = loc["id"]
                     if (
                         feat["geometry"]["type"] == "MultiPolygon"
                         and len(feat["geometry"]["coordinates"]) == 1
