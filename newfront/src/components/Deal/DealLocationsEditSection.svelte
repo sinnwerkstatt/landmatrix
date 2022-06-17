@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Feature, GeoJsonObject } from "geojson";
-  import type { ControlPosition, Layer, Map as LMap } from "leaflet";
-  import { GeoJSON, LatLngBounds, Marker } from "leaflet?client";
+  import type { Feature } from "geojson";
+  import type { Layer, Map as LMap } from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker, Path } from "leaflet?client";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
@@ -23,6 +23,7 @@
   export let locations: Location[] = [];
   export let country: Country;
 
+  let currentHoverFeature: Feature;
   let activeFeatureGroup: GeoJSON;
   let hoverLocationID: string;
   let activeLocationID: string;
@@ -41,39 +42,52 @@
   //   cutPolygon: false,
   //   drawMarker: false,
   // };
+
+  const colormap = {
+    contract_area: "#ff00ff",
+    intended_area: "#66ff33",
+    production_area: "#ff0000",
+    "": "#ffe600",
+  };
+
   const geojsonOptions = {
     style: (feature: Feature) => {
-      const colormap = {
-        contract_area: "#ff00ff",
-        intended_area: "#66ff33",
-        production_area: "#ff0000",
-        "": "#ffe600",
-      };
+      if (currentHoverFeature === feature) {
+        return { color: "orange" };
+      }
       return { color: colormap[feature.properties.type] };
     },
-    onEachFeature: (feature: Feature, layer: Marker) => {
-      // highlight location in list on map-hover
-      layer.addEventListener(
-        "mouseover",
-        () => (hoverLocationID = feature.properties?.id)
-      );
-      layer.addEventListener("mouseout", () => (hoverLocationID = null));
-      layer.addEventListener("dragend", () => {
-        const activeLocation = locations.find((l) => l.id === activeLocationID);
-        const latlng = layer.getLatLng();
-        activeLocation.point = {
-          lat: parseFloat(latlng.lat.toFixed(5)),
-          lng: parseFloat(latlng.lng.toFixed(5)),
-        };
-        locations = locations;
-      });
+    onEachFeature: (feature: Feature, layer: Layer) => {
+      if (layer instanceof Path) {
+        layer.addEventListener("mouseover", () => {
+          layer.setStyle({ color: "orange" });
+          currentHoverFeature = feature;
+        });
+        layer.addEventListener("mouseout", () => {
+          layer.setStyle({ color: colormap[feature.properties.type] });
+          currentHoverFeature = null;
+        });
+      }
 
-      if (feature.geometry.type === "Point") {
+      if (layer instanceof Marker) {
+        layer.addEventListener("mouseover", () => {
+          hoverLocationID = feature.properties?.id;
+        });
+        layer.addEventListener("mouseout", () => {
+          hoverLocationID = null;
+        });
+        layer.addEventListener("dragend", () => {
+          const activeLocation = locations.find((l) => l.id === activeLocationID);
+          const latlng = layer.getLatLng();
+          activeLocation.point = {
+            lat: parseFloat(latlng.lat.toFixed(5)),
+            lng: parseFloat(latlng.lng.toFixed(5)),
+          };
+          locations = locations;
+        });
         layer.addEventListener("click", () => {
           activeLocationID = locations.find((l) => l.id === feature.properties?.id)?.id;
         });
-      } else {
-        // _addPropertiesPopup(layer, feature);
       }
     },
   };
@@ -122,6 +136,7 @@
     const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
     if (areYouSure === true) locations = locations.filter((x) => x.id !== entry.id);
   }
+
   function addEntry() {
     const currentIDs = locations.map((x) => x.id.toString());
     const newEntry: Location = { id: newNanoid(currentIDs) };
@@ -211,14 +226,14 @@
         {#each locations as loc, index}
           <div
             class="border {hoverLocationID === loc.id
-              ? 'border-orange-300'
+              ? 'border-orange-400'
               : 'border-white'}"
           >
-            <h3 on:click={() => onActivateLocation(loc)}>
+            <h3 on:click={() => onActivateLocation(loc)} class="bg-gray-200 p-2">
               {index + 1}. {$_(modelName)}
               <small class="text-sm text-gray-500">#{loc.id}</small>
               <TrashIcon
-                class="w-6 h-6 text-red-600 float-right cursor-pointer"
+                class="w-6 h-8 text-red-600 float-right cursor-pointer"
                 on:click={() => removeEntry(loc)}
               />
             </h3>
@@ -302,21 +317,27 @@
               areaType="production_area"
               bind:locations
               bind:activeLocationID
+              bind:currentHoverFeature
               on:change={_updateGeoJSON}
+              on:hoverFeature={_updateGeoJSON}
             />
 
             <DealLocationsAreaField
               areaType="contract_area"
               bind:locations
               bind:activeLocationID
+              bind:currentHoverFeature
               on:change={_updateGeoJSON}
+              on:hoverFeature={_updateGeoJSON}
             />
 
             <DealLocationsAreaField
               areaType="intended_area"
               bind:locations
               bind:activeLocationID
+              bind:currentHoverFeature
               on:change={_updateGeoJSON}
+              on:hoverFeature={_updateGeoJSON}
             />
           {/if}
         </div>

@@ -6,7 +6,7 @@
   export let unit = "";
   export let required = false;
   export let max: number;
-  export let min: number;
+  export let min = 0;
   export let decimals = 2;
 
   $: step = 1 / 10 ** decimals;
