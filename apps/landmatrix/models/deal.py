@@ -362,13 +362,13 @@ class AbstractDealBase(models.Model):
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
-        models.CharField(max_length=255),
+        models.CharField(max_length=255, blank=True),
         verbose_name=_("Name of community"),
         blank=True,
         null=True,
     )
     name_of_indigenous_people = ArrayField(
-        models.CharField(max_length=255),
+        models.CharField(max_length=255, blank=True),
         verbose_name=_("Name of indigenous people"),
         blank=True,
         null=True,
