@@ -127,24 +127,23 @@
 </template>
 
 <script lang="ts">
-  import dayjs from "dayjs";
-  import gql from "graphql-tag";
+  import LoadingPulse from "$components/Data/LoadingPulse.vue";
+  import CalendarIcon from "$components/icons/Calendar.vue";
+  import type { Deal, DealVersion } from "$types/deal";
+  import type { GQLFilter } from "$types/filters";
+  import type { Investor } from "$types/investor";
+  import type { User } from "$types/user";
+  import type { Country, Region } from "$types/wagtail";
   import GoalsTable from "./Statistics/GoalsTable.vue";
   import LocationFilter from "./Statistics/LocationFilter.vue";
   import StatisticsTable from "./Statistics/StatisticsTable.vue";
-  import Vue from "vue";
-  import type { Deal, DealVersion } from "$types/deal";
-  import type { Investor } from "$types/investor";
-  import type { Country, Region } from "$types/wagtail";
-  import type { User } from "$types/user";
-  import type { GQLFilter } from "$types/filters";
+  import dayjs from "dayjs";
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+  import gql from "graphql-tag";
   // @ts-ignore
   import DatePicker from "v-calendar/lib/components/date-picker.umd";
-
-  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-  import LoadingPulse from "$components/Data/LoadingPulse.vue";
-  import CalendarIcon from "$components/icons/Calendar.vue";
+  import Vue from "vue";
 
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);
@@ -580,11 +579,11 @@
           let uri = this.user.userregionalinfo;
           if (uri.region.length) {
             this.selectedRegion =
-              this.regions.find((r) => r.id === uri.region[0].id) || null;
+              this.regions.find((r) => r.id === uri.region.id) || null;
           }
           if (uri.country.length) {
             this.selectedCountry =
-              this.countries.find((c) => c.id === uri.country[0].id) || null;
+              this.countries.find((c) => c.id === uri.country.id) || null;
           }
         }
       },

@@ -77,8 +77,8 @@ def get_user_full_name(obj: User, info: GraphQLResolveInfo):
 
 
 user_regional_info_type = ObjectType("UserRegionalInfo")
-user_regional_info_type.set_field("country", lambda obj, info: obj.country.all())
-user_regional_info_type.set_field("region", lambda obj, info: obj.region.all())
+user_regional_info_type.set_field("country", lambda obj, info: obj.country)
+user_regional_info_type.set_field("region", lambda obj, info: obj.region)
 
 REGISTRATION_SALT = getattr(settings, "REGISTRATION_SALT", "registration")
 

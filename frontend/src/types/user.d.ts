@@ -1,8 +1,8 @@
 import type { Country, Region } from "$types/wagtail";
 
 interface UserRegInfo {
-  country: Country[];
-  region: Region[];
+  country: Country;
+  region: Region;
 }
 
 interface Group {
