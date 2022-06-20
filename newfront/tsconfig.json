@@ -19,5 +19,10 @@
       "$components/*": ["src/components/*"],
       "$views/*": ["src/views/*"]
     }
-  }
+  },
+	"include": [
+		"./src/**/*.ts",
+		"./src/**/*.svelte"
+	],
+  "exclude": ["./node_modules/*"]
 }
