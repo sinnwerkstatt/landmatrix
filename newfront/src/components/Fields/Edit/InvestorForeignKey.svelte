@@ -31,8 +31,6 @@
 
 <div class="currency_foreignkey_field">
   {#if investors}
-    {JSON.stringify(investors)}
-    {JSON.stringify(value)}
     <Select
       items={investors}
       {value}
