@@ -40,9 +40,6 @@
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
-  {JSON.stringify(current)}
-  {JSON.stringify(valueCopy)}
-  {JSON.stringify(value)}
   <table class="w-full">
     <thead>
       <tr>

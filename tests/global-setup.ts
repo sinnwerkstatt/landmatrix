@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from "@playwright/test";
+import { chromium, expect, FullConfig } from "@playwright/test";
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
@@ -8,6 +8,10 @@ async function globalSetup(config: FullConfig) {
   await page.fill('text=Password >> [placeholder="Password"]', "hamlet4eva");
   await page.click("button.btn-primary");
   await page.waitForLoadState("networkidle");
+
+  const wrap = page.locator(".test-login");
+
+  await expect(wrap).toHaveText(/You are logged in./);
 
   // Save signed-in state to 'playwright-storageState.json'.
   await page.context().storageState({ path: "playwright-storageState.json" });
