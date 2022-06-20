@@ -4,6 +4,8 @@
   import { deal_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
+    if (!stuff.user) return { status: 403, error: "Permission denied" };
+
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
 
     const { data } = await stuff.secureApolloClient.query<{ deal: Deal[] }>({

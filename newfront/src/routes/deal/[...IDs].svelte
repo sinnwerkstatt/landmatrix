@@ -1,17 +1,15 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import { get } from "svelte/store";
-  import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
   import { deal_gql_query } from "./queries";
 
-  export const load: Load = async ({ params }) => {
+  export const load: Load = async ({ params, stuff }) => {
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
     if (!dealID) {
       return { status: 404, error: `Deal not found` };
     }
 
-    const { data } = await get(client).query<{ deal: Deal }>({
+    const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
       query: deal_gql_query,
       variables: { id: dealID, version: dealVersion },
     });

@@ -135,7 +135,6 @@ async function getChartDescriptions(language = "en") {
 }
 
 export async function fetchBasis(lang = "en") {
-  console.log("LANG", lang);
   await getObservatoryPages(lang);
   await getBlogCategories(lang);
   await getAboutPages(lang);
