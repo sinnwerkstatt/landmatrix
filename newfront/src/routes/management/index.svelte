@@ -1,8 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { user } from "$lib/user";
+  import { page } from "$app/stores";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
 
+  const user = $page.stuff.user;
   $: xTabs = [
     {
       name: "Todo",
@@ -14,7 +15,7 @@
           filters: [
             { field: "workflowinfos.draft_status_before", value: null },
             { field: "workflowinfos.draft_status_after", value: null },
-            { field: "workflowinfos.to_user_id", value: $user.id },
+            { field: "workflowinfos.to_user_id", value: user.id },
           ],
         },
         {
@@ -24,7 +25,7 @@
             { field: "draft_status", value: 1 },
             { field: "workflowinfos.draft_status_before", value: 2 },
             { field: "workflowinfos.draft_status_after", value: 1 },
-            { field: "workflowinfos.to_user_id", value: $user.id },
+            { field: "workflowinfos.to_user_id", value: user.id },
           ],
         },
         {
@@ -50,7 +51,7 @@
           filters: [
             { field: "workflowinfos.draft_status_before", value: null },
             { field: "workflowinfos.draft_status_after", value: null },
-            { field: "workflowinfos.from_user_id", value: $user.id },
+            { field: "workflowinfos.from_user_id", value: user.id },
           ],
         },
         {
@@ -60,7 +61,7 @@
           filters: [
             { field: "workflowinfos.draft_status_before", value: 2 },
             { field: "workflowinfos.draft_status_after", value: 1 },
-            { field: "workflowinfos.from_user_id", value: $user.id },
+            { field: "workflowinfos.from_user_id", value: user.id },
           ],
         },
       ],
@@ -75,14 +76,14 @@
             { field: "draft_status", value: 1 },
             {
               field: "current_draft.created_by_id",
-              value: $user.id,
+              value: user.id,
             },
           ],
         },
         {
           name: "Created by me",
           id: "created_by_me",
-          filters: [{ field: "created_by_id", value: $user.id }],
+          filters: [{ field: "created_by_id", value: user.id }],
         },
         {
           name: "Reviewed by me",
@@ -91,7 +92,7 @@
           filters: [
             { field: "workflowinfos.draft_status_before", value: 2 },
             { field: "workflowinfos.draft_status_after", value: 3 },
-            { field: "workflowinfos.from_user_id", value: $user.id },
+            { field: "workflowinfos.from_user_id", value: user.id },
           ],
         },
         {
@@ -100,7 +101,7 @@
           staff: true,
           filters: [
             { field: "workflowinfos.draft_status_before", value: 3 },
-            { field: "workflowinfos.from_user_id", value: $user.id },
+            { field: "workflowinfos.from_user_id", value: user.id },
           ],
         },
       ],

@@ -1,22 +1,22 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { dispatchLogin, user } from "$lib/user";
+  import { dispatchLogin } from "$lib/user";
 
   let username = "";
   let password = "";
   let login_failed_message = "";
   let login_success_message = $_("You are logged in.");
 
-  $: logged_in = $user?.is_authenticated || false;
+  let logged_in;
+  let next;
 
   onMount(() => {
-    const next = $page.url.searchParams.get("next") || "/";
+    next = $page.url.searchParams.get("next") || "/";
 
-    if (logged_in) {
-      goto(next);
+    if ($page.stuff.user?.is_authenticated) {
+      window.location.href = next;
     }
   });
 
@@ -24,6 +24,8 @@
     const res = await dispatchLogin(username, password);
     if (res.status) {
       login_failed_message = "";
+      logged_in = true;
+      setTimeout(() => (window.location.href = next), 100);
     } else {
       login_failed_message = res.error;
     }

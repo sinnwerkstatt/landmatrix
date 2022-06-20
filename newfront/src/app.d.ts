@@ -1,4 +1,5 @@
 /// <reference types="@sveltejs/kit" />
+import type { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import type { User } from "./lib/types/user";
 
 declare namespace App {
@@ -11,6 +12,7 @@ declare namespace App {
   }
   interface Stuff {
     user?: User;
+    secureApolloClient: ApolloClient<NormalizedCacheObject>;
   }
 }
 

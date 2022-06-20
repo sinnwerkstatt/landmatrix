@@ -2,13 +2,13 @@
   import { gql } from "@apollo/client/core";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
   import { filters } from "$lib/filters";
   import { publicOnly } from "$lib/filters";
   import { countries, regions } from "$lib/stores";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
-  import { user } from "$lib/user";
   import { isDefaultFilter, showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
@@ -81,7 +81,7 @@
     `;
     const variables = {
       limit: 0,
-      subset: $user?.is_authenticated ? "ACTIVE" : "PUBLIC",
+      subset: $page.stuff.user?.is_authenticated ? "ACTIVE" : "PUBLIC",
     };
     const res = await $client.query<{ investors: Investor[] }>({ query, variables });
     investors = res.data.investors;
@@ -130,7 +130,7 @@
         label={$_("Default filter")}
       />
 
-      {#if ["ADMINISTRATOR", "EDITOR"].includes($user?.role)}
+      {#if ["ADMINISTRATOR", "EDITOR"].includes($page.stuff.user?.role)}
         <CheckboxSwitch
           class="text-sm"
           bind:checked={$publicOnly}

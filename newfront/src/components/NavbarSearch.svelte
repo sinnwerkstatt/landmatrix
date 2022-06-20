@@ -2,12 +2,14 @@
   import { gql } from "@apollo/client/core";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
-  import { user } from "$lib/user";
   import SearchIcon from "./icons/SearchIcon.svelte";
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
+
+  $: user = $page.stuff.user;
 
   let search = "";
   let showSearch = false;
@@ -30,7 +32,7 @@
         }
       `,
       variables: {
-        subset: $user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
+        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
       },
     });
     deals = data.deals;
@@ -47,7 +49,7 @@
         }
       `,
       variables: {
-        subset: $user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
+        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
       },
     });
     investors = data.investors;
