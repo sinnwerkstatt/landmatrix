@@ -43,6 +43,7 @@
   //   drawMarker: false,
   // };
 
+  const areaTypes = ["production_area", "contract_area", "intended_area"];
   const colormap = {
     contract_area: "#ff00ff",
     intended_area: "#66ff33",
@@ -203,6 +204,40 @@
     });
   };
 
+  const highlightFeatureInMap = () => {
+    locationFGs
+      .get(activeLocationID)
+      .getLayers()
+      .filter((l) => l.feature.geometry.type === "Polygon")
+      .filter((l) => !hiddenFeatures.includes(l.feature))
+      .forEach((l) =>
+        l.feature === currentHoverFeature
+          ? l.setStyle({
+              color: "orange",
+            })
+          : l.setStyle({
+              color: colormap[l.feature.properties.type],
+            })
+      );
+  };
+
+  let hiddenFeatures = [];
+
+  const updateVisibility = () => {
+    locationFGs
+      .get(activeLocationID)
+      .getLayers()
+      .filter((l) => l.feature.geometry.type === "Polygon")
+      .forEach((l) =>
+        hiddenFeatures.includes(l.feature)
+          ? l.setStyle({
+              color: "rgba(0,0,0,0)",
+            })
+          : l.setStyle({
+              color: colormap[l.feature.properties.type],
+            })
+      );
+  };
   onMount(() => {
     if (locations?.length > 0) onActivateLocation(locations[0]);
   });
@@ -313,32 +348,18 @@
         </BigMap>
         <div>
           {#if activeLocationID}
-            <DealLocationsAreaField
-              areaType="production_area"
-              bind:locations
-              bind:activeLocationID
-              bind:currentHoverFeature
-              on:change={_updateGeoJSON}
-              on:hoverFeature={_updateGeoJSON}
-            />
-
-            <DealLocationsAreaField
-              areaType="contract_area"
-              bind:locations
-              bind:activeLocationID
-              bind:currentHoverFeature
-              on:change={_updateGeoJSON}
-              on:hoverFeature={_updateGeoJSON}
-            />
-
-            <DealLocationsAreaField
-              areaType="intended_area"
-              bind:locations
-              bind:activeLocationID
-              bind:currentHoverFeature
-              on:change={_updateGeoJSON}
-              on:hoverFeature={_updateGeoJSON}
-            />
+            {#each areaTypes as areaType}
+              <DealLocationsAreaField
+                {areaType}
+                bind:locations
+                bind:activeLocationID
+                bind:currentHoverFeature
+                bind:hiddenFeatures
+                on:change={_updateGeoJSON}
+                on:toggleVisibility={updateVisibility}
+                on:hoverFeature={highlightFeatureInMap}
+              />
+            {/each}
           {/if}
         </div>
       </div>

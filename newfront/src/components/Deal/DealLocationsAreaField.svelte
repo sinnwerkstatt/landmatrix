@@ -4,9 +4,11 @@
   import { _ } from "svelte-i18n";
   import type { Location } from "$lib/types/deal";
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte";
+  import EyeIcon from "$components/icons/EyeIcon.svelte";
+  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
+  import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import Overlay from "$components/Overlay.svelte";
-  import MinusIcon from "../icons/MinusIcon.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -16,6 +18,7 @@
   export let locations: Location[];
   export let activeLocationID: string;
   export let currentHoverFeature: Feature | null;
+  export let hiddenFeatures: Feature[];
 
   let showAddAreaOverlay = false;
   let toAddFiles;
@@ -60,6 +63,14 @@
     });
     reader.readAsText(toAddFiles[0]);
   }
+
+  const toggleVisibility = (feature: Feature) => {
+    hiddenFeatures = hiddenFeatures.includes(feature)
+      ? hiddenFeatures.filter((f) => f !== feature)
+      : [...hiddenFeatures, feature];
+
+    dispatch("toggleVisibility");
+  };
 
   function removeFeature(e) {
     let actAreas = locations.find((l) => l.id === activeLocationID).areas;
@@ -115,10 +126,11 @@
     <thead>
       {#if areaFeatures.length > 0}
         <tr>
+          <th class="font-normal" />
           <th class="font-normal">{$_("Current")}</th>
           <th class="font-normal">{$_("Date")}</th>
           <th class="font-normal">{$_("Type")}</th>
-          <th />
+          <th class="font-normal" />
         </tr>
       {/if}
     </thead>
@@ -129,17 +141,26 @@
           on:mouseout={() => onLocationAreaMouseOut()}
           class="px-1 {feat === currentHoverFeature ? 'border border-orange-400' : ''}"
         >
+          <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
+            {#if hiddenFeatures.includes(feat)}
+              <div title="Show"><EyeIcon /></div>
+            {:else}
+              <div title="Hide"><EyeSlashIcon /></div>
+            {/if}
+          </td>
           <td class="text-center px-1" on:click={() => updateCurrent(i)}>
             <input
               type="radio"
               bind:group={current}
               value={i}
               name="{areaType}_current"
+              required={current === -1}
             />
           </td>
           <td class="px-1">
             <LowLevelDateYearField
               bind:value={feat.properties.date}
+              required
               emitUndefinedOnEmpty
             />
           </td>
@@ -156,8 +177,7 @@
             </button>
             <button
               type="button"
-              disabled={areaFeatures.length <= 1}
-              on:click={() => removeFeature(feat)}
+              on:click={() => confirm($_("Delete feature?")) && removeFeature(feat)}
             >
               <MinusIcon class="w-5 h-5 text-red-600" />
             </button>
