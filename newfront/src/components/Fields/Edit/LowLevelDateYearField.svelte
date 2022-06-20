@@ -15,7 +15,6 @@
   let inputfield;
 
   function checkValidity() {
-    console.log("doing validity check", value);
     const field_valid =
       !value ||
       dayjs(

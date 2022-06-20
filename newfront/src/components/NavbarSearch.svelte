@@ -3,9 +3,9 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { client } from "$lib/apolloClient";
-  import { user } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
+  import { user } from "$lib/user";
   import SearchIcon from "./icons/SearchIcon.svelte";
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
 

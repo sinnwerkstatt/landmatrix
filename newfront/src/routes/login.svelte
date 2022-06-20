@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { dispatchLogin, user } from "$lib/stores";
+  import { dispatchLogin, user } from "$lib/user";
 
   let username = "";
   let password = "";

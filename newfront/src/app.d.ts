@@ -1,7 +1,6 @@
 /// <reference types="@sveltejs/kit" />
+import type { User } from "./lib/types/user";
 
-// See https://kit.svelte.dev/docs/types#the-app-namespace
-// for information about these interfaces
 declare namespace App {
   interface Locals {
     cookie?: string;
@@ -10,7 +9,9 @@ declare namespace App {
   interface Session {
     cookie?: string;
   }
-  // interface Stuff {}
+  interface Stuff {
+    user?: User;
+  }
 }
 
 declare module "leaflet?client" {

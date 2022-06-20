@@ -4,13 +4,11 @@
   import {
     aboutPages,
     blogCategories,
-    dispatchLogin,
-    dispatchLogout,
     fetchBasis,
     observatoryPages,
-    user,
   } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
+  import { dispatchLogin, dispatchLogout, user } from "$lib/user";
   import TranslateIcon from "$components/icons/TranslateIcon.svelte";
   import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
   import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";

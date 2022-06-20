@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { user } from "$lib/stores";
+  import { user } from "$lib/user";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
 
   $: xTabs = [

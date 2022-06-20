@@ -5,9 +5,10 @@
   import { client } from "$lib/apolloClient";
   import { filters } from "$lib/filters";
   import { publicOnly } from "$lib/filters";
-  import { countries, regions, user } from "$lib/stores";
+  import { countries, regions } from "$lib/stores";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
+  import { user } from "$lib/user";
   import { isDefaultFilter, showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,

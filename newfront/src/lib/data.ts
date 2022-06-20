@@ -3,8 +3,8 @@ import type { Readable } from "svelte/store";
 import { client } from "$lib/apolloClient";
 import { data_deal_query_gql } from "$lib/deal_query";
 import { filters, publicOnly } from "$lib/filters";
-import { user } from "$lib/stores";
 import type { Deal } from "$lib/types/deal";
+import { user } from "$lib/user";
 
 let debounceTimeOut: NodeJS.Timeout;
 
