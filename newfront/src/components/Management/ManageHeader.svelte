@@ -122,6 +122,13 @@
     if (otype === "deal") return obV ? `/deal/${obID}/${obV}` : `/deal/${obID}`;
     return obV ? `/investor/${obID}/${obV}` : `/investor/${obID}`;
   }
+
+  function object_edit_path(obID: number, obV?: number) {
+    if (otype === "deal")
+      return obV ? `/deal/edit/${obID}/${obV}` : `/deal/edit/${obID}`;
+    return obV ? `/investor/edit/${obID}/${obV}` : `/investor/edit/${obID}`;
+  }
+
   //   object_edit_path(obID: number, obV: number | string): Location {
   //     return this.otype === "deal"
   //       ? {
@@ -359,7 +366,7 @@
                   {#if !objectVersion || $page.stuff.user.id === object.modified_by?.id}
                     <a
                       class:disabled={is_old_draft}
-                      href="object_edit_path(object.id, objectVersion)"
+                      href={object_edit_path(object.id, last_version.id)}
                       class="btn btn-primary"
                     >
                       {$_("Edit")}
