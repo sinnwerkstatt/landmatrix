@@ -11,13 +11,11 @@ test.describe.serial("deal creation tests", () => {
     await page.goto("/deal/add/");
     saveButton = page.locator("text=Save");
 
-    //Location
-    // await page.locator(".chevron").click();
-    // await page.locator("text=Albania").nth(1).click();
+    //LOCATION
+    await page.locator('[placeholder="Country"]').fill("Albania");
     // await page.locator("text=Add Location").click();
     // await page.locator('[placeholder="Location"]').click();
     // await page.locator('[placeholder="Location"]').fill("Belsh");
-    // await page.locator("text=Save").click();
 
     //GENERAL
     await page.locator("text=General info").click();
@@ -43,6 +41,21 @@ test.describe.serial("deal creation tests", () => {
     await expect(
       await decimalField.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
+
+    //DateAreaField
+    //Radiobutton
+
+    //Area
+    await page
+      .locator(
+        'text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> [placeholder="\\31 23\\.45"]'
+      )
+      .click();
+    await page
+      .locator(
+        'text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> [placeholder="\\31 23\\.45"]'
+      )
+      .fill("2000");
 
     //Datefield
     let datefield = await page.locator(
@@ -72,18 +85,76 @@ test.describe.serial("deal creation tests", () => {
       await datefield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
-    //ChoiceField
-    // let choiceField = await page.locator(
-    //   'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
-    // );
-    //
-    // await choiceField.fill("USD");
-    // await page.locator("text=US Dollar (USD)").nth(1).click();
-    //
-    // await expect(
-    //   await choiceField.evaluate((x: HTMLInputElement) => x.validity.valid)
-    // ).toBeTruthy();
-    //
+    await page.locator('input[name="contract_size_current"]').first().check();
+
+    //Create 2nd DateAreaField
+    await page
+      .locator(
+        "text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> button"
+      )
+      .first()
+      .click();
+    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).click();
+    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).fill("2019");
+    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).press("Tab");
+    await page
+      .locator('text=ha ha >> [placeholder="\\31 23\\.45"]')
+      .nth(1)
+      .fill("3000");
+
+    //Purchase price
+    // await page.locator('input [placeholder="\\31 23\\.45"]').nth(4).click();
+    //ChoiceField Charfield
+    let choiceField_Charfield = await page.locator(
+      'select[name="purchase_price_type"]'
+    );
+    choiceField_Charfield.selectOption("PER_HA");
+    // Click div:has-text("Adding new deal Save Cancel Locations General info Contracts Employment Investor") >> nth=1
+    await expect(
+      await choiceField_Charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
+    ).toBeTruthy();
+
+    //ChoiceField ForeignKey
+    let choiceField = await page.locator(
+      'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
+    );
+
+    await choiceField.fill("USD");
+    await page.locator("text=US Dollar (USD)").nth(1).click();
+
+    //DateAreaFarmersHouseholds
+    await page
+      .locator(
+        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .click();
+    await page
+      .locator(
+        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .fill("2018-02-01");
+    await page
+      .locator(
+        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .press("Tab");
+    await page
+      .locator(
+        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="\\31 23\\.45"]'
+      )
+      .fill("2000");
+    await page
+      .locator(
+        "text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> button"
+      )
+      .first()
+      .click();
+    await page
+      .locator(
+        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> input[type="number"]'
+      )
+      .nth(2)
+      .fill("10");
 
     //DecimalField Farmers
     let farmers = await page
@@ -104,8 +175,88 @@ test.describe.serial("deal creation tests", () => {
       await farmers.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
-    //Contracts
+    // Check input[name="contract_farming"] >> nth=1
+    let radiobutton = await page.locator('input[name="contract_farming"]').nth(1);
+    await radiobutton.check();
+    await page.locator('input[name="on_the_lease_state"]').first().check();
+    await page.locator('input[name="on_the_lease_current"]').first().check();
 
+    //Create 2nd DateAreaFarmersHouseholdField
+    await page
+      .locator(
+        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .nth(1)
+      .click();
+    await page
+      .locator(
+        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .nth(1)
+      .fill("2019");
+    await page
+      .locator(
+        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
+      )
+      .nth(1)
+      .press("Tab");
+    await page
+      .locator(
+        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="\\31 23\\.45"]'
+      )
+      .nth(1)
+      .fill("1000");
+    await page
+      .locator(
+        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="\\31 23\\.45"]'
+      )
+      .nth(1)
+      .press("Tab");
+
+    //INVESTOR INFO
+    //Charfield
+    await page.locator("text=Investor info").click();
+    let charfield = await page.locator('[placeholder="Name of investment project"]');
+    await charfield.fill(
+      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata123456789"
+    );
+    await charfield.evaluate((x: HTMLInputElement) => console.log(x.validity));
+    await expect(charfield).toHaveValue(
+      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata"
+    );
+    await expect(
+      await charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
+    ).toBeTruthy();
+
+    await Promise.all([page.waitForNavigation(), saveButton.click()]);
+
+    // await expect(saveButton).toBeDisabled();
+    // await page.waitForNavigation();
+
+    let headline = await page.locator("h1");
+
+    dealID = (await headline.innerText()).replace("Editing Deal #", "");
+
+    await page.goto(`deal/${dealID}`);
+
+    //EDIT DEAL
+    headline = await page.locator("h1");
+    // await expect(headline).toContainText(`Deal #${dealID}`);
+
+    await Promise.all([
+      page.waitForNavigation(),
+      await page.goto(`deal/${dealID}/#general`),
+    ]);
+
+    const currentIntention = await page.locator("text=2000 ha");
+
+    expect(currentIntention).toHaveClass("font-bold");
+    //...
     await page.pause();
+
+    await page.goto(`deal/edit/${dealID}`);
+    await expect(
+      await page.locator('input[name="contract_size_current"]').first()
+    ).toBeChecked();
   });
 });
