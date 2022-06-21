@@ -11,7 +11,7 @@
 
     const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
       query: deal_gql_query,
-      variables: { id: dealID, version: dealVersion },
+      variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
     });
     return { props: { dealID, dealVersion, deal: data.deal } };
   };
