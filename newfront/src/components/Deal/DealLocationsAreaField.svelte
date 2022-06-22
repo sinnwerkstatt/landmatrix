@@ -36,15 +36,6 @@
 
   $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
-  const onLocationAreaHover = (feature) => {
-    currentHoverFeature = feature;
-    dispatch("hoverFeature");
-  };
-  const onLocationAreaMouseOut = () => {
-    currentHoverFeature = null;
-    dispatch("hoverFeature");
-  };
-
   function uploadFiles() {
     const reader = new FileReader();
     reader.addEventListener("load", (event) => {
@@ -68,8 +59,6 @@
     hiddenFeatures = hiddenFeatures.includes(feature)
       ? hiddenFeatures.filter((f) => f !== feature)
       : [...hiddenFeatures, feature];
-
-    dispatch("toggleVisibility");
   };
 
   function removeFeature(e) {
@@ -137,8 +126,8 @@
     <tbody>
       {#each areaFeatures as feat, i}
         <tr
-          on:mouseover={() => onLocationAreaHover(feat)}
-          on:mouseout={() => onLocationAreaMouseOut()}
+          on:mouseover={() => (currentHoverFeature = feat)}
+          on:mouseout={() => (currentHoverFeature = null)}
           class="px-1 {feat === currentHoverFeature ? 'border border-orange-400' : ''}"
         >
           <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>

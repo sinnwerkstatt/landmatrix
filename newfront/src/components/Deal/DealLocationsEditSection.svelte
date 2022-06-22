@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Feature } from "geojson";
   import type { Layer, Map as LMap } from "leaflet";
+  import { Polyline } from "leaflet";
   import { GeoJSON, LatLngBounds, Marker, Path } from "leaflet?client";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
@@ -26,7 +27,7 @@
   let currentHoverFeature: Feature | null;
   let hiddenFeatures: Feature[] = [];
   let activeFeatureGroup: GeoJSON;
-  let hoverLocationID: string;
+  let hoverLocationID: string | null;
   let activeLocationID: string | undefined;
   let bigmap: LMap;
 
@@ -53,22 +54,12 @@
   };
 
   const geojsonOptions = {
-    style: (feature: Feature) => {
-      if (currentHoverFeature === feature) {
-        return { color: "orange" };
-      }
-      return { color: colormap[feature.properties.type] };
-    },
     onEachFeature: (feature: Feature, layer: Layer) => {
       if (layer instanceof Path) {
         layer.addEventListener("mouseover", () => {
-          if (hiddenFeatures.includes(feature)) return;
-          layer.setStyle({ color: "orange" });
           currentHoverFeature = feature;
         });
         layer.addEventListener("mouseout", () => {
-          if (hiddenFeatures.includes(feature)) return;
-          layer.setStyle({ color: colormap[feature.properties.type] });
           currentHoverFeature = null;
         });
       }
@@ -108,6 +99,7 @@
       }
     });
     _fitBounds();
+    hiddenFeatures = hiddenFeatures; // trigger reevaluation of styling
   }
 
   function _fitBounds() {
@@ -207,38 +199,31 @@
     });
   };
 
-  const highlightFeatureInMap = () => {
-    locationFGs
-      .get(activeLocationID)
-      .getLayers()
-      .filter((l) => l.feature.geometry.type === "Polygon")
-      .filter((l) => !hiddenFeatures.includes(l.feature))
-      .forEach((l) =>
-        l.feature === currentHoverFeature
-          ? l.setStyle({
-              color: "orange",
-            })
-          : l.setStyle({
-              color: colormap[l.feature.properties.type],
-            })
-      );
-  };
+  $: {
+    // adjust style for hove and visibility state
+    if (activeLocationID) {
+      locationFGs
+        .get(activeLocationID)
+        .getLayers()
+        .filter((layer): layer is Polyline => layer instanceof Polyline)
+        .forEach((layer) => {
+          let style = {};
 
-  const updateVisibility = () => {
-    locationFGs
-      .get(activeLocationID)
-      .getLayers()
-      .filter((l) => l.feature.geometry.type === "Polygon")
-      .forEach((l) =>
-        hiddenFeatures.includes(l.feature)
-          ? l.setStyle({
-              color: "rgba(0,0,0,0)",
-            })
-          : l.setStyle({
-              color: colormap[l.feature.properties.type],
-            })
-      );
-  };
+          if (layer.feature) {
+            if (hiddenFeatures.includes(layer.feature)) {
+              style = { color: "rgba(0,0,0,0)" };
+            } else if (layer.feature === currentHoverFeature) {
+              style = { color: "orange" };
+            } else {
+              style = { color: colormap[layer.feature.properties.type] };
+            }
+          }
+
+          layer.setStyle(style);
+        });
+    }
+  }
+
   onMount(() => {
     if (locations?.length > 0) onActivateLocation(locations[0]);
   });
@@ -357,8 +342,6 @@
                 bind:currentHoverFeature
                 bind:hiddenFeatures
                 on:change={_updateGeoJSON}
-                on:toggleVisibility={updateVisibility}
-                on:hoverFeature={highlightFeatureInMap}
               />
             {/each}
           {/if}
