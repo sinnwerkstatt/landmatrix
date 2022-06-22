@@ -239,24 +239,60 @@ test.describe.serial("deal creation tests", () => {
 
     await page.goto(`deal/${dealID}`);
 
-    //EDIT DEAL
-    headline = await page.locator("h1");
-    // await expect(headline).toContainText(`Deal #${dealID}`);
+    //CHECKOUT DEAL
+    await expect(await page.locator("h1")).toHaveText(`Deal #${dealID}`);
 
     await Promise.all([
       page.waitForNavigation(),
       await page.goto(`deal/${dealID}/#general`),
     ]);
 
-    const currentIntention = await page.locator("text=2000 ha");
+    const currentIntention = await page.locator("text=2 000");
+    await expect(currentIntention).toHaveText("[2018-02-01, current] 2 000 ha ");
+    await expect(currentIntention).toHaveClass("font-bold");
+    // console.log(await currentIntention.count());
 
-    expect(currentIntention).toHaveClass("font-bold");
-    //...
-    await page.pause();
+    let contractFarming = page.locator(".test", {
+      has: page.locator("text=Contract farming"),
+    });
+    await expect(contractFarming).toHaveText(/No/);
 
-    await page.goto(`deal/edit/${dealID}`);
-    await expect(
-      await page.locator('input[name="contract_size_current"]').first()
-    ).toBeChecked();
+    //EDIT DEAL
+    await Promise.all([
+      page.waitForNavigation(),
+      await page.locator('a:has-text("Edit")').click(),
+    ]);
+    await Promise.all([
+      page.waitForNavigation(),
+      await page.locator("text=General info").click(),
+    ]);
+
+    await page.locator('input[name="contract_size_current"]').nth(1).check();
+    await page
+      .locator('text=Current Date Area (ha) ha ha >> [placeholder="YYYY-MM-DD"]')
+      .nth(1)
+      .fill("2022");
+    await page
+      .locator('textarea[name="contract_farming_comment"]')
+      .fill("Some comment");
+    await page.locator('input[name="contract_farming"]').first().check();
+    //await page.locator('input[name="on_the_lease_state"]').nth(1).check();
+    await saveButton.click();
+
+    //CHECKOUT DEAL CHANGES AFTER EDIT
+    await Promise.all([
+      page.waitForNavigation(),
+      await page.goto(`deal/${dealID}/#general`),
+    ]);
+
+    await expect(currentIntention).toHaveText("[2018-02-01] 2 000 ha ");
+    await expect(currentIntention).toHaveClass("");
+
+    const newCurrentIntention = await page.locator("text=3 000");
+    await expect(newCurrentIntention).toHaveText("[2022, current] 3 000 ha ");
+    await expect(newCurrentIntention).toHaveClass("font-bold");
+
+    await expect(contractFarming.first()).toHaveText(/Yes/);
+    await expect(contractFarming.nth(1)).toHaveText(/Some comment/);
   });
 });
