@@ -143,9 +143,11 @@
         >
           <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
             {#if hiddenFeatures.includes(feat)}
-              <div title="Show"><EyeIcon /></div>
+              <div title="Show">
+                <EyeIcon class="text-orange h-5 w-5" />
+              </div>
             {:else}
-              <div title="Hide"><EyeSlashIcon /></div>
+              <div title="Hide"><EyeSlashIcon class="h-5 w-5" /></div>
             {/if}
           </td>
           <td class="text-center px-1" on:click={() => updateCurrent(i)}>

@@ -85,6 +85,7 @@ test.describe.serial("deal creation tests", () => {
       await datefield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
+<<<<<<< HEAD
     await page.locator('input[name="contract_size_current"]').first().check();
 
     //Create 2nd DateAreaField
@@ -155,6 +156,20 @@ test.describe.serial("deal creation tests", () => {
       )
       .nth(2)
       .fill("10");
+=======
+    //ChoiceField
+    // let choiceField = await page.locator(
+    //   'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
+    // );
+    //
+    // await choiceField.fill("USD");
+    // await page.locator("text=US Dollar (USD)").nth(1).click();
+    //
+    // await expect(
+    //   await choiceField.evaluate((x: HTMLInputElement) => x.validity.valid)
+    // ).toBeTruthy();
+    //
+>>>>>>> b3c5c6388a0fb8193a455567fac2498ac9116e1e
 
     //DecimalField Farmers
     let farmers = await page
@@ -175,6 +190,7 @@ test.describe.serial("deal creation tests", () => {
       await farmers.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
+<<<<<<< HEAD
     // Check input[name="contract_farming"] >> nth=1
     let radiobutton = await page.locator('input[name="contract_farming"]').nth(1);
     await radiobutton.check();
@@ -294,5 +310,10 @@ test.describe.serial("deal creation tests", () => {
 
     await expect(contractFarming.first()).toHaveText(/Yes/);
     await expect(contractFarming.nth(1)).toHaveText(/Some comment/);
+
+    //Contracts
+
+    await page.pause();
+
   });
 });
