@@ -23,10 +23,11 @@
   export let locations: Location[] = [];
   export let country: Country;
 
-  let currentHoverFeature: Feature;
+  let currentHoverFeature: Feature | null;
+  let hiddenFeatures: Feature[] = [];
   let activeFeatureGroup: GeoJSON;
   let hoverLocationID: string;
-  let activeLocationID: string;
+  let activeLocationID: string | undefined;
   let bigmap: LMap;
 
   let cursorsMovable = false;
@@ -61,10 +62,12 @@
     onEachFeature: (feature: Feature, layer: Layer) => {
       if (layer instanceof Path) {
         layer.addEventListener("mouseover", () => {
+          if (hiddenFeatures.includes(feature)) return;
           layer.setStyle({ color: "orange" });
           currentHoverFeature = feature;
         });
         layer.addEventListener("mouseout", () => {
+          if (hiddenFeatures.includes(feature)) return;
           layer.setStyle({ color: colormap[feature.properties.type] });
           currentHoverFeature = null;
         });
@@ -220,8 +223,6 @@
             })
       );
   };
-
-  let hiddenFeatures = [];
 
   const updateVisibility = () => {
     locationFGs
