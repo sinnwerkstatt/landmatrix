@@ -31,8 +31,6 @@ __pycache__/
 
 /templates/vuebase.html
 
-# tsc files
-/tests/**.spec.js
 
 # IDEs
 .idea/

@@ -20,9 +20,9 @@
       "$views/*": ["src/views/*"]
     }
   },
-	"include": [
-		"./src/**/*.ts",
-		"./src/**/*.svelte"
-	],
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.svelte"
+  ],
   "exclude": ["./node_modules/*"]
 }
