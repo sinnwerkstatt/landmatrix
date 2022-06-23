@@ -57,7 +57,11 @@
             </div>
           </td>
           <td class="w-36 p-1">
-            <LowLevelDateYearField bind:value={val.date} required={val.choice} />
+            <LowLevelDateYearField
+              bind:value={val.date}
+              required={val.choice}
+              name={formfield.name}
+            />
           </td>
           <td class="w-2/3 p-1">
             <TypedChoiceField bind:value={val.choice} {formfield} required={val.date} />

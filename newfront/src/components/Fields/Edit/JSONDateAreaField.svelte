@@ -67,6 +67,7 @@
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
+              name={formfield.name}
             />
           </td>
 
@@ -74,18 +75,20 @@
             <LowLevelDecimalField
               bind:value={val.area}
               required={formfield.required}
+              name={formfield.name}
               unit="ha"
             />
           </td>
 
           <td class="p-1">
-            <button type="button" on:click={addEntry}>
+            <button type="button" on:click={addEntry} name="plus_icon">
               <PlusIcon class="w-5 h-5 text-black" />
             </button>
             <button
               type="button"
               disabled={valueCopy.length <= 1}
               on:click={() => removeEntry(i)}
+              name="minus_icon"
             >
               <MinusIcon class="w-5 h-5 text-red-600" />
             </button>

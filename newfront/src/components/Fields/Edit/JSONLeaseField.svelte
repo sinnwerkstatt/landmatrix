@@ -76,6 +76,7 @@
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
+              name={formfield.name}
             />
           </td>
 
@@ -84,6 +85,7 @@
               bind:value={val.area}
               required={formfield.required}
               unit="ha"
+              name={formfield.name}
             />
           </td>
           <td class="w-1/3 p-1">
@@ -92,6 +94,7 @@
               required={formfield.required}
               decimals=""
               min="0"
+              name={formfield.name}
             />
           </td>
           <td class="w-1/3 p-1">
@@ -100,6 +103,7 @@
               required={formfield.required}
               decimals=""
               min="0"
+              name={formfield.name}
             />
           </td>
 

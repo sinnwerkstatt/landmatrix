@@ -14,5 +14,6 @@
     max={formfield.max_value}
     min={formfield.min_value === "FloatField" ? "" : "0"}
     decimals={formfield.class === "IntegerField" ? 0 : 2}
+    name={formfield.name}
   />
 </div>

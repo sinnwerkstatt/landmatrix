@@ -72,6 +72,7 @@
               bind:value={val.area}
               required={val.date || val.choices}
               unit="ha"
+              name={formfield.name}
             />
           </td>
           <td class="w-2/4">

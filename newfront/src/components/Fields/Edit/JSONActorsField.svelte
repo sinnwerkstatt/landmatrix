@@ -42,7 +42,12 @@
       {#each valueCopy as val, i}
         <tr>
           <td class="w-1/2">
-            <input type="text" bind:value={val.name} class="inpt" />
+            <input
+              type="text"
+              bind:value={val.name}
+              class="inpt"
+              name={formfield.name}
+            />
           </td>
           <div class="typed_choice_field">
             <select bind:value={val.role} class="inpt" name={formfield.name}>
