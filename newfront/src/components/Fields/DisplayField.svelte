@@ -5,6 +5,7 @@
   import BooleanField from "$components/Fields/Display/BooleanField.svelte";
   import DecimalField from "$components/Fields/Display/DecimalField.svelte";
   import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte";
+  import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte";
   import TextField from "$components/Fields/Display/TextField.svelte";
   import type { FormField } from "$components/Fields/fields";
   import AutoField from "./Display/AutoField.svelte";
@@ -74,6 +75,7 @@
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
+    JSONLeaseField: JSONLeaseField,
     LengthField: LengthField,
     ManyToManyField: ManyToManyField,
     ModelChoiceField: ForeignKeyField,
