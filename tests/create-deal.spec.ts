@@ -19,6 +19,10 @@ test.describe.serial("deal creation tests", () => {
 
     //GENERAL
     await page.locator("text=General info").click();
+    const buttonCurrent = await page
+      .locator('input[name="contract_size_current"]')
+      .first();
+    await expect(buttonCurrent).toBeDisabled();
 
     //DecimalField
     let decimalField = await page.locator(`[name=intended_size]`);
@@ -73,7 +77,7 @@ test.describe.serial("deal creation tests", () => {
     ).toBeTruthy();
 
     await page.locator('input[name="contract_size_current"]').first().check();
-
+    // ToDo: Testing "+"button
     //Create 2nd DateAreaField
     await page.locator('button[name="plus_icon"]').first().click();
 
@@ -141,43 +145,65 @@ test.describe.serial("deal creation tests", () => {
       await charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
-    await page.pause();
     //ADD CONTRACT
-    //...
-    //ADD FILE
+    await page.locator("text=Contracts").click();
+    await page.locator("text=Add Contract").click();
+    await page.locator('input[name="number"]').fill("1234");
+    await page.locator('input[name="date"]').fill("2018-01-02");
+    await page.locator('input[name="agreement_duration"]').fill("10");
+    await page.locator("text=Add Contract").click();
+    await expect((await page.locator("text=2. Contract").count()) === 1).toBeTruthy();
+    await Promise.all([page.waitForNavigation(), saveButton.click()]);
+    await expect((await page.locator("text=2. Contract").count()) === 0).toBeTruthy();
+
+    //await page.locator("text=/1. Contract/ >> svg").first().click();
+    //ToDo: Expect alert, but not showing in chromium-browser, playwright-docu: https://playwright.dev/docs/dialogs
+
+    //ToDo: ADD FILE
+    // https://playwright.dev/docs/input#upload-files
     //...
 
-    await Promise.all([page.waitForNavigation(), saveButton.click()]);
+    //await Promise.all([page.waitForNavigation(), saveButton.click()]);
 
     // await expect(saveButton).toBeDisabled();
-    // await page.waitForNavigation();
+
+    //ToDo: needs fixing: wait for navigation line 156 not working, l175 returns innertext from before and after clicking the save-button
+    await page.evaluate(() => {
+      return new Promise((resolve) => setTimeout(resolve, 500));
+    });
 
     let headline = await page.locator("h1");
 
     dealID = (await headline.innerText()).replace("Editing Deal #", "");
+  });
 
+  //CHECKOUT DEAL
+  test("checkout new deal", async ({ context, page }) => {
     await page.goto(`deal/${dealID}`);
-
-    //CHECKOUT DEAL
     await expect(await page.locator("h1")).toHaveText(`Deal #${dealID}`);
 
     await Promise.all([
       page.waitForNavigation(),
       await page.goto(`deal/${dealID}/#general`),
     ]);
-
-    const currentIntention = await page.locator("text=2 000");
-    await expect(currentIntention).toHaveText("[2018-02-01, current] 2 000 ha ");
+    await expect(await page.locator('div[data-name="intended_size"]')).toContainText(
+      "123,2"
+    );
+    const currentIntention = await page.locator("text=2 000").first();
+    await expect(currentIntention).toContainText("[2018-02-01, current] 2 000 ha");
     await expect(currentIntention).toHaveClass("font-bold");
     // console.log(await currentIntention.count());
 
-    let contractFarming = page.locator(".test", {
-      has: page.locator("text=Contract farming"),
-    });
-    await expect(contractFarming).toHaveText(/No/);
-    await page.pause();
+    await expect(page.locator('div[data-name="contract_farming"]')).toContainText("No");
+    await page.goto(`deal/${dealID}/#contracts`);
+    await expect(page.locator('div[data-name="number"]')).toContainText("1234");
+  });
 
-    //EDIT DEAL
+  //EDIT DEAL
+  test("edit deal", async ({ context, page }) => {
+    saveButton = page.locator("text=Save");
+
+    await page.goto(`deal/${dealID}`);
     await Promise.all([
       page.waitForNavigation(),
       await page.locator('a:has-text("Edit")').click(),
@@ -188,15 +214,22 @@ test.describe.serial("deal creation tests", () => {
     ]);
 
     await page.locator('input[name="contract_size_current"]').nth(1).check();
-    await page
-      .locator('text=Current Date Area (ha) ha ha >> [placeholder="YYYY-MM-DD"]')
-      .nth(1)
-      .fill("2022");
+    await page.locator('input[name="contract_size"]').nth(2).fill("2022");
     await page
       .locator('textarea[name="contract_farming_comment"]')
       .fill("Some comment");
     await page.locator('input[name="contract_farming"]').first().check();
     //await page.locator('input[name="on_the_lease_state"]').nth(1).check();
+
+    //Add second contract:
+    await page.locator("text=Contracts").click();
+    await page.locator("text=Add Contract").click();
+    await page.locator("text=2. Contract").click();
+
+    await page.locator('input[name="number"]').fill("5678");
+    await page.locator('input[name="date"]').fill("2022-01-02");
+    await page.locator('input[name="agreement_duration"]').fill("20");
+
     await saveButton.click();
 
     //CHECKOUT DEAL CHANGES AFTER EDIT
@@ -204,7 +237,7 @@ test.describe.serial("deal creation tests", () => {
       page.waitForNavigation(),
       await page.goto(`deal/${dealID}/#general`),
     ]);
-
+    const currentIntention = await page.locator("text=2 000").first();
     await expect(currentIntention).toHaveText("[2018-02-01] 2 000 ha ");
     await expect(currentIntention).toHaveClass("");
 
@@ -212,8 +245,14 @@ test.describe.serial("deal creation tests", () => {
     await expect(newCurrentIntention).toHaveText("[2022, current] 3 000 ha ");
     await expect(newCurrentIntention).toHaveClass("font-bold");
 
-    await expect(contractFarming.first()).toHaveText(/Yes/);
-    await expect(contractFarming.nth(1)).toHaveText(/Some comment/);
+    await expect(page.locator('div[data-name="contract_farming"]')).toHaveText("Yes");
+    await expect(page.locator('div[data-name="contract_farming_comment"]')).toHaveText(
+      "Some comment"
+    );
+    await page.goto(`deal/${dealID}/#contracts`);
+    await expect(page.locator('div[data-name="number"]').first()).toContainText("1234");
+
+    await expect(page.locator('div[data-name="number"]').nth(1)).toContainText("5678");
 
     await page.pause();
   });
