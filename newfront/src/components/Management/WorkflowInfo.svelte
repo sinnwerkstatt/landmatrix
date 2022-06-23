@@ -50,7 +50,7 @@
   }
 </script>
 
-<div class="text-sm mb-2 {unread ? '!font-bold' : ''}">
+<div class="text-sm mb-2 mx-1 bg-neutral-200 shadow-md p-1{unread ? '!font-bold' : ''}">
   <div class="meta">
     <span class="font-semibold">{dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}</span
     >
@@ -66,25 +66,29 @@
   {#if info.draft_status_before !== info.draft_status_after}
     <div class="status-change">
       {#if info.draft_status_before}
-        <div class="status inline-block leading-4">
+        <div
+          class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2"
+        >
           {draft_status_map[info.draft_status_before]}
         </div>
         →
       {/if}
-      <div class="status inline-block leading-4">
+      <div class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2">
         {draft_status_map[info.draft_status_after] || status_map[2]}
       </div>
     </div>
   {/if}
   {#if confidential_status_change}
     <div class="status-change">
-      <div class="status inline-block leading-4 {confidential_status_change}">
+      <div
+        class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2 {confidential_status_change}"
+      >
         {$_("Confidential")}
       </div>
     </div>
   {/if}
   {#if comment_wo_head}
-    <div class="py-1 px-2 rounded whitespace-pre-line bg-neutral-200 relative">
+    <div class="py-1 px-2 whitespace-pre-line bg-neutral-200 relative">
       {comment_wo_head}
       {#if unread}
         <button

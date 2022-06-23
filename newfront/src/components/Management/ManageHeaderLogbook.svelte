@@ -23,15 +23,27 @@
   }
 </script>
 
-<div class="comments">
-  <h3>{$_("Logbook")}</h3>
-  <div class="new-comment">
+<div class="bg-lm-warmgray lg:w-1/3">
+  <h3 class="mx-3">{$_("Comments")}</h3>
+  <div class="mx-1">
     <form action="." method="post">
-      <div>
-        <textarea bind:this={commentArea} bind:value={comment} required rows="2" />
+      <div class="">
+        <textarea
+          bind:this={commentArea}
+          bind:value={comment}
+          required
+          rows="2"
+          class="w-full"
+        />
       </div>
-      <div class="send">
-        <span>{$_("Send to")}:</span>
+      <div class="my-2 ml-1 lg:flex">
+        <span class="lg:w-1/5">{$_("Send to")}:</span>
+        <select class="w-full mx-3">
+          <option value="">None</option>
+          {#each users as user}
+            <option>{user.full_name} ({user.username})</option>
+          {/each}
+        </select>
         <!--          <multi-select-->
         <!--            v-model="send_to_user"-->
         <!--            :allow-empty="true"-->
@@ -45,7 +57,7 @@
         <!--          />-->
         <button
           type="button"
-          class="btn btn-default"
+          class="btn btn-default bg-pelorous-400"
           on:click|preventDefault={add_comment}
         >
           {$_("Send")}
@@ -53,6 +65,7 @@
       </div>
     </form>
   </div>
+
   <ManageHeaderLogbookList workflowinfos={object.workflowinfos} />
 </div>
 

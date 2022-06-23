@@ -240,9 +240,12 @@
           </div>
         </div>
       {:else}
-        <div class="status-and-progress-buttons">
-          <div class="fat-stati">
-            <div class:active={[1, 4].includes(object.draft_status)}>
+        <div class="">
+          <div class="status-and-progress">
+            <div
+              class:active={[1, 4].includes(object.draft_status)}
+              class="status-field"
+            >
               <span>{$_("Draft")}</span>
               {#if object.draft_status === 4}
                 <span class="font-bold text-red-600 pl-2">
@@ -250,17 +253,16 @@
                 </span>
               {/if}
             </div>
-            <div class:active={object.draft_status === 2}>
+            <div class:active={object.draft_status === 2} class="status-field">
               <span>{$_("Submitted for review")}</span>
             </div>
-            <div class:active={object.draft_status === 3}>
+            <div class:active={object.draft_status === 3} class="status-field">
               <span>{$_("Submitted for activation")}</span>
             </div>
-            <div class:active={object.draft_status === null}>
+            <div class:active={object.draft_status === null} class="status-field">
               <span>{$_("Activated")}</span>
             </div>
           </div>
-
           <div class="row workflow-buttons">
             <div class="col text-right">
               {#if object.draft_status === 1 && is_authorized(object)}
