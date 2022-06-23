@@ -4,10 +4,12 @@
   import Select from "svelte-select";
   import { countries } from "$lib/stores";
   import type { Country } from "$lib/types/wagtail";
+  import type { FormField } from "$components/Fields/fields";
 
-  export let value: Country;
+  export let value: Country | undefined;
   export let model: string;
   export let disabled = false;
+  export let formfield: FormField;
 
   const dispatch = createEventDispatcher();
 
@@ -15,18 +17,8 @@
 
   $: targetCountries =
     model === "investor" ? $countries : $countries.filter((c) => !c.high_income);
-</script>
 
-<div
-  on:mouseover={() => (showHint = true)}
-  on:focus={() => (showHint = true)}
-  on:mouseout={() => (showHint = false)}
-  on:blur={() => (showHint = false)}
->
-  <Select
-    items={targetCountries}
-    {value}
-    on:select={(e) => {
+  const onSelect = (e) => {
       value = e?.detail
         ? {
             __typename: "Country",
@@ -40,12 +32,28 @@
           }
         : undefined;
       dispatch("change", value);
-    }}
+    }
+</script>
+
+<div
+  class="country_foreignkey_field"
+  on:mouseover={() => (showHint = true)}
+  on:focus={() => (showHint = true)}
+  on:mouseout={() => (showHint = false)}
+  on:blur={() => (showHint = false)}
+>
+  <Select
+    items={targetCountries}
+    {value}
+    on:select={onSelect}
     placeholder={$_("Country")}
     optionIdentifier="id"
     labelIdentifier="name"
     showChevron
     isDisabled={disabled}
+    inputAttributes={{
+      name: formfield.name,
+    }}
   />
   {#if disabled && showHint}
     <span class="absolute text-sm text-gray-500">

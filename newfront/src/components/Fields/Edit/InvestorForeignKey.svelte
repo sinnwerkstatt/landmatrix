@@ -3,9 +3,10 @@
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import { client } from "$lib/apolloClient";
-  import EditField from "../EditField.svelte";
+  import type { FormField } from "$components/Fields/fields";
 
   export let value: number;
+  export let formfield: FormField;
 
   type Investor = {
     id: number;
@@ -29,7 +30,7 @@
   getInvestors();
 </script>
 
-<div class="currency_foreignkey_field">
+<div class="investor_foreignkey_field">
   {#if investors}
     <Select
       items={investors}
@@ -41,16 +42,13 @@
       getOptionLabel={(o) => `${o.name} (#${o.id})`}
       getSelectionLabel={(o) => `${o.name} (#${o.id})`}
       showChevron
+      inputAttributes={{
+        name: formfield.name,
+      }}
     />
   {/if}
   {#if value}
     <div class="container p-2">
-      <!--      <a href={`../../investor/${value.id}`} class=""-->
-      <!--        ><button class="rounded bg-pelorous py-1 px-2 mr-1 text-white font-bold "-->
-      <!--          >{value.id}</button-->
-      <!--        >-->
-      <!--        <span class="text-black">{value.name}</span></a-->
-      <!--      >-->
       <a href={`../../investor/${value.id}`} class="">
         Show details for investor #{value.id} {value.name}</a
       >
