@@ -19,20 +19,20 @@
     model === "investor" ? $countries : $countries.filter((c) => !c.high_income);
 
   const onSelect = (e) => {
-      value = e?.detail
-        ? {
-            __typename: "Country",
-            id: e.detail.id,
-            name: e.detail.name,
-            code_alpha2: e.detail.code_alpha2,
-            point_lat_min: e.detail.point_lat_min,
-            point_lat_max: e.detail.point_lat_max,
-            point_lon_min: e.detail.point_lon_min,
-            point_lon_max: e.detail.point_lon_max,
-          }
-        : undefined;
-      dispatch("change", value);
-    }
+    value = e?.detail
+      ? {
+          __typename: "Country",
+          id: e.detail.id,
+          name: e.detail.name,
+          code_alpha2: e.detail.code_alpha2,
+          point_lat_min: e.detail.point_lat_min,
+          point_lat_max: e.detail.point_lat_max,
+          point_lon_min: e.detail.point_lon_min,
+          point_lon_max: e.detail.point_lon_max,
+        }
+      : undefined;
+    dispatch("change", value);
+  };
 </script>
 
 <div

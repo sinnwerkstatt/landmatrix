@@ -32,10 +32,8 @@
   $: areaFeatures =
     locations
       .find((loc) => loc.id === activeLocationID)
-      ?.areas
-      ?.features
-      ?.filter((feature) => feature.properties.type === areaType)
-    ?? [];
+      ?.areas?.features?.filter((feature) => feature.properties.type === areaType) ??
+    [];
 
   $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
@@ -131,7 +129,9 @@
         <tr
           on:mouseover={() => (currentHoverFeature = feat)}
           on:mouseout={() => (currentHoverFeature = null)}
-          class="px-1 {feat === currentHoverFeature ? 'border border-4 border-orange-400' : ''}"
+          class="px-1 {feat === currentHoverFeature
+            ? 'border border-4 border-orange-400'
+            : ''}"
         >
           <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
             {#if hiddenFeatures.includes(feat)}

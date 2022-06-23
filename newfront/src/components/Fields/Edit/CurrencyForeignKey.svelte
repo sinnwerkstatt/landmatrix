@@ -26,7 +26,7 @@
             name
           }
         }
-      `
+      `,
     });
     currencies = data.currencies;
   }

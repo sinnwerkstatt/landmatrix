@@ -1,14 +1,7 @@
 <script lang="ts">
   import type { Feature } from "geojson";
-  import {
-    GeoJSON,
-    LatLngBounds,
-    type Layer,
-    type Map as LMap,
-    Marker,
-    Path,
-    Polygon
-  } from "leaflet?client";
+  import type { Layer, Map as LMap } from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
@@ -60,7 +53,7 @@
 
   // type guards
   const isPath = (layer: Layer): layer is Path => layer instanceof Path;
-  const isMarker = (layer: Layer): layer is Marker<{ id: string }> => layer instanceof Marker;
+  const isMarker = (layer: Layer): layer is Marker => layer instanceof Marker;
   const isPolygon = (layer): layer is Polygon => layer instanceof Polygon;
 
   const geojsonOptions = {
@@ -159,7 +152,7 @@
     const newEntry: Location = { id: newNanoid(currentIDs) };
     locations = [...locations, newEntry];
     _updateGeoJSON();
-    onActivateLocation(newEntry)
+    onActivateLocation(newEntry);
   }
 
   const onMapReady = (event: CustomEvent<LMap>) => {
@@ -186,9 +179,10 @@
     } else {
       activeLocationID = location.id;
       if (!locationFGs.get(activeLocationID)) {
-        _addNewLayerGroup(activeLocationID);}
+        _addNewLayerGroup(activeLocationID);
       }
-      updateLocationVisibility();
+    }
+    updateLocationVisibility();
   };
 
   const updateLocationVisibility = () =>

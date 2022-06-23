@@ -27,6 +27,7 @@
     });
     investors = data.investors;
   }
+
   getInvestors();
 </script>
 
