@@ -32,7 +32,10 @@
   $: areaFeatures =
     locations
       .find((loc) => loc.id === activeLocationID)
-      .areas?.features?.filter((feature) => feature.properties.type === areaType) ?? [];
+      ?.areas
+      ?.features
+      ?.filter((feature) => feature.properties.type === areaType)
+    ?? [];
 
   $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
