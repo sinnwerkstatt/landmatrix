@@ -21,9 +21,7 @@ test.describe.serial("deal creation tests", () => {
     await page.locator("text=General info").click();
 
     //DecimalField
-    let decimalField = await page.locator(
-      'text=Intended size (in ha) ha >> [placeholder="\\31 23\\.45"]'
-    );
+    let decimalField = await page.locator(`[name=intended_size]`);
     await decimalField.fill("123.203498512903402342347");
     await expect(
       await decimalField.evaluate(
@@ -46,23 +44,12 @@ test.describe.serial("deal creation tests", () => {
     //Radiobutton
 
     //Area
-    await page
-      .locator(
-        'text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> [placeholder="\\31 23\\.45"]'
-      )
-      .click();
-    await page
-      .locator(
-        'text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> [placeholder="\\31 23\\.45"]'
-      )
-      .fill("2000");
-
+    await page.locator(`[name=contract_size]`).nth(1).fill("2000");
     //Datefield
-    let datefield = await page.locator(
-      'text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> [placeholder="YYYY-MM-DD"]'
-    );
-    await datefield.fill("01.02.2018");
+    let datefield = await page.locator(`[name=contract_size]`).first();
 
+    await datefield.fill("01.02.2018");
+    console.log(datefield);
     await expect(
       await datefield.evaluate(
         (x: HTMLInputElement) => !x.validity.valid && x.validity.customError
@@ -88,20 +75,10 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('input[name="contract_size_current"]').first().check();
 
     //Create 2nd DateAreaField
-    await page
-      .locator(
-        "text=Size under contract (leased or purchased area, in ha) Current Date Area (ha) ha >> button"
-      )
-      .first()
-      .click();
-    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).click();
-    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).fill("2019");
-    await page.locator('text=ha ha >> [placeholder="YYYY-MM-DD"]').nth(1).press("Tab");
-    await page
-      .locator('text=ha ha >> [placeholder="\\31 23\\.45"]')
-      .nth(1)
-      .fill("3000");
+    await page.locator('button[name="plus_icon"]').first().click();
 
+    await page.locator('input[name="contract_size"]').nth(2).fill("2019");
+    await page.locator('input[name="contract_size"]').nth(3).fill("3000");
     //Purchase price
     // await page.locator('input [placeholder="\\31 23\\.45"]').nth(4).click();
     //ChoiceField Charfield
@@ -122,40 +99,6 @@ test.describe.serial("deal creation tests", () => {
     await choiceField.fill("USD");
     await page.locator("text=US Dollar (USD)").nth(1).click();
 
-    //DateAreaFarmersHouseholds
-    await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .click();
-    await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .fill("2018-02-01");
-    await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .press("Tab");
-    await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> [placeholder="\\31 23\\.45"]'
-      )
-      .fill("2000");
-    await page
-      .locator(
-        "text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> button"
-      )
-      .first()
-      .click();
-    await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> input[type="number"]'
-      )
-      .nth(2)
-      .fill("10");
-
     //ChoiceField
     // let choiceField = await page.locator(
     //   'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
@@ -167,69 +110,26 @@ test.describe.serial("deal creation tests", () => {
     // await expect(
     //   await choiceField.evaluate((x: HTMLInputElement) => x.validity.valid)
     // ).toBeTruthy();
-    //
 
-    //DecimalField Farmers
-    let farmers = await page
-      .locator(
-        'text=On leased area/farmers/households Current Date Area (ha) Farmers Households ha >> input[type="number"]'
-      )
-      .nth(1);
-    await farmers.fill("-4");
-    await expect(
-      await farmers.evaluate((x: HTMLInputElement) => x.validity.valid)
-    ).toBeFalsy();
-    await farmers.fill("5.45");
-    await expect(
-      await farmers.evaluate((x: HTMLInputElement) => x.validity.valid)
-    ).toBeFalsy();
-    await farmers.fill("5");
-    await expect(
-      await farmers.evaluate((x: HTMLInputElement) => x.validity.valid)
-    ).toBeTruthy();
+    //Create 2nd DateAreaFarmersHouseholdField
 
     // Check input[name="contract_farming"] >> nth=1
     let radiobutton = await page.locator('input[name="contract_farming"]').nth(1);
     await radiobutton.check();
     await page.locator('input[name="on_the_lease_state"]').first().check();
-    await page.locator('input[name="on_the_lease_current"]').first().check();
 
-    //Create 2nd DateAreaFarmersHouseholdField
-    await page
-      .locator(
-        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .nth(1)
-      .click();
-    await page
-      .locator(
-        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .nth(1)
-      .fill("2019");
-    await page
-      .locator(
-        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="YYYY-MM-DD"]'
-      )
-      .nth(1)
-      .press("Tab");
-    await page
-      .locator(
-        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="\\31 23\\.45"]'
-      )
-      .nth(1)
-      .fill("1000");
-    await page
-      .locator(
-        'text=Current Date Area (ha) Farmers Households ha ha >> [placeholder="\\31 23\\.45"]'
-      )
-      .nth(1)
-      .press("Tab");
+    //DateAreaFarmersHouseholds
+    let leaseField = await page.locator('input[name="on_the_lease"]');
+    await leaseField.first().fill("2018-02-01");
+    await leaseField.nth(1).fill("2000");
+    await leaseField.nth(2).fill("5");
+    await leaseField.nth(3).fill("10");
+    await page.locator('input[name="on_the_lease_current"]').first().check();
 
     //INVESTOR INFO
     //Charfield
     await page.locator("text=Investor info").click();
-    let charfield = await page.locator('[placeholder="Name of investment project"]');
+    let charfield = await page.locator('input[name="project_name"]');
     await charfield.fill(
       "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata123456789"
     );
@@ -240,6 +140,12 @@ test.describe.serial("deal creation tests", () => {
     await expect(
       await charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
+
+    await page.pause();
+    //ADD CONTRACT
+    //...
+    //ADD FILE
+    //...
 
     await Promise.all([page.waitForNavigation(), saveButton.click()]);
 
@@ -269,6 +175,7 @@ test.describe.serial("deal creation tests", () => {
       has: page.locator("text=Contract farming"),
     });
     await expect(contractFarming).toHaveText(/No/);
+    await page.pause();
 
     //EDIT DEAL
     await Promise.all([
