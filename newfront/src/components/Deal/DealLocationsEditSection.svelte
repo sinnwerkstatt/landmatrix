@@ -253,7 +253,6 @@
 </script>
 
 <form id="locations">
-  <!--  <pre class="text-[10px]">{JSON.stringify(locations, null, 2)}</pre>-->
   <EditField
     bind:value={country}
     disabled={locations && locations.length > 0}
@@ -269,7 +268,7 @@
       <div class="lg:w-1/3 pr-3">
         {#each locations as loc, index}
           <div
-            class="border {hoverLocationID === loc.id
+            class="border border-4 {hoverLocationID === loc.id
               ? 'border-orange-400'
               : 'border-white'}"
           >
