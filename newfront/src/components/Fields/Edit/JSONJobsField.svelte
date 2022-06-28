@@ -39,7 +39,7 @@
     } else if (current > index) {
       current--;
     }
-    valueCopy = valueCopy.filter((val, i) => i == index);
+    valueCopy = valueCopy.filter((val, i) => i !== index);
   }
 </script>
 
@@ -80,6 +80,7 @@
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
+              name={formfield.name}
             />
           </td>
 
@@ -87,6 +88,7 @@
             <LowLevelDecimalField
               bind:value={val.jobs}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />
@@ -95,6 +97,7 @@
             <LowLevelDecimalField
               bind:value={val.employees}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />
@@ -103,6 +106,7 @@
             <LowLevelDecimalField
               bind:value={val.workers}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />

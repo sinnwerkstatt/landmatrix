@@ -293,7 +293,7 @@
             class="checkbox-btn"
           />
           {$_(layer.name)}
-          {#if $visibleContextLayers.includes(layer)}
+          {#if $visibleContextLayers.includes(layer.name)}
             <img
               alt="Legend for {layer.name}"
               src={layer.legendUrlFunction()}

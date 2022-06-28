@@ -15,7 +15,6 @@
   let inputfield;
 
   function checkValidity() {
-    console.log("doing validity check", value);
     const field_valid =
       !value ||
       dayjs(
@@ -40,7 +39,7 @@
       inputfield.setCustomValidity("");
       return;
     }
-    value = value.replace("/", "-").replace(".", "-").replace(",", "-");
+    value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim();
     checkValidity();
   };
 </script>

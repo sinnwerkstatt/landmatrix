@@ -38,6 +38,7 @@ const config = {
         "lm-dark": "#4a4a4a",
         "lm-light": "#f9f9f9",
         "lm-lightgray": "#fbfcfc",
+        "lm-warmgray": "#c4c4c4",
       },
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
@@ -46,13 +47,13 @@ const config = {
   },
 
   plugins: [
-    function({ addBase, theme }) {
-      function extractColorVars(colorObj, colorGroup = '') {
+    function ({ addBase, theme }) {
+      function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
           const value = colorObj[colorKey];
 
           const newVars =
-            typeof value === 'string'
+            typeof value === "string"
               ? { [`--color${colorGroup}-${colorKey}`]: value }
               : extractColorVars(value, `-${colorKey}`);
 
@@ -61,7 +62,7 @@ const config = {
       }
 
       addBase({
-        ':root': extractColorVars(theme('colors')),
+        ":root": extractColorVars(theme("colors")),
       });
     },
   ],

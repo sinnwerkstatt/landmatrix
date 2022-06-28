@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div v-if="investor.datasources.length > 0">
+      <div v-if="investor.datasources && investor.datasources.length > 0">
         <h3>{{ $t("Data sources") }} ({{ investor.datasources.length }})</h3>
         <table class="bigtable">
           <thead>

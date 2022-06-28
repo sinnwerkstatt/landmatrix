@@ -66,7 +66,7 @@
       <div class="col-md-6 col-lg-4 mb-3">
         <div class="border border-black/20 rounded">
           {#if blogpage.header_image}
-            <img src={blogpage.header_image} class="rounded-t" alt="" />
+            <img loading="lazy" src={blogpage.header_image} class="rounded-t" alt="" />
           {/if}
           <div class="p-2">
             <h5 class="text-lg font-bold mb-4">

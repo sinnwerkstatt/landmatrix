@@ -137,8 +137,9 @@ const store = new Vuex.Store({
           if (groupi.includes("Administrators")) ret = "Administrator";
           const uri = user.userregionalinfo;
           if (uri) {
-            let area = uri.region.map((c) => c.name);
-            area = area.concat(uri.country.map((c) => c.name));
+            const area = [];
+            if (uri.region) area.push(uri.region.name);
+            if (uri.country) area.push(uri.country.name);
             if (area.length) {
               ret = `${ret} of ${area.join(", ")}`;
             }

@@ -1,49 +1,39 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import type { FormField } from "../fields";
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
+  import TypedChoiceField from "./TypedChoiceField.svelte";
+
+  interface JSONDateChoiceField {
+    date?: string;
+    choice?: string;
+    current?: boolean;
+  }
 
   export let formfield: FormField;
   export let value;
-  let current = -1;
 
-  $: vals = JSON.stringify(value);
-  //   computed: {
-  //     filteredVals() {
-  //       return this.vals.filter((x) => x.date || x.choice);
-  //     },
-  //   },
+  let valueCopy: JSONDateChoiceField[] = JSON.parse(JSON.stringify(value ?? [{}]));
 
-  function updateEntries() {
-    // value = value.map((v, i) => {
-    //   let current = i === this.current ? { current: true } : {};
-    //   delete v.current;
-    //   return { ...v, ...current };
-    // });
-    // this.$emit("input", this.filteredVals);
-  }
-  function updateCurrent(i) {
-    current = i;
-    updateEntries();
-  }
+  $: filteredValueCopy = valueCopy.filter((val) => val.date || val.choice);
+  $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
+
   function addEntry() {
-    value = [...value, []];
-    updateEntries();
-    // TODO
+    valueCopy = [...valueCopy, {}];
   }
+
   function removeEntry(index) {
-    if (current === value.length - 1) this.current = null;
-    value = value.splice(index, 1);
-    updateEntries();
-    // TODO
+    valueCopy = valueCopy.filter((val, i) => i !== index);
   }
+
+  const anySelectedAsCurrent = (values) => values.some((val) => val.current);
+  const isCurrentRequired = (values) =>
+    values.length > 0 && !anySelectedAsCurrent(values);
 </script>
 
 <div class="json_date_choice_field whitespace-nowrap">
-  {JSON.stringify(value)}
   <table class="w-full">
     <thead>
       <tr>
@@ -54,46 +44,39 @@
       </tr>
     </thead>
     <tbody>
-      {#each value as val, i}
+      {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td class="text-center p-1" on:click={() => updateCurrent(i)}>
+          <td class="text-center p-1">
             <div class="form-check form-check-inline">
               <input
-                required={value.length > 0 && (value[0].date || value[0].choice)}
+                required={isCurrentRequired(valueCopy)}
                 type="checkbox"
                 bind:checked={val.current}
+                disabled={!val.date || !val.choice}
               />
             </div>
           </td>
           <td class="w-36 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
-              on:input={updateEntries}
+              required={val.choice}
+              name={formfield.name}
             />
           </td>
           <td class="w-2/3 p-1">
-            <Select
-              items={Object.entries(formfield.choices).map(([value, label]) => ({
-                value,
-                label,
-              }))}
-              value={val.choice}
-              showChevron
-            />
-            <!--              @input="updateEntries"-->
+            <TypedChoiceField bind:value={val.choice} {formfield} required={val.date} />
           </td>
 
-          <td class="buttons p-1">
+          <td class="p-1">
             <button type="button" on:click={addEntry}>
-              <PlusIcon class="w-5 h-5" />
+              <PlusIcon class="w-5 h-5 text-black" />
             </button>
             <button
               type="button"
-              disabled={value.length <= 1}
+              disabled={valueCopy.length <= 1}
               on:click={() => removeEntry(i)}
             >
-              <MinusIcon class="w-5 h-5" />
+              <MinusIcon class="w-5 h-5 text-red-600" />
             </button>
           </td>
         </tr>

@@ -14,6 +14,7 @@
     class="inpt"
     placeholder={$_(formfield.label)}
     maxlength={formfield.max_length}
+    name={formfield.name}
   />
   <div
     class="flex justify-center items-center border border-l-0 border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600"

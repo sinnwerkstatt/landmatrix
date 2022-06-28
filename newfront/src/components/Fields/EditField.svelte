@@ -11,6 +11,7 @@
   import DateField from "./Edit/DateField.svelte";
   import EmailField from "./Edit/EmailField.svelte";
   import FileField from "./Edit/FileField.svelte";
+  import InvestorForeignKey from "./Edit/InvestorForeignKey.svelte";
   import JSONActorsField from "./Edit/JSONActorsField.svelte";
   import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
   import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
@@ -60,7 +61,9 @@
     DecimalField: DecimalField,
     EmailField: EmailField,
     FileField: FileField,
+    FloatField: DecimalField,
     IntegerField: DecimalField,
+    InvestorForeignKey: InvestorForeignKey,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,

@@ -1,19 +1,17 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import { get } from "svelte/store";
-  import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
   import { deal_gql_query } from "./queries";
 
-  export const load: Load = async ({ params }) => {
+  export const load: Load = async ({ params, stuff }) => {
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
     if (!dealID) {
       return { status: 404, error: `Deal not found` };
     }
 
-    const { data } = await get(client).query<{ deal: Deal }>({
+    const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
       query: deal_gql_query,
-      variables: { id: dealID, version: dealVersion },
+      variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
     });
     return { props: { dealID, dealVersion, deal: data.deal } };
   };
@@ -29,6 +27,7 @@
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
+  import DealManageHeader from "$components/Management/DealManageHeader.svelte";
 
   export let deal: Deal;
   export let dealID: number;
@@ -63,26 +62,30 @@
 </script>
 
 <div class="container mx-auto min-h-full">
-  <div class="md:flex md:flex-row md:justify-between">
-    <h1>
-      Deal {dealID}
-      {#if deal.country}in {deal.country.name}{/if}
-    </h1>
-    <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        {$_("Created")}<br />
-        <DateTimeField value={deal.created_at} />
-      </div>
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        {$_("Last update")}<br />
-        <DateTimeField value={deal.modified_at} />
-      </div>
-      <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
-        {$_("Last full update")}<br />
-        <DateTimeField value={deal.fully_updated_at} />
+  {#if $page.stuff.user?.is_authenticated}
+    <DealManageHeader {deal} {dealVersion} />
+  {:else}
+    <div class="md:flex md:flex-row md:justify-between">
+      <h1>
+        Deal {dealID}
+        {#if deal.country}in {deal.country.name}{/if}
+      </h1>
+      <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
+        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+          {$_("Created")}<br />
+          <DateTimeField value={deal.created_at} />
+        </div>
+        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+          {$_("Last update")}<br />
+          <DateTimeField value={deal.modified_at} />
+        </div>
+        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+          {$_("Last full update")}<br />
+          <DateTimeField value={deal.fully_updated_at} />
+        </div>
       </div>
     </div>
-  </div>
+  {/if}
   <div class="flex min-h-full">
     <nav class="p-2 flex-initial">
       <ul>

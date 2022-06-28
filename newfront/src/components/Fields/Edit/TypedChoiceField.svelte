@@ -3,12 +3,12 @@
 
   export let formfield: FormField;
   export let value: string;
+  export let required: boolean;
 </script>
 
 <div class="typed_choice_field">
-  <select bind:value class="inpt" name={formfield.name}>
-    <!--   TODO is this really relevant? should definitely be connected to "required: true / false"  -->
-    <!--    <option>Select...</option>-->
+  <select bind:value class="inpt" name={formfield.name} {required}>
+    <option value="">None</option>
     {#each Object.entries(formfield.choices) as [value, label]}
       <option {value}>{label}</option>
     {/each}
