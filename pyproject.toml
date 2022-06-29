@@ -16,8 +16,6 @@ django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"
 django-modeltranslation = "*"
-django-recaptcha = "*"  # TODO delete this after squashing migrations
-django-multiselectfield = "*"  # TODO delete this after squashing migrations
 django-registration = "*"
 
 wagtail-font-awesome-svg = "*"
