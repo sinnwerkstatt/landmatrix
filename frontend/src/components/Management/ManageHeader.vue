@@ -148,7 +148,9 @@
                 <div class="d-inline-block">
                   <router-link
                     v-if="
-                      !objectVersion || $store.state.user.id === object.modified_by.id
+                      !objectVersion ||
+                      (object.modified_by &&
+                        $store.state.user.id === object.modified_by.id)
                     "
                     :class="{ disabled: is_old_draft }"
                     :to="object_edit_path(object.id, objectVersion)"
