@@ -21,14 +21,6 @@ if env.bool("FRONTENDDEV", default=False):
 
     MIDDLEWARE += ["livereload.middleware.LiveReloadScript"]
 
-# Recaptcha spam protection for comments
-# https://developers.google.com/recaptcha/docs/faq
-RECAPTCHA_USE_SSL = True
-NOCAPTCHA = True
-RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
-
 # hCaptcha spam protection for comments
 HCAPTCHA_SITEKEY = "10000000-ffff-ffff-ffff-000000000001"
 HCAPTCHA_SECRETKEY = "0x0000000000000000000000000000000000000000"
