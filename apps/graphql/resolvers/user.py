@@ -6,6 +6,7 @@ from ariadne.exceptions import HttpError
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import AbstractUser
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.template.loader import render_to_string
@@ -15,7 +16,7 @@ from graphql import GraphQLResolveInfo
 from apps.editor.models import UserRegionalInfo
 from apps.graphql.resolvers.user_utils import get_user_role
 
-User = auth.get_user_model()
+User: AbstractUser = auth.get_user_model()
 
 
 def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
@@ -43,7 +44,12 @@ def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
     if not role:
         raise HttpError(message="Not allowed")
 
-    users = User.objects.exclude(id=current_user.id).filter(is_active=True)
+    users = (
+        User.objects.exclude(id=current_user.id)
+        .filter(is_active=True)
+        .filter(groups__name__in=["Reporters", "Editors", "Administrators"])
+    )
+    # TODO - we could skip "reporters" here, and manually add the missing Reporter per deal in the frontend
 
     # this is implemented in Python, not in SQL, to support the "full_name"
     reverse = False
