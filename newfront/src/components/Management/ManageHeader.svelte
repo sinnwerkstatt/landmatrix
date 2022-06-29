@@ -443,7 +443,6 @@
     <ManageHeaderLogbook
       {object}
       {objectVersion}
-      users="users"
       on:add_comment={(e) => dispatch("add_comment", e)}
     />
   </div>
