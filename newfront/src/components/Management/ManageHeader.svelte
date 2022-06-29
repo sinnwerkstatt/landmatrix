@@ -2,6 +2,7 @@
   import dayjs from "dayjs";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import type { Obj, ObjVersion } from "$lib/types/generics";
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
@@ -115,17 +116,6 @@
     return obV ? `/investor/edit/${obID}/${obV}` : `/investor/edit/${obID}`;
   }
 
-  //   object_edit_path(obID: number, obV: number | string): Location {
-  //     return this.otype === "deal"
-  //       ? {
-  //           name: "deal_edit",
-  //           params: { dealId: obID.toString(), dealVersion: obV?.toString() },
-  //         }
-  //       : {
-  //           name: "investor_edit",
-  //           params: { investorId: obID.toString(), investorVersion: obV?.toString() },
-  //         };
-  //   },
   //   object_compare_path(
   //     oID: number,
   //     fromVersion: number,
@@ -149,6 +139,7 @@
   //           },
   //         };
   //   },
+
   function doDelete({ comment }): void {
     dispatch("delete", comment);
     showDeleteOverlay = false;
@@ -166,7 +157,6 @@
     dispatch("change_status", { comment, transition: "ACTIVATE" });
     showActivateOverlay = false;
   }
-  // },
 </script>
 
 <div class="my-6">
@@ -446,45 +436,42 @@
       on:add_comment={(e) => dispatch("add_comment", e)}
     />
   </div>
-
-  <!--    <Overlay-->
-  <!--      v-if="show_new_draft_overlay"-->
-  <!--      :comment-input="false"-->
-  <!--      :title="$_('Create a new draft').toString()"-->
-  <!--      @cancel="show_new_draft_overlay = false"-->
-  <!--      @submit="() => $router.push(object_edit_path(object.id, objectVersion))"-->
-  <!--    >-->
-  <!--      {-->
-  <!--        $_(-->
-  <!--          "You are not the author of this version. Therefore, a new version will be created if you proceed."-->
-  <!--        )-->
-  <!--      }-->
-  <!--    </Overlay>-->
-
-  <ManageOverlay
-    bind:visible={showToDraftOverlay}
-    title={$_("Request improvement")}
-    assignToUserInput
-    commentRequired
-    toUser={transitionToUser}
-    on:submit={sendToDraft}
-  />
-
-  <ManageOverlay
-    bind:visible={showDeleteOverlay}
-    commentRequired
-    on:submit={doDelete}
-    title={deleteTitle}
-  />
-
-  <ManageOverlay
-    bind:visible={showSendToActivationOverlay}
-    commentInput
-    on:submit={sendToActivation}
-  />
-
-  <ManageOverlay bind:visible={showActivateOverlay} commentInput on:submit={activate} />
 </div>
+
+<ManageOverlay
+  bind:visible={show_new_draft_overlay}
+  title={$_("Create a new draft")}
+  commentInput={false}
+  on:submit={() => goto(object_edit_path(object.id, objectVersion))}
+>
+  {$_(
+    "You are not the author of this version. Therefore, a new version will be created if you proceed."
+  )}
+</ManageOverlay>
+
+<ManageOverlay
+  bind:visible={showToDraftOverlay}
+  title={$_("Request improvement")}
+  assignToUserInput
+  commentRequired
+  toUser={transitionToUser}
+  on:submit={sendToDraft}
+/>
+
+<ManageOverlay
+  bind:visible={showDeleteOverlay}
+  commentRequired
+  on:submit={doDelete}
+  title={deleteTitle}
+/>
+
+<ManageOverlay
+  bind:visible={showSendToActivationOverlay}
+  commentInput
+  on:submit={sendToActivation}
+/>
+
+<ManageOverlay bind:visible={showActivateOverlay} commentInput on:submit={activate} />
 
 <!--<style lang="scss" scoped>-->
 <!--  $arrow-height: 34px;-->
