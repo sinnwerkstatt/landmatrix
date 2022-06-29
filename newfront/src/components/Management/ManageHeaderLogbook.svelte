@@ -24,7 +24,7 @@
 </script>
 
 <div class="bg-lm-warmgray lg:w-1/3">
-  <h3 class="mx-3">{$_("Comments")}</h3>
+  <h3 class="mx-3">{$_("Logbook")}</h3>
   <div class="mx-1">
     <form action="." method="post">
       <div class="">

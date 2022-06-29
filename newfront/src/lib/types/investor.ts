@@ -1,11 +1,11 @@
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
-import { DataSource } from "./deal";
+import type { DataSource, Deal } from "./deal";
 
-enum Role {
-  PARENT,
-  LENDER,
+export enum Role {
+  PARENT = "PARENT",
+  LENDER = "LENDER",
 }
-const enum Classification {
+export enum Classification {
   GOVERNMENT,
   GOVERNMENT_INSTITUTION,
   STATE_OWNED_COMPANY,
@@ -25,7 +25,7 @@ const enum Classification {
   OTHER,
 }
 
-interface Investor extends Obj {
+export interface Investor extends Obj {
   name: string;
   classification: Classification;
   homepage: string;
@@ -33,12 +33,15 @@ interface Investor extends Obj {
   datasources: DataSource[];
   comment: string;
   involvements: Involvement[];
+  investors?: Involvement[];
+  ventures?: Involvement[];
   versions: InvestorVersion[];
   workflowinfos: InvestorWorkflowInfo[];
+  deals?: Deal[];
   [key: string]: unknown;
 }
 
-interface InvestorVersion extends ObjVersion {
+export interface InvestorVersion extends ObjVersion {
   investor: Investor;
 }
 
@@ -46,6 +49,8 @@ export type Involvement = {
   id: number;
   role: Role;
   investment_type: [string];
+  investor: Investor;
+  venture: Investor;
   percentage: number;
   loans_amount: number;
   loans_currency: unknown;
@@ -55,6 +60,6 @@ export type Involvement = {
   involvement_type: string;
 };
 
-interface InvestorWorkflowInfo extends WorkflowInfo {
+export interface InvestorWorkflowInfo extends WorkflowInfo {
   investor: Investor;
 }

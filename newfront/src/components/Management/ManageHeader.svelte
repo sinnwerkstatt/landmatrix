@@ -4,6 +4,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Obj, ObjVersion } from "$lib/types/generics";
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
   import DateTimeField from "../Fields/Display/DateTimeField.svelte";
   import ManageHeaderLogbook from "./ManageHeaderLogbook.svelte";
 
@@ -31,30 +32,17 @@
         return false;
     }
   }
-  // data() {
-  //   return {
-  //     users: [],
-  let show_to_draft_overlay = false;
-  let show_to_delete_overlay = false;
-  let show_send_to_activation_overlay = false;
-  let show_activate_overlay = false;
+
+  let showToDraftOverlay = false;
+  let showDeleteOverlay = false;
+  let showSendToActivationOverlay = false;
+  let showActivateOverlay = false;
   let show_new_draft_overlay = false;
 
-  // apollo: {
-  //   users: gql`
-  //     {
-  //       users {
-  //         id
-  //         full_name
-  //         username
-  //       }
-  //     }
-  //   `,
-  // },
   let last_version: ObjVersion;
   $: last_version = object?.versions[0] ?? undefined;
   let has_active: boolean;
-  $: has_active = !!object.status;
+  $: has_active = !!object?.status;
 
   $: is_active_with_draft = !objectVersion && !!object.draft_status;
   $: is_editable = true;
@@ -73,39 +61,37 @@
       : object.draft_status === null || object.draft_status === 4
       ? $page.stuff.user.role === "ADMINISTRATOR"
       : is_authorized(object);
-  $: is_deleted = !objectVersion && object.status === 4;
+  $: is_deleted = !objectVersion && object?.status === 4;
 
-  $: latest_object_version = object.versions.find(
+  $: latest_object_version = object?.versions.find(
     (v: ObjVersion) => v.id === last_version.id
   )[otype];
 
   $: is_draft_with_active =
     objectVersion && [2, 3].includes(object.status)
       ? true
-      : is_old_draft && [2, 3].includes(latest_object_version.status);
+      : is_old_draft && [2, 3].includes(latest_object_version?.status);
   $: is_old_draft = !!objectVersion && last_version.id !== +objectVersion;
 
   $: has_newer_draft = is_active_with_draft
     ? true
-    : is_old_draft && !!latest_object_version.draft_status;
+    : is_old_draft && !!latest_object_version?.draft_status;
 
-  //   get_submit_to_delete_title(): string {
-  //     if (this.objectVersion)
-  //       return this.otype === "deal"
-  //         ? $_("Delete deal version").toString()
-  //         : $_("Delete investor version").toString();
-  //
-  //     if (this.object.status === 4)
-  //       return this.otype === "deal"
-  //         ? $_("Reactivate deal").toString()
-  //         : $_("Reactivate investor").toString();
-  //
-  //     return this.otype === "deal"
-  //       ? $_("Delete deal").toString()
-  //       : $_("Delete investor").toString();
-  //   },
-  //   get_activate_description(): string {
-  //   },
+  $: deleteTitle = $_(
+    objectVersion
+      ? otype === "deal"
+        ? "Delete deal version"
+        : "Delete investor version"
+      : object.status === 4
+      ? otype === "deal"
+        ? "Reactivate deal"
+        : "Reactivate investor"
+      : otype === "deal"
+      ? "Delete deal"
+      : "Delete investor"
+  );
+
+  let transitionToUser;
   //   transition_to_user(): User {
   //     let latest_draft_creation = this.object.workflowinfos.find((v) => {
   //       return !v.draft_status_before && v.draft_status_after === 1;
@@ -163,23 +149,23 @@
   //           },
   //         };
   //   },
-  //   do_delete({ comment }): void {
-  //     this.$emit("delete", comment);
-  //     this.show_to_delete_overlay = false;
-  //   },
-  //   do_to_draft({ comment, to_user }): void {
-  //     console.log("to_draft", { comment, to_user });
-  //     this.$emit("change_status", { transition: "TO_DRAFT", comment, to_user });
-  //     this.show_to_draft_overlay = false;
-  //   },
-  //   send_to_activation({ comment }) {
-  //     this.$emit("change_status", { comment, transition: "TO_ACTIVATION" });
-  //     this.show_send_to_activation_overlay = false;
-  //   },
-  //   activate({ comment }) {
-  //     this.$emit("change_status", { comment, transition: "ACTIVATE" });
-  //     this.show_activate_overlay = false;
-  //   },
+  function doDelete({ comment }): void {
+    dispatch("delete", comment);
+    showDeleteOverlay = false;
+  }
+  function sendToDraft({ comment, to_user }): void {
+    console.log("to_draft", { comment, to_user });
+    dispatch("change_status", { transition: "TO_DRAFT", comment, to_user });
+    showToDraftOverlay = false;
+  }
+  function sendToActivation({ comment }) {
+    dispatch("change_status", { comment, transition: "TO_ACTIVATION" });
+    showSendToActivationOverlay = false;
+  }
+  function activate({ comment }) {
+    dispatch("change_status", { comment, transition: "ACTIVATE" });
+    showActivateOverlay = false;
+  }
   // },
 </script>
 
@@ -289,7 +275,7 @@
                         "Send a request of improvent and create a new draft version of the investor"
                       )}
                   class="btn btn-primary"
-                  on:click={() => (show_to_draft_overlay = true)}
+                  on:click={() => (showToDraftOverlay = true)}
                 >
                   {$_("Request improvement")}
                 </button>
@@ -304,7 +290,7 @@
                     ? $_("Submits the deal for activation")
                     : $_("Submits the investor for activation")}
                   class="btn btn-pelorous"
-                  on:click={() => (show_send_to_activation_overlay = true)}
+                  on:click={() => (showSendToActivationOverlay = true)}
                 >
                   {$_("Submit for activation")}
                 </button>
@@ -323,7 +309,7 @@
                     ? $_("Sets the deal active")
                     : $_("Sets the investor active")}
                   class="btn btn-pelorous"
-                  on:click={() => (show_activate_overlay = true)}
+                  on:click={() => (showActivateOverlay = true)}
                 >
                   {$_("Activate")}
                 </button>
@@ -406,7 +392,7 @@
                 <div class="inline-block">
                   <button
                     class="btn btn-danger"
-                    on:click|preventDefault={() => (show_to_delete_overlay = true)}
+                    on:click|preventDefault={() => (showDeleteOverlay = true)}
                   >
                     {#if is_deleted}
                       {$_("Undelete")}
@@ -461,7 +447,6 @@
       on:add_comment={(e) => dispatch("add_comment", e)}
     />
   </div>
-  <slot name="overlays" />
 
   <!--    <Overlay-->
   <!--      v-if="show_new_draft_overlay"-->
@@ -476,36 +461,30 @@
   <!--        )-->
   <!--      }-->
   <!--    </Overlay>-->
-  <!--    <Overlay-->
-  <!--      v-if="show_to_draft_overlay"-->
-  <!--      :assign-to-user-input="true"-->
-  <!--      :comment-input="true"-->
-  <!--      :comment-required="true"-->
-  <!--      :title="$_('Request improvement')"-->
-  <!--      :to-user="transition_to_user"-->
-  <!--      @cancel="show_to_draft_overlay = false"-->
-  <!--      @submit="do_to_draft($event)"-->
-  <!--    />-->
-  <!--    <Overlay-->
-  <!--      v-if="show_to_delete_overlay"-->
-  <!--      :comment-input="true"-->
-  <!--      :comment-required="true"-->
-  <!--      :title="get_submit_to_delete_title"-->
-  <!--      @cancel="show_to_delete_overlay = false"-->
-  <!--      @submit="do_delete($event)"-->
-  <!--    />-->
-  <!--    <Overlay-->
-  <!--      v-if="show_send_to_activation_overlay"-->
-  <!--      :comment-input="true"-->
-  <!--      @cancel="show_send_to_activation_overlay = false"-->
-  <!--      @submit="send_to_activation"-->
-  <!--    />-->
-  <!--    <Overlay-->
-  <!--      v-if="show_activate_overlay"-->
-  <!--      :comment-input="true"-->
-  <!--      @cancel="show_activate_overlay = false"-->
-  <!--      @submit="activate"-->
-  <!--    />-->
+
+  <ManageOverlay
+    bind:visible={showToDraftOverlay}
+    title={$_("Request improvement")}
+    assignToUserInput
+    commentRequired
+    toUser={transitionToUser}
+    on:submit={sendToDraft}
+  />
+
+  <ManageOverlay
+    bind:visible={showDeleteOverlay}
+    commentRequired
+    on:submit={doDelete}
+    title={deleteTitle}
+  />
+
+  <ManageOverlay
+    bind:visible={showSendToActivationOverlay}
+    commentInput
+    on:submit={sendToActivation}
+  />
+
+  <ManageOverlay bind:visible={showActivateOverlay} commentInput on:submit={activate} />
 </div>
 
 <!--<style lang="scss" scoped>-->

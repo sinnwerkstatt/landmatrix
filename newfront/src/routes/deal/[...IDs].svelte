@@ -5,9 +5,8 @@
 
   export const load: Load = async ({ params, stuff }) => {
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
-    if (!dealID) {
-      return { status: 404, error: `Deal not found` };
-    }
+
+    if (!dealID) return { status: 404, error: `Deal not found` };
 
     const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
       query: deal_gql_query,
@@ -18,7 +17,6 @@
 </script>
 
 <script lang="ts">
-  import dayjs from "dayjs";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { dealSections } from "$lib/deal_sections";
@@ -61,14 +59,22 @@
   };
 </script>
 
+<svelte:head>
+  <title
+    >{$_("Deal")}
+    {deal.id}
+  </title>
+</svelte:head>
+
 <div class="container mx-auto min-h-full">
   {#if $page.stuff.user?.is_authenticated}
     <DealManageHeader {deal} {dealVersion} />
   {:else}
-    <div class="md:flex md:flex-row md:justify-between">
+    <div class="md:flex md:flex-row md:ju<stify-between">
       <h1>
-        Deal {dealID}
-        {#if deal.country}in {deal.country.name}{/if}
+        {$_("Deal")}
+        {deal.id}
+        {#if deal.country}{$_("in")} {deal.country.name}{/if}
       </h1>
       <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
         <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">

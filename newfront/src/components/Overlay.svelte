@@ -32,21 +32,23 @@
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border rounded max-h-[99vh] overflow-y-auto"
+      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border max-h-[99vh] overflow-y-auto"
     >
-      {#if $$slots.header || title}
-        <div class="border-b px-7 py-5">
-          <slot name="header"><span class="font-bold">{title}</span></slot>
+      <form on:submit|preventDefault>
+        {#if $$slots.header || title}
+          <div class="border-b px-7 py-5">
+            <slot name="header"><span class="font-bold">{title}</span></slot>
+          </div>
+        {/if}
+        <div class="p-7">
+          <slot />
         </div>
-      {/if}
-      <div class="p-7">
-        <slot />
-      </div>
-      {#if $$slots.footer}
-        <div class="border-t px-7 py-5">
-          <slot name="footer" />
-        </div>
-      {/if}
+        {#if $$slots.footer}
+          <div class="border-t px-7 py-5">
+            <slot name="footer" />
+          </div>
+        {/if}
+      </form>
     </div>
   </div>
 {/if}

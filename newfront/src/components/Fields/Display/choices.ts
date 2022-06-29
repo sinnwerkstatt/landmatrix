@@ -1,14 +1,3 @@
-import AgricultureIcon from "../../icons/AgricultureIcon.svelte";
-import FoodCropsIcon from "../../icons/FoodCropsIcon.svelte";
-import ForestIcon from "../../icons/ForestIcon.svelte";
-import IndustryIcon from "../../icons/IndustryIcon.svelte";
-import LandSpeculationIcon from "../../icons/LandSpeculationIcon.svelte";
-import LifestockIcon from "../../icons/LifestockIcon.svelte";
-import MiningIcon from "../../icons/MiningIcon.svelte";
-import OilIcon from "../../icons/OilIcon.svelte";
-import PlaneIcon from "../../icons/PlaneIcon.svelte";
-import RenewableEnergyIcon from "../../icons/RenewableEnergyIcon.svelte";
-
 export const implementation_status_choices: { [key: string]: string } = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
