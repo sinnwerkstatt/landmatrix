@@ -48,7 +48,7 @@ gunicorn = "*"
 [tool.poetry.dev-dependencies]
 ipdb = "*"
 pre-commit = "*"
-black = { version = "*", allow-prereleases = true }
+black = "*"
 mypy = "*"
 django-livereload = "*"
 django-extensions = "*"
