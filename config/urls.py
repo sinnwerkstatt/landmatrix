@@ -13,9 +13,9 @@ CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
     # Django basics
+    path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("django_registration.backends.activation.urls")),
-    path("admin/", admin.site.urls),
     path("impersonate/", include("impersonate.urls")),
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
@@ -28,7 +28,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    # Non i18n patterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
