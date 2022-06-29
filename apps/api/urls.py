@@ -1,8 +1,7 @@
 from django.urls import path
 
-from apps.landmatrix.export import DataDownload
-from .views import gis_export
-from apps.message.views import messages_json
+from .export import DataDownload
+from .views import gis_export, messages_json
 
 
 def data_download(request):

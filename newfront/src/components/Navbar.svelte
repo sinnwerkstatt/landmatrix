@@ -1,16 +1,15 @@
 <script lang="ts">
   import Cookies from "js-cookie";
   import { _, locale } from "svelte-i18n";
+  import { page } from "$app/stores";
   import {
     aboutPages,
     blogCategories,
-    dispatchLogin,
-    dispatchLogout,
     fetchBasis,
     observatoryPages,
-    user,
   } from "$lib/stores";
   import type { ObservatoryPage } from "$lib/types/wagtail";
+  import { dispatchLogin, dispatchLogout } from "$lib/user";
   import TranslateIcon from "$components/icons/TranslateIcon.svelte";
   import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
   import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
@@ -45,9 +44,12 @@
   let username = "";
   let password = "";
   let login_failed_message = "";
+
+  $: user = $page.stuff.user;
+
   async function login() {
-    const xx = await dispatchLogin(username, password);
-    if (xx.status === true) await location.reload();
+    const res = await dispatchLogin(username, password);
+    if (res.status === true) await location.reload();
   }
   async function logout() {
     if (await dispatchLogout()) location.reload();
@@ -172,17 +174,17 @@
           </ul>
         </NavDropDown>
 
-        {#if $user}
+        {#if user}
           <NavDropDown placement="bottom-end">
             <div slot="title" class="whitespace-nowrap flex items-center gap-1">
-              {$user.initials}
-              {#if $user.role === "ADMINISTRATOR"}
+              {user.initials}
+              {#if user.role === "ADMINISTRATOR"}
                 <UserAstronautSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-astronaut" />
-              {:else if $user.role === "EDITOR"}
+              {:else if user.role === "EDITOR"}
                 <UserNurseSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-nurse" />
-              {:else if $user.is_impersonate}
+              {:else if user.is_impersonate}
                 <UserSecretSolid class="h-4 w-4 inline" />
                 <i class="fa fa-user-secret" />
               {:else}
@@ -192,12 +194,12 @@
 
             <div class="divide-y divide-solid border border-orange bg-white">
               <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
-                {$user.full_name}
+                {user.full_name}
                 <br />
-                <small>{$user?.role ? $_($user?.role) : ""}</small>
+                <small>{user?.role ? $_(user?.role) : ""}</small>
               </p>
 
-              {#if $user.is_impersonate}
+              {#if user.is_impersonate}
                 <ul>
                   <li>
                     <a class="nav-link" href="/impersonate/stop/?next=/dashboard/">

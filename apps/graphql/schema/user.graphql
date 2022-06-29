@@ -31,7 +31,6 @@ type UserRegionalInfo {
   user: User
   phone: String
   information: String
-  super_user: User
-  country: [Country]
-  region: [Region]
+  country: Country
+  region: Region
 }

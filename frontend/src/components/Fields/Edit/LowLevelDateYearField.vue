@@ -43,7 +43,7 @@
           this.$refs.inputfield.setCustomValidity("");
           return;
         }
-        v = v.replace("/", "-").replace(".", "-").replace(",", "-");
+        v = v.replace("/", "-").replace(".", "-").replace(",", "-").trim();
         this.checkValidity();
         this.$emit("input", v);
       },

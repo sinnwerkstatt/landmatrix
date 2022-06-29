@@ -4,9 +4,11 @@ import zipfile
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.utils import timezone
 
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import Deal
+from apps.message.models import Message
 from apps.utils import qs_values_to_dict
 
 
@@ -59,3 +61,13 @@ def gis_export(request):
     response = HttpResponse(zip_buffer, content_type="application/zip")
     response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
     return response
+
+
+def messages_json(request):
+    msgs = [
+        msg.to_dict()
+        for msg in Message.objects.filter(is_active=True).exclude(
+            expires_at__lte=timezone.localdate()
+        )
+    ]
+    return JsonResponse({"messages": msgs})

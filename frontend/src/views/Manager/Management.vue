@@ -335,24 +335,23 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
-  import gql from "graphql-tag";
-  import dayjs from "dayjs";
-  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
   import DisplayField from "$components/Fields/DisplayField.vue";
   import CalendarIcon from "$components/icons/Calendar.vue";
-  import { sortAnything } from "$utils";
-  import { combined_status_fn } from "$utils/choices";
-  // @ts-ignore
-  import DatePicker from "v-calendar/lib/components/date-picker.umd";
-
-  import type { User } from "$types/user";
-  import type { Investor } from "$types/investor";
   import type { Deal } from "$types/deal";
   import type { GQLFilter } from "$types/filters";
+  import type { Investor } from "$types/investor";
+  import type { User } from "$types/user";
   import type { Country, Region } from "$types/wagtail";
+  import { sortAnything } from "$utils";
+  import { combined_status_fn } from "$utils/choices";
+  import dayjs from "dayjs";
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+  import gql from "graphql-tag";
+  // @ts-ignore
+  import DatePicker from "v-calendar/lib/components/date-picker.umd";
+  import Vue from "vue";
 
   dayjs.extend(isSameOrBefore);
   dayjs.extend(isSameOrAfter);
@@ -552,14 +551,10 @@
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
       user_region(): Region | null {
-        const regions = this.user.userregionalinfo?.region;
-        if (regions?.length > 0) return regions[0];
-        return null;
+        return this.user.userregionalinfo?.region;
       },
       user_country(): Country | null {
-        const countries = this.user.userregionalinfo?.country;
-        if (countries?.length > 0) return countries[0];
-        return null;
+        return this.user.userregionalinfo?.country;
       },
       country_options(): Country[] {
         const seen_ids = [] as number[];

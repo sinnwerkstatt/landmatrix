@@ -9,6 +9,10 @@ async function globalSetup(config: FullConfig) {
   await page.click("button.btn-primary");
   await page.waitForLoadState("networkidle");
 
+  const wrap = page.locator(".test-login");
+
+  await expect(wrap).toHaveText(/You are logged in./);
+
   // Save signed-in state to 'playwright-storageState.json'.
   await page.context().storageState({ path: "playwright-storageState.json" });
   await browser.close();

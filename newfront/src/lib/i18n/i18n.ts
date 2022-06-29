@@ -1,5 +1,4 @@
 import { init, register, waitLocale } from "svelte-i18n";
-import { browser } from "$app/env";
 
 export const supportedLanguages = ["en", "es", "fr", "ru"];
 export async function i18nload(params: Record<string, string>): Promise<void> {
@@ -18,15 +17,16 @@ export async function i18nload(params: Record<string, string>): Promise<void> {
   await waitLocale();
 }
 
-export function detectLang(languages = null): string {
-  if (!languages)
-    languages = browser
-      ? [window.navigator.language, ...window.navigator.languages]
-      : ["en"];
-  for (const browserLocale of languages) {
-    for (const supportedLanguage of supportedLanguages) {
-      if (browserLocale.startsWith(supportedLanguage)) return supportedLanguage;
-    }
-  }
-  return "en";
-}
+// import { browser } from "$app/env";
+// export function detectLang(languages: string[]): string {
+//   if (!languages)
+//     languages = browser
+//       ? [window.navigator.language, ...window.navigator.languages]
+//       : ["en"];
+//   for (const browserLocale of languages) {
+//     for (const supportedLanguage of supportedLanguages) {
+//       if (browserLocale.startsWith(supportedLanguage)) return supportedLanguage;
+//     }
+//   }
+//   return "en";
+// }
