@@ -430,11 +430,7 @@
         <slot name="visibility" />
       </div>
     </div>
-    <ManageHeaderLogbook
-      {object}
-      {objectVersion}
-      on:add_comment={(e) => dispatch("add_comment", e)}
-    />
+    <ManageHeaderLogbook {object} {objectVersion} on:addComment />
   </div>
 </div>
 

@@ -92,10 +92,6 @@
       {#if deal.country}{$_("in")} {deal.country.name}{/if}
     </h1>
     <div class="flex items-center my-5">
-      <!--{originalDeal}<br /><br />-->
-      <!--{JSON.stringify(deal.negotiation_status)}<br />-->
-      <!--{JSON.stringify(deal)}<br /><br />-->
-      &gt;{formChanged}&lt;
       <button
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"

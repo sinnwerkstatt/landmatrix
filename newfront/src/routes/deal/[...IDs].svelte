@@ -20,6 +20,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { dealSections } from "$lib/deal_sections";
+  import DealHistory from "$components/Deal/DealHistory.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
@@ -155,9 +156,9 @@
       {#if activeTab === "#overall_comment"}
         <DealSection {deal} sections={dealSections.overall_comment} />
       {/if}
-      {#if activeTab === "#overall_comment"}
+      {#if activeTab === "#history"}
         <section>
-          <!--          <DealHistory {deal} {dealId} {dealVersion} />-->
+          <DealHistory {deal} {dealID} {dealVersion} />
         </section>
       {/if}
       {#if activeTab === "#actions"}

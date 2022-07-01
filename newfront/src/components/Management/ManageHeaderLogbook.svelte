@@ -13,12 +13,14 @@
   let send_to_user;
   let commentArea;
 
-  function add_comment() {
-    if (!commentArea.checkValidity()) commentArea.reportValidity();
-    else {
-      dispatch("add_comment", { comment, send_to_user });
-      this.comment = "";
+  function addComment() {
+    if (!commentArea.checkValidity()) {
+      commentArea.reportValidity();
+      return;
     }
+
+    dispatch("addComment", { comment, send_to_user });
+    comment = "";
   }
 </script>
 
@@ -43,7 +45,7 @@
         <button
           type="button"
           class="btn btn-pelorous btn-slim lg:w-1/5"
-          on:click|preventDefault={add_comment}
+          on:click|preventDefault={addComment}
         >
           {$_("Send")}
         </button>

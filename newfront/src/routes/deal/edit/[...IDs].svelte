@@ -7,10 +7,9 @@
     if (!stuff.user) return { status: 403, error: "Permission denied" };
 
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
-
     const { data } = await stuff.secureApolloClient.query<{ deal: Deal[] }>({
       query: deal_gql_query,
-      variables: { id: +dealID, version: dealVersion },
+      variables: { id: dealID, version: dealVersion },
     });
     if (data.deal === null)
       return {

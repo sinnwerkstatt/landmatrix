@@ -28,6 +28,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
+  import { loading } from "$lib/data";
   import { Role } from "$lib/types/investor";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -52,15 +53,35 @@
     })),
   ];
 
+  async function reloadInvestor() {
+    loading.set(true);
+    const { data } = await $page.stuff.secureApolloClient.query<{ investor: Investor }>(
+      {
+        query: investor_gql_query,
+        variables: {
+          id: investorID,
+          version: investorVersion,
+          subset: "UNFILTERED",
+          includeDeals: true,
+          depth: 0,
+        },
+        fetchPolicy: "no-cache",
+      }
+    );
+    investor = data.investor;
+    loading.set(false);
+  }
+
   let graphDataIsReady = false;
 </script>
 
 <svelte:head>
   <title>{investor.name} #{investor.id}</title>
 </svelte:head>
+
 <div class="container mx-auto min-h-full px-2 pb-12">
   {#if $page.stuff.user?.is_authenticated}
-    <InvestorManageHeader {investor} {investorVersion} />
+    <InvestorManageHeader {investor} {investorVersion} on:reload={reloadInvestor} />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1>{investor.name} <small>#{investor.id}</small></h1>
