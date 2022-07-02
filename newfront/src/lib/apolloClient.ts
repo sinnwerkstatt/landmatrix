@@ -1,4 +1,6 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core/ApolloClient.js";
+import { HttpLink } from "@apollo/client/link/http/HttpLink.js";
+import { InMemoryCache } from "@apollo/client/cache/inmemory/inMemoryCache.js";
 import type { NormalizedCacheObject } from "@apollo/client/core";
 import { writable, type Writable } from "svelte/store";
 

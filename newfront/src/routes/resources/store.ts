@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "graphql-tag";
 import { get, writable } from "svelte/store";
 import { client } from "$lib/apolloClient";
 import type { BlogPage } from "$lib/types/wagtail";

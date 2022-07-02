@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import { client } from "$lib/apolloClient";
   import { filters, FilterValues } from "$lib/filters";

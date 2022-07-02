@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
   import { client } from "$lib/apolloClient";

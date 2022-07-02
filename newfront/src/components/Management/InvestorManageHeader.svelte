@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";

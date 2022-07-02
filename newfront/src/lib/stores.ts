@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "graphql-tag";
 import { get, writable } from "svelte/store";
 import type {
   BlogCategory,

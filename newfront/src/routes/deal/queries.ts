@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "graphql-tag";
 
 export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int, $subset: Subset) {

@@ -19,7 +19,7 @@ const line = lineRadial()
   .radius((d) => d.y)
   .angle((d) => d.x);
 
-function id(node) {
+function id(node): string {
   return `${node.parent ? id(node.parent) + "." : ""}${node.data.name}`;
 }
 
