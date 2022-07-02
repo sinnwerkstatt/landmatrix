@@ -1,5 +1,6 @@
 import type { LoadEvent } from "@sveltejs/kit";
-import { RESTEndpoint } from "$lib/index";
+
+const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`;
 
 export async function pageQuery(url: URL, fetch: LoadEvent["fetch"]) {
   const page_url =

@@ -9,7 +9,8 @@ import type {
 } from "$lib/types/wagtail";
 import type { FormField } from "$components/Fields/fields";
 import { client } from "./apolloClient";
-import { RESTEndpoint } from "./index";
+
+const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`;
 
 export const observatoryPages = writable<ObservatoryPage[]>([]);
 

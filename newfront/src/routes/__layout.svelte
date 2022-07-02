@@ -17,7 +17,7 @@
     }
     return new ApolloClient({
       link: new HttpLink({
-        uri: import.meta.env.VITE_GRAPHQL_URL,
+        uri: import.meta.env.VITE_BASE_URL + "/graphql/",
         credentials: "include",
         headers: { cookie: session.cookie },
       }),

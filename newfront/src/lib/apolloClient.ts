@@ -10,7 +10,7 @@ interface WritableApolloClient extends Writable<ApolloClient<NormalizedCacheObje
 
 function createApolloClient(): WritableApolloClient {
   const clnt = new ApolloClient({
-    link: new HttpLink({ uri: import.meta.env.VITE_GRAPHQL_URL, credentials: "include" }),
+    link: new HttpLink({ uri: import.meta.env.VITE_BASE_URL + "/graphql/", credentials: "include" }),
     cache: new InMemoryCache(),
   });
   const { subscribe, set, update } = writable<ApolloClient<NormalizedCacheObject>>(clnt);
