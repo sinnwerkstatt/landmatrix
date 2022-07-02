@@ -15,10 +15,9 @@
     if (!session.cookie) {
       return get(client);
     }
-    const uri = "http://localhost:3000/graphql/";
     return new ApolloClient({
       link: new HttpLink({
-        uri,
+        uri: import.meta.env.VITE_GRAPHQL_URL,
         credentials: "include",
         headers: { cookie: session.cookie },
       }),
