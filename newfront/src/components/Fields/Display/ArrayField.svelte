@@ -13,8 +13,8 @@
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte";
   import { flat_intention_of_investment_map } from "./choices";
 
-  export let formfield: FormField;
   export let value: string[];
+  export let formfield: FormField;
 
   const intention_of_investment_map = {
     BIOFUELS: AgricultureIcon,

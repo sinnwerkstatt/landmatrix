@@ -96,8 +96,18 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if field}
-      <svelte:component this={field} {value} {model} {formfield} {fileNotPublic} />
+    {#if formfield.class === "FileField"}
+      <FileField {value} {model} {formfield} {fileNotPublic} />
+    {:else if formfield.class === "AutoField"}
+      <AutoField {value} />
+    {:else if formfield.class === "DateTimeField"}
+      <DateTimeField {value} />
+    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
+      <ForeignKeyField {value} {formfield} />
+    {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
+      <ArrayField {value} {formfield} />
+    {:else if field}
+      <svelte:component this={field} {value} {model} {formfield} />
       <!--  <div>-->
       <!--    <component-->
       <!--      :target-blank="targetBlank"-->

@@ -3,10 +3,16 @@ import { browser } from "$app/env";
 import type { GQLFilter } from "./types/filters";
 import type { Investor } from "./types/investor";
 
+export enum ProduceGroup {
+  CROPS,
+  ANIMALS,
+  MINERAL_RESOURCES,
+}
 interface Produce {
   name: string;
   id: string;
   value: string;
+  groupID: ProduceGroup;
 }
 
 export enum NegotiationStatus {
@@ -263,9 +269,10 @@ export class FilterValues {
       const animals = [];
       const minerals = [];
       for (const prod of this.produce) {
-        if (prod.id.startsWith("crop_")) crops.push(prod.value);
-        if (prod.id.startsWith("animal_")) animals.push(prod.value);
-        if (prod.id.startsWith("mineral_")) minerals.push(prod.value);
+        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value);
+        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value);
+        else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
+          minerals.push(prod.value);
       }
       if (crops.length > 0) {
         filterArray.push({

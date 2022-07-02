@@ -4,31 +4,26 @@
   import FilterCollapse from "./FilterCollapse.svelte";
 
   interface Choice {
-    state?: boolean;
     value?: NegotiationStatus;
     name?: string;
   }
   interface GroupChoice extends Choice {
     group: string;
+    state: boolean;
     options: { value: NegotiationStatus; name: string }[];
   }
+
   function isSuperset(set: Set<string>, subset: Set<string>): boolean {
-    for (let elem of subset) {
-      if (!set.has(elem)) {
-        return false;
-      }
-    }
+    for (let elem of subset) if (!set.has(elem)) return false;
     return true;
   }
-
   function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
-    for (let elem of setB) {
-      if (setA.has(elem)) return true;
-    }
+    for (let elem of setB) if (setA.has(elem)) return true;
     return false;
   }
 
-  const choices: Array<Choice | GroupChoice> = [
+  // const choices: Array<Choice | GroupChoice> = [
+  const choices = [
     {
       group: "Intended",
       state: undefined,
@@ -71,24 +66,25 @@
   //       });
   //     },
   //   },
-  //   mounted() {
-  //     this.choices.forEach((choice) => {
-  //       if (choice.group) this.toggleSingle(choice as GroupChoice);
-  //     });
-  //   },
+
+  // const isGroupChoice = (c): c is GroupChoice => !!c?.group;
+  // onMount(() => {
+  //   choices.forEach((choice) => {
+  //     if (isGroupChoice(choice)) toggleSingle(choice);
+  //   });
+  // });
+
   async function toggleGroup(choice: GroupChoice) {
     // const fieldmap: { [key: string]: string[] } = {
     //   Concluded: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
     // };
     const fields = choice.options.map((o) => o.value);
-    console.log("FIE", fields);
-    console.log(choice.state);
 
     if (choice.state) {
       $filters.negotiation_status = [...$filters.negotiation_status, ...fields];
     } else {
       $filters.negotiation_status = $filters.negotiation_status.filter(
-        (s: string) => !fields.includes(s)
+        (s: NegotiationStatus) => !fields.includes(s)
       );
     }
   }
@@ -99,12 +95,14 @@
 
     if (isSuperset(cur_set, exp_set)) {
       checkbox.indeterminate = false;
-      choice.state = true;
+      // choice.state = true;
+      checkbox.checked = true;
     } else if (hasIntersection(cur_set, exp_set)) {
       checkbox.indeterminate = true;
     } else {
       checkbox.indeterminate = false;
-      choice.state = false;
+      // choice.state = false;
+      checkbox.checked = false;
     }
   }
 </script>
@@ -115,48 +113,38 @@
   on:click={() => ($filters.negotiation_status = [])}
 >
   {#each choices as nstat}
-    <div>
-      {#if nstat.group}
-        <div class="custom-control custom-checkbox">
-          <label class="custom-control-label orange-checkbox-label font-bold">
-            <input
-              id={nstat.group}
-              bind:checked={nstat.state}
-              class="custom-control-input"
-              type="checkbox"
-              on:change={() => toggleGroup(nstat)}
-            />
-            {$_(nstat.group)}
-          </label>
-          {#each nstat.options as nstatop}
-            <div class="custom-control custom-checkbox">
-              <label class="form-check-label custom-control-label">
-                <input
-                  bind:group={$filters.negotiation_status}
-                  class="form-check-input custom-control-input"
-                  type="checkbox"
-                  value={nstatop.value}
-                  on:change={() => toggleSingle(nstat)}
-                />
-                {$_(nstatop.name)}
-              </label>
-            </div>
-          {/each}
-        </div>
-      {:else}
-        <div class="custom-control custom-checkbox font-weight-bold">
+    {#if nstat.group}
+      <label class="font-bold block">
+        <input
+          id={nstat.group}
+          bind:checked={nstat.state}
+          class="custom-control-input"
+          type="checkbox"
+          on:change={() => toggleGroup(nstat)}
+        />
+        {$_(nstat.group)}
+      </label>
+      {#each nstat.options as nstatop}
+        <label class="block pl-4">
           <input
-            id={nstat.value}
             bind:group={$filters.negotiation_status}
             class="form-check-input custom-control-input"
             type="checkbox"
-            value={nstat.value}
+            value={nstatop.value}
+            on:change={() => toggleSingle(nstat)}
           />
-          <label class="form-check-label custom-control-label" for={nstat.value}>
-            {$_(nstat.name)}
-          </label>
-        </div>
-      {/if}
-    </div>
+          {$_(nstatop.name)}
+        </label>
+      {/each}
+    {:else}
+      <label class="font-bold block">
+        <input
+          bind:group={$filters.negotiation_status}
+          type="checkbox"
+          value={nstat.value}
+        />
+        {$_(nstat.name)}
+      </label>
+    {/if}
   {/each}
 </FilterCollapse>
