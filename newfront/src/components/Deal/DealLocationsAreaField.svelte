@@ -129,17 +129,17 @@
         <tr
           on:mouseover={() => (currentHoverFeature = feat)}
           on:mouseout={() => (currentHoverFeature = null)}
-          class="px-1 {feat === currentHoverFeature
-            ? 'border border-4 border-orange-400'
-            : ''}"
+          class="px-1
+            {feat === currentHoverFeature ? 'border border-4 border-orange-400' : ''}
+            {hiddenFeatures.includes(feat) ? 'bg-gray-200' : ''}"
         >
           <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
             {#if hiddenFeatures.includes(feat)}
               <div title="Show">
-                <EyeIcon class="text-orange h-5 w-5" />
+                <EyeSlashIcon class="h-5 w-5" />
               </div>
             {:else}
-              <div title="Hide"><EyeSlashIcon class="h-5 w-5" /></div>
+              <div title="Hide"><EyeIcon class="h-5 w-5" /></div>
             {/if}
           </td>
           <td class="text-center px-1" on:click={() => updateCurrent(i)}>
