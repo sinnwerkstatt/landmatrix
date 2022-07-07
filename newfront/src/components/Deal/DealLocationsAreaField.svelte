@@ -1,24 +1,28 @@
 <script lang="ts">
-  import type { Feature } from "geojson";
+  import type { GeoJSON } from "geojson";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
-  import type { Location } from "$lib/types/deal";
+  import type { Area, AreaFeature, Location } from "$lib/types/deal";
+  import {
+    getFeatures,
+    setCurrentProperty,
+    setFeatures,
+    setTypeProperty,
+  } from "$components/Deal/dealLocationAreaFeatures";
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte";
   import EyeIcon from "$components/icons/EyeIcon.svelte";
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
+  import TrashIcon from "$components/icons/TrashIcon.svelte";
   import Overlay from "$components/Overlay.svelte";
 
   const dispatch = createEventDispatcher();
 
-  type Area = "production_area" | "contract_area" | "intended_area";
-
   export let areaType: Area;
-  export let locations: Location[];
   export let activeLocationID: string;
-  export let currentHoverFeature: Feature | null;
-  export let hiddenFeatures: Feature[];
+  export let locations: Location[];
+  export let currentHoverFeature: AreaFeature | null;
+  export let hiddenFeatures: AreaFeature[];
 
   let showAddAreaOverlay = false;
   let toAddFiles;
@@ -29,92 +33,82 @@
     intended_area: $_("Intended areas"),
   }[areaType];
 
-  $: areaFeatures =
-    locations
-      .find((loc) => loc.id === activeLocationID)
-      ?.areas?.features?.filter((feature) => feature.properties.type === areaType) ??
-    [];
+  $: activeLocation = locations.find((location) => location.id === activeLocationID);
 
-  $: current = areaFeatures.findIndex((feature) => feature.properties.current);
+  // bind area type
+  const getAreaFeatures = (location: Location) => getFeatures(areaType, location);
+  const hasAreaFeatures = (location: Location) => getAreaFeatures(location).length > 0;
+  const setAreaFeatures = (location: Location, features: AreaFeature[]) => {
+    setFeatures(areaType, location, features);
+
+    // signal update
+    locations = locations;
+    dispatch("change");
+  };
+
+  $: current = getAreaFeatures(activeLocation).findIndex(
+    (feature) => feature.properties.current
+  );
 
   function uploadFiles() {
     const reader = new FileReader();
+
     reader.addEventListener("load", (event) => {
-      let result = JSON.parse(event.target?.result as string);
+      const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string);
 
-      const feats = result.features.map((f: Feature) => ({
-        ...f,
-        properties: { ...f.properties, type: areaType },
-      }));
+      let features = getAreaFeatures(activeLocation);
 
-      let actAreas = locations.find((l) => l.id === activeLocationID).areas;
-      actAreas.features = [...actAreas.features, ...feats];
-      locations = locations;
-      dispatch("change");
+      switch (geoJsonObject.type) {
+        case "Feature":
+          features = [...features, setTypeProperty(areaType)(geoJsonObject)];
+          break;
+        case "FeatureCollection":
+          features = [
+            ...features,
+            ...geoJsonObject.features.map(setTypeProperty(areaType)),
+          ];
+          break;
+        default:
+          console.error("Unsupported GeoJsonType");
+      }
+
+      setAreaFeatures(activeLocation, features);
       showAddAreaOverlay = false;
     });
+
     reader.readAsText(toAddFiles[0]);
   }
 
-  const toggleVisibility = (feature: Feature) => {
+  const toggleVisibility = (feature: AreaFeature) => {
     hiddenFeatures = hiddenFeatures.includes(feature)
       ? hiddenFeatures.filter((f) => f !== feature)
       : [...hiddenFeatures, feature];
   };
 
-  function removeFeature(e) {
-    let actAreas = locations.find((l) => l.id === activeLocationID).areas;
-    actAreas.features = actAreas.features.filter((f) => f !== e);
-    locations = locations;
-    dispatch("change");
+  function removeFeature(feature: AreaFeature) {
+    const remainingFeatures = getAreaFeatures(activeLocation).filter(
+      (f) => f !== feature
+    );
+
+    setAreaFeatures(activeLocation, remainingFeatures);
   }
 
   function updateCurrent(index: number) {
-    const activeIndex = locations.findIndex((l) => l.id === activeLocationID);
-
-    locations[activeIndex] = updateCurrentForLocation(locations[activeIndex], index);
-    locations = locations;
-  }
-
-  function updateCurrentForLocation(location: Location, index: number): Location {
-    let otherFeatures = location.areas.features.filter(
-      (f) => f.properties.type !== areaType
+    const updatedFeatures: AreaFeature[] = getAreaFeatures(activeLocation).map(
+      setCurrentProperty(index)
     );
 
-    let areaFeatures = location.areas.features
-      .filter((f) => f.properties.type === areaType)
-      .map((feature, i) => ({
-        ...feature,
-        properties: {
-          ...feature.properties,
-          current: i === index ? true : undefined,
-        },
-      }));
-
-    return {
-      ...location,
-      areas: { ...location.areas, features: [...otherFeatures, ...areaFeatures] },
-    } as Location;
+    setAreaFeatures(activeLocation, updatedFeatures);
   }
 </script>
 
 <div class="grid grid-cols-10 justify-between my-3">
   <div class="pr-2 col-span-2">
     <div class="text-lg font-medium">{title}</div>
-    {#if areaFeatures.length === 0}
-      <button
-        type="button"
-        class="btn btn-slim btn-secondary flex justify-center items-center"
-        on:click={() => (showAddAreaOverlay = true)}
-      >
-        <PlusIcon />
-        {$_("Add")}
-      </button>
-    {/if}
   </div>
-  <table class="flex-auto col-span-8">
-    <thead>
-      {#if areaFeatures.length > 0}
+  {#if hasAreaFeatures(activeLocation)}
+    <table class="flex-auto col-span-8">
+      <thead>
         <tr>
           <th class="font-normal" />
           <th class="font-normal">{$_("Current")}</th>
@@ -122,64 +116,78 @@
           <th class="font-normal">{$_("Type")}</th>
           <th class="font-normal" />
         </tr>
-      {/if}
-    </thead>
-    <tbody>
-      {#each areaFeatures as feat, i}
-        <tr
-          on:mouseover={() => (currentHoverFeature = feat)}
-          on:mouseout={() => (currentHoverFeature = null)}
-          class="px-1
+      </thead>
+      <tbody>
+        {#each getAreaFeatures(activeLocation) as feat, i}
+          <tr
+            on:mouseover={() => (currentHoverFeature = feat)}
+            on:focus={() => (currentHoverFeature = feat)}
+            on:mouseout={() => (currentHoverFeature = null)}
+            on:blur={() => (currentHoverFeature = null)}
+            class="px-1
             {feat === currentHoverFeature ? 'border border-4 border-orange-400' : ''}
             {hiddenFeatures.includes(feat) ? 'bg-gray-200' : ''}"
-        >
-          <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
-            {#if hiddenFeatures.includes(feat)}
-              <div title="Show">
-                <EyeSlashIcon class="h-5 w-5" />
-              </div>
-            {:else}
-              <div title="Hide"><EyeIcon class="h-5 w-5" /></div>
-            {/if}
-          </td>
-          <td class="text-center px-1" on:click={() => updateCurrent(i)}>
-            <input
-              type="radio"
-              bind:group={current}
-              value={i}
-              name="{areaType}_current"
-              required={current === -1}
-            />
-          </td>
-          <td class="px-1">
-            <LowLevelDateYearField
-              bind:value={feat.properties.date}
-              required
-              emitUndefinedOnEmpty
-            />
-          </td>
-          <td class="px-1">
-            <select bind:value={feat.properties.type} on:change class="inpt w-auto">
-              <option value="production_area">{$_("Production area")}</option>
-              <option value="contract_area">{$_("Contract area")}</option>
-              <option value="intended_area">{$_("Intended area")}</option>
-            </select>
-          </td>
-          <td class="p-1">
-            <button type="button" on:click={() => (showAddAreaOverlay = true)}>
-              <PlusIcon class="w-5 h-5 text-black" />
-            </button>
-            <button
-              type="button"
-              on:click={() => confirm($_("Delete feature?")) && removeFeature(feat)}
-            >
-              <MinusIcon class="w-5 h-5 text-red-600" />
-            </button>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
+          >
+            <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
+              {#if hiddenFeatures.includes(feat)}
+                <div title="Show">
+                  <EyeSlashIcon class="h-5 w-5" />
+                </div>
+              {:else}
+                <div title="Hide"><EyeIcon class="h-5 w-5" /></div>
+              {/if}
+            </td>
+            <td class="text-center px-1" on:click={() => updateCurrent(i)}>
+              <input
+                type="radio"
+                bind:group={current}
+                value={i}
+                name="{areaType}_{i}_current"
+                required={current === -1}
+              />
+            </td>
+            <td class="px-1">
+              <LowLevelDateYearField
+                bind:value={feat.properties.date}
+                name="{areaType}_{i}_year"
+                required
+                emitUndefinedOnEmpty
+              />
+            </td>
+            <td class="px-1">
+              <select
+                bind:value={feat.properties.type}
+                on:change
+                name="{areaType}_{i}_type"
+                class="inpt w-auto"
+              >
+                <option value="production_area">{$_("Production area")}</option>
+                <option value="contract_area">{$_("Contract area")}</option>
+                <option value="intended_area">{$_("Intended area")}</option>
+              </select>
+            </td>
+            <td class="p-1">
+              <button
+                type="button"
+                on:click={() => confirm($_("Delete feature?")) && removeFeature(feat)}
+              >
+                <TrashIcon class="w-5 h-5 text-red-600" />
+              </button>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {:else}
+    <button
+      type="button"
+      class="btn btn-slim btn-secondary flex justify-center items-center"
+      on:click={() => (showAddAreaOverlay = true)}
+    >
+      <PlusIcon />
+      {$_("Add")}
+    </button>
+  {/if}
 </div>
 
 <Overlay

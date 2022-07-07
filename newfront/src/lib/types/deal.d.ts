@@ -1,4 +1,5 @@
-import type { GeoJsonObject } from "geojson";
+import type { FeatureCollection, Geometry } from "geojson";
+import { Feature } from "geojson";
 import { ImplementationStatus, NegotiationStatus } from "$lib/filters";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
@@ -12,6 +13,20 @@ enum ACCURACY_LEVEL {
   COORDINATES,
 }
 
+type Area = "production_area" | "contract_area" | "intended_area";
+
+interface FeatureProps {
+  // these are the location id and name -> not unique for feature
+  id?: string;
+  name?: string;
+  type?: Area;
+  date?: string;
+  current?: boolean;
+}
+
+type AreaFeature = Feature<Geometry, FeatureProps>;
+type AreaFeatureCollection = FeatureCollection<Geometry, FeatureProps>;
+
 interface Location {
   id: string;
   name?: string;
@@ -23,7 +38,7 @@ interface Location {
   facility_name?: string;
   level_of_accuracy?: ACCURACY_LEVEL;
   comment?: string;
-  areas?: GeoJsonObject;
+  areas?: AreaFeatureCollection;
 }
 
 interface Contract {
