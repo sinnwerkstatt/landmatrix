@@ -3,14 +3,15 @@
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
+  import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
   import { filters, ProduceGroup } from "$lib/filters";
-  import { publicOnly } from "$lib/filters";
+  import { isDefaultFilter, publicOnly } from "$lib/filters";
   import { countries, regions } from "$lib/stores";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
-  import { isDefaultFilter, showFilterBar } from "$components/Data";
+  import { showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
@@ -111,6 +112,10 @@
       <CheckboxSwitch
         class="text-sm"
         checked={$isDefaultFilter}
+        on:change={(val) =>
+          val.target.checked
+            ? filters.set($filters.empty().default())
+            : filters.set($filters.empty())}
         label={$_("Default filter")}
       />
 
@@ -223,7 +228,7 @@
           getOptionLabel={(o) => `${o.name} (#${o.id})`}
           getSelectionLabel={(o) => `${o.name} (#${o.id})`}
           showChevron
-          isVirtualList
+          {VirtualList}
         />
         {$_("Country of registration")}
         <Select
@@ -232,7 +237,7 @@
           on:change={(e) => ($filters.investor_country_id = e.detail?.id)}
           placeholder={$_("Country of registration")}
           labelIdentifier="name"
-          optionsIdentifier="id"
+          optionIdentifier="id"
           showChevron
         />
       </FilterCollapse>

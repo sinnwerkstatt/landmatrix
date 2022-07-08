@@ -5,7 +5,7 @@
 
 <div class="flex {$$props.class}">
   <label class="switch align-middle relative block flex justify-center items-center">
-    <input class="opacity-0 w-0 h-0" type="checkbox" bind:checked />
+    <input class="opacity-0 w-0 h-0" type="checkbox" bind:checked on:input on:change />
     <span
       class="slider transition-transform delay-300 bg-gray-300 absolute cursor-pointer inset-0"
     />
