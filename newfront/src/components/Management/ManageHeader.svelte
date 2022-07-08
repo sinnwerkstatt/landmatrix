@@ -4,9 +4,10 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { isAuthorized } from "$lib/helpers";
   import type { Obj, ObjVersion } from "$lib/types/generics";
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import DateTimeField from "../Fields/Display/DateTimeField.svelte";
   import ManageHeaderLogbook from "./ManageHeaderLogbook.svelte";
 
   const dispatch = createEventDispatcher();
@@ -15,68 +16,50 @@
   export let objectVersion: number;
   export let otype = "deal";
 
-  function is_authorized(obj: Obj): boolean {
-    const { id, role } = $page.stuff.user;
-    switch (obj.draft_status) {
-      case null: // anybody who has a ROLE
-        return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(role);
-      case 1: // the Reporter of the Object or Editor,Administrator
-        return (
-          ["ADMINISTRATOR", "EDITOR"].includes(role) ||
-          obj.versions[0]?.created_by?.id === id
-        );
-      case 2: // at least Editor
-        return ["ADMINISTRATOR", "EDITOR"].includes(role);
-      case 3: // only Admins
-        return role === "ADMINISTRATOR";
-      default:
-        return false;
-    }
-  }
-
   let showToDraftOverlay = false;
   let showDeleteOverlay = false;
   let showSendToActivationOverlay = false;
   let showActivateOverlay = false;
   let show_new_draft_overlay = false;
 
-  let last_version: ObjVersion;
-  $: last_version = object?.versions[0] ?? undefined;
-  let has_active: boolean;
-  $: has_active = !!object?.status;
+  let lastVersion: ObjVersion;
+  $: lastVersion = object.versions[0];
 
-  $: is_active_with_draft = !objectVersion && !!object.draft_status;
-  $: is_editable = true;
-  //   is_editable(): boolean {
-  //     // object ist deleted
-  //     if (!this.objectVersion && this.object.status === 4) return false;
-  //     if (this.is_active_with_draft) return false;
-  //     if (this.object.draft_status === 4)
-  //       return this.$store.state.user.role === "ADMINISTRATOR";
-  //     return is_authorized(this.object);
-  //   },
+  let hasActive: boolean;
+  $: hasActive = !!object.status;
 
-  $: is_deletable =
-    is_active_with_draft || is_old_draft
+  let isActiveWithDraft: boolean;
+  $: isActiveWithDraft = !objectVersion && !!object.draft_status;
+
+  let isEditable: boolean;
+  $: isEditable =
+    (!objectVersion && object.status === 4) || isActiveWithDraft
+      ? false
+      : object.draft_status === 4
+      ? $page.stuff.user.role === "ADMINISTRATOR"
+      : isAuthorized($page.stuff.user, object);
+
+  let isOldDraft: boolean;
+  $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion;
+
+  let isDraftWithActive: boolean;
+  $: isDraftWithActive =
+    objectVersion && [2, 3].includes(object.status)
+      ? true
+      : isOldDraft && [2, 3].includes(lastVersion?.[otype]?.status);
+
+  let hasNewerDraft: boolean;
+  $: hasNewerDraft = isActiveWithDraft
+    ? true
+    : isOldDraft && !!lastVersion?.[otype]?.draft_status;
+
+  $: isDeletable =
+    isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
       ? $page.stuff.user.role === "ADMINISTRATOR"
-      : is_authorized(object);
+      : isAuthorized($page.stuff.user, object);
   $: is_deleted = !objectVersion && object?.status === 4;
-
-  $: latest_object_version = object?.versions.find(
-    (v: ObjVersion) => v.id === last_version.id
-  )[otype];
-
-  $: is_draft_with_active =
-    objectVersion && [2, 3].includes(object.status)
-      ? true
-      : is_old_draft && [2, 3].includes(latest_object_version?.status);
-  $: is_old_draft = !!objectVersion && last_version.id !== +objectVersion;
-
-  $: has_newer_draft = is_active_with_draft
-    ? true
-    : is_old_draft && !!latest_object_version?.draft_status;
 
   $: deleteTitle = $_(
     objectVersion
@@ -92,84 +75,36 @@
       : "Delete investor"
   );
 
-  let transitionToUser;
-  //   transition_to_user(): User {
-  //     let latest_draft_creation = this.object.workflowinfos.find((v) => {
-  //       return !v.draft_status_before && v.draft_status_after === 1;
-  //     });
-  //     if (!latest_draft_creation)
-  //       latest_draft_creation = this.object.workflowinfos.find((v) => {
-  //         return !v.draft_status_before && v.draft_status_after === 2;
-  //       });
-  //     return latest_draft_creation.from_user;
-  //   },
-  // },
-
-  function object_detail_path(obID: number, obV?: number) {
-    if (otype === "deal") return obV ? `/deal/${obID}/${obV}` : `/deal/${obID}`;
-    return obV ? `/investor/${obID}/${obV}` : `/investor/${obID}`;
-  }
-
-  function object_edit_path(obID: number, obV?: number) {
-    if (otype === "deal")
-      return obV ? `/deal/edit/${obID}/${obV}` : `/deal/edit/${obID}`;
-    return obV ? `/investor/edit/${obID}/${obV}` : `/investor/edit/${obID}`;
-  }
-
-  //   object_compare_path(
-  //     oID: number,
-  //     fromVersion: number,
-  //     toVersion: number
-  //   ): Location {
-  //     return this.otype === "deal"
-  //       ? {
-  //           name: "deal_compare",
-  //           params: {
-  //             dealId: oID.toString(),
-  //             fromVersion: fromVersion.toString(),
-  //             toVersion: toVersion.toString(),
-  //           },
-  //         }
-  //       : {
-  //           name: "investor_compare",
-  //           params: {
-  //             investorId: oID.toString(),
-  //             fromVersion: fromVersion.toString(),
-  //             toVersion: toVersion.toString(),
-  //           },
-  //         };
-  //   },
-
-  function doDelete({ comment }): void {
-    dispatch("delete", comment);
+  function doDelete({ detail: { comment } }): void {
+    dispatch("delete", { comment });
     showDeleteOverlay = false;
   }
-  function sendToDraft({ comment, to_user }): void {
-    console.log("to_draft", { comment, to_user });
+  function sendToDraft({ detail: { comment, to_user } }): void {
     dispatch("change_status", { transition: "TO_DRAFT", comment, to_user });
     showToDraftOverlay = false;
   }
-  function sendToActivation({ comment }) {
-    dispatch("change_status", { comment, transition: "TO_ACTIVATION" });
+  function sendToActivation({ detail: { comment } }) {
+    dispatch("change_status", { transition: "TO_ACTIVATION", comment });
     showSendToActivationOverlay = false;
   }
-  function activate({ comment }) {
-    dispatch("change_status", { comment, transition: "ACTIVATE" });
+  function activate({ detail: { comment } }) {
+    dispatch("change_status", { transition: "ACTIVATE", comment });
     showActivateOverlay = false;
   }
 </script>
 
 <div class="my-6">
+  <!--{JSON.stringify(lastVersion, null, 2)}-->
   <div class="p-0 flex flex-col lg:flex-row">
     <div class="grow-[2] bg-neutral-200">
-      <div class="flex justify-center gap-4 z-[1] -mt-5">
-        {#if is_draft_with_active}
-          <a href={object_detail_path(object.id)} class="btn btn-gray">
+      <div class="flex justify-center gap-4 -mt-5">
+        {#if isDraftWithActive}
+          <a href="/{otype}/{object.id}" class="btn btn-gray">
             {$_("Go to active version")}
           </a>
         {/if}
-        {#if has_newer_draft}
-          <a href={object_detail_path(object.id, last_version.id)} class="btn btn-gray">
+        {#if hasNewerDraft}
+          <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
             {$_("Go to current draft")}
           </a>
         {/if}
@@ -202,25 +137,23 @@
       </div>
 
       {#if object.status === 4}
-        <div class="status-and-progress-buttons">
-          <div class="fat-stati">
-            <div class="text-white bg-[hsl(0,33%,68%)]">
-              {$_("Deleted")}
-            </div>
-          </div>
+        <div
+          class="flex items-center justify-center h-16 w-full text-white bg-[hsl(0,33%,68%)] text-lg border-2"
+        >
+          {$_("Deleted")}
         </div>
       {:else if object.status !== 1 && !objectVersion}
-        <div class="status-and-progress-buttons">
-          <div class="fat-stati">
-            <div class="active">{$_("Activated")}</div>
-          </div>
+        <div
+          class="flex items-center justify-center h-16 w-full text-white bg-pelorous-300 font-medium text-lg border-2"
+        >
+          {$_("Activated")}
         </div>
       {:else}
-        <div class="">
-          <div class="status-and-progress">
+        <div>
+          <div class="flex flex-wrap w-full justify-between text-center">
             <div
               class:active={[1, 4].includes(object.draft_status)}
-              class="status-field"
+              class="status-field z-[3]"
             >
               <span>{$_("Draft")}</span>
               {#if object.draft_status === 4}
@@ -229,21 +162,22 @@
                 </span>
               {/if}
             </div>
-            <div class:active={object.draft_status === 2} class="status-field">
+            <div class:active={object.draft_status === 2} class="status-field z-[2]">
               <span>{$_("Submitted for review")}</span>
             </div>
-            <div class:active={object.draft_status === 3} class="status-field">
+            <div class:active={object.draft_status === 3} class="status-field z-[1]">
               <span>{$_("Submitted for activation")}</span>
             </div>
             <div class:active={object.draft_status === null} class="status-field">
               <span>{$_("Activated")}</span>
             </div>
           </div>
-          <div class="row workflow-buttons">
-            <div class="col text-right">
-              {#if object.draft_status === 1 && is_authorized(object)}
-                <a
-                  class:disabled={last_version.id !== +objectVersion}
+          <div class="flex workflow-buttons">
+            <div class="flex-1 text-right">
+              {#if object.draft_status === 1 && isAuthorized($page.stuff.user, object)}
+                <button
+                  type="button"
+                  class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
                     ? $_("Submits the deal for review")
                     : $_("Submits the investor for review")}
@@ -251,12 +185,12 @@
                   on:click={() => dispatch("send_to_review")}
                 >
                   {$_("Submit for review")}
-                </a>
+                </button>
               {/if}
-              {#if (object.draft_status === 2 || object.draft_status === 3) && is_authorized(object)}
+              {#if (object.draft_status === 2 || object.draft_status === 3) && isAuthorized($page.stuff.user, object)}
                 <button
                   type="button"
-                  class:disabled={last_version.id !== +objectVersion}
+                  class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
                     ? $_(
                         "Send a request of improvent and create a new draft version of the deal"
@@ -271,11 +205,11 @@
                 </button>
               {/if}
             </div>
-            <div class="col text-center">
-              {#if object.draft_status === 2 && is_authorized(object)}
+            <div class="flex-1 text-center">
+              {#if object.draft_status === 2 && isAuthorized($page.stuff.user, object)}
                 <button
                   type="button"
-                  class:disabled={last_version.id !== +objectVersion}
+                  class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
                     ? $_("Submits the deal for activation")
                     : $_("Submits the investor for activation")}
@@ -286,12 +220,12 @@
                 </button>
               {/if}
             </div>
-            <div class="col text-left">
-              {#if object.draft_status === 3 && is_authorized(object)}
+            <div class="flex-1 text-left">
+              {#if object.draft_status === 3 && isAuthorized($page.stuff.user, object)}
                 <button
                   type="button"
-                  class:disabled={last_version.id !== +objectVersion}
-                  title={has_active
+                  class:disabled={lastVersion.id !== +objectVersion}
+                  title={hasActive
                     ? $_(
                         "Activates submitted version replacing currently active version"
                       )
@@ -310,27 +244,22 @@
       {/if}
       <div class="p-4 flex w-full flew-row gap-4">
         <div class="grow-[2] basis-0">
-          {#if last_version}
+          {#if lastVersion}
             <div class="text-sm mb-4">
               {$_("Last changes")}
-              {#if last_version.created_by}
+              {#if lastVersion.created_by}
                 <span>
                   {$_("by")}
-                  {last_version.created_by.full_name}
+                  {lastVersion.created_by.full_name}
                 </span>
               {/if}
               on
-              {dayjs(last_version.created_at).format("YYYY-MM-DD HH:mm")}
+              {dayjs(lastVersion.created_at).format("YYYY-MM-DD HH:mm")}
               <br />
               {#if object.versions.length > 1}
                 <a
-                  href="
-                        object_compare_path(
-                          object.id,
-                          object.versions[1].id,
-                          object.versions[0].id
-                        )
-                      "
+                  href="/{otype}/{object.id}/compare/{object.versions[1].id}/{object
+                    .versions[0].id}/"
                 >
                   {$_("Show latest changes")}
                 </a>
@@ -338,13 +267,13 @@
             </div>
           {/if}
           <div class="action-buttons">
-            {#if is_editable}
+            {#if isEditable}
               <div class="action-button">
                 <div class="inline-block">
-                  {#if !objectVersion || $page.stuff.user.id === object.modified_by?.id}
+                  {#if !objectVersion || $page.stuff.user.id === object.created_by?.id}
                     <a
-                      class:disabled={is_old_draft}
-                      href={object_edit_path(object.id, last_version.id)}
+                      class:disabled={isOldDraft}
+                      href="/{otype}/edit/{object.id}/{objectVersion ?? ''}"
                       class="btn btn-primary"
                     >
                       {$_("Edit")}
@@ -360,7 +289,7 @@
                 </div>
                 <div class="inline-block ml-4 italic text-black/50">
                   {#if object.draft_status === 1}
-                    {#if !has_active}
+                    {#if !hasActive}
                       {otype === "deal"
                         ? $_("Starts editing this deal")
                         : $_("Starts editing this investor")}
@@ -377,7 +306,7 @@
                 </div>
               </div>
             {/if}
-            {#if is_deletable}
+            {#if isDeletable}
               <div class="action-button">
                 <div class="inline-block">
                   <button
@@ -398,7 +327,7 @@
                     {otype === "deal"
                       ? $_("Reactivate this deal")
                       : $_("Reactivate this investor")}
-                  {:else if objectVersion && has_active}
+                  {:else if objectVersion && hasActive}
                     {otype === "deal"
                       ? $_("Deletes this draft version of the deal")
                       : $_("Deletes this draft version of the investor")}
@@ -438,7 +367,7 @@
   bind:visible={show_new_draft_overlay}
   title={$_("Create a new draft")}
   commentInput={false}
-  on:submit={() => goto(object_edit_path(object.id, objectVersion))}
+  on:submit={() => goto(`/${otype}/edit/${object.id}/${objectVersion ?? ""}`)}
 >
   {$_(
     "You are not the author of this version. Therefore, a new version will be created if you proceed."
@@ -450,7 +379,7 @@
   title={$_("Request improvement")}
   assignToUserInput
   commentRequired
-  toUser={transitionToUser}
+  toUser={lastVersion?.created_by?.id}
   on:submit={sendToDraft}
 />
 
@@ -459,124 +388,52 @@
   commentRequired
   on:submit={doDelete}
   title={deleteTitle}
+  xtitle={objectVersion
+    ? `${$_("Delete")} ${$_(otype)} ${$_("version")}`
+    : `${object.status === 4 ? $_("Reactivate") : $_("Delete")} ${$_(otype)}`}
 />
 
 <ManageOverlay
   bind:visible={showSendToActivationOverlay}
   commentInput
   on:submit={sendToActivation}
+  title={$_("Submit for activation")}
 />
 
-<ManageOverlay bind:visible={showActivateOverlay} commentInput on:submit={activate} />
+<ManageOverlay
+  bind:visible={showActivateOverlay}
+  commentInput
+  on:submit={activate}
+  title={$_("Activate")}
+/>
 
-<!--<style lang="scss" scoped>-->
-<!--  $arrow-height: 34px;-->
-<!--  $max-z-index: 10;-->
+<style>
+  .status-field {
+    @apply w-1/4 border-2 h-16 bg-zinc-300 flex items-center justify-center relative pl-5;
+  }
+  .status-field:before {
+    @apply content-[""];
+    @apply border-y border-y-[31px] border-y-transparent;
+    @apply border-l border-l-[18px] border-l-neutral-200;
+    @apply absolute inset-y-0 left-0;
+  }
+  .status-field:after {
+    @apply content-[""];
+    @apply border-y border-y-[31px] border-y-transparent;
+    @apply border-l border-l-[18px] border-l-zinc-300;
+    @apply absolute inset-y-0 right-[-17px];
+  }
+  .status-field:first-child:before {
+    @apply hidden;
+  }
+  .status-field:last-child:after {
+    @apply hidden;
+  }
 
-<!--  .status-and-progress-buttons {-->
-<!--    display: flex;-->
-<!--    flex-flow: column;-->
-<!--    margin-bottom: 2rem;-->
-
-<!--    > div {-->
-<!--      width: 100%;-->
-<!--    }-->
-
-<!--    .fat-stati {-->
-<!--      display: flex;-->
-<!--      flex-flow: row wrap;-->
-<!--      margin-top: 1rem;-->
-
-<!--      @media (max-width: 400px) {-->
-<!--        font-size: 0.9rem;-->
-<!--        line-height: 1.1;-->
-<!--      }-->
-
-<!--      > div {-->
-<!--        position: relative;-->
-<!--        margin: 0.5rem 0.3rem;-->
-<!--        padding: 0.5rem 0 0.5rem 1.3rem;-->
-<!--        background: #dbdbdb;-->
-<!--        flex-grow: 1;-->
-<!--        text-align: center;-->
-<!--        height: $arrow-height * 2;-->
-<!--        display: flex;-->
-<!--        align-items: center;-->
-<!--        justify-content: center;-->
-<!--        opacity: 0.7;-->
-
-<!--        &.active {-->
-<!--          background: #93c7c8;-->
-<!--          color: white;-->
-
-<!--          &:after {-->
-<!--            border-left-color: #93c7c8;-->
-<!--          }-->
-<!--        }-->
-
-<!--        @for $i from 0 to $max-z-index {-->
-<!--          &:nth-child(#{$i + 1}) {-->
-<!--            z-index: ($max-z-index - $i);-->
-<!--          }-->
-<!--        }-->
-
-<!--        &:before {-->
-<!--          // arrow from the left-->
-<!--          content: "";-->
-<!--          border-left: $arrow-height/2 solid #e5e5e5;-->
-<!--          border-top: $arrow-height solid transparent;-->
-<!--          border-bottom: $arrow-height solid transparent;-->
-<!--          height: 0;-->
-<!--          width: 0;-->
-<!--          position: absolute;-->
-<!--          left: 0;-->
-<!--          top: 0;-->
-<!--          bottom: 0;-->
-<!--        }-->
-
-<!--        &:after {-->
-<!--          // arrow to the right-->
-<!--          content: "";-->
-<!--          border-left: $arrow-height/2 solid #dbdbdb;-->
-<!--          border-top: $arrow-height solid transparent;-->
-<!--          border-bottom: $arrow-height solid transparent;-->
-<!--          height: 0;-->
-<!--          width: 0;-->
-<!--          position: absolute;-->
-<!--          right: -($arrow-height - 1)/2;-->
-<!--          top: 0;-->
-<!--          bottom: 0;-->
-<!--        }-->
-
-<!--        &:first-child {-->
-<!--          margin-left: 0;-->
-<!--          padding-left: 0.2rem;-->
-
-<!--          &:before {-->
-<!--            display: none;-->
-<!--          }-->
-<!--        }-->
-
-<!--        &:last-child {-->
-<!--          margin-right: 0;-->
-
-<!--          &:after {-->
-<!--            display: none;-->
-<!--          }-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-
-<!--    .action-button {-->
-<!--      margin-bottom: 0.5em;-->
-
-<!--      &:not(:last-child) {-->
-<!--        margin-bottom: 7px;-->
-<!--      }-->
-
-<!--      align-items: center;-->
-
-<!--    }-->
-<!--  }-->
-<!--</style>-->
+  .status-field.active {
+    @apply text-white bg-pelorous-300;
+  }
+  .status-field.active:after {
+    @apply border-l-pelorous-300;
+  }
+</style>

@@ -4,6 +4,8 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import type { Deal, DealVersion } from "$lib/types/deal";
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte";
+  import CircleIcon from "$components/icons/CircleIcon.svelte";
 
   export let deal: Deal;
   export let dealID: number;
@@ -97,15 +99,12 @@
               {version.created_by && version.created_by.full_name}
             </td>
           {/if}
-          <td>
-            <!--            <button-->
-            <!--              disabled-->
-            <!--              :title="version.deal.fully_updated ? 'Fully updated' : 'Updated'"-->
-            <!--              :class="[-->
-            <!--                'fa',-->
-            <!--                version.deal.fully_updated ? 'fa-check-circle' : 'fa-circle',-->
-            <!--              ]"-->
-            <!--            />-->
+          <td class="px-4">
+            {#if version.deal.fully_updated}
+              <div title={$_("Fully updated")}><CheckCircleIcon /></div>
+            {:else}
+              <div title={$_("Updated")}><CircleIcon /></div>
+            {/if}
           </td>
           {#if $page.stuff.user.is_authenticated}
             <td>

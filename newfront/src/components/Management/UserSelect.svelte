@@ -2,11 +2,12 @@
   import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
+  import VirtualList from "svelte-tiny-virtual-list";
   import { writable } from "svelte/store";
   import { page } from "$app/stores";
   import type { User } from "$lib/types/user";
 
-  export let value;
+  export let value: User | number;
 
   let users = writable<User[]>(undefined);
 
@@ -23,7 +24,11 @@
         }
       `,
     });
-    users.set([...data.users].sort((a, b) => a.full_name.localeCompare(b.full_name)));
+    await users.set(
+      [...data.users].sort((a, b) => a.full_name.localeCompare(b.full_name))
+    );
+
+    if (typeof value === "number") value = data.users.find((u) => u.id === value);
   }
   fetchUsers();
 </script>
@@ -37,4 +42,5 @@
   getOptionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
   getSelectionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
   showChevron
+  {VirtualList}
 />

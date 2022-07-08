@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import type { User } from "$lib/types/user";
   import UserSelect from "$components/Management/UserSelect.svelte";
   import Overlay from "$components/Overlay.svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let visible = false;
   export let hideable = true;
@@ -10,15 +13,21 @@
 
   export let commentInput = false;
   export let commentRequired = false;
-  export let comment = "";
+
+  let comment = "";
 
   export let assignToUserInput = false;
   export let toUser: User;
   export let showSubmit = true;
   export let cancelButtonTitle = "Cancel";
+
+  const onSubmit = async () => {
+    dispatch("submit", { comment, to_user: toUser });
+    comment = "";
+  };
 </script>
 
-<Overlay bind:title bind:hideable bind:visible on:submit>
+<Overlay bind:title bind:hideable bind:visible on:submit={onSubmit}>
   <slot />
 
   {#if commentInput || commentRequired}

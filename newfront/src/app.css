@@ -172,3 +172,7 @@
   /*noinspection CssUnresolvedCustomProperty*/
   --item-hover-bg: var(--color-orange-100);
 }
+
+th {
+  text-align: left;
+}

@@ -1,24 +1,33 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "./queries";
+  import { deal_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
 
     if (!dealID) return { status: 404, error: `Deal not found` };
 
-    const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
-      query: deal_gql_query,
-      variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
-    });
-    return { props: { dealID, dealVersion, deal: data.deal } };
+    if (!stuff.secureApolloClient) return {};
+    try {
+      const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
+        query: deal_gql_query,
+        variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
+      });
+      return { props: { dealID, dealVersion, deal: data.deal } };
+    } catch (e) {
+      if (e.graphQLErrors[0].message === "deal not found")
+        return { status: 404, error: `Deal not found` };
+      console.log(JSON.stringify(e));
+      return { status: 500, error: e };
+    }
   };
 </script>
 
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
+  import { loading } from "$lib/data";
   import { dealSections } from "$lib/deal_sections";
   import DealHistory from "$components/Deal/DealHistory.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
@@ -55,6 +64,19 @@
     { target: "#actions", name: $_("Actions") },
   ];
 
+  async function reloadDeal() {
+    console.log("Deal detail: reload");
+
+    loading.set(true);
+    const { data } = await $page.stuff.secureApolloClient.query<{ deal: Deal }>({
+      query: deal_gql_query,
+      variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
+      fetchPolicy: "no-cache",
+    });
+    deal = data.deal;
+    loading.set(false);
+  }
+
   const download_link = function (format: string): string {
     return `/api/legacy_export/?deal_id=${dealID}&subset=UNFILTERED&format=${format}`;
   };
@@ -69,7 +91,7 @@
 
 <div class="container mx-auto min-h-full">
   {#if $page.stuff.user?.is_authenticated}
-    <DealManageHeader {deal} {dealVersion} />
+    <DealManageHeader {deal} {dealVersion} on:reload={reloadDeal} />
   {:else}
     <div class="md:flex md:flex-row md:ju<stify-between">
       <h1>
