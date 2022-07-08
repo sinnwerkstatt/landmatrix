@@ -231,37 +231,12 @@ export class FilterValues {
       });
 
     if (this.intention_of_investment.length > 0) {
-      const intention_of_investment_choices = [
-        IntentionOfInvestment.BIOFUELS,
-        IntentionOfInvestment.FOOD_CROPS,
-        IntentionOfInvestment.FODDER,
-        IntentionOfInvestment.LIVESTOCK,
-        IntentionOfInvestment.NON_FOOD_AGRICULTURE,
-        IntentionOfInvestment.AGRICULTURE_UNSPECIFIED,
-        IntentionOfInvestment.TIMBER_PLANTATION,
-        IntentionOfInvestment.FOREST_LOGGING,
-        IntentionOfInvestment.CARBON,
-        IntentionOfInvestment.FORESTRY_UNSPECIFIED,
-        IntentionOfInvestment.MINING,
-        IntentionOfInvestment.OIL_GAS_EXTRACTION,
-        IntentionOfInvestment.TOURISM,
-        IntentionOfInvestment.INDUSTRY,
-        IntentionOfInvestment.CONVERSATION,
-        IntentionOfInvestment.LAND_SPECULATION,
-        IntentionOfInvestment.RENEWABLE_ENERGY,
-        IntentionOfInvestment.OTHER,
-      ];
-      const diflist = intention_of_investment_choices.filter(
-        (x) => !this.intention_of_investment.includes(x)
-      );
-      if (diflist.length > 0) {
-        filterArray.push({
-          field: "current_intention_of_investment",
-          operation: "OVERLAP",
-          value: diflist,
-          exclusion: true,
-        });
-      }
+      filterArray.push({
+        field: "current_intention_of_investment",
+        operation: "OVERLAP",
+        value: this.intention_of_investment.filter((x) => x !== "UNKNOWN"),
+        allow_null: this.intention_of_investment.includes("UNKNOWN"),
+      });
     }
 
     if (this.produce && this.produce.length > 0) {

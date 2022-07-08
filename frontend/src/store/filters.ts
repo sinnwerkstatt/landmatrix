@@ -1,6 +1,6 @@
-import { isEqual } from "lodash-es";
 import type { GQLFilter } from "$types/filters";
 import type { Investor } from "$types/investor";
+import { isEqual } from "lodash-es";
 
 interface Produce {
   name: string;
@@ -183,56 +183,30 @@ export function prepareFilters(filters: FilterValues): GQLFilter[] {
     }
   }
 
-  if (filters.initiation_year_min && filters.initiation_year_min > 1970) {
+  if (filters.initiation_year_min && filters.initiation_year_min > 1970)
     filterArray.push({
       field: "initiation_year",
       operation: "GE",
       value: filters.initiation_year_min,
       allow_null: filters.initiation_year_unknown,
     });
-  }
-  if (filters.initiation_year_max) {
+
+  if (filters.initiation_year_max)
     filterArray.push({
       field: "initiation_year",
       operation: "LE",
       value: filters.initiation_year_max,
       allow_null: filters.initiation_year_unknown,
     });
-  }
 
-  if (filters.intention_of_investment.length > 0) {
-    const intention_of_investment_choices = [
-      "BIOFUELS",
-      "FOOD_CROPS",
-      "FODDER",
-      "LIVESTOCK",
-      "NON_FOOD_AGRICULTURE",
-      "AGRICULTURE_UNSPECIFIED",
-      "TIMBER_PLANTATION",
-      "FOREST_LOGGING",
-      "CARBON",
-      "FORESTRY_UNSPECIFIED",
-      "MINING",
-      "OIL_GAS_EXTRACTION",
-      "TOURISM",
-      "INDUSTRY",
-      "CONVERSATION",
-      "LAND_SPECULATION",
-      "RENEWABLE_ENERGY",
-      "OTHER",
-    ];
-    const diflist = intention_of_investment_choices.filter(
-      (x) => !filters.intention_of_investment.includes(x)
-    );
-    if (diflist.length > 0) {
-      filterArray.push({
-        field: "current_intention_of_investment",
-        operation: "OVERLAP",
-        value: diflist,
-        exclusion: true,
-      });
-    }
-  }
+  if (filters.intention_of_investment.length > 0)
+    filterArray.push({
+      field: "current_intention_of_investment",
+      operation: "OVERLAP",
+      value: filters.intention_of_investment.filter((x) => x !== "UNKNOWN"),
+      allow_null: filters.intention_of_investment.includes("UNKNOWN"),
+    });
+
   if (filters.produce && filters.produce.length > 0) {
     const crops = [];
     const animals = [];

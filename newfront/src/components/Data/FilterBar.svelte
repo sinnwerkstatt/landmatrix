@@ -299,11 +299,15 @@
         clearable={$filters.intention_of_investment.length > 0}
         on:click={() => ($filters.intention_of_investment = [])}
       >
-        <div class="hint p-1 my-1 mr-1 rounded bg-white shadow-md text-xs italic">
-          {$_(
-            "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
-          )}
-        </div>
+        <label class="block">
+          <input
+            type="checkbox"
+            bind:group={$filters.intention_of_investment}
+            value="UNKNOWN"
+            class="checkbox-btn form-checkbox"
+          />
+          {$_("No information")}
+        </label>
         {#each Object.entries(choices.intention_of_investment) as [name, options]}
           <div class="mb-2">
             <strong>{$_(name)}</strong>
