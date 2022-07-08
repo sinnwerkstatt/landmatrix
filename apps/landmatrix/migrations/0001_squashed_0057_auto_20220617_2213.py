@@ -23,32 +23,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ActivityAttributeGroup',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, null=True)),
-            ],
-            options={
-                'verbose_name': 'Activity attribute group',
-                'verbose_name_plural': 'Activity attribute groups',
-            },
-        ),
-        migrations.CreateModel(
-            name='AgriculturalProduce',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='BrowseRule',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('rule_type', models.CharField(choices=[('browse', 'Browse rule'), ('generic', 'Generic rule')], max_length=255, verbose_name='Rule type')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Country',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -73,15 +47,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Crop',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=255, verbose_name='Code')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('slug', models.SlugField(verbose_name='Slug')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Currency',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -92,18 +57,7 @@ class Migration(migrations.Migration):
                 ('ranking', models.IntegerField(verbose_name='Ranking')),
             ],
         ),
-        migrations.CreateModel(
-            name='FilterPresetGroup',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('description', models.TextField(blank=True, null=True)),
-            ],
-            options={
-                'verbose_name': 'Filter preset group',
-                'verbose_name_plural': 'Filter preset groups',
-            },
-        ),
+
         migrations.CreateModel(
             name='Investor',
             fields=[
@@ -134,14 +88,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Mineral',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=255, verbose_name='Code')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Region',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -151,14 +97,6 @@ class Migration(migrations.Migration):
                 ('point_lon_min', models.DecimalField(blank=True, decimal_places=12, max_digits=18, null=True, verbose_name='Longitude of westernmost point')),
                 ('point_lat_max', models.DecimalField(blank=True, decimal_places=12, max_digits=18, null=True, verbose_name='Latitude of southernmost point')),
                 ('point_lon_max', models.DecimalField(blank=True, decimal_places=12, max_digits=18, null=True, verbose_name='Longitude of easternmost point')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='ReviewDecision',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('description', models.TextField(blank=True, null=True, verbose_name='Description')),
             ],
         ),
         migrations.CreateModel(
@@ -202,104 +140,10 @@ class Migration(migrations.Migration):
             name='subinvestors',
             field=models.ManyToManyField(through='landmatrix.InvestorVentureInvolvement', to='landmatrix.Investor'),
         ),
-        migrations.CreateModel(
-            name='HistoricalActivityAttribute',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, null=True)),
-                ('value', models.TextField(blank=True, max_length=255, null=True)),
-                ('value2', models.TextField(blank=True, max_length=255, null=True)),
-                ('date', models.CharField(blank=True, db_index=True, max_length=10, null=True, verbose_name='Year or Date')),
-                ('is_current', models.BooleanField(blank=True, default=False, verbose_name='Is current')),
-                ('polygon', django.contrib.gis.db.models.fields.MultiPolygonField(blank=True, null=True, srid=4326)),
-            ],
-            options={
-                'get_latest_by': 'history_date',
-                'verbose_name': 'Historical activity attribute',
-                'verbose_name_plural': 'Historical activity attributes',
-            },
-        ),
-        migrations.CreateModel(
-            name='HistoricalActivity',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('activity_identifier', models.IntegerField(db_index=True, verbose_name='Activity identifier')),
-                ('availability', models.FloatField(blank=True, null=True, verbose_name='availability')),
-                ('fully_updated', models.BooleanField(default=False, verbose_name='Fully updated')),
-                ('history_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('comment', models.TextField(blank=True, null=True, verbose_name='Comment')),
-            ],
-            options={
-                'get_latest_by': 'id',
-                'verbose_name': 'Historical activity',
-                'ordering': ('-history_date',),
-                'verbose_name_plural': 'Historical activities',
-                'permissions': (('review_historicalactivity', 'Can review activity changes'),),
-            },
-        ),
-        migrations.CreateModel(
-            name='FilterPreset',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('relation', models.CharField(choices=[('and', 'And'), ('or', 'Or')], default='and', max_length=3)),
-                ('is_default_country', models.BooleanField(default=False, verbose_name='Country')),
-                ('is_default_global', models.BooleanField(default=False, verbose_name='Global/Region')),
-                ('is_hidden', models.BooleanField(default=False, verbose_name='Is hidden')),
-            ],
-            options={
-                'verbose_name': 'Filter preset',
-                'verbose_name_plural': 'Filter presets',
-            },
-        ),
         migrations.AddField(
             model_name='country',
             name='fk_region',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='landmatrix.region', verbose_name='Region'),
-        ),
-        migrations.CreateModel(
-            name='BrowseCondition',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('variable', models.CharField(max_length=20, verbose_name='Variable')),
-                ('operator', models.CharField(max_length=20, verbose_name='Operator')),
-                ('value', models.CharField(max_length=1024, verbose_name='Value')),
-                ('rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='landmatrix.browserule')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='ActivityFeedback',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.TextField(verbose_name='Comment')),
-                ('timestamp', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Timestamp')),
-            ],
-            options={
-                'verbose_name': 'Activity feedback',
-                'ordering': ('-timestamp', '-id'),
-                'verbose_name_plural': 'Activity feedbacks',
-            },
-        ),
-        migrations.CreateModel(
-            name='HistoricalInvestor',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('investor_identifier', models.IntegerField(db_index=True, default=2147483647, verbose_name='Investor ID')),
-                ('name', models.CharField(max_length=1024, verbose_name='Name')),
-                ('classification', models.CharField(blank=True, choices=[('10', 'Private company'), ('20', 'Stock-exchange listed company'), ('30', 'Individual entrepreneur'), ('40', 'Investment fund'), ('50', 'Semi state-owned company'), ('60', 'State-/government (owned) company'), ('70', 'Other (please specify in comment field)'), ('110', 'Government'), ('120', 'Government institution'), ('130', 'Multilateral Development Bank (MDB)'), ('140', 'Bilateral Development Bank / Development Finance Institution'), ('150', 'Commercial Bank'), ('160', 'Investment Bank'), ('170', 'Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)'), ('180', 'Insurance firm'), ('190', 'Private equity firm'), ('200', 'Asset management firm'), ('210', 'Non - Profit organization (e.g. Church, University etc.)')], max_length=3, null=True, verbose_name='Classification')),
-                ('homepage', models.URLField(blank=True, null=True, verbose_name='Investor homepage')),
-                ('opencorporates_link', models.URLField(blank=True, null=True, verbose_name='Opencorporates link')),
-                ('comment', models.TextField(blank=True, null=True, verbose_name='Comment')),
-                ('history_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('action_comment', models.TextField(blank=True, null=True, verbose_name='Comment')),
-            ],
-            options={
-                'get_latest_by': 'history_date',
-                'verbose_name': 'Historical investor',
-                'ordering': ['-history_date'],
-                'verbose_name_plural': 'Historical investors',
-                'permissions': (('review_historicalinvestor', 'Can review investor changes'),),
-            },
         ),
         migrations.AlterField(
             model_name='investor',
@@ -344,17 +188,6 @@ class Migration(migrations.Migration):
             name='investor_identifier',
             field=models.IntegerField(db_index=True, default=2147483647, verbose_name='ID'),
         ),
-        migrations.CreateModel(
-            name='FilterCondition',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('variable', models.CharField(max_length=32, verbose_name='Variable')),
-                ('key', models.CharField(choices=[('value', 'Value'), ('value2', 'Value 2'), ('date', 'Date'), ('polygon', 'Polygon'), ('high_income', 'High income')], default='value', max_length=32, verbose_name='Key')),
-                ('operator', models.CharField(choices=[('is', 'is'), ('in', 'in'), ('not_in', 'not_in'), ('gte', 'gte'), ('gt', 'gt'), ('lte', 'lte'), ('lt', 'lt'), ('contains', 'contains'), ('not_contains', 'not_contains'), ('is_empty', 'is_empty'), ('excludes', 'excludes')], max_length=20, verbose_name='Operator')),
-                ('value', models.CharField(blank=True, max_length=1024, null=True, verbose_name='Value')),
-                ('fk_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='conditions', to='landmatrix.filterpreset')),
-            ],
-        ),
         migrations.AlterField(
             model_name='investor',
             name='investor_identifier',
@@ -364,37 +197,6 @@ class Migration(migrations.Migration):
             model_name='investorventureinvolvement',
             name='parent_relation',
             field=models.CharField(blank=True, choices=[('Subsidiary', 'Subsidiary of parent company'), ('Local branch', 'Local branch of parent company'), ('Joint venture', 'Joint venture of parent companies')], max_length=255, null=True, verbose_name='Parent relation'),
-        ),
-        migrations.CreateModel(
-            name='HistoricalInvestorActivityInvolvement',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-            ],
-            options={
-                'verbose_name_plural': 'Historical Investor Activity Involvements',
-                'verbose_name': 'Historical Investor Activity Involvement',
-                'ordering': ['-id'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Animal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=255, verbose_name='Code')),
-                ('name', models.CharField(max_length=255, verbose_name='Name')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='InvestorActivityInvolvement',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-            ],
-            options={
-                'get_latest_by': 'timestamp',
-                'verbose_name': 'Investor Activity Involvement',
-                'ordering': ('-id',),
-                'verbose_name_plural': 'Investor Activity Involvements',
-            },
         ),
         migrations.RemoveField(
             model_name='investorventureinvolvement',
@@ -412,55 +214,11 @@ class Migration(migrations.Migration):
             model_name='investorventureinvolvement',
             name='loans_currency',
         ),
-        migrations.CreateModel(
-            name='ActivityChangeset',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Timestamp')),
-                ('comment', models.TextField(blank=True, null=True, verbose_name='Comment')),
-            ],
-            options={
-                'ordering': ('-timestamp',),
-                'get_latest_by': 'timestamp',
-            },
-        ),
-        migrations.CreateModel(
-            name='Comment',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('comment', models.TextField(verbose_name='Comment')),
-                ('timestamp', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Timestamp')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='HistoricalInvestorVentureInvolvement',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.CharField(choices=[('ST', 'Parent company'), ('IN', 'Tertiary investor/lender')], max_length=2, verbose_name='Relation type')),
-                ('investment_type', models.CharField(blank=True, max_length=10, null=True, verbose_name='')),
-                ('percentage', models.FloatField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(100.0)], verbose_name='Ownership share')),
-                ('loans_amount', models.FloatField(blank=True, null=True, verbose_name='Loan amount')),
-                ('loans_date', models.CharField(blank=True, max_length=10, null=True, verbose_name='Loan date')),
-                ('comment', models.TextField(blank=True, null=True, verbose_name='Comment')),
-                ('parent_relation', models.CharField(blank=True, choices=[('Subsidiary', 'Subsidiary of parent company'), ('Local branch', 'Local branch of parent company'), ('Joint venture', 'Joint venture of parent companies')], max_length=255, null=True, verbose_name='Parent relation')),
-            ],
-            options={
-                'verbose_name_plural': 'Historical Investor Venture Involvements',
-                'get_latest_by': '-id',
-                'verbose_name': 'Historical Investor Venture Involvement',
-            },
-        ),
         migrations.DeleteModel(
             name='Investor',
         ),
         migrations.DeleteModel(
-            name='InvestorActivityInvolvement',
-        ),
-        migrations.DeleteModel(
             name='InvestorVentureInvolvement',
-        ),
-        migrations.DeleteModel(
-            name='BrowseCondition',
         ),
         migrations.CreateModel(
             name='Investor',
@@ -542,19 +300,6 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='InvestorVersion',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('object_id', models.IntegerField(blank=True, null=True)),
-                ('serialized_data', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('revision', models.ForeignKey(help_text='The revision that contains this version.', on_delete=django.db.models.deletion.CASCADE, to='landmatrix.revision')),
-            ],
-            options={
-                'ordering': ['-pk'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='InvestorVentureInvolvementVersion',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('object_id', models.IntegerField(blank=True, null=True)),
@@ -772,9 +517,6 @@ class Migration(migrations.Migration):
                 ('modified_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.DeleteModel(
-            name='BrowseRule',
-        ),
         migrations.AddField(
             model_name='investor',
             name='created_by',
@@ -789,26 +531,8 @@ class Migration(migrations.Migration):
             model_name='country',
             name='is_target_country',
         ),
-        migrations.CreateModel(
-            name='InvestorWorkflowInfo',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('draft_status_before', models.IntegerField(blank=True, choices=[(1, 'Draft'), (2, 'Review'), (3, 'Activation'), (4, 'Rejected'), (5, 'To Delete')], null=True)),
-                ('draft_status_after', models.IntegerField(blank=True, choices=[(1, 'Draft'), (2, 'Review'), (3, 'Activation'), (4, 'Rejected'), (5, 'To Delete')], null=True)),
-                ('timestamp', models.DateTimeField(default=django.utils.timezone.now)),
-                ('comment', models.TextField(blank=True, default='')),
-                ('processed_by_receiver', models.BooleanField(default=False)),
-                ('investor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='workflowinfos', to='landmatrix.investor')),
-                ('investor_version', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='workflowinfos', to='landmatrix.investorversion')),
-                ('from_user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('to_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
         migrations.DeleteModel(
             name='DealVersion',
-        ),
-        migrations.DeleteModel(
-            name='InvestorWorkflowInfo',
         ),
         migrations.DeleteModel(
             name='InvestorVersion',
@@ -879,9 +603,6 @@ class Migration(migrations.Migration):
             model_name='country',
             name='high_income',
             field=models.BooleanField(default=False, help_text='Target countries are countries that are NOT high income', verbose_name='High income'),
-        ),
-        migrations.DeleteModel(
-            name='InvestorVentureInvolvementVersion',
         ),
         migrations.DeleteModel(
             name='Revision',
@@ -1067,15 +788,6 @@ class Migration(migrations.Migration):
             model_name='deal',
             name='vggt_applied_comment',
         ),
-        migrations.DeleteModel(
-            name='FilterCondition',
-        ),
-        migrations.DeleteModel(
-            name='FilterPreset',
-        ),
-        migrations.DeleteModel(
-            name='FilterPresetGroup',
-        ),
         migrations.AlterField(
             model_name='deal',
             name='current_intention_of_investment',
@@ -1100,12 +812,6 @@ class Migration(migrations.Migration):
             model_name='deal',
             name='negotiation_status',
             field=models.JSONField(blank=True, choices=[('EXPRESSION_OF_INTEREST', 'Expression of interest'), ('UNDER_NEGOTIATION', 'Under negotiation'), ('MEMORANDUM_OF_UNDERSTANDING', 'Memorandum of understanding'), ('ORAL_AGREEMENT', 'Oral agreement'), ('CONTRACT_SIGNED', 'Contract signed'), ('NEGOTIATIONS_FAILED', 'Negotiations failed'), ('CONTRACT_CANCELED', 'Contract canceled'), ('CONTRACT_EXPIRED', 'Contract expired'), ('CHANGE_OF_OWNERSHIP', 'Change of ownership')], null=True, verbose_name='Negotiation status'),
-        ),
-        migrations.DeleteModel(
-            name='Animal',
-        ),
-        migrations.DeleteModel(
-            name='Mineral',
         ),
         migrations.AlterField(
             model_name='deal',
@@ -1221,15 +927,6 @@ class Migration(migrations.Migration):
             model_name='deal',
             name='source_of_water_extraction',
             field=apps.landmatrix.models.fields.ArrayField(base_field=models.CharField(choices=[('GROUNDWATER', 'Groundwater'), ('SURFACE_WATER', 'Surface water'), ('RIVER', 'River'), ('LAKE', 'Lake')], max_length=100), blank=True, null=True, size=None, verbose_name='Source of water extraction'),
-        ),
-        migrations.DeleteModel(
-            name='AgriculturalProduce',
-        ),
-        migrations.DeleteModel(
-            name='Comment',
-        ),
-        migrations.DeleteModel(
-            name='Crop',
         ),
         migrations.AddField(
             model_name='investor',
@@ -1395,33 +1092,6 @@ class Migration(migrations.Migration):
             model_name='deal',
             name='water_extraction_amount',
             field=models.IntegerField(blank=True, null=True, verbose_name='Water extraction amount'),
-        ),
-        migrations.DeleteModel(
-            name='ActivityAttributeGroup',
-        ),
-        migrations.DeleteModel(
-            name='ActivityChangeset',
-        ),
-        migrations.DeleteModel(
-            name='ActivityFeedback',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalActivity',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalActivityAttribute',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalInvestor',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalInvestorActivityInvolvement',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalInvestorVentureInvolvement',
-        ),
-        migrations.DeleteModel(
-            name='ReviewDecision',
         ),
         migrations.AlterField(
             model_name='deal',
