@@ -255,7 +255,7 @@ class Investor(models.Model):
         self, top_investors_only=False, _seen_investors=None
     ) -> Set["Investor"]:
         """
-        Get list of highest parent companies
+        Get list of the highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
         if _seen_investors is None:

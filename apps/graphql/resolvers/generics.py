@@ -110,7 +110,7 @@ def change_object_status(
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
-        # if there was a request for improvement workflowinfo, send an email to the requester
+        # if there was a request for improvement workflowinfo, email the requester
         old_wfi = obj.workflowinfos.last()
         if (
             old_wfi.draft_status_before == 2
