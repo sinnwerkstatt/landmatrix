@@ -9,6 +9,8 @@
   // import tippy from "tippy.js";
   //
 
+  // TODO  maybe use d3: https://codepen.io/fabvit86/pen/RLKbab ?
+
   function makePopper(ele) {
     let ref = ele.popperRef(); // used only for positioning
     // if (ref) {
