@@ -20,7 +20,7 @@
 <div>
   <PageTitle>{page.title}</PageTitle>
 
-  <div class="container mx-auto">
+  <div class="container mx-auto px-10">
     <div class="meta mb-3">
       <div class="inline-block mr-4">
         <i class="far fa-calendar-alt" />
