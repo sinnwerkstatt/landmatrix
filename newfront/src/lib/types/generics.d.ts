@@ -12,7 +12,7 @@ interface Obj {
   id: number;
   status: number;
   draft_status: number | null;
-  versions?: ObjVersion[];
+  versions: ObjVersion[];
   workflowinfos?: WorkflowInfo[];
   created_at?: Date;
   created_by?: User;

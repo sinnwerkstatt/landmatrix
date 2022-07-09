@@ -39,7 +39,7 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
     if version:
         try:
-            deal_version = DealVersion.objects.get(id=version)
+            deal_version = DealVersion.objects.get(id=version, object_id=id)
             deal = deal_version.enriched_dict()
         except DealVersion.DoesNotExist:
             return

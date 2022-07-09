@@ -2,8 +2,8 @@
   import type { Load } from "@sveltejs/kit";
   import { pageQuery } from "$lib/queries";
 
-  export const load: Load = async ({ url }) => {
-    const page = await pageQuery(url);
+  export const load: Load = async ({ url, fetch }) => {
+    const page = await pageQuery(url, fetch);
 
     return { props: { page } };
   };

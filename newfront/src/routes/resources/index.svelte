@@ -3,8 +3,8 @@
   import { pageQuery } from "$lib/queries";
   import { getBlogPages } from "./store";
 
-  export const load: Load = async ({ url }) => {
-    const page = await pageQuery(url);
+  export const load: Load = async ({ url, fetch }) => {
+    const page = await pageQuery(url, fetch);
     const blogpages = await getBlogPages();
     const category = url.searchParams.get("category");
     const tag = url.searchParams.get("tag");

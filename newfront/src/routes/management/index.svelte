@@ -7,7 +7,7 @@
   $: xTabs = [
     {
       name: "Todo",
-      initExpanded: true,
+      expanded: true,
       items: [
         {
           name: "Feedback for me",
@@ -136,8 +136,8 @@
 
 <div class="flex min-h-full">
   <nav class="p-2 flex-initial">
-    {#each xTabs as { name, items, initExpanded }}
-      <FilterCollapse title={$_(name)} {initExpanded}>
+    {#each xTabs as { name, items, expanded }}
+      <FilterCollapse title={$_(name)} {expanded}>
         <ul>
           {#each items as { id, name }}
             <li

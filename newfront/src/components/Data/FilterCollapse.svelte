@@ -6,7 +6,7 @@
 
   export let title: string;
   export let clearable = false;
-  export let initExpanded = false;
+  export let expanded = false;
 </script>
 
 <div
@@ -15,14 +15,14 @@
   <div
     class="py-1.5 pr-2 relative flex justify-between"
     class:text-orange={clearable}
-    class:collapsed={!initExpanded}
-    on:click={() => (initExpanded = !initExpanded)}
+    class:collapsed={!expanded}
+    on:click={() => (expanded = !expanded)}
   >
     <span class="pr-0">
       <ChevronUpIcon
-        class="{initExpanded
+        class="transition-transform transition-duration-300 mr-1 h-3 w-3 inline rounded {expanded
           ? 'rotate-180'
-          : ''} transition transition-duration-300 mr-1 h-3 w-3 inline rounded"
+          : ''}"
       />
       {$_(title)}
     </span>
@@ -30,10 +30,10 @@
       <ClearFilter on:click />
     {/if}
   </div>
-  {#if initExpanded}
+  {#if expanded}
     <div
       transition:slide={{ duration: 200 }}
-      class={`shadow-inner bg-lm-light -ml-[0.5em] pl-2 ${initExpanded ? "py-2" : ""}`}
+      class="shadow-inner bg-lm-light -ml-[0.5em] p-2"
     >
       <slot />
     </div>

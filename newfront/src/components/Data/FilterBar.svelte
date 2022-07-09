@@ -1,15 +1,17 @@
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import Select from "svelte-select";
+  import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
-  import { filters } from "$lib/filters";
-  import { publicOnly } from "$lib/filters";
+  import { filters, ProduceGroup } from "$lib/filters";
+  import { isDefaultFilter, publicOnly } from "$lib/filters";
   import { countries, regions } from "$lib/stores";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
-  import { isDefaultFilter, showFilterBar } from "$components/Data";
+  import { showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
@@ -21,36 +23,28 @@
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
-  $: produce_choices = $formfields
+  $: produceChoices = $formfields
     ? [
-        {
-          type: $_("Crop"),
-          options: Object.entries($formfields.deal.crops.choices).map(([k, v]) => ({
-            name: v,
-            id: `crop_${k}`,
-            value: k,
-          })),
-        },
-        {
-          type: $_("Livestock"),
-          options: Object.entries($formfields.deal.animals.choices).map(([k, v]) => ({
-            name: v,
-            id: `animal_${k}`,
-            value: k,
-          })),
-        },
-        {
-          type: $_("Minerals"),
-          options: Object.entries($formfields.deal.mineral_resources.choices).map(
-            ([k, v]) => ({ name: v, id: `mineral_${k}`, value: k })
-          ),
-        },
+        ...Object.entries($formfields.deal.crops.choices).map(([v, k]) => ({
+          value: v,
+          label: k,
+          groupID: ProduceGroup.CROPS,
+          group: $_("Crops"),
+        })),
+        ...Object.entries($formfields.deal.animals.choices).map(([v, k]) => ({
+          value: v,
+          label: k,
+          groupID: ProduceGroup.ANIMALS,
+          group: $_("Animals"),
+        })),
+        ...Object.entries($formfields.deal.mineral_resources.choices).map(([v, k]) => ({
+          value: v,
+          label: k,
+          groupID: ProduceGroup.MINERAL_RESOURCES,
+          group: $_("Mineral resources"),
+        })),
       ]
     : [];
-
-  // $: console.log(produce_choices);
-
-  $: countriesWithDeals = $countries.filter((c) => c.deals.length > 0);
 
   const choices = {
     implementation_status: {
@@ -61,30 +55,22 @@
     intention_of_investment: intention_of_investment_choices,
   };
 
-  $: regionsWithGlobal = [
-    {
-      id: undefined,
-      name: "Global",
-    },
-    ...$regions,
-  ];
+  $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
 
   let investors: Investor[] = [];
   async function getInvestors() {
-    const query = gql`
-      query Investors($limit: Int!, $subset: Subset) {
-        investors(limit: $limit, subset: $subset) {
-          id
-          name
+    const { data } = await $client.query<{ investors: Investor[] }>({
+      query: gql`
+        query Investors($limit: Int!, $subset: Subset) {
+          investors(limit: $limit, subset: $subset) {
+            id
+            name
+          }
         }
-      }
-    `;
-    const variables = {
-      limit: 0,
-      subset: $page.stuff.user?.is_authenticated ? "ACTIVE" : "PUBLIC",
-    };
-    const res = await $client.query<{ investors: Investor[] }>({ query, variables });
-    investors = res.data.investors;
+      `,
+      variables: { limit: 0, subset: "ACTIVE" },
+    });
+    investors = data.investors;
   }
 
   onMount(() => {
@@ -98,12 +84,11 @@
 
   function trackDownload(format) {
     let name = "Global";
-    if ($filters.country_id) {
+    if ($filters.country_id)
       name = $countries.find((c) => c.id === $filters.country_id).name;
-    }
-    if ($filters.region_id) {
+    if ($filters.region_id)
       name = $regions.find((r) => r.id === $filters.region_id).name;
-    }
+
     // noinspection TypeScriptUnresolvedVariable
     window._paq.push(["trackEvent", "Downloads", format, name]);
   }
@@ -127,6 +112,10 @@
       <CheckboxSwitch
         class="text-sm"
         checked={$isDefaultFilter}
+        on:change={(val) =>
+          val.target.checked
+            ? filters.set($filters.empty().default())
+            : filters.set($filters.empty())}
         label={$_("Default filter")}
       />
 
@@ -168,7 +157,7 @@
           on:change={() => ($filters.region_id = undefined)}
         >
           <option value={undefined} />
-          {#each countriesWithDeals as c}
+          {#each $countries.filter((c) => c.deals.length > 0) as c}
             <option value={c.id}>{c.name}</option>
           {/each}
         </select>
@@ -223,33 +212,35 @@
         {/each}
       </FilterCollapse>
 
-      <!--        <FilterCollapse-->
-      <!--          :title="$_('Investor')"-->
-      <!--          :clearable="!!(investor || investor_country)"-->
-      <!--          @click="investor = investor_country = null"-->
-      <!--        >-->
-      <!--          <div>-->
-      <!--            {{ $_("Investor name") }}-->
-      <!--            <multi-select-->
-      <!--              v-model="investor"-->
-      <!--              :options="investors"-->
-      <!--              :multiple="false"-->
-      <!--              :close-on-select="true"-->
-      <!--              placeholder="Investor"-->
-      <!--              track-by="id"-->
-      <!--              label="name"-->
-      <!--              select-label=""-->
-      <!--            />-->
-      <!--            {{ $_("Country of registration") }}-->
-      <!--            <multi-select-->
-      <!--              v-model="investor_country"-->
-      <!--              :options="countries"-->
-      <!--              label="name"-->
-      <!--              select-label=""-->
-      <!--              placeholder="Country of registration"-->
-      <!--            />-->
-      <!--          </div>-->
-      <!--        </FilterCollapse>-->
+      <FilterCollapse
+        title={$_("Investor")}
+        clearable={!!($filters.investor || $filters.investor_country_id)}
+        on:click={() =>
+          ($filters.investor = null) && ($filters.investor_country_id = null)}
+      >
+        {$_("Investor name")}
+        <Select
+          items={investors}
+          bind:value={$filters.investor}
+          placeholder={$_("Investor")}
+          optionIdentifier="id"
+          labelIdentifier="name"
+          getOptionLabel={(o) => `${o.name} (#${o.id})`}
+          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          showChevron
+          {VirtualList}
+        />
+        {$_("Country of registration")}
+        <Select
+          items={$countries}
+          value={$countries.find((c) => c.id === $filters.investor_country_id)}
+          on:change={(e) => ($filters.investor_country_id = e.detail?.id)}
+          placeholder={$_("Country of registration")}
+          labelIdentifier="name"
+          optionIdentifier="id"
+          showChevron
+        />
+      </FilterCollapse>
 
       <FilterCollapse
         title={$_("Year of initiation")}
@@ -257,7 +248,7 @@
         on:click={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
       >
-        <div class="flex">
+        <div class="flex gap-1">
           <input
             bind:value={$filters.initiation_year_min}
             type="number"
@@ -313,11 +304,15 @@
         clearable={$filters.intention_of_investment.length > 0}
         on:click={() => ($filters.intention_of_investment = [])}
       >
-        <div class="hint p-1 my-1 mr-1 rounded bg-white shadow-md text-xs italic">
-          {$_(
-            "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
-          )}
-        </div>
+        <label class="block">
+          <input
+            type="checkbox"
+            bind:group={$filters.intention_of_investment}
+            value="UNKNOWN"
+            class="checkbox-btn form-checkbox"
+          />
+          {$_("No information")}
+        </label>
         {#each Object.entries(choices.intention_of_investment) as [name, options]}
           <div class="mb-2">
             <strong>{$_(name)}</strong>
@@ -336,25 +331,19 @@
         {/each}
       </FilterCollapse>
 
-      <!--        <FilterCollapse-->
-      <!--          :title="$_('Produce')"-->
-      <!--          :clearable="produce.length > 0"-->
-      <!--          @click="produce = []"-->
-      <!--        >-->
-      <!--          <multi-select-->
-      <!--            v-model="produce"-->
-      <!--            :options="produce_choices"-->
-      <!--            :multiple="true"-->
-      <!--            :close-on-select="false"-->
-      <!--            placeholder="Produce"-->
-      <!--            :group-select="true"-->
-      <!--            group-label="type"-->
-      <!--            group-values="options"-->
-      <!--            track-by="id"-->
-      <!--            label="name"-->
-      <!--            select-label=""-->
-      <!--          />-->
-      <!--        </FilterCollapse>-->
+      <FilterCollapse
+        title={$_("Produce")}
+        clearable={$filters.produce?.length > 0}
+        on:click={() => ($filters.produce = [])}
+      >
+        <Select
+          bind:value={$filters.produce}
+          items={produceChoices}
+          isMulti
+          showChevron
+          groupBy={(i) => i.group}
+        />
+      </FilterCollapse>
 
       <FilterCollapse
         title={$_("Scope")}

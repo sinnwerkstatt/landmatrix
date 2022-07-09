@@ -227,12 +227,17 @@
           :clearable="intention_of_investment.length > 0"
           @click="intention_of_investment = []"
         >
-          <div class="hint">
-            {{
-              $t(
-                "Please note that excluding one intention of investment will exclude all deals that report the respective intention of investment, including deals that have other intentions of investments aside from the excluded one."
-              )
-            }}
+          <div class="custom-control custom-checkbox">
+            <input
+              id="ioi_nullvalue"
+              v-model="intention_of_investment"
+              class="form-check-input custom-control-input"
+              type="checkbox"
+              value="UNKNOWN"
+            />
+            <label class="form-check-label custom-control-label" for="ioi_nullvalue">
+              {{ $t("No information") }}
+            </label>
           </div>
           <div v-for="(options, name) in choices.intention_of_investment" :key="name">
             <strong>{{ $t(name) }}</strong>

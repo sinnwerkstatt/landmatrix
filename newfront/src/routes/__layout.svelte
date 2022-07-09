@@ -1,6 +1,9 @@
 <script context="module" lang="ts">
-  import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client/core";
+  import { InMemoryCache } from "@apollo/client/cache/inmemory/inMemoryCache.js";
+  import { ApolloClient } from "@apollo/client/core/ApolloClient.js";
+  import { HttpLink } from "@apollo/client/link/http/HttpLink.js";
   import type { Load } from "@sveltejs/kit";
+  import { gql } from "graphql-tag";
   import Cookies from "js-cookie";
   import { get } from "svelte/store";
   import { client } from "$lib/apolloClient";
@@ -12,10 +15,9 @@
     if (!session.cookie) {
       return get(client);
     }
-    const uri = "http://localhost:3000/graphql/";
     return new ApolloClient({
       link: new HttpLink({
-        uri,
+        uri: import.meta.env.VITE_BASE_URL + "/graphql/",
         credentials: "include",
         headers: { cookie: session.cookie },
       }),

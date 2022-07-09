@@ -563,28 +563,6 @@ Django = ">=2.2"
 six = "*"
 
 [[package]]
-name = "django-multiselectfield"
-version = "0.1.12"
-description = "Django multiple select field"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-django = ">=1.4"
-
-[[package]]
-name = "django-recaptcha"
-version = "3.0.0"
-description = "Django recaptcha form field/widget app."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-django = "*"
-
-[[package]]
 name = "django-redis"
 version = "5.2.0"
 description = "Full featured redis cache backend for Django."
@@ -2031,7 +2009,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fcb57d428721a0c2139b50c77f63fbbbf25375dab9707534d8434a5b1a722ea4"
+content-hash = "87780377c0099783b795aba5f76ab01c183513fcacb984142bdad4ec062fe9df"
 
 [metadata.files]
 amqp = [
@@ -2261,14 +2239,6 @@ django-modelcluster = [
 django-modeltranslation = [
     {file = "django-modeltranslation-0.18.2.tar.gz", hash = "sha256:70fbd09b323b23ee8a939ff9f4851378396f0f83ae9d75f13a79c6e40d43436e"},
     {file = "django_modeltranslation-0.18.2-py3-none-any.whl", hash = "sha256:52e321bf1deef94acfe4f8127dddcdf51640e8177bdfe0e57ecc629712ab4968"},
-]
-django-multiselectfield = [
-    {file = "django-multiselectfield-0.1.12.tar.gz", hash = "sha256:d0a4c71568fb2332c71478ffac9f8708e01314a35cf923dfd7a191343452f9f9"},
-    {file = "django_multiselectfield-0.1.12-py3-none-any.whl", hash = "sha256:c270faa7f80588214c55f2d68cbddb2add525c2aa830c216b8a198de914eb470"},
-]
-django-recaptcha = [
-    {file = "django-recaptcha-3.0.0.tar.gz", hash = "sha256:253197051288923cae675d7eff91b619e3775311292a5dbaf27a8a55ffebc670"},
-    {file = "django_recaptcha-3.0.0-py3-none-any.whl", hash = "sha256:1aed69fd6ac8fd9e99e52665392ae6748f8b6339ace656fad779fe0c6c915a52"},
 ]
 django-redis = [
     {file = "django-redis-5.2.0.tar.gz", hash = "sha256:8a99e5582c79f894168f5865c52bd921213253b7fd64d16733ae4591564465de"},

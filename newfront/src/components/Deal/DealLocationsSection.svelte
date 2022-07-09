@@ -2,10 +2,11 @@
   import { area } from "@turf/turf";
   import type { Layer, Map } from "leaflet";
   import { GeoJSON, LatLngBounds } from "leaflet?client";
+  import type { Deal } from "$lib/types/deal";
   import BigMap from "$components/Map/BigMap.svelte";
   import DealSubmodelSection from "./DealSubmodelSection.svelte";
 
-  export let deal;
+  export let deal: Deal;
 
   let bigmap: Map;
   let layer: Layer;

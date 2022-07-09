@@ -1,15 +1,6 @@
-// import { get } from "svelte/store";
-// import { countries, regions } from "$lib/stores";
-// import type { CountryOrRegion } from "./types/wagtail";
-// export function getCountryOrRegion(
-//   id: number,
-//   region = false
-// ): CountryOrRegion | undefined {
-//   return region
-//     ? get(regions).find((region) => region.id === +id)
-//     : get(countries).find((country) => country.id === +id);
-// }
 import { nanoid } from "nanoid";
+import type { Obj } from "$lib/types/generics";
+import type { User } from "$lib/types/user";
 
 export function isEmpty(field: unknown): boolean {
   return (
@@ -28,4 +19,23 @@ export function newNanoid(existingIDs: string[]): string {
     matching = existingIDs.includes(newID);
   } while (matching);
   return newID;
+}
+
+export function isAuthorized(user: User, obj: Obj): boolean {
+  const { id, role } = user;
+  switch (obj.draft_status) {
+    case null: // anybody who has a ROLE
+      return ["ADMINISTRATOR", "EDITOR", "REPORTER"].includes(role);
+    case 1: // the Reporter of the Object or Editor,Administrator
+      return (
+        ["ADMINISTRATOR", "EDITOR"].includes(role) ||
+        obj.versions[0]?.created_by?.id === id
+      );
+    case 2: // at least Editor
+      return ["ADMINISTRATOR", "EDITOR"].includes(role);
+    case 3: // only Admins
+      return role === "ADMINISTRATOR";
+    default:
+      return false;
+  }
 }

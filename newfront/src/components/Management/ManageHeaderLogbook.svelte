@@ -2,29 +2,30 @@
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import type { Obj } from "$lib/types/generics";
-  import type { User } from "$lib/types/user";
+  import UserSelect from "$components/Management/UserSelect.svelte";
   import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte";
 
   const dispatch = createEventDispatcher();
   export let object: Obj;
   export let objectVersion: number;
-  export let users: User[];
 
   let comment = "";
   let send_to_user;
   let commentArea;
 
-  function add_comment() {
-    if (!commentArea.checkValidity()) commentArea.reportValidity();
-    else {
-      dispatch("add_comment", { comment, send_to_user });
-      this.comment = "";
+  function addComment() {
+    if (!commentArea.checkValidity()) {
+      commentArea.reportValidity();
+      return;
     }
+
+    dispatch("addComment", { comment, send_to_user });
+    comment = "";
   }
 </script>
 
 <div class="bg-lm-warmgray lg:w-1/3">
-  <h3 class="mx-3">{$_("Comments")}</h3>
+  <h3 class="mx-3">{$_("Logbook")}</h3>
   <div class="mx-1">
     <form action="." method="post">
       <div class="">
@@ -36,29 +37,15 @@
           class="w-full"
         />
       </div>
-      <div class="my-2 ml-1 lg:flex">
+      <div class="my-2 ml-1 lg:flex items-center">
         <span class="lg:w-1/5">{$_("Send to")}:</span>
-        <select class="w-full mx-3">
-          <option value="">None</option>
-          {#each users as user}
-            <option>{user.full_name} ({user.username})</option>
-          {/each}
-        </select>
-        <!--          <multi-select-->
-        <!--            v-model="send_to_user"-->
-        <!--            :allow-empty="true"-->
-        <!--            :close-on-select="true"-->
-        <!--            :custom-label="(u) => `${u.full_name} (${u.username})`"-->
-        <!--            :multiple="false"-->
-        <!--            :options="users"-->
-        <!--            placeholder="Send to"-->
-        <!--            track-by="id"-->
-        <!--            select-label=""-->
-        <!--          />-->
+        <div class="flex-grow">
+          <UserSelect bind:value={send_to_user} />
+        </div>
         <button
           type="button"
-          class="btn btn-default bg-pelorous-400"
-          on:click|preventDefault={add_comment}
+          class="btn btn-pelorous btn-slim lg:w-1/5"
+          on:click|preventDefault={addComment}
         >
           {$_("Send")}
         </button>

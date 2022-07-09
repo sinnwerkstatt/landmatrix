@@ -2,10 +2,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
-from django_registration.backends.activation.views import RegistrationView
 
 from apps.api.views import vuebase
-from apps.landmatrix.forms.oldforms import CustomRegistrationForm
 from apps.landmatrix.views import SwitchLanguageView
 from apps.wagtailcms.api import api_router
 
@@ -15,14 +13,9 @@ CACHE_TIMEOUT = 24 * 3600
 
 urlpatterns = [
     # Django basics
-    path(
-        "accounts/register/",
-        RegistrationView.as_view(form_class=CustomRegistrationForm),
-        name="registration_register",
-    ),
+    path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("django_registration.backends.activation.urls")),
-    path("admin/", admin.site.urls),
     path("impersonate/", include("impersonate.urls")),
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
@@ -35,7 +28,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    # Non i18n patterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

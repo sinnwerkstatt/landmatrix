@@ -66,7 +66,6 @@ INSTALLED_APPS = [
     "wagtailorderable",
     "modelcluster",
     "taggit",
-    "captcha",  # TODO delete this after squashing migrations
     #   apps of the actual landmatrix project
     "apps.blog",
     "apps.message",

@@ -16,8 +16,6 @@ django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"
 django-modeltranslation = "*"
-django-recaptcha = "*"  # TODO delete this after squashing migrations
-django-multiselectfield = "*"  # TODO delete this after squashing migrations
 django-registration = "*"
 
 wagtail-font-awesome-svg = "*"
@@ -50,7 +48,7 @@ gunicorn = "*"
 [tool.poetry.dev-dependencies]
 ipdb = "*"
 pre-commit = "*"
-black = { version = "*", allow-prereleases = true }
+black = "*"
 mypy = "*"
 django-livereload = "*"
 django-extensions = "*"

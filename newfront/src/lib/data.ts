@@ -7,13 +7,13 @@ import type { Deal } from "$lib/types/deal";
 
 let debounceTimeOut: NodeJS.Timeout;
 
-export const dealsLoading = writable(false);
+export const loading = writable(false);
 
 export const deals: Readable<Deal[]> = derived(
   [filters, publicOnly],
   ([$filters, $publicOnly], set) => {
     // set([]); // setting "initial" value here.
-    dealsLoading.set(true);
+    loading.set(true);
     const variables = {
       limit: 0,
       filters: $filters.toGQLFilterArray(),
@@ -24,7 +24,7 @@ export const deals: Readable<Deal[]> = derived(
       get(client)
         .query<{ deals: Deal[] }>({ query: data_deal_query_gql, variables })
         .then(({ data }) => {
-          dealsLoading.set(false);
+          loading.set(false);
           set(data.deals);
         });
     }, 300);

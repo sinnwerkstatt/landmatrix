@@ -1,8 +1,8 @@
 <script lang="ts">
   export let value: number;
-  export let model: string;
   export let targetBlank = false;
-  export let objectVersion: number;
+  export let objectVersion: number | null = null;
+  export let model: "deal" | "investor" = "deal";
 
   let href = (model === "deal" ? "/deal/" : "/investor/") + value;
   if (objectVersion) href += "/" + objectVersion;
