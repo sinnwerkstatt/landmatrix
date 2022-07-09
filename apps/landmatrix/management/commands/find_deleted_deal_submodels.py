@@ -6,7 +6,7 @@ import pytz
 import termtables as tt
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models import Deal
+from apps.landmatrix.models.deal import Deal
 
 
 @dataclass

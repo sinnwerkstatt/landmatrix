@@ -1,13 +1,13 @@
 import base64
 import os
 
+from ariadne.graphql import GraphQLError
 from django.contrib.gis.geos import Point
 from django.core.files.storage import DefaultStorage
-from graphql import GraphQLResolveInfo, GraphQLError
 
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Deal, Country
-from apps.landmatrix.models.deal import DealVersion, DealWorkflowInfo
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.utils import qs_values_to_dict
 from .generics import (
     add_object_comment,
@@ -20,7 +20,8 @@ from .user_utils import get_user_role
 storage = DefaultStorage()
 
 
-def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC"):
+# noinspection PyShadowingBuiltins
+def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
@@ -80,8 +81,8 @@ def resolve_deal(_, info: GraphQLResolveInfo, id, version=None, subset="PUBLIC")
 
 
 def resolve_deals(
-    _,
-    info: GraphQLResolveInfo,
+    _obj,
+    info,
     sort="id",
     limit=20,
     subset="PUBLIC",
@@ -108,9 +109,7 @@ def resolve_deals(
     )
 
 
-def resolve_dealversions(
-    obj, info: GraphQLResolveInfo, filters=None, country_id=None, region_id=None
-):
+def resolve_dealversions(_obj, _info, filters=None, country_id=None, region_id=None):
     # TODO-1 We are not restricting queries here!!!
     qs = DealVersion.objects.all()
 
@@ -129,7 +128,7 @@ def resolve_dealversions(
     return [dv.to_dict() for dv in qs]
 
 
-def resolve_upload_datasource_file(_, info, filename, payload) -> str:
+def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
     user = info.context["request"].user
     if not user.is_authenticated:
         raise GraphQLError("not authorized")
@@ -142,8 +141,9 @@ def resolve_upload_datasource_file(_, info, filename, payload) -> str:
     return fname
 
 
+# noinspection PyShadowingBuiltins
 def resolve_add_deal_comment(
-    _, info, id: int, version: int, comment: str, to_user_id=None
+    _obj, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
     add_object_comment(
         "deal", info.context["request"].user, id, version, comment, to_user_id
@@ -152,8 +152,9 @@ def resolve_add_deal_comment(
     return {"dealId": id, "dealVersion": version}
 
 
+# noinspection PyShadowingBuiltins
 def resolve_change_deal_status(
-    _,
+    _obj,
     info,
     id: int,
     version: int,
@@ -162,7 +163,7 @@ def resolve_change_deal_status(
     to_user_id: int = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> dict:
-    dealId, dealVersion = change_object_status(
+    deal_id, deal_version = change_object_status(
         otype="deal",
         user=info.context["request"].user,
         obj_id=id,
@@ -172,7 +173,7 @@ def resolve_change_deal_status(
         to_user_id=to_user_id,
         fully_updated=fully_updated,
     )
-    return {"dealId": dealId, "dealVersion": dealVersion}
+    return {"dealId": deal_id, "dealVersion": deal_version}
 
 
 def _clean_payload(payload) -> dict:
@@ -198,20 +199,22 @@ def _clean_payload(payload) -> dict:
     return ret
 
 
-def resolve_deal_edit(_, info, id, version=None, payload: dict = None) -> dict:
+# noinspection PyShadowingBuiltins
+def resolve_deal_edit(_obj, info, id, version=None, payload: dict = None) -> dict:
     payload = _clean_payload(payload)
-    dealId, dealVersion = object_edit(
+    deal_id, deal_version = object_edit(
         otype="deal",
         user=info.context["request"].user,
         obj_id=id,
         obj_version_id=version,
         payload=payload,
     )
-    return {"dealId": dealId, "dealVersion": dealVersion}
+    return {"dealId": deal_id, "dealVersion": deal_version}
 
 
+# noinspection PyShadowingBuiltins
 def resolve_deal_delete(
-    _, info, id: int, version: int = None, comment: str = None
+    _obj, info, id: int, version: int = None, comment: str = None
 ) -> bool:
     return object_delete(
         otype="deal",
@@ -222,8 +225,9 @@ def resolve_deal_delete(
     )
 
 
+# noinspection PyShadowingBuiltins
 def resolve_set_confidential(
-    _, info, id, confidential, version=None, reason=None, comment=""
+    _obj, info, id, confidential, version=None, reason=None, comment=""
 ) -> bool:
     user = info.context["request"].user
     role = get_user_role(user)

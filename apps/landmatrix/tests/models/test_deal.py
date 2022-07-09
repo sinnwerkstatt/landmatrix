@@ -1,6 +1,6 @@
 import pytest
 
-from apps.landmatrix.models import Deal
+from apps.landmatrix.models.deal import Deal
 
 
 @pytest.mark.django_db

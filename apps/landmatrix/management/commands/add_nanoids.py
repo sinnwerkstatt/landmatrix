@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models import Deal, DealVersion
+from apps.landmatrix.models.deal import Deal
 
 from nanoid import generate
 

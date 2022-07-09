@@ -5,7 +5,9 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from wagtail.core.models import Site
 
-from apps.landmatrix.models import Country, Deal, Investor
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor
 
 User = get_user_model()
 

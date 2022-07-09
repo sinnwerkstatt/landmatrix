@@ -1,11 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.landmatrix.models.country import Country, Region
-from .currency import Currency
-from .investor import Investor, InvestorVersion, InvestorVentureInvolvement
-from .deal import Deal, DealVersion
-
 
 class Language(models.Model):
     english_name = models.CharField(_("English name"), max_length=255)

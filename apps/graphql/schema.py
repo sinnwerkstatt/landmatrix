@@ -20,7 +20,6 @@ from apps.graphql.resolvers.charts import (
     resolve_deal_aggregations,
     resolve_global_map_of_investments,
 )
-
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,

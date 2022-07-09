@@ -7,6 +7,7 @@ from .models import UserRegionalInfo
 
 User = get_user_model()
 
+
 # Define an inline admin descriptor for Employee model
 # which acts a bit like a singleton
 class UserRegionalInfoInline(admin.StackedInline):
@@ -16,6 +17,7 @@ class UserRegionalInfoInline(admin.StackedInline):
     fk_name = "user"
 
 
+# noinspection PyUnusedLocal
 def set_inactive(modeladmin, request, queryset):
     queryset.update(is_active=False)
 

@@ -17,13 +17,15 @@ class TwitterTimeline:
         self.cache_timeout = cache_timeout
         self.cache_long_term_timeout = cache_long_term_timeout
 
-        self.re_url = re.compile(r"([A-Za-z]+://[A-Za-z\d-_]+\.[A-Za-z\d-_:%&~?/.=]+)")
+        self.re_url = re.compile(
+            r"([A-Za-z]+://[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~?/.=]+)"
+        )
         self.re_url_sub = r'<a href="\g<1>">\g<1></a>'
-        self.re_hashtag = re.compile(r"#+(?P<hashtag>[A-Za-z\d-_]+)")
+        self.re_hashtag = re.compile(r"#+(?P<hashtag>[A-Za-z0-9-_]+)")
         self.re_hashtag_sub = (
             r'<a href="https://twitter.com/search/%23\g<hashtag>">#\g<hashtag></a>'
         )
-        self.re_username = re.compile(r"@+(?P<username>[A-Za-z\d-_]+)")
+        self.re_username = re.compile(r"@+(?P<username>[A-Za-z0-9-_]+)")
         self.re_username_sub = (
             r'<a href="https://twitter.com/\g<username>">@\g<username></a>'
         )
@@ -118,6 +120,7 @@ class TwitterTimeline:
 
 
 if __name__ == "__main__":
+    # noinspection PyPackageRequirements
     import environ
 
     BASE_DIR = environ.Path(__file__) - 4

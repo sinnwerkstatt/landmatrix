@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from apps.landmatrix.models import Country, Region
+from apps.landmatrix.models.country import Country, Region
 
 
 class UserRegionalInfo(models.Model):

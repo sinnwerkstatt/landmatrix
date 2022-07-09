@@ -1,11 +1,8 @@
 import pytest
 
-from apps.landmatrix.models import (
-    Deal,
-    Investor,
-    Country,
-    InvestorVentureInvolvement,
-)
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
 @pytest.fixture

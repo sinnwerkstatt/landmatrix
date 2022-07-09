@@ -12,7 +12,11 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
   password_reset(email: String!): Boolean!
-  password_reset_confirm(token: String!, new_password1: String, new_password2: String!): Boolean!
+  password_reset_confirm(
+    token: String!
+    new_password1: String
+    new_password2: String!
+  ): Boolean!
 
   add_public_deal_comment(
     id: Int!

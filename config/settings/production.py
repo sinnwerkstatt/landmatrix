@@ -2,6 +2,8 @@ import random
 import string
 
 import sentry_sdk
+
+# noinspection PyPackageRequirements
 from environ.environ import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
