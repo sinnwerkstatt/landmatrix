@@ -1,8 +1,8 @@
 import type { Feature } from "geojson";
 import type {
-  Area,
   AreaFeature,
   AreaFeatureCollection,
+  AreaType,
   Location,
 } from "$lib/types/deal";
 
@@ -13,7 +13,7 @@ const createEmptyFeatureCollection = (): AreaFeatureCollection => ({
 
 // property setters
 export const setTypeProperty =
-  (areaType: Area) =>
+  (areaType: AreaType) =>
   (feature: Feature): AreaFeature => ({
     ...feature,
     properties: { ...feature.properties, type: areaType },
@@ -30,14 +30,14 @@ export const setCurrentProperty =
   });
 
 // feature utils
-export const getFeatures = (areaType: Area, location: Location): AreaFeature[] => {
+export const getFeatures = (areaType: AreaType, location: Location): AreaFeature[] => {
   const activeAreas = location.areas ?? createEmptyFeatureCollection();
 
   return activeAreas.features.filter((feature) => feature.properties.type === areaType);
 };
 
 export const setFeatures = (
-  areaType: Area,
+  areaType: AreaType,
   location: Location,
   features: AreaFeature[]
 ): void => {

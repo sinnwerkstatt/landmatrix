@@ -13,13 +13,13 @@ enum ACCURACY_LEVEL {
   COORDINATES,
 }
 
-type Area = "production_area" | "contract_area" | "intended_area";
+type AreaType = "production_area" | "contract_area" | "intended_area";
 
 interface FeatureProps {
   // these are the location id and name -> not unique for feature
   id?: string;
   name?: string;
-  type?: Area;
+  type?: AreaType;
   date?: string;
   current?: boolean;
 }

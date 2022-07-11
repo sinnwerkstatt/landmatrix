@@ -3,7 +3,7 @@
   import type { GeoJSON } from "geojson";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
-  import type { Area, AreaFeature, Location } from "$lib/types/deal";
+  import type { AreaFeature, AreaType, Location } from "$lib/types/deal";
   import {
     getFeatures,
     setCurrentProperty,
@@ -19,7 +19,7 @@
 
   const dispatch = createEventDispatcher();
 
-  export let areaType: Area;
+  export let areaType: AreaType;
   export let activeLocationID: string;
   export let locations: Location[];
   export let currentHoverFeature: AreaFeature | null;
