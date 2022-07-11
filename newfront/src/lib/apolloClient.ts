@@ -1,8 +1,9 @@
-import { ApolloClient } from "@apollo/client/core/ApolloClient.js";
-import { HttpLink } from "@apollo/client/link/http/HttpLink.js";
 import { InMemoryCache } from "@apollo/client/cache/inmemory/inMemoryCache.js";
 import type { NormalizedCacheObject } from "@apollo/client/core";
-import { writable, type Writable } from "svelte/store";
+import { ApolloClient } from "@apollo/client/core/ApolloClient.js";
+import { HttpLink } from "@apollo/client/link/http/HttpLink.js";
+import { writable } from "svelte/store";
+import type { Writable } from "svelte/store";
 
 interface WritableApolloClient extends Writable<ApolloClient<NormalizedCacheObject>> {
   resetClient?(this: void, cookie: string): void;
@@ -10,10 +11,14 @@ interface WritableApolloClient extends Writable<ApolloClient<NormalizedCacheObje
 
 function createApolloClient(): WritableApolloClient {
   const clnt = new ApolloClient({
-    link: new HttpLink({ uri: import.meta.env.VITE_BASE_URL + "/graphql/", credentials: "include" }),
+    link: new HttpLink({
+      uri: import.meta.env.VITE_BASE_URL + "/graphql/",
+      credentials: "include",
+    }),
     cache: new InMemoryCache(),
   });
-  const { subscribe, set, update } = writable<ApolloClient<NormalizedCacheObject>>(clnt);
+  const { subscribe, set, update } =
+    writable<ApolloClient<NormalizedCacheObject>>(clnt);
 
   return {
     subscribe,
@@ -30,7 +35,6 @@ function createApolloClient(): WritableApolloClient {
 }
 
 export const client = createApolloClient();
-
 
 // export async function checkUserAuthentication(cookie:string) {
 //   // link: new HttpLink({ uri: import.meta.env.VITE_GRAPHQL_URL, fetch }),
