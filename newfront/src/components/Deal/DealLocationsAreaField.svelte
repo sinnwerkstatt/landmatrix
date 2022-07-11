@@ -143,14 +143,12 @@
                 bind:group={current}
                 value={i}
                 name="{areaType}_{i}_current"
-                required={current === -1}
               />
             </td>
             <td class="px-1">
               <LowLevelDateYearField
                 bind:value={feat.properties.date}
                 name="{areaType}_{i}_year"
-                required
                 emitUndefinedOnEmpty
               />
             </td>
