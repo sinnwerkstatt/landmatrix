@@ -53,28 +53,28 @@
     reader.addEventListener("load", (event) => {
       const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string);
 
-      let features = areaFeatures;
-
       switch (geoJsonObject.type) {
         case "Feature":
-          features = [...features, setTypeProperty(areaType)(geoJsonObject)];
+          setAreaFeatures(activeLocation, [
+            ...areaFeatures,
+            setTypeProperty(areaType)(geoJsonObject),
+          ]);
           break;
         case "FeatureCollection":
           if (geoJsonObject.features.length !== 1) {
             window.alert("Please upload 1 area feature at a time.");
             return;
           }
-          features = [
-            ...features,
+          setAreaFeatures(activeLocation, [
+            ...areaFeatures,
             ...geoJsonObject.features.map(setTypeProperty(areaType)),
-          ];
+          ]);
           break;
         default:
           window.alert("Unsupported GeoJsonType");
           return;
       }
 
-      setAreaFeatures(activeLocation, features);
       showAddAreaOverlay = false;
     });
 
@@ -88,15 +88,14 @@
   }
 
   function removeFeature(feature: AreaFeature): void {
-    const remainingFeatures = areaFeatures.filter((f) => f !== feature);
-
-    setAreaFeatures(activeLocation, remainingFeatures);
+    setAreaFeatures(
+      activeLocation,
+      areaFeatures.filter((f) => f !== feature)
+    );
   }
 
   function updateCurrent(index: number): void {
-    const updatedFeatures: AreaFeature[] = areaFeatures.map(setCurrentProperty(index));
-
-    setAreaFeatures(activeLocation, updatedFeatures);
+    setAreaFeatures(activeLocation, areaFeatures.map(setCurrentProperty(index)));
   }
 </script>
 
