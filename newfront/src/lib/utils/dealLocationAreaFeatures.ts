@@ -31,7 +31,6 @@ export const setCurrentProperty =
 
 // feature utils
 export const getFeatures = (areaType: Area, location: Location): AreaFeature[] => {
-  console.log(location.areas);
   const activeAreas = location.areas ?? createEmptyFeatureCollection();
 
   return activeAreas.features.filter((feature) => feature.properties.type === areaType);

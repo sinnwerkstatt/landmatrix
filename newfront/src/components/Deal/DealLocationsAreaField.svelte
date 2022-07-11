@@ -1,4 +1,5 @@
 <script lang="ts">
+  import classNames from "classnames";
   import type { GeoJSON } from "geojson";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
@@ -8,7 +9,7 @@
     setCurrentProperty,
     setFeatures,
     setTypeProperty,
-  } from "$components/Deal/dealLocationAreaFeatures";
+  } from "$lib/utils/dealLocationAreaFeatures";
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte";
   import EyeIcon from "$components/icons/EyeIcon.svelte";
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
@@ -34,42 +35,43 @@
   }[areaType];
 
   $: activeLocation = locations.find((location) => location.id === activeLocationID);
+  $: areaFeatures = getFeatures(areaType, activeLocation);
+  $: hasAreaFeatures = areaFeatures.length > 0;
+  $: current = areaFeatures.findIndex((feature) => feature.properties.current);
 
-  // bind area type
-  const getAreaFeatures = (location: Location) => getFeatures(areaType, location);
-  const hasAreaFeatures = (location: Location) => getAreaFeatures(location).length > 0;
-  const setAreaFeatures = (location: Location, features: AreaFeature[]) => {
+  function setAreaFeatures(location: Location, features: AreaFeature[]): void {
     setFeatures(areaType, location, features);
 
     // signal update
     locations = locations;
     dispatch("change");
-  };
+  }
 
-  $: current = getAreaFeatures(activeLocation).findIndex(
-    (feature) => feature.properties.current
-  );
-
-  function uploadFiles() {
+  function uploadFiles(): void {
     const reader = new FileReader();
 
     reader.addEventListener("load", (event) => {
       const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string);
 
-      let features = getAreaFeatures(activeLocation);
+      let features = areaFeatures;
 
       switch (geoJsonObject.type) {
         case "Feature":
           features = [...features, setTypeProperty(areaType)(geoJsonObject)];
           break;
         case "FeatureCollection":
+          if (geoJsonObject.features.length !== 1) {
+            window.alert("Please upload 1 area feature at a time.");
+            return;
+          }
           features = [
             ...features,
             ...geoJsonObject.features.map(setTypeProperty(areaType)),
           ];
           break;
         default:
-          console.error("Unsupported GeoJsonType");
+          window.alert("Unsupported GeoJsonType");
+          return;
       }
 
       setAreaFeatures(activeLocation, features);
@@ -79,24 +81,20 @@
     reader.readAsText(toAddFiles[0]);
   }
 
-  const toggleVisibility = (feature: AreaFeature) => {
+  function toggleVisibility(feature: AreaFeature): void {
     hiddenFeatures = hiddenFeatures.includes(feature)
       ? hiddenFeatures.filter((f) => f !== feature)
       : [...hiddenFeatures, feature];
-  };
+  }
 
-  function removeFeature(feature: AreaFeature) {
-    const remainingFeatures = getAreaFeatures(activeLocation).filter(
-      (f) => f !== feature
-    );
+  function removeFeature(feature: AreaFeature): void {
+    const remainingFeatures = areaFeatures.filter((f) => f !== feature);
 
     setAreaFeatures(activeLocation, remainingFeatures);
   }
 
-  function updateCurrent(index: number) {
-    const updatedFeatures: AreaFeature[] = getAreaFeatures(activeLocation).map(
-      setCurrentProperty(index)
-    );
+  function updateCurrent(index: number): void {
+    const updatedFeatures: AreaFeature[] = areaFeatures.map(setCurrentProperty(index));
 
     setAreaFeatures(activeLocation, updatedFeatures);
   }
@@ -106,7 +104,7 @@
   <div class="pr-2 col-span-2">
     <div class="text-lg font-medium">{title}</div>
   </div>
-  {#if hasAreaFeatures(activeLocation)}
+  {#if hasAreaFeatures}
     <table class="flex-auto col-span-8">
       <thead>
         <tr>
@@ -118,15 +116,17 @@
         </tr>
       </thead>
       <tbody>
-        {#each getAreaFeatures(activeLocation) as feat, i}
+        {#each areaFeatures as feat, i}
           <tr
             on:mouseover={() => (currentHoverFeature = feat)}
             on:focus={() => (currentHoverFeature = feat)}
             on:mouseout={() => (currentHoverFeature = null)}
             on:blur={() => (currentHoverFeature = null)}
-            class="px-1
-            {feat === currentHoverFeature ? 'border border-4 border-orange-400' : ''}
-            {hiddenFeatures.includes(feat) ? 'bg-gray-200' : ''}"
+            class={classNames(
+              "px-1",
+              feat === currentHoverFeature ? "border border-4 border-orange-400" : "",
+              hiddenFeatures.includes(feat) ? "bg-gray-200" : ""
+            )}
           >
             <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
               {#if hiddenFeatures.includes(feat)}
@@ -214,7 +214,7 @@
       type="button"
       class="btn btn-primary"
       on:click={uploadFiles}
-      disabled={!toAddFiles}
+      disabled={!toAddFiles || !toAddFiles.length}
     >
       <PlusIcon />
       {$_("Add GeoJSON")}
