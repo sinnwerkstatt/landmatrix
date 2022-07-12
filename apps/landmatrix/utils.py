@@ -100,9 +100,7 @@ class InvolvementNetwork:
             investment_type = "|".join(
                 arrayfield_choices_display(
                     involvement["investment_type"],
-                    InvestorVentureInvolvement._meta.get_field(
-                        "investment_type"
-                    ).choices,
+                    InvestorVentureInvolvement.INVESTMENT_TYPE_CHOICES,
                 )
             )
             # TODO: this duplicates row generation in export.py
@@ -115,7 +113,7 @@ class InvolvementNetwork:
                     involvement["investor"]["name"],
                     str(
                         dict(
-                            InvestorVentureInvolvement._meta.get_field("role").choices
+                            InvestorVentureInvolvement.ROLE_CHOICES
                         )[involvement["role"]]
                     ),
                     investment_type,
