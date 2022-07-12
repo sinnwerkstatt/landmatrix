@@ -112,9 +112,9 @@ class InvolvementNetwork:
                     involvement["investor"]["id"],
                     involvement["investor"]["name"],
                     str(
-                        dict(
-                            InvestorVentureInvolvement.ROLE_CHOICES
-                        )[involvement["role"]]
+                        dict(InvestorVentureInvolvement.ROLE_CHOICES)[
+                            involvement["role"]
+                        ]
                     ),
                     investment_type,
                     involvement["percentage"],
