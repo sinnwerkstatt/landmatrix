@@ -23,7 +23,7 @@
     },
   })
 
-  const title = $_("Produce info map")
+  $: title = $_("Produce info map")
 
   onMount(() => {
     showContextBar.set(!$isMobile)

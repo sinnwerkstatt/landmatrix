@@ -14,7 +14,7 @@
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  const title = $_("Web of transnational deals")
+  $: title = $_("Web of transnational deals")
 
   const transnationalDealsQuery = gql`
     query ($filters: [Filter]) {

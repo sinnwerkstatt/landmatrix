@@ -32,6 +32,10 @@
       route: "/charts/produce-info/",
     },
     {
+      title: $_("Global Map of Investments"),
+      route: "/charts/global-map-of-investments",
+    },
+    {
       title: $_("Country profiles"),
       route: "/charts/country-profiles/",
     },

@@ -16,126 +16,196 @@ import {
   geoPath,
   select,
   zoom,
+  zoomIdentity,
 } from "d3";
-import type { D3ZoomEvent, GeoPath } from "d3";
-import type * as GeoJSON from "geojson";
+import type { BaseType, D3ZoomEvent, GeoPath } from "d3";
+import type { Feature, GeoJsonProperties } from "geojson";
 import { feature } from "topojson-client";
-import world from "world-atlas/countries-110m.json";
-import { addMarkers } from "./utils";
+import type { Topology } from "topojson-specification";
+import type { GeometryCollection } from "topojson-specification";
+import worldTopology from "world-atlas/countries-110m.json";
+import { addMarkers } from "$components/Data/Charts/utils";
 
-export class GlobalInvestmentMap {
-  private readonly width = 950;
-  private readonly height = 500;
-  private readonly projection;
-  private readonly path: GeoPath;
-  private readonly svg;
-  private readonly countries;
-  private readonly moneylines;
-  private frontCountries: unknown;
-  private selectedCountry?: unknown;
-  private global_map_of_investments: unknown;
+export interface Investments {
+  [targetCountryId: string]: TargetInvestments;
+}
 
-  constructor(svg_selector: string) {
-    this.projection = geoNaturalEarth1();
-    // this.projection = geoEqualEarth();
+interface TargetInvestments {
+  [investorCountryId: string]: {
+    size: string;
+    count: number;
+  };
+}
 
-    this.countries = feature(world, world.objects.countries).features;
-    console.log("countries", { countries: this.countries });
-    this.path = geoPath().projection(this.projection);
+type Country = Feature;
 
-    this.svg = select(svg_selector).attr("viewBox", `0 0 ${this.width} ${this.height}`);
-    this.moneylines = this.svg.append("g").attr("class", "moneylines");
-    console.warn("MONEYLS", this.moneylines);
+const getId = (country: Country) => +(country.id as string);
+const hasId = (id: string) => (country: Country) => getId(country) === +id;
+const unique = <T>(arr: Array<T>) => [...new Set(arr)];
 
-    addMarkers(this.svg);
-  }
+export const createGlobalMapOfInvestments = (
+  svgSelector: string,
+  setCountryFilter: (id: string) => void
+) => {
+  const width = 950;
+  const height = 500;
 
-  public doTheThing(global_map_of_investments): void {
-    this.global_map_of_investments = global_map_of_investments;
+  // https://github.com/d3/d3-zoom
+  // https://stackoverflow.com/questions/29320905
+  // https://gist.github.com/KarolAltamirano/b54c263184be0516a59d6baf7f053f3e
+  // https://d3-graph-gallery.com/graph/interactivity_zoom.html
+  // https://www.freecodecamp.org/news/5d963b0a153e
 
-    console.log("doTheThing");
-    this.frontCountries = this.svg
-      .selectAll(".country")
-      .data(this.countries)
+  const zoomed = (event: D3ZoomEvent<Element, unknown>): void => {
+    gZoom.attr("transform", event.transform.toString());
+  };
+
+  const zoomFn = zoom().scaleExtent([1, 3]).on("zoom", zoomed);
+
+  const svg = select(svgSelector).attr("viewBox", `0 0 ${width} ${height}`);
+  const gZoom = svg.append("g").call(zoomFn as any);
+
+  // add background
+  gZoom
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "background");
+
+  const gCountries = gZoom.append("g").attr("class", "countries");
+  const gMoneyLines = gZoom.append("g").attr("class", "money-lines");
+
+  const countries: Country[] = feature(
+    worldTopology as unknown as Topology,
+    worldTopology.objects.countries as GeometryCollection<GeoJsonProperties>
+  ).features;
+
+  const resetZoom = () =>
+    gZoom
+      .transition()
+      .duration(500)
+      .call(zoomFn.transform as any, zoomIdentity);
+
+  const path: GeoPath = geoPath().projection(geoNaturalEarth1());
+
+  let investments: Investments;
+
+  const drawCountries = () => {
+    gCountries
+      .selectAll<BaseType, Country>("*")
+      .data(countries)
       .enter()
-      .insert("path", ".line")
+      .append("path")
       .attr("class", "country")
-      .attr("data-id", (d) => d.id)
-      .attr("d", this.path)
-      .on("mouseover", (e: Event) => select(e.target).classed("hover", true))
-      .on("mouseout", (e: Event) => select(e.target).classed("hover", false))
-      .on("click", (e: Event) => this.countrySelect(e));
+      .attr("data-id", getId)
+      .attr("d", path);
 
-    this.svg.call(
-      zoom().on("zoom", (e) => {
-        this.zoomed(e);
-      })
-    );
-  }
+    addMarkers(svg, 5);
+  };
 
-  countrySelect(e: PointerEvent): void {
-    // reset playing field
-    this.moneylines.selectAll("*").remove();
-    this.svg.selectAll(".country").attr("class", "country");
+  const injectData = (
+    data: Investments,
+    selectedCountryId: number | undefined
+  ): void => {
+    investments = data;
 
-    const selectedCountryId = +e.target?.dataset.id;
-    this.selectedCountry = this.countries.find((c) => +c.id === selectedCountryId);
-
-    const investorCountries: GeoJSON.Feature[] = [];
-    const targetCountries: GeoJSON.Feature[] = [];
-
-    Object.entries(this.global_map_of_investments).forEach(([k, v]) => {
-      Object.keys(v).forEach((x) => {
-        if (+k === +selectedCountryId && +x !== +selectedCountryId)
-          investorCountries.push(this.countries.find((c) => +c.id === +x));
-        if (+x === +selectedCountryId && +k !== +selectedCountryId)
-          targetCountries.push(this.countries.find((c) => +c.id === +k));
-        // if (+x === +selectedCountryId) targetCountries.push(v);
+    gCountries
+      .selectAll<BaseType, Country>("*")
+      .on("mouseover", (event: MouseEvent) =>
+        select(event.target as HTMLElement).classed("hover", true)
+      )
+      .on("mouseout", (event: MouseEvent) =>
+        select(event.target as HTMLElement).classed("hover", false)
+      )
+      .on("click", (event: PointerEvent) => {
+        const countryId = (event.target as HTMLElement).dataset.id as string;
+        selectCountry(countryId);
+        setCountryFilter(countryId);
       });
-    });
 
-    if (investorCountries.length > 0) {
-      console.log("investorCountries", { investorCountries });
-      this.moneylines
-        .selectAll(".lines")
-        .data(investorCountries)
-        .enter()
-        .append("path")
-        .attr("class", "investor-country-line")
-        .attr("d", (target) => this.moneyLine(this.selectedCountry, target));
+    if (selectedCountryId) {
+      selectCountry(selectedCountryId.toString());
+    }
+  };
+
+  const getInvestorAndTargetCountries = (
+    selectedCountry: Country
+  ): { investorCountries: Country[]; targetCountries: Country[] } => {
+    const investorCountries: Country[] = [];
+    const targetCountries: Country[] = [];
+
+    Object.entries<TargetInvestments>(investments).forEach(
+      ([targetCountryId, targetInvestments]) => {
+        const targetCountry = countries.find(hasId(targetCountryId));
+        if (!targetCountry) return;
+
+        Object.keys(targetInvestments).forEach((investorCountryId) => {
+          const investorCountry = countries.find(hasId(investorCountryId));
+
+          if (!investorCountry || targetCountry === investorCountry) return;
+          if (targetCountry === selectedCountry)
+            investorCountries.push(investorCountry);
+          if (investorCountry === selectedCountry) targetCountries.push(targetCountry);
+        });
+      }
+    );
+
+    return {
+      investorCountries: unique(investorCountries),
+      targetCountries: unique(targetCountries),
+    };
+  };
+
+  const clearSelection = (): void => {
+    gMoneyLines.selectAll<BaseType, Country>("*").remove();
+    gCountries
+      .selectAll<BaseType, Country>(".country")
+      .classed("selected-country", false)
+      .classed("investor-country", false)
+      .classed("target-country", false);
+  };
+
+  const selectCountry = (countryId: string): void => {
+    clearSelection();
+    resetZoom();
+
+    const selectedCountry = countries.find(hasId(countryId));
+    if (!selectedCountry) {
+      console.error("Country not found in map", countryId);
+      return;
     }
 
-    if (targetCountries.length > 0) {
-      console.log("targetCountries", { targetCountries });
-      this.moneylines
-        .selectAll(".lines")
-        .data(targetCountries)
-        .enter()
-        .append("path")
-        .attr("class", "target-country-line")
-        .attr("d", (target) => this.moneyLine(this.selectedCountry, target));
-    }
+    const { investorCountries, targetCountries } =
+      getInvestorAndTargetCountries(selectedCountry);
 
-    this.svg
-      .selectAll(".country")
-      .classed("investor-country", (d) => investorCountries.includes(d));
-    this.svg
-      .selectAll(".country")
-      .classed("target-country", (d) => targetCountries.includes(d));
-    this.svg
-      .selectAll(".country")
-      .classed("selected-country", (d) => selectedCountryId === +d.id);
-    // select(this).classed("target-country", true);
-  }
+    gMoneyLines
+      .selectAll<BaseType, Country>(".investor-country-line")
+      .data(investorCountries)
+      .enter()
+      .append("path")
+      .attr("class", "investor-country-line")
+      .attr("d", (investorCountry) => moneyLine(investorCountry, selectedCountry));
 
-  moneyLine(source: GeoJSON.Feature, target: GeoJSON.Feature): string | null {
-    return this.path({
+    gMoneyLines
+      .selectAll<BaseType, Country>(".target-country-line")
+      .data(targetCountries)
+      .enter()
+      .append("path")
+      .attr("class", "target-country-line")
+      .attr("d", (targetCountry) => moneyLine(selectedCountry, targetCountry));
+
+    gCountries
+      .selectAll<BaseType, Country>(".country")
+      .classed("selected-country", (country) => country === selectedCountry)
+      .classed("investor-country", (country) => investorCountries.includes(country))
+      .classed("target-country", (country) => targetCountries.includes(country));
+  };
+
+  const moneyLine = (source: Country, target: Country): string | null =>
+    path({
       type: "LineString",
       coordinates: [geoCentroid(source), geoCentroid(target)],
     });
-  }
 
-  zoomed(event: D3ZoomEvent<Element, unknown>): void {
-    this.svg.attr("transform", event.transform);
-  }
-}
+  return { drawCountries, injectData, selectCountry };
+};
