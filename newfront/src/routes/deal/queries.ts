@@ -178,7 +178,6 @@ export const deal_gql_query = gql`
       fully_updated
       fully_updated_at
       confidential
-      confidential_reason
       confidential_comment
       is_public
       not_public_reason

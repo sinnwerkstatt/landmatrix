@@ -161,7 +161,6 @@ deal_fields = {
     "gender_related_information": "Comment on gender-related info",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
-    "confidential_reason": "Reason",
     "confidential_comment": "Comment on not public",
 }
 
@@ -903,11 +902,6 @@ class DataDownload:
             data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
-
-        if data.get("confidential_reason"):
-            data["confidential_reason"] = dict(choices.CONFIDENTIAL_REASON_CHOICES)[
-                data["confidential_reason"]
-            ]
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()

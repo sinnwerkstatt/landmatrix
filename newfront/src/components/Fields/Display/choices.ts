@@ -156,9 +156,3 @@ export const combined_status_fn = (
     return toString ? "Active" : "ACTIVE";
   throw Error(`Invalid status ${status} ${draft_status}`);
 };
-
-export const confidential_reason_choices = {
-  TEMPORARY_REMOVAL: "Temporary removal from PI after criticism",
-  RESEARCH_IN_PROGRESS: "Research in progress",
-  LAND_OBSERVATORY_IMPORT: "Land Observatory Import",
-};

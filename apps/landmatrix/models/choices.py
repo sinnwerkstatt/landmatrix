@@ -333,12 +333,6 @@ WATER_SOURCE_CHOICES = (
     ("LAKE", "Lake"),
 )
 
-CONFIDENTIAL_REASON_CHOICES = (
-    ("TEMPORARY_REMOVAL", _("Temporary removal from PI after criticism")),
-    ("RESEARCH_IN_PROGRESS", _("Research in progress")),
-    ("LAND_OBSERVATORY_IMPORT", _("Land Observatory Import")),
-)
-
 NOT_PUBLIC_REASON_CHOICES = (
     ("CONFIDENTIAL", _("Confidential flag")),
     ("NO_COUNTRY", _("No country")),

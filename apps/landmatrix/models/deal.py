@@ -685,12 +685,6 @@ class Deal(AbstractDealBase):
 
     fully_updated = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
-    confidential_reason = models.CharField(
-        max_length=100,
-        choices=_choices.CONFIDENTIAL_REASON_CHOICES,
-        null=True,
-        blank=True,
-    )
     confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True, null=True
     )

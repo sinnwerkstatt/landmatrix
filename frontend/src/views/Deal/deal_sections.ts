@@ -295,7 +295,7 @@ export const deal_sections = {
       },
       {
         name: "Confidential",
-        fields: ["confidential", "confidential_reason", "confidential_comment"],
+        fields: ["confidential", "confidential_comment"],
       },
     ],
   },

@@ -227,7 +227,7 @@ def resolve_deal_delete(
 
 # noinspection PyShadowingBuiltins
 def resolve_set_confidential(
-    _obj, info, id, confidential, version=None, reason=None, comment=""
+    _obj, info, id, confidential, version=None, comment=""
 ) -> bool:
     user = info.context["request"].user
     role = get_user_role(user)
@@ -242,7 +242,6 @@ def resolve_set_confidential(
         if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
             raise GraphQLError("not authorized")
         deal_version.serialized_data["confidential"] = confidential
-        deal_version.serialized_data["confidential_reason"] = reason
         deal_version.serialized_data["confidential_comment"] = comment
         deal_version.save()
 
@@ -253,14 +252,12 @@ def resolve_set_confidential(
             raise GraphQLError("not authorized")
         deal = Deal.objects.get(id=id)
         deal.confidential = confidential
-        deal.confidential_reason = reason
         deal.confidential_comment = comment
         deal.save()
 
         if deal.current_draft:
             deal.current_draft.serialized_data["confidential"] = confidential
             deal.current_draft.serialized_data["confidential"] = confidential
-            deal.current_draft.serialized_data["confidential_reason"] = reason
             deal.current_draft.serialized_data["confidential_comment"] = comment
             deal.current_draft.save()
 

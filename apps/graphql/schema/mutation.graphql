@@ -49,7 +49,6 @@ type Mutation {
     id: Int!
     confidential: Boolean!
     version: Int
-    reason: ConfidentialReason
     comment: String
   ): Boolean
 
@@ -74,12 +73,6 @@ type Mutation {
 }
 
 scalar Payload
-
-enum ConfidentialReason {
-  TEMPORARY_REMOVAL
-  RESEARCH_IN_PROGRESS
-  LAND_OBSERVATORY_IMPORT
-}
 
 enum WorkflowTransition {
   TO_DRAFT
