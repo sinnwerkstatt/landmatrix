@@ -46,12 +46,12 @@ from apps.graphql.resolvers.investor import (
     resolve_change_investor_status,
     resolve_investor_delete,
 )
-from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
     resolve_countries,
     resolve_regions,
     resolve_chart_descriptions,
     resolve_currencies,
+    resolve_markers,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
