@@ -4,7 +4,8 @@
   import { GestureHandling } from "leaflet-gesture-handling?client";
   import "leaflet/dist/leaflet.css";
   import { Icon, Map } from "leaflet?client";
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { nanoid } from "nanoid";
+  import { createEventDispatcher, onMount } from "svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import {
     baseLayers,
@@ -20,6 +21,7 @@
 
   const dispatch = createEventDispatcher<{ ready: Map }>();
 
+  let mapId = "bigMap-" + nanoid();
   let map: Map;
 
   if (!import.meta.env.SSR) {
@@ -32,10 +34,16 @@
     });
   }
 
-  onMount(() => {
+  onMount(async () => {
+    // onDestroy sometimes triggers after onMount on loading a new map
+    // clean up by removing layers from old map
+    baseLayers.forEach((l) => l.layer.remove());
+    contextLayers.forEach((l) => l.layer.remove());
+
     Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
-    map = new Map("bigmap", {
+    // create new Map in div with mapId
+    map = new Map(mapId, {
       zoomSnap: 0.5,
       minZoom: 1,
       zoom: 3,
@@ -43,9 +51,9 @@
       gestureHandling: true,
       ...options,
     });
+
     map.whenReady(() => dispatch("ready", map));
   });
-  onDestroy(() => map && map.remove());
 
   $: if (map && $visibleLayer) {
     baseLayers.forEach((l) => {
@@ -64,7 +72,7 @@
 
 <div class="mx-auto relative {containerClass}">
   <!-- ! isolate is important to capture and contextualize leaflet's "400" z-index -->
-  <div id="bigmap" class="h-full w-full isolate">
+  <div id={mapId} class="h-full w-full isolate">
     {#if !map}
       <LoadingPulse class="h-[300px]" />
     {/if}

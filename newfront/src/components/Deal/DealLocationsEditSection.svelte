@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Feature } from "geojson";
-  import type { Layer, Map as LMap } from "leaflet";
+  import type { GeoJSONOptions, Layer, Map as LMap } from "leaflet";
   import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
@@ -56,7 +56,7 @@
   const isMarker = (layer: Layer): layer is Marker => layer instanceof Marker;
   const isPolygon = (layer): layer is Polygon => layer instanceof Polygon;
 
-  const geojsonOptions = {
+  const geojsonOptions: GeoJSONOptions = {
     onEachFeature: (feature: Feature, layer: Layer) => {
       if (isPath(layer)) {
         layer.addEventListener("mouseover", () => {

@@ -24,34 +24,62 @@
       }
     );
   }
+
   function hideDropdown() {
     dropdownMenu.style.display = "none";
   }
+
   const handleKeyDown = async (e: KeyboardEvent) => {
     console.log(e.code, e.key);
     // console.log(dropdownMenu.children);
     // dropdownMenu.children[1].focus();
+  };
+
+  let isFocused = false;
+  let isHover = false;
+
+  const onMouseEnter = (e) => {
+    if (!isFocused) {
+      showDropdown(e);
+    }
+    isHover = true;
+  };
+
+  const onMouseLeave = (e) => {
+    if (!isFocused) {
+      hideDropdown();
+    }
+    isHover = false;
+  };
+
+  const onFocusIn = (e) => {
+    isFocused = true;
+  };
+
+  const onFocusOut = (e) => {
+    if (!isHover) {
+      hideDropdown();
+    }
+    isFocused = false;
   };
 </script>
 
 <li
   bind:this={listItem}
   class={$$props.class}
-  on:mouseleave={hideDropdown}
-  on:focusout={hideDropdown}
+  on:mouseenter={onMouseEnter}
+  on:mouseleave={onMouseLeave}
+  on:focusin={onFocusIn}
+  on:focusout={onFocusOut}
   on:keydown={handleKeyDown}
 >
-  <button
-    class="flex items-center gap-2 hover:text-orange p-2"
-    on:mouseenter={showDropdown}
-    on:focus={showDropdown}
-  >
+  <div class="flex items-center cursor-default gap-2 hover:text-orange p-2">
     {#if title}
       {title} <ChevronDownIcon class="h-3 w-3" />
     {:else}
       <slot name="title" />
     {/if}
-  </button>
+  </div>
   <div bind:this={dropdownMenu} class="hidden absolute">
     <slot />
   </div>

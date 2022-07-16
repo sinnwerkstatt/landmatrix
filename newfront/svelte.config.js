@@ -12,7 +12,6 @@ const config = {
       postcss: true,
     }),
   ],
-
   kit: {
     adapter: adapter(),
     vite: {
@@ -24,6 +23,7 @@ const config = {
           // $static: resolve("static"),
         },
       },
+      envDir: "..",
       server: {
         host: "0.0.0.0",
         proxy: {

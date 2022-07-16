@@ -61,7 +61,7 @@
       {/each}
     </ul>
   </div>
-  <div class="container mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="container mx-auto px-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
         <div class="border border-black/20 rounded">

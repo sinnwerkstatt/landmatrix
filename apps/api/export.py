@@ -670,6 +670,8 @@ class DataDownload:
                     if x.get("choices") is not None
                 ]
             )
+        else:
+            data["intention_of_investment"] = ""
 
         flatten_array_choices(
             data, "nature_of_deal", dict(choices.NATURE_OF_DEAL_CHOICES)
@@ -688,6 +690,8 @@ class DataDownload:
                     for x in data["negotiation_status"]
                 ]
             )
+        else:
+            data["negotiation_status"] = ""
 
         if data.get("implementation_status"):
             data["implementation_status"] = "|".join(
@@ -702,6 +706,8 @@ class DataDownload:
                     for x in data["implementation_status"]
                 ]
             )
+        else:
+            data["implementation_status"] = ""
 
         if data.get("purchase_price"):
             data["purchase_price"] = int(data["purchase_price"])
