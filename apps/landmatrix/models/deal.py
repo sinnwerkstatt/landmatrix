@@ -10,8 +10,9 @@ from django.db.models import Sum, F, Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.models import Investor, Currency
-from apps.landmatrix.models import _choices
+from apps.landmatrix.models.investor import Investor
+from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models import choices
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
     DRAFT_STATUS_CHOICES,
@@ -161,7 +162,7 @@ class AbstractDealBase(models.Model):
 
     # Nature of the deal
     nature_of_deal = ArrayField(
-        models.CharField(max_length=100, choices=_choices.NATURE_OF_DEAL_CHOICES),
+        models.CharField(max_length=100, choices=choices.NATURE_OF_DEAL_CHOICES),
         verbose_name=_("Nature of the deal"),
         blank=True,
         null=True,
@@ -192,12 +193,12 @@ class AbstractDealBase(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="deal_purchase_price",
+        related_name="+",
     )
     purchase_price_type = models.CharField(
         _("Purchase price area type"),
         max_length=100,
-        choices=_choices.HA_AREA_CHOICES,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -222,12 +223,12 @@ class AbstractDealBase(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="deal_annual_leasing_fee",
+        related_name="+",
     )
     annual_leasing_fee_type = models.CharField(
         _("Annual leasing fee area type"),
         max_length=100,
-        choices=_choices.HA_AREA_CHOICES,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -378,7 +379,7 @@ class AbstractDealBase(models.Model):
     )
 
     recognition_status = ArrayField(
-        models.CharField(max_length=100, choices=_choices.RECOGNITION_STATUS_CHOICES),
+        models.CharField(max_length=100, choices=choices.RECOGNITION_STATUS_CHOICES),
         verbose_name=_("Recognition status of community land tenure"),
         blank=True,
         null=True,
@@ -389,7 +390,7 @@ class AbstractDealBase(models.Model):
     community_consultation = models.CharField(
         _("Community consultation"),
         max_length=100,
-        choices=_choices.COMMUNITY_CONSULTATION_CHOICES,
+        choices=choices.COMMUNITY_CONSULTATION_CHOICES,
         blank=True,
         null=True,
     )
@@ -400,7 +401,7 @@ class AbstractDealBase(models.Model):
     community_reaction = models.CharField(
         _("Community reaction"),
         max_length=100,
-        choices=_choices.COMMUNITY_REACTION_CHOICES,
+        choices=choices.COMMUNITY_REACTION_CHOICES,
         blank=True,
         null=True,
     )
@@ -455,7 +456,7 @@ class AbstractDealBase(models.Model):
     )
 
     negative_impacts = ArrayField(
-        models.CharField(max_length=100, choices=_choices.NEGATIVE_IMPACTS_CHOICES),
+        models.CharField(max_length=100, choices=choices.NEGATIVE_IMPACTS_CHOICES),
         verbose_name=_("Negative impacts for local communities"),
         blank=True,
         null=True,
@@ -472,7 +473,7 @@ class AbstractDealBase(models.Model):
     )
 
     promised_benefits = ArrayField(
-        models.CharField(max_length=100, choices=_choices.BENEFITS_CHOICES),
+        models.CharField(max_length=100, choices=choices.BENEFITS_CHOICES),
         verbose_name=_("Promised benefits for local communities"),
         blank=True,
         null=True,
@@ -482,7 +483,7 @@ class AbstractDealBase(models.Model):
     )
 
     materialized_benefits = ArrayField(
-        models.CharField(max_length=100, choices=_choices.BENEFITS_CHOICES),
+        models.CharField(max_length=100, choices=choices.BENEFITS_CHOICES),
         verbose_name=_("Materialized benefits for local communities"),
         blank=True,
         null=True,
@@ -501,7 +502,7 @@ class AbstractDealBase(models.Model):
     """ Former use """
 
     former_land_owner = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_OWNER_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
         blank=True,
         null=True,
@@ -511,7 +512,7 @@ class AbstractDealBase(models.Model):
     )
 
     former_land_use = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_USE_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
         blank=True,
         null=True,
@@ -521,7 +522,7 @@ class AbstractDealBase(models.Model):
     )
 
     former_land_cover = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_COVER_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),
         blank=True,
         null=True,
@@ -640,7 +641,7 @@ class AbstractDealBase(models.Model):
     )
 
     source_of_water_extraction = ArrayField(
-        models.CharField(max_length=100, choices=_choices.WATER_SOURCE_CHOICES),
+        models.CharField(max_length=100, choices=choices.WATER_SOURCE_CHOICES),
         verbose_name=_("Source of water extraction"),
         blank=True,
         null=True,
@@ -693,7 +694,7 @@ class Deal(AbstractDealBase):
     is_public = models.BooleanField(default=False)
     has_known_investor = models.BooleanField(default=False)
     not_public_reason = models.CharField(
-        max_length=100, blank=True, choices=_choices.NOT_PUBLIC_REASON_CHOICES
+        max_length=100, blank=True, choices=choices.NOT_PUBLIC_REASON_CHOICES
     )
     parent_companies = models.ManyToManyField(
         Investor, verbose_name=_("Parent companies"), related_name="child_deals"
@@ -715,18 +716,18 @@ class Deal(AbstractDealBase):
         null=True,
     )
     current_intention_of_investment = ArrayField(
-        models.CharField(max_length=100, choices=_choices.INTENTION_CHOICES),
+        models.CharField(max_length=100, choices=choices.INTENTION_CHOICES),
         blank=True,
         null=True,
     )
     current_negotiation_status = models.CharField(
-        choices=_choices.NEGOTIATION_STATUS_CHOICES,
+        choices=choices.NEGOTIATION_STATUS_CHOICES,
         max_length=100,
         blank=True,
         null=True,
     )
     current_implementation_status = models.CharField(
-        choices=_choices.IMPLEMENTATION_STATUS_CHOICES,
+        choices=choices.IMPLEMENTATION_STATUS_CHOICES,
         max_length=100,
         blank=True,
         null=True,
