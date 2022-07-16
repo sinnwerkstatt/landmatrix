@@ -15,7 +15,7 @@
       ? 'bg-orange hover:bg-orange-600'
       : 'bg-pelorous hover:bg-pelorous-600'}"
     {href}
-    target={targetBlank ? "_blank" : "_self"}
+    target={targetBlank ? "_blank" : undefined}
   >
     {value}
   </a>
