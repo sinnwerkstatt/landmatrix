@@ -38,7 +38,7 @@ export const DEFAULT_FILTERS: FilterValues = {
   deal_size_min: 200,
   deal_size_max: null,
   // Negotiation Status "Concluded"
-  negotiation_status: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
+  negotiation_status: ["ORAL_AGREEMENT", "CONTRACT_SIGNED", "CHANGE_OF_OWNERSHIP"],
   // Exclude Pure Contract Farming
   nature_of_deal: ["OUTRIGHT_PURCHASE", "LEASE", "CONCESSION", "EXPLOITATION_PERMIT"],
   investor: null,
