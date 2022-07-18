@@ -48,9 +48,7 @@
           }
         }
       `,
-      variables: {
-        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-      },
+      variables: { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
     });
     investors = data.investors;
   }

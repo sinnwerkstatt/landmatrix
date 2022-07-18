@@ -23,6 +23,8 @@
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
+  $: user = $page.stuff.user;
+
   $: produceChoices = $formfields
     ? [
         ...Object.entries($formfields.deal.crops.choices).map(([v, k]) => ({
@@ -61,14 +63,14 @@
   async function getInvestors() {
     const { data } = await $client.query<{ investors: Investor[] }>({
       query: gql`
-        query Investors($limit: Int!, $subset: Subset) {
-          investors(limit: $limit, subset: $subset) {
+        query SInvestors($subset: Subset) {
+          investors(limit: 0, subset: $subset) {
             id
             name
           }
         }
       `,
-      variables: { limit: 0, subset: "ACTIVE" },
+      variables: { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
     });
     investors = data.investors;
   }

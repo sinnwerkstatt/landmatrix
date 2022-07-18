@@ -5,7 +5,7 @@
   import { client } from "$lib/apolloClient";
   import type { FormField } from "$components/Fields/fields";
 
-  export let value: number;
+  export let value: Investor;
   export let formfield: FormField;
 
   type Investor = {
@@ -50,8 +50,8 @@
   {/if}
   {#if value}
     <div class="container p-2">
-      <a href={`../../investor/${value.id}`} class="">
-        Show details for investor #{value.id} {value.name}</a
+      <a href="/investor/{value.id}" class="">
+        {$_("Show details for investor")} #{value.id} {value.name}</a
       >
     </div>
   {/if}

@@ -23,10 +23,11 @@
   import OCIDField from "./Display/OCIDField.svelte";
   import PointField from "./Display/PointField.svelte";
   import StatusField from "./Display/StatusField.svelte";
+  import TypedChoiceField from "./Display/TypedChoiceField.svelte";
 
   export let fieldname: string;
   export let value;
-  export let model = "deal";
+  export let model: "deal" | "investor" = "deal";
 
   export let showLabel = true;
   export let wrapperClasses = "test mb-3 leading-5 flex flex-wrap";
@@ -34,8 +35,9 @@
   export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
 
   export let fileNotPublic = false;
+  export let targetBlank = false;
+
   //   visible: { type: Boolean, default: true },
-  //   targetBlank: { type: Boolean, default: false },
   //   objectId: { type: Number, default: null, required: false },
   //   objectVersion: { type: Number, default: null, required: false },
 
@@ -55,7 +57,7 @@
   $: field = {
     BooleanField: BooleanField,
     CharField: TextField,
-    TypedChoiceField: TextField,
+    TypedChoiceField: TypedChoiceField,
     DateField: DateField,
     DecimalField: DecimalField,
     EmailField: TextField,
@@ -89,7 +91,7 @@
     {#if formfield.class === "FileField"}
       <FileField {value} {model} {formfield} {fileNotPublic} />
     {:else if formfield.class === "AutoField"}
-      <AutoField {value} />
+      <AutoField {value} {model} {targetBlank} />
     {:else if formfield.class === "DateTimeField"}
       <DateTimeField {value} />
     {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
@@ -98,13 +100,9 @@
       <ArrayField {value} {formfield} />
     {:else if field}
       <svelte:component this={field} {value} {model} {formfield} />
-      <!--  <div>-->
-      <!--    <component-->
-      <!--      :target-blank="targetBlank"-->
+      <!--  old Vue -->
       <!--      :object-id="objectId"-->
       <!--      :object-version="objectVersion"-->
-      <!--    />-->
-      <!--  </div>-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}
