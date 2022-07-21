@@ -1,6 +1,4 @@
-from django.conf import settings
-from django.templatetags.static import static
-from django.utils.html import escape, format_html, format_html_join
+from django.utils.html import escape
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.core import hooks
 from wagtail.core.models import Page
@@ -84,6 +82,7 @@ class MessageAdmin(OrderableMixin, ModelAdmin):
 modeladmin_register(MessageAdmin)
 
 
+# TODO: the following can be removed, yes?
 # GND replace link-handler with legacy-aware handler for now.
 class MyPageLinkHandler(PageLinkHandler):
     @classmethod

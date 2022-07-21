@@ -8,15 +8,15 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from apps.landmatrix.models import Country, Currency
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
     DRAFT_STATUS_CHOICES,
     Version,
     WorkflowInfo,
 )
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import DatasourcesField
-
 from apps.utils import ecma262
 
 
@@ -255,7 +255,7 @@ class Investor(models.Model):
         self, top_investors_only=False, _seen_investors=None
     ) -> Set["Investor"]:
         """
-        Get list of highest parent companies
+        Get list of the highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
         if _seen_investors is None:

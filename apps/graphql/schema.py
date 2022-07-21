@@ -20,7 +20,6 @@ from apps.graphql.resolvers.charts import (
     resolve_deal_aggregations,
     resolve_global_map_of_investments,
 )
-
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
@@ -47,12 +46,12 @@ from apps.graphql.resolvers.investor import (
     resolve_change_investor_status,
     resolve_investor_delete,
 )
-from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
     resolve_countries,
     resolve_regions,
     resolve_chart_descriptions,
     resolve_currencies,
+    resolve_markers,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,

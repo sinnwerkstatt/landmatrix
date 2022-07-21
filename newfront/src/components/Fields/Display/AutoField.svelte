@@ -1,8 +1,10 @@
 <script lang="ts">
+  import classNames from "classnames";
+
   export let value: number;
-  export let model: string;
   export let targetBlank = false;
-  export let objectVersion: number;
+  export let objectVersion: number | null = null;
+  export let model: "deal" | "investor" = "deal";
 
   let href = (model === "deal" ? "/deal/" : "/investor/") + value;
   if (objectVersion) href += "/" + objectVersion;
@@ -10,12 +12,14 @@
 
 <div class="auto_field">
   <a
-    class="inline py-1 px-2 text-white text-xs font-bold text-center whitespace-nowrap align-baseline {model ===
-    'deal'
-      ? 'bg-orange hover:bg-orange-600'
-      : 'bg-pelorous hover:bg-pelorous-600'}"
+    class={classNames(
+      "inline py-1 px-2 text-white text-xs font-bold text-center whitespace-nowrap align-baseline",
+      model === "deal"
+        ? "bg-orange hover:bg-orange-600"
+        : "bg-pelorous hover:bg-pelorous-600 hover:text-pelorous-200"
+    )}
     {href}
-    target={targetBlank ? "_blank" : "_self"}
+    target={targetBlank ? "_blank" : undefined}
   >
     {value}
   </a>

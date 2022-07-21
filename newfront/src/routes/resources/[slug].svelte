@@ -2,8 +2,8 @@
   import type { Load } from "@sveltejs/kit";
   import { pageQuery } from "$lib/queries";
 
-  export const load: Load = async ({ url }) => {
-    const page = await pageQuery(url);
+  export const load: Load = async ({ url, fetch }) => {
+    const page = await pageQuery(url, fetch);
 
     return { props: { page } };
   };
@@ -20,7 +20,7 @@
 <div>
   <PageTitle>{page.title}</PageTitle>
 
-  <div class="container mx-auto">
+  <div class="container mx-auto px-10">
     <div class="meta mb-3">
       <div class="inline-block mr-4">
         <i class="far fa-calendar-alt" />

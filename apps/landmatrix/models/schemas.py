@@ -75,7 +75,6 @@ contracts_schema_def = {
 
 contracts_schema = compile(contracts_schema_def)
 
-
 datasources_schema_def = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "array",
@@ -92,7 +91,6 @@ datasources_schema_def = {
             "old_id": {"type": ["integer", "null"]},
             "old_group_id": {"type": "integer"},
             "type": {
-                "type": "string",
                 "enum": [
                     "",
                     "MEDIA_REPORT",

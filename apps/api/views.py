@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.utils import timezone
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import Deal
+from apps.landmatrix.models.deal import Deal
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
 

@@ -2,6 +2,8 @@ import random
 import string
 
 import sentry_sdk
+
+# noinspection PyPackageRequirements
 from environ.environ import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -32,13 +34,6 @@ sentry_sdk.init(
 )
 
 CELERY_TASK_ALWAYS_EAGER = True
-
-# Recaptcha spam protection for comments
-# https://developers.google.com/recaptcha/docs/faq
-RECAPTCHA_USE_SSL = True
-NOCAPTCHA = True
-RECAPTCHA_PUBLIC_KEY = env("DJANGO_RECAPTCHA_PUBLIC_KEY")
-RECAPTCHA_PRIVATE_KEY = env("DJANGO_RECAPTCHA_PRIVATE_KEY")
 
 HCAPTCHA_SITEKEY = env("DJANGO_HCAPTCHA_SITEKEY")
 HCAPTCHA_SECRETKEY = env("DJANGO_HCAPTCHA_SECRETKEY")

@@ -1,24 +1,23 @@
-from typing import Any
-
 import requests
 from ariadne import ObjectType
 from ariadne.exceptions import HttpError
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import AbstractUser
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode
-from graphql import GraphQLResolveInfo
 
 from apps.editor.models import UserRegionalInfo
 from apps.graphql.resolvers.user_utils import get_user_role
 
-User = auth.get_user_model()
+User: AbstractUser = auth.get_user_model()
 
 
-def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
+# noinspection PyShadowingBuiltins
+def resolve_user(_obj, info, id=None):
     user = info.context["request"].user
     if not user.is_authenticated:
         return
@@ -37,13 +36,16 @@ def resolve_user(obj: Any, info: GraphQLResolveInfo, id=None):
     return user
 
 
-def resolve_users(obj: Any, info: GraphQLResolveInfo, sort):
+def resolve_users(_obj, info, sort):
     current_user = info.context["request"].user
     role = get_user_role(current_user)
     if not role:
         raise HttpError(message="Not allowed")
 
-    users = User.objects.exclude(id=current_user.id).filter(is_active=True)
+    users = User.objects.filter(is_active=True).filter(
+        groups__name__in=["Reporters", "Editors", "Administrators"]
+    )
+    # TODO - we could skip "reporters" here, and manually add the missing Reporter per deal in the frontend
 
     # this is implemented in Python, not in SQL, to support the "full_name"
     reverse = False
@@ -57,17 +59,17 @@ user_type = ObjectType("User")
 
 
 @user_type.field("groups")
-def get_user_groups(obj: User, info: GraphQLResolveInfo):
+def get_user_groups(obj: User, _info):
     return obj.groups.all()
 
 
 @user_type.field("role")
-def get_user_r(obj: User, info: GraphQLResolveInfo):
+def get_user_r(obj: User, _info):
     return get_user_role(obj)
 
 
 @user_type.field("full_name")
-def get_user_full_name(obj: User, info: GraphQLResolveInfo):
+def get_user_full_name(obj: User, _info):
     full_name = (
         f"{obj.first_name} {obj.last_name}".strip()
         if (obj.first_name or obj.last_name)
@@ -109,7 +111,16 @@ def send_activation_email(user, request):
 
 
 def resolve_register(
-    _, info, username, first_name, last_name, email, phone, information, password, token
+    _obj,
+    info,
+    username,
+    first_name,
+    last_name,
+    email,
+    phone,
+    information,
+    password,
+    token,
 ) -> dict:
     hcaptcha_verify = requests.post(
         "https://hcaptcha.com/siteverify",
@@ -143,7 +154,7 @@ def resolve_register(
     # return {"status": False, "error": "Invalid username or password"}
 
 
-def resolve_login(_, info, username, password) -> dict:
+def resolve_login(_obj, info, username, password) -> dict:
     request = info.context["request"]
     user = auth.authenticate(request, username=username, password=password)
     if user:
@@ -152,7 +163,7 @@ def resolve_login(_, info, username, password) -> dict:
     return {"status": False, "error": "Invalid username or password"}
 
 
-def resolve_logout(_, info: GraphQLResolveInfo) -> bool:
+def resolve_logout(_obj, info) -> bool:
     request = info.context["request"]
     if request.user.is_authenticated:
         auth.logout(request)
@@ -160,7 +171,7 @@ def resolve_logout(_, info: GraphQLResolveInfo) -> bool:
     return False
 
 
-def resolve_password_reset(_, info: GraphQLResolveInfo, email) -> bool:
+def resolve_password_reset(_obj, _info, email) -> bool:
     form = PasswordResetForm(data={"email": email})
     if form.is_valid():
         form.save()
@@ -169,7 +180,7 @@ def resolve_password_reset(_, info: GraphQLResolveInfo, email) -> bool:
 
 
 def resolve_password_reset_confirm(
-    _, info: GraphQLResolveInfo, token, new_password1, new_password2
+    _obj, _info, token, new_password1, new_password2
 ) -> bool:
     # This is currently not used. We should probably use a good lib here
     try:

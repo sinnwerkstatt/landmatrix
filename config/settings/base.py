@@ -1,5 +1,4 @@
-import sys
-
+# noinspection PyPackageRequirements
 import environ
 from django.utils.translation import gettext_lazy as _
 
@@ -66,7 +65,6 @@ INSTALLED_APPS = [
     "wagtailorderable",
     "modelcluster",
     "taggit",
-    "captcha",  # TODO delete this after squashing migrations
     #   apps of the actual landmatrix project
     "apps.blog",
     "apps.message",
@@ -155,7 +153,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-
 WAGTAIL_SITE_NAME = "Land Matrix"
 
 MODELTRANSLATION_CUSTOM_FIELDS = ("NoWrapsStreamField",)
@@ -174,7 +171,6 @@ IMPERSONATE = {
     "ALLOW_SUPERUSER": True,
     "REDIRECT_FIELD_NAME": "next",
 }
-
 
 # CELERY SETTINGS
 BROKER_URL = "redis://localhost:6379/0"

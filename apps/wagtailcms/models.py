@@ -1,6 +1,5 @@
 from django import forms
 from django.db import models
-from django.db.models import F, Count, Sum
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -16,9 +15,8 @@ from wagtail.core.models import Page
 from wagtail.core.rich_text import expand_db_html
 
 from apps.blog.models import BlogPage
-from apps.landmatrix.models import Region, Country, Deal
-from apps.landmatrix.models import Region as DataRegion
-from apps.landmatrix.models.country import Country as DataCountry
+from apps.landmatrix.models.country import Region, Country
+from apps.landmatrix.models.deal import Deal
 from apps.wagtailcms.blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,

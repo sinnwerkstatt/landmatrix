@@ -1,9 +1,10 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "graphql-tag";
 
 export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int, $subset: Subset) {
     deal(id: $id, version: $version, subset: $subset) {
       id
+      locations
       # General Info
       ## Land area
       country {
@@ -170,15 +171,17 @@ export const deal_gql_query = gql`
       # Meta
       created_at
       modified_at
+      created_by {
+        id
+        username
+      }
       fully_updated
       fully_updated_at
       confidential
-      confidential_reason
       confidential_comment
       is_public
       not_public_reason
       has_known_investor
-      locations
       contracts
       datasources
       geojson

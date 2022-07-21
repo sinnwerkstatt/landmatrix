@@ -10,13 +10,20 @@
 </script>
 
 <div class="length_field">
-  <button type="button" on:click={(displayDeals = !displayDeals)}>{value.length}</button
-  >
-  {#if displayDeals}
-    <div>
-      {#each value as val (val.id)}
-        <br /> <a href="/deal/{value.id}"> #{val.id}</a>
-      {/each}
-    </div>
+  {#if value.length > 0}
+    <button
+      class="text-orange"
+      type="button"
+      on:click={() => (displayDeals = !displayDeals)}
+    >
+      {value.length}
+    </button>
+    {#if displayDeals}
+      <ul>
+        {#each value as val (val.id)}
+          <li><a href="/deal/{value.id}"> #{val.id}</a></li>
+        {/each}
+      </ul>
+    {/if}
   {/if}
 </div>

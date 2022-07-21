@@ -11,16 +11,13 @@ from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import (
-    Deal,
-    Investor,
-    InvestorVentureInvolvement,
-    Currency,
-    Country,
-)
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.country import Country
 
 # noinspection PyProtectedMember
-from apps.landmatrix.models import _choices
+from apps.landmatrix.models import choices
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -164,7 +161,6 @@ deal_fields = {
     "gender_related_information": "Comment on gender-related info",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
-    "confidential_reason": "Reason",
     "confidential_comment": "Comment on not public",
 }
 
@@ -264,13 +260,11 @@ class Choices:
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
             if name == "crops":
-                self.choices[name] = {k: v["name"] for k, v in _choices.CROPS.items()}
+                self.choices[name] = {k: v["name"] for k, v in choices.CROPS.items()}
             if name == "animals":
-                self.choices[name] = {k: v["name"] for k, v in _choices.ANIMALS.items()}
+                self.choices[name] = {k: v["name"] for k, v in choices.ANIMALS.items()}
             if name == "mineral_resources":
-                self.choices[name] = {
-                    k: v["name"] for k, v in _choices.MINERALS.items()
-                }
+                self.choices[name] = {k: v["name"] for k, v in choices.MINERALS.items()}
         return self.choices[name]
 
 
@@ -364,18 +358,18 @@ def flatten_date_current_value(data, field, fieldname) -> None:
     )
 
 
-def flatten_array_choices(data, field, choices) -> None:
+def flatten_array_choices(data, field, choics) -> None:
     if not data.get(field):
         data[field] = ""
         return
 
-    data[field] = "|".join([choices[x] for x in data[field]])
+    data[field] = "|".join([choics[x] for x in data[field]])
 
 
-def single_choice(data, field, choices) -> None:
+def single_choice(data, field, choics) -> None:
     if not data.get(field):
         return
-    data[field] = choices[data[field]]
+    data[field] = choics[data[field]]
 
 
 def bool_cast(data, field) -> None:
@@ -675,9 +669,11 @@ class DataDownload:
                     if x.get("choices") is not None
                 ]
             )
+        else:
+            data["intention_of_investment"] = ""
 
         flatten_array_choices(
-            data, "nature_of_deal", dict(_choices.NATURE_OF_DEAL_CHOICES)
+            data, "nature_of_deal", dict(choices.NATURE_OF_DEAL_CHOICES)
         )
 
         if data.get("negotiation_status"):
@@ -693,6 +689,8 @@ class DataDownload:
                     for x in data["negotiation_status"]
                 ]
             )
+        else:
+            data["negotiation_status"] = ""
 
         if data.get("implementation_status"):
             data["implementation_status"] = "|".join(
@@ -707,6 +705,8 @@ class DataDownload:
                     for x in data["implementation_status"]
                 ]
             )
+        else:
+            data["implementation_status"] = ""
 
         if data.get("purchase_price"):
             data["purchase_price"] = int(data["purchase_price"])
@@ -715,7 +715,7 @@ class DataDownload:
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
-            data["purchase_price_type"] = dict(_choices.HA_AREA_CHOICES)[
+            data["purchase_price_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["purchase_price_type"]
             ]
         # if data.get("purchase_price_area"):
@@ -728,7 +728,7 @@ class DataDownload:
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
-            data["annual_leasing_fee_type"] = dict(_choices.HA_AREA_CHOICES)[
+            data["annual_leasing_fee_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["annual_leasing_fee_type"]
             ]
         # if data.get("annual_leasing_fee_area"):
@@ -758,15 +758,15 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "recognition_status", dict(_choices.RECOGNITION_STATUS_CHOICES)
+            data, "recognition_status", dict(choices.RECOGNITION_STATUS_CHOICES)
         )
         single_choice(
             data,
             "community_consultation",
-            dict(_choices.COMMUNITY_CONSULTATION_CHOICES),
+            dict(choices.COMMUNITY_CONSULTATION_CHOICES),
         )
         single_choice(
-            data, "community_reaction", dict(_choices.COMMUNITY_REACTION_CHOICES)
+            data, "community_reaction", dict(choices.COMMUNITY_REACTION_CHOICES)
         )
 
         if data.get("involved_actors"):
@@ -775,9 +775,7 @@ class DataDownload:
                     "#".join(
                         [
                             x.get("name", "") or "",
-                            dict(_choices.ACTOR_MAP)[x["role"]]
-                            if x.get("role")
-                            else "",
+                            dict(choices.ACTOR_MAP)[x["role"]] if x.get("role") else "",
                         ]
                     )
                     for x in data["involved_actors"]
@@ -822,22 +820,20 @@ class DataDownload:
         bool_cast(data, "displacement_of_people")
 
         flatten_array_choices(
-            data, "negative_impacts", dict(_choices.NEGATIVE_IMPACTS_CHOICES)
+            data, "negative_impacts", dict(choices.NEGATIVE_IMPACTS_CHOICES)
+        )
+        flatten_array_choices(data, "promised_benefits", dict(choices.BENEFITS_CHOICES))
+        flatten_array_choices(
+            data, "materialized_benefits", dict(choices.BENEFITS_CHOICES)
         )
         flatten_array_choices(
-            data, "promised_benefits", dict(_choices.BENEFITS_CHOICES)
+            data, "former_land_owner", dict(choices.FORMER_LAND_OWNER_CHOICES)
         )
         flatten_array_choices(
-            data, "materialized_benefits", dict(_choices.BENEFITS_CHOICES)
+            data, "former_land_use", dict(choices.FORMER_LAND_USE_CHOICES)
         )
         flatten_array_choices(
-            data, "former_land_owner", dict(_choices.FORMER_LAND_OWNER_CHOICES)
-        )
-        flatten_array_choices(
-            data, "former_land_use", dict(_choices.FORMER_LAND_USE_CHOICES)
-        )
-        flatten_array_choices(
-            data, "former_land_cover", dict(_choices.FORMER_LAND_COVER_CHOICES)
+            data, "former_land_cover", dict(choices.FORMER_LAND_COVER_CHOICES)
         )
 
         bool_cast(data, "has_domestic_use")
@@ -903,14 +899,9 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "source_of_water_extraction", dict(_choices.WATER_SOURCE_CHOICES)
+            data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
-
-        if data.get("confidential_reason"):
-            data["confidential_reason"] = dict(_choices.CONFIDENTIAL_REASON_CHOICES)[
-                data["confidential_reason"]
-            ]
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()

@@ -1,14 +1,3 @@
-import AgricultureIcon from "../../icons/AgricultureIcon.svelte";
-import FoodCropsIcon from "../../icons/FoodCropsIcon.svelte";
-import ForestIcon from "../../icons/ForestIcon.svelte";
-import IndustryIcon from "../../icons/IndustryIcon.svelte";
-import LandSpeculationIcon from "../../icons/LandSpeculationIcon.svelte";
-import LifestockIcon from "../../icons/LifestockIcon.svelte";
-import MiningIcon from "../../icons/MiningIcon.svelte";
-import OilIcon from "../../icons/OilIcon.svelte";
-import PlaneIcon from "../../icons/PlaneIcon.svelte";
-import RenewableEnergyIcon from "../../icons/RenewableEnergyIcon.svelte";
-
 export const implementation_status_choices: { [key: string]: string } = {
   PROJECT_NOT_STARTED: "Project not started",
   STARTUP_PHASE: "Start-up phase (no production)",
@@ -166,10 +155,4 @@ export const combined_status_fn = (
   if ([2, 3].includes(status) && draft_status === null)
     return toString ? "Active" : "ACTIVE";
   throw Error(`Invalid status ${status} ${draft_status}`);
-};
-
-export const confidential_reason_choices = {
-  TEMPORARY_REMOVAL: "Temporary removal from PI after criticism",
-  RESEARCH_IN_PROGRESS: "Research in progress",
-  LAND_OBSERVATORY_IMPORT: "Land Observatory Import",
 };

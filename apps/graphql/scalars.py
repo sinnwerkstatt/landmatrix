@@ -9,7 +9,7 @@ datetime_scalar = ScalarType("DateTime")
 def serialize_datetime(value: datetime) -> str:
     if isinstance(value, datetime):
         return value.isoformat()
-    return value
+    return str(value)
 
 
 geopoint_scalar = ScalarType("GeoPoint")

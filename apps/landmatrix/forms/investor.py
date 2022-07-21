@@ -1,8 +1,8 @@
-from django.forms import ModelForm, IntegerField
+from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
-from apps.landmatrix.models import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
 class InvestorForm(JSONFormOutputMixin, ModelForm):

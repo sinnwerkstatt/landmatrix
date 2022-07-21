@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -48,9 +48,7 @@
           }
         }
       `,
-      variables: {
-        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-      },
+      variables: { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
     });
     investors = data.investors;
   }

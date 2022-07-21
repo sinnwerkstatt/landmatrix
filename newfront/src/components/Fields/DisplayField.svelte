@@ -23,10 +23,11 @@
   import OCIDField from "./Display/OCIDField.svelte";
   import PointField from "./Display/PointField.svelte";
   import StatusField from "./Display/StatusField.svelte";
+  import TypedChoiceField from "./Display/TypedChoiceField.svelte";
 
   export let fieldname: string;
   export let value;
-  export let model = "deal";
+  export let model: "deal" | "investor" = "deal";
 
   export let showLabel = true;
   export let wrapperClasses = "test mb-3 leading-5 flex flex-wrap";
@@ -34,8 +35,9 @@
   export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
 
   export let fileNotPublic = false;
+  export let targetBlank = false;
+
   //   visible: { type: Boolean, default: true },
-  //   targetBlank: { type: Boolean, default: false },
   //   objectId: { type: Number, default: null, required: false },
   //   objectVersion: { type: Number, default: null, required: false },
 
@@ -53,22 +55,14 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
-    ArrayField: ArrayField,
-    AutoField: AutoField,
     BooleanField: BooleanField,
     CharField: TextField,
-    TypedChoiceField: TextField,
-    CountryForeignKey: ForeignKeyField,
-    CurrencyForeignKey: ForeignKeyField,
+    TypedChoiceField: TypedChoiceField,
     DateField: DateField,
-    DateTimeField: DateTimeField,
     DecimalField: DecimalField,
     EmailField: TextField,
-    FileField: FileField,
     FloatField: DecimalField,
-    ForeignKey: ForeignKeyField,
     IntegerField: DecimalField,
-    InvestorForeignKey: ForeignKeyField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
@@ -78,12 +72,10 @@
     JSONLeaseField: JSONLeaseField,
     LengthField: LengthField,
     ManyToManyField: ManyToManyField,
-    ModelChoiceField: ForeignKeyField,
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
     PointField: PointField,
     StatusField: StatusField,
-    SimpleArrayField: ArrayField,
     TextField: TextField,
     URLField: TextField,
   }[formfield.class];
@@ -96,15 +88,21 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if field}
-      <svelte:component this={field} {value} {model} {formfield} {fileNotPublic} />
-      <!--  <div>-->
-      <!--    <component-->
-      <!--      :target-blank="targetBlank"-->
+    {#if formfield.class === "FileField"}
+      <FileField {value} {model} {formfield} {fileNotPublic} />
+    {:else if formfield.class === "AutoField"}
+      <AutoField {value} {model} {targetBlank} />
+    {:else if formfield.class === "DateTimeField"}
+      <DateTimeField {value} />
+    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
+      <ForeignKeyField {value} {formfield} />
+    {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
+      <ArrayField {value} {formfield} />
+    {:else if field}
+      <svelte:component this={field} {value} {model} {formfield} />
+      <!--  old Vue -->
       <!--      :object-id="objectId"-->
       <!--      :object-version="objectVersion"-->
-      <!--    />-->
-      <!--  </div>-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

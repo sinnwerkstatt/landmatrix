@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from django import forms
 from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.exceptions import ValidationError

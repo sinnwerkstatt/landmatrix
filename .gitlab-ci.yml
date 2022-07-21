@@ -10,7 +10,7 @@ variables:
   PRODUCTION_HOST: landmatrix.org
   PRODUCTION_USER: landmatrix
   DJANGO_SETTINGS_MODULE: config.settings.ci
-  DATABASE_URL: "postgis://landmatrix:landmatrix@mdillon__postgis/landmatrix"
+  DATABASE_URL: "postgis://landmatrix:landmatrix@postgres/landmatrix"
 
 stages:
   - test
@@ -38,8 +38,8 @@ tests and coverage:
   stage: test
   interruptible: true
   services:
-#    - kartoza/postgis:12.1
-    - mdillon/postgis:10
+    - name: postgis/postgis:12-3.2
+      alias: postgres
   script:
     - poetry install
     - poetry run doit -n 4 update

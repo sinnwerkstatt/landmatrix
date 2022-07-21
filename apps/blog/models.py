@@ -301,7 +301,7 @@ class BlogPage(Page):
     ]
 
     def get_blog_index(self):
-        # Find closest ancestor which is a blog index
+        # Find the closest ancestor which is a blog index
         return self.get_ancestors().type(BlogIndexPage).last()
 
     def get_context(self, request, *args, **kwargs):

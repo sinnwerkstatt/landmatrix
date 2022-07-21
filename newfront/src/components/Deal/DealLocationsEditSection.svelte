@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { Feature } from "geojson";
-  import type { Layer, Map as LMap } from "leaflet";
-  import { Polyline } from "leaflet";
-  import { GeoJSON, LatLngBounds, Marker, Path } from "leaflet?client";
+  import type { GeoJSONOptions, Layer, Map as LMap } from "leaflet";
+  import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
@@ -24,11 +23,10 @@
   export let locations: Location[] = [];
   export let country: Country;
 
-  let currentHoverFeature: Feature | null;
+  let currentHoverFeature: Feature | null = null;
   let hiddenFeatures: Feature[] = [];
-  let activeFeatureGroup: GeoJSON;
-  let hoverLocationID: string | null;
-  let activeLocationID: string | undefined;
+  let hoverLocationID: string | null = null;
+  let activeLocationID: string | null = null;
   let bigmap: LMap;
 
   let cursorsMovable = false;
@@ -53,9 +51,14 @@
     "": "#ffe600",
   };
 
-  const geojsonOptions = {
+  // type guards
+  const isPath = (layer: Layer): layer is Path => layer instanceof Path;
+  const isMarker = (layer: Layer): layer is Marker => layer instanceof Marker;
+  const isPolygon = (layer): layer is Polygon => layer instanceof Polygon;
+
+  const geojsonOptions: GeoJSONOptions = {
     onEachFeature: (feature: Feature, layer: Layer) => {
-      if (layer instanceof Path) {
+      if (isPath(layer)) {
         layer.addEventListener("mouseover", () => {
           currentHoverFeature = feature;
         });
@@ -64,7 +67,7 @@
         });
       }
 
-      if (layer instanceof Marker) {
+      if (isMarker(layer)) {
         layer.addEventListener("mouseover", () => {
           hoverLocationID = feature.properties?.id;
         });
@@ -81,7 +84,8 @@
           locations = locations;
         });
         layer.addEventListener("click", () => {
-          activeLocationID = locations.find((l) => l.id === feature.properties?.id)?.id;
+          const activeLocation = locations.find((l) => l.id === feature.properties?.id);
+          onActivateLocation(activeLocation);
         });
       }
     },
@@ -92,7 +96,7 @@
       const fg = locationFGs.get(loc.id) ?? _addNewLayerGroup(loc.id);
       fg.clearLayers();
       if (loc.areas) fg.addData(loc.areas);
-      if (loc.point) {
+      if (loc.point && loc.point.lat && loc.point.lng) {
         let pt = new Marker(loc.point).toGeoJSON();
         pt.properties = { id: loc.id }; //, name: loc.name, type: "point" };
         fg.addData(pt);
@@ -100,6 +104,7 @@
     });
     _fitBounds();
     hiddenFeatures = hiddenFeatures; // trigger reevaluation of styling
+    updateLocationVisibility();
   }
 
   function _fitBounds() {
@@ -124,21 +129,30 @@
     return fg;
   }
 
+  function _removeLayerGroup(id: string): void {
+    locationFGs.get(id).clearLayers();
+    locationFGs.delete(id);
+  }
+
   function removeEntry(entry: Location) {
+    // TODO: fix isEmptySubmodel not returning true because of entry.point = {}
     if (isEmptySubmodel(entry)) {
       locations = locations.filter((x) => x.id !== entry.id);
       return;
     }
     const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
-    if (areYouSure === true) locations = locations.filter((x) => x.id !== entry.id);
+    if (areYouSure === true) {
+      locations = locations.filter((x) => x.id !== entry.id);
+      _removeLayerGroup(entry.id);
+    }
   }
 
   function addEntry() {
     const currentIDs = locations.map((x) => x.id.toString());
     const newEntry: Location = { id: newNanoid(currentIDs) };
     locations = [...locations, newEntry];
-    activeLocationID = newEntry.id;
     _updateGeoJSON();
+    onActivateLocation(newEntry);
   }
 
   const onMapReady = (event: CustomEvent<LMap>) => {
@@ -161,22 +175,26 @@
 
   const onActivateLocation = (location: Location) => {
     if (activeLocationID === location.id) {
-      activeLocationID = undefined;
-      return;
+      activeLocationID = null;
+    } else {
+      activeLocationID = location.id;
+      if (!locationFGs.get(activeLocationID)) {
+        _addNewLayerGroup(activeLocationID);
+      }
     }
-    activeLocationID = location.id;
+    updateLocationVisibility();
+  };
 
-    if (!locationFGs.get(activeLocationID)) _addNewLayerGroup(activeLocationID);
-    activeFeatureGroup = locationFGs.get(activeLocationID);
-
+  const updateLocationVisibility = () =>
     locationFGs.forEach((value, key) => {
-      value.eachLayer((l: Layer) => {
-        let relevant_element = l?._icon || l._path;
-        if (key !== activeLocationID) relevant_element.classList.add("leaflet-hidden");
-        else relevant_element.classList.remove("leaflet-hidden");
+      value.eachLayer((layer: Layer) => {
+        if (isMarker(layer) || isPath(layer)) {
+          const element = layer.getElement();
+          if (key !== activeLocationID) element?.classList.add("leaflet-hidden");
+          else element?.classList.remove("leaflet-hidden");
+        }
       });
     });
-  };
 
   const onCountryChange = () =>
     country &&
@@ -187,11 +205,10 @@
 
   const onToggleMarkerMovable = () => {
     cursorsMovable = !cursorsMovable;
-    bigmap.eachLayer((l: Marker) => {
-      if (l?._icon) {
-        console.log(l);
-        if (cursorsMovable) l.dragging.enable();
-        else l.dragging.disable();
+    bigmap.eachLayer((layer: Layer) => {
+      if (isMarker(layer) && layer.dragging) {
+        if (cursorsMovable) layer.dragging.enable();
+        else layer.dragging.disable();
       }
 
       // if (key !== activeLocationID) relevant_element.classList.add("leaflet-hidden");
@@ -205,7 +222,7 @@
       locationFGs
         .get(activeLocationID)
         .getLayers()
-        .filter((layer): layer is Polyline => layer instanceof Polyline)
+        .filter(isPolygon)
         .forEach((layer) => {
           let style = {};
 
@@ -230,7 +247,6 @@
 </script>
 
 <form id="locations">
-  <!--  <pre class="text-[10px]">{JSON.stringify(locations, null, 2)}</pre>-->
   <EditField
     bind:value={country}
     disabled={locations && locations.length > 0}
@@ -246,7 +262,7 @@
       <div class="lg:w-1/3 pr-3">
         {#each locations as loc, index}
           <div
-            class="border {hoverLocationID === loc.id
+            class="border border-4 {hoverLocationID === loc.id
               ? 'border-orange-400'
               : 'border-white'}"
           >
@@ -350,3 +366,14 @@
     </section>
   {/if}
 </form>
+
+<style global>
+  path.leaflet-hidden {
+    display: none;
+  }
+
+  img.leaflet-hidden {
+    opacity: 0.6;
+    filter: saturate(0);
+  }
+</style>

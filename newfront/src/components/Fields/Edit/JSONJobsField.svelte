@@ -88,6 +88,7 @@
             <LowLevelDecimalField
               bind:value={val.jobs}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />
@@ -96,6 +97,7 @@
             <LowLevelDecimalField
               bind:value={val.employees}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />
@@ -104,6 +106,7 @@
             <LowLevelDecimalField
               bind:value={val.workers}
               required={formfield.required}
+              name={formfield.name}
               decimals=""
               unit=""
             />

@@ -52,7 +52,7 @@
 
   function bigMapIsReady(map) {
     if (import.meta.env.SSR) return;
-    console.log("The big map is ready.");
+    // console.log("The big map is ready.");
     bigmap = map.detail;
     bigmap.on("zoomend", () => refreshMap());
     bigmap.on("moveend", () => refreshMap());
@@ -63,12 +63,12 @@
   }
   function refreshMap() {
     if (!bigmap || skipMapRefresh) return;
-    console.log("Clearing layers");
+    // console.log("Clearing layers");
     markersFeatureGroup?.clearLayers();
-    console.log("Clearing layers: done");
+    // console.log("Clearing layers: done");
     if ($deals?.length === 0 || markers.length === 0) return;
 
-    console.log("Refreshing map");
+    // console.log("Refreshing map");
     current_zoom = bigmap.getZoom();
 
     if (current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
@@ -103,7 +103,7 @@
       // cluster by country
       Object.entries(groupBy(markers, (mark) => mark.country_id)).forEach(
         ([key, val]) => {
-          console.log("doing markers for region");
+          // console.log("doing markers for region");
           if (key === "undefined") return;
           let circle = new Marker(country_coords[key], {
             icon: new DivIcon({ className: LMCircleClass }),
@@ -148,13 +148,13 @@
         }
       );
     }
-    console.log("Refreshing map done.");
+    // console.log("Refreshing map done.");
   }
 
   let _dealLocationMarkersCache: { [key: number]: Marker[] } = {};
   async function refreshMarkers() {
     if (import.meta.env.SSR) return;
-    console.log("computing markers ...");
+    // console.log("computing markers ...");
     markers = [];
     for (let deal of $deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
@@ -176,7 +176,7 @@
 
       markers.push(..._dealLocationMarkersCache[deal.id]);
     }
-    console.log(`computing markers: done - ${markers.length}`);
+    // console.log(`computing markers: done - ${markers.length}`);
     refreshMap();
   }
 
@@ -196,7 +196,7 @@
 
   async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
     if (import.meta.env.SSR || !bigmap) return;
-    console.log("Flying to country or region now");
+    // console.log("Flying to country or region now");
     let coords: [number, number] = [0, 0];
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS;
     if (country_id) {
@@ -249,7 +249,7 @@
 
   <div slot="FilterBar">
     <h4>{$_("Map settings")}</h4>
-    <FilterCollapse initExpanded title={$_("Displayed data")}>
+    <FilterCollapse expanded title={$_("Displayed data")}>
       <label class="block">
         <input
           type="radio"
@@ -269,7 +269,7 @@
         {$_("Area (ha)")}
       </label>
     </FilterCollapse>
-    <FilterCollapse initExpanded title={$_("Base layer")}>
+    <FilterCollapse expanded title={$_("Base layer")}>
       {#each baseLayers as layer}
         <label class="block">
           <input
@@ -293,7 +293,7 @@
             class="checkbox-btn"
           />
           {$_(layer.name)}
-          {#if $visibleContextLayers.includes(layer)}
+          {#if $visibleContextLayers.includes(layer.name)}
             <img
               alt="Legend for {layer.name}"
               src={layer.legendUrlFunction()}

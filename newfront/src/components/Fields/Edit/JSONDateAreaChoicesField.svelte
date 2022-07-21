@@ -64,6 +64,7 @@
             <LowLevelDateYearField
               bind:value={val.date}
               required={val.area || val.choices}
+              name={formfield.name}
             />
           </td>
 

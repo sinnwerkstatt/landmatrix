@@ -15,8 +15,8 @@
   {"pk": 10, "model": "auth.user", "fields": {"username": "reporter-2", "first_name": "Reporter 2", "last_name": "Reporter 2", "email": "reporter2@example.com", "password": "pbkdf2_sha256$120000$ZeDbcXSxMpuV$g2edH3quWIjnSRMJxsQHHXruLraQgT0EIsC9QZj0RGo=", "is_superuser": false, "is_staff": false, "is_active": true, "groups": [1], "user_permissions": []}},
 
 
-  {"pk": 1, "model": "editor.userregionalinfo", "fields": {"user": 3, "country": [104], "region": []}},
-  {"pk": 2, "model": "editor.userregionalinfo", "fields": {"user": 4, "country": [], "region": [142]}},
-  {"pk": 3, "model": "editor.userregionalinfo", "fields": {"user": 6, "country": [104], "region": []}},
-  {"pk": 4, "model": "editor.userregionalinfo", "fields": {"user": 7, "country": [], "region": [142]}}
+  {"pk": 1, "model": "editor.userregionalinfo", "fields": {"user": 3, "country": 104, "region": null}},
+  {"pk": 2, "model": "editor.userregionalinfo", "fields": {"user": 4, "country": null, "region": 142}},
+  {"pk": 3, "model": "editor.userregionalinfo", "fields": {"user": 6, "country": 104, "region": null}},
+  {"pk": 4, "model": "editor.userregionalinfo", "fields": {"user": 7, "country": null, "region": 142}}
 ]

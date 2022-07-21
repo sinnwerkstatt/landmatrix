@@ -1,15 +1,15 @@
 from typing import List, Union
 
+from ariadne.graphql import GraphQLError
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from graphql import GraphQLError, GraphQLResolveInfo
 
 from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
-from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
+from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     Investor,
@@ -110,7 +110,7 @@ def change_object_status(
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
-        # if there was a request for improvement workflowinfo, send an email to the requester
+        # if there was a request for improvement workflowinfo, email the requester
         old_wfi = obj.workflowinfos.last()
         if (
             old_wfi.draft_status_before == 2
@@ -365,9 +365,8 @@ def object_delete(
     return True
 
 
-def resolve_toggle_workflow_info_unread(
-    _, info: GraphQLResolveInfo, id: int, type: str
-) -> bool:
+# noinspection PyShadowingBuiltins
+def resolve_toggle_workflow_info_unread(_obj, _info, id: int, type: str) -> bool:
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
         wi.processed_by_receiver = not wi.processed_by_receiver
@@ -381,7 +380,7 @@ def resolve_toggle_workflow_info_unread(
     return False
 
 
-def resolve_object_copy(_, info, otype: OType, obj_id: int) -> dict:
+def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
     user = info.context["request"].user
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion

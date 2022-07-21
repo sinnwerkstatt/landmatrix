@@ -158,8 +158,6 @@ type Deal {
   overall_comment: String
   fully_updated: Boolean!
   confidential: Boolean!
-  confidential_reason: String
-  #confidential_reason_display: String
   confidential_comment: String
 
   #### Calculated fields
@@ -197,7 +195,7 @@ type Deal {
   versions: [DealVersion]
   workflowinfos: [DealWorkflowInfo]
 
-#  comments: [DealComment]
+  #  comments: [DealComment]
 
   # for statistics only
   country_id: Int

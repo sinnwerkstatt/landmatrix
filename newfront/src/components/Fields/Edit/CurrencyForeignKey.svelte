@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { gql } from "@apollo/client/core";
+  import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import { client } from "$lib/apolloClient";
+  import type { FormField } from "$components/Fields/fields";
 
   export let value: number;
+  export let formfield: FormField;
 
   type Currency = {
     id: number;
@@ -28,6 +30,7 @@
     });
     currencies = data.currencies;
   }
+
   getCurrencies();
 </script>
 
@@ -44,6 +47,9 @@
       getOptionLabel={(o) => `${o.name} (${o.code})`}
       getSelectionLabel={(o) => `${o.name} (${o.code})`}
       showChevron
+      inputAttributes={{
+        name: formfield.name,
+      }}
     />
   {/if}
 </div>

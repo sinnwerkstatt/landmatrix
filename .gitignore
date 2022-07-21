@@ -31,7 +31,6 @@ __pycache__/
 
 /templates/vuebase.html
 
-
 # IDEs
 .idea/
 .vscode/

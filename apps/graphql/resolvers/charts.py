@@ -1,12 +1,10 @@
 from collections import defaultdict
-from typing import Any
 
 from django.db import connection
 from django.db.models import Sum, Count, F
-from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import Country
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealTopInvestors, Deal
 
 LONG_COUNTRIES = {
@@ -67,14 +65,12 @@ def _deal_investors(filters=None):
     return {"links": retdings, "relevant_countries": relevant_countries}
 
 
-def resolve_global_map_of_investments(obj: Any, info: GraphQLResolveInfo, filters=None):
-    xx = _deal_investors(filters)
-    return dict(xx["links"])
+def resolve_global_map_of_investments(_obj, _info, filters=None):
+    deal_investors = _deal_investors(filters)
+    return dict(deal_investors["links"])
 
 
-def resolve_web_of_transnational_deals(
-    obj: Any, info: GraphQLResolveInfo, filters=None
-):
+def resolve_web_of_transnational_deals(_obj, _info, filters=None):
     deal_investors = _deal_investors(filters)
     _relevant_countries = deal_investors["relevant_countries"]
 
@@ -114,9 +110,8 @@ def resolve_web_of_transnational_deals(
     }
 
 
-def country_investments_and_rankings(
-    obj: Any, info: GraphQLResolveInfo, id, filters=None
-):
+# noinspection PyShadowingBuiltins
+def country_investments_and_rankings(_obj, _info, id, filters=None):
     deals = Deal.objects.active()
     if filters:
         deals = deals.filter(parse_filters(filters))
@@ -154,7 +149,7 @@ def country_investments_and_rankings(
     }
 
 
-def global_rankings(obj, info, count=10, filters=None):
+def global_rankings(_obj, _info, count=10, filters=None):
     qs = Deal.objects.active()
 
     if filters:
@@ -166,7 +161,7 @@ def global_rankings(obj, info, count=10, filters=None):
     }
 
 
-def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
+def resolve_statistics(_obj, _info, country_id=None, region_id=None):
     from_clause = "FROM landmatrix_deal d"
     where_clause = "WHERE status IN (2,3) AND is_public=True "
 
@@ -215,9 +210,7 @@ def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id
     }
 
 
-def resolve_deal_aggregations(
-    obj: Any, info: GraphQLResolveInfo, fields, subset="PUBLIC", filters=None
-):
+def resolve_deal_aggregations(_obj, info, fields, subset="PUBLIC", filters=None):
     deals = Deal.objects.visible(user=info.context["request"].user, subset=subset)
     if filters:
         deals = deals.filter(parse_filters(filters))

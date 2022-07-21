@@ -12,7 +12,11 @@ type Mutation {
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
   password_reset(email: String!): Boolean!
-  password_reset_confirm(token: String!, new_password1: String, new_password2: String!): Boolean!
+  password_reset_confirm(
+    token: String!
+    new_password1: String
+    new_password2: String!
+  ): Boolean!
 
   add_public_deal_comment(
     id: Int!
@@ -45,7 +49,6 @@ type Mutation {
     id: Int!
     confidential: Boolean!
     version: Int
-    reason: ConfidentialReason
     comment: String
   ): Boolean
 
@@ -70,12 +73,6 @@ type Mutation {
 }
 
 scalar Payload
-
-enum ConfidentialReason {
-  TEMPORARY_REMOVAL
-  RESEARCH_IN_PROGRESS
-  LAND_OBSERVATORY_IMPORT
-}
 
 enum WorkflowTransition {
   TO_DRAFT

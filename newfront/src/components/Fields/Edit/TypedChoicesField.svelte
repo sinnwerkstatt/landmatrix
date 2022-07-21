@@ -24,7 +24,11 @@
       value,
       label,
     }))}
-    name={formfield.name}
+    inputAttributes={{
+      name: formfield.name,
+      // see: https://github.com/rob-balfre/svelte-select/issues/214#issuecomment-1119348374
+      required: required && !value,
+    }}
     isMulti={true}
     hasError={required && !value}
   />
