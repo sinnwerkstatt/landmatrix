@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n";
   import { displayDealsCount } from "$components/Map/map_helper";
 
-  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "";
-  $: displaySize = $displayDealsCount ? "" : "bg-orange text-white";
+  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "bg-white border";
+  $: displaySize = $displayDealsCount ? "bg-white border" : "bg-orange text-white";
 </script>
 
 <div class="text-center flex justify-around mt-8 ">
