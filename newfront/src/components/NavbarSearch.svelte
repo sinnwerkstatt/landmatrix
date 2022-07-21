@@ -142,7 +142,7 @@
         class="relative max-h-[55vh] overflow-y-auto mt-4 pt-2 border-t-orange"
       >
         {#each searchResult as d, i}
-          <li>
+          <li class="my-2 hover:font-bold">
             <a
               href={d.url}
               class={selectedSearchIndex === i
@@ -151,7 +151,7 @@
                   : "bg-orange"
                 : d.investor
                 ? "text-pelorous"
-                : "text-orange"}
+                : "text-pelorous"}
               class:opacity-40={d.is_public === false}
               class:text-white={selectedSearchIndex === i}
             >
