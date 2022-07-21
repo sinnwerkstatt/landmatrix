@@ -751,6 +751,7 @@ class Deal(AbstractDealBase):
     )
     forest_concession = models.BooleanField(default=False)
     transnational = models.BooleanField(null=True)
+    # geojson is a single FeatureCollection object or None (but never a list!)
     geojson = models.JSONField(blank=True, null=True)
 
     """ # Status """
