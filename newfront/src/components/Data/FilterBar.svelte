@@ -153,16 +153,18 @@
         clearable={!!$filters.country_id}
         on:click={() => ($filters.country_id = null)}
       >
-        <select
-          bind:value={$filters.country_id}
-          class="inpt"
-          on:change={() => ($filters.region_id = undefined)}
-        >
-          <option value={undefined} />
-          {#each $countries.filter((c) => c.deals.length > 0) as c}
-            <option value={c.id}>{c.name}</option>
-          {/each}
-        </select>
+        <Select
+          items={$countries.filter((c) => c.deals && c.deals.length > 0)}
+          value={$countries.find((c) => c.id === $filters.country_id)}
+          on:change={(e) => ($filters.country_id = e.detail?.id)}
+          placeholder={$_("Country")}
+          optionIdentifier="id"
+          labelIdentifier="name"
+          getOptionLabel={(o) => `${o.name} (#${o.id})`}
+          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          showChevron
+          {VirtualList}
+        />
       </FilterCollapse>
 
       <FilterCollapse
