@@ -12,6 +12,7 @@
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
   import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
 
   export let deal: Deal;
   export let dealID: number;
@@ -207,3 +208,7 @@
     </div>
   </div>
 </div>
+
+<ManageOverlay bind:visible={showReallyQuitOverlay} title={$_("Quit without saving?")}>
+  <div class="font-medium">{$_("Do you really want to close deal editor?")}</div>
+</ManageOverlay>
