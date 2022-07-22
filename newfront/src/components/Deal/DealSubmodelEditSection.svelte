@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
+  import { dealSubsections } from "$lib/deal_sections";
   import { newNanoid } from "$lib/helpers";
-  import { subsections } from "$lib/sections";
   import type { Contract, DataSource } from "$lib/types/deal";
   import { isEmptySubmodel } from "$lib/utils/data_processing";
   import EditField from "$components/Fields/EditField.svelte";
@@ -17,24 +17,24 @@
   // TODO: build something to filter out empty entries
   // $: _entries = JSON.parse(JSON.stringify(entries));
 
-  $: fields = subsections[model];
+  $: fields = dealSubsections[model];
 
-  let activeEntry: number;
-  $: activeEntry = 0; //entries.length - 1;
+  let activeEntry = -1;
 
   function addEntry() {
     const currentIDs = entries.map((x) => x.id.toString());
     const newEntry = { id: newNanoid(currentIDs) } as Contract | DataSource;
     entries = [...entries, newEntry];
+    activeEntry = entries.length - 1;
   }
 
   function removeEntry(entry: Contract | DataSource) {
-    if (isEmptySubmodel(entry)) {
-      entries = entries.filter((x) => x.id !== entry.id);
-      return;
+    if (!isEmptySubmodel(entry)) {
+      const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+      if (!areYouSure) return;
     }
-    const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
-    if (areYouSure === true) entries = entries.filter((x) => x.id !== entry.id);
+
+    entries = entries.filter((x) => x.id !== entry.id);
   }
 </script>
 
@@ -42,14 +42,20 @@
   <form {id} class="w-full">
     {#each entries as entry, index}
       <div class="{model}-entry">
-        <h3 on:click={() => (activeEntry = activeEntry === index ? -1 : index)}>
-          {index + 1}. {$_(modelName)}
-          <small class="text-sm text-gray-500">#{entry.id}</small>
-          <TrashIcon
-            class="w-6 h-6 text-red-600 float-right cursor-pointer"
-            on:click={() => removeEntry(entry)}
-          />
-        </h3>
+        <div class="flex flex-row justify-between items-center my-2 bg-gray-200">
+          <div
+            class="flex-grow p-2"
+            on:click={() => (activeEntry = activeEntry === index ? -1 : index)}
+          >
+            <h3 class="m-0">
+              {index + 1}. {$_(modelName)}
+              <small class="text-sm text-gray-500">#{entry.id}</small>
+            </h3>
+          </div>
+          <div class="flex-initial p-2" on:click={() => removeEntry(entry)}>
+            <TrashIcon class="w-6 h-8 text-red-600 cursor-pointer" />
+          </div>
+        </div>
         {#if activeEntry === index}
           <div transition:slide={{ duration: 200 }}>
             {#each fields as fieldname}

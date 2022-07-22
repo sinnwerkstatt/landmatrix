@@ -136,14 +136,17 @@
 
   function removeEntry(entry: Location) {
     // TODO: fix isEmptySubmodel not returning true because of entry.point = {}
-    if (isEmptySubmodel(entry)) {
-      locations = locations.filter((x) => x.id !== entry.id);
-      return;
+    if (!isEmptySubmodel(entry)) {
+      const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+      if (!areYouSure) {
+        return;
+      }
     }
-    const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
-    if (areYouSure === true) {
-      locations = locations.filter((x) => x.id !== entry.id);
-      _removeLayerGroup(entry.id);
+
+    locations = locations.filter((x) => x.id !== entry.id);
+    _removeLayerGroup(entry.id);
+    if (entry.id === activeLocationID) {
+      activeLocationID = null;
     }
   }
 
@@ -266,14 +269,17 @@
               ? 'border-orange-400'
               : 'border-white'}"
           >
-            <h3 on:click={() => onActivateLocation(loc)} class="bg-gray-200 p-2">
-              {index + 1}. {$_(modelName)}
-              <small class="text-sm text-gray-500">#{loc.id}</small>
-              <TrashIcon
-                class="w-6 h-8 text-red-600 float-right cursor-pointer"
-                on:click={() => removeEntry(loc)}
-              />
-            </h3>
+            <div class="flex flex-row justify-between items-center my-2 bg-gray-200">
+              <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
+                <h3 class="m-0">
+                  {index + 1}. {$_(modelName)}
+                  <small class="text-sm text-gray-500">#{loc.id}</small>
+                </h3>
+              </div>
+              <div class="flex-initial p-2" on:click={() => removeEntry(loc)}>
+                <TrashIcon class="w-6 h-8 text-red-600 cursor-pointer" />
+              </div>
+            </div>
             {#if activeLocationID === loc.id}
               <div transition:slide={{ duration: 200 }} class="">
                 <EditField
