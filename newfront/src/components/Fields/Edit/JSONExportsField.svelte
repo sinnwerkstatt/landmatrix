@@ -44,12 +44,12 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>{$_("Current")}</th>
-        <th>{$_("Date")}</th>
-        <th>{$_("Area (ha)")}</th>
-        <th>{$_("Choices")}</th>
-        <th>{$_("Yield(tons)")}</th>
-        <th>{$_("Export(%)")}</th>
+        <th class="font-normal">{$_("Current")}</th>
+        <th class="font-normal">{$_("Date")}</th>
+        <th class="font-normal">{$_("Area (ha)")}</th>
+        <th class="font-normal">{$_("Choices")}</th>
+        <th class="font-normal">{$_("Yield(tons)")}</th>
+        <th class="font-normal">{$_("Export(%)")}</th>
         <th />
       </tr>
     </thead>

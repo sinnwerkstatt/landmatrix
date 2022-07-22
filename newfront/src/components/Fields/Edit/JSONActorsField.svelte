@@ -34,8 +34,8 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>{$_("Name")}</th>
-        <th>{$_("Role")}</th>
+        <th class="font-normal">{$_("Name")}</th>
+        <th class="font-normal">{$_("Role")}</th>
       </tr>
     </thead>
     <tbody>
