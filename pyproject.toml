@@ -44,6 +44,7 @@ unicodecsv = "*"
 doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
+django-test-migrations = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
