@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import type { FormField } from "../fields";
@@ -15,15 +16,14 @@
   }
 
   export let formfield: FormField;
-  export let value: Array<JSONJobsField>;
-  let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
+  export let value: Array<JSONJobsField> | null;
 
-  // create valueCopy to avoid overwriting null in db by [] or so
-  let valueCopy: Array<JSONJobsField> = JSON.parse(JSON.stringify(value ?? [{}]));
-  $: filteredValueCopy = valueCopy.filter(
-    (val) => val.date || val.jobs || val.employees || val.workers
+  let valueCopy = createValueCopy(value);
+  let current = valueCopy.map((val) => val.current).indexOf(true) ?? -1;
+  $: value = syncValue(
+    (val) => !!(val.date || val.jobs || val.employees || val.workers),
+    valueCopy
   );
-  $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map((val) => ({ ...val, current: undefined }));
@@ -44,9 +44,6 @@
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
-  <!--{JSON.stringify(current)}-->
-  <!--{JSON.stringify(valueCopy)}-->
-  <!--{JSON.stringify(value)}-->
   <table class="w-full">
     <thead>
       <tr>

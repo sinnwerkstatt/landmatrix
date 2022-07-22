@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import type { FormField } from "../fields";
@@ -17,15 +18,13 @@
   }
 
   export let formfield: FormField;
-  export let value: Array<JSONExportsField>;
-  // let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
+  export let value: Array<JSONExportsField> | null;
 
-  // create valueCopy to avoid overwriting null in db by [] or so
-  let valueCopy: Array<JSONExportsField> = JSON.parse(JSON.stringify(value ?? [{}]));
-  $: filteredValueCopy = valueCopy.filter(
-    (val) => val.date || val.area || val.choices || val.yield || val.export
+  let valueCopy = createValueCopy(value);
+  $: value = syncValue(
+    (val) => !!(val.date || val.area || val.choices || val.yield || val.export),
+    valueCopy
   );
-  $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
 
   function addEntry() {
     valueCopy = [...valueCopy, {}];
