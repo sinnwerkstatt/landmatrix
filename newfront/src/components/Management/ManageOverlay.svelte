@@ -19,7 +19,6 @@
   export let assignToUserInput = false;
   export let toUser: User;
   export let showSubmit = true;
-  export let cancelButtonTitle = "Cancel";
 
   const onSubmit = async () => {
     dispatch("submit", { comment, to_user: toUser });
@@ -27,7 +26,14 @@
   };
 </script>
 
-<Overlay bind:title bind:hideable bind:visible on:submit={onSubmit}>
+<Overlay
+  bind:title
+  bind:hideable
+  bind:visible
+  on:submit={onSubmit}
+  on:close
+  {showSubmit}
+>
   <slot />
 
   {#if commentInput || commentRequired}
@@ -44,11 +50,4 @@
       <UserSelect bind:value={toUser} />
     </div>
   {/if}
-
-  <div slot="footer" class="text-right">
-    <button type="button" class="btn btn-cancel" on:click={() => (visible = false)}>
-      {cancelButtonTitle}
-    </button>
-    {#if showSubmit}<button type="submit" class="btn btn-primary">{title}</button>{/if}
-  </div>
 </Overlay>

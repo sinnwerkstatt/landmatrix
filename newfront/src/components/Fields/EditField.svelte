@@ -28,9 +28,9 @@
   export let model = "deal";
 
   export let showLabel = true;
-  export let wrapperClasses = "mb-3 leading-5 flex flex-wrap";
-  export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
-  export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
+  export let wrapperClasses = "mb-3 leading-5 flex flex-col xl:flex-row";
+  export let labelClasses = "font-medium text-lg mb-1 w-full xl:w-1/3";
+  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-2/3";
   export let disabled = false;
 
   //   fileNotPublic: { type: Boolean, default: false },
@@ -54,7 +54,6 @@
 
   $: field = {
     BooleanField: BooleanField,
-    CharField: CharField,
     CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
@@ -72,9 +71,7 @@
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
     NullBooleanField: BooleanField,
-    OCIDField: CharField,
     SimpleArrayField: SimpleArrayField,
-    TextField: TextField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
   }[formfield.class];
@@ -87,7 +84,13 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if field}
+    {#if formfield.class === "FileField"}
+      <FileField bind:value {model} {formfield} on:change />
+    {:else if formfield.class === "TextField"}
+      <TextField bind:value {formfield} on:change />
+    {:else if ["CharField", "OCIDField"].includes(formfield.class)}
+      <CharField bind:value {formfield} on:change />
+    {:else if field}
       <svelte:component
         this={field}
         bind:value

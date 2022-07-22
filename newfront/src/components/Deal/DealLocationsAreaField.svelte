@@ -191,13 +191,18 @@
   bind:visible={showAddAreaOverlay}
   title={$_("Add GeoJSON")}
   on:close={() => (toAddFiles = undefined)}
+  showSubmit
+  on:submit={uploadFiles}
+  submitDisabled={!toAddFiles || !toAddFiles.length}
 >
-  <div class="mb-2 font-bold">{$_("File")}</div>
-  <input
-    bind:files={toAddFiles}
-    type="file"
-    accept=".geojson,application/geo+json,application/json"
-  />
+  <div class="flex gap-2">
+    <div class="mb-2 font-bold">{$_("File")}</div>
+    <input
+      bind:files={toAddFiles}
+      type="file"
+      accept=".geojson,application/geo+json,application/json"
+    />
+  </div>
 
   <!--  <select bind:value={toAddFeature.type} class="inpt w-auto" required>-->
   <!--    <option value>&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
@@ -205,16 +210,4 @@
   <!--    <option value="contract_area">{$_("Contract area")}</option>-->
   <!--    <option value="intended_area">{$_("Intended area")}</option>-->
   <!--  </select>-->
-
-  <div class="block mt-6 text-right flex items-center">
-    <button
-      type="button"
-      class="btn btn-primary"
-      on:click={uploadFiles}
-      disabled={!toAddFiles || !toAddFiles.length}
-    >
-      <PlusIcon />
-      {$_("Add GeoJSON")}
-    </button>
-  </div>
 </Overlay>

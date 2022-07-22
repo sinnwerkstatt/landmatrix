@@ -1,5 +1,6 @@
 <script>
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
+  import { _ } from "svelte-i18n";
   import { fade, slide } from "svelte/transition";
   import { browser } from "$app/env";
 
@@ -9,6 +10,9 @@
   export let hideable = true;
   export let title = null;
 
+  export let showSubmit = false;
+  export let submitDisabled = false;
+
   function close() {
     if (hideable) {
       dispatch("close");
@@ -17,11 +21,13 @@
   }
 
   function escape_key(e) {
-    if (e.key === "Escape" && hideable) visible = false;
+    if (e.key === "Escape") close();
   }
 
-  onMount(() => browser && document.addEventListener("keydown", escape_key));
-  onDestroy(() => browser && document.removeEventListener("keydown", escape_key));
+  $: if (browser) {
+    if (visible) document.addEventListener("keydown", escape_key);
+    else document.removeEventListener("keydown", escape_key);
+  }
 </script>
 
 {#if visible}
@@ -43,11 +49,17 @@
         <div class="p-7">
           <slot />
         </div>
-        {#if $$slots.footer}
-          <div class="border-t px-7 py-5">
-            <slot name="footer" />
-          </div>
-        {/if}
+
+        <div class="border-t px-7 py-5 text-right">
+          <button type="button" class="btn btn-cancel" on:click={close}>
+            {$_("Cancel")}
+          </button>
+          {#if showSubmit}
+            <button disabled={submitDisabled} type="submit" class="btn btn-primary">
+              {title}
+            </button>
+          {/if}
+        </div>
       </form>
     </div>
   </div>

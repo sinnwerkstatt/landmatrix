@@ -112,21 +112,20 @@
     <div class="w-full self-start ">
       <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <CheckboxSwitch
-        class="text-sm"
+        class="text-base"
         checked={$isDefaultFilter}
         on:change={(val) =>
           val.target.checked
             ? filters.set($filters.empty().default())
             : filters.set($filters.empty())}
-        label={$_("Default filter")}
-      />
+      >
+        {$_("Default filter")}
+      </CheckboxSwitch>
 
       {#if ["ADMINISTRATOR", "EDITOR"].includes($page.stuff.user?.role)}
-        <CheckboxSwitch
-          class="text-sm"
-          bind:checked={$publicOnly}
-          label={$_("Public deals only")}
-        />
+        <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
+          {$_("Public deals only")}
+        </CheckboxSwitch>
       {/if}
 
       <FilterCollapse
