@@ -57,6 +57,10 @@ deploy to staging:
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update dev=True production=True
+      cd newfront/
+      npm ci
+      npm run build
+      sudo /bin/systemctl restart webapp-node-dev.landmatrix.org.service
       sudo /bin/systemctl restart django-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_

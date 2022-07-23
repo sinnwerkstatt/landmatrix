@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite dev",
-    "build": "svelte-kit build",
+    "build": "vite build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
@@ -27,6 +27,7 @@
     "@typescript-eslint/parser": "^5.30.7",
     "autoprefixer": "^10.4.7",
     "classnames": "^2.3.1",
+    "chart.js": "^3.8.0",
     "d3": "^7.6.1",
     "d3-sankey": "^0.12.3",
     "dayjs": "^1.11.4",
