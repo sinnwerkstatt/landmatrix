@@ -42,7 +42,8 @@
 
     <div class="px-4 bg-stone-100 w-full flex flex-col">
       <div class="h-[4rem] flex items-center pl-2 text-lg">
-        {$deals?.length ?? "-"}
+        {$deals?.length ?? "—"}
+        {$deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
       <Table sortBy="fully_updated_at" objects={$deals}>

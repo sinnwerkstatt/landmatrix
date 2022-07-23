@@ -5,6 +5,7 @@ import { client } from "$lib/apolloClient";
 import { data_deal_query_gql } from "$lib/deal_query";
 import { filters, publicOnly } from "$lib/filters";
 import type { Deal } from "$lib/types/deal";
+import type { GQLFilter } from "$lib/types/filters";
 import type { Investor } from "$lib/types/investor";
 
 let dealsDebounceTimeout: NodeJS.Timeout;
@@ -34,80 +35,71 @@ export const deals: Readable<Deal[]> = derived(
   }
 );
 
-// investorFilters() {
-//   if (this.fetchAllInvestors) {
-//     return [];
-//   } else {
-//     /** @type GQLFilter[] */
-//     let filters = [
-//       {
-//         field: "child_deals.id",
-//         operation: "IN",
-//         value: this.deals.map((d) => d.id.toString()),
-//       },
-//     ];
-//
-//     let store_state_filters = this.$store.state.filters;
-//     if (store_state_filters.investor) {
-//       filters.push({
-//         field: "id",
-//         value: store_state_filters.investor.id.toString(),
-//       });
-//     }
-//     if (store_state_filters.investor_country_id) {
-//       filters.push({
-//         field: "country_id",
-//         value: store_state_filters.investor_country_id.toString(),
-//       });
-//     }
-//     return filters;
-//   }
-// }
+export const investors: Readable<Investor[]> = derived(
+  [deals, filters],
+  ([$deals, $filters], set) => {
+    if (!$deals) {
+      set([]);
+      return;
+    }
 
-export const investors: Readable<Investor[]> = derived([filters], ([$filters], set) => {
-  loading.set(true);
-  const query = gql`
-    query Investors($limit: Int!, $filters: [Filter]) {
-      investors(limit: $limit, filters: $filters) {
-        id
-        name
-        country {
+    loading.set(true);
+
+    const dealIDs = $deals.map((d) => d.id);
+    const tooManyDealsHack = $deals.length > 2500;
+    const filters: GQLFilter[] = tooManyDealsHack
+      ? []
+      : [{ field: "child_deals.id", operation: "IN", value: dealIDs }];
+
+    if ($filters.investor) filters.push({ field: "id", value: $filters.investor.id });
+
+    if ($filters.investor_country_id)
+      filters.push({ field: "country_id", value: $filters.investor_country_id });
+
+    const query = gql`
+      query Investors($filters: [Filter]) {
+        investors(limit: 0, filters: $filters) {
           id
           name
+          country {
+            id
+            name
+          }
+          classification
+          homepage
+          opencorporates
+          comment
+          deals {
+            id
+          }
+          status
+          draft_status
+          created_at
+          modified_at
+          is_actually_unknown
         }
-        classification
-        homepage
-        opencorporates
-        comment
-        #involvements
-        deals {
-          id
-        }
-        status
-        draft_status
-        created_at
-        modified_at
-        is_actually_unknown
       }
-    }
-  `;
-  const variables = { limit: 0, filters: $filters.toGQLFilterArray() };
-  if (investorsDebounceTimeout) clearTimeout(investorsDebounceTimeout);
+    `;
+    const variables = { filters };
+    if (investorsDebounceTimeout) clearTimeout(investorsDebounceTimeout);
 
-  investorsDebounceTimeout = setTimeout(() => {
-    get(client)
-      .query<{ investors: Investor[] }>({ query, variables })
-      .then(({ data }) => {
-        console.log("EAVL INVESTORS THEN");
-        loading.set(false);
-        console.log(data.investors);
-        set(data.investors);
-      })
-      .catch(() => {
-        console.log("CATRROR");
-      })
-      .finally(() => {
-        console.log("FINALLY");
-      });
-  }, 300);
-});
+    investorsDebounceTimeout = setTimeout(() => {
+      get(client)
+        .query<{ investors: Investor[] }>({ query, variables })
+        .then(({ data }) => {
+          set(
+            data.investors.filter((investor, index, self) => {
+              // remove duplicates
+              if (self.indexOf(investor) !== index) return false;
+              // filter for deals
+              if (tooManyDealsHack) {
+                return investor.deals?.some((d) => dealIDs.includes(d.id));
+              }
+              return true;
+            })
+          );
+          loading.set(false);
+        });
+    }, 300);
+  }
+);

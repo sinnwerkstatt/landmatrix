@@ -47,7 +47,7 @@
   });
 </script>
 
-<div class="overflow-auto h-full">
+<div class="overflow-auto h-full pb-20">
   <table class="table-auto w-full border-b-2 relative">
     <slot name="thead" />
 

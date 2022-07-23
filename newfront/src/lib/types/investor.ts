@@ -27,17 +27,17 @@ export enum Classification {
 
 export interface Investor extends Obj {
   name: string;
-  classification?: Classification;
+  classification: Classification;
   homepage: string;
   opencorporates: string;
   datasources: DataSource[];
   comment: string;
   involvements: Involvement[];
-  investors?: Involvement[];
-  ventures?: Involvement[];
+  investors: Involvement[];
+  ventures: Involvement[];
   versions: InvestorVersion[];
   workflowinfos: InvestorWorkflowInfo[];
-  deals?: Deal[];
+  deals: Deal[];
   [key: string]: unknown;
 }
 
