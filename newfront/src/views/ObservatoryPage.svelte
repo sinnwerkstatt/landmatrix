@@ -1,6 +1,6 @@
 <script lang="ts">
   import { gql } from "graphql-tag";
-  import Pie from "svelte-chartjs/src/Pie.svelte";
+  import { Pie } from "svelte-chartjs";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
   import { client } from "$lib/apolloClient";

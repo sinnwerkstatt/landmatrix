@@ -51,9 +51,7 @@
     labelIdentifier="name"
     showChevron
     isDisabled={disabled}
-    inputAttributes={{
-      name: formfield.name,
-    }}
+    inputAttributes={{ name: formfield.name }}
   />
   {#if disabled && showHint}
     <span class="absolute text-sm text-gray-500">
