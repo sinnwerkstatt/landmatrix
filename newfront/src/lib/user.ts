@@ -1,5 +1,7 @@
 import { gql } from "graphql-tag";
 import { get } from "svelte/store";
+import type { User } from "$lib/types/user";
+import { UserLevel } from "$lib/types/user";
 import { client } from "./apolloClient";
 
 export async function dispatchLogin(username: string, password: string) {
@@ -36,9 +38,19 @@ export async function dispatchLogin(username: string, password: string) {
   `;
   const variables = { username, password };
   const { data } = await get(client).mutate({ mutation, variables });
-  return data.login;
+  return userWithLevel(data.login);
 }
-
+export function userWithLevel(user: User): User {
+  const me = { ...user };
+  const levelmap = {
+    Administrators: UserLevel.ADMINISTRATOR,
+    Editors: UserLevel.EDITOR,
+    Reporters: UserLevel.REPORTER,
+  };
+  me.level = me.groups?.length >= 1 ? levelmap[me.groups[0].name] : UserLevel.ANYBODY;
+  console.log(me);
+  return me;
+}
 export async function dispatchLogout() {
   const { data } = await get(client).mutate({
     mutation: gql`

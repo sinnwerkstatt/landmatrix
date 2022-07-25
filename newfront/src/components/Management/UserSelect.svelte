@@ -1,5 +1,6 @@
 <script lang="ts">
   import { gql } from "graphql-tag";
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import VirtualList from "svelte-tiny-virtual-list";
@@ -30,7 +31,7 @@
 
     if (typeof value === "number") value = data.users.find((u) => u.id === value);
   }
-  fetchUsers();
+  onMount(fetchUsers);
 </script>
 
 <Select
