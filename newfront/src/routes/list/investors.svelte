@@ -4,20 +4,10 @@
   import { formfields } from "$lib/stores";
   import { showContextBar, showFilterBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
-  import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import Table from "$components/table/Table.svelte";
 
   let columns = ["modified_at", "id", "name", "country", "classification", "deals"];
-
-  const allColumns = [
-    "modified_at",
-    "id",
-    "name",
-    "country",
-    "classification",
-    "deals",
-  ];
 
   showContextBar.set(false);
 </script>
@@ -32,7 +22,8 @@
 
     <div class="px-4 bg-stone-100 w-full flex flex-col">
       <div class="h-[4rem] flex items-center pl-2 text-lg">
-        {$investors?.length ?? "-"}
+        {$investors?.length ?? "—"}
+        {$investors?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
 
       <Table sortBy="modified_at" objects={$investors}>

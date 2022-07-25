@@ -59,7 +59,7 @@
       : object.draft_status === null || object.draft_status === 4
       ? $page.stuff.user.role === "ADMINISTRATOR"
       : isAuthorized($page.stuff.user, object);
-  $: is_deleted = !objectVersion && object?.status === 4;
+  $: isDeleted = !objectVersion && object?.status === 4;
 
   $: deleteTitle = $_(
     objectVersion
@@ -243,7 +243,7 @@
         </div>
       {/if}
       <div class="p-4 flex w-full flew-row gap-4">
-        <div class="grow-[2] basis-0">
+        <div class="flex-auto">
           {#if lastVersion}
             <div class="text-sm mb-4">
               {$_("Last changes")}
@@ -313,7 +313,7 @@
                     class="btn btn-danger"
                     on:click|preventDefault={() => (showDeleteOverlay = true)}
                   >
-                    {#if is_deleted}
+                    {#if isDeleted}
                       {$_("Undelete")}
                     {:else if objectVersion && !object.draft_status}
                       {otype === "deal" ? $_("Delete deal") : $_("Delete investor")}
@@ -323,7 +323,7 @@
                   </button>
                 </div>
                 <div class="inline-block ml-4 italic text-black/50">
-                  {#if is_deleted}
+                  {#if isDeleted}
                     {otype === "deal"
                       ? $_("Reactivate this deal")
                       : $_("Reactivate this investor")}

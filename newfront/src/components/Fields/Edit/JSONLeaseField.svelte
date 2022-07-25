@@ -51,11 +51,11 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>{$_("Current")}</th>
-        <th>{$_("Date")}</th>
-        <th>{$_("Area (ha)")}</th>
-        <th>{$_("Farmers")}</th>
-        <th>{$_("Households")}</th>
+        <th class="font-normal">{$_("Current")}</th>
+        <th class="font-normal">{$_("Date")}</th>
+        <th class="font-normal">{$_("Area (ha)")}</th>
+        <th class="font-normal">{$_("Farmers")}</th>
+        <th class="font-normal">{$_("Households")}</th>
       </tr>
     </thead>
     <tbody>

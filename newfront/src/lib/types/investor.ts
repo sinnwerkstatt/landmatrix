@@ -33,11 +33,11 @@ export interface Investor extends Obj {
   datasources: DataSource[];
   comment: string;
   involvements: Involvement[];
-  investors?: Involvement[];
-  ventures?: Involvement[];
+  investors: Involvement[];
+  ventures: Involvement[];
   versions: InvestorVersion[];
   workflowinfos: InvestorWorkflowInfo[];
-  deals?: Deal[];
+  deals: Deal[];
   [key: string]: unknown;
 }
 

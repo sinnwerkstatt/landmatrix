@@ -50,11 +50,11 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>{$_("Current")}</th>
-        <th>{$_("Date")}</th>
-        <th>{$_("Jobs")}</th>
-        <th>{$_("Employees")}</th>
-        <th>{$_("Workers")}</th>
+        <th class="font-normal">{$_("Current")}</th>
+        <th class="font-normal">{$_("Date")}</th>
+        <th class="font-normal">{$_("Jobs")}</th>
+        <th class="font-normal">{$_("Employees")}</th>
+        <th class="font-normal">{$_("Workers")}</th>
         <th />
       </tr>
     </thead>

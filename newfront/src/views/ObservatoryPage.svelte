@@ -1,6 +1,5 @@
 <script lang="ts">
   import { gql } from "graphql-tag";
-  import Pie from "svelte-chartjs/src/Pie.svelte";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
   import { client } from "$lib/apolloClient";
@@ -10,6 +9,7 @@
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
   import MapDataCharts from "$components/MapDataCharts.svelte";
   import PageTitle from "$components/PageTitle.svelte";
+  import StatusPieChart from "$components/StatusPieChart.svelte";
   import Streamfield from "$components/Streamfield.svelte";
   import ArticleList from "$components/Wagtail/ArticleList.svelte";
   import Twitter from "$components/Wagtail/Twitter.svelte";
@@ -179,16 +179,14 @@
           <div class="text-orange">{$_("Size")}</div>
           <div class=" mb-2">{totalSize} ha</div>
           <div class="mx-auto max-w-[80%]">
-            <Pie data={chartDatSize} options={{ responsive: true, aspectRatio: 1 }} />
-            <!-- <StatusPieChart unit="ha" />-->
+            <StatusPieChart data={chartDatSize} unit="ha" />
           </div>
         </div>
         <div class="text-center">
           <div class="text-orange">{$_("Number of deals")}</div>
           <div class="  mb-2">{totalCount}</div>
           <div class="mx-auto max-w-[80%]">
-            <Pie data={chartDatCount} options={{ responsive: true, aspectRatio: 1 }} />
-            <!-- <StatusPieChart />-->
+            <StatusPieChart data={chartDatCount} />
           </div>
         </div>
       </div>

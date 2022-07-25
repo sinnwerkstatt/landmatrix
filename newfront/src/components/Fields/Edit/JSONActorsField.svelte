@@ -34,8 +34,8 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th>{$_("Name")}</th>
-        <th>{$_("Role")}</th>
+        <th class="font-normal">{$_("Name")}</th>
+        <th class="font-normal">{$_("Role")}</th>
       </tr>
     </thead>
     <tbody>
@@ -49,14 +49,14 @@
               name={formfield.name}
             />
           </td>
-          <div class="typed_choice_field">
+          <td>
             <select bind:value={val.role} class="inpt" name={formfield.name}>
               <option />
               {#each Object.entries(formfield.choices) as [value, label]}
                 <option {value}>{label}</option>
               {/each}
             </select>
-          </div>
+          </td>
 
           <td class="p-1">
             <button type="button" on:click={addEntry}>

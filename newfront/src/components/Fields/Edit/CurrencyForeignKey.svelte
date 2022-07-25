@@ -47,9 +47,7 @@
       getOptionLabel={(o) => `${o.name} (${o.code})`}
       getSelectionLabel={(o) => `${o.name} (${o.code})`}
       showChevron
-      inputAttributes={{
-        name: formfield.name,
-      }}
+      inputAttributes={{ name: formfield.name }}
     />
   {/if}
 </div>

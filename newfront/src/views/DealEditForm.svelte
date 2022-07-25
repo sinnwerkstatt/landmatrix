@@ -41,7 +41,7 @@
   ];
 
   async function saveDeal(hash: string) {
-    const currentForm = document.querySelector(activeTab);
+    const currentForm = document.querySelector<HTMLFormElement>(activeTab);
     console.log(currentForm);
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
