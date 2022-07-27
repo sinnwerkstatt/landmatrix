@@ -1,18 +1,23 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { resolve } from "path";
+import { defineConfig } from "vite";
 import { isoImport } from "vite-plugin-iso-import";
 
-/** @type {import('vite').UserConfig} */
-const config = {
+export default defineConfig({
   plugins: [sveltekit(), isoImport()],
   resolve: {
     alias: {
       $components: resolve("src/components"),
       $views: resolve("src/views"),
-      // $static: resolve("static"),
+      $lib: resolve("src/lib"),
     },
   },
   envDir: "..",
+  test: {
+    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    globals: true,
+    environment: "jsdom",
+  },
   server: {
     port: 3000,
     host: "0.0.0.0",
@@ -30,6 +35,4 @@ const config = {
       "/editor": "http://localhost:8000",
     },
   },
-};
-
-export default config;
+});
