@@ -140,16 +140,10 @@
         class="relative max-h-[55vh] overflow-y-auto mt-4 pt-2 border-t-orange"
       >
         {#each searchResult as d, i}
-          <li class="my-2 hover:font-bold">
+          <li class="group py-1 px-1.5 hover:bg-pelorous transition duration-100">
             <a
               href={d.url}
-              class={selectedSearchIndex === i
-                ? d.investor
-                  ? "bg-pelorous"
-                  : "bg-orange"
-                : d.investor
-                ? "text-pelorous"
-                : "text-pelorous"}
+              class="text-pelorous group-hover:text-white group-hover:font-bold "
               class:opacity-40={d.is_public === false}
               class:text-white={selectedSearchIndex === i}
             >
