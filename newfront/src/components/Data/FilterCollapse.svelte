@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
-  import ChevronUpIcon from "$components/icons/ChevronUpIcon.svelte";
+  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
   import ClearFilter from "$components/icons/ClearFilter.svelte";
 
   export let title: string;
@@ -19,7 +19,7 @@
     on:click={() => (expanded = !expanded)}
   >
     <span class="pr-0">
-      <ChevronUpIcon
+      <ChevronDownIcon
         class="transition-transform transition-duration-300 mr-1 h-3 w-3 inline rounded {expanded
           ? 'rotate-180'
           : ''}"

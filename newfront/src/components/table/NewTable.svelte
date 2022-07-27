@@ -1,18 +1,77 @@
 <script lang="ts">
+  import classNames from "classnames";
   import VirtualList from "svelte-tiny-virtual-list";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
+  import { sortFn } from "$lib/utils";
+  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
 
   export let columns: string[];
-  export let sortBy: string;
-  export let objects: Array<Deal | Investor>;
+  export let labels: string[] | null = null;
+  export let spans: number[] | null = null;
+  export let items: Array<{ [key: string]: unknown }> = [];
+  export let sortBy: string | null = null;
+
+  $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items;
+
+  $: labels = labels ?? columns;
+  $: spans = spans ?? columns.map((col) => 1);
+  $: nCols = spans.reduce((sum, value) => sum + value);
+
+  const onTableHeadClick = (col) => {
+    if (col === sortBy) {
+      sortBy = `-${col}`;
+    } else if (col === `-${sortBy}`) {
+      sortBy = col;
+    } else {
+      sortBy = col;
+    }
+  };
 </script>
 
-<div class="grid">
-  {#each columns as col}
-    <div class="grid">
-      {col}
+<div>
+  <div
+    class="row text-white bg-gray-700 font-medium pr-4 whitespace-nowrap"
+    style="--grid-columns: {nCols};"
+  >
+    {#each columns as col, colIndex}
+      <div
+        class="p-1 col-span-{spans[colIndex]}"
+        on:click={() => onTableHeadClick(col)}
+      >
+        {labels[colIndex]}
+        {#if sortBy === col || sortBy === `-${col}`}
+          <ChevronDownIcon
+            class={classNames(
+              "transition-transform transition-duration-300 h-4 w-4 inline rounded text-orange",
+              sortBy === `-${col}` ? "rotate-180" : ""
+            )}
+          />
+        {/if}
+      </div>
+    {/each}
+  </div>
+  <VirtualList width="100%" height={800} itemCount={sortedItems.length} itemSize={70}>
+    <div
+      slot="item"
+      class="row  odd:bg-white even:bg-gray-50 hover:bg-gray-100"
+      let:index
+      let:style
+      style="--grid-columns: {nCols}; {style}"
+    >
+      {#each columns as fieldName, colIndex}
+        <!-- Testing slots not possible atm: https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
+        <div class="col-span-{spans[colIndex]}" data-testid="{index}-{colIndex}">
+          <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}
+            >{sortedItems[index][fieldName]}</slot
+          >
+        </div>
+      {/each}
     </div>
-  {/each}
-  <!--  <VirtualList ></VirtualList>-->
+  </VirtualList>
 </div>
+
+<style>
+  .row {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  }
+</style>

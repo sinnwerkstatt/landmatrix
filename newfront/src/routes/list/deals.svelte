@@ -6,9 +6,9 @@
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
-  import Table from "$components/table/Table.svelte";
+  import NewTable from "$components/table/NewTable.svelte";
 
-  let columns = [
+  let activeColumns = [
     "fully_updated_at",
     "id",
     "country",
@@ -16,18 +16,23 @@
     "operating_company",
   ];
 
-  const allColumns = [
-    "fully_updated_at",
-    "deal_size",
-    "id",
-    "country",
-    "current_intention_of_investment",
-    "current_negotiation_status",
-    "current_contract_size",
-    "current_implementation_status",
-    "intended_size",
-    "operating_company",
-  ];
+  const allColumnsWithSpan = {
+    fully_updated_at: 2,
+    deal_size: 2,
+    id: 1,
+    country: 3,
+    current_intention_of_investment: 5,
+    current_negotiation_status: 4,
+    current_contract_size: 3,
+    current_implementation_status: 4,
+    intended_size: 2,
+    operating_company: 4,
+  };
+
+  $: labels = activeColumns.map((col) => $formfields.deal[col].label);
+  $: spans = Object.entries(allColumnsWithSpan)
+    .filter(([col, _]) => activeColumns.includes(col))
+    .map(([_, colSpan]) => colSpan);
 
   showContextBar.set(false);
 </script>
@@ -46,36 +51,23 @@
         {$deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
-      <Table sortBy="fully_updated_at" objects={$deals}>
-        <thead slot="thead">
-          <tr>
-            {#each columns as col}
-              <th
-                class="p-1 sticky top-0 text-white bg-gray-700 font-medium whitespace-nowrap"
-                data-sortby={col}
-              >
-                {$_($formfields.deal[col].label)}
-              </th>
-            {/each}
-          </tr>
-        </thead>
-        <tbody slot="tbody" let:objects>
-          {#each objects as obj}
-            <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
-              {#each columns as col}
-                <td class="px-1">
-                  <DisplayField
-                    valueClasses=""
-                    wrapperClasses="py-1"
-                    fieldname={col}
-                    value={obj[col]}
-                  />
-                </td>
-              {/each}
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
+      <NewTable
+        sortBy="-fully_updated_at"
+        items={$deals}
+        columns={activeColumns}
+        {spans}
+        {labels}
+      >
+        <DisplayField
+          slot="field"
+          let:fieldName
+          let:fieldValue
+          wrapperClasses="p-1"
+
+          fieldname={fieldName}
+          value={fieldValue}
+        />
+      </NewTable>
     </div>
     <div
       class="flex-none h-full min-h-[3px] {$showContextBar
@@ -87,9 +79,9 @@
   <div slot="FilterBar">
     <FilterCollapse title={$_("Table columns")}>
       <div class="flex flex-col">
-        {#each allColumns as opt}
+        {#each Object.keys(allColumnsWithSpan) as opt}
           <label>
-            <input type="checkbox" bind:group={columns} value={opt} />
+            <input type="checkbox" bind:group={activeColumns} value={opt} />
             {$_($formfields.deal[opt]?.label)}
           </label>
         {/each}

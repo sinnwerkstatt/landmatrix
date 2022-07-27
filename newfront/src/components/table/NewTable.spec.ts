@@ -1,25 +1,85 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/svelte";
+import { render, screen } from "@testing-library/svelte";
+import userEvent from "@testing-library/user-event";
 import NewTable from "./NewTable.svelte";
 
-test("columns shown in document", () => {
-  const columns = ["hi", "there"];
-  render(NewTable, { columns });
+test("Column labels are shown", () => {
+  const columns = ["col1", "col2"];
+  const labels = ["colName1", "colName2"];
 
-  columns.forEach((col) => {
-    const el = screen.getByText(col);
+  render(NewTable, { columns, labels });
+
+  columns.forEach((col, index) => {
+    const el = screen.getByText(labels[index]);
     expect(el).toBeInTheDocument();
   });
 });
-//
-// // Note: This is as an async test as we are using `fireEvent`
-// test("changes button text on click", async () => {
-//   render(NewTable, { name: "World" });
-//   const button = screen.getByRole("button");
-//
-//   // Using await when firing events is unique to the svelte testing library because
-//   // we have to wait for the next `tick` so that Svelte flushes all pending state changes.
-//   await fireEvent.click(button);
-//
-//   expect(button).toHaveTextContent("Button Clicked");
-// });
+
+describe("Sorting", () => {
+  const columns = ["col1", "col2"];
+  const items = [
+    { col1: 2, col2: "second" },
+    { col1: 1, col2: "first" },
+  ];
+
+  test("Default", () => {
+    render(NewTable, { columns, items });
+
+    expect(screen.getByTestId("0-0")).toHaveTextContent("2");
+    expect(screen.getByTestId("0-1")).toHaveTextContent("second");
+  });
+
+  test("By column", async () => {
+    const user = userEvent.setup();
+
+    render(NewTable, {
+      columns,
+      labels: ["colName1", "colName2"],
+      items,
+      sortBy: "col1",
+    });
+
+    expect(screen.getByTestId("0-0")).toHaveTextContent("1");
+    expect(screen.getByTestId("1-0")).toHaveTextContent("2");
+
+    await user.click(screen.getByText("colName1"));
+    expect(screen.getByTestId("0-0")).toHaveTextContent("2");
+    expect(screen.getByTestId("1-0")).toHaveTextContent("1");
+
+    await user.click(screen.getByText("colName2"));
+    expect(screen.getByTestId("0-1")).toHaveTextContent("first");
+    expect(screen.getByTestId("1-1")).toHaveTextContent("second");
+
+    await user.click(screen.getByText("colName2"));
+    expect(screen.getByTestId("0-1")).toHaveTextContent("second");
+    expect(screen.getByTestId("1-1")).toHaveTextContent("first");
+  });
+});
+
+describe("Column spans", () => {
+  const columns = ["col1", "col2", "col3"];
+  const items = [
+    { col1: 1, col2: "first", col3: true },
+    { col1: 2, col2: "second", col3: false },
+  ];
+
+  test("Default to equal span for all columns", () => {
+    render(NewTable, { columns, items });
+
+    expect(screen.getByTestId("0-0")).toHaveClass("col-span-1");
+    expect(screen.getByTestId("0-1")).toHaveClass("col-span-1");
+    expect(screen.getByTestId("0-2")).toHaveClass("col-span-1");
+  });
+
+  test("Spans are correctly applied when passed as props", () => {
+    render(NewTable, {
+      columns,
+      items,
+      spans: [3, 1, 5],
+    });
+
+    expect(screen.getByTestId("0-0")).toHaveClass("col-span-3");
+    expect(screen.getByTestId("0-1")).toHaveClass("col-span-1");
+    expect(screen.getByTestId("0-2")).toHaveClass("col-span-5");
+  });
+});
