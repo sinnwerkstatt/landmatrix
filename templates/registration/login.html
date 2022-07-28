@@ -34,6 +34,6 @@
 
 {# Assumes you setup the password_reset view in your URLconf #}
 <p>{% trans "Forgot password?" %} <a href="{% url 'password_reset' %}">{% trans "Reset it" %}</a></p>
-<p>{% trans "No registered user yet?" %} <a href="{% url 'registration_register' %}{% if next %}?next={{ next }}{% endif %}">{% trans "Register" %}</a></p>
+<p>{% trans "No registered user yet?" %} <a href="{% url 'django_registration_register' %}{% if next %}?next={{ next }}{% endif %}">{% trans "Register" %}</a></p>
 
 {% endblock %}
