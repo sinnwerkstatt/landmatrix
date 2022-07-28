@@ -161,6 +161,9 @@
   objectVersion={investorVersion}
   otype="investor"
   on:addComment={addComment}
+  on:changeStatus={changeStatus}
+  on:delete={deleteInvestor}
+  on:sendToReview={() => (showSendToReviewOverlay = true)}
 >
   <div slot="heading">
     {investor.name} <small>#{investor.id}</small>

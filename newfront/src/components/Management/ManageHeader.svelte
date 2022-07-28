@@ -14,13 +14,13 @@
 
   export let object: Obj;
   export let objectVersion: number;
-  export let otype = "deal";
+  export let otype: "deal" | "investor" = "deal";
 
   let showToDraftOverlay = false;
   let showDeleteOverlay = false;
   let showSendToActivationOverlay = false;
   let showActivateOverlay = false;
-  let show_new_draft_overlay = false;
+  let showNewDraftOverlay = false;
 
   let lastVersion: ObjVersion;
   $: lastVersion = object.versions[0];
@@ -80,21 +80,20 @@
     showDeleteOverlay = false;
   }
   function sendToDraft({ detail: { comment, to_user } }): void {
-    dispatch("change_status", { transition: "TO_DRAFT", comment, to_user });
+    dispatch("changeStatus", { transition: "TO_DRAFT", comment, to_user });
     showToDraftOverlay = false;
   }
   function sendToActivation({ detail: { comment } }) {
-    dispatch("change_status", { transition: "TO_ACTIVATION", comment });
+    dispatch("changeStatus", { transition: "TO_ACTIVATION", comment });
     showSendToActivationOverlay = false;
   }
   function activate({ detail: { comment } }) {
-    dispatch("change_status", { transition: "ACTIVATE", comment });
+    dispatch("changeStatus", { transition: "ACTIVATE", comment });
     showActivateOverlay = false;
   }
 </script>
 
 <div class="my-6">
-  <!--{JSON.stringify(lastVersion, null, 2)}-->
   <div class="p-0 flex flex-col lg:flex-row">
     <div class="grow-[2] bg-neutral-200">
       <div class="flex justify-center gap-4 -mt-5">
@@ -182,7 +181,7 @@
                     ? $_("Submits the deal for review")
                     : $_("Submits the investor for review")}
                   class="btn btn-pelorous"
-                  on:click={() => dispatch("send_to_review")}
+                  on:click={() => dispatch("sendToReview")}
                 >
                   {$_("Submit for review")}
                 </button>
@@ -281,7 +280,7 @@
                   {:else}
                     <button
                       class="btn btn-primary"
-                      on:click|preventDefault={() => (show_new_draft_overlay = true)}
+                      on:click|preventDefault={() => (showNewDraftOverlay = true)}
                     >
                       {$_("Edit")}
                     </button>
@@ -339,7 +338,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.stuff.user.role === "ADMINISTRATOR" && otype === "deal"}
+            {#if $page.stuff.user.role === "ADMINISTRATOR" && otype === "deal" && object.status !== 1}
               <div class="action-button">
                 <div class="inline-block">
                   <button
@@ -359,12 +358,12 @@
         <slot name="visibility" />
       </div>
     </div>
-    <ManageHeaderLogbook {object} {objectVersion} on:addComment />
+    <ManageHeaderLogbook {object} on:addComment />
   </div>
 </div>
 
 <ManageOverlay
-  bind:visible={show_new_draft_overlay}
+  bind:visible={showNewDraftOverlay}
   title={$_("Create a new draft")}
   commentInput={false}
   on:submit={() => goto(`/${otype}/edit/${object.id}/${objectVersion ?? ""}`)}

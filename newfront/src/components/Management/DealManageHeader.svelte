@@ -167,15 +167,43 @@
         dispatch("reload");
       });
   }
+
+  function addComment({ detail: { comment, send_to_user } }) {
+    $page.stuff.secureApolloClient
+      .mutate({
+        mutation: gql`
+          mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
+            add_deal_comment(
+              id: $id
+              version: $version
+              comment: $comment
+              to_user_id: $to_user_id
+            ) {
+              dealId
+              dealVersion
+            }
+          }
+        `,
+        variables: {
+          id: deal.id,
+          version: dealVersion ?? null,
+          comment: comment,
+          to_user_id: send_to_user?.id,
+        },
+      })
+      .then(() => dispatch("reload"))
+      .catch((error) => console.error(error));
+  }
 </script>
 
 <ManageHeader
   object={deal}
   objectVersion={dealVersion}
-  on:send_to_review={() => (showSendToReviewOverlay = true)}
-  on:change_status={changeStatus}
-  on:delete={deleteDeal}
+  on:addComment={addComment}
+  on:changeStatus={changeStatus}
   on:copy={() => (showCopyOverlay = true)}
+  on:delete={deleteDeal}
+  on:sendToReview={() => (showSendToReviewOverlay = true)}
 >
   <div slot="heading">
     {$_("Deal")} #{deal.id}
@@ -196,24 +224,13 @@
     </div>
 
     {#if isEditable}
-      <div class="confidential-toggle">
-        <CheckboxSwitch
-          checked={deal.confidential}
-          title={$_("Toggle deal confidentiality")}
-          on:change={toggleConfidential}
-        >
-          {deal.confidential ? $_("Confidential") : $_("Not confidential")}
-        </CheckboxSwitch>
-
-        <!--        <a id="confidential-reason">-->
-        <!--          {#if deal.confidential}-->
-        <!--            <span>({$_("reason")})</span>-->
-        <!--          {/if}-->
-        <!--        </a>-->
-        <!--          <b-tooltip target="confidential-reason" triggers="click">-->
-        <!--            { deal.confidential_comment }-->
-        <!--          </b-tooltip>-->
-      </div>
+      <CheckboxSwitch
+        checked={deal.confidential}
+        title={deal.confidential_comment}
+        on:change={toggleConfidential}
+      >
+        {deal.confidential ? $_("Confidential") : $_("Not confidential")}
+      </CheckboxSwitch>
     {/if}
     <ul>
       {#if !isEditable}
@@ -235,7 +252,7 @@
       </li>
 
       <li class="flex items-center gap-1 whitespace-nowrap">
-        {#if deal.datasources.length > 0}
+        {#if deal.datasources?.length > 0}
           <CheckIcon class="h-4 w-4 mx-1" />
           {$_("At least one data source")} ({deal.datasources.length})
         {:else}
