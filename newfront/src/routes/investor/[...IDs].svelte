@@ -31,6 +31,7 @@
   import { loading } from "$lib/data";
   import { Role } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user.js";
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
@@ -60,8 +61,8 @@
   $: tabs = [
     { target: "#general", name: $_("General info") },
     { target: "#involvements", name: $_("Involvements") },
-    { target: "#deal_involvements", name: $_("Deal Involvements") },
-    { target: "#actions", name: $_("Actions") },
+    { target: "#data_sources", name: $_("Data sources") },
+    { target: "#history", name: $_("Version History") },
   ];
 
   async function reloadInvestor() {
@@ -117,7 +118,7 @@
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-20 border-orange {activeTab === target
+            class="py-2 pr-20 border-orange whitespace-nowrap {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -138,8 +139,8 @@
       {/if}
       {#if activeTab === "#involvements"}
         <h3>{$_("Involvements")} ({simple_involvements.length})</h3>
-        <table class="table-auto w-full border-b-2 relative">
-          <thead>
+        <table class="table-auto w-full relative mb-20">
+          <thead class="border-b-2 ">
             <tr>
               <th>{$_("Investor ID")}</th>
               <th>{$_("Name")}</th>
@@ -202,56 +203,53 @@
             {/each}
           </tbody>
         </table>
-      {/if}
-      {#if activeTab === "#deal_involvements"}
-        <!--{#if investor.deals?.length > 0}-->
-        <h3>
-          {$_("Deals (Involvements as Operating company)")} ({investor.deals.length})
-        </h3>
 
-        <table class="table-auto w-full border-b-2 relative">
-          <thead>
-            <tr>
-              <th>{$_("Deal ID")}</th>
-              <th>{$_("Target country")}</th>
-              <th>{$_("Intention of investment")}</th>
-              <th>{$_("Current negotiation status")}</th>
-              <th>{$_("Current implementation status")}</th>
-              <th>{$_("Deal size")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each investor.deals as deal}
+        {#if investor.deals?.length > 0}
+          <h3>
+            {$_("Deals (Involvements as Operating company)")} ({investor.deals.length})
+          </h3>
+
+          <table class="table-auto w-full  relative">
+            <thead class="border-b-2">
               <tr>
-                {#each ["id", "country", "current_intention_of_investment", "current_negotiation_status", "current_implementation_status", "deal_size"] as field}
-                  <td>
-                    <DisplayField
-                      showLabel={false}
-                      value={deal[field]}
-                      valueClasses=""
-                      wrapperClasses=""
-                      fieldname={field}
-                    />
-                  </td>
-                {/each}
+                <th>{$_("Deal ID")}</th>
+                <th>{$_("Target country")}</th>
+                <th>{$_("Intention of investment")}</th>
+                <th>{$_("Current negotiation status")}</th>
+                <th>{$_("Current implementation status")}</th>
+                <th>{$_("Deal size")}</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
-        <!--{/if}-->
+            </thead>
+            <tbody>
+              {#each investor.deals as deal}
+                <tr>
+                  {#each ["id", "country", "current_intention_of_investment", "current_negotiation_status", "current_implementation_status", "deal_size"] as field}
+                    <td>
+                      <DisplayField
+                        showLabel={false}
+                        value={deal[field]}
+                        valueClasses=""
+                        wrapperClasses=""
+                        fieldname={field}
+                      />
+                    </td>
+                  {/each}
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {/if}
       {/if}
-      {#if activeTab === "#actions"}
+      {#if activeTab === "#data_sources"}
+        <DealSubmodelSection
+          model="datasource"
+          modelName="Data source"
+          entries={investor.datasources}
+        />
+      {/if}
+      {#if activeTab === "#history"}
         <section>
-          <h3>{$_("Download")}</h3>
-
-          <a target="_blank" href={download_link("xlsx")}>
-            <DownloadIcon />
-            {$_("Excel document")}
-          </a><br />
-          <a target="_blank" href={download_link("csv")}>
-            <DownloadIcon />
-            {$_("CSV file")}
-          </a>
+          <h3>{$_("Version history")}</h3>
         </section>
       {/if}
     </div>
