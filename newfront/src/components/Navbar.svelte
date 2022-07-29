@@ -154,7 +154,7 @@
       <ul class="flex items-center ml-auto">
         <NavbarSearch />
 
-        <NavDropDown placement="bottom-end">
+        <NavDropDown placement="right-0">
           <div slot="title" class="whitespace-nowrap flex items-center gap-1">
             <TranslateIcon class="h-4 w-4 inline" />
             {languages[language]}
@@ -176,7 +176,7 @@
         </NavDropDown>
 
         {#if user}
-          <NavDropDown placement="bottom-end">
+          <NavDropDown placement="right-0">
             <div slot="title" class="whitespace-nowrap flex items-center gap-1">
               {user.initials}
               {#if user.level === UserLevel.ADMINISTRATOR}
@@ -235,7 +235,7 @@
             </div>
           </NavDropDown>
         {:else}
-          <NavDropDown placement="bottom-end">
+          <NavDropDown placement="right-0">
             <div slot="title" class="whitespace-nowrap" title="Login/Register">
               <UserRegular class="h-4 w-4 inline mx-1" />
             </div>

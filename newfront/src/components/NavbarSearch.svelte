@@ -1,4 +1,5 @@
 <script lang="ts">
+  import classNames from "classnames";
   import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -116,7 +117,7 @@
   // },
 </script>
 
-<NavDropDown>
+<NavDropDown placement="right-0">
   <div slot="title">
     <SearchIcon class="h-5 w-5 mr-2" />
   </div>
@@ -140,10 +141,15 @@
         class="relative max-h-[55vh] overflow-y-auto mt-4 pt-2 border-t-orange"
       >
         {#each searchResult as d, i}
-          <li class="group py-1 px-1.5 hover:bg-pelorous transition duration-100">
+          <li
+            class={classNames(
+              "py-1 px-1.5 !hover:text-white transition duration-100",
+              d.investor ? "hover:bg-pelorous" : "hover:bg-orange"
+            )}
+          >
             <a
               href={d.url}
-              class="text-pelorous group-hover:text-white group-hover:font-bold "
+              class={d.investor ? "text-pelorous" : "text-orange"}
               class:opacity-40={d.is_public === false}
               class:text-white={selectedSearchIndex === i}
             >
@@ -155,3 +161,9 @@
     {/if}
   </div>
 </NavDropDown>
+
+<style>
+  li:hover > a {
+    color: white !important;
+  }
+</style>
