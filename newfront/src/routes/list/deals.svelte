@@ -6,7 +6,7 @@
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
-  import NewTable from "$components/table/NewTable.svelte";
+  import Table from "$components/table/Table.svelte";
 
   let activeColumns = [
     "fully_updated_at",
@@ -51,7 +51,7 @@
         {$deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
-      <NewTable
+      <Table
         sortBy="-fully_updated_at"
         items={$deals}
         columns={activeColumns}
@@ -67,7 +67,7 @@
           fieldname={fieldName}
           value={fieldValue}
         />
-      </NewTable>
+      </Table>
     </div>
     <div
       class="flex-none h-full min-h-[3px] {$showContextBar

@@ -1,13 +1,13 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import NewTable from "./NewTable.svelte";
+import Table from "./Table.svelte";
 
 test("Column labels are shown", () => {
   const columns = ["col1", "col2"];
   const labels = ["colName1", "colName2"];
 
-  render(NewTable, { columns, labels });
+  render(Table, { columns, labels });
 
   columns.forEach((col, index) => {
     const el = screen.getByText(labels[index]);
@@ -23,7 +23,7 @@ describe("Sorting", () => {
   ];
 
   test("Default", () => {
-    render(NewTable, { columns, items });
+    render(Table, { columns, items });
 
     expect(screen.getByTestId("0-0")).toHaveTextContent("2");
     expect(screen.getByTestId("0-1")).toHaveTextContent("second");
@@ -32,7 +32,7 @@ describe("Sorting", () => {
   test("By column", async () => {
     const user = userEvent.setup();
 
-    render(NewTable, {
+    render(Table, {
       columns,
       labels: ["colName1", "colName2"],
       items,
@@ -64,7 +64,7 @@ describe("Column spans", () => {
   ];
 
   test("Default to equal span for all columns", () => {
-    render(NewTable, { columns, items });
+    render(Table, { columns, items });
 
     expect(screen.getByTestId("0-0")).toHaveClass("col-span-1");
     expect(screen.getByTestId("0-1")).toHaveClass("col-span-1");
@@ -72,7 +72,7 @@ describe("Column spans", () => {
   });
 
   test("Spans are correctly applied when passed as props", () => {
-    render(NewTable, {
+    render(Table, {
       columns,
       items,
       spans: [3, 1, 5],
