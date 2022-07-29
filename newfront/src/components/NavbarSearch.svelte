@@ -121,7 +121,7 @@
   <div slot="title">
     <SearchIcon class="h-5 w-5 mr-2" />
   </div>
-  <div class="border border-orange bg-white py-2 px-4">
+  <div class="border border-orange bg-white dark:bg-gray-800 py-2 px-4">
     <form>
       <label for="search" class="whitespace-nowrap flex flex-col">
         {$_("Search deals and investors")}

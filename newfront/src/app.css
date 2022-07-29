@@ -51,7 +51,7 @@
   }
 
   h3 {
-    @apply text-lm-dark text-[22px] my-5 font-bold;
+    @apply text-lm-dark dark:text-gray-200 text-[22px] my-5 font-bold;
   }
   h3 a {
     @apply text-lm-dark;
@@ -81,6 +81,7 @@
     @apply bg-white text-orange border-orange;
     @apply hover:bg-orange-300 hover:text-white hover:border-orange-300;
     @apply active:bg-orange-700;
+    @apply dark:bg-gray-900 dark:text-orange-200;
   }
 
   .btn-white {
@@ -111,6 +112,7 @@
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
     @apply border border-gray-300 py-1.5 px-3 bg-white w-full text-black;
+    @apply dark:bg-gray-600 dark:text-white dark:border-gray-500;
   }
   textarea.inpt,
   select[multiple].inpt {

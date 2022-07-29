@@ -57,7 +57,9 @@
   }
 </script>
 
-<nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex px-2">
+<nav
+  class="sticky top-0 z-[1030] bg-white dark:bg-gray-800 border-b-8 border-orange flex px-2"
+>
   <div class="mx-6 w-full lg:container lg:mx-auto flex justify-between p-1">
     <a class="mt-1 mr-6" href="/">
       <img
@@ -89,7 +91,7 @@
     <div class="hidden w-full flex-grow items-center lg:flex lg:w-auto">
       <ul class="flex w-full items-center">
         <NavDropDown title={$_("Data")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each dataLinks as { name, href }}
               <li class="whitespace-nowrap">
                 <a {href} class="nav-link">
@@ -101,7 +103,9 @@
         </NavDropDown>
 
         <NavDropDown title={$_("Observatories")}>
-          <div class="divide-y divide-solid border border-orange bg-white">
+          <div
+            class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+          >
             {#each Object.values(observatoriesGroups) as obs}
               <ul>
                 {#each obs as observatory}
@@ -117,7 +121,7 @@
         </NavDropDown>
 
         <NavDropDown title={$_("Resources")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $blogCategories as cat}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/resources/?category={cat.slug}">
@@ -129,7 +133,7 @@
         </NavDropDown>
 
         <NavDropDown title={$_("About")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $aboutPages as { title, meta }}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/about/{meta.slug}/">
@@ -140,12 +144,12 @@
           </ul>
         </NavDropDown>
 
-        <li class="nav-item">
+        <li>
           <a class="nav-link" href="/faq/">
             {$_("FAQ")}
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a class="nav-link" href="/contribute/">
             {$_("Contribute")}
           </a>
@@ -160,7 +164,7 @@
             {languages[language]}
           </div>
 
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each Object.entries(languages) as [lcode, lingo]}
               <li class="whitespace-nowrap">
                 <a
@@ -181,20 +185,19 @@
               {user.initials}
               {#if user.level === UserLevel.ADMINISTRATOR}
                 <UserAstronautSolid class="h-4 w-4 inline" />
-                <i class="fas fa-user-astronaut" />
               {:else if user.level === UserLevel.EDITOR}
                 <UserNurseSolid class="h-4 w-4 inline" />
-                <i class="fas fa-user-nurse" />
               {:else if user.is_impersonate}
                 <UserSecretSolid class="h-4 w-4 inline" />
-                <i class="fa fa-user-secret" />
               {:else}
-                <i class="fa fa-user" />
+                <UserRegular class="h-4 w-4 inline" />
               {/if}
             </div>
 
-            <div class="divide-y divide-solid border border-orange bg-white">
-              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
+            <div
+              class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+            >
+              <p class="pt-2 pl-2 text-gray-400 leading-5 mb-2 whitespace-nowrap">
                 {user.full_name}
                 <br />
                 <small>{user?.role ? $_(user?.role) : ""}</small>
@@ -239,7 +242,9 @@
             <div slot="title" class="whitespace-nowrap" title="Login/Register">
               <UserRegular class="h-4 w-4 inline mx-1" />
             </div>
-            <div class="divide-y divide-solid border border-orange bg-white">
+            <div
+              class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+            >
               <form on:submit|preventDefault={login} class="px-4 pt-3 space-y-2">
                 <input
                   autocomplete="username"
@@ -284,8 +289,8 @@
 
 <style>
   :global(.nav-link) {
-    @apply px-4 py-2 block text-black;
-    @apply hover:bg-gray-200;
+    @apply px-4 py-2 block text-black dark:text-white;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-600;
     @apply active:bg-orange active:text-white;
   }
   :global(.nav-link.active) {

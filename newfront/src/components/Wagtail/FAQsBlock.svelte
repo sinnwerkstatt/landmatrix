@@ -18,9 +18,15 @@
 
 <div data-block="faqs_block" class="border border-gray-400">
   {#each value.faqs as faq}
-    <div class="bg-gray-50 border-b border-gray-400">
+    <div
+      class="bg-gray-50 border-b border-gray-400 dark:bg-gray-600 cursor-pointer"
+      on:click={() => updateHash(`#${faq.slug}`)}
+    >
       <div class="py-4 px-6">
-        <button class="text-orange" on:click={() => updateHash(`#${faq.slug}`)}>
+        <button
+          class="text-orange"
+          on:click|stopPropagation={() => updateHash(`#${faq.slug}`)}
+        >
           {faq.question}
         </button>
       </div>
@@ -28,7 +34,7 @@
         <div
           transition:slide
           id="collapse-{faq.slug}"
-          class="bg-white border-t border-gray-400 p-4"
+          class="bg-white dark:bg-gray-600 border-t border-gray-400 p-4"
         >
           <div class="card-body">{@html faq.answer}</div>
         </div>
