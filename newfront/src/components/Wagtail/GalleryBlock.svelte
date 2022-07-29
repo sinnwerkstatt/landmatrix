@@ -11,7 +11,7 @@
   $: galleryColumns = cols_map[value.columns] ?? "grid-cols-1";
 </script>
 
-<div class="grid gap-4 {galleryColumns}">
+<div data-block="gallery" class="grid gap-4 {galleryColumns}">
   {#each value.images as image}
     <div class="col">
       <ImageBlock value={image} />

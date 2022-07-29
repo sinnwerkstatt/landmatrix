@@ -5,4 +5,6 @@
   export let value: { articles: BlogPage[] };
 </script>
 
-<ArticleList articles={value.articles} />
+<div data-block="resources_teasers">
+  <ArticleList articles={value.articles} />
+</div>

@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="border border-gray-400">
+<div data-block="faqs_block" class="border border-gray-400">
   {#each value.faqs as faq}
     <div class="bg-gray-50 border-b border-gray-400">
       <div class="py-4 px-6">

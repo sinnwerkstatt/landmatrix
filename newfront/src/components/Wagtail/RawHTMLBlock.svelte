@@ -2,4 +2,4 @@
   export let value: string;
 </script>
 
-<div>{@html value}</div>
+<div data-block="html">{@html value}</div>

@@ -6,15 +6,13 @@
   };
 </script>
 
-<template>
-  <h3>
-    {#if value.url}
-      <a href={value.url}>
-        <i class="fa fa-{value.fa_icon}" />
-        {value.value}
-      </a>
-    {:else}
-      <i class="fa fa-{value.fa_icon}" /> {value.value}
-    {/if}
-  </h3>
-</template>
+<h3 data-block="heading">
+  {#if value.url}
+    <a href={value.url}>
+      <i class="fa fa-{value.fa_icon}" />
+      {value.value}
+    </a>
+  {:else}
+    <i class="fa fa-{value.fa_icon}" /> {value.value}
+  {/if}
+</h3>
