@@ -8,6 +8,7 @@
     fetchBasis,
     observatoryPages,
   } from "$lib/stores";
+  import { UserLevel } from "$lib/types/user";
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import { dispatchLogin, dispatchLogout } from "$lib/user";
   import TranslateIcon from "$components/icons/TranslateIcon.svelte";
@@ -178,10 +179,10 @@
           <NavDropDown placement="bottom-end">
             <div slot="title" class="whitespace-nowrap flex items-center gap-1">
               {user.initials}
-              {#if user.role === "ADMINISTRATOR"}
+              {#if user.level === UserLevel.ADMINISTRATOR}
                 <UserAstronautSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-astronaut" />
-              {:else if user.role === "EDITOR"}
+              {:else if user.level === UserLevel.EDITOR}
                 <UserNurseSolid class="h-4 w-4 inline" />
                 <i class="fas fa-user-nurse" />
               {:else if user.is_impersonate}

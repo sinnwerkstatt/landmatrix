@@ -6,6 +6,7 @@
   import { page } from "$app/stores";
   import { isAuthorized } from "$lib/helpers";
   import type { Obj, ObjVersion } from "$lib/types/generics";
+  import { UserLevel } from "$lib/types/user";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
   import ManageHeaderLogbook from "./ManageHeaderLogbook.svelte";
@@ -36,7 +37,7 @@
     (!objectVersion && object.status === 4) || isActiveWithDraft
       ? false
       : object.draft_status === 4
-      ? $page.stuff.user.role === "ADMINISTRATOR"
+      ? $page.stuff.user.level === UserLevel.ADMINISTRATOR
       : isAuthorized($page.stuff.user, object);
 
   let isOldDraft: boolean;
@@ -57,7 +58,7 @@
     isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
-      ? $page.stuff.user.role === "ADMINISTRATOR"
+      ? $page.stuff.user.level === UserLevel.ADMINISTRATOR
       : isAuthorized($page.stuff.user, object);
   $: isDeleted = !objectVersion && object?.status === 4;
 
@@ -338,7 +339,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.stuff.user.role === "ADMINISTRATOR" && otype === "deal" && object.status !== 1}
+            {#if $page.stuff.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
               <div class="action-button">
                 <div class="inline-block">
                   <button

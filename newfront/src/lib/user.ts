@@ -42,13 +42,19 @@ export async function dispatchLogin(username: string, password: string) {
 }
 export function userWithLevel(user: User): User {
   const me = { ...user };
-  const levelmap = {
+  const levelmap: { [key: string]: UserLevel } = {
     Administrators: UserLevel.ADMINISTRATOR,
     Editors: UserLevel.EDITOR,
     Reporters: UserLevel.REPORTER,
   };
-  me.level = me.groups?.length >= 1 ? levelmap[me.groups[0].name] : UserLevel.ANYBODY;
-  console.log(me);
+
+  let level = UserLevel.ANYBODY;
+  if (me.groups)
+    me.groups?.forEach((g) => {
+      level = Math.max(UserLevel.ANYBODY, levelmap[g.name]);
+    });
+  me.level = level;
+
   return me;
 }
 export async function dispatchLogout() {
