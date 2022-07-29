@@ -181,6 +181,11 @@ class LinkedImageBlock(ExternalLinkMixin, StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label="URL")
     caption = RichTextBlock(required=False)
+    lightbox = blocks.BooleanBlock(
+        required=False,
+        default=False,
+        help_text="When selected, this image becomes clickable to show a maximized version.<br/>Beware: combining this with the URL will not work.",
+    )
 
     class Meta:
         icon = "image"
