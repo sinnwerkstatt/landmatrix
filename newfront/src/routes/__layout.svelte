@@ -10,6 +10,8 @@
   import { i18nload } from "$lib/i18n/i18n";
   import { fetchBasis } from "$lib/stores";
   import type { User } from "$lib/types/user";
+  import { UserLevel } from "$lib/types/user";
+  import { userWithLevel } from "$lib/user";
 
   function getApolloClient(session) {
     if (!session.cookie) {
@@ -54,7 +56,7 @@
         }
       `,
     });
-    return data.me;
+    return userWithLevel(data.me);
   }
 
   export const load: Load = async ({ params, session }) => {

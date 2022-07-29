@@ -9,6 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode
+from graphql import GraphQLError
 
 from apps.editor.models import UserRegionalInfo
 from apps.graphql.resolvers.user_utils import get_user_role
@@ -40,7 +41,7 @@ def resolve_users(_obj, info, sort):
     current_user = info.context["request"].user
     role = get_user_role(current_user)
     if not role:
-        raise HttpError(message="Not allowed")
+        raise GraphQLError(message="Not allowed")
 
     users = User.objects.filter(is_active=True).filter(
         groups__name__in=["Reporters", "Editors", "Administrators"]

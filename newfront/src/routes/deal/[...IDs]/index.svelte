@@ -29,6 +29,7 @@
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
   import { dealSections } from "$lib/deal_sections";
+  import { UserLevel } from "$lib/types/user";
   import DealHistory from "$components/Deal/DealHistory.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
   import DealSection from "$components/Deal/DealSection.svelte";
@@ -90,7 +91,7 @@
 </svelte:head>
 
 <div class="container mx-auto min-h-full">
-  {#if $page.stuff.user?.is_authenticated}
+  {#if $page.stuff.user?.level > UserLevel.ANYBODY}
     <DealManageHeader {deal} {dealVersion} on:reload={reloadDeal} />
   {:else}
     <div class="md:flex md:flex-row md:ju<stify-between">

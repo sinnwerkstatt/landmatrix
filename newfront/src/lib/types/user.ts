@@ -10,7 +10,14 @@ interface Group {
   name: string;
 }
 
-interface User {
+export enum UserLevel {
+  ANYBODY,
+  REPORTER,
+  EDITOR,
+  ADMINISTRATOR,
+}
+
+export interface User {
   id: number;
   username: string;
   first_name: string;
@@ -27,4 +34,5 @@ interface User {
   groups?: Group[];
   role: string;
   bigrole?: string;
+  level: UserLevel;
 }
