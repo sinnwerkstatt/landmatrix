@@ -3,4 +3,5 @@ export interface BlockImage {
   url: string;
   caption?: string;
   external?: boolean;
+  lightbox?: boolean;
 }
