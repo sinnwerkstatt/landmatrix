@@ -41,6 +41,7 @@ export async function dispatchLogin(username: string, password: string) {
   return userWithLevel(data.login);
 }
 export function userWithLevel(user: User): User {
+  if (!user) return user;
   const me = { ...user };
   const levelmap: { [key: string]: UserLevel } = {
     Administrators: UserLevel.ADMINISTRATOR,
