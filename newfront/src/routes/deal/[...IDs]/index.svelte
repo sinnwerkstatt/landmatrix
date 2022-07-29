@@ -84,9 +84,8 @@
 </script>
 
 <svelte:head>
-  <title
-    >{$_("Deal")}
-    {deal.id}
+  <title>
+    {$_("Deal")} #{deal.id}
   </title>
 </svelte:head>
 
@@ -97,7 +96,7 @@
     <div class="md:flex md:flex-row md:ju<stify-between">
       <h1>
         {$_("Deal")}
-        {deal.id}
+        #{deal.id}
         {#if deal.country}{$_("in")} {deal.country.name}{/if}
       </h1>
       <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
