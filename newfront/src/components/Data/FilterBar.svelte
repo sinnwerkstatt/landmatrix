@@ -109,7 +109,7 @@
     class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
     class:hidden={!$showFilterBar}
   >
-    <div class="w-full self-start ">
+    <div class="w-full self-start">
       <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <CheckboxSwitch
         class="text-base"

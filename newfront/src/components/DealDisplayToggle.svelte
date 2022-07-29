@@ -6,7 +6,7 @@
   $: displaySize = !$displayDealsCount ? "bg-orange text-white" : "bg-white";
 </script>
 
-<div class="text-center flex justify-center mt-8 ">
+<div class="text-center flex justify-center mt-8">
   <button
     type="button"
     on:click={() => displayDealsCount.set(true)}

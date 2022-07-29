@@ -25,9 +25,12 @@
     @apply list-decimal pl-4;
   }
   :global(.streamfield ul) {
-    @apply list-disc pl-4;
+    @apply list-disc pl-4 mb-4;
   }
   :global(.streamfield h2) {
     @apply text-3xl font-bold;
+  }
+  :global(.streamfield p) {
+    @apply mb-4;
   }
 </style>

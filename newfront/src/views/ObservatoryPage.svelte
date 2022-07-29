@@ -177,14 +177,14 @@
       <div class="grid md:grid-cols-2 font-bold">
         <div class="text-center">
           <div class="text-orange">{$_("Size")}</div>
-          <div class=" mb-2">{totalSize} ha</div>
+          <div class="mb-2">{totalSize} ha</div>
           <div class="mx-auto max-w-[80%]">
             <StatusPieChart data={chartDatSize} unit="ha" />
           </div>
         </div>
         <div class="text-center">
           <div class="text-orange">{$_("Number of deals")}</div>
-          <div class="  mb-2">{totalCount}</div>
+          <div class="mb-2">{totalCount}</div>
           <div class="mx-auto max-w-[80%]">
             <StatusPieChart data={chartDatCount} />
           </div>
