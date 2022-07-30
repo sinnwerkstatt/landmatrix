@@ -29,6 +29,7 @@
                 {fieldname}
                 value={entry[fieldname]}
                 {model}
+                showLabel
                 fileNotPublic={entry.file_not_public}
               />
             {/if}

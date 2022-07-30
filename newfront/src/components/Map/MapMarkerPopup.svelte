@@ -16,6 +16,7 @@
     fieldname="level_of_accuracy"
     model="location"
     value={location.level_of_accuracy}
+    showLabel
   />
   <DisplayField
     wrapperClasses="mb-4"
@@ -23,6 +24,7 @@
     valueClasses=""
     fieldname="current_intention_of_investment"
     value={deal.current_intention_of_investment}
+    showLabel
   />
   <DisplayField
     wrapperClasses="mb-4"
@@ -30,6 +32,7 @@
     valueClasses=""
     fieldname="deal_size"
     value={deal.deal_size}
+    showLabel
   />
   <DisplayField
     wrapperClasses="mb-4"
@@ -37,6 +40,7 @@
     valueClasses=""
     fieldname="operating_company"
     value={deal.operating_company}
+    showLabel
   />
 </div>
 <a href="/deal/{deal.id}/" class="btn btn-primary !text-white">

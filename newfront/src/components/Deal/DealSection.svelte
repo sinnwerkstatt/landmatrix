@@ -21,7 +21,7 @@
     <div class="space-y-4 mt-2">
       <h3 class="my-0">{$_(subsection.name)}</h3>
       {#each sectionFieldsWithValues(subsection) as fieldname}
-        <DisplayField {fieldname} value={deal[fieldname]} />
+        <DisplayField {fieldname} value={deal[fieldname]} showLabel />
       {/each}
     </div>
   {/each}

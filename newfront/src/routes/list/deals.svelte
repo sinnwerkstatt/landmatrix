@@ -67,7 +67,6 @@
                   <DisplayField
                     valueClasses=""
                     wrapperClasses="py-1"
-                    showLabel={false}
                     fieldname={col}
                     value={obj[col]}
                   />

@@ -34,8 +34,8 @@
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
+  import InvestorHistory from "$components/Investor/InvestorHistory.svelte";
   import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte";
 
   export let investor: Investor;
@@ -134,7 +134,12 @@
     <div class="pl-4 flex-auto w-full">
       {#if activeTab === "#general"}
         {#each ["name", "country", "classification", "homepage", "opencorporates", "comment"] as fieldname}
-          <DisplayField {fieldname} value={investor[fieldname]} model="investor" />
+          <DisplayField
+            {fieldname}
+            value={investor[fieldname]}
+            model="investor"
+            showLabel
+          />
         {/each}
       {/if}
       {#if activeTab === "#involvements"}
@@ -155,7 +160,6 @@
               <tr>
                 <td>
                   <DisplayField
-                    showLabel={false}
                     value={involvement.investor.id}
                     valueClasses=""
                     wrapperClasses="text-center"
@@ -165,7 +169,6 @@
                 </td>
                 <td>
                   <DisplayField
-                    showLabel={false}
                     value={involvement.investor.name}
                     valueClasses=""
                     wrapperClasses=""
@@ -175,7 +178,6 @@
                 </td>
                 <td>
                   <DisplayField
-                    showLabel={false}
                     value={involvement.investor.country}
                     valueClasses=""
                     wrapperClasses=""
@@ -185,7 +187,6 @@
                 </td>
                 <td>
                   <DisplayField
-                    showLabel={false}
                     value={involvement.investor.classification}
                     valueClasses=""
                     wrapperClasses=""
@@ -226,7 +227,6 @@
                   {#each ["id", "country", "current_intention_of_investment", "current_negotiation_status", "current_implementation_status", "deal_size"] as field}
                     <td>
                       <DisplayField
-                        showLabel={false}
                         value={deal[field]}
                         valueClasses=""
                         wrapperClasses=""

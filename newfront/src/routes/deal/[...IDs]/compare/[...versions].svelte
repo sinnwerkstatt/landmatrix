@@ -50,8 +50,7 @@
 
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { dealSubsections } from "$lib/deal_sections";
-  import { dealSections } from "$lib/deal_sections.js";
+  import { dealSections, dealSubsections } from "$lib/deal_sections";
   import { formfields } from "$lib/stores";
   import DisplayField from "$components/Fields/DisplayField.svelte";
 
@@ -141,7 +140,6 @@
                     <DisplayField
                       wrapperClasses="px-4 py-2"
                       fieldname={field}
-                      showLabel={false}
                       value={dealFrom[field]}
                     />
                   </td>
@@ -149,7 +147,6 @@
                     <DisplayField
                       wrapperClasses="py-2"
                       fieldname={field}
-                      showLabel={false}
                       value={dealTo[field]}
                     />
                   </td>
@@ -184,7 +181,6 @@
                   <DisplayField
                     wrapperClasses="px-4 py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealFrom.locations[field][jfield]}
                     model="location"
                   />
@@ -195,7 +191,6 @@
                   <DisplayField
                     wrapperClasses="py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealTo.locations[field][jfield]}
                     model="location"
                   />
@@ -230,7 +225,6 @@
                   <DisplayField
                     wrapperClasses="px-4 py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealFrom.datasources[field][jfield]}
                     model="datasource"
                   />
@@ -241,7 +235,6 @@
                   <DisplayField
                     wrapperClasses="py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealTo.datasources[field][jfield]}
                     model="datasource"
                   />
@@ -276,7 +269,6 @@
                   <DisplayField
                     wrapperClasses="px-4 py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealFrom.contracts[field][jfield]}
                     model="contract"
                   />
@@ -287,7 +279,6 @@
                   <DisplayField
                     wrapperClasses="py-2"
                     fieldname={jfield}
-                    showLabel={false}
                     value={dealTo.contracts[field][jfield]}
                     model="contract"
                   />

@@ -47,7 +47,6 @@
                   <DisplayField
                     valueClasses=""
                     wrapperClasses="py-1"
-                    showLabel={false}
                     fieldname={col}
                     model="investor"
                     value={obj[col]}
