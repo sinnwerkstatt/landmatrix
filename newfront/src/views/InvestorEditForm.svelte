@@ -4,10 +4,11 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
+  import { investorSections } from "$lib/sections";
   import type { DataSource } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
-  import { investorSections } from "$lib/utils/invester_sections.js";
+  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
   import InvestorEditSection from "$components/Investor/InvestorEditSection.svelte";
 
@@ -133,6 +134,14 @@
       {/if}
       {#if activeTab === "#parent_companies"}{/if}
       {#if activeTab === "#tertiary_investores"}{/if}
+      {#if activeTab === "#data_sources"}
+        <DealSubmodelEditSection
+          model="datasource"
+          modelName="Data source"
+          bind:entries={investor.datasources}
+          id="data_sources"
+        />
+      {/if}
     </div>
   </div>
 </div>

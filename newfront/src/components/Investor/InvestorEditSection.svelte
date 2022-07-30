@@ -1,11 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import type { Section } from "$lib/sections";
   import type { Investor } from "$lib/types/investor";
-  import type { InvestorSection } from "$lib/utils/invester_sections";
   import EditField from "$components/Fields/EditField.svelte";
 
   export let investor: Investor;
-  export let sections: InvestorSection[] = [];
+  export let sections: Section[] = [];
   export let id: string;
 </script>
 

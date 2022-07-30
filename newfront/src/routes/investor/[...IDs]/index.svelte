@@ -248,9 +248,7 @@
         />
       {/if}
       {#if activeTab === "#history"}
-        <section>
-          <h3>{$_("Version history")}</h3>
-        </section>
+        <InvestorHistory {investor} {investorID} {investorVersion} />
       {/if}
     </div>
   </div>

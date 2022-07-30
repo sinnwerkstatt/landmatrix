@@ -28,7 +28,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
-  import { dealSections } from "$lib/deal_sections";
+  import { dealSections } from "$lib/sections";
   import { UserLevel } from "$lib/types/user";
   import DealHistory from "$components/Deal/DealHistory.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";

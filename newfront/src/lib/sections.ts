@@ -1,9 +1,9 @@
-export type DealSection = {
+export type Section = {
   name: string;
   fields: string[];
 };
 
-export const dealSections: { [key: string]: DealSection[] } = {
+export const dealSections: { [key: string]: Section[] } = {
   general_info: [
     {
       name: "Land area",
@@ -271,7 +271,7 @@ export const dealSections: { [key: string]: DealSection[] } = {
   ],
 };
 
-export const dealSubsections = {
+export const subsections = {
   location: [
     "level_of_accuracy",
     "name",
@@ -294,6 +294,44 @@ export const dealSubsections = {
     "phone",
     "includes_in_country_verified_information",
     "open_land_contracts_id",
+    "comment",
+  ],
+};
+
+export const investorSections: { [key: string]: Section[] } = {
+  general_info: [
+    {
+      name: "General Info",
+      fields: [
+        "name",
+        "country",
+        "classification",
+        "homepage",
+        "opencorporates",
+        "comment",
+      ],
+    },
+  ],
+};
+
+export const investorSubsections = {
+  parent_companies: [
+    "investor",
+    "investment_type",
+    "percentage",
+    "loans_amount",
+    "loans_currency",
+    "loans_date",
+    "comment",
+  ],
+  tertiary_investors: [
+    "investor",
+    "investment_type",
+    "ownership_share",
+    "loan_amount",
+    "loan_currency",
+    "loan_date",
+    "parent_relation",
     "comment",
   ],
 };

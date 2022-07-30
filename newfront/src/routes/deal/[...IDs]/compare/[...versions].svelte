@@ -50,7 +50,7 @@
 
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { dealSections, dealSubsections } from "$lib/deal_sections";
+  import { dealSections, subsections } from "$lib/sections";
   import { formfields } from "$lib/stores";
   import DisplayField from "$components/Fields/DisplayField.svelte";
 
@@ -170,7 +170,7 @@
             <h3 class="text-lg m-0 pl-5">{$_("Location")} #{+field + 1}</h3>
           </th>
         </tr>
-        {#each dealSubsections.location as jfield}
+        {#each subsections.location as jfield}
           {#if hasDifference(dealFrom.locations, dealTo.locations, field, jfield)}
             <tr class="odd:bg-gray-100">
               <th class="py-2 pl-8 whitespace-nowrap">
@@ -214,7 +214,7 @@
             <h3 class="text-lg m-0 pl-5">{$_("Data source")} #{+field + 1}</h3>
           </th>
         </tr>
-        {#each dealSubsections.datasource as jfield}
+        {#each subsections.datasource as jfield}
           {#if hasDifference(dealFrom.datasources, dealTo.datasources, field, jfield)}
             <tr class="odd:bg-gray-100">
               <th class="py-2 pl-8 whitespace-nowrap">
@@ -258,7 +258,7 @@
             <h3 class="text-lg m-0 pl-5">{$_("Contract")} #{+field + 1}</h3>
           </th>
         </tr>
-        {#each dealSubsections.contract as jfield}
+        {#each subsections.contract as jfield}
           {#if hasDifference(dealFrom.contracts, dealTo.contracts, field, jfield)}
             <tr class="odd:bg-gray-100">
               <th class="py-2 pl-8 whitespace-nowrap">

@@ -4,7 +4,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { client } from "$lib/apolloClient";
-  import { dealSections } from "$lib/deal_sections";
+  import { dealSections } from "$lib/sections";
   import type { Deal } from "$lib/types/deal";
   import type { Contract, DataSource, Location } from "$lib/types/deal";
   import { removeEmptyEntries } from "$lib/utils/data_processing";

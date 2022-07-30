@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { dealSubsections } from "$lib/deal_sections";
   import { isEmpty } from "$lib/helpers";
+  import { subsections } from "$lib/sections";
   import type { Contract, DataSource, Location } from "$lib/types/deal";
   import DisplayField from "$components/Fields/DisplayField.svelte";
 
@@ -9,7 +9,7 @@
   export let modelName: string;
   export let entries: Array<Contract | DataSource | Location> = [];
 
-  $: fields = dealSubsections[model];
+  $: fields = subsections[model];
 
   let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full";
 </script>
