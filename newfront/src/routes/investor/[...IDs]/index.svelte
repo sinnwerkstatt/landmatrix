@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import type { Investor } from "$lib/types/investor";
-  import { investor_gql_query } from "./queries";
+  import { investor_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [investorID, investorVersion] = params.IDs.split("/").map((x) =>

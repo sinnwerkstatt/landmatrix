@@ -179,9 +179,7 @@
         <DealSection {deal} sections={dealSections.overall_comment} />
       {/if}
       {#if activeTab === "#history"}
-        <section>
-          <DealHistory {deal} {dealID} {dealVersion} />
-        </section>
+        <DealHistory {deal} {dealID} {dealVersion} />
       {/if}
       {#if activeTab === "#actions"}
         <section>

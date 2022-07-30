@@ -7,11 +7,15 @@
 </script>
 
 <div class="file_field">
-  <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
-    {#if fileNotPublic}
-      <EyeSlashIcon />
-    {/if}
-    <FilePdfIcon />
-    {value.replace("uploads/", "")}
-  </a>
+  {#if value}
+    <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
+      {#if fileNotPublic}
+        <EyeSlashIcon />
+      {/if}
+      <FilePdfIcon />
+      {value.replace("uploads/", "")}
+    </a>
+  {:else}
+    —
+  {/if}
 </div>

@@ -259,6 +259,16 @@ export const dealSections: { [key: string]: DealSection[] } = {
       fields: ["overall_comment"],
     },
   ],
+  meta: [
+    {
+      name: "Fully updated",
+      fields: ["fully_updated"],
+    },
+    {
+      name: "Confidential",
+      fields: ["confidential", "confidential_comment"],
+    },
+  ],
 };
 
 export const dealSubsections = {

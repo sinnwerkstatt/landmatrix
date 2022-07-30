@@ -70,8 +70,8 @@
   }
 </script>
 
-<div>
-  <h3>{$_("Deal history")}</h3>
+<section>
+  <h3>{$_("Version history")}</h3>
   <table class="table-auto w-full border-b-2 relative">
     <thead>
       <tr>
@@ -155,4 +155,4 @@
       </tr>
     </tfoot>
   </table>
-</div>
+</section>

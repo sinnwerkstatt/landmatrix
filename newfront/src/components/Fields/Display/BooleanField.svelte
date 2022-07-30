@@ -12,6 +12,6 @@
   {:else if value === false}
     {$_("No")}
   {:else}
-    NULL
+    —
   {/if}
 </div>

@@ -27,10 +27,16 @@
 
   export let fieldname: string;
   export let value;
-  export let model: "deal" | "investor" = "deal";
+  export let model:
+    | "deal"
+    | "location"
+    | "contract"
+    | "datasource"
+    | "investor"
+    | "involvement" = "deal";
 
   export let showLabel = true;
-  export let wrapperClasses = "test mb-3 leading-5 flex flex-wrap";
+  export let wrapperClasses = "mb-3 leading-5 flex flex-wrap";
   export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
   export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
 
