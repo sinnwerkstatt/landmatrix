@@ -17,13 +17,7 @@
   $: nCols = spans.reduce((sum, value) => sum + value);
 
   const onTableHeadClick = (col) => {
-    if (col === sortBy) {
-      sortBy = `-${col}`;
-    } else if (col === `-${sortBy}`) {
-      sortBy = col;
-    } else {
-      sortBy = col;
-    }
+    sortBy = sortBy === col ? `-${col}` : col;
   };
 </script>
 
@@ -52,13 +46,14 @@
   <VirtualList width="100%" height={800} itemCount={sortedItems.length} itemSize={70}>
     <div
       slot="item"
-      class="row  odd:bg-white even:bg-gray-50 hover:bg-gray-100"
+      class="row odd:bg-white even:bg-gray-50 hover:bg-gray-100"
       let:index
       let:style
       style="--grid-columns: {nCols}; {style}"
     >
       {#each columns as fieldName, colIndex}
-        <!-- Testing slots not possible atm: https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
+        <!-- Testing slots not possible atm -->
+        <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
         <div class="col-span-{spans[colIndex]}" data-testid="{index}-{colIndex}">
           <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}
             >{sortedItems[index][fieldName]}</slot
