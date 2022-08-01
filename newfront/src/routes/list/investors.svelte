@@ -44,7 +44,6 @@
           let:fieldValue
           model="investor"
           wrapperClasses="p-1"
-
           fieldname={fieldName}
           value={fieldValue}
         />
