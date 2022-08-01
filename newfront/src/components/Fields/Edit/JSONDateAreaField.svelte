@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import type { FormField } from "../fields";
@@ -13,13 +14,11 @@
   }
 
   export let formfield: FormField;
-  export let value: Array<JSONDateAreaField>;
-  let current = value?.map((val) => val.current)?.indexOf(true) ?? -1;
+  export let value: Array<JSONDateAreaField> | null;
 
-  // create valueCopy to avoid overwriting null in db by [] or so
-  let valueCopy: Array<JSONDateAreaField> = JSON.parse(JSON.stringify(value ?? [{}]));
-  $: filteredValueCopy = valueCopy.filter((val) => val.date || val.area);
-  $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
+  let valueCopy = createValueCopy(value);
+  let current = valueCopy.map((val) => val.current).indexOf(true) ?? -1;
+  $: value = syncValue((val) => !!(val.date || val.area), valueCopy);
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map((val) => ({ ...val, current: undefined }));

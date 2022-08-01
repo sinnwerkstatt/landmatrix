@@ -1,11 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
   import MinusIcon from "$components/icons/MinusIcon.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import type { FormField } from "../fields";
-  import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TextField from "./TextField.svelte";
 
   interface JSONActorsField {
     name?: string;
@@ -13,12 +11,10 @@
   }
 
   export let formfield: FormField;
-  export let value: Array<JSONActorsField>;
+  export let value: Array<JSONActorsField> | null;
 
-  // create valueCopy to avoid overwriting null in db by [] or so
-  let valueCopy: Array<JSONActorsField> = JSON.parse(JSON.stringify(value ?? [{}]));
-  $: filteredValueCopy = valueCopy.filter((val) => val.name || val.role);
-  $: value = filteredValueCopy.length > 0 ? filteredValueCopy : null;
+  let valueCopy = createValueCopy(value);
+  $: value = syncValue((val) => !!(val.name || val.role), valueCopy);
 
   function addEntry() {
     valueCopy = [...valueCopy, {}];
@@ -29,8 +25,6 @@
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">
-  <!--{JSON.stringify(value)}-->
-  <!--{JSON.stringify(Object.entries(formfield.choices))}-->
   <table class="w-full">
     <thead>
       <tr>
