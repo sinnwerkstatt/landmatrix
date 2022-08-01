@@ -9,7 +9,7 @@
   <div class="flex items-center cursor-default gap-2 hover:text-orange p-2">
     {#if title}
       {title}
-      <ChevronDownIcon class="h-3 w-3" />
+      <ChevronDownIcon />
     {:else}
       <slot name="title" />
     {/if}

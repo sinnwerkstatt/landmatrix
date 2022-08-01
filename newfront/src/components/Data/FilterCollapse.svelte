@@ -20,7 +20,7 @@
   >
     <span class="pr-0">
       <ChevronDownIcon
-        class="transition-transform transition-duration-300 mr-1 h-3 w-3 inline rounded {expanded
+        class="transition-transform transition-duration-300 mr-1 h-4 w-4 inline rounded {expanded
           ? 'rotate-180'
           : ''}"
       />
