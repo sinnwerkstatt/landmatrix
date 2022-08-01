@@ -34,7 +34,7 @@ django tests and coverage:
   script:
     - poetry install
     - poetry run doit -n 4 update
-    - poetry run pytest -m "not migration_test" -x
+    - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 frontend formatting and linting:

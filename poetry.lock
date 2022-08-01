@@ -601,17 +601,6 @@ python-versions = ">=3.6"
 Django = ">=2.2"
 
 [[package]]
-name = "django-test-migrations"
-version = "1.2.0"
-description = "Test django schema and data migrations, including ordering"
-category = "main"
-optional = false
-python-versions = ">=3.6,<4.0"
-
-[package.dependencies]
-typing_extensions = ">=3.6,<5"
-
-[[package]]
 name = "django-treebeard"
 version = "4.5.1"
 description = "Efficient tree implementations for Django"
@@ -2020,7 +2009,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "95acac832208934b3ea52d7b5727766a1bafbad78f91e42107c270965d26f647"
+content-hash = "6c714520bf119016e2dd496001c3be55e8356dd623f713690c05548080b49796"
 
 [metadata.files]
 amqp = []
@@ -2233,7 +2222,6 @@ django-taggit = [
     {file = "django-taggit-1.5.1.tar.gz", hash = "sha256:e5bb62891f458d55332e36a32e19c08d20142c43f74bc5656c803f8af25c084a"},
     {file = "django_taggit-1.5.1-py3-none-any.whl", hash = "sha256:dfe9e9c10b5929132041de0c00093ef0072c73c2a97d0f74a818ae50fa77149a"},
 ]
-django-test-migrations = []
 django-treebeard = [
     {file = "django-treebeard-4.5.1.tar.gz", hash = "sha256:80150017725239702054e5fa64dc66e383dc13ac262c8d47ee5a82cb005969da"},
     {file = "django_treebeard-4.5.1-py3-none-any.whl", hash = "sha256:7c2b1cdb1e9b46d595825186064a1228bc4d00dbbc186db5b0b9412357fba91c"},
