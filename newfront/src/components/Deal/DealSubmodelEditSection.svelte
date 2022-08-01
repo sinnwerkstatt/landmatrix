@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { slide } from "svelte/transition";
-  import { dealSubsections } from "$lib/deal_sections";
   import { newNanoid } from "$lib/helpers";
+  import { subsections } from "$lib/sections";
   import type { Contract, DataSource } from "$lib/types/deal";
   import { isEmptySubmodel } from "$lib/utils/data_processing";
   import EditField from "$components/Fields/EditField.svelte";
@@ -17,7 +17,7 @@
   // TODO: build something to filter out empty entries
   // $: _entries = JSON.parse(JSON.stringify(entries));
 
-  $: fields = dealSubsections[model];
+  $: fields = subsections[model];
 
   let activeEntry = -1;
 
