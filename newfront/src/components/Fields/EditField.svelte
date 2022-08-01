@@ -53,7 +53,6 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
 
   $: field = {
-    BooleanField: BooleanField,
     CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
@@ -70,7 +69,6 @@
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
-    NullBooleanField: BooleanField,
     SimpleArrayField: SimpleArrayField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
@@ -90,6 +88,8 @@
       <TextField bind:value {formfield} on:change />
     {:else if ["CharField", "OCIDField"].includes(formfield.class)}
       <CharField bind:value {formfield} on:change />
+    {:else if ["BooleanField", "NullBooleanField"].includes(formfield.class)}
+      <BooleanField bind:value {formfield} on:change />
     {:else if field}
       <svelte:component
         this={field}

@@ -4,6 +4,7 @@
   import { newNanoid } from "$lib/helpers";
   import { subsections } from "$lib/sections";
   import type { Contract, DataSource } from "$lib/types/deal";
+  import type { Involvement } from "$lib/types/investor";
   import { isEmptySubmodel } from "$lib/utils/data_processing";
   import EditField from "$components/Fields/EditField.svelte";
   import PlusIcon from "$components/icons/PlusIcon.svelte";
@@ -11,19 +12,21 @@
 
   export let model: string;
   export let modelName: string;
-  export let entries: Array<Contract | DataSource> = [];
+  export let entries: Array<Contract | DataSource | Involvement> = [];
+  export let entriesFilter = () => true;
+  export let newEntryExtras = {};
   export let id: string;
 
-  // TODO: build something to filter out empty entries
-  // $: _entries = JSON.parse(JSON.stringify(entries));
-
-  $: fields = subsections[model];
+  export let fields = subsections[model];
 
   let activeEntry = -1;
 
   function addEntry() {
     const currentIDs = entries.map((x) => x.id.toString());
-    const newEntry = { id: newNanoid(currentIDs) } as Contract | DataSource;
+    const newEntry = { id: newNanoid(currentIDs), ...newEntryExtras } as
+      | Contract
+      | DataSource
+      | Involvement;
     entries = [...entries, newEntry];
     activeEntry = entries.length - 1;
   }
@@ -40,7 +43,7 @@
 
 <section class="flex flex-wrap">
   <form {id} class="w-full">
-    {#each entries as entry, index}
+    {#each entries.filter(entriesFilter) as entry, index}
       <div class="{model}-entry">
         <div class="flex flex-row justify-between items-center my-2 bg-gray-200">
           <div

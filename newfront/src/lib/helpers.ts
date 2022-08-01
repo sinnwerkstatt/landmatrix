@@ -12,7 +12,7 @@ export function isEmpty(field: unknown): boolean {
   );
 }
 
-export function newNanoid(existingIDs: string[]): string {
+export function newNanoid(existingIDs: string[] = []): string {
   let newID: string;
   let matching: boolean;
   do {

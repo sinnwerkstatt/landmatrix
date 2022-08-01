@@ -10,9 +10,9 @@
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
-  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
+  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
 
   export let deal: Deal;
   export let dealID: number;
@@ -146,7 +146,7 @@
         <DealEditSection bind:deal sections={dealSections.general_info} id="general" />
       {/if}
       {#if activeTab === "#contracts"}
-        <DealSubmodelEditSection
+        <SubmodelEditSection
           model="contract"
           modelName="Contract"
           bind:entries={deal.contracts}
@@ -164,7 +164,7 @@
         />
       {/if}
       {#if activeTab === "#data_sources"}
-        <DealSubmodelEditSection
+        <SubmodelEditSection
           model="datasource"
           modelName="Data source"
           bind:entries={deal.datasources}

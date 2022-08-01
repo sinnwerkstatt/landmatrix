@@ -8,9 +8,9 @@
   import type { DataSource } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
-  import DealSubmodelEditSection from "$components/Deal/DealSubmodelEditSection.svelte";
+  import EditField from "$components/Fields/EditField.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
-  import InvestorEditSection from "$components/Investor/InvestorEditSection.svelte";
+  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
 
   export let investor: Investor;
   export let investorID: number;
@@ -67,6 +67,7 @@
       );
     }
   }
+
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true;
     else if (!investorID) await goto("/");
@@ -126,16 +127,65 @@
     </nav>
     <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
       {#if activeTab === "#general"}
-        <InvestorEditSection
-          bind:investor
-          sections={investorSections.general_info}
-          id="general"
+        <section>
+          <form id="general">
+            {#each investorSections.general_info as subsection}
+              <div class="space-y-4 mt-2">
+                <h3 class="my-0">{$_(subsection.name)}</h3>
+                {#each subsection.fields as fieldname}
+                  <EditField
+                    model="investor"
+                    {fieldname}
+                    bind:value={investor[fieldname]}
+                  />
+                {/each}
+              </div>
+            {/each}
+            <slot />
+          </form>
+        </section>
+      {/if}
+      {#if activeTab === "#parent_companies"}
+        <SubmodelEditSection
+          model="involvement"
+          modelName="Parent company"
+          bind:entries={investor.investors}
+          entriesFilter={(i) => i.role === "PARENT"}
+          newEntryExtras={{ role: "PARENT" }}
+          id="parent_companies"
+          fields={[
+            "investor",
+            "investment_type",
+            "percentage",
+            "loans_amount",
+            "loans_currency",
+            "loans_date",
+            "parent_relation",
+            "comment",
+          ]}
         />
       {/if}
-      {#if activeTab === "#parent_companies"}{/if}
-      {#if activeTab === "#tertiary_investores"}{/if}
+      {#if activeTab === "#tertiary_investors"}
+        <SubmodelEditSection
+          model="involvement"
+          modelName="Tertiary investor/lender"
+          bind:entries={investor.investors}
+          entriesFilter={(i) => i.role === "LENDER"}
+          newEntryExtras={{ role: "LENDER" }}
+          id="tertiary_investors"
+          fields={[
+            "investor",
+            "investment_type",
+            "percentage",
+            "loans_amount",
+            "loans_currency",
+            "loans_date",
+            "comment",
+          ]}
+        />
+      {/if}
       {#if activeTab === "#data_sources"}
-        <DealSubmodelEditSection
+        <SubmodelEditSection
           model="datasource"
           modelName="Data source"
           bind:entries={investor.datasources}

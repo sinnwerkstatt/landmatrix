@@ -22,7 +22,7 @@
     if (data.investor === null)
       return {
         status: 404,
-        error: investorVersion ? "Deal version not found" : "Deal not found",
+        error: investorVersion ? "Investor version not found" : "Investor not found",
       };
 
     return {
@@ -41,7 +41,6 @@
   export let investor: Investor;
   export let investorID: number;
   export let investorVersion: number;
-  console.log(investor);
 </script>
 
 <InvestorEditForm bind:investor bind:investorID bind:investorVersion />
