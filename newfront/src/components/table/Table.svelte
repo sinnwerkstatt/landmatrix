@@ -28,7 +28,8 @@
   >
     {#each columns as col, colIndex}
       <div
-        class="p-1 col-span-{spans[colIndex]}"
+        class="p-1"
+        style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
         on:click={() => onTableHeadClick(col)}
       >
         {labels[colIndex]}
@@ -54,7 +55,10 @@
       {#each columns as fieldName, colIndex}
         <!-- Testing slots not possible atm -->
         <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
-        <div class="col-span-{spans[colIndex]}" data-testid="{index}-{colIndex}">
+        <div
+          data-testid="{index}-{colIndex}"
+          style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
+        >
           <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}
             >{sortedItems[index][fieldName]}</slot
           >

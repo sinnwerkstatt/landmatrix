@@ -18,9 +18,11 @@
   $: dataItemName = {};
 </script>
 
-<div class="absolute mx-auto top-3 inset-x-0 text-center z-30 drop-shadow">
+<div
+  class="absolute mx-auto top-3 inset-x-0 text-center z-30 drop-shadow pointer-events-none"
+>
   <nav id="data-navigation">
-    <ul class="inline-flex drop-shadow bg-white text-left">
+    <ul class="inline-flex drop-shadow bg-white text-left pointer-events-auto">
       <li>
         <a
           href="/map"

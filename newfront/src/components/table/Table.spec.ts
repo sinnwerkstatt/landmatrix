@@ -66,9 +66,9 @@ describe("Column spans", () => {
   test("Default to equal span for all columns", () => {
     render(Table, { columns, items });
 
-    expect(screen.getByTestId("0-0")).toHaveClass("col-span-1");
-    expect(screen.getByTestId("0-1")).toHaveClass("col-span-1");
-    expect(screen.getByTestId("0-2")).toHaveClass("col-span-1");
+    expect(screen.getByTestId("0-0")).toHaveStyle("grid-column: span 1 / span 1");
+    expect(screen.getByTestId("0-1")).toHaveStyle("grid-column: span 1 / span 1");
+    expect(screen.getByTestId("0-2")).toHaveStyle("grid-column: span 1 / span 1");
   });
 
   test("Spans are correctly applied when passed as props", () => {
@@ -78,8 +78,8 @@ describe("Column spans", () => {
       spans: [3, 1, 5],
     });
 
-    expect(screen.getByTestId("0-0")).toHaveClass("col-span-3");
-    expect(screen.getByTestId("0-1")).toHaveClass("col-span-1");
-    expect(screen.getByTestId("0-2")).toHaveClass("col-span-5");
+    expect(screen.getByTestId("0-0")).toHaveStyle("grid-column: span 3 / span 3");
+    expect(screen.getByTestId("0-1")).toHaveStyle("grid-column: span 1 / span 1");
+    expect(screen.getByTestId("0-2")).toHaveStyle("grid-column: span 5 / span 5");
   });
 });
