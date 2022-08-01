@@ -25,16 +25,7 @@ django formatting and linting:
     # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
-frontend formatting and linting:
-  stage: test
-  interruptible: true
-  script:
-    - cd frontend
-    - npm ci
-    - npm run lint
-    - npm run build
-
-tests and coverage:
+django tests and coverage:
   stage: test
   interruptible: true
   services:
@@ -45,6 +36,34 @@ tests and coverage:
     - poetry run doit -n 4 update
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
+
+frontend formatting and linting:
+  stage: test
+  interruptible: true
+  script:
+    - cd frontend
+    - npm ci
+    - npm run lint
+    - npm run build
+
+newfront test:
+  stage: test
+  interruptible: true
+  script:
+    - cd newfront
+    - npm ci
+    - npm run test
+
+newfront formatting and linting:
+  stage: test
+  interruptible: true
+  script:
+    - cd newfront
+    - npm ci
+    - npm run format:check
+#   TODO: fix errors
+#    - npm run lint
+    - npm run build
 
 deploy to staging:
   stage: deploy

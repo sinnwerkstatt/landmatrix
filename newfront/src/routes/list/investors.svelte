@@ -7,7 +7,18 @@
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import Table from "$components/table/Table.svelte";
 
-  let columns = ["modified_at", "id", "name", "country", "classification", "deals"];
+  const allColumnsWithSpan = {
+    modified_at: 2,
+    id: 1,
+    name: 3,
+    country: 3,
+    classification: 4,
+    deals: 1,
+  };
+
+  $: columns = Object.keys(allColumnsWithSpan);
+  $: labels = columns.map((col) => $formfields.investor[col].label);
+  $: spans = Object.entries(allColumnsWithSpan).map(([_, colSpan]) => colSpan);
 
   showContextBar.set(false);
 </script>
@@ -26,36 +37,16 @@
         {$investors?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
 
-      <Table sortBy="modified_at" objects={$investors}>
-        <thead slot="thead">
-          <tr>
-            {#each columns as col}
-              <th
-                class="p-1 sticky top-0 text-white bg-gray-700 font-medium whitespace-nowrap"
-                data-sortby={col}
-              >
-                {$_($formfields.investor[col].label)}
-              </th>
-            {/each}
-          </tr>
-        </thead>
-        <tbody slot="tbody" let:objects>
-          {#each objects as obj}
-            <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
-              {#each columns as col}
-                <td class="px-1">
-                  <DisplayField
-                    valueClasses=""
-                    wrapperClasses="py-1"
-                    fieldname={col}
-                    model="investor"
-                    value={obj[col]}
-                  />
-                </td>
-              {/each}
-            </tr>
-          {/each}
-        </tbody>
+      <Table sortBy="-modified_at" items={$investors} {columns} {spans} {labels}>
+        <DisplayField
+          slot="field"
+          let:fieldName
+          let:fieldValue
+          model="investor"
+          wrapperClasses="p-1"
+          fieldname={fieldName}
+          value={fieldValue}
+        />
       </Table>
     </div>
     <div

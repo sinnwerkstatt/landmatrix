@@ -133,6 +133,7 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "operating_company": {"class": "InvestorForeignKey"},
             "deal_size": {"unit": _("ha")},
             "intended_size": {"unit": _("ha")},
+            "current_contract_size": {"unit": _("ha")},
             "purchase_price_currency": {"class": "CurrencyForeignKey"},
             "annual_leasing_fee_currency": {"class": "CurrencyForeignKey"},
             "total_jobs_planned": {"unit": _("jobs")},
