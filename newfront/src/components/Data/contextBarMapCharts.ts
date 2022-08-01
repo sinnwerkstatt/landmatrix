@@ -14,6 +14,9 @@ export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boo
     [NegotiationStatusGroup.CONTRACT_EXPIRED]: { count: 0, size: 0 },
   };
   for (const d of deals ?? []) {
+    if (!d.current_negotiation_status || !d.deal_size) {
+      continue;
+    }
     const group = NegotiationStatusGroupMap[d.current_negotiation_status];
     const buck = negStatBuckets[group];
     if (buck) {
@@ -51,6 +54,9 @@ export function calcImplementationStatusChart(
     PROJECT_ABANDONED: { count: 0, size: 0 },
   };
   for (const d of deals ?? []) {
+    if (!d.current_implementation_status || !d.deal_size) {
+      continue;
+    }
     const buck = impStatBuckets[d.current_implementation_status];
     if (buck) {
       buck.count += 1;
@@ -80,67 +86,59 @@ export function calcImplementationStatusChart(
   };
 }
 
-export function calcProduceChart(deals: Deal[], displayDealsCount: boolean) {
+enum ProduceFields {
+  CROPS = "current_crops",
+  ANIMALS = "current_animals",
+  MINERAL_RESOURCES = "current_mineral_resources",
+}
+
+const ProduceLabels = {
+  [ProduceFields.CROPS]: "Crops",
+  [ProduceFields.ANIMALS]: "Livestock",
+  [ProduceFields.MINERAL_RESOURCES]: "Mineral resources",
+};
+
+const ProduceColors = {
+  [ProduceFields.CROPS]: "#FC941F",
+  [ProduceFields.ANIMALS]: "#7D4A0F",
+  [ProduceFields.MINERAL_RESOURCES]: "#000000",
+};
+
+export function calcProduceChart(deals: Deal[]) {
   const $_ = get(t);
 
-  const produceLabelMap = {
-    ...get(formfields).deal.crops.choices,
-    ...get(formfields).deal.animals.choices,
-    ...get(formfields).deal.mineral_resources.choices,
+  const dealsWithProduceInfo =
+    deals?.filter((deal) =>
+      Object.values(ProduceFields).some((field) => deal[field])
+    ) ?? [];
+
+  const buckets = {
+    [ProduceFields.CROPS]: 0,
+    [ProduceFields.ANIMALS]: 0,
+    [ProduceFields.MINERAL_RESOURCES]: 0,
   };
-  const data: unknown[] = [];
-  const fields = ["crops", "animals", "mineral_resources"];
-  // if (produceLabelMap && this.dealsWithProduceInfo.length) {
-  //   const counts = {};
-  //   for (const deal of this.dealsWithProduceInfo) {
-  //     for (const field of fields) {
-  //       counts[field] = counts[field] || [];
-  //       if (deal["current_" + field]) {
-  //         for (const key of deal["current_" + field]) {
-  //           counts[field][key] = counts[field][key] + 1 || 1;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   for (const field of fields) {
-  //     for (const [key, count] of Object.entries(counts[field])) {
-  //       if (count > 1) {
-  //         data.push({
-  //           label: key,
-  //           color: colors[fields.indexOf(field)],
-  //           value: count,
-  //         });
-  //       }
-  //     }
-  //   }
-  //   data.sort((a, b) => {
-  //     return b.value - a.value;
-  //   });
-  //   const totalCount = sum(data, "value");
-  //   const cutOffIndex = Math.min(15, data.length);
-  //   const other = data.slice(cutOffIndex, data.length);
-  //   data = data.slice(0, cutOffIndex);
-  //   for (const d of data) {
-  //     if (d.label in this.produceLabelMap) {
-  //       d.label = this.produceLabelMap[d.label];
-  //     }
-  //     d.value = (d.value / totalCount) * 100;
-  //     d.unit = "%";
-  //     d.precision = 1;
-  //   }
-  //   if (other.length) {
-  //     const otherCount = sum(other, "value");
-  //     data.push({
-  //       label: "Other",
-  //       color: "rgba(252,148,31,0.4)",
-  //       value: (otherCount / totalCount) * 100,
-  //       unit: "%",
-  //       precision: 1,
-  //     });
-  //   }
-  // }
+
+  for (const deal of dealsWithProduceInfo) {
+    for (const field of Object.values(ProduceFields)) {
+      if (deal[field]) {
+        buckets[field] += 1;
+      }
+    }
+  }
+
+  const total = Object.values(buckets).reduce((acc, current) => acc + current);
+  const sortedEntries = Object.entries(buckets).sort((a, b) => a[1] - b[1]) as [
+    ProduceFields,
+    number
+  ][];
+
   return {
-    labels: [$_("Crops"), $_("Livestock"), $_("Mineral resources")],
-    datasets: [{ data, backgroundColor: ["#FC941F", "#7D4A0F", "#000000"] }],
+    labels: sortedEntries.map(([key, _]) => $_(ProduceLabels[key])),
+    datasets: [
+      {
+        data: sortedEntries.map(([_, value]) => (value / total) * 100),
+        backgroundColor: sortedEntries.map(([key, _]) => ProduceColors[key]),
+      },
+    ],
   };
 }

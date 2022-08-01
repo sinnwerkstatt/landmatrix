@@ -1,6 +1,4 @@
 <script lang="ts">
-  // import { implementation_status_choices } from "$utils/choices";
-  //  import { prepareNegotianStatusData, sum } from "$utils/data_processing";
   import { _ } from "svelte-i18n";
   import { deals } from "$lib/data";
   import { filters } from "$lib/filters";
@@ -36,7 +34,7 @@
 
   $: chartNegStat = calcNegotiationStatusChart($deals, $displayDealsCount);
   $: chartImpStat = calcImplementationStatusChart($deals, $displayDealsCount);
-  $: chartProd = calcProduceChart($deals, $displayDealsCount);
+  $: chartProd = calcProduceChart($deals);
 
   $: totalCount = $displayDealsCount
     ? `${Math.round($deals?.length).toLocaleString("fr")}`
@@ -79,12 +77,6 @@
       <div class="w-full mb-3">
         <h5 class="text-left text-lg mt-4">{$_("Produce")}</h5>
         <StatusPieChart data={chartProd} unit="%" />
-
-        <!--        <StatusPieChart-->
-        <!--          :deal-data="produceData"-->
-        <!--          :legends="produceDataLegendItems"-->
-        <!--          unit="%"-->
-        <!--        />-->
       </div>
     </div>
   {/if}

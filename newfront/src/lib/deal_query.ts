@@ -36,27 +36,3 @@ export const data_deal_query_gql = gql`
     }
   }
 `;
-
-// export const data_deal_produce_query = {
-//   query: gql`
-//     query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
-//       dealsWithProduceInfo: deals(limit: $limit, subset: $subset, filters: $filters) {
-//         id
-//         current_crops
-//         current_animals
-//         current_mineral_resources
-//       }
-//     }
-//   `,
-//   variables(): OperationVariables {
-//     return {
-//       limit: 0,
-//       filters: store.getters.filtersForGQL,
-//       subset: store.getters.userAuthenticated
-//         ? store.state.publicOnly
-//           ? "PUBLIC"
-//           : "ACTIVE"
-//         : "PUBLIC",
-//     };
-//   },
-// };
