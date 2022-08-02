@@ -52,7 +52,14 @@
       variables: {
         id: investorID ? +investorID : -1,
         version: investorVersion ? +investorVersion : null,
-        payload: { ...investor, versions: null, comments: null, workflowinfos: null },
+        payload: {
+          ...investor,
+          versions: undefined,
+          comments: undefined,
+          workflowinfos: undefined,
+          ventures: undefined,
+          involvements: undefined,
+        },
       },
     });
     const { investor_edit } = data;
