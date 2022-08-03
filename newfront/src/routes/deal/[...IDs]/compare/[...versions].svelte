@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { diff } from "deep-object-diff";
+  import { deal_gql_query } from "$lib/deal_queries";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "../../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [dealID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
@@ -12,19 +12,21 @@
       .split("/")
       .map((x) => (x ? +x : undefined));
 
-    if (!stuff.secureApolloClient) return {};
-
-    const vFrom = await stuff.secureApolloClient.query<Deal>({
-      query: deal_gql_query,
-      variables: { id: dealID, version: +versionFrom, subset: "UNFILTERED" },
-      fetchPolicy: "no-cache",
-    });
+    const vFrom = await stuff.urqlClient
+      .query(
+        deal_gql_query,
+        { id: dealID, version: +versionFrom, subset: "UNFILTERED" },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     const dealFrom = vFrom.data.deal;
-    const vTo = await stuff.secureApolloClient.query<Deal>({
-      query: deal_gql_query,
-      variables: { id: dealID, version: +versionTo, subset: "UNFILTERED" },
-      fetchPolicy: "no-cache",
-    });
+    const vTo = await stuff.urqlClient
+      .query(
+        deal_gql_query,
+        { id: dealID, version: +versionTo, subset: "UNFILTERED" },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     const dealTo = vTo.data.deal;
 
     let dealdiffy = Object.keys(diff(dealFrom, dealTo));

@@ -1,9 +1,12 @@
 <script lang="ts">
   // import { implementation_status_choices } from "$utils/choices";
   //  import { prepareNegotianStatusData, sum } from "$utils/data_processing";
+  import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
-  import { deals } from "$lib/data";
-  import { filters } from "$lib/filters";
+  import { page } from "$app/stores";
+  import { loading } from "$lib/data";
+  import { data_deal_query_gql } from "$lib/deal_queries";
+  import { filters, publicOnly } from "$lib/filters";
   import { countries, observatoryPages, regions } from "$lib/stores";
   import type { CountryOrRegion } from "$lib/types/wagtail";
   import { sum } from "$lib/utils/data_processing";
@@ -16,6 +19,16 @@
     calcNegotiationStatusChart,
     calcProduceChart,
   } from "./contextBarMapCharts";
+
+  $: deals = queryStore({
+    client: $page.stuff.urqlClient,
+    query: data_deal_query_gql,
+    variables: {
+      filters: $filters.toGQLFilterArray(),
+      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
+    },
+  });
+  $: loading.set($deals?.fetching ?? false);
 
   let currentItem: CountryOrRegion;
   $: if (!$filters.region_id && !$filters.country_id) {
@@ -34,13 +47,16 @@
     );
   }
 
-  $: chartNegStat = calcNegotiationStatusChart($deals, $displayDealsCount);
-  $: chartImpStat = calcImplementationStatusChart($deals, $displayDealsCount);
-  $: chartProd = calcProduceChart($deals, $displayDealsCount);
+  $: chartNegStat = calcNegotiationStatusChart($deals?.data?.deals, $displayDealsCount);
+  $: chartImpStat = calcImplementationStatusChart(
+    $deals?.data?.deals,
+    $displayDealsCount
+  );
+  $: chartProd = calcProduceChart($deals?.data?.deals, $displayDealsCount);
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round($deals?.length).toLocaleString("fr")}`
-    : `${Math.round(sum($deals, "deal_size")).toLocaleString("fr")} ha`;
+    ? `${Math.round($deals?.data?.deals?.length).toLocaleString("fr")}`
+    : `${Math.round(sum($deals?.data?.deals, "deal_size")).toLocaleString("fr")} ha`;
 </script>
 
 <ContextBarContainer>
@@ -56,7 +72,7 @@
       </p>
     {/if}
   {/if}
-  {#if $deals?.length}
+  {#if $deals?.data?.deals?.length > 0}
     <div>
       <DealDisplayToggle />
       <div class="w-full text-center font-bold my-3">

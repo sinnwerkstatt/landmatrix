@@ -1,15 +1,12 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
-  import { filters, ProduceGroup } from "$lib/filters";
-  import { isDefaultFilter, publicOnly } from "$lib/filters";
-  import { countries, regions } from "$lib/stores";
-  import { formfields } from "$lib/stores";
+  import { filters, isDefaultFilter, ProduceGroup, publicOnly } from "$lib/filters";
+  import { countries, formfields, regions } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user";
   import { showFilterBar } from "$components/Data";
@@ -61,18 +58,21 @@
   $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
 
   let investors: Investor[] = [];
+
   async function getInvestors() {
-    const { data } = await $client.query<{ investors: Investor[] }>({
-      query: gql`
-        query SInvestors($subset: Subset) {
-          investors(limit: 0, subset: $subset) {
-            id
-            name
+    const { data } = await $page.stuff.urqlClient
+      .query<{ investors: Investor[] }>(
+        gql`
+          query SInvestors($subset: Subset) {
+            investors(limit: 0, subset: $subset) {
+              id
+              name
+            }
           }
-        }
-      `,
-      variables: { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
-    });
+        `,
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" }
+      )
+      .toPromise();
     investors = data.investors;
   }
 

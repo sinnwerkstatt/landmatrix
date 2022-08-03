@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { investor_gql_query } from "$lib/investor_queries";
   import type { Investor } from "$lib/types/investor";
-  import { investor_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     if (!stuff.user) return { status: 403, error: "Permission denied" };
@@ -9,16 +9,15 @@
     let [investorID, investorVersion] = params.IDs.split("/").map((x) =>
       x ? +x : undefined
     );
-    const { data } = await stuff.secureApolloClient.query<{ investor: Investor[] }>({
-      query: investor_gql_query,
-      variables: {
+    const { data } = await stuff.urqlClient
+      .query<{ investor: Investor[] }>(investor_gql_query, {
         id: investorID,
         version: investorVersion,
         subset: "UNFILTERED",
         depth: 0,
         includeDeals: false,
-      },
-    });
+      })
+      .toPromise();
     if (data.investor === null)
       return {
         status: 404,

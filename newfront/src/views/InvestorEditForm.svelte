@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
   import { investorSections } from "$lib/sections";
   import type { DataSource } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
@@ -40,28 +39,30 @@
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
 
-    const { data } = await $client.mutate({
-      mutation: gql`
-        mutation ($id: Int!, $version: Int, $payload: Payload) {
-          investor_edit(id: $id, version: $version, payload: $payload) {
-            investorId
-            investorVersion
+    const { data } = await $page.stuff.urqlClient
+      .mutation(
+        gql`
+          mutation ($id: Int!, $version: Int, $payload: Payload) {
+            investor_edit(id: $id, version: $version, payload: $payload) {
+              investorId
+              investorVersion
+            }
           }
+        `,
+        {
+          id: investorID ? +investorID : -1,
+          version: investorVersion ? +investorVersion : null,
+          payload: {
+            ...investor,
+            versions: undefined,
+            comments: undefined,
+            workflowinfos: undefined,
+            ventures: undefined,
+            involvements: undefined,
+          },
         }
-      `,
-      variables: {
-        id: investorID ? +investorID : -1,
-        version: investorVersion ? +investorVersion : null,
-        payload: {
-          ...investor,
-          versions: undefined,
-          comments: undefined,
-          workflowinfos: undefined,
-          ventures: undefined,
-          involvements: undefined,
-        },
-      },
-    });
+      )
+      .toPromise();
     const { investor_edit } = data;
     originalInvestor = JSON.stringify(investor);
     savingInProgress = false;

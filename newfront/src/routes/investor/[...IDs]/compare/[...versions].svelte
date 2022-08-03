@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { diff } from "deep-object-diff";
+  import { investor_gql_query } from "$lib/investor_queries";
   import type { Investor } from "$lib/types/investor";
-  import { investor_gql_query } from "../../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [investorID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
@@ -12,29 +12,31 @@
       .split("/")
       .map((x) => (x ? +x : undefined));
 
-    if (!stuff.secureApolloClient) return {};
-
-    const vFrom = await stuff.secureApolloClient.query<Investor>({
-      query: investor_gql_query,
-      variables: {
-        id: investorID,
-        version: +versionFrom,
-        subset: "UNFILTERED",
-        includeDeals: false,
-      },
-      fetchPolicy: "no-cache",
-    });
+    const vFrom = await stuff.urqlClient
+      .query(
+        investor_gql_query,
+        {
+          id: investorID,
+          version: +versionFrom,
+          subset: "UNFILTERED",
+          includeDeals: false,
+        },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     const investorFrom = vFrom.data.investor;
-    const vTo = await stuff.secureApolloClient.query<Investor>({
-      query: investor_gql_query,
-      variables: {
-        id: investorID,
-        version: +versionTo,
-        subset: "UNFILTERED",
-        includeDeals: false,
-      },
-      fetchPolicy: "no-cache",
-    });
+    const vTo = await stuff.urqlClient
+      .query(
+        investor_gql_query,
+        {
+          id: investorID,
+          version: +versionTo,
+          subset: "UNFILTERED",
+          includeDeals: false,
+        },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     const investorTo = vTo.data.investor;
 
     let investordiffy = Object.keys(diff(investorFrom, investorTo));

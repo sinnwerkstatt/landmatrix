@@ -1,15 +1,17 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { deals } from "$lib/data";
   import { filters, NegotiationStatus, NegotiationStatusGroupMap } from "$lib/filters";
+  import type { Deal } from "$lib/types/deal";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
   import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation";
+
+  export let deals: Deal[] = [];
 
   let title = $_("LSLA by negotiation status");
   let svg = new LSLAByNegotiation();
 
-  $: if (browser && $deals && $deals.length > 0) {
+  $: if (browser && deals.length > 0) {
     const filter_negstat = $filters.negotiation_status;
     const selected_neg_stat =
       filter_negstat.length > 0
@@ -66,7 +68,7 @@
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_EXPIRED))
       pots.CONTRACT_EXPIRED = new LSLAData(NegotiationStatus.CONTRACT_EXPIRED, true);
 
-    $deals.forEach((d) => {
+    deals.forEach((d) => {
       if (!d.current_negotiation_status) return;
       (pots[d.current_negotiation_status] as LSLAData).add(
         d.current_contract_size,
@@ -86,6 +88,7 @@
     //   encodeURIComponent(JSON.stringify(this.payload, null, 2));
     // a_download(data, fileName(this.title, ".json"));
   }
+
   function downloadCSV() {
     // const csv = dynamics_csv(this.payload);
     // let data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);

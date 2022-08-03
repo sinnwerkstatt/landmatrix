@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
   import { dealSections } from "$lib/sections";
-  import type { Deal } from "$lib/types/deal";
-  import type { Contract, DataSource, Location } from "$lib/types/deal";
+  import type { Contract, DataSource, Deal, Location } from "$lib/types/deal";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
@@ -53,21 +51,23 @@
     deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
     deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
 
-    const { data } = await $client.mutate({
-      mutation: gql`
-        mutation ($id: Int!, $version: Int, $payload: Payload) {
-          deal_edit(id: $id, version: $version, payload: $payload) {
-            dealId
-            dealVersion
+    const { data } = await $page.stuff.urqlClient
+      .mutation(
+        gql`
+          mutation ($id: Int!, $version: Int, $payload: Payload) {
+            deal_edit(id: $id, version: $version, payload: $payload) {
+              dealId
+              dealVersion
+            }
           }
+        `,
+        {
+          id: dealID ? +dealID : -1,
+          version: dealVersion ? +dealVersion : null,
+          payload: { ...deal, versions: null, comments: null, workflowinfos: null },
         }
-      `,
-      variables: {
-        id: dealID ? +dealID : -1,
-        version: dealVersion ? +dealVersion : null,
-        payload: { ...deal, versions: null, comments: null, workflowinfos: null },
-      },
-    });
+      )
+      .toPromise();
     const { deal_edit } = data;
     originalDeal = JSON.stringify(deal);
     savingInProgress = false;

@@ -1,16 +1,15 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { deal_gql_query } from "$lib/deal_queries";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     if (!stuff.user) return { status: 403, error: "Permission denied" };
 
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
-    const { data } = await stuff.secureApolloClient.query<{ deal: Deal[] }>({
-      query: deal_gql_query,
-      variables: { id: dealID, version: dealVersion },
-    });
+    const { data } = await stuff.urqlClient
+      .query<{ deal: Deal[] }>(deal_gql_query, { id: dealID, version: dealVersion })
+      .toPromise();
     if (data.deal === null)
       return {
         status: 404,

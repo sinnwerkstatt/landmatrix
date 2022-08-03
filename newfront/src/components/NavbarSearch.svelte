@@ -1,10 +1,9 @@
 <script lang="ts">
+  import { gql } from "@urql/svelte";
   import classNames from "classnames";
-  import { gql } from "graphql-tag";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
   import type { Deal } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import SearchIcon from "./icons/SearchIcon.svelte";
@@ -19,38 +18,42 @@
   let investors: Investor[] = [];
 
   async function getDeals() {
-    const { data } = await $client.query<{ deals: Deal[] }>({
-      query: gql`
-        query SDeals($subset: Subset) {
-          deals(limit: 0, subset: $subset) {
-            id
-            country {
+    const { data } = await $page.stuff.urqlClient
+      .query<{ deals: Deal[] }>(
+        gql`
+          query SDeals($subset: Subset) {
+            deals(limit: 0, subset: $subset) {
               id
-              name
+              country {
+                id
+                name
+              }
+              is_public
             }
-            is_public
           }
+        `,
+        {
+          subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
         }
-      `,
-      variables: {
-        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-      },
-    });
+      )
+      .toPromise();
     deals = data.deals;
   }
 
   async function getInvestors() {
-    const { data } = await $client.query<{ investors: Investor[] }>({
-      query: gql`
-        query SInvestors($subset: Subset) {
-          investors(limit: 0, subset: $subset) {
-            id
-            name
+    const { data } = await $page.stuff.urqlClient
+      .query<{ investors: Investor[] }>(
+        gql`
+          query SInvestors($subset: Subset) {
+            investors(limit: 0, subset: $subset) {
+              id
+              name
+            }
           }
-        }
-      `,
-      variables: { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
-    });
+        `,
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" }
+      )
+      .toPromise();
     investors = data.investors;
   }
 

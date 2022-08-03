@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
-  import { client } from "$lib/apolloClient";
+  import { page } from "$app/stores";
   import { filters, FilterValues } from "$lib/filters";
   import { chartDescriptions, countries } from "$lib/stores";
 
@@ -20,21 +20,23 @@
 
   async function _grabInvestmentsAndRankings(countryID: number, fltrs: FilterValues) {
     if (!countryID) return;
-    const { data } = await $client.query({
-      query: gql`
-        query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
-          country_investments_and_rankings(id: $id, filters: $filters)
+    const { data } = await $page.stuff.urqlClient
+      .query(
+        gql`
+          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
+            country_investments_and_rankings(id: $id, filters: $filters)
+          }
+        `,
+        {
+          id: countryID,
+          filters: fltrs
+            .toGQLFilterArray()
+            .filter(
+              (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
+            ),
         }
-      `,
-      variables: {
-        id: countryID,
-        filters: fltrs
-          .toGQLFilterArray()
-          .filter(
-            (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
-          ),
-      },
-    });
+      )
+      .toPromise();
 
     let countryInvestmentsAndRankings = data.country_investments_and_rankings;
     investing_countries = countryInvestmentsAndRankings.investing.map((x) => ({

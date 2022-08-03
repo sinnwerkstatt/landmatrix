@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
-  import { client } from "$lib/apolloClient";
-  import { defaultFilterValues, filters, NegotiationStatus } from "$lib/filters";
+  import { page as storePage } from "$app/stores";
+  import { filters, FilterValues, NegotiationStatus } from "$lib/filters";
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
@@ -24,37 +24,39 @@
   let filteredCountryProfiles;
   let filteredNewsPubs;
 
-  $: regionID = page.region ? page.region.id : undefined;
-  $: countryID = page.country ? page.country.id : undefined;
+  $: regionID = page.region?.id;
+  $: countryID = page.country?.id;
 
   async function getAggregations() {
-    let filters = defaultFilterValues();
+    let filters = new FilterValues().default();
     filters.negotiation_status = [];
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const { data } = await $client.query({
-      query: gql`
-        query DealAggregations(
-          $fields: [String]!
-          $subset: Subset
-          $filters: [Filter]
-        ) {
-          deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
-            current_negotiation_status {
-              value
-              size
-              count
+    const { data } = await $storePage.stuff.urqlClient
+      .query(
+        gql`
+          query DealAggregations(
+            $fields: [String]!
+            $subset: Subset
+            $filters: [Filter]
+          ) {
+            deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
+              current_negotiation_status {
+                value
+                size
+                count
+              }
             }
           }
+        `,
+        {
+          fields: ["current_negotiation_status"],
+          filters: filters.toGQLFilterArray(),
+          subset: "PUBLIC",
         }
-      `,
-      variables: {
-        fields: ["current_negotiation_status"],
-        filters: filters.toGQLFilterArray(),
-        subset: "PUBLIC",
-      },
-    });
+      )
+      .toPromise();
     const curNegStat = data.deal_aggregations.current_negotiation_status;
     // const curNegStat = page.current_negotiation_status_metrics
     totalCount = curNegStat

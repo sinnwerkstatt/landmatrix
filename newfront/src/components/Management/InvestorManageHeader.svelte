@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
@@ -19,9 +19,9 @@
     showSendToReviewOverlay = false;
   }
   function addComment({ detail: { comment, send_to_user } }) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
             add_investor_comment(
               id: $id
@@ -34,21 +34,22 @@
             }
           }
         `,
-        variables: {
+        {
           id: investor.id,
           version: investorVersion ?? null,
           comment: comment,
           to_user_id: send_to_user?.id,
-        },
-      })
+        }
+      )
+      .toPromise()
       .then(() => dispatch("reload"))
       .catch((error) => console.error(error));
   }
 
   function changeStatus({ transition, comment = "", to_user = null }) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation (
             $id: Int!
             $version: Int!
@@ -68,14 +69,15 @@
             }
           }
         `,
-        variables: {
+        {
           id: investor.id,
           version: investorVersion,
           transition,
           comment,
           to_user_id: to_user?.id,
-        },
-      })
+        }
+      )
+      .toPromise()
       .then(({ data: { change_investor_status } }) => {
         console.log(change_investor_status);
         // if (transition === "ACTIVATE") {
@@ -103,9 +105,9 @@
       .catch((error) => console.error(error));
   }
   function copyInvestor(): void {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!) {
             object_copy(otype: "investor", obj_id: $id) {
               objId
@@ -113,8 +115,9 @@
             }
           }
         `,
-        variables: { id: investor.id },
-      })
+        { id: investor.id }
+      )
+      .toPromise()
       .then(({ data }) => {
         // window.open(
         //   this.$router.resolve({
@@ -129,19 +132,20 @@
       });
   }
   function deleteInvestor(comment) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!, $version: Int, $comment: String) {
             investor_delete(id: $id, version: $version, comment: $comment)
           }
         `,
-        variables: {
+        {
           id: investor.id,
           version: investorVersion ?? null,
           comment,
-        },
-      })
+        }
+      )
+      .toPromise()
       .then(() => {
         if (investorVersion) {
           // this.$router

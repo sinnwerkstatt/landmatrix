@@ -58,7 +58,6 @@
     DateField: DateField,
     DecimalField: DecimalField,
     EmailField: EmailField,
-    FileField: FileField,
     FloatField: DecimalField,
     IntegerField: DecimalField,
     InvestorForeignKey: InvestorForeignKey,

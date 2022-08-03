@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
-  import { deals } from "$lib/data";
+  import { page } from "$app/stores";
+  import { loading } from "$lib/data";
+  import { data_deal_query_gql } from "$lib/deal_queries";
+  import { filters, publicOnly } from "$lib/filters";
   import { formfields } from "$lib/stores";
   import { showContextBar, showFilterBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
@@ -35,6 +39,16 @@
     .map(([_, colSpan]) => colSpan);
 
   showContextBar.set(false);
+
+  $: deals = queryStore({
+    client: $page.stuff.urqlClient,
+    query: data_deal_query_gql,
+    variables: {
+      filters: $filters.toGQLFilterArray(),
+      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
+    },
+  });
+  $: loading.set($deals?.fetching ?? false);
 </script>
 
 <DataContainer>
@@ -47,13 +61,13 @@
 
     <div class="px-4 bg-stone-100 w-full flex flex-col">
       <div class="h-[4rem] flex items-center pl-2 text-lg">
-        {$deals?.length ?? "—"}
-        {$deals?.length === 1 ? $_("Deal") : $_("Deals")}
+        {$deals?.data?.deals?.length ?? "—"}
+        {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
       <Table
         sortBy="-fully_updated_at"
-        items={$deals}
+        items={$deals?.data?.deals ?? []}
         columns={activeColumns}
         {spans}
         {labels}

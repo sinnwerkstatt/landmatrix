@@ -1,19 +1,21 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { deal_gql_query } from "$lib/deal_queries";
   import type { Deal } from "$lib/types/deal";
-  import { deal_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
 
     if (!dealID) return { status: 404, error: `Deal not found` };
 
-    if (!stuff.secureApolloClient) return {};
     try {
-      const { data } = await stuff.secureApolloClient.query<{ deal: Deal }>({
-        query: deal_gql_query,
-        variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
-      });
+      const { data } = await stuff.urqlClient
+        .query<{ deal: Deal }>(deal_gql_query, {
+          id: dealID,
+          version: dealVersion,
+          subset: "UNFILTERED",
+        })
+        .toPromise();
       return { props: { dealID, dealVersion, deal: data.deal } };
     } catch (e) {
       if (e.graphQLErrors[0].message === "deal not found")
@@ -69,11 +71,13 @@
     console.log("Deal detail: reload");
 
     loading.set(true);
-    const { data } = await $page.stuff.secureApolloClient.query<{ deal: Deal }>({
-      query: deal_gql_query,
-      variables: { id: dealID, version: dealVersion, subset: "UNFILTERED" },
-      fetchPolicy: "no-cache",
-    });
+    const { data } = await $page.stuff.urqlClient
+      .query<{ deal: Deal }>(
+        deal_gql_query,
+        { id: dealID, version: dealVersion, subset: "UNFILTERED" },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     deal = data.deal;
     loading.set(false);
   }

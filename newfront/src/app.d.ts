@@ -10,8 +10,6 @@ declare namespace App {
   }
   interface Stuff {
     user: import("$lib/types/user").User;
-    secureApolloClient: import("@apollo/client/core").ApolloClient<
-      import("@apollo/client/core").NormalizedCacheObject
-    >;
+    urqlClient: import("@urql/core").Client;
   }
 }

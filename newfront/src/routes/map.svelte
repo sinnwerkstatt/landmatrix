@@ -1,12 +1,16 @@
 <script lang="ts">
+  import { queryStore } from "@urql/svelte";
   import type { LeafletEvent, Map, MarkerOptions } from "leaflet";
   import { DivIcon, FeatureGroup, Marker, Popup } from "leaflet?client";
   import { groupBy } from "lodash";
   import { onDestroy } from "svelte";
   import { _ } from "svelte-i18n";
-  import { deals } from "$lib/data";
-  import { filters } from "$lib/filters";
+  import { page } from "$app/stores";
+  import { loading } from "$lib/data";
+  import { data_deal_query_gql } from "$lib/deal_queries";
+  import { filters, publicOnly } from "$lib/filters";
   import { countries, regions } from "$lib/stores";
+  import { showContextBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import BigMap from "$components/Map/BigMap.svelte";
@@ -22,6 +26,8 @@
     styleCircle,
   } from "$components/Map/map_helper";
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte";
+
+  showContextBar.set(true);
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -46,6 +52,16 @@
   let markersFeatureGroup: FeatureGroup;
   let skipMapRefresh = false;
 
+  $: deals = queryStore({
+    client: $page.stuff.urqlClient,
+    query: data_deal_query_gql,
+    variables: {
+      filters: $filters.toGQLFilterArray(),
+      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
+    },
+  });
+  $: loading.set($deals?.fetching ?? false);
+
   $: country_coords = Object.fromEntries(
     $countries.map((c) => [c.id, [c.point_lat, c.point_lon]])
   );
@@ -61,12 +77,13 @@
     refreshMap();
     flyToCountryOrRegion($filters.country_id, $filters.region_id);
   }
+
   function refreshMap() {
     if (!bigmap || skipMapRefresh) return;
     // console.log("Clearing layers");
     markersFeatureGroup?.clearLayers();
     // console.log("Clearing layers: done");
-    if ($deals?.length === 0 || markers.length === 0) return;
+    if ($deals?.data?.deals?.length === 0 || markers.length === 0) return;
 
     // console.log("Refreshing map");
     current_zoom = bigmap.getZoom();
@@ -152,11 +169,12 @@
   }
 
   let _dealLocationMarkersCache: { [key: number]: Marker[] } = {};
+
   async function refreshMarkers() {
     if (import.meta.env.SSR) return;
     // console.log("computing markers ...");
     markers = [];
-    for (let deal of $deals ?? []) {
+    for (let deal of $deals?.data?.deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
           .filter((loc) => !!loc.point)
@@ -221,7 +239,7 @@
     }
   }
 
-  const markersRefreshUnsubscribe = deals.subscribe(() => refreshMarkers());
+  $: markersRefreshUnsubscribe = deals?.subscribe(() => refreshMarkers());
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap());
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id);
 

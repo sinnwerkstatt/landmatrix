@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
@@ -17,24 +17,27 @@
   };
 
   let investors: Investor[] = [];
+
   async function getInvestors() {
-    const { data } = await $page.stuff.secureApolloClient.query<{
-      investors: Investor[];
-    }>({
-      query: gql`
-        query {
-          investors(
-            sort: "name"
-            limit: 0
-            subset: UNFILTERED
-            filters: [{ field: "status", value: 4, exclusion: true }]
-          ) {
-            id
-            name
+    const { data } = await $page.stuff.urqlClient
+      .query<{
+        investors: Investor[];
+      }>(
+        gql`
+          query {
+            investors(
+              sort: "name"
+              limit: 0
+              subset: UNFILTERED
+              filters: [{ field: "status", value: 4, exclusion: true }]
+            ) {
+              id
+              name
+            }
           }
-        }
-      `,
-    });
+        `
+      )
+      .toPromise();
     investors = [...data.investors];
   }
 
@@ -45,18 +48,20 @@
   let newInvestor: Investor = {} as Investor;
   let newInvestorForm: HTMLFormElement;
   let showNewInvestorForm = false;
+
   function initCreateNewInvestor({ detail }) {
     newInvestor = { name: detail };
     showNewInvestorForm = true;
   }
-  function addNewInvestor() {
+
+  async function addNewInvestor() {
     if (!newInvestorForm.checkValidity()) {
       newInvestorForm.reportValidity();
       return;
     }
-    return $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    const { data } = await $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($payload: Payload) {
             investor_edit(id: -1, payload: $payload) {
               investorId
@@ -64,16 +69,16 @@
             }
           }
         `,
-        variables: { payload: newInvestor },
-      })
-      .then(({ data: { investor_edit } }) => {
-        let newI = { id: investor_edit.investorId, name: newInvestor.name };
-        investors.push(newI);
-        // dispatch("input", newI);
-        value = newI;
-        newInvestor = {} as Investor;
-        showNewInvestorForm = false;
-      });
+        { payload: newInvestor }
+      )
+      .toPromise();
+
+    let newI = { id: data.investor_edit.investorId, name: newInvestor.name };
+    investors.push(newI);
+    // dispatch("input", newI);
+    value = newI;
+    newInvestor = {} as Investor;
+    showNewInvestorForm = false;
   }
 </script>
 

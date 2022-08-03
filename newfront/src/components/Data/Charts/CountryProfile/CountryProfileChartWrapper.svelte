@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { browser } from "$app/env";
-  import { deals } from "$lib/data";
+  import { loading } from "$lib/data";
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
   import FileImageIcon from "$components/icons/FileImageIcon.svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";
@@ -29,12 +29,17 @@
   <div
     class="max-w-full bg-white flex justify-center items-center flex-auto	svg-wrapper"
   >
-    {#if !$deals} <div class="absolute"><LoadingPulse /></div> {/if}
+    {#if $loading}
+      <div class="absolute">
+        <LoadingPulse />
+      </div>
+    {/if}
     <slot />
   </div>
   <div class="bg-[#2d2d2d] text-lm-light text-sm">
     <button on:click={() => downloadImage("svg")} class="pb-1 px-3">
-      <FileImageIcon /> SVG
+      <FileImageIcon />
+      SVG
     </button>
     <span
       id="download-png"
@@ -67,10 +72,12 @@
 
     <span style="margin: 2rem 0">|</span>
     <button class="pb-1 px-3" on:click={() => dispatch("downloadJSON")}>
-      <FileCodeIcon /> JSON
+      <FileCodeIcon />
+      JSON
     </button>
     <button class="pb-1 px-3" on:click={() => dispatch("downloadCSV")}>
-      <FileCodeIcon /> CSV
+      <FileCodeIcon />
+      CSV
     </button>
   </div>
   <div class="flex-shrink-0 p-2">

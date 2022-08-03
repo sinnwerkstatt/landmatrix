@@ -1,14 +1,36 @@
 <script lang="ts" context="module">
   import type { Load } from "@sveltejs/kit";
+  import { gql } from "@urql/svelte";
   import { pageQuery } from "$lib/queries";
-  import { getBlogPages } from "./store";
 
-  export const load: Load = async ({ url, fetch }) => {
+  export const load: Load = async ({ url, fetch, stuff }) => {
     const page = await pageQuery(url, fetch);
-    const blogpages = await getBlogPages();
+    const { data } = await stuff.urqlClient
+      .query(
+        gql`
+          query {
+            blogpages {
+              id
+              title
+              slug
+              date
+              header_image
+              excerpt
+              categories {
+                slug
+              }
+              tags {
+                slug
+              }
+              url
+            }
+          }
+        `
+      )
+      .toPromise();
     const category = url.searchParams.get("category");
     const tag = url.searchParams.get("tag");
-    return { props: { page, blogpages, category, tag } };
+    return { props: { page, blogpages: data.blogpages, category, tag } };
   };
 </script>
 
@@ -16,6 +38,7 @@
   import { _ } from "svelte-i18n";
   import { blogCategories } from "$lib/stores";
   import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
+  import TagIcon from "$components/icons/TagIcon.svelte";
   import PageTitle from "$components/PageTitle.svelte";
 
   export let page: WagtailPage;
@@ -38,10 +61,13 @@
 </script>
 
 <div>
-  <PageTitle>
+  <PageTitle class="inline-flex items-center gap-2">
     <span>{$_(page.title)}</span>
     {#if tag}
-      <small><i class="fas fa-tags" /> {tag}</small>
+      <small class="inline-flex items-center">
+        <TagIcon class="h-6 w-6" />
+        {tag}
+      </small>
     {/if}
   </PageTitle>
 

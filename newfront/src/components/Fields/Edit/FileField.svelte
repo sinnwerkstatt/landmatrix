@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
-  import { client } from "$lib/apolloClient";
+  import { page } from "$app/stores";
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
 
-  export let value;
-  export let accept;
+  export let value: string;
+  export let accept: string;
   // "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint," +
   // " text/plain, application/pdf, image/*";
 
@@ -17,14 +17,16 @@
     if (!files.length) return;
     let fr = new FileReader();
     fr.onload = async () => {
-      const { data } = await $client.mutate<{ upload_datasource_file: string }>({
-        mutation: gql`
-          mutation ($filename: String!, $payload: String!) {
-            upload_datasource_file(filename: $filename, payload: $payload)
-          }
-        `,
-        variables: { filename: files[0].name, payload: fr.result },
-      });
+      const { data } = await $page.stuff.urqlClient
+        .mutation<{ upload_datasource_file: string }>(
+          gql`
+            mutation ($filename: String!, $payload: String!) {
+              upload_datasource_file(filename: $filename, payload: $payload)
+            }
+          `,
+          { filename: files[0].name, payload: fr.result }
+        )
+        .toPromise();
       value = data.upload_datasource_file;
     };
     fr.readAsDataURL(files[0]);

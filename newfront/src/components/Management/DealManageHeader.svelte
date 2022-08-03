@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -40,9 +40,9 @@
   let showCopyOverlay = false;
 
   async function copyDeal() {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!) {
             object_copy(otype: "deal", obj_id: $id) {
               objId
@@ -50,8 +50,9 @@
             }
           }
         `,
-        variables: { id: deal.id },
-      })
+        { id: deal.id }
+      )
+      .toPromise()
       .then(({ data: { object_copy } }) => {
         window.open(`/deal/${object_copy.objId}/${object_copy.objVersion}`, "_blank");
       });
@@ -80,9 +81,9 @@
     }
   }
   function setConfidential(confidential, comment = ""): void {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation (
             $id: Int!
             $confidential: Boolean!
@@ -97,15 +98,16 @@
             )
           }
         `,
-        variables: { id: deal.id, version: dealVersion, confidential, comment },
-      })
+        { id: deal.id, version: dealVersion, confidential, comment }
+      )
+      .toPromise()
       .then(() => dispatch("reload"));
   }
 
   function changeStatus({ detail: { transition, comment = "", to_user = null } }) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation (
             $id: Int!
             $version: Int!
@@ -127,15 +129,16 @@
             }
           }
         `,
-        variables: {
+        {
           id: deal.id,
           version: dealVersion,
           transition,
           comment,
           to_user_id: to_user?.id,
           fully_updated,
-        },
-      })
+        }
+      )
+      .toPromise()
       .then(async ({ data: { change_deal_status } }) => {
         console.log(change_deal_status);
         if (transition === "ACTIVATE") {
@@ -151,15 +154,16 @@
       .catch((error) => console.error(error));
   }
   async function deleteDeal({ detail: { comment } }) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!, $version: Int, $comment: String) {
             deal_delete(id: $id, version: $version, comment: $comment)
           }
         `,
-        variables: { id: deal.id, version: dealVersion, comment },
-      })
+        { id: deal.id, version: dealVersion, comment }
+      )
+      .toPromise()
       .then(async (dat) => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
         console.log(dat);
@@ -169,9 +173,9 @@
   }
 
   function addComment({ detail: { comment, send_to_user } }) {
-    $page.stuff.secureApolloClient
-      .mutate({
-        mutation: gql`
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
           mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
             add_deal_comment(
               id: $id
@@ -184,13 +188,14 @@
             }
           }
         `,
-        variables: {
+        {
           id: deal.id,
           version: dealVersion ?? null,
           comment: comment,
           to_user_id: send_to_user?.id,
-        },
-      })
+        }
+      )
+      .toPromise()
       .then(() => dispatch("reload"))
       .catch((error) => console.error(error));
   }

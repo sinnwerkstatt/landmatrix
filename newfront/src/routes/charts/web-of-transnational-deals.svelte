@@ -9,10 +9,10 @@
 </script>
 
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { client } from "$lib/apolloClient";
+  import { page } from "$app/stores";
   import { filters } from "$lib/filters";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte";
@@ -31,20 +31,22 @@
   }
 
   const grabTransnationalDeals = async () => {
-    const { data } = await $client.query<{ transnational_deals: unknown[] }>({
-      query: gql`
-        query WebOfTransnationalDeals($filters: [Filter]) {
-          transnational_deals(filters: $filters)
+    const { data } = await $page.stuff.urqlClient
+      .query(
+        gql`
+          query ($filters: [Filter]) {
+            transnational_deals(filters: $filters)
+          }
+        `,
+        {
+          filters: $filters
+            .toGQLFilterArray()
+            .filter(
+              (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
+            ),
         }
-      `,
-      variables: {
-        filters: $filters
-          .toGQLFilterArray()
-          .filter(
-            (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
-          ),
-      },
-    });
+      )
+      .toPromise();
     transnational_deals = data.transnational_deals;
   };
 

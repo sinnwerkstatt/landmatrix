@@ -1,19 +1,27 @@
-<script lang="ts" context="module">
-  import type { Load } from "@sveltejs/kit";
-  import { showContextBar } from "$components/Data";
-
-  export const load: Load = async () => {
-    showContextBar.set(false);
-    return {};
-  };
-</script>
-
 <script lang="ts">
+  import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
+  import { loading } from "$lib/data";
+  import { data_deal_query_gql } from "$lib/deal_queries";
+  import { filters, publicOnly } from "$lib/filters";
+  import { showContextBar } from "$components/Data";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte";
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte";
   import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte";
+
+  showContextBar.set(false);
+
+  $: deals = queryStore({
+    client: $page.stuff.urqlClient,
+    query: data_deal_query_gql,
+    variables: {
+      filters: $filters.toGQLFilterArray(),
+      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
+    },
+  });
+  $: loading.set($deals?.fetching ?? false);
 </script>
 
 <svelte:head>
@@ -24,17 +32,8 @@
   <div
     class="country-profile mt-20 overflow-visible flex flex-col w-[clamp(500px,90%,1000px)]"
   >
-    <!--    <LoadingPulse v-if="$apollo.loading" />-->
-    <IntentionsPerCategory />
-    <LSLAByNegotiation />
-    <DynamicsOfDeal />
+    <IntentionsPerCategory deals={$deals?.data?.deals} />
+    <LSLAByNegotiation deals={$deals?.data?.deals} />
+    <DynamicsOfDeal deals={$deals?.data?.deals} />
   </div>
 </ChartsContainer>
-
-<!--<style lang="scss" scoped>-->
-<!--  .country-profile {-->
-<!--    > * {-->
-<!--      flex-shrink: 0;-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->

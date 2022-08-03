@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { deals } from "$lib/data";
+  import type { Deal } from "$lib/types/deal";
   import { classification_choices } from "$components/Fields/Display/choices";
   import { a_download, fileName } from "../utils";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
@@ -10,12 +10,15 @@
 
   const title = $_("Dynamics of deal by investor type");
   const svg = new DynamicsOfDeal();
+
+  export let deals: Deal[] = [];
+
   let multideals = 0;
   let payload: DynamicsDataPoint[] = [];
 
-  $: if (browser && $deals && $deals.length > 0) {
+  $: if (browser && deals.length > 0) {
     let pots: { [key: string]: number } = {};
-    $deals.forEach((d) => {
+    deals.forEach((d) => {
       if (d.top_investors.length > 1) multideals += 1;
       d.top_investors.forEach((i) => {
         const cl = i.classification;

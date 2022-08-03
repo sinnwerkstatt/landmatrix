@@ -348,8 +348,6 @@ export class FilterValues {
   }
 }
 
-export const defaultFilterValues = () => new FilterValues().default();
-
 // export const DEFAULT_FILTER_IGNORED_KEYS = [
 //   "region_id",
 //   "country_id",

@@ -9,7 +9,6 @@ export default defineConfig({
     alias: {
       $components: resolve("src/components"),
       $views: resolve("src/views"),
-      $lib: resolve("src/lib"),
     },
   },
   envDir: "..",
@@ -18,6 +17,7 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
   },
+  optimizeDeps: { exclude: ["@urql/svelte"] },
   server: {
     port: 3000,
     host: "0.0.0.0",

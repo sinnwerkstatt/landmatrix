@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { investor_gql_query } from "$lib/investor_queries";
   import type { Investor } from "$lib/types/investor";
-  import { investor_gql_query } from "../queries";
 
   export const load: Load = async ({ params, stuff }) => {
     let [investorID, investorVersion] = params.IDs.split("/").map((x) =>
@@ -10,16 +10,15 @@
 
     if (!investorID) return { status: 404, error: `Deal not found` };
 
-    const { data } = await stuff.secureApolloClient.query<{ investor: Investor }>({
-      query: investor_gql_query,
-      variables: {
+    const { data } = await stuff.urqlClient
+      .query<{ investor: Investor }>(investor_gql_query, {
         id: investorID,
         version: investorVersion,
         subset: "UNFILTERED",
         includeDeals: true,
         depth: 0,
-      },
-    });
+      })
+      .toPromise();
 
     return { props: { investorID, investorVersion, investor: data.investor } };
   };
@@ -67,19 +66,19 @@
 
   async function reloadInvestor() {
     loading.set(true);
-    const { data } = await $page.stuff.secureApolloClient.query<{ investor: Investor }>(
-      {
-        query: investor_gql_query,
-        variables: {
+    const { data } = await $page.stuff.urqlClient
+      .query<{ investor: Investor }>(
+        investor_gql_query,
+        {
           id: investorID,
           version: investorVersion,
           subset: "UNFILTERED",
           includeDeals: true,
           depth: 0,
         },
-        fetchPolicy: "no-cache",
-      }
-    );
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
     investor = data.investor;
     loading.set(false);
   }

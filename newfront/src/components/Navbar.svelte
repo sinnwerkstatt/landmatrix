@@ -39,7 +39,7 @@
     language = lang;
     Cookies.set("django_language", lang);
     await locale.set(lang);
-    await fetchBasis(lang);
+    await fetchBasis(lang, $page.stuff.urqlClient);
   }
 
   let username = "";
@@ -49,11 +49,12 @@
   $: user = $page.stuff.user;
 
   async function login() {
-    const res = await dispatchLogin(username, password);
+    const res = await dispatchLogin(username, password, $page.stuff.urqlClient);
     if (res.status === true) await location.reload();
   }
+
   async function logout() {
-    if (await dispatchLogout()) location.reload();
+    if (await dispatchLogout($page.stuff.urqlClient)) location.reload();
   }
 </script>
 
@@ -293,6 +294,7 @@
     @apply hover:bg-gray-200 dark:hover:bg-gray-600;
     @apply active:bg-orange active:text-white;
   }
+
   :global(.nav-link.active) {
     @apply bg-orange text-white;
   }

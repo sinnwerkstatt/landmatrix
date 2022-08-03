@@ -1,5 +1,6 @@
-import { gql } from "graphql-tag";
-import { get, writable } from "svelte/store";
+import type { Client } from "@urql/core";
+import { gql } from "@urql/svelte";
+import { writable } from "svelte/store";
 import type {
   BlogCategory,
   Country,
@@ -8,18 +9,8 @@ import type {
   WagtailPage,
 } from "$lib/types/wagtail";
 import type { FormField } from "$components/Fields/fields";
-import { client } from "./apolloClient";
 
 const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`;
-
-export const observatoryPages = writable<ObservatoryPage[]>([]);
-
-async function getObservatoryPages(language = "en") {
-  console.log("getObservatoryPages", { language });
-  const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
-  const res = await (await fetch(url)).json();
-  await observatoryPages.set(res.items);
-}
 
 export const aboutPages = writable<WagtailPage[]>([]);
 
@@ -33,22 +24,33 @@ async function getAboutPages(language = "en") {
   await aboutPages.set(res_children.items);
 }
 
+export const observatoryPages = writable<ObservatoryPage[]>([]);
+
+async function getObservatoryPages(language = "en") {
+  console.log("getObservatoryPages", { language });
+  const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
+  const res = await (await fetch(url)).json();
+  await observatoryPages.set(res.items);
+}
+
 export const blogCategories = writable<BlogCategory[]>([]);
 
-async function getBlogCategories(language = "en") {
+async function getBlogCategories(language = "en", urqlClient: Client) {
   console.log("getBlogCategories", { language });
-  const { data } = await get(client).query<{ blogcategories: BlogCategory[] }>({
-    query: gql`
-      query ($language: String) {
-        blogcategories(language: $language) {
-          id
-          name
-          slug
+  const { data } = await urqlClient
+    .query(
+      gql`
+        query ($language: String) {
+          blogcategories(language: $language) {
+            id
+            name
+            slug
+          }
         }
-      }
-    `,
-    variables: { language },
-  });
+      `,
+      { language }
+    )
+    .toPromise();
   await blogCategories.set(data.blogcategories);
 }
 
@@ -65,49 +67,52 @@ export const countries = writable<Country[]>([]);
 export const regions = writable<Region[]>([]);
 export const formfields = writable<FormFields>(undefined);
 
-async function getCountriesRegionsFormfields() {
+async function getCountriesRegionsFormfields(urqlClient: Client) {
   console.log("getCountriesRegionsFormfields");
-  const { data } = await get(client).query({
-    query: gql`
-      query {
-        countries {
-          id
-          name
-          code_alpha2
-          slug
-          point_lat
-          point_lon
-          point_lat_min
-          point_lon_min
-          point_lat_max
-          point_lon_max
-          observatory_page_id
-          high_income
-          deals {
+  const { data } = await urqlClient
+    .query(
+      gql`
+        query {
+          countries {
             id
+            name
+            code_alpha2
+            slug
+            point_lat
+            point_lon
+            point_lat_min
+            point_lon_min
+            point_lat_max
+            point_lon_max
+            observatory_page_id
+            high_income
+            deals {
+              id
+            }
+          }
+          regions {
+            id
+            name
+            slug
+            point_lat_min
+            point_lon_min
+            point_lat_max
+            point_lon_max
+            observatory_page_id
+          }
+          formfields {
+            deal
+            location
+            contract
+            datasource
+            investor
+            involvement
           }
         }
-        regions {
-          id
-          name
-          slug
-          point_lat_min
-          point_lon_min
-          point_lat_max
-          point_lon_max
-          observatory_page_id
-        }
-        formfields {
-          deal
-          location
-          contract
-          datasource
-          investor
-          involvement
-        }
-      }
-    `,
-  });
+      `
+    )
+    .toPromise();
+
   await countries.set(data.countries);
   await regions.set(data.regions);
   await formfields.set(data.formfields);
@@ -119,26 +124,29 @@ export const chartDescriptions = writable<{
   produce_info_map: string;
 }>(undefined);
 
-async function getChartDescriptions(language = "en") {
+async function getChartDescriptions(language = "en", urqlClient: Client) {
   console.log("getChartDescriptions", { language });
-  const { data } = await get(client).query({
-    query: gql`
-      query chart_descriptions($language: String) {
-        chart_descriptions(language: $language) {
-          web_of_transnational_deals
-          dynamics_overview
-          produce_info_map
+  const { data } = await urqlClient
+    .query(
+      gql`
+        query chart_descriptions($language: String) {
+          chart_descriptions(language: $language) {
+            web_of_transnational_deals
+            dynamics_overview
+            produce_info_map
+          }
         }
-      }
-    `,
-  });
+      `,
+      { language }
+    )
+    .toPromise();
   await chartDescriptions.set(data.chart_descriptions);
 }
 
-export async function fetchBasis(lang = "en") {
-  await getObservatoryPages(lang);
-  await getBlogCategories(lang);
+export async function fetchBasis(lang = "en", urqlClient: Client) {
   await getAboutPages(lang);
-  await getChartDescriptions(lang);
-  await getCountriesRegionsFormfields();
+  await getObservatoryPages(lang);
+  await getBlogCategories(lang, urqlClient);
+  await getCountriesRegionsFormfields(urqlClient);
+  await getChartDescriptions(lang, urqlClient);
 }

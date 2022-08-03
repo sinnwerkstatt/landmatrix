@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
-  import { client } from "$lib/apolloClient";
+  import { page } from "$app/stores";
   import type { FormField } from "$components/Fields/fields";
 
   export let value: number;
@@ -17,17 +17,19 @@
   let currencies: Currency[] = [];
 
   async function getCurrencies() {
-    const { data } = await $client.query<{ currencies: Currency[] }>({
-      query: gql`
-        query {
-          currencies {
-            id
-            code
-            name
+    const { data } = await $page.stuff.urqlClient
+      .query<{ currencies: Currency[] }>(
+        gql`
+          query {
+            currencies {
+              id
+              code
+              name
+            }
           }
-        }
-      `,
-    });
+        `
+      )
+      .toPromise();
     currencies = data.currencies;
   }
 

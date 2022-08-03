@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
+  import { gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
@@ -14,17 +14,19 @@
 
   async function fetchUsers() {
     if ($users !== undefined) return;
-    const { data } = await $page.stuff.secureApolloClient.query<{ users: User[] }>({
-      query: gql`
-        {
-          users {
-            id
-            full_name
-            username
+    const { data } = await $page.stuff.urqlClient
+      .query<{ users: User[] }>(
+        gql`
+          {
+            users {
+              id
+              full_name
+              username
+            }
           }
-        }
-      `,
-    });
+        `
+      )
+      .toPromise();
     await users.set(
       [...data.users].sort((a, b) => a.full_name.localeCompare(b.full_name))
     );

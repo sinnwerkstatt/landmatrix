@@ -1,43 +1,49 @@
-import { gql } from "graphql-tag";
-import { get } from "svelte/store";
+import type { Client } from "@urql/svelte";
+import { gql } from "@urql/svelte";
 import type { User } from "$lib/types/user";
 import { UserLevel } from "$lib/types/user";
-import { client } from "./apolloClient";
 
-export async function dispatchLogin(username: string, password: string) {
-  const mutation = gql`
-    mutation Login($username: String!, $password: String!) {
-      login(username: $username, password: $password) {
-        status
-        error
-        user {
-          id
-          full_name
-          username
-          initials
-          is_authenticated
-          is_impersonate
-          role
-          userregionalinfo {
-            country {
+export async function dispatchLogin(
+  username: string,
+  password: string,
+  urqlClient: Client
+) {
+  const { data } = await urqlClient
+    .mutation(
+      gql`
+        mutation Login($username: String!, $password: String!) {
+          login(username: $username, password: $password) {
+            status
+            error
+            user {
               id
-              name
+              full_name
+              username
+              initials
+              is_authenticated
+              is_impersonate
+              role
+              userregionalinfo {
+                country {
+                  id
+                  name
+                }
+                region {
+                  id
+                  name
+                }
+              }
+              groups {
+                id
+                name
+              }
             }
-            region {
-              id
-              name
-            }
-          }
-          groups {
-            id
-            name
           }
         }
-      }
-    }
-  `;
-  const variables = { username, password };
-  const { data } = await get(client).mutate({ mutation, variables });
+      `,
+      { username, password }
+    )
+    .toPromise();
   return userWithLevel(data.login);
 }
 export function userWithLevel(user: User): User {
@@ -58,13 +64,15 @@ export function userWithLevel(user: User): User {
 
   return me;
 }
-export async function dispatchLogout() {
-  const { data } = await get(client).mutate({
-    mutation: gql`
-      mutation {
-        logout
-      }
-    `,
-  });
+export async function dispatchLogout(urqlClient: Client) {
+  const { data } = await urqlClient
+    .mutation(
+      gql`
+        mutation {
+          logout
+        }
+      `
+    )
+    .toPromise();
   return data.logout;
 }

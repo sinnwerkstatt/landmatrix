@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { deals } from "$lib/data";
+  import type { Deal } from "$lib/types/deal";
   import {
     flat_intention_of_investment_map,
     implementation_status_choices,
@@ -13,6 +13,9 @@
   const title = $_(
     "Number of intentions per category of production according to implementation status"
   );
+
+  export let deals: Deal[] = [];
+
   let sankey_links = [];
   let sankey = new LamaSankey();
   let sankey_legend_numbers;
@@ -29,21 +32,21 @@
     a_download(data, fileName(title, ".csv"));
   };
 
-  $: if ($deals && $deals.length > 0) {
+  $: if (deals?.length > 0) {
     sankey_legend_numbers = {
-      x: $deals.filter((d) => d.current_intention_of_investment?.length > 1).length,
-      y: $deals
+      x: deals.filter((d) => d.current_intention_of_investment?.length > 1).length,
+      y: deals
         .map((d) => d.current_intention_of_investment?.length || 0)
         .reduce((a, b) => a + b, 0),
-      z: $deals.length,
+      z: deals.length,
     };
   }
 
-  $: if (browser && $deals && $deals.length > 0) {
+  $: if (browser && deals.length > 0) {
     let datanodes: Set<string> = new Set();
     let datalinks: { [key: string]: number } = {};
     let i_status_counter: { [key: string]: number } = {};
-    $deals.forEach((d) => {
+    deals.forEach((d) => {
       const i_stat = d.current_implementation_status ?? "S_UNKNOWN";
       const ivis = d.current_intention_of_investment ?? ["I_UNKNOWN"];
 
