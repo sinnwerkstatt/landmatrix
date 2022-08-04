@@ -62,11 +62,9 @@
 
   $: field = {
     BooleanField: BooleanField,
-    CharField: TextField,
     TypedChoiceField: TypedChoiceField,
     DateField: DateField,
     DecimalField: DecimalField,
-    EmailField: TextField,
     FloatField: DecimalField,
     IntegerField: DecimalField,
     JSONActorsField: JSONActorsField,
@@ -76,14 +74,11 @@
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
-    LengthField: LengthField,
     ManyToManyField: ManyToManyField,
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
     PointField: PointField,
     StatusField: StatusField,
-    TextField: TextField,
-    URLField: TextField,
   }[formfield.class];
 </script>
 
@@ -94,16 +89,20 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if formfield.class === "FileField"}
-      <FileField {value} {model} {formfield} {fileNotPublic} />
-    {:else if formfield.class === "AutoField"}
-      <AutoField {value} {model} {targetBlank} />
-    {:else if formfield.class === "DateTimeField"}
-      <DateTimeField {value} />
-    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
-      <ForeignKeyField {value} {formfield} />
+    {#if formfield.class === "AutoField"}
+      <AutoField {value} {model} {formfield} {targetBlank} />
     {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
       <ArrayField {value} {formfield} />
+    {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
+      <TextField {value} {formfield} />
+    {:else if formfield.class === "DateTimeField"}
+      <DateTimeField {value} {formfield} />
+    {:else if formfield.class === "LengthField"}
+      <LengthField {value} {formfield} />
+    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
+      <ForeignKeyField {value} {formfield} />
+    {:else if formfield.class === "FileField"}
+      <FileField {value} {formfield} {fileNotPublic} />
     {:else if field}
       <svelte:component this={field} {value} {model} {formfield} />
       <!--  old Vue -->

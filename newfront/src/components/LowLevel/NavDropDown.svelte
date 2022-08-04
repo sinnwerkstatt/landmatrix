@@ -5,7 +5,7 @@
   export let placement = "";
 </script>
 
-<li class="group relative">
+<li class="group relative {$$props.class}">
   <div class="flex items-center cursor-default gap-2 hover:text-orange p-2">
     {#if title}
       {title}

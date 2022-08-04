@@ -1,16 +1,18 @@
 <script lang="ts">
   import classNames from "classnames";
+  import type { FormField } from "$components/Fields/fields";
 
+  export let formfield: FormField;
   export let value: number;
+
   export let targetBlank = false;
-  export let objectVersion: number | null = null;
+  export let objectVersion: number | undefined;
   export let model: "deal" | "investor" = "deal";
 
-  let href = (model === "deal" ? "/deal/" : "/investor/") + value;
-  if (objectVersion) href += "/" + objectVersion;
+  let href = `/${model}/${value}/${objectVersion ?? ""}`;
 </script>
 
-<div class="auto_field">
+<div class="auto_field" data-name={formfield.name}>
   <a
     class={classNames(
       "inline py-1 px-2 text-white text-xs font-bold text-center whitespace-nowrap align-baseline",

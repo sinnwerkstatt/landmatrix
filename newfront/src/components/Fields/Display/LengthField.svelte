@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { FormField } from "$components/Fields/fields";
+
   type ForeignKey = {
     id: number;
     name?: string;
@@ -6,10 +8,12 @@
   };
 
   export let value: ForeignKey[];
-  export let displayDeals = false;
+  export let formfield: FormField;
+
+  let displayDeals = false;
 </script>
 
-<div class="length_field">
+<div class="length_field" data-name={formfield.name}>
   {#if value.length > 0}
     <button
       class="text-orange"

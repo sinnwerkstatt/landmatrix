@@ -38,15 +38,13 @@
   };
 
   export function parseValues(value) {
-    let ret = "";
-    if (formfield.choices) {
-      ret += value.map((v) => formfield.choices[v]).join(", ");
-    } else ret += value.join(", ");
-    return ret;
+    if (formfield.choices?.length > 0)
+      return value.map((v) => formfield.choices?.[v]).join(", ");
+    return value.join(", ");
   }
 </script>
 
-<div class="array_field">
+<div class="array_field" data-name={formfield.name}>
   {#if formfield.name === "current_intention_of_investment"}
     {#each value ?? [] as ioi}
       <span
