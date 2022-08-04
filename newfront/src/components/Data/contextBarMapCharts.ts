@@ -1,8 +1,52 @@
 import { t } from "svelte-i18n";
 import { get } from "svelte/store";
-import { NegotiationStatusGroup, NegotiationStatusGroupMap } from "$lib/filters";
-import { formfields } from "$lib/stores";
+import {
+  ImplementationStatus,
+  NegotiationStatusGroup,
+  NegotiationStatusGroupMap,
+  ProduceGroup,
+} from "$lib/filters";
 import type { Deal } from "$lib/types/deal";
+
+const NegotiationStatusColors = {
+  [NegotiationStatusGroup.INTENDED]: "rgba(252,148,31,0.4)",
+  [NegotiationStatusGroup.CONCLUDED]: "rgba(252,148,31,1)",
+  [NegotiationStatusGroup.FAILED]: "rgba(125,74,15,1)",
+  [NegotiationStatusGroup.CONTRACT_EXPIRED]: "rgb(59,36,8)",
+};
+
+const NegotiationStatusLabels = {
+  [NegotiationStatusGroup.INTENDED]: "Intended",
+  [NegotiationStatusGroup.CONCLUDED]: "Concluded",
+  [NegotiationStatusGroup.FAILED]: "Failed",
+  [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
+};
+
+const ImplementationStatusLabels = {
+  [ImplementationStatus.PROJECT_NOT_STARTED]: "Project not started",
+  [ImplementationStatus.STARTUP_PHASE]: "Start-up phase (no production)",
+  [ImplementationStatus.IN_OPERATION]: "In operation (production)",
+  [ImplementationStatus.PROJECT_ABANDONED]: "Project abandoned",
+};
+
+const ImplementationStatusColors = {
+  [ImplementationStatus.PROJECT_NOT_STARTED]: "rgba(252,148,31,0.4)",
+  [ImplementationStatus.STARTUP_PHASE]: "rgba(252,148,31,0.7)",
+  [ImplementationStatus.IN_OPERATION]: "rgba(252,148,31,1)",
+  [ImplementationStatus.PROJECT_ABANDONED]: "#7D4A0F",
+};
+
+const ProduceLabels = {
+  [ProduceGroup.CROPS]: "Crops",
+  [ProduceGroup.ANIMALS]: "Livestock",
+  [ProduceGroup.MINERAL_RESOURCES]: "Mineral resources",
+};
+
+const ProduceColors = {
+  [ProduceGroup.CROPS]: "#FC941F",
+  [ProduceGroup.ANIMALS]: "#7D4A0F",
+  [ProduceGroup.MINERAL_RESOURCES]: "#000000",
+};
 
 export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boolean) {
   const $_ = get(t);
@@ -14,6 +58,9 @@ export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boo
     [NegotiationStatusGroup.CONTRACT_EXPIRED]: { count: 0, size: 0 },
   };
   for (const d of deals ?? []) {
+    if (!d.current_negotiation_status || !d.deal_size) {
+      continue;
+    }
     const group = NegotiationStatusGroupMap[d.current_negotiation_status];
     const buck = negStatBuckets[group];
     if (buck) {
@@ -21,126 +68,109 @@ export function calcNegotiationStatusChart(deals: Deal[], displayDealsCount: boo
       buck.size += d.deal_size;
     }
   }
+  const sortedEntries = Object.entries(negStatBuckets)
+    .map(
+      ([key, bucket]) =>
+        [key, displayDealsCount ? bucket.count : bucket.size] as [
+          NegotiationStatusGroup,
+          number
+        ]
+    )
+    .sort((a, b) => a[1] - b[1]);
+
   return {
-    labels: [$_("Intended"), $_("Concluded"), $_("Failed"), $_("Contract expired")],
+    labels: sortedEntries.map(([key, _]) => $_(NegotiationStatusLabels[key])),
     datasets: [
       {
-        data: Object.values(negStatBuckets).map((n) =>
-          displayDealsCount ? n["count"] : n["size"]
-        ),
-        backgroundColor: [
-          "rgba(252,148,31,0.4)",
-          "rgba(252,148,31,1)",
-          "rgba(125,74,15,1)",
-          "rgb(59,36,8)",
-        ],
+        data: sortedEntries.map(([_, value]) => value),
+        backgroundColor: sortedEntries.map(([key, _]) => NegotiationStatusColors[key]),
       },
     ],
   };
 }
-
 export function calcImplementationStatusChart(
   deals: Deal[],
   displayDealsCount: boolean
 ) {
   const $_ = get(t);
   const impStatBuckets = {
-    PROJECT_NOT_STARTED: { count: 0, size: 0 },
-    STARTUP_PHASE: { count: 0, size: 0 },
-    IN_OPERATION: { count: 0, size: 0 },
-    PROJECT_ABANDONED: { count: 0, size: 0 },
+    [ImplementationStatus.PROJECT_NOT_STARTED]: { count: 0, size: 0 },
+    [ImplementationStatus.STARTUP_PHASE]: { count: 0, size: 0 },
+    [ImplementationStatus.IN_OPERATION]: { count: 0, size: 0 },
+    [ImplementationStatus.PROJECT_ABANDONED]: { count: 0, size: 0 },
   };
   for (const d of deals ?? []) {
+    if (!d.current_implementation_status || !d.deal_size) {
+      continue;
+    }
     const buck = impStatBuckets[d.current_implementation_status];
     if (buck) {
       buck.count += 1;
       buck.size += d.deal_size;
     }
   }
+  const sortedEntries = Object.entries(impStatBuckets)
+    .map(
+      ([key, bucket]) =>
+        [key, displayDealsCount ? bucket.count : bucket.size] as [
+          ImplementationStatus,
+          number
+        ]
+    )
+    .sort((a, b) => a[1] - b[1]);
+
   return {
-    labels: [
-      $_("Project not started"),
-      $_("Start-up phase (no production)"),
-      $_("In operation (production)"),
-      $_("Project abandoned"),
-    ],
+    labels: sortedEntries.map(([key, _]) => $_(ImplementationStatusLabels[key])),
     datasets: [
       {
-        data: Object.values(impStatBuckets).map((n) =>
-          displayDealsCount ? n["count"] : n["size"]
+        data: sortedEntries.map(([_, value]) => value),
+        backgroundColor: sortedEntries.map(
+          ([key, _]) => ImplementationStatusColors[key]
         ),
-        backgroundColor: [
-          "rgba(252,148,31,0.4)",
-          "rgba(252,148,31,0.7)",
-          "rgba(252,148,31,1)",
-          "#7D4A0F",
-        ],
       },
     ],
   };
 }
 
-export function calcProduceChart(deals: Deal[], displayDealsCount: boolean) {
+export function calcProduceChart(deals: Deal[]) {
   const $_ = get(t);
 
-  const produceLabelMap = {
-    ...get(formfields).deal.crops.choices,
-    ...get(formfields).deal.animals.choices,
-    ...get(formfields).deal.mineral_resources.choices,
+  const ProduceFields = {
+    [ProduceGroup.CROPS]: "current_crops",
+    [ProduceGroup.ANIMALS]: "current_animals",
+    [ProduceGroup.MINERAL_RESOURCES]: "current_mineral_resources",
   };
-  const data: unknown[] = [];
-  const fields = ["crops", "animals", "mineral_resources"];
-  // if (produceLabelMap && this.dealsWithProduceInfo.length) {
-  //   const counts = {};
-  //   for (const deal of this.dealsWithProduceInfo) {
-  //     for (const field of fields) {
-  //       counts[field] = counts[field] || [];
-  //       if (deal["current_" + field]) {
-  //         for (const key of deal["current_" + field]) {
-  //           counts[field][key] = counts[field][key] + 1 || 1;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   for (const field of fields) {
-  //     for (const [key, count] of Object.entries(counts[field])) {
-  //       if (count > 1) {
-  //         data.push({
-  //           label: key,
-  //           color: colors[fields.indexOf(field)],
-  //           value: count,
-  //         });
-  //       }
-  //     }
-  //   }
-  //   data.sort((a, b) => {
-  //     return b.value - a.value;
-  //   });
-  //   const totalCount = sum(data, "value");
-  //   const cutOffIndex = Math.min(15, data.length);
-  //   const other = data.slice(cutOffIndex, data.length);
-  //   data = data.slice(0, cutOffIndex);
-  //   for (const d of data) {
-  //     if (d.label in this.produceLabelMap) {
-  //       d.label = this.produceLabelMap[d.label];
-  //     }
-  //     d.value = (d.value / totalCount) * 100;
-  //     d.unit = "%";
-  //     d.precision = 1;
-  //   }
-  //   if (other.length) {
-  //     const otherCount = sum(other, "value");
-  //     data.push({
-  //       label: "Other",
-  //       color: "rgba(252,148,31,0.4)",
-  //       value: (otherCount / totalCount) * 100,
-  //       unit: "%",
-  //       precision: 1,
-  //     });
-  //   }
-  // }
+  const dealsWithProduceInfo =
+    deals?.filter((deal) =>
+      Object.values(ProduceFields).some((field) => deal[field])
+    ) ?? [];
+
+  const buckets = {
+    [ProduceGroup.CROPS]: 0,
+    [ProduceGroup.ANIMALS]: 0,
+    [ProduceGroup.MINERAL_RESOURCES]: 0,
+  };
+
+  for (const deal of dealsWithProduceInfo) {
+    Object.entries(ProduceFields).forEach(([field, fieldName]) => {
+      if (deal[fieldName]) {
+        buckets[field as unknown as ProduceGroup] += 1;
+      }
+    });
+  }
+
+  const total = Object.values(buckets).reduce((acc, current) => acc + current);
+  const sortedEntries = Object.entries(buckets)
+    .map(([key, val]) => [key, val] as unknown as [ProduceGroup, number])
+    .sort((a, b) => a[1] - b[1]);
+
   return {
-    labels: [$_("Crops"), $_("Livestock"), $_("Mineral resources")],
-    datasets: [{ data, backgroundColor: ["#FC941F", "#7D4A0F", "#000000"] }],
+    labels: sortedEntries.map(([key, _]) => $_(ProduceLabels[key])),
+    datasets: [
+      {
+        data: sortedEntries.map(([_, value]) => (value / total) * 100),
+        backgroundColor: sortedEntries.map(([key, _]) => ProduceColors[key]),
+      },
+    ],
   };
 }

@@ -70,6 +70,9 @@ interface Deal extends Obj {
   current_intention_of_investment?: string[];
   current_negotiation_status?: NegotiationStatus;
   current_implementation_status?: ImplementationStatus;
+  current_crops?: string[];
+  current_animals?: string[];
+  current_mineral_resources?: string[];
   fully_updated_at?: Date;
   fully_updated?: boolean;
   top_investors?: Investor[];
