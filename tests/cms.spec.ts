@@ -75,4 +75,11 @@ test("basic cms", async ({ context, page }) => {
     page.waitForNavigation(),
     page.locator("text=View live").first().click(),
   ]);
+
+  await expect(page.locator("h3 >> nth=0")).toContainText(
+    "We currently have information about:"
+  );
+  await page.pause();
+  await page.locator("text=Observatories").click();
+  await page.locator("text=Observatories global >> a").click();
 });
