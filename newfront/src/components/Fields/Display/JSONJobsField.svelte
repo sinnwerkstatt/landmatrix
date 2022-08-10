@@ -15,7 +15,7 @@
 </script>
 
 <div class="jsonjobs_field whitespace-nowrap">
-  {#each value as val}
+  {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       {dateCurrentFormat(val)}
       {#if val.jobs}

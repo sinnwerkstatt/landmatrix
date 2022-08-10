@@ -22,7 +22,7 @@
 </script>
 
 <div class="jsonexports_field whitespace-nowrap">
-  {#each value as val}
+  {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)} </span>
       {#if val.choices}
