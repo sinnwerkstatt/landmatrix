@@ -18,10 +18,12 @@ async function getAboutPages(language = "en") {
   console.log("getAboutPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.AboutIndexPage`;
   const res = await (await fetch(url)).json();
-  const indexPageId = res.items[0].id;
-  const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`;
-  const res_children = await (await fetch(pagesUrl)).json();
-  await aboutPages.set(res_children.items);
+  if (res.items && res.items.length) {
+    const indexPageId = res.items[0].id;
+    const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`;
+    const res_children = await (await fetch(pagesUrl)).json();
+    await aboutPages.set(res_children.items);
+  }
 }
 
 export const observatoryPages = writable<ObservatoryPage[]>([]);
