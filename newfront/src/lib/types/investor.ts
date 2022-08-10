@@ -49,7 +49,7 @@ export type Involvement = {
   id: number;
   role: Role;
   investment_type?: [string];
-  investor?: Investor;
+  investor: Investor;
   venture?: Investor;
   percentage?: number;
   loans_amount?: number;
