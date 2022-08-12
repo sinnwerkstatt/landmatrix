@@ -457,6 +457,7 @@ class DataDownload:
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = f'attachment; filename="{self.filename}.xlsx"'
         wb = Workbook(write_only=True)
+        # wb = Workbook()
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
@@ -941,7 +942,9 @@ class DataDownload:
                 # empty fields
                 data[field] = ""
             elif field == "classification":
-                data[field] = dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
+                data[field] = str(
+                    dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
+                )
             row.append(data[field])
         return row
 
@@ -963,8 +966,8 @@ class DataDownload:
                 # empty fields
                 data[field] = ""
             elif field == "role":
-                data[field] = dict(InvestorVentureInvolvement.ROLE_CHOICES).get(
-                    data[field], ""
+                data[field] = str(
+                    dict(InvestorVentureInvolvement.ROLE_CHOICES).get(data[field], "")
                 )
             row.append(data[field])
         return row
