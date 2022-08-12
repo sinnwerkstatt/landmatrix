@@ -214,11 +214,25 @@ produce_choices = {
     "contract_farming_animals": {k: v["name"] for k, v in _choices.ANIMALS.items()},
     "mineral_resources": {k: v["name"] for k, v in _choices.MINERALS.items()},
 }
-currency_choices = {
-    x.id: f"{x.name} ({x.symbol})" if x.symbol else x.name
-    for x in Currency.objects.all()
-}
-country_choices = dict(Country.objects.values_list("id", "name"))
+
+
+class Choices:
+    """ need to generate the choices on running, otherwise DB errors"""
+    choices = {}
+
+    def get(self, name):
+        if not self.choices.get(name):
+            if name == "currency":
+                self.choices[name] = {
+                    x.id: f"{x.name} ({x.symbol})" if x.symbol else x.name
+                    for x in Currency.objects.all()
+                }
+            if name == "country":
+                self.choices[name] = dict(Country.objects.values_list("id", "name"))
+        return self.choices[name]
+
+
+mchoices = Choices()
 
 deal_fields_top_investor = []
 for f in deal_fields.keys():
@@ -655,7 +669,7 @@ class DataDownload:
         if data.get("purchase_price"):
             data["purchase_price"] = int(data["purchase_price"])
         if data.get("purchase_price_currency"):
-            data["purchase_price_currency"] = currency_choices[
+            data["purchase_price_currency"] = mchoices.get("currency")[
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
@@ -668,7 +682,7 @@ class DataDownload:
         if data.get("annual_leasing_fee"):
             data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
         if data.get("annual_leasing_fee_currency"):
-            data["annual_leasing_fee_currency"] = currency_choices[
+            data["annual_leasing_fee_currency"] = mchoices.get("currency")[
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
@@ -800,7 +814,7 @@ class DataDownload:
             "export_country3",
         ]:
             if data.get(country):
-                data[country] = country_choices[data[country]]
+                data[country] = mchoices.get("country")[data[country]]
 
         for produce_type in ["crops", "animals", "mineral_resources"]:
             if data.get(produce_type) is not None:
