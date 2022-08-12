@@ -1,6 +1,10 @@
 import type { FeatureCollection, Geometry } from "geojson";
 import { Feature } from "geojson";
-import { ImplementationStatus, NegotiationStatus } from "$lib/filters";
+import {
+  ImplementationStatus,
+  IntentionOfInvestment,
+  NegotiationStatus,
+} from "$lib/filters";
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
 import type { Investor } from "$lib/types/investor";
 
@@ -67,7 +71,7 @@ interface Deal extends Obj {
   datasources: DataSource[];
   versions: DealVersion[];
   workflowinfos?: DealWorkflowInfo[];
-  current_intention_of_investment?: string[];
+  current_intention_of_investment?: IntentionOfInvestment[];
   current_negotiation_status?: NegotiationStatus;
   current_implementation_status?: ImplementationStatus;
   current_crops?: string[];

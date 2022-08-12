@@ -7,17 +7,15 @@
     Title,
     Tooltip,
   } from "chart.js";
+  import type { ChartData, ChartOptions } from "chart.js";
   import { Pie } from "svelte-chartjs";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
-  export let data;
+  export let data: ChartData;
   export let unit = "";
-</script>
 
-<Pie
-  {data}
-  options={{
+  const options: ChartOptions<"pie"> = {
     responsive: true,
     aspectRatio: 1,
     plugins: {
@@ -33,6 +31,13 @@
           },
         },
       },
+      legend: {
+        position: "bottom",
+      },
     },
-  }}
-/>
+  };
+</script>
+
+<!--svelte plugin for IntelliJ cannot index props for SvelteComponentTyped-->
+<!--https://github.com/tomblachut/svelte-intellij/issues/206-->
+<Pie {data} {options} />

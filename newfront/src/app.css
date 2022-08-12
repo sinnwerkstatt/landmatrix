@@ -50,6 +50,10 @@
     @apply text-3xl text-lm-dark my-5 font-bold;
   }
 
+  h2 {
+    @apply text-xl text-lm-dark my-4 font-bold;
+  }
+
   h3 {
     @apply text-lm-dark dark:text-gray-200 text-[22px] my-5 font-bold;
   }
