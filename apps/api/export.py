@@ -217,7 +217,8 @@ produce_choices = {
 
 
 class Choices:
-    """ need to generate the choices on running, otherwise DB errors"""
+    """need to generate the choices on running, otherwise DB errors"""
+
     choices = {}
 
     def get(self, name):
