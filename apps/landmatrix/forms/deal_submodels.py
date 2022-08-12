@@ -49,7 +49,7 @@ datasource_fields = {
     "type": {
         "label": _("Type"),
         "class": "TypedChoiceField",
-        "choices": {"": "--------"} | choices.DATASOURCE_TYPE_MAP,
+        "choices": {"": "--------", **choices.DATASOURCE_TYPE_MAP},
     },
     "url": {"label": _("Url"), "class": "URLField", "type": "url"},
     "file": {"label": _("File"), "class": "FileField"},

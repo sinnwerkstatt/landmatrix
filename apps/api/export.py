@@ -197,11 +197,12 @@ datasource_fields = {
     "comment": "Comment on data source",
 }
 
-negotiation_status_choices = dict(choices.NEGOTIATION_STATUS_CHOICES) | {None: "None"}
-implementation_status_choices = dict(choices.IMPLEMENTATION_STATUS_CHOICES) | {
-    None: "None"
+negotiation_status_choices = {**dict(choices.NEGOTIATION_STATUS_CHOICES), None: "None"}
+implementation_status_choices = {
+    **dict(choices.IMPLEMENTATION_STATUS_CHOICES),
+    None: "None",
 }
-intention_of_investment_choices = dict(choices.INTENTION_CHOICES) | {None: "None"}
+intention_of_investment_choices = {**dict(choices.INTENTION_CHOICES), None: "None"}
 produce_choices = {
     "crops": {k: v["name"] for k, v in choices.CROPS.items()},
     "contract_farming_crops": {k: v["name"] for k, v in choices.CROPS.items()},
