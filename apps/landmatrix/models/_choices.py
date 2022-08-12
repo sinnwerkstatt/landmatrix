@@ -347,3 +347,23 @@ NOT_PUBLIC_REASON_CHOICES = (
     ("NO_OPERATING_COMPANY", _("No operating company")),
     ("NO_KNOWN_INVESTOR", _("No known investor")),
 )
+
+DATASOURCE_TYPE_MAP = {
+    "MEDIA_REPORT": _("Media report"),
+    "RESEARCH_PAPER_OR_POLICY_REPORT": _("Research Paper / Policy Report"),
+    "GOVERNMENT_SOURCES": _("Government sources"),
+    "COMPANY_SOURCES": _("Company sources"),
+    "CONTRACT": "Contract",
+    "CONTRACT_FARMING_AGREEMENT": _("Contract (contract farming agreement)"),
+    "PERSONAL_INFORMATION": _("Personal information"),
+    "CROWDSOURCING": _("Crowdsourcing"),
+    "OTHER": _("Other (Please specify in comment field)"),
+}
+
+LOCATION_ACCURACY = {
+    "COUNTRY": _("Country"),
+    "ADMINISTRATIVE_REGION": _("Administrative region"),
+    "APPROXIMATE_LOCATION": _("Approximate location"),
+    "EXACT_LOCATION": _("Exact location"),
+    "COORDINATES": _("Coordinates"),
+}
