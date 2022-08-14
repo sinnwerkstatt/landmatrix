@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ChartData, ChartOptions } from "chart.js";
   import {
     ArcElement,
     CategoryScale,
@@ -6,9 +7,8 @@
     Legend,
     Title,
     Tooltip,
-  } from "chart.js";
-  import type { ChartData, ChartOptions } from "chart.js";
-  import { Pie } from "svelte-chartjs";
+  } from "chart.js?client";
+  import { Pie } from "svelte-chartjs?client";
   import { _ } from "svelte-i18n";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
