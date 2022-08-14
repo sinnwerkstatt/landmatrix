@@ -20,7 +20,7 @@ const getNegotiationStatusGroupColor = (
   negotiationStatusGroup: NegotiationStatusGroup
 ) => NEGOTIATION_STATUS_GROUP_COLORS[negotiationStatusGroup];
 
-export const negotiationStatusReducer: DealReducer<NegotiationStatusGroup> = (
+export const negotiationStatusGroupReducer: DealReducer<NegotiationStatusGroup> = (
   bucketMap,
   deal
 ): BucketMap<NegotiationStatusGroup> => {
@@ -36,7 +36,7 @@ export const negotiationStatusReducer: DealReducer<NegotiationStatusGroup> = (
 };
 
 export const createNegotiationStatusChartData = createChartData(
-  negotiationStatusReducer,
+  negotiationStatusGroupReducer,
   Object.values(NegotiationStatusGroup),
   getNegotiationStatusGroupLabel,
   getNegotiationStatusGroupColor

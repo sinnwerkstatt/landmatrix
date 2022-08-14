@@ -3,7 +3,7 @@
   import { createAgricultureIntentionChartData } from "$lib/data/charts/agricultureIntention";
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
   import { createIntentionOfInvestmentGroupChartData } from "$lib/data/charts/intentionOfInvestmentGroup";
-  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatus";
+  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
   import type { Deal } from "$lib/types/deal";
   import StatusPieChart from "$components/StatusPieChart.svelte";
 

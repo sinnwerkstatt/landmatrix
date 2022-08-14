@@ -1,10 +1,13 @@
 import {
+  AgricultureIoI,
+  ForestryIoI,
   ImplementationStatus,
   IntentionOfInvestment,
   IntentionOfInvestmentGroup,
   NatureOfDeal,
   NegotiationStatus,
   NegotiationStatusGroup,
+  OtherIoI,
 } from "$lib/types/deal";
 import { Classification } from "$lib/types/investor";
 
@@ -53,31 +56,35 @@ export const negotiation_status_group_choices: {
   [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
 };
 
-export const agriculture_investment_choices = {
-  [IntentionOfInvestment.BIOFUELS]: "Biofuels",
-  [IntentionOfInvestment.FOOD_CROPS]: "Food crops",
-  [IntentionOfInvestment.FODDER]: "Fodder",
-  [IntentionOfInvestment.LIVESTOCK]: "Livestock",
-  [IntentionOfInvestment.NON_FOOD_AGRICULTURE]: "Non-food agricultural commodities",
-  [IntentionOfInvestment.AGRICULTURE_UNSPECIFIED]: "Agriculture unspecified",
+export const agriculture_investment_choices: {
+  [key in AgricultureIoI]: string;
+} = {
+  [AgricultureIoI.BIOFUELS]: "Biofuels",
+  [AgricultureIoI.FOOD_CROPS]: "Food crops",
+  [AgricultureIoI.FODDER]: "Fodder",
+  [AgricultureIoI.LIVESTOCK]: "Livestock",
+  [AgricultureIoI.NON_FOOD_AGRICULTURE]: "Non-food agricultural commodities",
+  [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: "Agriculture unspecified",
 };
 
-export const forestry_investment_choices = {
-  [IntentionOfInvestment.TIMBER_PLANTATION]: "Timber plantation",
-  [IntentionOfInvestment.FOREST_LOGGING]: "Forest logging / management",
-  [IntentionOfInvestment.CARBON]: "For carbon sequestration/REDD",
-  [IntentionOfInvestment.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
+export const forestry_investment_choices: {
+  [key in ForestryIoI]: string;
+} = {
+  [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation",
+  [ForestryIoI.FOREST_LOGGING]: "Forest logging / management",
+  [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
+  [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
 };
 
-export const other_intention_choices = {
-  [IntentionOfInvestment.MINING]: "Mining",
-  [IntentionOfInvestment.OIL_GAS_EXTRACTION]: "Oil / Gas extraction",
-  [IntentionOfInvestment.TOURISM]: "Tourism",
-  [IntentionOfInvestment.INDUSTRY]: "Industry",
-  [IntentionOfInvestment.CONVERSATION]: "Conservation",
-  [IntentionOfInvestment.LAND_SPECULATION]: "Land speculation",
-  [IntentionOfInvestment.RENEWABLE_ENERGY]: "Renewable energy",
-  [IntentionOfInvestment.OTHER]: "Other",
+export const other_intention_choices: { [key in OtherIoI]: string } = {
+  [OtherIoI.MINING]: "Mining",
+  [OtherIoI.OIL_GAS_EXTRACTION]: "Oil / Gas extraction",
+  [OtherIoI.TOURISM]: "Tourism",
+  [OtherIoI.INDUSTRY]: "Industry",
+  [OtherIoI.CONVERSATION]: "Conservation",
+  [OtherIoI.LAND_SPECULATION]: "Land speculation",
+  [OtherIoI.RENEWABLE_ENERGY]: "Renewable energy",
+  [OtherIoI.OTHER]: "Other",
 };
 
 export const intention_of_investment_group_choices: {

@@ -4,7 +4,7 @@
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
-  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatus";
+  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";

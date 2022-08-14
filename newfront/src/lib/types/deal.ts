@@ -88,20 +88,26 @@ export enum IntentionOfInvestmentGroup {
   FORESTRY = "FORESTRY",
   OTHER = "OTHER",
 }
+export const IoIGroup = IntentionOfInvestmentGroup;
+export type IoIGroup = IntentionOfInvestmentGroup;
 
-export enum IntentionOfInvestment {
+export enum AgricultureIoI {
   BIOFUELS = "BIOFUELS",
   FOOD_CROPS = "FOOD_CROPS",
   FODDER = "FODDER",
   LIVESTOCK = "LIVESTOCK",
   NON_FOOD_AGRICULTURE = "NON_FOOD_AGRICULTURE",
   AGRICULTURE_UNSPECIFIED = "AGRICULTURE_UNSPECIFIED",
+}
 
+export enum ForestryIoI {
   TIMBER_PLANTATION = "TIMBER_PLANTATION",
   FOREST_LOGGING = "FOREST_LOGGING",
   CARBON = "CARBON",
   FORESTRY_UNSPECIFIED = "FORESTRY_UNSPECIFIED",
+}
 
+export enum OtherIoI {
   MINING = "MINING",
   OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
   TOURISM = "TOURISM",
@@ -112,30 +118,44 @@ export enum IntentionOfInvestment {
   OTHER = "OTHER",
 }
 
+// merge intention of investment enums
+// 1. merge objects
+export const IntentionOfInvestment = {
+  ...ForestryIoI,
+  ...AgricultureIoI,
+  ...OtherIoI,
+};
+
+// 2. create union type
+export type IntentionOfInvestment = keyof typeof IntentionOfInvestment;
+
+// create shorthand alias
+export const IoI = IntentionOfInvestment;
+export type IoI = IntentionOfInvestment;
+
 export const INTENTION_OF_INVESTMENT_GROUP_MAP: {
-  [key in IntentionOfInvestment]: IntentionOfInvestmentGroup;
+  [key in IoI]: IntentionOfInvestmentGroup;
 } = {
-  BIOFUELS: IntentionOfInvestmentGroup.AGRICULTURE,
-  [IntentionOfInvestment.FOOD_CROPS]: IntentionOfInvestmentGroup.AGRICULTURE,
-  [IntentionOfInvestment.FODDER]: IntentionOfInvestmentGroup.AGRICULTURE,
-  [IntentionOfInvestment.LIVESTOCK]: IntentionOfInvestmentGroup.AGRICULTURE,
-  [IntentionOfInvestment.NON_FOOD_AGRICULTURE]: IntentionOfInvestmentGroup.AGRICULTURE,
-  [IntentionOfInvestment.AGRICULTURE_UNSPECIFIED]:
-    IntentionOfInvestmentGroup.AGRICULTURE,
+  [AgricultureIoI.BIOFUELS]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.FOOD_CROPS]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.FODDER]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.LIVESTOCK]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.NON_FOOD_AGRICULTURE]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: IoIGroup.AGRICULTURE,
 
-  [IntentionOfInvestment.TIMBER_PLANTATION]: IntentionOfInvestmentGroup.FORESTRY,
-  [IntentionOfInvestment.FOREST_LOGGING]: IntentionOfInvestmentGroup.FORESTRY,
-  [IntentionOfInvestment.CARBON]: IntentionOfInvestmentGroup.FORESTRY,
-  [IntentionOfInvestment.FORESTRY_UNSPECIFIED]: IntentionOfInvestmentGroup.FORESTRY,
+  [ForestryIoI.TIMBER_PLANTATION]: IoIGroup.FORESTRY,
+  [ForestryIoI.FOREST_LOGGING]: IoIGroup.FORESTRY,
+  [ForestryIoI.CARBON]: IoIGroup.FORESTRY,
+  [ForestryIoI.FORESTRY_UNSPECIFIED]: IoIGroup.FORESTRY,
 
-  [IntentionOfInvestment.MINING]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.OIL_GAS_EXTRACTION]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.TOURISM]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.INDUSTRY]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.CONVERSATION]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.LAND_SPECULATION]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.RENEWABLE_ENERGY]: IntentionOfInvestmentGroup.OTHER,
-  [IntentionOfInvestment.OTHER]: IntentionOfInvestmentGroup.OTHER,
+  [OtherIoI.MINING]: IoIGroup.OTHER,
+  [OtherIoI.OIL_GAS_EXTRACTION]: IoIGroup.OTHER,
+  [OtherIoI.TOURISM]: IoIGroup.OTHER,
+  [OtherIoI.INDUSTRY]: IoIGroup.OTHER,
+  [OtherIoI.CONVERSATION]: IoIGroup.OTHER,
+  [OtherIoI.LAND_SPECULATION]: IoIGroup.OTHER,
+  [OtherIoI.RENEWABLE_ENERGY]: IoIGroup.OTHER,
+  [OtherIoI.OTHER]: IoIGroup.OTHER,
 };
 
 export enum NegotiationStatusGroup {

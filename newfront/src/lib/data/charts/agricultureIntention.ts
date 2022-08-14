@@ -4,22 +4,21 @@ import { createBucketMapReducer } from "$lib/data/buckets";
 import { createChartData } from "$lib/data/createChartData";
 import type { Deal } from "$lib/types/deal";
 import {
+  AgricultureIoI,
   INTENTION_OF_INVESTMENT_GROUP_MAP,
   IntentionOfInvestmentGroup,
 } from "$lib/types/deal";
 
-type AgricultureIntention = keyof typeof agriculture_investment_choices;
-
-const getAgricultureIntentionLabel = (intention: AgricultureIntention) =>
+const getAgricultureIntentionLabel = (intention: AgricultureIoI) =>
   agriculture_investment_choices[intention];
 
 export const agricultureIntentionReducer = (
-  bucketMap: BucketMap<AgricultureIntention>,
+  bucketMap: BucketMap<AgricultureIoI>,
   deal: Deal
-): BucketMap<AgricultureIntention> => {
+): BucketMap<AgricultureIoI> => {
   const intentions = deal.current_intention_of_investment ?? [];
   const agricultureIntentions = intentions.filter(
-    (intention): intention is AgricultureIntention =>
+    (intention): intention is AgricultureIoI =>
       INTENTION_OF_INVESTMENT_GROUP_MAP[intention] ===
       IntentionOfInvestmentGroup.AGRICULTURE
   );
@@ -29,13 +28,12 @@ export const agricultureIntentionReducer = (
   );
 };
 
-export const createAgricultureIntentionChartData =
-  createChartData<AgricultureIntention>(
-    agricultureIntentionReducer,
-    Object.keys(agriculture_investment_choices) as AgricultureIntention[],
-    getAgricultureIntentionLabel,
-    (_, index, array) => {
-      const alphaValue = 1 - index / array.length;
-      return `rgba(252,148,31,${alphaValue})`;
-    }
-  );
+export const createAgricultureIntentionChartData = createChartData<AgricultureIoI>(
+  agricultureIntentionReducer,
+  Object.values(AgricultureIoI),
+  getAgricultureIntentionLabel,
+  (_, index, array) => {
+    const alphaValue = 1 - index / array.length;
+    return `rgba(252,148,31,${alphaValue})`;
+  }
+);

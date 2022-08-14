@@ -26,9 +26,10 @@ const getProduceGroupColor = (produceGroup: ProduceGroup) =>
 export const produceGroupReducer: DealReducer<ProduceGroup> = (bucketMap, deal) => {
   const groups: ProduceGroup[] = [];
 
-  if (deal.current_crops) groups.push(ProduceGroup.CROPS);
-  if (deal.current_animals) groups.push(ProduceGroup.ANIMALS);
-  if (deal.current_mineral_resources) groups.push(ProduceGroup.MINERAL_RESOURCES);
+  if (deal.current_crops?.length) groups.push(ProduceGroup.CROPS);
+  if (deal.current_animals?.length) groups.push(ProduceGroup.ANIMALS);
+  if (deal.current_mineral_resources?.length)
+    groups.push(ProduceGroup.MINERAL_RESOURCES);
 
   const bucketMapReducer = createBucketMapReducer<ProduceGroup>(deal.deal_size);
   return groups.reduce(bucketMapReducer, bucketMap);
