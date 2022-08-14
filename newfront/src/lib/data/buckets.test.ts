@@ -58,8 +58,4 @@ describe("buckets", () => {
       { size: 5, count: 1 },
     ]);
   });
-
-  test("updateBucket", () => {
-    expect(true).toBeFalsy();
-  });
 });
