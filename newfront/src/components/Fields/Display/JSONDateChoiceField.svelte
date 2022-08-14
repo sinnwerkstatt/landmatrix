@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ImplementationStatus, NegotiationStatus } from "$lib/filters";
+  import { ImplementationStatus, NegotiationStatus } from "$lib/types/deal";
   import {
     dateCurrentFormat,
     mapChoices,

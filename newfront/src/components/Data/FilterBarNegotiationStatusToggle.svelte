@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { filters, NegotiationStatus } from "$lib/filters";
+  import { filters } from "$lib/filters";
+  import { NegotiationStatus } from "$lib/types/deal";
   import FilterCollapse from "./FilterCollapse.svelte";
 
   interface Choice {

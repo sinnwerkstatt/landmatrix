@@ -1,8 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import { filters, NegotiationStatus, NegotiationStatusGroupMap } from "$lib/filters";
+  import { filters } from "$lib/filters";
   import type { Deal } from "$lib/types/deal";
+  import { NEGOTIATION_STATUS_GROUP_MAP, NegotiationStatus } from "$lib/types/deal";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
   import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation";
 
@@ -74,7 +75,7 @@
         d.current_contract_size,
         d.intended_size
       );
-      const ngrp = NegotiationStatusGroupMap[d.current_negotiation_status];
+      const ngrp = NEGOTIATION_STATUS_GROUP_MAP[d.current_negotiation_status];
       if (ngrp && pots[ngrp])
         (pots[ngrp] as LSLAData).add(d.current_contract_size, d.intended_size);
     });

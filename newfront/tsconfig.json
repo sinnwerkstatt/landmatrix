@@ -15,10 +15,10 @@
     "sourceMap": true,
     "strict": true,
     "paths": {
-      "$lib": ["src/lib"],
-      "$lib/*": ["src/lib/*"],
-      "$components/*": ["src/components/*"],
-      "$views/*": ["src/views/*"]
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"],
+      "$components/*": ["./src/components/*"],
+      "$views/*": ["./src/views/*"]
     }
   },
   "include": ["./src/**/*.ts", "./src/**/*.svelte", "vite.config.ts"],
