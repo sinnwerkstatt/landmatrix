@@ -149,8 +149,8 @@ CACHES = {
 CORS_ALLOWED_ORIGINS = [
     "https://dev.accountability.landmatrix.org",
     "https://accountability.landmatrix.org",
-    "http://localhost:3000",    # vite dev
-    "http://localhost:4173"     # vite preview
+    "http://localhost:3000",  # vite dev
+    "http://localhost:4173",  # vite preview
 ]
 CORS_ALLOW_CREDENTIALS = True
 
