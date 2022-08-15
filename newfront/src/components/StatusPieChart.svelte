@@ -16,6 +16,9 @@
   export let data: ChartData<"pie", number[], string>;
   export let unit = "";
 
+  $: totals = data.datasets.map((dSet) =>
+    dSet.data.reduce((sum, value) => sum + value)
+  );
   let i18nData: ChartData<"pie", number[], string>;
   $: i18nData = { ...data, labels: data.labels?.map((label) => $_(label)) };
 
@@ -26,11 +29,13 @@
       tooltip: {
         callbacks: {
           label: (context) => {
+            const value = context.dataset.data[context.dataIndex];
+            const percentage = (value / totals[context.datasetIndex]) * 100;
+
             let ret = `${context.label}: `;
-            ret += Math.round(context.dataset.data[context.dataIndex]).toLocaleString(
-              "fr"
-            );
+            ret += Math.round(value).toLocaleString("fr");
             if (unit) ret += ` ${unit}`;
+            ret += " (" + percentage.toFixed(0) + "%)";
             return ret;
           },
         },
