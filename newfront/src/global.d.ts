@@ -11,6 +11,16 @@ declare module "leaflet-gesture-handling?client" {
   export = LGH;
 }
 
+declare module "svelte-chartjs?client" {
+  import * as svelte_chartjs from "svelte-chartjs";
+  export = svelte_chartjs;
+}
+
+declare module "chart.js?client" {
+  import * as chartjs from "chart.js";
+  export = chartjs;
+}
+
 // fallback
 declare module "*?client";
 declare module "*?server";

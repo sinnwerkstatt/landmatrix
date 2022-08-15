@@ -5,16 +5,17 @@
   import Select from "svelte-select";
   import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
-  import { filters, isDefaultFilter, ProduceGroup, publicOnly } from "$lib/filters";
-  import { countries, formfields, regions } from "$lib/stores";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import { showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
-  } from "$components/Fields/Display/choices";
+  } from "$lib/choices";
+  import { filters, isDefaultFilter, publicOnly } from "$lib/filters";
+  import { countries, formfields, regions } from "$lib/stores";
+  import { ProduceGroup } from "$lib/types/deal";
+  import type { Investor } from "$lib/types/investor";
+  import { UserLevel } from "$lib/types/user";
+  import { showFilterBar } from "$components/Data";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte";

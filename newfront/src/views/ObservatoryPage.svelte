@@ -3,7 +3,8 @@
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
   import { page as storePage } from "$app/stores";
-  import { filters, FilterValues, NegotiationStatus } from "$lib/filters";
+  import { filters, FilterValues } from "$lib/filters";
+  import { NegotiationStatus } from "$lib/types/deal";
   import type { ObservatoryPage } from "$lib/types/wagtail";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";

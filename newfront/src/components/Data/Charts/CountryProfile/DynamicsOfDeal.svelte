@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
+  import { classification_choices } from "$lib/choices";
   import type { Deal } from "$lib/types/deal";
-  import { classification_choices } from "$components/Fields/Display/choices";
   import { a_download, fileName } from "../utils";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
   import { dynamics_csv, DynamicsOfDeal } from "./dynamics_of_deal";

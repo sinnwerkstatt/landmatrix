@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import type { IntentionOfInvestment } from "$lib/filters";
+  import type { IntentionOfInvestment } from "$lib/types/deal";
   import {
     dateCurrentFormat,
     mapChoices,
@@ -12,7 +12,7 @@
     current?: boolean;
     name: string;
     area?: string;
-    choices: Array<IntentionOfInvestment | { [key: string]: string }>;
+    choices: Array<IntentionOfInvestment>;
   };
 
   export let formfield: FormField;
