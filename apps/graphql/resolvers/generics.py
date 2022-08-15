@@ -136,6 +136,13 @@ def change_object_status(
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.serialized_data["current_draft"] = None
 
+        # dirty hack for some investors with datasources == None
+        if (
+            "datasources" in obj_version.serialized_data
+            and obj_version.serialized_data["datasources"] is None
+        ):
+            obj_version.serialized_data["datasources"] = []
+
         obj = Object.deserialize_from_version(obj_version)
         obj_version.save()
     elif transition == "TO_DRAFT":
