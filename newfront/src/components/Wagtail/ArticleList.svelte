@@ -30,6 +30,5 @@
   <button type="button" class="btn-white" on:click={() => (limit = 0)}>
     {$_("Show all")}
     {articles.length}
-    {$_("articles")}
   </button>
 {/if}

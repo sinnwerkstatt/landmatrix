@@ -202,7 +202,7 @@
 
 <div class="mx-auto container w-[clamp(20rem,75%,56rem)] my-8">
   <h3>{$_("Country profiles")}</h3>
-  <div class="description">
+  <div>
     <p>
       {$_(
         "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."

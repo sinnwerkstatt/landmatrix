@@ -1,56 +1,51 @@
-import dayjs from "dayjs";
-import Cookies from "js-cookie";
-
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-import MultiSelect from "vue-multiselect";
-import VueApollo from "vue-apollo";
-import VueMeta from "vue-meta";
-import VueI18n from "vue-i18n";
-// import * as Sentry from "@sentry/vue";
-// import { Integrations } from "@sentry/tracing";
-
-// @ts-ignore
-import VueMatomo from "vue-matomo";
-// @ts-ignore
-import ScrollLoader from "vue-scroll-loader";
-
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import Columns1on1 from "$components/Wagtail/Columns1on1.vue";
+import Columns3 from "$components/Wagtail/Columns3.vue";
+import FaqsBlock from "$components/Wagtail/FaqsBlock.vue";
+import FullWidthContainer from "$components/Wagtail/FullWidthContainer.vue";
+import Gallery from "$components/Wagtail/Gallery.vue";
+import Heading from "$components/Wagtail/Heading.vue";
+import Image from "$components/Wagtail/Image.vue";
+import LatestDatabaseModifications from "$components/Wagtail/LatestDatabaseModifications.vue";
+import LatestNews from "$components/Wagtail/LatestNews.vue";
+import Paragraph from "$components/Wagtail/Paragraph.vue";
+import RawHTML from "$components/Wagtail/RawHTML.vue";
+import ResourcesTeasers from "$components/Wagtail/ResourcesTeasers.vue";
+import SectionDivider from "$components/Wagtail/SectionDivider.vue";
+import Slider from "$components/Wagtail/Slider.vue";
+import Statistics from "$components/Wagtail/Statistics.vue";
+// needs to be registered globally for streamfield loops
+import Title from "$components/Wagtail/Title.vue";
+import Twitter from "$components/Wagtail/Twitter.vue";
 import { apolloClient } from "$utils/apolloclient";
-
+import App from "./App.vue";
 import en_messages from "./i18n_messages.en.json";
 import es_messages from "./i18n_messages.es.json";
 import fr_messages from "./i18n_messages.fr.json";
 import ru_messages from "./i18n_messages.ru.json";
-
-import "@fortawesome/fontawesome-free/css/all.css";
-import "bootstrap";
-import "vue-multiselect/dist/vue-multiselect.min.css";
-import "leaflet/dist/leaflet.css";
-import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import "leaflet.markercluster/dist/MarkerCluster.css";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import router from "./router";
 import "./scss/main.scss";
-
-// needs to be registered globally for streamfield loops
-import Title from "$components/Wagtail/Title.vue";
-import Heading from "$components/Wagtail/Heading.vue";
-import Image from "$components/Wagtail/Image.vue";
-import Paragraph from "$components/Wagtail/Paragraph.vue";
-import Columns1on1 from "$components/Wagtail/Columns1on1.vue";
-import Columns3 from "$components/Wagtail/Columns3.vue";
-import FullWidthContainer from "$components/Wagtail/FullWidthContainer.vue";
-import Slider from "$components/Wagtail/Slider.vue";
-import Gallery from "$components/Wagtail/Gallery.vue";
-import FaqsBlock from "$components/Wagtail/FaqsBlock.vue";
-import Twitter from "$components/Wagtail/Twitter.vue";
-import LatestNews from "$components/Wagtail/LatestNews.vue";
-import LatestDatabaseModifications from "$components/Wagtail/LatestDatabaseModifications.vue";
-import Statistics from "$components/Wagtail/Statistics.vue";
-import SectionDivider from "$components/Wagtail/SectionDivider.vue";
-import RawHTML from "$components/Wagtail/RawHTML.vue";
+import store from "./store";
+import "@fortawesome/fontawesome-free/css/all.css";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import "bootstrap";
+import BootstrapVue from "bootstrap-vue";
+import dayjs from "dayjs";
+import Cookies from "js-cookie";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet/dist/leaflet.css";
+import Vue from "vue";
+import VueApollo from "vue-apollo";
+import VueI18n from "vue-i18n";
+// import * as Sentry from "@sentry/vue";
+// import { Integrations } from "@sentry/tracing";
+// @ts-ignore
+import VueMatomo from "vue-matomo";
+import VueMeta from "vue-meta";
+import MultiSelect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+// @ts-ignore
+import ScrollLoader from "vue-scroll-loader";
 
 Vue.use(BootstrapVue);
 Vue.use(VueMeta);
@@ -115,6 +110,7 @@ Vue.component("wagtail-columns_1_1", Columns1on1);
 Vue.component("wagtail-columns_3", Columns3);
 Vue.component("wagtail-section_divider", SectionDivider);
 Vue.component("wagtail-html", RawHTML);
+Vue.component("wagtail-resources_teasers", ResourcesTeasers);
 Vue.component("wagtail-full_width_container", FullWidthContainer);
 Vue.component("wagtail-faqs_block", FaqsBlock);
 Vue.component("wagtail-twitter", Twitter);
