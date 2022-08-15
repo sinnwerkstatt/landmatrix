@@ -22,14 +22,9 @@ test("basic cms", async ({ context, page }) => {
     console.log("obs index page already exists");
     await page.locator("text=Pages").first().click();
     await page.locator('h3:has-text("Land Matrix")').click();
-    // await page
-    //   .locator("[aria-label=\"View more options for \\'observatory\\'\"]")
-    //   .click();
     await page.locator("text=observatory").first().click();
     await page.locator("div.dropdown-toggle").last().click();
-    await page.pause(); //throws an error without this pause
     await Promise.all([page.waitForNavigation(), page.locator("text=Delete").click()]);
-    await page.pause();
     await Promise.all([
       page.waitForNavigation(),
       await page.locator("text=Yes, delete it").click(),
@@ -64,22 +59,21 @@ test("basic cms", async ({ context, page }) => {
   await page.locator("text=Paragraph").first().click();
   await page.locator('div[role="textbox"] div').nth(2).click();
   await page.keyboard.type("test global child page");
-  await page.locator("div.dropdown-toggle").last().click();
-  await page.pause(); //throws an error without this pause
+  await page.locator("div.dropdown-toggle").first().click();
+
+  //ToDo: needs Fixing to delete timeout
+  await page.evaluate(() => {
+    return new Promise((resolve) => setTimeout(resolve, 500));
+  });
   await Promise.all([
     page.waitForNavigation(),
     page.locator('button:has-text("Publish")').click(),
   ]);
 
-  await Promise.all([
-    page.waitForNavigation(),
-    page.locator("text=View live").first().click(),
-  ]);
-
-  await expect(page.locator("h3 >> nth=0")).toContainText(
-    "We currently have information about:"
-  );
-  await page.pause();
+  await page.locator("text=View live").first().click(),
+    await expect(page.locator("h3 >> nth=0")).toContainText(
+      "We currently have information about:"
+    );
   await page.locator("text=Observatories").click();
   await page.locator("text=Observatories global >> a").click();
 });
