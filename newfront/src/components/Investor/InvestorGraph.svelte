@@ -16,6 +16,7 @@
   export let investor: Investor;
   export let showDealsOnLoad = true;
   export let initDepth = 1;
+  export let showControls = false;
 
   const MAX_DEPTH = 5;
   let depth = initDepth;
@@ -97,33 +98,34 @@
   <div id="investor-network" class:network-fullscreen={isFullscreen} />
 
   <div id="investor-controls" class="flex flex-row">
-    <div class="basis-1/2 p-2">
-      <div class="pb-3">
-        <label for="investor-level">
-          <strong>{$_("Level of parent investors")}</strong>
-        </label>
-        <div class="w-1/2">
-          <input
-            bind:value={depth}
-            id="investor-level"
-            type="range"
-            min="1"
-            max={MAX_DEPTH}
-          />
-          {depth}
+    {#if showControls}
+      <div class="basis-1/2 p-2">
+        <div class="pb-3">
+          <label for="investor-level">
+            <strong>{$_("Level of parent investors")}</strong>
+          </label>
+          <div class="w-1/2">
+            <input
+              bind:value={depth}
+              id="investor-level"
+              type="range"
+              min="1"
+              max={MAX_DEPTH}
+            />
+            {depth}
+          </div>
+        </div>
+
+        <div>
+          <label for="investor-deals" class="pr-3"
+            ><strong>{$_("Show deals")}</strong></label
+          >
+          <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
         </div>
       </div>
-
-      <div>
-        <label for="investor-deals" class="pr-3"
-          ><strong>{$_("Show deals")}</strong></label
-        >
-        <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
-      </div>
-    </div>
-
+    {/if}
     <div id="investor-legend" class="basis-1/2 p-2">
-      <strong>Legend</strong>
+      <strong>{$_("Legend")}</strong>
       <ul>
         <li>
           <span class="legend-icon deal" />{$_("Is operating company of")}

@@ -84,8 +84,6 @@
     loading.set(false);
   }
 
-  let graphDataIsReady = true;
-
   const download_link = function (format: string): string {
     return `/api/legacy_export/?investor_id=${investorID}&subset=UNFILTERED&format=${format}`;
   };
@@ -255,11 +253,7 @@
       {/if}
       {#if activeTab === "#network_graph"}
         {#if !investorVersion}
-          <div class:loading_wrapper={!graphDataIsReady}>
-            {#if graphDataIsReady}
-              <InvestorGraph {investor} />
-            {/if}
-          </div>
+          <InvestorGraph {investor} showControls />
         {:else}
           <div
             class="lg:w-3/4 xl:w-1/2 mb-3 flex text-center items-center text-zinc-600 bg-neutral-300"

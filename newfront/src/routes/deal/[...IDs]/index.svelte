@@ -27,6 +27,8 @@
 </script>
 
 <script lang="ts">
+  import { gql } from "@urql/svelte";
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
@@ -38,7 +40,9 @@
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
+  import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
   import DealManageHeader from "$components/Management/DealManageHeader.svelte";
+  import type { Investor } from "$lib/types/investor";
 
   export let deal: Deal;
   export let dealID: number;
@@ -85,6 +89,38 @@
   const download_link = function (format: string): string {
     return `/api/legacy_export/?deal_id=${dealID}&subset=UNFILTERED&format=${format}`;
   };
+
+  let investor: Investor;
+  async function fetchInvestor() {
+    if (!deal.operating_company?.id) return;
+    const { data } = await $page.stuff.urqlClient
+      .query<{ deal: Deal }>(
+        gql`
+          query ($id: Int!) {
+            investor(
+              id: $id
+              involvements_depth: 5
+              involvements_include_ventures: false
+            ) {
+              id
+              name
+              classification
+              country {
+                id
+                name
+              }
+              homepage
+              comment
+              involvements
+            }
+          }
+        `,
+        { id: deal.operating_company.id }
+      )
+      .toPromise();
+    investor = data.investor;
+  }
+  onMount(fetchInvestor);
 </script>
 
 <svelte:head>
@@ -137,7 +173,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full">
+    <div class="pl-4 flex-auto w-full mb-12">
       {#if activeTab === "#locations"}
         <DealLocationsSection {deal} />
       {/if}
@@ -155,7 +191,14 @@
         <DealSection {deal} sections={dealSections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealSection {deal} sections={dealSections.investor_info} />
+        <DealSection {deal} sections={dealSections.investor_info}>
+          {#if investor}
+            <h4 class="mb-2">
+              Network of parent companies and tertiary investors/lenders
+            </h4>
+            <InvestorGraph {investor} />
+          {/if}
+        </DealSection>
       {/if}
       {#if activeTab === "#data_sources"}
         <DealSubmodelSection
