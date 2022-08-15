@@ -96,7 +96,7 @@
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
       <TextField {value} {formfield} />
     {:else if formfield.class === "DateTimeField"}
-      <DateTimeField {value} {formfield} />
+      <DateTimeField {value} />
     {:else if formfield.class === "LengthField"}
       <LengthField {value} {formfield} />
     {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}

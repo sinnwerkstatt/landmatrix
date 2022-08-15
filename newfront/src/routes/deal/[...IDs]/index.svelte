@@ -10,11 +10,7 @@
 
     try {
       const { data } = await stuff.urqlClient
-        .query<{ deal: Deal }>(deal_gql_query, {
-          id: dealID,
-          version: dealVersion,
-          subset: "UNFILTERED",
-        })
+        .query<{ deal: Deal }>(deal_gql_query, { id: dealID, version: dealVersion })
         .toPromise();
       return { props: { dealID, dealVersion, deal: data.deal } };
     } catch (e) {
@@ -33,6 +29,7 @@
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
   import { dealSections } from "$lib/sections";
+  import type { Investor } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user";
   import DealHistory from "$components/Deal/DealHistory.svelte";
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
@@ -42,7 +39,6 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
   import DealManageHeader from "$components/Management/DealManageHeader.svelte";
-  import type { Investor } from "$lib/types/investor";
 
   export let deal: Deal;
   export let dealID: number;
@@ -78,7 +74,7 @@
     const { data } = await $page.stuff.urqlClient
       .query<{ deal: Deal }>(
         deal_gql_query,
-        { id: dealID, version: dealVersion, subset: "UNFILTERED" },
+        { id: dealID, version: dealVersion },
         { requestPolicy: "network-only" }
       )
       .toPromise();
