@@ -200,7 +200,6 @@ export class FilterValues {
       });
 
     if (this.nature_of_deal.length > 0) {
-      //TODO use enum
       const nature_of_deal_choices = [
         NatureOfDeal.OUTRIGHT_PURCHASE,
         NatureOfDeal.LEASE,

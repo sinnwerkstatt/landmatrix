@@ -119,7 +119,6 @@
         <input
           id={nstat.group}
           bind:checked={nstat.state}
-          class="custom-control-input"
           type="checkbox"
           on:change={() => toggleGroup(nstat)}
         />
@@ -129,7 +128,6 @@
         <label class="block pl-4">
           <input
             bind:group={$filters.negotiation_status}
-            class="form-check-input custom-control-input"
             type="checkbox"
             value={nstatop.value}
             on:change={() => toggleSingle(nstat)}

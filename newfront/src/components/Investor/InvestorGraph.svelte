@@ -85,13 +85,13 @@
 
 <div id="investor-network-wrapper" class:network-fullscreen={isFullscreen}>
   <div id="toggle-fullscreen-button">
-    <a on:click={toggleFullscreen}>
+    <button type="button" on:click={toggleFullscreen}>
       {#if isFullscreen}
         <CompressIcon />
       {:else}
         <ExpandIcon />
       {/if}
-    </a>
+    </button>
   </div>
 
   <div id="investor-network" class:network-fullscreen={isFullscreen} />

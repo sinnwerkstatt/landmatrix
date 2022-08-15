@@ -6,9 +6,10 @@ import type { LayoutOptions } from "cytoscape-cose-bilkent";
 import cyPopper from "cytoscape-popper";
 import tippy from "tippy.js";
 import type { Instance as TippyInstance } from "tippy.js";
+import { classification_choices } from "$lib/choices";
 import type { Deal } from "$lib/types/deal";
 import type { Investor, Involvement } from "$lib/types/investor";
-import { classification_choices } from "$components/Fields/Display/choices";
+import type { Classification } from "$lib/types/investor";
 
 cytoscape.use(cyCoseBilkent);
 cytoscape.use(cyPopper);
@@ -89,9 +90,10 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
             content += `${ele.data().country.name}, `;
           if (
             "classification" in ele.data() &&
-            classification_choices[ele.data().classification]
+            classification_choices[ele.data().classification as Classification]
           )
-            content += classification_choices[ele.data().classification];
+            content +=
+              classification_choices[ele.data().classification as Classification];
           tipEl.innerHTML = content;
         }
         return tipEl;
