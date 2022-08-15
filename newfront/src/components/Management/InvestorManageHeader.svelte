@@ -2,6 +2,7 @@
   import { gql } from "@urql/svelte";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import type { Investor } from "$lib/types/investor";
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
@@ -13,40 +14,12 @@
   export let investorVersion: number | undefined;
 
   let showSendToReviewOverlay = false;
-
   async function sendToReview() {
-    await changeStatus({ transition: "TO_REVIEW" });
+    await changeStatus({ detail: { transition: "TO_REVIEW" } });
     showSendToReviewOverlay = false;
   }
-  function addComment({ detail: { comment, send_to_user } }) {
-    $page.stuff.urqlClient
-      .mutation(
-        gql`
-          mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
-            add_investor_comment(
-              id: $id
-              version: $version
-              comment: $comment
-              to_user_id: $to_user_id
-            ) {
-              investorId
-              investorVersion
-            }
-          }
-        `,
-        {
-          id: investor.id,
-          version: investorVersion ?? null,
-          comment: comment,
-          to_user_id: send_to_user?.id,
-        }
-      )
-      .toPromise()
-      .then(() => dispatch("reload"))
-      .catch((error) => console.error(error));
-  }
 
-  function changeStatus({ transition, comment = "", to_user = null }) {
+  function changeStatus({ detail: { transition, comment = "", to_user = null } }) {
     $page.stuff.urqlClient
       .mutation(
         gql`
@@ -78,59 +51,47 @@
         }
       )
       .toPromise()
-      .then(({ data: { change_investor_status } }) => {
+      .then(async ({ data: { change_investor_status } }) => {
         console.log(change_investor_status);
-        // if (transition === "ACTIVATE") {
-        //   this.$router.push({
-        //     name: "investor_detail",
-        //     params: { investorId: change_investor_status.investorId.toString() },
-        //   });
-        // } else {
-        //   if (
-        //     parseInt(this.investorVersion) !== change_investor_status.investorVersion
-        //   ) {
-        //     this.$router.push({
-        //       name: "investor_detail",
-        //       params: {
-        //         investorId: change_investor_status.investorId.toString(),
-        //         investorVersion: change_investor_status.investorVersion.toString(),
-        //       },
-        //     });
-        //   } else {
-        //     console.log("Investor detail: reload");
-        //     this.reloadInvestor();
-        //   }
-        // }
+        if (transition === "ACTIVATE") {
+          await goto(`/deal/${change_investor_status.investorId}/`);
+        } else if (investorVersion !== change_investor_status.investorVersion)
+          await goto(
+            `/deal/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`
+          );
+        else dispatch("reload");
       })
       .catch((error) => console.error(error));
   }
-  function copyInvestor(): void {
+
+  function addComment({ detail: { comment, send_to_user } }) {
     $page.stuff.urqlClient
       .mutation(
         gql`
-          mutation ($id: Int!) {
-            object_copy(otype: "investor", obj_id: $id) {
-              objId
-              objVersion
+          mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
+            add_investor_comment(
+              id: $id
+              version: $version
+              comment: $comment
+              to_user_id: $to_user_id
+            ) {
+              investorId
+              investorVersion
             }
           }
         `,
-        { id: investor.id }
+        {
+          id: investor.id,
+          version: investorVersion ?? null,
+          comment: comment,
+          to_user_id: send_to_user?.id,
+        }
       )
       .toPromise()
-      .then(({ data }) => {
-        // window.open(
-        //   this.$router.resolve({
-        //     name: "investor_detail",
-        //     params: {
-        //       investorId: data.object_copy.objId,
-        //       investorVersion: data.object_copy.objVersion,
-        //     },
-        //   }).href,
-        //   "_blank"
-        // );
-      });
+      .then(() => dispatch("reload"))
+      .catch((error) => console.error(error));
   }
+
   function deleteInvestor(comment) {
     $page.stuff.urqlClient
       .mutation(

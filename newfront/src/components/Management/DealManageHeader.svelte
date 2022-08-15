@@ -37,8 +37,102 @@
     showSendToReviewOverlay = false;
   }
 
-  let showCopyOverlay = false;
+  function changeStatus({ detail: { transition, comment = "", to_user = null } }) {
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
+          mutation (
+            $id: Int!
+            $version: Int!
+            $transition: WorkflowTransition!
+            $comment: String
+            $to_user_id: Int
+            $fully_updated: Boolean
+          ) {
+            change_deal_status(
+              id: $id
+              version: $version
+              transition: $transition
+              comment: $comment
+              to_user_id: $to_user_id
+              fully_updated: $fully_updated
+            ) {
+              dealId
+              dealVersion
+            }
+          }
+        `,
+        {
+          id: deal.id,
+          version: dealVersion,
+          transition,
+          comment,
+          to_user_id: to_user?.id,
+          fully_updated,
+        }
+      )
+      .toPromise()
+      .then(async ({ data: { change_deal_status } }) => {
+        console.log(change_deal_status);
+        if (transition === "ACTIVATE") {
+          await goto(`/deal/${change_deal_status.dealId}/`);
+        } else if (dealVersion !== change_deal_status.dealVersion)
+          await goto(
+            `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`
+          );
+        else dispatch("reload");
+      })
+      .catch((error) => console.error(error));
+  }
 
+  function addComment({ detail: { comment, send_to_user } }) {
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
+          mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
+            add_deal_comment(
+              id: $id
+              version: $version
+              comment: $comment
+              to_user_id: $to_user_id
+            ) {
+              dealId
+              dealVersion
+            }
+          }
+        `,
+        {
+          id: deal.id,
+          version: dealVersion ?? null,
+          comment: comment,
+          to_user_id: send_to_user?.id,
+        }
+      )
+      .toPromise()
+      .then(() => dispatch("reload"))
+      .catch((error) => console.error(error));
+  }
+
+  async function deleteDeal({ detail: { comment } }) {
+    $page.stuff.urqlClient
+      .mutation(
+        gql`
+          mutation ($id: Int!, $version: Int, $comment: String) {
+            deal_delete(id: $id, version: $version, comment: $comment)
+          }
+        `,
+        { id: deal.id, version: dealVersion, comment }
+      )
+      .toPromise()
+      .then(async (dat) => {
+        //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
+        console.log(dat);
+        if (dealVersion) await goto(`/deal/${deal.id}`);
+        dispatch("reload");
+      });
+  }
+
+  let showCopyOverlay = false;
   async function copyDeal() {
     $page.stuff.urqlClient
       .mutation(
@@ -80,6 +174,7 @@
       showConfidentialOverlay = true;
     }
   }
+
   function setConfidential(confidential, comment = ""): void {
     $page.stuff.urqlClient
       .mutation(
@@ -102,102 +197,6 @@
       )
       .toPromise()
       .then(() => dispatch("reload"));
-  }
-
-  function changeStatus({ detail: { transition, comment = "", to_user = null } }) {
-    $page.stuff.urqlClient
-      .mutation(
-        gql`
-          mutation (
-            $id: Int!
-            $version: Int!
-            $transition: WorkflowTransition!
-            $comment: String
-            $to_user_id: Int
-            $fully_updated: Boolean
-          ) {
-            change_deal_status(
-              id: $id
-              version: $version
-              transition: $transition
-              comment: $comment
-              to_user_id: $to_user_id
-              fully_updated: $fully_updated
-            ) {
-              dealId
-              dealVersion
-            }
-          }
-        `,
-        {
-          id: deal.id,
-          version: dealVersion,
-          transition,
-          comment,
-          to_user_id: to_user?.id,
-          fully_updated,
-        }
-      )
-      .toPromise()
-      .then(async ({ data: { change_deal_status } }) => {
-        console.log(change_deal_status);
-        if (transition === "ACTIVATE") {
-          await goto(`/deal/${change_deal_status.dealId}/`);
-        } else {
-          if (dealVersion !== change_deal_status.dealVersion)
-            await goto(
-              `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`
-            );
-          else dispatch("reload");
-        }
-      })
-      .catch((error) => console.error(error));
-  }
-  async function deleteDeal({ detail: { comment } }) {
-    $page.stuff.urqlClient
-      .mutation(
-        gql`
-          mutation ($id: Int!, $version: Int, $comment: String) {
-            deal_delete(id: $id, version: $version, comment: $comment)
-          }
-        `,
-        { id: deal.id, version: dealVersion, comment }
-      )
-      .toPromise()
-      .then(async (dat) => {
-        //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
-        console.log(dat);
-        if (dealVersion) await goto(`/deal/${deal.id}`);
-        dispatch("reload");
-      });
-  }
-
-  function addComment({ detail: { comment, send_to_user } }) {
-    $page.stuff.urqlClient
-      .mutation(
-        gql`
-          mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
-            add_deal_comment(
-              id: $id
-              version: $version
-              comment: $comment
-              to_user_id: $to_user_id
-            ) {
-              dealId
-              dealVersion
-            }
-          }
-        `,
-        {
-          id: deal.id,
-          version: dealVersion ?? null,
-          comment: comment,
-          to_user_id: send_to_user?.id,
-        }
-      )
-      .toPromise()
-      .then(() => dispatch("reload"))
-      .catch((error) => console.error(error));
   }
 </script>
 

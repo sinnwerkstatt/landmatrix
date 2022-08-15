@@ -155,12 +155,12 @@
       {/if}
       {#if activeTab === "#parent_companies"}
         <SubmodelEditSection
+          id="parent_companies"
           model="involvement"
           modelName="Parent company"
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "PARENT"}
           newEntryExtras={{ role: "PARENT" }}
-          id="parent_companies"
           fields={[
             "investor",
             "investment_type",
@@ -175,12 +175,12 @@
       {/if}
       {#if activeTab === "#tertiary_investors"}
         <SubmodelEditSection
+          id="tertiary_investors"
           model="involvement"
           modelName="Tertiary investor/lender"
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "LENDER"}
           newEntryExtras={{ role: "LENDER" }}
-          id="tertiary_investors"
           fields={[
             "investor",
             "investment_type",

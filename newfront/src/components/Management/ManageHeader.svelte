@@ -388,9 +388,6 @@
   commentRequired
   on:submit={doDelete}
   title={deleteTitle}
-  xtitle={objectVersion
-    ? `${$_("Delete")} ${$_(otype)} ${$_("version")}`
-    : `${object.status === 4 ? $_("Reactivate") : $_("Delete")} ${$_(otype)}`}
 />
 
 <ManageOverlay

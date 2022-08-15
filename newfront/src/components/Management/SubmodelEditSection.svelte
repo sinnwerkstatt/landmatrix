@@ -10,7 +10,7 @@
   import PlusIcon from "$components/icons/PlusIcon.svelte";
   import TrashIcon from "$components/icons/TrashIcon.svelte";
 
-  export let model: string;
+  export let model: "datasource" | "contract" | "involvement";
   export let modelName: string;
   export let entries: Array<Contract | DataSource | Involvement> = [];
   export let entriesFilter = () => true;
@@ -22,7 +22,7 @@
   let activeEntry = -1;
 
   function addEntry() {
-    const currentIDs = entries.map((x) => x.id.toString());
+    const currentIDs = entries.map((x) => x?.id?.toString());
     const newEntry = { id: newNanoid(currentIDs), ...newEntryExtras } as
       | Contract
       | DataSource
@@ -52,7 +52,15 @@
           >
             <h3 class="m-0">
               {index + 1}. {$_(modelName)}
-              <small class="text-sm text-gray-500">#{entry.id}</small>
+              <small class="text-sm text-gray-500">
+                {#if model === "involvement"}
+                  {#if entry?.investor?.id}
+                    {$_("Investor")} #{entry.investor.id}
+                  {/if}
+                {:else}
+                  #{entry.id}
+                {/if}
+              </small>
             </h3>
           </div>
           <div class="flex-initial p-2" on:click={() => removeEntry(entry)}>
