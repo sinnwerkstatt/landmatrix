@@ -15,7 +15,7 @@
     const vFrom = await stuff.urqlClient
       .query(
         deal_gql_query,
-        { id: dealID, version: +versionFrom, subset: "UNFILTERED" },
+        { id: dealID, version: versionFrom },
         { requestPolicy: "network-only" }
       )
       .toPromise();
@@ -23,7 +23,7 @@
     const vTo = await stuff.urqlClient
       .query(
         deal_gql_query,
-        { id: dealID, version: +versionTo, subset: "UNFILTERED" },
+        { id: dealID, version: versionTo },
         { requestPolicy: "network-only" }
       )
       .toPromise();

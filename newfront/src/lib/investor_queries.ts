@@ -1,17 +1,10 @@
 import { gql } from "@urql/svelte";
 
 export const investor_gql_query = gql`
-  query Investor(
-    $id: Int!
-    $version: Int
-    $subset: Subset
-    $depth: Int
-    $includeDeals: Boolean!
-  ) {
+  query Investor($id: Int!, $version: Int, $depth: Int, $includeDeals: Boolean!) {
     investor(
       id: $id
       version: $version
-      subset: $subset
       involvements_depth: $depth
       involvements_include_ventures: true
     ) {

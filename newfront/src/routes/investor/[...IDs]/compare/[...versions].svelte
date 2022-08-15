@@ -15,12 +15,7 @@
     const vFrom = await stuff.urqlClient
       .query(
         investor_gql_query,
-        {
-          id: investorID,
-          version: +versionFrom,
-          subset: "UNFILTERED",
-          includeDeals: false,
-        },
+        { id: investorID, version: versionFrom, includeDeals: false },
         { requestPolicy: "network-only" }
       )
       .toPromise();
@@ -28,12 +23,7 @@
     const vTo = await stuff.urqlClient
       .query(
         investor_gql_query,
-        {
-          id: investorID,
-          version: +versionTo,
-          subset: "UNFILTERED",
-          includeDeals: false,
-        },
+        { id: investorID, version: versionTo, includeDeals: false },
         { requestPolicy: "network-only" }
       )
       .toPromise();

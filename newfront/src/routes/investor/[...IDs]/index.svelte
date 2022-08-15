@@ -14,7 +14,6 @@
       .query<{ investor: Investor }>(investor_gql_query, {
         id: investorID,
         version: investorVersion,
-        subset: "UNFILTERED",
         includeDeals: true,
         depth: 1,
       })
@@ -66,6 +65,7 @@
   ];
 
   async function reloadInvestor() {
+    console.log("Investor detail: reload");
     loading.set(true);
     const { data } = await $page.stuff.urqlClient
       .query<{ investor: Investor }>(
@@ -73,7 +73,6 @@
         {
           id: investorID,
           version: investorVersion,
-          subset: "UNFILTERED",
           includeDeals: true,
           depth: 5, // max depth
         },
