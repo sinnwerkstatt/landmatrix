@@ -6,7 +6,6 @@ from io import BytesIO
 import unicodecsv as csv
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import gettext as _
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
@@ -163,7 +162,6 @@ deal_fields = {
     "confidential": "Not public",
     "confidential_comment": "Comment on not public",
 }
-
 location_fields = {
     "id": "ID",
     "deal_id": "Deal ID",
@@ -183,7 +181,6 @@ contract_fields = {
     "agreement_duration": "Duration of the agreement",
     "comment": "Comment on contract",
 }
-
 datasource_fields = {
     "id": "ID",
     "deal_id": "Deal ID",
@@ -200,54 +197,24 @@ datasource_fields = {
     "comment": "Comment on data source",
 }
 
-current_negotiation_status_map = {
-    "EXPRESSION_OF_INTEREST": "Intended (Expression of interest)",
-    "UNDER_NEGOTIATION": "Intended (Under negotiation)",
-    "MEMORANDUM_OF_UNDERSTANDING": "Intended (Memorandum of understanding)",
-    "ORAL_AGREEMENT": "Concluded (Oral Agreement)",
-    "CONTRACT_SIGNED": "Concluded (Contract signed)",
-    "CHANGE_OF_OWNERSHIP": "Concluded (Change of ownership)",
-    "NEGOTIATIONS_FAILED": "Failed (Negotiations failed)",
-    "CONTRACT_CANCELED": "Failed (Contract cancelled)",
-    "CONTRACT_EXPIRED": "Contract expired",
+negotiation_status_choices = {**dict(choices.NEGOTIATION_STATUS_CHOICES), None: "None"}
+implementation_status_choices = {
+    **dict(choices.IMPLEMENTATION_STATUS_CHOICES),
     None: "None",
 }
-
-current_implementation_status_map = {
-    "PROJECT_NOT_STARTED": "Project not started",
-    "STARTUP_PHASE": "Startup phase (no production)",
-    "IN_OPERATION": "In operation (production)",
-    "PROJECT_ABANDONED": "Project abandoned",
-    None: "None",
-}
-intention_of_investment_map = {
-    "BIOFUELS": "Biofuels",
-    "FOOD_CROPS": "Food crops",
-    "FODDER": "Fodder",
-    "LIVESTOCK": "Livestock",
-    "NON_FOOD_AGRICULTURE": "Non-food agricultural commodities",
-    "AGRICULTURE_UNSPECIFIED": "Agriculture unspecified",
-    "TIMBER_PLANTATION": "Timber plantation",
-    "FOREST_LOGGING": "Forest logging / management",
-    "CARBON": "For carbon sequestration/REDD",
-    "FORESTRY_UNSPECIFIED": "Forestry unspecified",
-    "MINING": "Mining",
-    "OIL_GAS_EXTRACTION": "Oil / Gas extraction",
-    "TOURISM": "Tourism",
-    "INDUSTRY": "Industry",
-    "CONVERSATION": "Conservation",
-    "LAND_SPECULATION": "Land speculation",
-    "RENEWABLE_ENERGY": "Renewable Energy",
-    "OTHER": "Other",
-}
-
-deal_choices_fields = {
-    "intention_of_investment": intention_of_investment_map,
-    "investor_classification": dict(Investor.CLASSIFICATION_CHOICES),
+intention_of_investment_choices = {**dict(choices.INTENTION_CHOICES), None: "None"}
+produce_choices = {
+    "crops": {k: v["name"] for k, v in choices.CROPS.items()},
+    "contract_farming_crops": {k: v["name"] for k, v in choices.CROPS.items()},
+    "animals": {k: v["name"] for k, v in choices.ANIMALS.items()},
+    "contract_farming_animals": {k: v["name"] for k, v in choices.ANIMALS.items()},
+    "mineral_resources": {k: v["name"] for k, v in choices.MINERALS.items()},
 }
 
 
 class Choices:
+    """need to generate the choices on running, otherwise DB errors"""
+
     choices = {}
 
     def get(self, name):
@@ -259,31 +226,21 @@ class Choices:
                 }
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
-            if name == "crops":
-                self.choices[name] = {k: v["name"] for k, v in choices.CROPS.items()}
-            if name == "animals":
-                self.choices[name] = {k: v["name"] for k, v in choices.ANIMALS.items()}
-            if name == "mineral_resources":
-                self.choices[name] = {k: v["name"] for k, v in choices.MINERALS.items()}
         return self.choices[name]
 
 
 mchoices = Choices()
 
-deal_sub_fields = {
-    "top_investors": [
-        "top_investors__id",
-        "top_investors__name",
-        "top_investors__country__name",
-    ]
-}
-deal_flattened_fields = []
+deal_fields_top_investor = []
 for f in deal_fields.keys():
-    if f in deal_sub_fields:
-        for sf in deal_sub_fields[f]:
-            deal_flattened_fields.append(sf)
+    if f == "top_investors":
+        deal_fields_top_investor += [
+            "top_investors__id",
+            "top_investors__name",
+            "top_investors__country__name",
+        ]
     else:
-        deal_flattened_fields.append(f)
+        deal_fields_top_investor += [f]
 
 investor_headers = [
     "Investor ID",
@@ -304,7 +261,6 @@ investor_fields = [
     "opencorporates",
     "comment",
 ]
-investor_choices_fields = {"classification": dict(Investor.CLASSIFICATION_CHOICES)}
 
 involvement_headers = [
     "Involvement ID",
@@ -334,7 +290,6 @@ involvement_fields = [
     "loans_date",
     "comment",
 ]
-involvement_choices_fields = {"role": dict(InvestorVentureInvolvement.ROLE_CHOICES)}
 
 
 def flatten_date_current_value(data, field, fieldname) -> None:
@@ -398,7 +353,7 @@ class DataDownload:
         self.deals = [
             self.deal_download_format(qs_dict)
             for qs_dict in qs_values_to_dict(
-                qs, deal_flattened_fields, deal_sub_fields.keys()
+                qs, deal_fields_top_investor, ["top_investors"]
             )
         ]
 
@@ -432,7 +387,7 @@ class DataDownload:
         self.deals = [
             self.deal_download_format(qs_dict)
             for qs_dict in qs_values_to_dict(
-                qs, deal_flattened_fields, deal_sub_fields.keys()
+                qs, deal_fields_top_investor, ["top_investors"]
             )
         ]
 
@@ -498,6 +453,7 @@ class DataDownload:
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = f'attachment; filename="{self.filename}.xlsx"'
         wb = Workbook(write_only=True)
+        # wb = Workbook()
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
@@ -555,23 +511,23 @@ class DataDownload:
         zip_file = zipfile.ZipFile(result, "w")
 
         # Deals CSV
-        deals_data = [deal_fields.values()] + self.deals
+        deals_data = [list(deal_fields.values())] + self.deals
         zip_file.writestr("deals.csv", self._csv_writer(deals_data))
 
         # Locations CSV
         zip_file.writestr(
             "locations.csv",
-            self._csv_writer([location_fields.values()] + self.locations),
+            self._csv_writer([list(location_fields.values())] + self.locations),
         )
         # Contracts CSV
         zip_file.writestr(
             "contracts.csv",
-            self._csv_writer([contract_fields.values()] + self.contracts),
+            self._csv_writer([list(contract_fields.values())] + self.contracts),
         )
         # Datasources CSV
         zip_file.writestr(
             "datasources.csv",
-            self._csv_writer([datasource_fields.values()] + self.datasources),
+            self._csv_writer([list(datasource_fields.values())] + self.datasources),
         )
 
         # Involvements CSV
@@ -620,7 +576,7 @@ class DataDownload:
                 ]["name"]
             if "classification" in data["operating_company"]:
                 data["operating_company__classification"] = str(
-                    deal_choices_fields["investor_classification"][
+                    dict(Investor.CLASSIFICATION_CHOICES)[
                         data["operating_company"]["classification"]
                     ]
                 )
@@ -635,12 +591,12 @@ class DataDownload:
         data["current_production_size"] = data.get("current_production_size", 0.0)
 
         imp_stat = data.get("current_implementation_status")
-        data["current_implementation_status"] = current_implementation_status_map.get(
+        data["current_implementation_status"] = implementation_status_choices.get(
             imp_stat, imp_stat
         )
 
         neg_stat = data.get("current_negotiation_status")
-        data["current_negotiation_status"] = current_negotiation_status_map.get(
+        data["current_negotiation_status"] = negotiation_status_choices.get(
             neg_stat, neg_stat
         )
 
@@ -660,7 +616,7 @@ class DataDownload:
                             "current" if x.get("current") else "",
                             str(x.get("area", "")),
                             ", ".join(
-                                deal_choices_fields["intention_of_investment"][y]
+                                intention_of_investment_choices[y]
                                 for y in x.get("choices", [])
                             ),
                         ]
@@ -683,7 +639,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            current_negotiation_status_map[x.get("choice")],
+                            negotiation_status_choices[x.get("choice")],
                         ]
                     )
                     for x in data["negotiation_status"]
@@ -699,7 +655,7 @@ class DataDownload:
                         [
                             str(x.get("date", "")),
                             "current" if x.get("current") else "",
-                            current_implementation_status_map[x.get("choice")],
+                            implementation_status_choices[x.get("choice")],
                         ]
                     )
                     for x in data["implementation_status"]
@@ -867,8 +823,8 @@ class DataDownload:
                                 str(dat.get("export") or ""),
                                 ", ".join(
                                     [
-                                        mchoices.get(produce_type).get(x, x)
-                                        for x in dat.get("choices")
+                                        produce_choices.get(produce_type).get(x, x)
+                                        for x in dat.get("choices", [])
                                     ]
                                 ),
                             ]
@@ -888,8 +844,8 @@ class DataDownload:
                                 str(dat.get("area", "")),
                                 ", ".join(
                                     [
-                                        mchoices.get(produce_type[17:]).get(x, x)
-                                        for x in dat.get("choices")
+                                        produce_choices.get(produce_type).get(x, x)
+                                        for x in dat.get("choices", [])
                                     ]
                                 ),
                             ]
@@ -912,13 +868,9 @@ class DataDownload:
         if data.get("point"):
             data["point"] = f"{data['point']['lat']},{data['point']['lng']}"
         if data.get("level_of_accuracy"):
-            data["level_of_accuracy"] = {
-                "COUNTRY": _("Country"),
-                "ADMINISTRATIVE_REGION": _("Administrative region"),
-                "APPROXIMATE_LOCATION": _("Approximate location"),
-                "EXACT_LOCATION": _("Exact location"),
-                "COORDINATES": _("Coordinates"),
-            }[data["level_of_accuracy"]]
+            data["level_of_accuracy"] = choices.LOCATION_ACCURACY[
+                data["level_of_accuracy"]
+            ]
         return [
             "" if field not in data else data[field] for field in location_fields.keys()
         ]
@@ -952,20 +904,7 @@ class DataDownload:
     @staticmethod
     def datasource_download_format(data):
         if data.get("type"):
-            data["type"] = {
-                "MEDIA_REPORT": _("Media report"),
-                "RESEARCH_PAPER_OR_POLICY_REPORT": _("Research Paper / Policy Report"),
-                "GOVERNMENT_SOURCES": _("Government sources"),
-                "COMPANY_SOURCES": _("Company sources"),
-                "CONTRACT": _("Contract"),
-                "CONTRACT_FARMING_AGREEMENT": _(
-                    "Contract (contract farming agreement)"
-                ),
-                "PERSONAL_INFORMATION": _("Personal information"),
-                "CROWDSOURCING": _("Crowdsourcing"),
-                "OTHER": _("Other (Please specify in comment field)"),
-            }[data["type"]]
-
+            data["type"] = choices.DATASOURCE_TYPE_MAP[data["type"]]
         if data.get("date"):
             try:
                 data["date"] = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
@@ -989,9 +928,10 @@ class DataDownload:
             if field not in data:
                 # empty fields
                 data[field] = ""
-            elif field in investor_choices_fields:
-                # fields with choices
-                data[field] = str(investor_choices_fields[field][data[field]])
+            elif field == "classification":
+                data[field] = str(
+                    dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
+                )
             row.append(data[field])
         return row
 
@@ -1012,8 +952,9 @@ class DataDownload:
             if field not in data:
                 # empty fields
                 data[field] = ""
-            elif field in involvement_choices_fields and data[field] != "":
-                # fields with choices
-                data[field] = str(involvement_choices_fields[field][data[field]])
+            elif field == "role":
+                data[field] = str(
+                    dict(InvestorVentureInvolvement.ROLE_CHOICES).get(data[field], "")
+                )
             row.append(data[field])
         return row

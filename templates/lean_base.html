@@ -39,6 +39,7 @@
   </div>
 </div>
 
+{% block content_wrapper %}
 <div style="
   height: calc(100vh - 240px);
   display: flex;
@@ -51,6 +52,7 @@
     {% block content %}{% endblock %}
   </div>
 </div>
+{% endblock %}
 
 </body>
 </html>
