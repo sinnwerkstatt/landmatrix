@@ -1,5 +1,7 @@
 from django.utils.translation import gettext as _
 
+from apps.landmatrix.models import _choices
+
 location_fields = {
     "id": {"label": "ID", "class": "NanoIDField"},
     "name": {"label": _("Location"), "class": "CharField"},
@@ -9,13 +11,7 @@ location_fields = {
     "level_of_accuracy": {
         "label": _("Spatial accuracy level"),
         "class": "TypedChoiceField",
-        "choices": {
-            "COUNTRY": _("Country"),
-            "ADMINISTRATIVE_REGION": _("Administrative region"),
-            "APPROXIMATE_LOCATION": _("Approximate location"),
-            "EXACT_LOCATION": _("Exact location"),
-            "COORDINATES": _("Coordinates"),
-        },
+        "choices": _choices.LOCATION_ACCURACY,
     },
     "comment": {"label": _("Comment"), "class": "TextField"},
     "areas": {"label": _("Areas"), "class": "JSONField"},
@@ -53,18 +49,7 @@ datasource_fields = {
     "type": {
         "label": _("Type"),
         "class": "TypedChoiceField",
-        "choices": {
-            "": "--------",
-            "MEDIA_REPORT": _("Media report"),
-            "RESEARCH_PAPER_OR_POLICY_REPORT": _("Research Paper / Policy Report"),
-            "GOVERNMENT_SOURCES": _("Government sources"),
-            "COMPANY_SOURCES": _("Company sources"),
-            "CONTRACT": "Contract",
-            "CONTRACT_FARMING_AGREEMENT": _("Contract (contract farming agreement)"),
-            "PERSONAL_INFORMATION": _("Personal information"),
-            "CROWDSOURCING": _("Crowdsourcing"),
-            "OTHER": _("Other (Please specify in comment field)"),
-        },
+        "choices": {"": "--------", **_choices.DATASOURCE_TYPE_MAP},
     },
     "url": {"label": _("Url"), "class": "URLField", "type": "url"},
     "file": {"label": _("File"), "class": "FileField"},
