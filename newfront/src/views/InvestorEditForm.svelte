@@ -163,16 +163,6 @@
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "PARENT"}
           newEntryExtras={{ role: "PARENT" }}
-          fields={[
-            "investor",
-            "investment_type",
-            "percentage",
-            "loans_amount",
-            "loans_currency",
-            "loans_date",
-            "parent_relation",
-            "comment",
-          ]}
         />
       {/if}
       {#if activeTab === "#tertiary_investors"}

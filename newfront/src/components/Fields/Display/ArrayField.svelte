@@ -38,8 +38,7 @@
   };
 
   export function parseValues(value) {
-    if (formfield.choices?.length > 0)
-      return value.map((v) => formfield.choices?.[v]).join(", ");
+    if (formfield.choices) return value.map((v) => formfield.choices?.[v]).join(", ");
     return value.join(", ");
   }
 </script>
@@ -57,6 +56,6 @@
       </span>
     {/each}
   {:else}
-    {@html parseValues(value)}
+    {parseValues(value)}
   {/if}
 </div>
