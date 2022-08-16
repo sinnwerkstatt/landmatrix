@@ -13,6 +13,8 @@
   export let showSubmit = false;
   export let submitDisabled = false;
 
+  export let closeButtonText = $_("Cancel");
+
   function close() {
     if (hideable) {
       dispatch("close");
@@ -38,7 +40,8 @@
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border max-h-[99vh] overflow-y-auto"
+      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border max-h-[99vh] overflow-y-auto {$$props.class ??
+        ''}"
     >
       <form on:submit|preventDefault>
         {#if $$slots.header || title}
@@ -52,7 +55,7 @@
 
         <div class="border-t px-7 py-5 text-right">
           <button type="button" class="btn btn-cancel" on:click={close}>
-            {$_("Cancel")}
+            {closeButtonText}
           </button>
           {#if showSubmit}
             <button disabled={submitDisabled} type="submit" class="btn btn-primary">
