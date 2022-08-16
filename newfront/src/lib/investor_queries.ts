@@ -30,6 +30,14 @@ export const investor_gql_query = gql`
         role
         parent_relation
         percentage
+        loans_amount
+        loans_currency {
+          id
+          code
+          name
+        }
+        loans_date
+        comment
         investor {
           id
           name
@@ -45,6 +53,14 @@ export const investor_gql_query = gql`
         role
         parent_relation
         percentage
+        loans_amount
+        loans_currency {
+          id
+          code
+          name
+        }
+        loans_date
+        comment
         venture {
           id
           name

@@ -12,3 +12,6 @@ class Currency(models.Model):
         if self.symbol:
             return f"{self.name} ({self.symbol})"
         return self.name
+
+    def to_dict(self):
+        return {"id": self.id, "code": self.code, "name": self.name}
