@@ -9,6 +9,7 @@
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import EditField from "$components/Fields/EditField.svelte";
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
   import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
 
   export let investor: Investor;
@@ -39,8 +40,8 @@
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
 
-    const { data } = await $page.stuff.urqlClient
-      .mutation(
+    const { data, error } = await $page.stuff.urqlClient
+      .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
             investor_edit(id: $id, version: $version, payload: $payload) {
@@ -63,6 +64,10 @@
         }
       )
       .toPromise();
+    if (!data) {
+      console.error("Problem with edit", error);
+      return;
+    }
     const { investor_edit } = data;
     originalInvestor = JSON.stringify(investor);
     savingInProgress = false;
@@ -79,10 +84,7 @@
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true;
     else if (!investorID) await goto("/");
-    else
-      await goto(
-        `/investor/${investorID}${investorVersion ? "/" + investorVersion : ""}`
-      );
+    else await goto(`/investor/${investorID}/${investorVersion ?? ""}`);
   };
 </script>
 
@@ -203,3 +205,11 @@
     </div>
   </div>
 </div>
+
+<ManageOverlay
+  bind:visible={showReallyQuitOverlay}
+  title={$_("Quit without saving?")}
+  on:submit={() => onClickClose(true)}
+>
+  <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
+</ManageOverlay>

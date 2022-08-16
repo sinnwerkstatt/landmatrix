@@ -12,6 +12,11 @@
       const { data } = await stuff.urqlClient
         .query<{ deal: Deal }>(deal_gql_query, { id: dealID, version: dealVersion })
         .toPromise();
+      if (!data?.deal) return { status: 404, error: `Deal not found` };
+      if (data.deal.status === 1 && !dealVersion) {
+        const dealVersion = data.deal.versions?.[0]?.id;
+        return { status: 301, redirect: `/deal/${dealID}/${dealVersion}` };
+      }
       return { props: { dealID, dealVersion, deal: data.deal } };
     } catch (e) {
       if (e.graphQLErrors[0].message === "deal not found")
@@ -111,7 +116,7 @@
             }
           }
         `,
-        { id: deal.operating_company.id }
+        { id: deal?.operating_company?.id }
       )
       .toPromise();
     investor = data.investor;

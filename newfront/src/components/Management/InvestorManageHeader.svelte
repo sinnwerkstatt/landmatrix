@@ -14,8 +14,8 @@
   export let investorVersion: number | undefined;
 
   let showSendToReviewOverlay = false;
-  async function sendToReview() {
-    await changeStatus({ detail: { transition: "TO_REVIEW" } });
+  async function sendToReview({ detail: { comment } }) {
+    await changeStatus({ detail: { transition: "TO_REVIEW", comment } });
     showSendToReviewOverlay = false;
   }
 
@@ -54,10 +54,10 @@
       .then(async ({ data: { change_investor_status } }) => {
         console.log(change_investor_status);
         if (transition === "ACTIVATE") {
-          await goto(`/deal/${change_investor_status.investorId}/`);
+          await goto(`/investor/${change_investor_status.investorId}/`);
         } else if (investorVersion !== change_investor_status.investorVersion)
           await goto(
-            `/deal/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`
+            `/investor/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`
           );
         else dispatch("reload");
       })
@@ -92,7 +92,7 @@
       .catch((error) => console.error(error));
   }
 
-  function deleteInvestor(comment) {
+  function deleteInvestor({ detail: { comment } }) {
     $page.stuff.urqlClient
       .mutation(
         gql`
@@ -100,22 +100,13 @@
             investor_delete(id: $id, version: $version, comment: $comment)
           }
         `,
-        {
-          id: investor.id,
-          version: investorVersion ?? null,
-          comment,
-        }
+        { id: investor.id, version: investorVersion, comment }
       )
       .toPromise()
-      .then(() => {
-        if (investorVersion) {
-          // this.$router
-          //   .push({
-          //     name: "investor_detail",
-          //     params: { investorId: this.investorId.toString() },
-          //   })
-          //   .then(this.reloadInvestor);
-        }
+      .then(async (dat) => {
+        //todo: if it was just a draft, and we deleted the whole thing, jump to investor list
+        console.log(dat);
+        if (investorVersion) await goto(`/investor/${investor.id}`);
         dispatch("reload");
       });
   }

@@ -8,7 +8,7 @@
       x ? +x : undefined
     );
 
-    if (!investorID) return { status: 404, error: `Deal not found` };
+    if (!investorID) return { status: 404, error: `Investor not found` };
 
     const { data } = await stuff.urqlClient
       .query<{ investor: Investor }>(investor_gql_query, {
@@ -18,6 +18,12 @@
         depth: 1,
       })
       .toPromise();
+    if (!data?.investor) return { status: 404, error: `Investor not found` };
+    if (data.investor.status === 1 && !investorVersion) {
+      const investorVersion = data.investor.versions?.[0]?.id;
+      return { status: 301, redirect: `/investor/${investorID}/${investorVersion}` };
+    }
+
     return { props: { investorID, investorVersion, investor: data.investor } };
   };
 </script>

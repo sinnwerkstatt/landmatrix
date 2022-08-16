@@ -7,6 +7,7 @@ export const investor_gql_query = gql`
       version: $version
       involvements_depth: $depth
       involvements_include_ventures: true
+      subset: UNFILTERED
     ) {
       id
       name

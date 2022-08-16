@@ -39,7 +39,7 @@ export const data_deal_query_gql = gql`
 
 export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int) {
-    deal(id: $id, version: $version) {
+    deal(id: $id, version: $version, subset: UNFILTERED) {
       id
       locations
       # General Info
