@@ -38,7 +38,9 @@
   };
 
   export function parseValues(value) {
-    if (formfield.choices) return value.map((v) => formfield.choices?.[v]).join(", ");
+    if (!value) return "—";
+    if (Object.keys(formfield.choices).length > 0)
+      return value.map((v) => formfield.choices?.[v]).join(", ");
     return value.join(", ");
   }
 </script>
