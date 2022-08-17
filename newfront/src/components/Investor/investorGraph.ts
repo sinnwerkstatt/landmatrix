@@ -87,7 +87,7 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
             ele.data().id
           })</span>`;
           if ("country" in ele.data() && ele.data().country)
-            content += `${ele.data().country.name}, `;
+            content += ` ${ele.data().country.name}, `;
           if (
             "classification" in ele.data() &&
             classification_choices[ele.data().classification as Classification]
