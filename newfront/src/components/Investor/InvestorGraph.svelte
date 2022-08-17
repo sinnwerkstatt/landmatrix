@@ -87,7 +87,7 @@
 
 <div
   class={isFullscreen
-    ? "fixed bg-white border border-solid border-black top-12 left-0 mx-[5%] my-[5%] w-[90%] h-[70%] z-[8]"
+    ? "fixed bg-white border border-solid border-black top-12 left-0 mx-[5%] my-[5%] w-[90%] h-[70%]"
     : "relative"}
 >
   <div class="absolute cursor-pointer right-3 top-1.5 z-[9]">
