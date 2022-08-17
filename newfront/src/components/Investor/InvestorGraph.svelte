@@ -1,4 +1,5 @@
 <script lang="ts">
+  import cn from "classnames";
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
@@ -84,8 +85,12 @@
   {$_("Please click the nodes to get more details.")}
 </p>
 
-<div id="investor-network-wrapper" class:network-fullscreen={isFullscreen}>
-  <div id="toggle-fullscreen-button">
+<div
+  class={isFullscreen
+    ? "fixed bg-white border border-solid border-black top-12 left-0 mx-[5%] my-[5%] w-[90%] h-[70%] z-[8]"
+    : "relative"}
+>
+  <div class="absolute cursor-pointer right-3 top-1.5 z-[9]">
     <button type="button" on:click={toggleFullscreen}>
       {#if isFullscreen}
         <CompressIcon />
@@ -95,9 +100,14 @@
     </button>
   </div>
 
-  <div id="investor-network" class:network-fullscreen={isFullscreen} />
+  <div class={isFullscreen ? "h-full" : "h-96"}>
+    <div
+      id="investor-network"
+      class="border-2 border-solid w-full min-h-full cursor-all-scroll"
+    />
+  </div>
 
-  <div id="investor-controls" class="flex flex-row">
+  <div class="flex flex-row bg-white">
     {#if showControls}
       <div class="basis-1/2 p-2">
         <div class="pb-3">
@@ -124,142 +134,56 @@
         </div>
       </div>
     {/if}
-    <div id="investor-legend" class="basis-1/2 p-2">
+    <div class="basis-1/2 p-2">
       <strong>{$_("Legend")}</strong>
       <ul>
         <li>
-          <span class="legend-icon deal" />{$_("Is operating company of")}
+          <span
+            class={cn(
+              "inline-block relative w-5 h-1.5 mr-1",
+              "border-t-2 border-t-orange"
+            )}
+          />{$_("Is operating company of")}
         </li>
-        <li><span class="legend-icon parent" />{$_("Is parent company of")}</li>
         <li>
-          <span class="legend-icon tertiary" />{$_("Is tertiary investor/lender of")}
+          <span
+            class={cn(
+              "inline-block relative w-0 h-0 mr-3",
+              "border-y-transparent border-y-8 border-r-[12px] border-[#f78e8f]",
+              "after:absolute after:w-3 after:left-2 after:border-t-2 after:border-[#f78e8f]"
+            )}
+          />{$_("Is parent company of")}
+        </li>
+        <li>
+          <span
+            class={cn(
+              "inline-block relative w-0 h-0 mr-3",
+              "border-y-transparent border-y-8 border-r-[12px] border-[#72b0fd]",
+              "after:absolute after:w-3 after:left-2 after:border-t-2 after:border-[#72b0fd]"
+            )}
+          />{$_("Is tertiary investor/lender of")}
         </li>
       </ul>
     </div>
   </div>
 </div>
 
-<style lang="scss">
-  #investor-network-wrapper {
-    position: relative;
-
-    #toggle-fullscreen-button {
-      right: 12px;
-      position: absolute;
-      top: 7px;
-      z-index: 99;
-      cursor: pointer;
-    }
-
-    &.network-fullscreen {
-      position: fixed;
-      top: 100px;
-      left: 0;
-      margin-left: 5%;
-      margin-right: 5%;
-      margin-top: 0;
-      width: 90%;
-      max-height: 80%;
-      background: #ffffff;
-      z-index: 98;
-      border: 1px solid black;
-
-      #toggle-fullscreen-button {
-        right: 10px;
-        top: 5px;
-      }
-    }
-
-    #investor-network {
-      border: 2px solid #ddd;
-      display: block;
-      width: 100%;
-      min-height: 400px;
-      max-height: 400px;
-      cursor: all-scroll;
-      overflow: hidden;
-
-      &.network-fullscreen {
-        width: 100%;
-        max-width: 100%;
-        height: 60vh;
-        max-height: 60vh;
-        min-height: 60vh;
-      }
-    }
-  }
-
-  #investor-legend {
-    @mixin arrow {
-      border-color: transparent;
-      border-style: solid;
-      border-width: 0.5em 0.75em 0.5em 0;
-      margin-left: -0.25em;
-      margin-right: 1em;
-
-      &:after {
-        content: " ";
-        border-top: 2px solid;
-        position: absolute;
-        top: 50%;
-        left: 1em;
-        width: 0.5em;
-        margin-top: -1px;
-      }
-    }
-
-    .legend-icon {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      position: relative;
-      top: 0.15em;
-      margin-right: 0.75em;
-
-      &.deal {
-        border-style: none;
-        border-width: 0;
-        background-color: var(--color-lm-orange);
-        margin-left: 0;
-        margin-right: 0.5em;
-        top: -0.3em;
-        height: 0.15em;
-        width: 1.25em;
-      }
-
-      &.parent {
-        @include arrow;
-        border-right-color: #f78e8f;
-
-        &:after {
-          border-top-color: #f78e8f;
-        }
-      }
-
-      &.tertiary {
-        @include arrow;
-        border-right-color: #72b0fd;
-
-        &:after {
-          border-top-color: #72b0fd;
-        }
-      }
-    }
-  }
-
+<style>
   :global(.g-tooltip) {
     color: white;
     border-radius: 3px;
     padding: 3px 7px;
     margin-top: -5px;
     text-align: center;
-
-    :global(.name) {
-      font-weight: bold;
-      display: block;
-    }
   }
 
+  /*Space between classes to indicate nesting*/
+  :global(.g-tooltip .name) {
+    font-weight: bold;
+    display: block;
+  }
+
+  /*No space when all classes apply to same element*/
   :global(.g-tooltip.deal) {
     background-color: var(--color-lm-orange);
   }
