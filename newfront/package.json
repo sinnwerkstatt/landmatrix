@@ -55,7 +55,6 @@
     "leaflet": "^1.8.0",
     "leaflet-gesture-handling": "^1.2.2",
     "nanoid": "^4.0.0",
-    "node-sass": "^7.0.1",
     "postcss": "^8.4.14",
     "postcss-load-config": "^4.0.1",
     "prettier": "^2.7.1",

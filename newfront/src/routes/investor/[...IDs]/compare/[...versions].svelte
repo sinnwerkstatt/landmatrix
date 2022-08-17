@@ -121,8 +121,8 @@
     {#each Object.entries(investorSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
-          <th colspan="3" class="bg-gray-500 text-white py-4">
-            <h2 class="text-xl pl-2">{labels[label]}</h2>
+          <th colspan="3" class="bg-gray-500 py-4">
+            <h2 class="text-white my-0 pl-2">{labels[label]}</h2>
           </th>
         </tr>
         {#each section as subsec}
@@ -164,8 +164,8 @@
 
     {#if involvementsdiff}
       <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 text-white py-4">
-          <h2 class="text-xl pl-2">{$_("Involvements")}</h2>
+        <th colspan="3" class="bg-gray-500 py-4">
+          <h2 class="text-white my-0 pl-2">{$_("Involvements")}</h2>
         </th>
       </tr>
       {#each [...involvementsdiff] as field}
@@ -209,8 +209,8 @@
 
     {#if datasourcesdiff}
       <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 text-white py-4">
-          <h2 class="text-xl pl-2">{$_("Data sources")}</h2>
+        <th colspan="3" class="bg-gray-500 py-4">
+          <h2 class="text-white my-0 pl-2">{$_("Data sources")}</h2>
         </th>
       </tr>
       {#each [...datasourcesdiff] as field}

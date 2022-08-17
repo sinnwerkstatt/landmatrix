@@ -57,7 +57,7 @@
 
 <ContextBarContainer>
   {#if currentItem}
-    <h2 class="font-bold text-lg my-3 leading-5">{currentItem.name}</h2>
+    <h2>{currentItem.name}</h2>
     {#if currentItem?.observatory_page}
       <p class="mb-1">
         {currentItem.observatory_page.short_description}
