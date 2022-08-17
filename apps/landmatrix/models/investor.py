@@ -491,6 +491,10 @@ class InvestorVentureInvolvement(models.Model):
         }
 
     def serialize(self) -> dict:
+        if self.loans_currency_id:
+            loans_currency = Currency.objects.get(id=self.loans_currency_id).to_dict()
+        else:
+            loans_currency = None
         return {
             "id": self.id,
             "investor": self.investor_id,
@@ -499,7 +503,7 @@ class InvestorVentureInvolvement(models.Model):
             "investment_type": self.investment_type,
             "percentage": self.percentage,
             "loans_amount": self.loans_amount,
-            "loans_currency": self.loans_currency_id,
+            "loans_currency": loans_currency,
             "loans_date": self.loans_date,
             "parent_relation": self.parent_relation,
             "comment": self.comment,

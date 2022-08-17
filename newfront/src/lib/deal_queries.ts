@@ -38,8 +38,8 @@ export const data_deal_query_gql = gql`
 `;
 
 export const deal_gql_query = gql`
-  query Deal($id: Int!, $version: Int, $subset: Subset) {
-    deal(id: $id, version: $version, subset: $subset) {
+  query Deal($id: Int!, $version: Int) {
+    deal(id: $id, version: $version, subset: UNFILTERED) {
       id
       locations
       # General Info
@@ -71,6 +71,7 @@ export const deal_gql_query = gql`
       purchase_price
       purchase_price_currency {
         id
+        code
         name
       }
       purchase_price_type
@@ -80,6 +81,7 @@ export const deal_gql_query = gql`
       annual_leasing_fee
       annual_leasing_fee_currency {
         id
+        code
         name
       }
       annual_leasing_fee_type

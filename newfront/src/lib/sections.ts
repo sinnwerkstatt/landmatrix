@@ -296,6 +296,16 @@ export const subsections = {
     "open_land_contracts_id",
     "comment",
   ],
+  involvement: [
+    "investor",
+    "investment_type",
+    "percentage",
+    "loans_amount",
+    "loans_currency",
+    "loans_date",
+    "parent_relation",
+    "comment",
+  ],
 };
 
 export const investorSections: { [key: string]: Section[] } = {

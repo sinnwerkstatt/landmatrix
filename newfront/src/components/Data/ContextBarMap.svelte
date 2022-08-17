@@ -3,6 +3,9 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
+  import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
+  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
+  import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
   import { countries, observatoryPages, regions } from "$lib/stores";
@@ -12,11 +15,6 @@
   import { displayDealsCount } from "$components/Map/map_helper";
   import StatusPieChart from "$components/StatusPieChart.svelte";
   import ContextBarContainer from "./ContextBarContainer.svelte";
-  import {
-    calcImplementationStatusChart,
-    calcNegotiationStatusChart,
-    calcProduceChart,
-  } from "./contextBarMapCharts";
 
   $: deals = queryStore({
     client: $page.stuff.urqlClient,
@@ -44,22 +42,22 @@
       (o) => o.id === currentItem.observatory_page_id
     );
   }
+  $: unit = $displayDealsCount ? "deals" : "ha";
+  $: sortBy = $displayDealsCount ? "count" : "size";
+  $: dealsArray = $deals?.data?.deals ?? [];
 
-  $: chartNegStat = calcNegotiationStatusChart($deals?.data?.deals, $displayDealsCount);
-  $: chartImpStat = calcImplementationStatusChart(
-    $deals?.data?.deals,
-    $displayDealsCount
-  );
-  $: chartProd = calcProduceChart($deals?.data?.deals);
+  $: chartNegStat = createNegotiationStatusChartData(dealsArray, sortBy);
+  $: chartImpStat = createImplementationStatusChartData(dealsArray, sortBy);
+  $: chartProd = createProduceGroupChartData(dealsArray, sortBy);
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round($deals?.data?.deals?.length).toLocaleString("fr")}`
-    : `${Math.round(sum($deals?.data?.deals, "deal_size")).toLocaleString("fr")} ha`;
+    ? `${Math.round(dealsArray.length).toLocaleString("fr")}`
+    : `${Math.round(sum(dealsArray, "deal_size")).toLocaleString("fr")} ha`;
 </script>
 
 <ContextBarContainer>
   {#if currentItem}
-    <h2 class="font-bold text-lg my-3 leading-5">{currentItem.name}</h2>
+    <h2>{currentItem.name}</h2>
     {#if currentItem?.observatory_page}
       <p class="mb-1">
         {currentItem.observatory_page.short_description}
@@ -70,7 +68,7 @@
       </p>
     {/if}
   {/if}
-  {#if $deals?.data?.deals?.length > 0}
+  {#if dealsArray.length > 0}
     <div>
       <DealDisplayToggle />
       <div class="w-full text-center font-bold my-3">
@@ -78,21 +76,15 @@
       </div>
       <div class="w-full mb-3">
         <h5 class="text-left text-lg mt-4">{$_("Negotiation status")}</h5>
-        <StatusPieChart
-          data={chartNegStat}
-          unit={$displayDealsCount ? "deals" : "ha"}
-        />
+        <StatusPieChart data={chartNegStat} {unit} />
       </div>
       <div class="w-full mb-3">
         <h5 class="text-left text-lg mt-4">{$_("Implementation status")}</h5>
-        <StatusPieChart
-          data={chartImpStat}
-          unit={$displayDealsCount ? "deals" : "ha"}
-        />
+        <StatusPieChart data={chartImpStat} {unit} />
       </div>
       <div class="w-full mb-3">
         <h5 class="text-left text-lg mt-4">{$_("Produce")}</h5>
-        <StatusPieChart data={chartProd} unit="%" />
+        <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>
   {/if}

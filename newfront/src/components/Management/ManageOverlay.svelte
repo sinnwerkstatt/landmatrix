@@ -17,7 +17,7 @@
   let comment = "";
 
   export let assignToUserInput = false;
-  export let toUser: User;
+  export let toUser: User | null = null;
   export let showSubmit = true;
 
   const onSubmit = async () => {

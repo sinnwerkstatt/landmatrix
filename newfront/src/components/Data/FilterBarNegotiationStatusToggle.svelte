@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { filters, NegotiationStatus } from "$lib/filters";
+  import { filters } from "$lib/filters";
+  import { NegotiationStatus } from "$lib/types/deal";
   import FilterCollapse from "./FilterCollapse.svelte";
 
   interface Choice {
@@ -118,7 +119,6 @@
         <input
           id={nstat.group}
           bind:checked={nstat.state}
-          class="custom-control-input"
           type="checkbox"
           on:change={() => toggleGroup(nstat)}
         />
@@ -128,7 +128,6 @@
         <label class="block pl-4">
           <input
             bind:group={$filters.negotiation_status}
-            class="form-check-input custom-control-input"
             type="checkbox"
             value={nstatop.value}
             on:change={() => toggleSingle(nstat)}

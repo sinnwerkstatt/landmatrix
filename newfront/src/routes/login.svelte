@@ -21,7 +21,7 @@
   });
 
   async function login() {
-    const res = await dispatchLogin(username, password);
+    const res = await dispatchLogin(username, password, $page.stuff.urqlClient);
     if (res.status) {
       login_failed_message = "";
       logged_in = true;

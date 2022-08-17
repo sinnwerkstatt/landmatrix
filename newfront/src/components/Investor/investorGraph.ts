@@ -1,15 +1,20 @@
 import cytoscape from "cytoscape";
-import coseBilkent from "cytoscape-cose-bilkent";
-import popper from "cytoscape-popper";
+import type { Core as Graph } from "cytoscape";
+import type { CytoscapeOptions, ElementDefinition, NodeSingular } from "cytoscape";
+import cyCoseBilkent from "cytoscape-cose-bilkent";
+import type { LayoutOptions } from "cytoscape-cose-bilkent";
+import cyPopper from "cytoscape-popper";
+import tippy from "tippy.js";
+import type { Instance as TippyInstance } from "tippy.js";
+import { classification_choices } from "$lib/choices";
 import type { Deal } from "$lib/types/deal";
 import type { Investor, Involvement } from "$lib/types/investor";
+import type { Classification } from "$lib/types/investor";
 
-cytoscape.use(coseBilkent);
-cytoscape.use(popper);
+cytoscape.use(cyCoseBilkent);
+cytoscape.use(cyPopper);
 
-const cy = null;
-
-const cyconfig = {
+export const CY_OPTIONS: CytoscapeOptions = {
   minZoom: 0.3,
   maxZoom: 5,
   layout: {
@@ -17,16 +22,16 @@ const cyconfig = {
     quality: "proof",
     nodeDimensionsIncludeLabels: true,
     animate: "end",
-  },
+  } as LayoutOptions,
   style: [
     {
       selector: "node",
       style: {
-        "background-color": (obj) => {
-          return obj.data("bgcolor") || "#bee7e7";
+        "background-color": (el) => {
+          return el.data("bgColor");
         },
-        label: (obj) => {
-          return obj.data("name");
+        label: (el: NodeSingular) => {
+          return el.data("name");
         },
         "text-valign": "center",
         "font-size": "9pt",
@@ -41,8 +46,8 @@ const cyconfig = {
         width: 1,
         "line-color": "data(edge_color)",
         "target-arrow-color": "data(edge_color)",
-        "target-arrow-shape": (obj) => {
-          return obj.data("target_arrow_shape") || "none  ";
+        "target-arrow-shape": (el) => {
+          return el.data("target_arrow_shape") || "none";
         },
         "curve-style": "bezier",
       },
@@ -50,29 +55,85 @@ const cyconfig = {
   ],
 };
 
-export function calculateGraph(
+export const createGraph = (elements: ElementDefinition[]) =>
+  cytoscape({
+    container: document.getElementById("investor-network"),
+    elements: elements,
+    ...CY_OPTIONS,
+  });
+
+const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
+  const ref = ele.popperRef(); // used only for positioning
+  if (ref) {
+    // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
+    // https://github.com/atomiks/tippyjs/issues/661
+    const dummyDomEle = document.createElement("div");
+
+    ele.tippy = tippy(dummyDomEle, {
+      trigger: "manual", // call show() and hide() yourself
+      getReferenceClientRect: ref.getBoundingClientRect,
+      animation: false,
+      content: () => {
+        const tipEl = document.createElement("div");
+        tipEl.classList.add("g-tooltip");
+        if (ele.data().dealNode) {
+          // tooltip content of deal node
+          tipEl.classList.add("deal");
+          tipEl.innerHTML = `Deal ${ele.data().name}`;
+        } else {
+          // tooltip content of investor node
+          tipEl.classList.add("investor");
+          let content = `<span class="name">${ele.data().name} (#${
+            ele.data().id
+          })</span>`;
+          if ("country" in ele.data() && ele.data().country)
+            content += ` ${ele.data().country.name}, `;
+          if (
+            "classification" in ele.data() &&
+            classification_choices[ele.data().classification as Classification]
+          )
+            content +=
+              classification_choices[ele.data().classification as Classification];
+          tipEl.innerHTML = content;
+        }
+        return tipEl;
+      },
+    });
+  }
+};
+export const registerTippy = (cyGraph: Graph) => {
+  cyGraph.ready(() => {
+    cyGraph.nodes().forEach(function (ele) {
+      makePopper(ele);
+    });
+    cyGraph.nodes().unbind("mouseover");
+    cyGraph.nodes().bind("mouseover", (event) => event.target.tippy.show());
+    cyGraph.nodes().unbind("mouseout");
+    cyGraph.nodes().bind("mouseout", (event) => event.target.tippy.hide());
+  });
+};
+
+export const createGraphElements = (
   investor: Investor,
-  elements,
+  elements: ElementDefinition[],
   showDeals: boolean,
   depth: number
-) {
-  if (depth <= 0) return;
+) => {
+  if (depth <= 0) return elements;
 
-  if (!elements) {
-    elements = [
-      {
-        data: {
-          id: investor.id,
-          name: investor.name,
-          comment: investor.comment,
-          country: investor.country,
-          classification: investor.classification,
-          homepage: investor.homepage,
-          bgcolor: "#44b7b6",
-          rootNode: true,
-        },
+  if (elements.length === 0) {
+    elements.push({
+      data: {
+        id: `${investor.id}`,
+        name: investor.name,
+        comment: investor.comment,
+        country: investor.country,
+        classification: investor.classification,
+        homepage: investor.homepage,
+        bgColor: "#44b7b6",
+        rootNode: true,
       },
-    ];
+    });
   }
 
   if (showDeals) {
@@ -83,7 +144,7 @@ export function calculateGraph(
           _id: deal.id,
           id: "D" + deal.id,
           name: "#" + deal.id,
-          bgcolor: "#fc941f",
+          bgColor: "#fc941f",
           dealNode: true,
         },
       };
@@ -100,43 +161,47 @@ export function calculateGraph(
       elements.push(deal_edge);
     });
   }
-  if (!investor.involvements || !investor.involvements.length) return;
-  investor.involvements.forEach((involvement: Involvement) => {
-    const investor_node = {
-      data: {
-        id: involvement.investor.id,
-        name: involvement.investor.name,
-        comment: involvement.investor.comment,
-        country: involvement.investor.country,
-        classification: involvement.investor.classification,
-        homepage: involvement.investor.homepage,
-        involvement: {
-          role: involvement.role,
-          investment_type: involvement.investment_type,
-          involvement_type: involvement.involvement_type,
-          percentage: involvement.percentage,
-          loans_amount: involvement.loans_amount,
-          loans_currency: involvement.loans_currency,
-          loans_date: involvement.loans_date,
-          parent_relation: involvement.parent_relation,
-          comment: involvement.comment,
+  if (investor.involvements && investor.involvements.length) {
+    investor.involvements.forEach((involvement: Involvement) => {
+      const investor_node = {
+        data: {
+          id: `${involvement.investor.id}`,
+          name: involvement.investor.name,
+          comment: involvement.investor.comment,
+          country: involvement.investor.country,
+          classification: involvement.investor.classification,
+          homepage: involvement.investor.homepage,
+          bgColor: "#bee7e7",
+          involvement: {
+            role: involvement.role,
+            investment_type: involvement.investment_type,
+            involvement_type: involvement.involvement_type,
+            percentage: involvement.percentage,
+            loans_amount: involvement.loans_amount,
+            loans_currency: involvement.loans_currency,
+            loans_date: involvement.loans_date,
+            parent_relation: involvement.parent_relation,
+            comment: involvement.comment,
+          },
         },
-      },
-    };
-    const investor_edge = {
-      data: {
-        id: `${investor.id}_${involvement.investor.id}`,
-        edge_color: involvement.role === "PARENT" ? "#72B0FD" : "#F78E8F",
-        ...(involvement.involvement_type === "VENTURE"
-          ? { source: investor.id, target: involvement.investor.id }
-          : { source: involvement.investor.id, target: investor.id }),
-        target_arrow_shape: "triangle",
-      },
-    };
+      };
+      const investor_edge = {
+        data: {
+          id: `${investor.id}_${involvement.investor.id}`,
+          edge_color: involvement.role === "PARENT" ? "#72B0FD" : "#F78E8F",
+          ...(involvement.involvement_type === "VENTURE"
+            ? { source: investor.id, target: involvement.investor.id }
+            : { source: involvement.investor.id, target: investor.id }),
+          target_arrow_shape: "triangle",
+        },
+      };
 
-    elements.push(investor_node);
-    elements.push(investor_edge);
+      elements.push(investor_node);
+      elements.push(investor_edge);
 
-    calculateGraph(involvement.investor, elements, showDeals, depth - 1);
-  });
-}
+      createGraphElements(involvement.investor, elements, showDeals, depth - 1);
+    });
+  }
+
+  return elements;
+};

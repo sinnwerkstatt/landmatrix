@@ -1,7 +1,5 @@
 <template>
-  <div v-if="articles.length" class="articles clamp-20-75p-56">
-    <h3>{{ $t(articlesLabel) }}</h3>
-    <slot />
+  <div class="articles">
     <div v-for="article in limitedArticles" :key="article.slug">
       <div class="article row">
         <div class="col-3">
@@ -20,21 +18,20 @@
       </div>
     </div>
     <button v-if="limit && limit < articles.length" @click.prevent="limit = 0">
-      {{ $t("Show all") }} {{ articles.length }} {{ articlesLabel.toLowerCase() }}
+      {{ $t("Show all") }} {{ articles.length }}
     </button>
   </div>
 </template>
 
 <script lang="ts">
+  import type { BlogPage } from "$types/wagtail";
   import Vue from "vue";
   import type { PropType } from "vue";
-  import type { BlogPage } from "$types/wagtail";
 
   export default Vue.extend({
     name: "ArticleList",
     props: {
       articles: { type: Array as PropType<BlogPage[]>, required: true },
-      articlesLabel: { type: String, required: true },
     },
     data() {
       return {

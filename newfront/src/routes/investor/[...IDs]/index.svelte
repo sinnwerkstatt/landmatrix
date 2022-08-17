@@ -8,23 +8,28 @@
       x ? +x : undefined
     );
 
-    if (!investorID) return { status: 404, error: `Deal not found` };
+    if (!investorID) return { status: 404, error: `Investor not found` };
 
     const { data } = await stuff.urqlClient
       .query<{ investor: Investor }>(investor_gql_query, {
         id: investorID,
         version: investorVersion,
-        subset: "UNFILTERED",
         includeDeals: true,
-        depth: 0,
+        depth: 1,
       })
       .toPromise();
+    if (!data?.investor) return { status: 404, error: `Investor not found` };
+    if (data.investor.status === 1 && !investorVersion) {
+      const investorVersion = data.investor.versions?.[0]?.id;
+      return { status: 301, redirect: `/investor/${investorID}/${investorVersion}` };
+    }
 
     return { props: { investorID, investorVersion, investor: data.investor } };
   };
 </script>
 
 <script lang="ts">
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { loading } from "$lib/data";
@@ -60,11 +65,13 @@
   $: tabs = [
     { target: "#general", name: $_("General info") },
     { target: "#involvements", name: $_("Involvements") },
+    { target: "#network_graph", name: $_("Network Graph") },
     { target: "#data_sources", name: $_("Data sources") },
     { target: "#history", name: $_("Version History") },
   ];
 
   async function reloadInvestor() {
+    console.log("Investor detail: reload");
     loading.set(true);
     const { data } = await $page.stuff.urqlClient
       .query<{ investor: Investor }>(
@@ -72,9 +79,8 @@
         {
           id: investorID,
           version: investorVersion,
-          subset: "UNFILTERED",
           includeDeals: true,
-          depth: 0,
+          depth: 5, // max depth
         },
         { requestPolicy: "network-only" }
       )
@@ -83,11 +89,11 @@
     loading.set(false);
   }
 
-  let graphDataIsReady = false;
-
   const download_link = function (format: string): string {
     return `/api/legacy_export/?investor_id=${investorID}&subset=UNFILTERED&format=${format}`;
   };
+
+  onMount(reloadInvestor);
 </script>
 
 <svelte:head>
@@ -112,6 +118,7 @@
       </div>
     </div>
   {/if}
+
   <div class="flex min-h-full">
     <nav class="p-2 flex-initial">
       <ul>
@@ -249,23 +256,19 @@
       {#if activeTab === "#history"}
         <InvestorHistory {investor} {investorID} {investorVersion} />
       {/if}
-    </div>
-  </div>
-  <div class="flex">
-    {#if !investorVersion}
-      <div class:loading_wrapper={!graphDataIsReady} class="lg:w-3/4 xl:w-1/2 mb-3">
-        {#if graphDataIsReady}
-          <InvestorGraph initDepth="depth" {investor} AtnewDepth="onNewDepth" />
+      {#if activeTab === "#network_graph"}
+        {#if !investorVersion}
+          <InvestorGraph {investor} showControls />
+        {:else}
+          <div
+            class="lg:w-3/4 xl:w-1/2 mb-3 flex text-center items-center text-zinc-600 bg-neutral-300"
+          >
+            {$_(
+              "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+            )}
+          </div>
         {/if}
-      </div>
-    {:else}
-      <div
-        class="lg:w-3/4 xl:w-1/2 mb-3 flex text-center items-center text-zinc-600 bg-neutral-300"
-      >
-        {$_(
-          "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
-        )}
-      </div>
-    {/if}
+      {/if}
+    </div>
   </div>
 </div>

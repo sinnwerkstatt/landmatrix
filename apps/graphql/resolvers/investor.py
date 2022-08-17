@@ -196,7 +196,10 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
             for entry in value:
                 ivi = InvestorVentureInvolvement()
                 if entry.get("id"):
-                    ivi.id = entry["id"]
+                    try:
+                        ivi = InvestorVentureInvolvement.objects.get(id=entry["id"])
+                    except (ValueError, InvestorVentureInvolvement.DoesNotExist):
+                        pass  # it's okay, we'll use the new instance
                 ivi.venture_id = investor_id
                 ivi.investor_id = entry["investor"]["id"]
                 ivi.role = entry["role"]

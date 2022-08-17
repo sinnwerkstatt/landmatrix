@@ -41,8 +41,7 @@
     <!-- removing "code" here, for "has deal changed" logic -->
     <Select
       items={currencies}
-      {value}
-      on:select={(x) => (value = { ...x.detail, code: undefined })}
+      bind:value
       placeholder={$_("Currency")}
       optionIdentifier="id"
       labelIdentifier="name"

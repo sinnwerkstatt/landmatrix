@@ -61,10 +61,8 @@
       <MapDataCharts @click.native="setGlobalLocationFilter" />
     </div>
 
-    <ArticleList
-      :articles="filteredCountryProfiles"
-      :articles-label="$t('Country profiles')"
-    >
+    <div v-if="filteredCountryProfiles.length" class="clamp-20-75p-56">
+      <h3>{{ $t("Country profiles") }}</h3>
       <div class="description">
         <p>
           {{
@@ -84,11 +82,14 @@
         </p>
         <h4>{{ $t("Download country profiles for") }}:</h4>
       </div>
-    </ArticleList>
-    <ArticleList
-      :articles="filteredNewsPubs"
-      :articles-label="$t('News & publications')"
-    />
+      <ArticleList :articles="filteredCountryProfiles" />
+    </div>
+
+    <div v-if="filteredNewsPubs.length" class="clamp-20-75p-56">
+      <h3>{{ $t("News & publications") }}</h3>
+      <ArticleList :articles="filteredNewsPubs" />
+    </div>
+
     <div v-if="page.twitter_feed" class="clamp-20-75p-56 tweets">
       <h3>{{ $t("Latest tweets") }}</h3>
       <Twitter :value="page.twitter_feed" />

@@ -87,7 +87,7 @@
 </script>
 
 <div>
-  <h2 class="text-xl my-4">{$_("Web of transnational deals")}</h2>
+  <h2>{$_("Web of transnational deals")}</h2>
   <div>{@html $chartDescriptions?.web_of_transnational_deals}</div>
   {#if country}
     <div class="p-4 text-sm mb-5 bg-gray-100 border border-gray-300 shadow-inner">

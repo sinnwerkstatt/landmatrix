@@ -1,81 +1,20 @@
 import { writable } from "svelte/store";
 import { browser } from "$app/env";
+import {
+  ImplementationStatus,
+  IntentionOfInvestment,
+  NatureOfDeal,
+  NegotiationStatus,
+  ProduceGroup,
+} from "$lib/types/deal";
 import type { GQLFilter } from "./types/filters";
 import type { Investor } from "./types/investor";
 
-export enum ProduceGroup {
-  CROPS,
-  ANIMALS,
-  MINERAL_RESOURCES,
-}
-interface Produce {
+export interface Produce {
   name: string;
   id: string;
   value: string;
   groupID: ProduceGroup;
-}
-
-export enum NegotiationStatus {
-  EXPRESSION_OF_INTEREST = "EXPRESSION_OF_INTEREST",
-  UNDER_NEGOTIATION = "UNDER_NEGOTIATION",
-  MEMORANDUM_OF_UNDERSTANDING = "MEMORANDUM_OF_UNDERSTANDING",
-  ORAL_AGREEMENT = "ORAL_AGREEMENT",
-  CONTRACT_SIGNED = "CONTRACT_SIGNED",
-  CHANGE_OF_OWNERSHIP = "CHANGE_OF_OWNERSHIP",
-  NEGOTIATIONS_FAILED = "NEGOTIATIONS_FAILED",
-  CONTRACT_CANCELED = "CONTRACT_CANCELED",
-  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
-}
-export enum NegotiationStatusGroup {
-  INTENDED = "INTENDED",
-  CONCLUDED = "CONCLUDED",
-  FAILED = "FAILED",
-  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
-}
-export const NegotiationStatusGroupMap = {
-  [NegotiationStatus.EXPRESSION_OF_INTEREST]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.UNDER_NEGOTIATION]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.ORAL_AGREEMENT]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.CONTRACT_SIGNED]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.CHANGE_OF_OWNERSHIP]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.NEGOTIATIONS_FAILED]: NegotiationStatusGroup.FAILED,
-  [NegotiationStatus.CONTRACT_CANCELED]: NegotiationStatusGroup.FAILED,
-  [NegotiationStatus.CONTRACT_EXPIRED]: NegotiationStatusGroup.CONTRACT_EXPIRED,
-};
-
-export enum NatureOfDeal {
-  OUTRIGHT_PURCHASE = "OUTRIGHT_PURCHASE",
-  LEASE = "LEASE",
-  CONCESSION = "CONCESSION",
-  EXPLOITATION_PERMIT = "EXPLOITATION_PERMIT",
-  PURE_CONTRACT_FARMING = "PURE_CONTRACT_FARMING",
-}
-export enum ImplementationStatus {
-  PROJECT_NOT_STARTED = "PROJECT_NOT_STARTED",
-  STARTUP_PHASE = "STARTUP_PHASE",
-  IN_OPERATION = "IN_OPERATION",
-  PROJECT_ABANDONED = "PROJECT_ABANDONED",
-}
-export enum IntentionOfInvestment {
-  BIOFUELS = "BIOFUELS",
-  FOOD_CROPS = "FOOD_CROPS",
-  FODDER = "FODDER",
-  LIVESTOCK = "LIVESTOCK",
-  NON_FOOD_AGRICULTURE = "NON_FOOD_AGRICULTURE",
-  AGRICULTURE_UNSPECIFIED = "AGRICULTURE_UNSPECIFIED",
-  TIMBER_PLANTATION = "TIMBER_PLANTATION",
-  FOREST_LOGGING = "FOREST_LOGGING",
-  CARBON = "CARBON",
-  FORESTRY_UNSPECIFIED = "FORESTRY_UNSPECIFIED",
-  MINING = "MINING",
-  OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
-  TOURISM = "TOURISM",
-  INDUSTRY = "INDUSTRY",
-  CONVERSATION = "CONVERSATION",
-  LAND_SPECULATION = "LAND_SPECULATION",
-  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
-  OTHER = "OTHER",
 }
 
 export class FilterValues {
@@ -92,7 +31,7 @@ export class FilterValues {
   initiation_year_unknown = true;
   implementation_status: ImplementationStatus[] = [];
   intention_of_investment: IntentionOfInvestment[] = [];
-  produce: Produce[] = [];
+  produce?: Produce[] = [];
   transnational: boolean | null = null;
   forest_concession: boolean | null = null;
 
@@ -205,7 +144,7 @@ export class FilterValues {
         IntentionOfInvestment.RENEWABLE_ENERGY,
         IntentionOfInvestment.OTHER,
       ]),
-      this.produce.length === 0,
+      !this.produce || this.produce.length === 0,
       this.transnational === true,
       this.forest_concession === false,
     ].every(Boolean);
@@ -246,7 +185,9 @@ export class FilterValues {
         field: "current_implementation_status",
         operation: "IN",
         value: this.implementation_status,
-        allow_null: this.implementation_status.includes("UNKNOWN"),
+        allow_null: this.implementation_status.includes(
+          "UNKNOWN" as ImplementationStatus
+        ),
       });
 
     if (this.investor)
@@ -259,7 +200,6 @@ export class FilterValues {
       });
 
     if (this.nature_of_deal.length > 0) {
-      //TODO use enum
       const nature_of_deal_choices = [
         NatureOfDeal.OUTRIGHT_PURCHASE,
         NatureOfDeal.LEASE,
@@ -301,7 +241,9 @@ export class FilterValues {
         field: "current_intention_of_investment",
         operation: "OVERLAP",
         value: this.intention_of_investment,
-        allow_null: this.intention_of_investment.includes("UNKNOWN"),
+        allow_null: this.intention_of_investment.includes(
+          "UNKNOWN" as IntentionOfInvestment
+        ),
       });
     }
 

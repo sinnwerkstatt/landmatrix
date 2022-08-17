@@ -21,7 +21,7 @@
 </script>
 
 <ul class="jsonactors_field list-disc pl-5">
-  {#each value as val}
+  {#each value ?? [] as val}
     <li>
       <span>{val.name}</span>
       {#if val.role}

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
-  import type { Deal } from "$lib/types/deal";
   import {
     flat_intention_of_investment_map,
     implementation_status_choices,
-  } from "$components/Fields/Display/choices";
+  } from "$lib/choices";
+  import type { Deal } from "$lib/types/deal";
   import { a_download, fileName } from "../utils";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
   import { LamaSankey, sankey_links_to_csv_cross } from "./intentions_per_category";

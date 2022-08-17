@@ -5,16 +5,17 @@
   import Select from "svelte-select";
   import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
-  import { filters, isDefaultFilter, ProduceGroup, publicOnly } from "$lib/filters";
-  import { countries, formfields, regions } from "$lib/stores";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import { showFilterBar } from "$components/Data";
   import {
     implementation_status_choices,
     intention_of_investment_choices,
     nature_of_deal_choices,
-  } from "$components/Fields/Display/choices";
+  } from "$lib/choices";
+  import { filters, isDefaultFilter, publicOnly } from "$lib/filters";
+  import { countries, formfields, regions } from "$lib/stores";
+  import { ProduceGroup } from "$lib/types/deal";
+  import type { Investor } from "$lib/types/investor";
+  import { UserLevel } from "$lib/types/user";
+  import { showFilterBar } from "$components/Data";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte";
@@ -45,15 +46,6 @@
         })),
       ]
     : [];
-
-  const choices = {
-    implementation_status: {
-      UNKNOWN: $_("No information"),
-      ...implementation_status_choices,
-    },
-    nature_of_deal: nature_of_deal_choices,
-    intention_of_investment: intention_of_investment_choices,
-  };
 
   $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
 
@@ -203,7 +195,7 @@
         clearable={$filters.nature_of_deal.length > 0}
         on:click={() => ($filters.nature_of_deal = [])}
       >
-        {#each Object.entries(choices.nature_of_deal) as [isval, isname]}
+        {#each Object.entries(nature_of_deal_choices) as [isval, isname]}
           <label class="block">
             <input
               type="checkbox"
@@ -290,11 +282,20 @@
         clearable={$filters.implementation_status.length > 0}
         on:click={() => ($filters.implementation_status = [])}
       >
-        {#each Object.entries(choices.implementation_status) as [isval, isname]}
+        <label class="block">
+          <input
+            bind:group={$filters.implementation_status}
+            class="checkbox-btn"
+            type="checkbox"
+            value="UNKNOWN"
+          />
+          {$_("No information")}
+        </label>
+        {#each Object.entries(implementation_status_choices) as [isval, isname]}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
-              class="form-check-input custom-control-input checkbox-btn"
+              class=" checkbox-btn"
               type="checkbox"
               value={isval}
             />
@@ -317,7 +318,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(choices.intention_of_investment) as [name, options]}
+        {#each Object.entries(intention_of_investment_choices) as [name, options]}
           <div class="mb-2">
             <strong>{$_(name)}</strong>
             {#each Object.entries(options) as [isval, isname]}
@@ -452,100 +453,3 @@
     </div>
   </div>
 </div>
-<!--<style lang="scss">-->
-
-<!--    .default-filter-switch {-->
-<!--      &.active {-->
-<!--        color: var(&#45;&#45;color-lm-orange);-->
-<!--      }-->
-
-<!--      label.custom-control-label {-->
-<!--        font-size: 0.9rem;-->
-
-<!--        &:hover {-->
-<!--          cursor: pointer;-->
-<!--        }-->
-
-<!--        &:before {-->
-<!--          font-size: 0.8rem;-->
-<!--          background-color: rgba(black, 0.1);-->
-<!--          border-width: 0;-->
-<!--          width: 1.9em;-->
-<!--          height: 0.65em;-->
-<!--          margin-top: 0.2em;-->
-<!--          margin-left: 0.15em;-->
-
-<!--          &:focus {-->
-<!--            outline: none;-->
-<!--          }-->
-<!--        }-->
-
-<!--        &:after {-->
-<!--          margin-top: -0.1em;-->
-<!--          background-color: white;-->
-<!--          box-shadow: 0 1px 2px rgba(black, 0.3);-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-
-<!--    .custom-switch .custom-control-input:checked ~ .custom-control-label {-->
-<!--      &:before {-->
-<!--        background-color: var(&#45;&#45;color-lm-orange-light-10);-->
-<!--      }-->
-
-<!--      &:after {-->
-<!--        background-color: var(&#45;&#45;color-lm-orange);-->
-<!--        box-shadow: 0 0 0 1px var(&#45;&#45;color-lm-orange-light);-->
-<!--      }-->
-<!--    }-->
-
-<!--    .custom-control-input:focus ~ .custom-control-label {-->
-<!--      &:before {-->
-<!--        box-shadow: none;-->
-<!--      }-->
-<!--    }-->
-
-<!--    .form-check {-->
-<!--      padding: 0;-->
-
-<!--      .custom-control.custom-checkbox {-->
-<!--        min-height: 0;-->
-<!--        padding-left: 1.3rem;-->
-
-<!--        label.custom-control-label {-->
-<!--          &:hover {-->
-<!--            cursor: pointer;-->
-<!--          }-->
-
-<!--          line-height: 1.2;-->
-
-<!--          &:before,-->
-<!--          &:after {-->
-<!--            top: 1px;-->
-<!--            left: -1.3rem;-->
-<!--          }-->
-<!--        }-->
-<!--      }-->
-
-<!--      .custom-control-input:focus ~ .custom-control-label {-->
-<!--        &:before {-->
-<!--          border-color: #adb5bd;-->
-<!--        }-->
-<!--      }-->
-
-<!--      .custom-control-input:checked ~ .custom-control-label {-->
-<!--        &:before {-->
-<!--          background-color: var(&#45;&#45;color-lm-orange-light);-->
-<!--          border-color: transparent;-->
-<!--        }-->
-<!--      }-->
-
-<!--      &:not(:first-child) {-->
-<!--        .custom-control.custom-checkbox {-->
-<!--          margin-top: 2px;-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-
-<!--</style>-->

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { combined_status_fn } from "./choices";
+  import { combined_status_fn } from "$lib/choices";
 
   export let value: number[];
 

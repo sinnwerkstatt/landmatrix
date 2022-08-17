@@ -15,34 +15,23 @@
     const vFrom = await stuff.urqlClient
       .query(
         investor_gql_query,
-        {
-          id: investorID,
-          version: +versionFrom,
-          subset: "UNFILTERED",
-          includeDeals: false,
-        },
+        { id: investorID, version: versionFrom, includeDeals: false },
         { requestPolicy: "network-only" }
       )
       .toPromise();
-    const investorFrom = vFrom.data.investor;
+    const investorFrom: Investor = vFrom.data.investor;
     const vTo = await stuff.urqlClient
       .query(
         investor_gql_query,
-        {
-          id: investorID,
-          version: +versionTo,
-          subset: "UNFILTERED",
-          includeDeals: false,
-        },
+        { id: investorID, version: versionTo, includeDeals: false },
         { requestPolicy: "network-only" }
       )
       .toPromise();
-    const investorTo = vTo.data.investor;
+    const investorTo: Investor = vTo.data.investor;
 
     let investordiffy = Object.keys(diff(investorFrom, investorTo));
-    // let locdiffy = Object.keys(diff(investorFrom.locations, investorTo.locations));
     let dsdiffy = Object.keys(diff(investorFrom.datasources, investorTo.datasources));
-    // let condiffy = Object.keys(diff(investorFrom.contracts, investorTo.contracts));
+    let idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors));
 
     return {
       props: {
@@ -53,6 +42,7 @@
         investorTo,
         investordiff: investordiffy.length ? new Set(investordiffy) : new Set(),
         datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
+        involvementsdiff: idiffy.length ? new Set(idiffy) : null,
       },
     };
   };
@@ -71,6 +61,7 @@
   export let investorTo: Investor;
   export let investordiff;
   export let datasourcesdiff;
+  export let involvementsdiff;
 
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));
@@ -130,8 +121,8 @@
     {#each Object.entries(investorSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
-          <th colspan="3" class="bg-gray-500 text-white py-4">
-            <h2 class="text-xl pl-2">{labels[label]}</h2>
+          <th colspan="3" class="bg-gray-500 py-4">
+            <h2 class="text-white my-0 pl-2">{labels[label]}</h2>
           </th>
         </tr>
         {#each section as subsec}
@@ -171,10 +162,55 @@
       {/if}
     {/each}
 
+    {#if involvementsdiff}
+      <tr class="border-t-[3rem] border-white">
+        <th colspan="3" class="bg-gray-500 py-4">
+          <h2 class="text-white my-0 pl-2">{$_("Involvements")}</h2>
+        </th>
+      </tr>
+      {#each [...involvementsdiff] as field}
+        <tr>
+          <th colspan="3" class="bg-gray-300 py-2">
+            <h3 class="text-lg m-0 pl-5">{$_("Involvement")} #{+field + 1}</h3>
+          </th>
+        </tr>
+        {#each subsections.involvement as jfield}
+          {#if hasDifference(investorFrom.investors, investorTo.investors, field, jfield)}
+            <tr class="odd:bg-gray-100">
+              <th class="py-2 pl-8 whitespace-nowrap">
+                {$formfields.involvement[jfield].label}
+              </th>
+
+              <td>
+                {#if investorFrom.investors?.[field]}
+                  <DisplayField
+                    wrapperClasses="px-4 py-2"
+                    fieldname={jfield}
+                    value={investorFrom.investors[field][jfield]}
+                    model="involvement"
+                  />
+                {/if}
+              </td>
+              <td>
+                {#if investorTo.investors?.[field]}
+                  <DisplayField
+                    wrapperClasses="py-2"
+                    fieldname={jfield}
+                    value={investorTo.investors[field][jfield]}
+                    model="involvement"
+                  />
+                {/if}
+              </td>
+            </tr>
+          {/if}
+        {/each}
+      {/each}
+    {/if}
+
     {#if datasourcesdiff}
       <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 text-white py-4">
-          <h2 class="text-xl pl-2">{$_("Data sources")}</h2>
+        <th colspan="3" class="bg-gray-500 py-4">
+          <h2 class="text-white my-0 pl-2">{$_("Data sources")}</h2>
         </th>
       </tr>
       {#each [...datasourcesdiff] as field}

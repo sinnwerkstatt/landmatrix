@@ -13,7 +13,6 @@
       .query<{ investor: Investor[] }>(investor_gql_query, {
         id: investorID,
         version: investorVersion,
-        subset: "UNFILTERED",
         depth: 0,
         includeDeals: false,
       })

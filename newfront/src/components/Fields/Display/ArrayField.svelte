@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { flat_intention_of_investment_map } from "$lib/choices";
   import type { FormField } from "$components/Fields/fields";
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte";
   import FoodCropsIcon from "$components/icons/FoodCropsIcon.svelte";
@@ -11,7 +12,6 @@
   import OilIcon from "$components/icons/OilIcon.svelte";
   import PlaneIcon from "$components/icons/PlaneIcon.svelte";
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte";
-  import { flat_intention_of_investment_map } from "./choices";
 
   export let value: string[];
   export let formfield: FormField;
@@ -38,7 +38,8 @@
   };
 
   export function parseValues(value) {
-    if (formfield.choices?.length > 0)
+    if (!value) return "—";
+    if (Object.keys(formfield.choices).length > 0)
       return value.map((v) => formfield.choices?.[v]).join(", ");
     return value.join(", ");
   }
@@ -57,6 +58,6 @@
       </span>
     {/each}
   {:else}
-    {@html parseValues(value)}
+    {parseValues(value)}
   {/if}
 </div>

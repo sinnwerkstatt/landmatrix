@@ -82,7 +82,7 @@
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true;
     else if (!dealID) await goto("/");
-    else await goto(`/deal/${dealID}${dealVersion ? "/" + dealVersion : ""}`);
+    else await goto(`/deal/${dealID}/${dealVersion ?? ""}`);
   };
 </script>
 
@@ -209,6 +209,10 @@
   </div>
 </div>
 
-<ManageOverlay bind:visible={showReallyQuitOverlay} title={$_("Quit without saving?")}>
-  <div class="font-medium">{$_("Do you really want to close deal editor?")}</div>
+<ManageOverlay
+  bind:visible={showReallyQuitOverlay}
+  title={$_("Quit without saving?")}
+  on:submit={() => onClickClose(true)}
+>
+  <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
 </ManageOverlay>

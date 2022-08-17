@@ -4,7 +4,8 @@
 import { max, range, scaleBand, scaleLinear, select } from "d3";
 import { t } from "svelte-i18n";
 import { get } from "svelte/store";
-import { flat_negotiation_status_map } from "$components/Fields/Display/choices";
+import { flat_negotiation_status_map } from "$lib/choices";
+import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/deal";
 
 const $_ = get(t);
 
@@ -14,7 +15,7 @@ export class LSLAData {
   public contract_size = 0;
   public intended_size = 0;
   public bold?: boolean;
-  constructor(name: string, bold = false) {
+  constructor(name: NegotiationStatus | NegotiationStatusGroup, bold = false) {
     this.name = $_(flat_negotiation_status_map[name]);
     this.bold = bold;
   }
