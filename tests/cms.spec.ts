@@ -12,16 +12,6 @@ async function publishNewPage(page) {
     page.waitForNavigation(),
     page.locator('button:has-text("Publish")').click(),
   ]);
-  await page.locator("text=View live").first().click();
-}
-
-async function login(page) {
-  await page.goto("/cms");
-  //delete after fixing global setup:
-  await page.locator('[placeholder="Enter your username"]').click();
-  await page.locator('[placeholder="Enter your username"]').fill("shakespeare");
-  await page.locator('[placeholder="Enter password"]').fill("hamlet4eva");
-  await page.locator('button:has-text("Sign in")').click();
 }
 
 test("basic cms", async ({ context, page }) => {
@@ -42,7 +32,7 @@ test("basic cms", async ({ context, page }) => {
 });
 
 test("create observatory page", async ({ context, page }) => {
-  login(page);
+  await page.goto("/cms");
 
   // create observatory index page
   await page.locator("text=Pages").first().click();
@@ -72,7 +62,7 @@ test("create observatory page", async ({ context, page }) => {
   await page.locator('div[role="textbox"] div').nth(2).click();
   await page.keyboard.type("test global child page");
   await publishNewPage(page);
-
+  await page.locator("text=View live").first().click();
   await expect(page.locator("h3 >> nth=0")).toContainText(
     "We currently have information about:"
   );
@@ -81,7 +71,7 @@ test("create observatory page", async ({ context, page }) => {
 });
 
 test("create wagtail page", async ({ context, page }) => {
-  login(page);
+  await page.goto("/cms");
 
   await page.locator("text=Pages").first().click();
   await page.locator('h3:has-text("Land Matrix")').click();
@@ -92,6 +82,7 @@ test("create wagtail page", async ({ context, page }) => {
   await page.locator('input[name="body_en-0-value"]').click();
   await page.locator('input[name="body_en-0-value"]').fill("Test Title");
   await publishNewPage(page);
+  await page.locator("text=View live").first().click();
   await Promise.all([
     page.waitForNavigation(),
     page.locator('a:has-text("Contribute")').click(),
@@ -100,26 +91,64 @@ test("create wagtail page", async ({ context, page }) => {
   await expect(page.locator("text=Test Title")).toBeVisible();
 });
 
-test("delete pages created", async ({ context, page }) => {
-  login(page);
-  //check if observatory index page already exists:
+test("create blog page", async ({ context, page }) => {
+  await page.goto("/cms");
+  //create blog category
+  await page.locator("text=Snippets").click();
+  await page.locator("text=Blog Categories").click();
+  await page.locator("text=Add Blog Category").click();
+  await page.locator('input[name="name"]').click();
+  await page.locator('input[name="name"]').fill("News");
+  await page.locator('input[name="name"]').press("Enter");
+  //create blog index page
   await page.locator("text=Pages").first().click();
   await page.locator('h3:has-text("Land Matrix")').click();
-  await page.locator("text=observatory").first().click();
-  await page.locator("div.dropdown-toggle").last().click();
-  await Promise.all([page.waitForNavigation(), page.locator("text=Delete").click()]);
   await Promise.all([
     page.waitForNavigation(),
-    await page.locator("text=Yes, delete it").click(),
+    await page.locator("text=Add child page").first().click(),
   ]);
+  await page.locator("text=Blog index").first().click();
+  await page.locator('input[name="title_en"]').fill("Resources");
+  await publishNewPage(page);
+  //create blog Article page
+  await page.locator("a[title=\"Add a child page to 'Resources'\"]").click();
+  await page.locator('input[name="title_en"]').fill("Blog Article");
+  await page.locator('text="News"').click();
+  await page.locator("text=Paragraph").click();
+  await page.locator('div[role="textbox"] div').nth(2).click();
+  await page.keyboard.type("Blog Article Test Page");
+  await publishNewPage(page);
+  //checkout frontend
+  await page.goto("/");
+  await page.locator("text=Resources").click();
+  await Promise.all([
+    page.waitForNavigation(/*{ url: 'http://localhost:3000/resources?category=news' }*/),
+    page.locator("text=Resources News >> a").click(),
+  ]);
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('a:has-text("Blog Article")').click(),
+  ]);
+  await expect(page.locator("text=Blog Article Test Page")).toBeVisible();
+});
 
+test("delete pages created", async ({ context, page }) => {
+  await page.goto("/cms");
+  //delete pages
   await page.locator("text=Pages").first().click();
   await page.locator('h3:has-text("Land Matrix")').click();
-  await page.locator("text=Contribute").first().click();
-  await page.locator("div.dropdown-toggle").last().click();
-  await Promise.all([page.waitForNavigation(), page.locator("text=Delete").click()]);
+  await page.locator('input[type="checkbox"]').first().check();
   await Promise.all([
     page.waitForNavigation(),
-    await page.locator("text=Yes, delete it").click(),
+    await page.locator("text=Delete").last().click(),
   ]);
+  await page.locator("text=Yes, delete").click();
+  //Delete category "News"
+  await page.locator("text=Snippets").click();
+  await page.locator("text=Blog Categories").click();
+  await page
+    .locator('text=Select all Blog Categories Title >> input[type="checkbox"]')
+    .check();
+  await page.locator("text=Delete Blog Categories").click();
+  await page.locator("text=Yes, delete").click();
 });
