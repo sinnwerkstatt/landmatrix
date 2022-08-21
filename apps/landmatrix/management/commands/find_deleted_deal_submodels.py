@@ -149,7 +149,7 @@ class Command(BaseCommand):
 
             if has_problems:
                 print(
-                    f'{deal.id};{deal.country.fk_region.name};{deal.country.name};=HYPERLINK("https://dev.landmatrix.org/deal/{deal.id}/datasources_table/")'
+                    f'{deal.id};{deal.country.region.name};{deal.country.name};=HYPERLINK("https://dev.landmatrix.org/deal/{deal.id}/datasources_table/")'
                 )
                 global_count += 1
             if deletion_events > 1:

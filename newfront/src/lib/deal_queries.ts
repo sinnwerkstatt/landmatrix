@@ -8,7 +8,7 @@ export const data_deal_query_gql = gql`
       country {
         id
         name
-        fk_region {
+        region {
           id
         }
       }

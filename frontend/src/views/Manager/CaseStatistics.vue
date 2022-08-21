@@ -396,7 +396,7 @@
         if (this.selectedRegion && this.selectedRegion.id !== -1)
           return [
             {
-              field: "country.fk_region.id",
+              field: "country.region.id",
               operation: "EQ",
               value: this.selectedRegion.id,
             },
