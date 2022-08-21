@@ -80,8 +80,8 @@
     dispatch("delete", { comment });
     showDeleteOverlay = false;
   }
-  function sendToDraft({ detail: { comment, to_user } }): void {
-    dispatch("changeStatus", { transition: "TO_DRAFT", comment, to_user });
+  function sendToDraft({ detail: { comment, toUser } }): void {
+    dispatch("changeStatus", { transition: "TO_DRAFT", comment, toUser });
     showToDraftOverlay = false;
   }
   function sendToActivation({ detail: { comment } }) {

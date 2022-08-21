@@ -75,10 +75,10 @@
         <DisplayField
           slot="field"
           let:fieldName
-          let:fieldValue
+          let:obj
           wrapperClasses="p-1"
           fieldname={fieldName}
-          value={fieldValue}
+          value={obj[fieldName]}
         />
       </Table>
     </div>

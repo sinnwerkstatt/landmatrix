@@ -19,7 +19,7 @@
     showSendToReviewOverlay = false;
   }
 
-  function changeStatus({ detail: { transition, comment = "", to_user = null } }) {
+  function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
     $page.stuff.urqlClient
       .mutation(
         gql`
@@ -47,7 +47,7 @@
           version: investorVersion,
           transition,
           comment,
-          to_user_id: to_user?.id,
+          to_user_id: toUser?.id,
         }
       )
       .toPromise()
@@ -64,7 +64,7 @@
       .catch((error) => console.error(error));
   }
 
-  function addComment({ detail: { comment, send_to_user } }) {
+  function addComment({ detail: { comment, sendToUser } }) {
     $page.stuff.urqlClient
       .mutation(
         gql`
@@ -84,7 +84,7 @@
           id: investor.id,
           version: investorVersion ?? null,
           comment: comment,
-          to_user_id: send_to_user?.id,
+          to_user_id: sendToUser?.id,
         }
       )
       .toPromise()

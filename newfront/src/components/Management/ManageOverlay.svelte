@@ -21,7 +21,7 @@
   export let showSubmit = true;
 
   const onSubmit = async () => {
-    dispatch("submit", { comment, to_user: toUser });
+    dispatch("submit", { comment, toUser });
     comment = "";
   };
 </script>
