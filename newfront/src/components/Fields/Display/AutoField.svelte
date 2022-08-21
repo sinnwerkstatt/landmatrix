@@ -6,10 +6,8 @@
   export let value: number;
 
   export let targetBlank = false;
-  export let objectVersion: number | undefined;
+  export let objectVersion: number | undefined = undefined;
   export let model: "deal" | "investor" = "deal";
-
-  let href = `/${model}/${value}/${objectVersion ?? ""}`;
 </script>
 
 <div class="auto_field" data-name={formfield.name}>
@@ -20,7 +18,7 @@
         ? "bg-orange hover:bg-orange-600"
         : "bg-pelorous hover:bg-pelorous-600 hover:text-pelorous-200"
     )}
-    {href}
+    href="/{model}/{value}/{objectVersion ?? ''}"
     target={targetBlank ? "_blank" : undefined}
   >
     {value}
