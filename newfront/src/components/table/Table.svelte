@@ -59,9 +59,9 @@
           data-testid="{index}-{colIndex}"
           style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
         >
-          <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}
-            >{sortedItems[index][fieldName]}</slot
-          >
+          <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}>
+            {sortedItems[index][fieldName]}
+          </slot>
         </div>
       {/each}
     </div>
