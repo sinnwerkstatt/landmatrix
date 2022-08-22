@@ -7,7 +7,7 @@ export type SortBy = keyof Bucket;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyKey = keyof any;
 
-export type BucketMap<TKey extends AnyKey> = Record<TKey, Bucket>;
+export type BucketMap<TKey extends AnyKey = AnyKey> = Partial<Record<TKey, Bucket>>;
 
 export const createBucketMap = <TKey extends AnyKey>(keys: TKey[]): BucketMap<TKey> =>
   keys.reduce(
@@ -23,11 +23,11 @@ export const createBucketMap = <TKey extends AnyKey>(keys: TKey[]): BucketMap<TK
 
 export const createBucketMapReducer =
   <TKey extends AnyKey>(size = 0) =>
-  (bucketMap: BucketMap<TKey>, key: TKey): BucketMap<TKey> => ({
+  (bucketMap: BucketMap<TKey> = {}, key: TKey): BucketMap<TKey> => ({
     ...bucketMap,
     [key]: {
-      count: bucketMap[key].count + 1,
-      size: bucketMap[key].size + size,
+      count: (bucketMap[key]?.count || 0) + 1,
+      size: (bucketMap[key]?.size || 0) + size,
     },
   });
 
