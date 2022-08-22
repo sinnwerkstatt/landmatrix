@@ -20,7 +20,7 @@ test.describe.serial("deal creation tests", () => {
     //GENERAL
     await page.locator("text=General info").click();
     const buttonCurrent = await page
-      .locator('input[name="contract_size_current"]')
+      .locator('input[name="production_size_current"]')
       .first();
     await expect(buttonCurrent).toBeDisabled();
 
@@ -48,9 +48,9 @@ test.describe.serial("deal creation tests", () => {
     //Radiobutton
 
     //Area
-    await page.locator(`[name=contract_size]`).nth(1).fill("2000");
+    await page.locator(`[name=production_size]`).nth(1).fill("2000");
     //Datefield
-    let datefield = await page.locator(`[name=contract_size]`).first();
+    let datefield = await page.locator(`[name=production_size]`).first();
 
     await datefield.fill("01.02.2018");
     console.log(datefield);
@@ -76,13 +76,13 @@ test.describe.serial("deal creation tests", () => {
       await datefield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
-    await page.locator('input[name="contract_size_current"]').first().check();
+    await page.locator('input[name="production_size_current"]').first().check();
     // ToDo: Testing "+"button
     //Create 2nd DateAreaField
     await page.locator('button[name="plus_icon"]').first().click();
 
-    await page.locator('input[name="contract_size"]').nth(2).fill("2019");
-    await page.locator('input[name="contract_size"]').nth(3).fill("3000");
+    await page.locator('input[name="production_size"]').nth(2).fill("2019");
+    await page.locator('input[name="production_size"]').nth(3).fill("3000");
     //Purchase price
     // await page.locator('input [placeholder="\\31 23\\.45"]').nth(4).click();
     //ChoiceField Charfield
@@ -101,7 +101,6 @@ test.describe.serial("deal creation tests", () => {
     );
 
     await choiceField.fill("USD");
-    await page.locator("text=US Dollar (USD)").nth(1).click();
 
     //ChoiceField
     // let choiceField = await page.locator(
@@ -213,8 +212,8 @@ test.describe.serial("deal creation tests", () => {
       await page.locator("text=General info").click(),
     ]);
 
-    await page.locator('input[name="contract_size_current"]').nth(1).check();
-    await page.locator('input[name="contract_size"]').nth(2).fill("2022");
+    await page.locator('input[name="production_size_current"]').nth(1).check();
+    await page.locator('input[name="production_size"]').nth(2).fill("2022");
     await page
       .locator('textarea[name="contract_farming_comment"]')
       .fill("Some comment");
@@ -253,7 +252,70 @@ test.describe.serial("deal creation tests", () => {
     await expect(page.locator('div[data-name="number"]').first()).toContainText("1234");
 
     await expect(page.locator('div[data-name="number"]').nth(1)).toContainText("5678");
-
-    await page.pause();
   });
+
+  // test("create investor", async ({ context, page }) => {
+  //   saveButton = page.locator("text=Save");
+  //
+  //   await page.goto(`deal/${dealID}`);
+  //   await Promise.all([
+  //     page.waitForNavigation(),
+  //     await page.locator('a:has-text("Edit")').click(),
+  //   ]);
+  //   await page.pause();
+  //   // Click text=Investor info
+  //   await page.locator("text=Investor info").click();
+  //   // assert.equal(page.url(), 'http://localhost:3000/deal/edit/4/4#investor_info');
+  //   // Click [placeholder="Investor"]
+  //   await page.locator('[placeholder="Investor"]').click();
+  //   // Fill [placeholder="Investor"]
+  //   await page.locator('[placeholder="Investor"]').fill("Investor Test");
+  //   // Press Enter
+  //   await page.locator('[placeholder="Investor"]').press("Enter");
+  //   // Click [placeholder="Country"]
+  //   await page.locator('[placeholder="Country"]').click();
+  //   // Click text=No options
+  //   await page.locator("text=No options").click();
+  //   // Click [placeholder="Country"]
+  //   await page.locator('[placeholder="Country"]').click();
+  //   // Select GOVERNMENT
+  //   await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Fill [placeholder="Investor homepage"]
+  //   await page
+  //     .locator('[placeholder="Investor homepage"]')
+  //     .fill("www.testing-investor.de");
+  //   // Click #investor_info >> text=Save
+  //   await page.locator("#investor_info >> text=Save").click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click .flex.justify-center.items-center.border >> nth=0
+  //   await page.locator(".flex.justify-center.items-center.border").first().click();
+  //   // Click text=Name Country of registration/origin Classification None---------GovernmentGovern >> svg >> nth=1
+  //   await page
+  //     .locator(
+  //       "text=Name Country of registration/origin Classification None---------GovernmentGovern >> svg"
+  //     )
+  //     .nth(1)
+  //     .click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click text=Investor homepage
+  //   await page.locator("text=Investor homepage").click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Fill [placeholder="Investor homepage"]
+  //   await page
+  //     .locator('[placeholder="Investor homepage"]')
+  //     .fill("https://www.testing-investor.de");
+  //   // Click #investor_info >> text=Save
+  //   await page.locator("#investor_info >> text=Save").click();
+  //   // Click text=Save
+  //   await page.locator("text=Save").click();
+  // });
 });
