@@ -7,12 +7,25 @@ poetry run ./manage.py shell << E=O=F
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 User = get_user_model()
+
 if not User.objects.filter(username='shakespeare').exists():
- will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
- admins, _ = Group.objects.get_or_create(name="Administrators")
- cms_editors, _ = Group.objects.get_or_create(name="CMS Global (Editors)")
- will.groups.set([admins,cms_editors])
- will.save()
+  will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
+  admins, _ = Group.objects.get_or_create(name="Administrators")
+  cms_editors, _ = Group.objects.get_or_create(name="CMS Global (Editors)")
+  will.groups.set([admins,cms_editors])
+  will.save()
+
+if not User.objects.filter(username='test_editor').exists():
+  user = User.objects.create_user('test_editor', 'editor@test.dev', 'love2edit')
+  editors, _ = Group.objects.get_or_create(name='Editors')
+  user.groups.set([editors])
+  user.save()
+
+if not User.objects.filter(username='test_reporter').exists():
+  user = User.objects.create_user('test_reporter', 'reporter@test.dev', 'love2report')
+  reporters, _ = Group.objects.get_or_create(name='Reporters')
+  user.groups.set([reporters])
+  user.save()
 E=O=F
 
 # 4. Start Django
@@ -35,7 +48,7 @@ while ! nc -z localhost 3000; do
   sleep 0.3 # wait for 3/10 of the second before check again
 done
 
-npx playwright test
+npx playwright test tests
 
 kill $RUNSERVER_PID
 sleep 1
