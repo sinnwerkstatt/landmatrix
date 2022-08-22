@@ -216,7 +216,7 @@
 
               <ul>
                 <li>
-                  <a class="nav-link" href="/manager/">
+                  <a class="nav-link" href="/management/">
                     {$_("Manage")}
                   </a>
                 </li>

@@ -10,7 +10,7 @@ class CountryManager(models.Manager):
 
 
 class Country(models.Model):
-    fk_region = models.ForeignKey(
+    region = models.ForeignKey(
         "Region",
         verbose_name=_("Region"),
         on_delete=models.PROTECT,
@@ -104,7 +104,7 @@ class Country(models.Model):
         retdict = {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
         if deep:
             retdict["high_income"] = self.high_income
-            retdict["region"] = self.fk_region.to_dict()
+            retdict["region"] = self.region.to_dict()
         return retdict
 
 

@@ -612,7 +612,7 @@ class RegionBlock(StructBlock):
             )
         )
         if context.get("country"):
-            context["region"] = context["country"].fk_region
+            context["region"] = context["country"].region
         return context
 
 
@@ -630,7 +630,7 @@ class CountriesBlock(StructBlock):
         )
         if context.get("region"):
             context["countries"] = DataCountry.objects.filter(
-                fk_region=context.get("region")
+                region=context.get("region")
             )
         return context
 

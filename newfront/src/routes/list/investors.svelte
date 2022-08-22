@@ -91,11 +91,11 @@
         <DisplayField
           slot="field"
           let:fieldName
-          let:fieldValue
+          let:obj
           model="investor"
           wrapperClasses="p-1"
           fieldname={fieldName}
-          value={fieldValue}
+          value={obj[fieldName]}
         />
       </Table>
     </div>

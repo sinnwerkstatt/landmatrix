@@ -185,7 +185,7 @@
             marker.deal_id = deal.id;
             marker.deal_size = deal.deal_size;
             if (deal.country) {
-              marker.region_id = deal.country.fk_region.id;
+              marker.region_id = deal.country.region.id;
               marker.country_id = deal.country.id;
             }
             marker.on("click", createMarkerPopup);

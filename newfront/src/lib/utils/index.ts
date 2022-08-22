@@ -39,6 +39,7 @@ export const sortFn =
         return _strCmp(x, y);
       case "object":
         if (x.name) return _strCmp(x.name, y.name);
+        if (x.username) return _strCmp(x.username, y.username);
 
         return x.length - y.length;
     }

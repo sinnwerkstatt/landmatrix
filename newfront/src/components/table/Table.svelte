@@ -10,6 +10,8 @@
   export let items: Array<{ [key: string]: unknown }> = [];
   export let sortBy: string | null = null;
 
+  export let rowClasses = "";
+
   $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items;
 
   $: labels = labels ?? columns;
@@ -47,7 +49,7 @@
   <VirtualList width="100%" height={800} itemCount={sortedItems.length} itemSize={70}>
     <div
       slot="item"
-      class="row odd:bg-white even:bg-gray-50 hover:bg-gray-100"
+      class="row odd:bg-white even:bg-gray-50 hover:bg-gray-100 {rowClasses}"
       let:index
       let:style
       style="--grid-columns: {nCols}; {style}"
@@ -59,9 +61,9 @@
           data-testid="{index}-{colIndex}"
           style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
         >
-          <slot name="field" {fieldName} fieldValue={sortedItems[index][fieldName]}
-            >{sortedItems[index][fieldName]}</slot
-          >
+          <slot name="field" {fieldName} obj={sortedItems[index]}>
+            {sortedItems[index][fieldName]}
+          </slot>
         </div>
       {/each}
     </div>

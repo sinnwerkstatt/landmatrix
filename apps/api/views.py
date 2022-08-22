@@ -1,15 +1,23 @@
+import csv
 import io
 import json
 import zipfile
 
-from django.http import JsonResponse, HttpResponse
+from django.contrib.auth import get_user_model
+from django.db.models import Q, F
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.utils import timezone
+from django.views import View
+from openpyxl.workbook import Workbook
 
 from apps.graphql.tools import parse_filters
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
+
+User = get_user_model()
 
 
 def vuebase(request, *args, **kwargs):
@@ -37,7 +45,7 @@ def gis_export(request):
             props["deal_id"] = deal["id"]
             if deal.get("country"):
                 props["country"] = deal["country"].get("name")
-                props["region"] = deal["country"].get("fk_region", {}).get("name")
+                props["region"] = deal["country"].get("region", {}).get("name")
             if feat["geometry"]["type"] == "Point":
                 point_res["features"] += [feat]
             else:
@@ -71,3 +79,186 @@ def messages_json(request):
         )
     ]
     return JsonResponse({"messages": msgs})
+
+
+class Management(View):
+    def __init__(self):
+        super().__init__()
+        self.users_map = {
+            u.id: {"id": u.id, "username": u.username} for u in User.objects.all()
+        }
+        self.countries_map = {
+            c.id: {
+                "id": c.id,
+                "name": c.name,
+                "region": {"id": c.region_id} if c.region_id else None,
+            }
+            for c in Country.objects.all()
+        }
+
+    @staticmethod
+    def filters(request):
+        # TODO should admins see all?
+        user_groups = list(request.user.groups.values_list("name", flat=True))
+        region_or_country = Q()
+        if hasattr(request.user, "userregionalinfo"):
+            if country := request.user.userregionalinfo.country:
+                region_or_country |= Q(country=country)
+            if region := request.user.userregionalinfo.region:
+                region_or_country |= Q(country__region=region)
+
+        return {
+            "todo_feedback": (
+                Q(
+                    workflowinfos__draft_status_before=F(
+                        "workflowinfos__draft_status_after"
+                    )
+                )
+                | (
+                    Q(workflowinfos__draft_status_before=None)
+                    & Q(workflowinfos__draft_status_after=None)
+                )
+            )
+            & Q(workflowinfos__to_user_id=request.user.id),
+            "todo_improvement": Q(draft_status=1)
+            & Q(workflowinfos__draft_status_before=2)
+            & Q(workflowinfos__draft_status_after=1)
+            & Q(workflowinfos__to_user_id=request.user.id),
+            "todo_review": region_or_country
+            & Q(draft_status=2)
+            & ~Q(current_draft=None),
+            "todo_activation": region_or_country
+            & Q(draft_status=3)
+            & ~Q(current_draft=None),
+            "requested_feedback": (
+                Q(
+                    workflowinfos__draft_status_before=F(
+                        "workflowinfos__draft_status_after"
+                    )
+                )
+                | (
+                    Q(workflowinfos__draft_status_before=None)
+                    & Q(workflowinfos__draft_status_after=None)
+                )
+            )
+            & Q(workflowinfos__from_user_id=request.user.id),
+            "requested_improvement": Q(workflowinfos__draft_status_before=2)
+            & Q(workflowinfos__draft_status_after=1)
+            & Q(workflowinfos__from_user_id=request.user.id),
+            "my_drafts": Q(current_draft__created_by_id=request.user.id)
+            & Q(draft_status=1),
+            "created_by_me": Q(current_draft__created_by_id=request.user.id),
+            "reviewed_by_me": Q(workflowinfos__draft_status_before=2)
+            & Q(workflowinfos__draft_status_after=3)
+            & Q(workflowinfos__from_user_id=request.user.id),
+            "activated_by_me": Q(workflowinfos__draft_status_before=3)
+            & Q(workflowinfos__from_user_id=request.user.id),
+            "all_items": Q(),
+            "all_drafts": ~Q(current_draft=None),
+            "all_deleted": Q(status=4),
+        }
+
+    def _deal_dict(self, deal: Deal):
+        deal_dict = {
+            "id": deal.id,
+            "status": deal.status,
+            "draft_status": deal.draft_status,
+            "workflowinfos": [
+                {
+                    "id": w.id,
+                    "from_user": self.users_map.get(w.from_user_id),
+                    "to_user": self.users_map.get(w.to_user_id),
+                    "draft_status_before": w.draft_status_before,
+                    "draft_status_after": w.draft_status_after,
+                    "timestamp": w.timestamp,
+                    "comment": w.comment,
+                    "processed_by_receiver": w.processed_by_receiver,
+                }
+                for w in deal.workflowinfos.order_by("-id")
+            ],
+        }
+        if deal.current_draft and (draft := deal.current_draft.serialized_data):
+            deal_dict.update(
+                {
+                    "draft_id": deal.current_draft.id,
+                    "country": self.countries_map[draft["country"]]
+                    if draft["country"]
+                    else None,
+                    "deal_size": draft["deal_size"],
+                    "created_at": draft["created_at"],
+                    "created_by": self.users_map.get(draft["created_by"]),
+                    "modified_at": draft["modified_at"],
+                    "modified_by": self.users_map.get(draft["modified_by"]),
+                    "fully_updated_at": draft["fully_updated_at"],
+                }
+            )
+        else:
+            deal_dict.update(
+                {
+                    "country": self.countries_map[deal.country_id]
+                    if deal.country_id
+                    else None,
+                    "deal_size": int(deal.deal_size),
+                    "created_at": deal.created_at,
+                    "created_by": self.users_map.get(deal.created_by_id),
+                    "modified_at": deal.modified_at,
+                    "modified_by": self.users_map.get(deal.modified_by_id),
+                    "fully_updated_at": deal.fully_updated_at,
+                }
+            )
+        return deal_dict
+
+    @staticmethod
+    def _csv_writer(data):
+        file = io.StringIO()
+        writer = csv.writer(file, delimiter=";")  # encoding='cp1252'
+        writer.writerow(data[0].keys())
+        [writer.writerow(item.values()) for item in data]
+        file.seek(0)
+        return file.getvalue()
+
+    @staticmethod
+    def _xlsx_writer(data, response: HttpResponse):
+        wb = Workbook(write_only=True)
+        ws = wb.create_sheet(title="Deals")
+        ws.append(list(data[0].keys()))
+        [ws.append(list(item.values())) for item in data]
+        wb.save(response)
+
+    def get(self, request, *args, **kwargs):
+        filters = self.filters(request)
+
+        action = request.GET.get("action")
+        if action == "counts":
+            return JsonResponse(
+                {
+                    metric: Deal.objects.filter(filters[metric]).count()
+                    for metric in filters.keys()
+                }
+            )
+        elif action in filters.keys():
+            ret = [
+                self._deal_dict(deal) for deal in Deal.objects.filter(filters[action])
+            ]
+        else:
+            return HttpResponseBadRequest("unknown request")
+
+        if rformat := request.GET.get("format"):
+            for x in ret:
+                x["country"] = x.get("country", {}).get("name")
+                x["created_by"] = x.get("created_by", {}).get("username")
+                x["modified_by"] = x.get("modified_by", {}).get("username")
+                del x["workflowinfos"]
+            if rformat == "csv":
+                response = HttpResponse(self._csv_writer(ret), content_type="text/csv")
+                response["Content-Disposition"] = f'attachment; filename="{action}.csv"'
+                return response
+            if rformat == "xlsx":
+                response = HttpResponse(content_type="application/ms-excel")
+                response[
+                    "Content-Disposition"
+                ] = f'attachment; filename="{action}.xlsx"'
+                self._xlsx_writer(ret, response)
+                return response
+
+        return JsonResponse({"deals": ret})
