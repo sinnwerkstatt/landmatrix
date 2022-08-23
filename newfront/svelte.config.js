@@ -10,7 +10,14 @@ const config = {
       postcss: true,
     }),
   ],
-  kit: { adapter: adapter() },
+  kit: {
+    adapter: adapter(),
+    alias: {
+      $lib: "src/lib",
+      $components: "src/components",
+      $views: "src/views",
+    },
+  },
 };
 
 export default config;
