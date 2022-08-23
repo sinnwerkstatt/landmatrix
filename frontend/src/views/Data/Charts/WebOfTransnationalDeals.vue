@@ -15,11 +15,11 @@
 <script lang="ts">
   import ContextBarWebOfTransnationalDeals from "$components/Charts/ContextBarWebOfTransnationalDeals.vue";
   import LoadingPulse from "$components/Data/LoadingPulse.vue";
-  import gql from "graphql-tag";
-  import Vue from "vue";
+  import type { GQLFilter } from "$types/filters";
   import ChartsContainer from "./ChartsContainer.vue";
   import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
-  import type { GQLFilter } from "$types/filters";
+  import gql from "graphql-tag";
+  import Vue from "vue";
 
   export default Vue.extend({
     name: "WebOfTransnationalDeals",
@@ -52,7 +52,7 @@
     computed: {
       filtered_filtersForGQL(): GQLFilter[] {
         return this.$store.getters.filtersForGQL.filter(
-          (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
+          (f) => f.field !== "country_id" && f.field !== "country.region_id"
         );
       },
       filtered_country_id(): number {

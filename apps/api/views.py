@@ -37,7 +37,7 @@ def gis_export(request):
     if filters:
         deals = deals.filter(parse_filters(json.loads(filters)))
 
-    fields = ["id", "country__name", "country__fk_region__name", "geojson"]
+    fields = ["id", "country__name", "country__region__name", "geojson"]
 
     for deal in qs_values_to_dict(deals, fields):
         for feat in deal["geojson"].get("features"):
