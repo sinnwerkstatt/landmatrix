@@ -6,10 +6,10 @@
   import { onDestroy } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
-  import { countries, regions } from "$lib/stores";
+  import { countries, loading, regions } from "$lib/stores";
+  import type { Location } from "$lib/types/deal";
   import { showContextBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
@@ -53,7 +53,7 @@
   let skipMapRefresh = false;
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),
@@ -177,8 +177,8 @@
     for (let deal of $deals?.data?.deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
-          .filter((loc) => !!loc.point)
-          .map((loc) => {
+          .filter((loc: Location) => !!loc.point)
+          .map((loc: Location) => {
             let marker = new Marker([loc.point.lat, loc.point.lng]);
             marker.deal = deal;
             marker.loc = loc;

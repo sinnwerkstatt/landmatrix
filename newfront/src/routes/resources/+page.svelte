@@ -1,57 +1,29 @@
-<script lang="ts" context="module">
-  import type { Load } from "@sveltejs/kit";
-  import { gql } from "@urql/svelte";
-  import { pageQuery } from "$lib/queries";
-
-  export const load: Load = async ({ url, fetch, stuff }) => {
-    const page = await pageQuery(url, fetch);
-    const { data } = await stuff.urqlClient
-      .query(
-        gql`
-          query {
-            blogpages {
-              id
-              title
-              slug
-              date
-              header_image
-              excerpt
-              categories {
-                slug
-              }
-              tags {
-                slug
-              }
-              url
-            }
-          }
-        `
-      )
-      .toPromise();
-    const category = url.searchParams.get("category");
-    const tag = url.searchParams.get("tag");
-    return { props: { page, blogpages: data.blogpages, category, tag } };
-  };
-</script>
-
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { blogCategories } from "$lib/stores";
-  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
+  import type { BlogCategory, BlogPage } from "$lib/types/wagtail";
   import TagIcon from "$components/icons/TagIcon.svelte";
   import PageTitle from "$components/PageTitle.svelte";
 
-  export let page: WagtailPage;
-  export let blogpages: BlogPage[] = [];
-  export let category: string;
-  export let tag: string;
+  // import { PageData } from "./$types";
+  //
+  // export let data: PageData;
+
+  export let data: {
+    page: BlogPage;
+    category: string | null;
+    tag: string | null;
+    blogpages: BlogPage[];
+  };
 
   let filteredBlogpages: BlogPage[];
-  $: filteredBlogpages = category
-    ? blogpages.filter((page) => page.categories.map((c) => c.slug).includes(category))
-    : tag
-    ? blogpages.filter((page) => page.tags.map((t) => t.slug).includes(tag))
-    : blogpages;
+  $: filteredBlogpages = data.category
+    ? data.blogpages.filter((page) =>
+        page.categories.map((c) => c.slug).includes(data.category)
+      )
+    : data.tag
+    ? data.blogpages.filter((page) => page.tags.map((t) => t.slug).includes(data.tag))
+    : data.blogpages;
 
   let blogCategoriesWithAll: BlogCategory[];
   $: blogCategoriesWithAll = [
@@ -62,11 +34,11 @@
 
 <div>
   <PageTitle class="inline-flex items-center gap-2">
-    <span>{$_(page.title)}</span>
-    {#if tag}
+    <span>{$_(data.page.title)}</span>
+    {#if data.tag}
       <small class="inline-flex items-center">
         <TagIcon class="h-6 w-6" />
-        {tag}
+        {data.tag}
       </small>
     {/if}
   </PageTitle>
@@ -77,7 +49,7 @@
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="block px-4 py-2 whitespace-nowrap {category === cat.slug
+            class="block px-4 py-2 whitespace-nowrap {data.category === cat.slug
               ? 'text-white bg-orange'
               : ''}"
           >

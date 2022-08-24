@@ -1,25 +1,18 @@
-<script lang="ts" context="module">
-  import type { Load } from "@sveltejs/kit";
-  import { showContextBar } from "$components/Data";
-
-  export const load: Load = async () => {
-    showContextBar.set(true);
-    return {};
-  };
-</script>
-
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { Client, gql } from "@urql/svelte";
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { browser } from "$app/env";
   import { page } from "$app/stores";
+  import { LandMatrixRadialSpider } from "$lib/data/charts/d3_hierarchical_edge_bundling";
+  import type { EdgeBundlingData } from "$lib/data/charts/d3_hierarchical_edge_bundling";
   import { filters } from "$lib/filters";
+  import { showContextBar } from "$components/Data";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";
-  import { LandMatrixRadialSpider } from "./d3_hierarchical_edge_bundling";
 
-  let transnational_deals = [];
+  let transnational_deals: EdgeBundlingData | undefined = undefined;
 
   function redrawSpider(deals, country_id): void {
     LandMatrixRadialSpider(
@@ -31,8 +24,8 @@
   }
 
   const grabTransnationalDeals = async () => {
-    const { data } = await $page.stuff.urqlClient
-      .query(
+    const { data } = await ($page.data.urqlClient as Client)
+      .query<{ transnational_deals: EdgeBundlingData }>(
         gql`
           query ($filters: [Filter]) {
             transnational_deals(filters: $filters)
@@ -45,11 +38,12 @@
         }
       )
       .toPromise();
-    transnational_deals = data.transnational_deals;
+    transnational_deals = data?.transnational_deals;
   };
 
   $: $filters && grabTransnationalDeals();
   $: browser && redrawSpider(transnational_deals, $filters.country_id);
+  onMount(() => showContextBar.set(false));
 </script>
 
 <svelte:head>
@@ -57,7 +51,7 @@
 </svelte:head>
 
 <ChartsContainer>
-  {#if transnational_deals.length === 0}
+  {#if !transnational_deals}
     <div class="absolute inset-0">
       <LoadingPulse data-v-if="$apollo.queries.transnational_deals.loading" />
     </div>
@@ -72,6 +66,7 @@
   </div>
 </ChartsContainer>
 
+<!--suppress CssUnusedSymbol, CssUnknownTarget -->
 <style>
   :global(#incoming-marker) {
     fill: var(--color-lm-orange);

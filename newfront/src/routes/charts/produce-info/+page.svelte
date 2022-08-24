@@ -1,31 +1,24 @@
-<script lang="ts" context="module">
-  import type { Load } from "@sveltejs/kit";
-  import { showContextBar } from "$components/Data";
-
-  export const load: Load = async () => {
-    showContextBar.set(true);
-    return {};
-  };
-</script>
-
 <script lang="ts">
   import { queryStore } from "@urql/svelte";
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
   import { chartDescriptions } from "$lib/stores";
+  import { showContextBar } from "$components/Data";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte";
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
   });
+  onMount(() => showContextBar.set(true));
 </script>
 
 <svelte:head>

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte";
+  import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
   import { loading } from "$lib/stores";
@@ -12,10 +12,8 @@
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte";
   import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte";
 
-  showContextBar.set(false);
-
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),
@@ -23,6 +21,8 @@
     },
   });
   $: loading.set($deals?.fetching ?? false);
+
+  onMount(() => showContextBar.set(false));
 </script>
 
 <svelte:head>

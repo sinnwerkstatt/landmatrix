@@ -94,6 +94,8 @@
       <AutoField {value} {model} {formfield} {targetBlank} {objectVersion} />
     {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
       <ArrayField {value} {formfield} />
+    {:else if formfield.class === "TypedChoiceField"}
+      <TypedChoiceField {value} {formfield} />
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
       <TextField {value} {formfield} />
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}

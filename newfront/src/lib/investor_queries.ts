@@ -120,28 +120,3 @@ export const investor_gql_query = gql`
     }
   }
 `;
-
-export const investors_gql_query = gql`
-  query Investors($filters: [Filter]) {
-    investors(limit: 0, filters: $filters) {
-      id
-      name
-      country {
-        id
-        name
-      }
-      classification
-      homepage
-      opencorporates
-      comment
-      deals {
-        id
-      }
-      status
-      draft_status
-      created_at
-      modified_at
-      is_actually_unknown
-    }
-  }
-`;

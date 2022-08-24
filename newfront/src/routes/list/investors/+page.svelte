@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte";
+  import { gql, queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, FilterValues, publicOnly } from "$lib/filters";
-  import { investors_gql_query } from "$lib/investor_queries";
   import { formfields } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { GQLFilter } from "$lib/types/filters";
@@ -30,7 +29,7 @@
   $: spans = Object.entries(allColumnsWithSpan).map(([_, colSpan]) => colSpan);
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),
@@ -55,8 +54,35 @@
     if (s_filters.investor_country_id)
       filters.push({ field: "country_id", value: s_filters.investor_country_id });
 
-    const { data } = await $page.stuff.urqlClient
-      .query(investors_gql_query, { filters })
+    const { data } = await $page.data.urqlClient
+      .query(
+        gql`
+          query Investors($filters: [Filter]) {
+            investors(limit: 0, filters: $filters) {
+              id
+              name
+              country {
+                id
+                name
+              }
+              classification
+              homepage
+              opencorporates
+              comment
+              deals {
+                id
+              }
+              status
+              draft_status
+              created_at
+              modified_at
+              is_actually_unknown
+            }
+          }
+        `,
+
+        { filters }
+      )
       .toPromise();
 
     investors = data.investors.filter((investor, index, self) => {

@@ -1,39 +1,11 @@
-<script context="module" lang="ts">
-  import type { Load } from "@sveltejs/kit";
-  import { investor_gql_query } from "$lib/investor_queries";
-  import type { Investor } from "$lib/types/investor";
-
-  export const load: Load = async ({ params, stuff }) => {
-    let [investorID, investorVersion] = params.IDs.split("/").map((x) =>
-      x ? +x : undefined
-    );
-
-    if (!investorID) return { status: 404, error: `Investor not found` };
-
-    const { data } = await stuff.urqlClient
-      .query<{ investor: Investor }>(investor_gql_query, {
-        id: investorID,
-        version: investorVersion,
-        includeDeals: true,
-        depth: 1,
-      })
-      .toPromise();
-    if (!data?.investor) return { status: 404, error: `Investor not found` };
-    if (data.investor.status === 1 && !investorVersion) {
-      const investorVersion = data.investor.versions?.[0]?.id;
-      return { status: 301, redirect: `/investor/${investorID}/${investorVersion}` };
-    }
-
-    return { props: { investorID, investorVersion, investor: data.investor } };
-  };
-</script>
-
 <script lang="ts">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
+  import { investor_gql_query } from "$lib/investor_queries";
+  import { loading } from "$lib/stores";
   import { Role } from "$lib/types/investor";
+  import type { Investor } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user.js";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
@@ -42,9 +14,17 @@
   import InvestorHistory from "$components/Investor/InvestorHistory.svelte";
   import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte";
 
-  export let investor: Investor;
-  export let investorID: number;
-  export let investorVersion: number;
+  // import type { PageData } from "./$types";
+  //
+  // export let data: PageData;
+  export let data: {
+    investor: Investor;
+    investorID: number;
+    investorVersion: number | undefined;
+  };
+
+  let investor: Investor = data.investor;
+  $: investor = data.investor;
 
   $: simple_involvements = [
     ...investor.investors.map((i) => ({
@@ -73,24 +53,26 @@
   async function reloadInvestor() {
     console.log("Investor detail: reload");
     loading.set(true);
-    const { data } = await $page.stuff.urqlClient
-      .query<{ investor: Investor }>(
-        investor_gql_query,
-        {
-          id: investorID,
-          version: investorVersion,
-          includeDeals: true,
-          depth: 5, // max depth
-        },
-        { requestPolicy: "network-only" }
-      )
-      .toPromise();
-    investor = data.investor;
+    const ret = (
+      await $page.data.urqlClient
+        .query<{ investor: Investor }>(
+          investor_gql_query,
+          {
+            id: data.investorID,
+            version: data.investorVersion,
+            includeDeals: true,
+            depth: 5, // max depth
+          },
+          { requestPolicy: "network-only" }
+        )
+        .toPromise()
+    ).data;
+    investor = ret.investor;
     loading.set(false);
   }
 
   const download_link = function (format: string): string {
-    return `/api/legacy_export/?investor_id=${investorID}&subset=UNFILTERED&format=${format}`;
+    return `/api/legacy_export/?investor_id=${data.investorID}&subset=UNFILTERED&format=${format}`;
   };
 
   onMount(reloadInvestor);
@@ -101,8 +83,12 @@
 </svelte:head>
 
 <div class="container mx-auto min-h-full px-2 pb-12">
-  {#if $page.stuff.user?.level > UserLevel.ANYBODY}
-    <InvestorManageHeader {investor} {investorVersion} on:reload={reloadInvestor} />
+  {#if $page.data.user?.level > UserLevel.ANYBODY}
+    <InvestorManageHeader
+      {investor}
+      investorVersion={data.investorVersion}
+      on:reload={reloadInvestor}
+    />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1>{investor.name} <small>#{investor.id}</small></h1>
@@ -254,10 +240,14 @@
         />
       {/if}
       {#if activeTab === "#history"}
-        <InvestorHistory {investor} {investorID} {investorVersion} />
+        <InvestorHistory
+          {investor}
+          investorID={data.investorID}
+          investorVersion={data.investorVersion}
+        />
       {/if}
       {#if activeTab === "#network_graph"}
-        {#if !investorVersion}
+        {#if !data.investorVersion}
           <InvestorGraph {investor} showControls />
         {:else}
           <div

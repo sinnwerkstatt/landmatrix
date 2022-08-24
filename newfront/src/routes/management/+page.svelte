@@ -4,9 +4,8 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { publicOnly } from "$lib/filters";
-  import { formfields } from "$lib/stores.js";
+  import { formfields, loading } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import { UserLevel } from "$lib/types/user";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
@@ -21,7 +20,7 @@
     count?: number;
   }
 
-  const user = $page.stuff.user;
+  const user = $page.data.user;
 
   let model: "deal" | "investor" = "deal";
   let activeTab;

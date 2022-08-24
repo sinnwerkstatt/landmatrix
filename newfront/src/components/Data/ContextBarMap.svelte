@@ -7,8 +7,7 @@
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
-  import { loading } from "$lib/stores";
-  import { countries, observatoryPages, regions } from "$lib/stores";
+  import { countries, loading, observatoryPages, regions } from "$lib/stores";
   import type { CountryOrRegion } from "$lib/types/wagtail";
   import { sum } from "$lib/utils/data_processing";
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte";

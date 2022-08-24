@@ -1,39 +1,12 @@
-<script context="module" lang="ts">
-  import type { Load } from "@sveltejs/kit";
-  import { deal_gql_query } from "$lib/deal_queries";
-  import type { Deal } from "$lib/types/deal";
-
-  export const load: Load = async ({ params, stuff }) => {
-    let [dealID, dealVersion] = params.IDs.split("/").map((x) => (x ? +x : undefined));
-
-    if (!dealID) return { status: 404, error: `Deal not found` };
-
-    try {
-      const { data } = await stuff.urqlClient
-        .query<{ deal: Deal }>(deal_gql_query, { id: dealID, version: dealVersion })
-        .toPromise();
-      if (!data?.deal) return { status: 404, error: `Deal not found` };
-      if (data.deal.status === 1 && !dealVersion) {
-        const dealVersion = data.deal.versions?.[0]?.id;
-        return { status: 301, redirect: `/deal/${dealID}/${dealVersion}` };
-      }
-      return { props: { dealID, dealVersion, deal: data.deal } };
-    } catch (e) {
-      if (e.graphQLErrors[0].message === "deal not found")
-        return { status: 404, error: `Deal not found` };
-      console.log(JSON.stringify(e));
-      return { status: 500, error: e };
-    }
-  };
-</script>
-
 <script lang="ts">
   import { gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
+  import { deal_gql_query } from "$lib/deal_queries";
   import { dealSections } from "$lib/sections";
+  import { loading } from "$lib/stores";
+  import type { Deal } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user";
   import DealHistory from "$components/Deal/DealHistory.svelte";
@@ -45,9 +18,13 @@
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
   import DealManageHeader from "$components/Management/DealManageHeader.svelte";
 
-  export let deal: Deal;
-  export let dealID: number;
-  export let dealVersion: number;
+  // import type { PageData } from "./$types";
+  //
+  // export let data: PageData;
+  export let data: { deal: Deal; dealID: number; dealVersion: number };
+
+  let deal: Deal = data.deal;
+  $: deal = data.deal;
 
   $: activeTab = $page.url.hash || "#locations";
 
@@ -76,50 +53,53 @@
     console.log("Deal detail: reload");
 
     loading.set(true);
-    const { data } = await $page.stuff.urqlClient
-      .query<{ deal: Deal }>(
-        deal_gql_query,
-        { id: dealID, version: dealVersion },
-        { requestPolicy: "network-only" }
-      )
-      .toPromise();
-    deal = data.deal;
+    deal = (
+      await $page.data.urqlClient
+        .query<{ deal: Deal }>(
+          deal_gql_query,
+          { id: data.dealID, version: data.dealVersion },
+          { requestPolicy: "network-only" }
+        )
+        .toPromise()
+    ).data.deal;
     loading.set(false);
   }
 
   const download_link = function (format: string): string {
-    return `/api/legacy_export/?deal_id=${dealID}&subset=UNFILTERED&format=${format}`;
+    return `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`;
   };
 
   let investor: Investor;
   async function fetchInvestor() {
     if (!deal.operating_company?.id) return;
-    const { data } = await $page.stuff.urqlClient
-      .query<{ deal: Deal }>(
-        gql`
-          query ($id: Int!) {
-            investor(
-              id: $id
-              involvements_depth: 5
-              involvements_include_ventures: false
-            ) {
-              id
-              name
-              classification
-              country {
+    const ret = (
+      await $page.data.urqlClient
+        .query<{ deal: Deal }>(
+          gql`
+            query ($id: Int!) {
+              investor(
+                id: $id
+                involvements_depth: 5
+                involvements_include_ventures: false
+              ) {
                 id
                 name
+                classification
+                country {
+                  id
+                  name
+                }
+                homepage
+                comment
+                involvements
               }
-              homepage
-              comment
-              involvements
             }
-          }
-        `,
-        { id: deal?.operating_company?.id }
-      )
-      .toPromise();
-    investor = data.investor;
+          `,
+          { id: deal?.operating_company?.id }
+        )
+        .toPromise()
+    ).data;
+    investor = ret.investor;
   }
   onMount(fetchInvestor);
 </script>
@@ -131,8 +111,8 @@
 </svelte:head>
 
 <div class="container mx-auto min-h-full">
-  {#if $page.stuff.user?.level > UserLevel.ANYBODY}
-    <DealManageHeader {deal} {dealVersion} on:reload={reloadDeal} />
+  {#if $page.data.user?.level > UserLevel.ANYBODY}
+    <DealManageHeader {deal} dealVersion={data.dealVersion} on:reload={reloadDeal} />
   {:else}
     <div class="md:flex md:flex-row md:ju<stify-between">
       <h1>
@@ -227,7 +207,7 @@
         <DealSection {deal} sections={dealSections.overall_comment} />
       {/if}
       {#if activeTab === "#history"}
-        <DealHistory {deal} {dealID} {dealVersion} />
+        <DealHistory {deal} dealID={data.dealID} dealVersion={data.dealVersion} />
       {/if}
       {#if activeTab === "#actions"}
         <section>

@@ -1,73 +1,29 @@
-<script context="module" lang="ts">
-  import type { Load } from "@sveltejs/kit";
-  import { diff } from "deep-object-diff";
-  import { investor_gql_query } from "$lib/investor_queries";
-  import type { Investor } from "$lib/types/investor";
-
-  export const load: Load = async ({ params, stuff }) => {
-    let [investorID] = params.IDs.split("/").map((x) => (x ? +x : undefined));
-    if (!investorID) return { status: 404, error: `Investor not found` };
-
-    let [versionFrom, versionTo] = params.versions
-      .split("/")
-      .map((x) => (x ? +x : undefined));
-
-    const vFrom = await stuff.urqlClient
-      .query(
-        investor_gql_query,
-        { id: investorID, version: versionFrom, includeDeals: false },
-        { requestPolicy: "network-only" }
-      )
-      .toPromise();
-    const investorFrom: Investor = vFrom.data.investor;
-    const vTo = await stuff.urqlClient
-      .query(
-        investor_gql_query,
-        { id: investorID, version: versionTo, includeDeals: false },
-        { requestPolicy: "network-only" }
-      )
-      .toPromise();
-    const investorTo: Investor = vTo.data.investor;
-
-    let investordiffy = Object.keys(diff(investorFrom, investorTo));
-    let dsdiffy = Object.keys(diff(investorFrom.datasources, investorTo.datasources));
-    let idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors));
-
-    return {
-      props: {
-        investorID,
-        versionFrom,
-        versionTo,
-        investorFrom,
-        investorTo,
-        investordiff: investordiffy.length ? new Set(investordiffy) : new Set(),
-        datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
-        involvementsdiff: idiffy.length ? new Set(idiffy) : null,
-      },
-    };
-  };
-</script>
-
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { investorSections, subsections } from "$lib/sections";
   import { formfields } from "$lib/stores";
+  import type { Investor } from "$lib/types/investor";
   import DisplayField from "$components/Fields/DisplayField.svelte";
 
-  export let versionFrom;
-  export let versionTo;
-  export let investorID: number;
-  export let investorFrom: Investor;
-  export let investorTo: Investor;
-  export let investordiff;
-  export let datasourcesdiff;
-  export let involvementsdiff;
-
+  // import type { PageData } from "./$types";
+  //
+  // export let data: PageData;
+  export let data: {
+    investorID: number;
+    versionFrom: number;
+    versionTo: number;
+    investorFrom: Investor;
+    investorTo: Investor;
+    investordiff: string[];
+    datasourcesdiff: string[];
+    involvementsdiff: string[];
+  };
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));
   }
+
   function anyFieldFromSubSection(subsec) {
-    return subsec.fields.some((f) => investordiff.has(f));
+    return subsec.fields.some((f) => data.investordiff.includes(f));
   }
 
   const labels = {
@@ -98,7 +54,7 @@
 <svelte:head>
   <title>
     {$_("Comparing Investor")}
-    #{investorID} @{versionFrom} - @{versionTo}
+    #{data.investorID} @{data.versionFrom} - @{data.versionTo}
   </title>
 </svelte:head>
 
@@ -106,14 +62,18 @@
   <thead>
     <tr class="text-2xl">
       <th class="pl-1">
-        <a href="/investor/{investorID}">{$_("Investor")} #{investorID} </a>
+        <a href="/investor/{data.investorID}">{$_("Investor")} #{data.investorID} </a>
       </th>
       <th class="px-4">
-        <a href="/investor/{investorID}/{versionFrom}">{$_("Version")} {versionFrom}</a>
+        <a href="/investor/{data.investorID}/{data.versionFrom}"
+          >{$_("Version")} {data.versionFrom}</a
+        >
       </th>
       <th>
-        <a href="/investor/{investorID}/{versionTo}">{$_("Version")} {versionTo}</a></th
-      >
+        <a href="/investor/{data.investorID}/{data.versionTo}"
+          >{$_("Version")} {data.versionTo}</a
+        >
+      </th>
     </tr>
   </thead>
 
@@ -133,7 +93,7 @@
               </th>
             </tr>
             {#each subsec.fields as field}
-              {#if investordiff.has(field)}
+              {#if data.investordiff.includes(field)}
                 <tr class="odd:bg-gray-100">
                   <th class="py-2 pl-8 whitespace-nowrap">
                     {$formfields.investor[field].label}
@@ -142,7 +102,7 @@
                     <DisplayField
                       wrapperClasses="px-4 py-2"
                       fieldname={field}
-                      value={investorFrom[field]}
+                      value={data.investorFrom[field]}
                       model="investor"
                     />
                   </td>
@@ -150,7 +110,7 @@
                     <DisplayField
                       wrapperClasses="py-2"
                       fieldname={field}
-                      value={investorTo[field]}
+                      value={data.investorTo[field]}
                       model="investor"
                     />
                   </td>
@@ -162,41 +122,41 @@
       {/if}
     {/each}
 
-    {#if involvementsdiff}
+    {#if data.involvementsdiff}
       <tr class="border-t-[3rem] border-white">
         <th colspan="3" class="bg-gray-500 py-4">
           <h2 class="text-white my-0 pl-2">{$_("Involvements")}</h2>
         </th>
       </tr>
-      {#each [...involvementsdiff] as field}
+      {#each [...data.involvementsdiff] as field}
         <tr>
           <th colspan="3" class="bg-gray-300 py-2">
             <h3 class="text-lg m-0 pl-5">{$_("Involvement")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.involvement as jfield}
-          {#if hasDifference(investorFrom.investors, investorTo.investors, field, jfield)}
+          {#if hasDifference(data.investorFrom.investors, data.investorTo.investors, field, jfield)}
             <tr class="odd:bg-gray-100">
               <th class="py-2 pl-8 whitespace-nowrap">
                 {$formfields.involvement[jfield].label}
               </th>
 
               <td>
-                {#if investorFrom.investors?.[field]}
+                {#if data.investorFrom.investors?.[field]}
                   <DisplayField
                     wrapperClasses="px-4 py-2"
                     fieldname={jfield}
-                    value={investorFrom.investors[field][jfield]}
+                    value={data.investorFrom.investors[field][jfield]}
                     model="involvement"
                   />
                 {/if}
               </td>
               <td>
-                {#if investorTo.investors?.[field]}
+                {#if data.investorTo.investors?.[field]}
                   <DisplayField
                     wrapperClasses="py-2"
                     fieldname={jfield}
-                    value={investorTo.investors[field][jfield]}
+                    value={data.investorTo.investors[field][jfield]}
                     model="involvement"
                   />
                 {/if}
@@ -207,40 +167,40 @@
       {/each}
     {/if}
 
-    {#if datasourcesdiff}
+    {#if data.datasourcesdiff}
       <tr class="border-t-[3rem] border-white">
         <th colspan="3" class="bg-gray-500 py-4">
           <h2 class="text-white my-0 pl-2">{$_("Data sources")}</h2>
         </th>
       </tr>
-      {#each [...datasourcesdiff] as field}
+      {#each [...data.datasourcesdiff] as field}
         <tr>
           <th colspan="3" class="bg-gray-300 py-2">
             <h3 class="text-lg m-0 pl-5">{$_("Data source")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.datasource as jfield}
-          {#if hasDifference(investorFrom.datasources, investorTo.datasources, field, jfield)}
+          {#if hasDifference(data.investorFrom.datasources, data.investorTo.datasources, field, jfield)}
             <tr class="odd:bg-gray-100">
               <th class="py-2 pl-8 whitespace-nowrap">
                 {$formfields.datasource[jfield].label}
               </th>
               <td>
-                {#if investorFrom.datasources?.[field]}
+                {#if data.investorFrom.datasources?.[field]}
                   <DisplayField
                     wrapperClasses="px-4 py-2"
                     fieldname={jfield}
-                    value={investorFrom.datasources[field][jfield]}
+                    value={data.investorFrom.datasources[field][jfield]}
                     model="datasource"
                   />
                 {/if}
               </td>
               <td>
-                {#if investorTo.datasources?.[field]}
+                {#if data.investorTo.datasources?.[field]}
                   <DisplayField
                     wrapperClasses="py-2"
                     fieldname={jfield}
-                    value={investorTo.datasources[field][jfield]}
+                    value={data.investorTo.datasources[field][jfield]}
                     model="datasource"
                   />
                 {/if}

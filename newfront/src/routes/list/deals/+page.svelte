@@ -2,10 +2,9 @@
   import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
-  import { formfields } from "$lib/stores";
+  import { formfields, loading } from "$lib/stores";
   import { showContextBar, showFilterBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
@@ -41,7 +40,7 @@
   showContextBar.set(false);
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),

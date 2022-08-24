@@ -11,7 +11,7 @@
   import { displayDealsCount } from "$components/Map/map_helper";
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),

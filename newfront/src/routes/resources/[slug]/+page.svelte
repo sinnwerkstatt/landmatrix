@@ -1,34 +1,26 @@
-<script context="module" lang="ts">
-  import type { Load } from "@sveltejs/kit";
-  import { pageQuery } from "$lib/queries";
-
-  export const load: Load = async ({ url, fetch }) => {
-    const page = await pageQuery(url, fetch);
-
-    return { props: { page } };
-  };
-</script>
-
 <script lang="ts">
   import type { BlogPage } from "$lib/types/wagtail";
   import PageTitle from "$components/PageTitle.svelte";
   import Streamfield from "$components/Streamfield.svelte";
 
-  export let page: BlogPage;
+  // import type { PageData } from "./$types";
+  //
+  // export let data: PageData;
+  export let data: { page: BlogPage };
 </script>
 
 <div>
-  <PageTitle>{page.title}</PageTitle>
+  <PageTitle>{data.page.title}</PageTitle>
 
   <div class="container mx-auto px-10">
     <div class="meta mb-3">
       <div class="inline-block mr-4">
         <i class="far fa-calendar-alt" />
-        {page.date}
+        {data.page.date}
       </div>
-      {#if page.tags?.length > 0}
+      {#if data.page.tags?.length > 0}
         <div class="inline-block">
-          {#each page.tags as tag}
+          {#each data.page.tags as tag}
             <a href="/resources/?tag={tag.slug}">
               <!-- <Tag />-->
               {tag.name}
@@ -37,6 +29,6 @@
         </div>
       {/if}
     </div>
-    <Streamfield content={page.body} />
+    <Streamfield content={data.page.body} />
   </div>
 </div>

@@ -15,13 +15,13 @@
   onMount(() => {
     next = $page.url.searchParams.get("next") || "/";
 
-    if ($page.stuff.user?.is_authenticated) {
+    if ($page.data.user?.is_authenticated) {
       window.location.href = next;
     }
   });
 
   async function login() {
-    const res = await dispatchLogin(username, password, $page.stuff.urqlClient);
+    const res = await dispatchLogin(username, password, $page.data.urqlClient);
     if (res.status) {
       login_failed_message = "";
       logged_in = true;
