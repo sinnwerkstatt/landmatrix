@@ -29,7 +29,7 @@
       ? false
       : !dealVersion && !!deal.draft_status
       ? false
-      : isAuthorized($page.stuff.user, deal);
+      : isAuthorized($page.data.user, deal);
 
   let showSendToReviewOverlay = false;
   async function sendToReview({ detail: { comment } }) {
@@ -38,7 +38,7 @@
   }
 
   function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation (
@@ -86,7 +86,7 @@
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
@@ -114,7 +114,7 @@
   }
 
   async function deleteDeal({ detail: { comment } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String) {
@@ -134,7 +134,7 @@
 
   let showCopyOverlay = false;
   async function copyDeal() {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!) {
@@ -176,7 +176,7 @@
   }
 
   function setConfidential(confidential, comment = ""): void {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation (

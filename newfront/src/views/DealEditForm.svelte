@@ -4,7 +4,12 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { dealSections } from "$lib/sections";
-  import type { Contract, DataSource, Deal, Location } from "$lib/types/deal";
+  import type {
+    Contract,
+    DataSource,
+    Deal,
+    Location as LamaLoc,
+  } from "$lib/types/deal";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
@@ -12,7 +17,7 @@
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
   import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
 
-  export let deal: Deal;
+  export let deal: Deal = {} as Deal;
   export let dealID: number;
   export let dealVersion: number;
 
@@ -47,11 +52,11 @@
       return;
     }
     savingInProgress = true;
-    deal.locations = removeEmptyEntries<Location>(deal.locations);
+    deal.locations = removeEmptyEntries<LamaLoc>(deal.locations);
     deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
     deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
 
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
@@ -110,7 +115,10 @@
           {$_("Close")}
         </button>
       {:else}
-        <button class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+        <button
+          class="btn btn-gray btn-sm mx-2"
+          on:click={() => goto(`/deal/${dealID}/${dealVersion ?? ""}`)}
+        >
           {$_("Cancel")}
         </button>
       {/if}

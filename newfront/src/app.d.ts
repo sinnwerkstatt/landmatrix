@@ -1,15 +1,14 @@
-/// <reference types="@sveltejs/kit" />
-
+// See https://kit.svelte.dev/docs/types#app
+// for information about these interfaces
+// and what to do when importing types
 declare namespace App {
   interface Locals {
     cookie?: string;
   }
+
   // interface Platform {}
-  interface Session {
-    cookie?: string;
-  }
-  interface Stuff {
-    user: import("$lib/types/user").User;
-    urqlClient: import("@urql/core").Client;
-  }
+
+  // interface PrivateEnv {}
+
+  // interface PublicEnv {}
 }

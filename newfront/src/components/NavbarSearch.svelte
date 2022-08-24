@@ -9,16 +9,15 @@
   import SearchIcon from "./icons/SearchIcon.svelte";
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
 
-  $: user = $page.stuff.user;
+  $: user = $page.data.user;
 
   let search = "";
-  let showSearch = false;
   let selectedSearchIndex = 0;
   let deals: Deal[] = [];
   let investors: Investor[] = [];
 
   async function getDeals() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ deals: Deal[] }>(
         gql`
           query SDeals($subset: Subset) {
@@ -41,7 +40,7 @@
   }
 
   async function getInvestors() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {

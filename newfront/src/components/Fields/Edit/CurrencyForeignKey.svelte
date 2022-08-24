@@ -17,7 +17,7 @@
   let currencies: Currency[] = [];
 
   async function getCurrencies() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ currencies: Currency[] }>(
         gql`
           query {

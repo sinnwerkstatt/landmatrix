@@ -14,7 +14,7 @@
 
   async function fetchUsers() {
     if ($users !== undefined) return;
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ users: User[] }>(
         gql`
           {

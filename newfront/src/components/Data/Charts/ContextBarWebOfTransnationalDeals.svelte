@@ -20,7 +20,7 @@
 
   async function _grabInvestmentsAndRankings(countryID: number, fltrs: FilterValues) {
     if (!countryID) return;
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query(
         gql`
           query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {

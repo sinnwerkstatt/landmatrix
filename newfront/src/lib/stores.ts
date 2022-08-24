@@ -109,7 +109,8 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
             involvement
           }
         }
-      `
+      `,
+      {}
     )
     .toPromise();
 

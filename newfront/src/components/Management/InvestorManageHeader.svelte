@@ -20,7 +20,7 @@
   }
 
   function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation (
@@ -65,7 +65,7 @@
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
@@ -93,7 +93,7 @@
   }
 
   function deleteInvestor({ detail: { comment } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String) {

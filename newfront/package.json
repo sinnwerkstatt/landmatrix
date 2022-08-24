@@ -18,7 +18,7 @@
     "@floating-ui/dom": "^1.0.1",
     "@googlemaps/js-api-loader": "^1.14.3",
     "@sveltejs/adapter-node": "^1.0.0-next.86",
-    "@sveltejs/kit": "1.0.0-next.405",
+    "@sveltejs/kit": "^1.0.0-next.432",
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/svelte": "^3.2.1",

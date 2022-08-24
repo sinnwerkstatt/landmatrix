@@ -8,7 +8,19 @@ import {
   select,
   selectAll,
 } from "d3";
-import { addMarkers } from "./utils";
+import type { BaseType, Selection } from "d3";
+
+export interface EdgeBundlingData {
+  name: string;
+  children: {
+    name: number;
+    children: {
+      id: number;
+      imports: string[];
+      name: string;
+    }[];
+  }[];
+}
 
 const width = 954;
 const radius = width / 2;
@@ -33,8 +45,27 @@ function bilink(root) {
   return root;
 }
 
+function addMarkers(svg: Selection<BaseType, unknown, HTMLElement, unknown>): void {
+  const defs = svg.append("defs");
+  const marker_factory = (name: string) =>
+    defs
+      .append("marker")
+      .attr("id", name)
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 0)
+      .attr("refY", 0)
+      .attr("markerWidth", 10)
+      .attr("markerHeight", 10)
+      .attr("orient", "auto-start-reverse")
+      .attr("markerUnits", "userSpaceOnUse")
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5");
+  marker_factory("incoming-marker");
+  marker_factory("outgoing-marker");
+}
+
 export function LandMatrixRadialSpider(
-  data_hierarchical,
+  data_hierarchical: EdgeBundlingData,
   container: string,
   selectedCountry: number,
   updateCountryFn: (country: number) => void
