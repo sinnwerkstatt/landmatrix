@@ -154,7 +154,7 @@ export class FilterValues {
     const filterArray: GQLFilter[] = [];
 
     if (this.region_id)
-      filterArray.push({ field: "country.fk_region_id", value: this.region_id });
+      filterArray.push({ field: "country.region_id", value: this.region_id });
 
     if (this.country_id)
       filterArray.push({ field: "country_id", value: this.country_id });

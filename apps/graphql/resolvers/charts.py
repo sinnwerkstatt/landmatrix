@@ -83,19 +83,19 @@ def resolve_web_of_transnational_deals(_obj, _info, filters=None):
         for k, v in deal_investors["links"][country_id].items():
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
-            imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]
-            # regiondata_for_x = regiondata.get(imp_c.fk_region_id)
+            imports += [f"lama.{imp_c.region_id}.{short_name}"]
+            # regiondata_for_x = regiondata.get(imp_c.region_id)
             # if regiondata_for_x:
             #     regiondata_for_x["size"] += v["size"]
             #     regiondata_for_x["count"] += v["count"]
             # else:
-            #     regiondata[imp_c.fk_region_id] = {
+            #     regiondata[imp_c.region_id] = {
             #         "size": v["size"],
             #         "count": v["count"],
             #     }
 
         short_name = LONG_COUNTRIES.get(country.name, country.name)
-        regions[country.fk_region_id] += [
+        regions[country.region_id] += [
             {
                 "id": country.id,
                 "name": short_name,
@@ -169,7 +169,7 @@ def resolve_statistics(_obj, _info, country_id=None, region_id=None):
         where_clause += f"AND country_id={country_id}"
     if region_id:
         from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
-        where_clause += f"AND c.fk_region_id={region_id}"
+        where_clause += f"AND c.region_id={region_id}"
 
     cursor = connection.cursor()
 

@@ -121,7 +121,7 @@ def resolve_dealversions(_obj, _info, filters=None, country_id=None, region_id=N
 
     if region_id:
         country_ids = list(
-            Country.objects.filter(fk_region_id=region_id).values_list("id", flat=True)
+            Country.objects.filter(region_id=region_id).values_list("id", flat=True)
         )
         qs = qs.filter(serialized_data__country__in=country_ids)
 

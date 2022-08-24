@@ -31,9 +31,7 @@
           id: countryID,
           filters: fltrs
             .toGQLFilterArray()
-            .filter(
-              (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
-            ),
+            .filter((f) => f.field !== "country_id" && f.field !== "country.region_id"),
         }
       )
       .toPromise();

@@ -79,7 +79,7 @@
         if (wtpage.meta.type === "wagtailcms.RegionPage") {
           return [
             {
-              field: "country.fk_region_id",
+              field: "country.region_id",
               value: wtpage.region.id.toString(),
             },
           ];

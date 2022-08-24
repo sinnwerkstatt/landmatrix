@@ -1099,7 +1099,7 @@ class Deal(AbstractDealBase):
                     "count": x["count"],
                     "coordinates": [x["country__point_lat"], x["country__point_lon"]],
                 }
-                for x in deals.filter(country__fk_region_id=region_id)
+                for x in deals.filter(country__region_id=region_id)
                 .values("country_id", "country__point_lat", "country__point_lon")
                 .annotate(count=Count("pk"))
                 # .annotate(size=Sum("deal_size"))
@@ -1125,7 +1125,7 @@ class Deal(AbstractDealBase):
                 "count": x["count"],
                 "coordinates": region_coordinates[x["region_id"]],
             }
-            for x in deals.values(region_id=F("country__fk_region_id")).annotate(
+            for x in deals.values(region_id=F("country__region_id")).annotate(
                 count=Count("pk")
             )
         ]
