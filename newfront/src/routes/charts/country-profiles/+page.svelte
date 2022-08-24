@@ -5,6 +5,7 @@
   import { loading } from "$lib/data";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
+  import { loading } from "$lib/stores";
   import { showContextBar } from "$components/Data";
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte";
