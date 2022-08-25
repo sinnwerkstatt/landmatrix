@@ -115,7 +115,6 @@ test("create blog page", async ({ context, page }) => {
     page.waitForNavigation(),
     page.locator("text=Resources News >> a").click(),
   ]);
-  await page.pause();
   await Promise.all([
     page.waitForNavigation(),
     page.locator('a:has-text("Blog Article")').click(),

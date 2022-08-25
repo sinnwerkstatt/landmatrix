@@ -303,7 +303,7 @@ test.describe.serial("deal creation tests", () => {
       page.locator('a:has-text("www.testing-child-investor.de")')
     ).toBeVisible();
 
-    //edit investor, adding Parent Investor as Parent Company
+    //add Parent Investor to Child Investor
     await page.locator('button:has-text("Edit")').click();
     await page.locator('button:has-text("Create a new draft")').click();
     await page.locator("text=Parent companies").click();
@@ -314,7 +314,7 @@ test.describe.serial("deal creation tests", () => {
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
-    //add data source to investor
+    //add data source to Child Investor
     await page.locator("text=Data sources").click();
     await page.locator("text=Add Data source").click();
     await page.locator('select[name="type"]').selectOption("MEDIA_REPORT");
@@ -325,19 +325,39 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('[placeholder="Name"]').click();
     await page.locator('[placeholder="Name"]').fill("William Shakespeare");
     await page.locator("text=Save").click();
+
+    //checkout Investor Changes (WIP)
     await page.goto(`http://localhost:3000/investor/${investorID}`);
+    await page.click('a:has-text("Involvements")');
     await page.pause();
-
+    await expect(
+      await page.locator("div:has-text('Parent Investor Test')")
+    ).toBeVisible();
     await page.locator("text=Data sources").click();
+    await expect(await page.locator("h3")).toContainText("1. Data source");
+    await expect(await page.locator("text=2022-02-02"));
 
-    //delete Child and Parent Investor (WIP)
+    //delete Child Investor
     await page.locator('button:has-text("Delete")').click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
-      .fill("delete Investor Test");
+      .fill("delete Child Investor Test");
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('button:has-text("Delete investor version")').click(),
+    ]);
+    //delete Parent Investor
+    await page.goto(`/investor/${ParentID}`);
+    await page.locator('button:has-text("Delete")').click();
+    await page
+      .locator("text=Please provide a comment explaining your request >> textarea")
+      .click();
+    await page
+      .locator("text=Please provide a comment explaining your request >> textarea")
+      .fill("delete Parent Investor Test");
     await Promise.all([
       page.waitForNavigation(),
       page.locator('button:has-text("Delete investor version")').click(),
