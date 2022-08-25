@@ -24,7 +24,8 @@
               username
             }
           }
-        `
+        `,
+        {}
       )
       .toPromise();
     await users.set(
