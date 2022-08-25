@@ -105,7 +105,7 @@
   {/if}
   {#if !showNewInvestorForm && value}
     <div class="container p-2">
-      <a href="/investor/{value.id}" class="">
+      <a href="/investor/{value.id}" class="investor-link">
         {$_("Show details for investor")} #{value.id} {value.name}</a
       >
     </div>
