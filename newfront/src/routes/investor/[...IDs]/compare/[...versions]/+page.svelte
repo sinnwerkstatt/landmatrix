@@ -1,4 +1,3 @@
-<script src="+page.ts"></script>
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { investorSections, subsections } from "$lib/sections";
