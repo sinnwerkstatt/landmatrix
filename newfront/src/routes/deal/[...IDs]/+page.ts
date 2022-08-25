@@ -24,8 +24,8 @@ export const load: PageLoad = async ({ params, parent }) => {
   }
   if (!res?.deal) throw error(404, "Deal not found");
   if (res.deal.status === 1 && !dealVersion) {
-    const dealVersion = res.deal.versions?.[0]?.id;
-    throw redirect(301, `/deal/${dealID}/${dealVersion}`);
+    const dealV = res.deal.versions?.[0]?.id;
+    throw redirect(301, `/deal/${dealID}/${dealV}`);
   }
-  return { dealID, dealVersion, deal: res.deal };
+  return { deal: res.deal, dealID, dealVersion };
 };

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { Client, gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
@@ -51,17 +51,17 @@
 
   async function reloadDeal() {
     console.log("Deal detail: reload");
-
     loading.set(true);
-    deal = (
-      await $page.data.urqlClient
+    const ret = (
+      await ($page.data.urqlClient as Client)
         .query<{ deal: Deal }>(
           deal_gql_query,
           { id: data.dealID, version: data.dealVersion },
           { requestPolicy: "network-only" }
         )
         .toPromise()
-    ).data.deal;
+    ).data;
+    deal = ret.deal;
     loading.set(false);
   }
 

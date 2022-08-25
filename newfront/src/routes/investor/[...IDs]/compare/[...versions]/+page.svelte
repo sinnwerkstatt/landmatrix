@@ -1,3 +1,4 @@
+<script src="+page.ts"></script>
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { investorSections, subsections } from "$lib/sections";
@@ -15,8 +16,8 @@
     investorFrom: Investor;
     investorTo: Investor;
     investordiff: string[];
-    datasourcesdiff: string[];
-    involvementsdiff: string[];
+    datasourcesdiff: string[] | null;
+    involvementsdiff: string[] | null;
   };
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));

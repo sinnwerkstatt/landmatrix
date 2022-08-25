@@ -5,7 +5,7 @@ import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ params, parent }) => {
   const { user, urqlClient } = await parent();
-  if (!user) return { status: 403, error: "Permission denied" };
+  if (!user) throw error(403, "Permission denied");
 
   const [investorID, investorVersion] = params.IDs.split("/").map((x) =>
     x ? +x : undefined
@@ -24,5 +24,5 @@ export const load: PageLoad = async ({ params, parent }) => {
       investorVersion ? "Investor version not found" : "Investor not found"
     );
 
-  return { investorID, investorVersion, investor: data.investor };
+  return { investor: data.investor, investorID, investorVersion };
 };

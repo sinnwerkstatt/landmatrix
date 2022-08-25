@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { blogCategories } from "$lib/stores";
-  import type { BlogCategory, BlogPage } from "$lib/types/wagtail";
+  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
   import TagIcon from "$components/icons/TagIcon.svelte";
   import PageTitle from "$components/PageTitle.svelte";
 
@@ -10,19 +10,19 @@
   // export let data: PageData;
 
   export let data: {
-    page: BlogPage;
+    page: WagtailPage;
+    blogpages: BlogPage[];
     category: string | null;
     tag: string | null;
-    blogpages: BlogPage[];
   };
 
   let filteredBlogpages: BlogPage[];
   $: filteredBlogpages = data.category
-    ? data.blogpages.filter((page) =>
-        page.categories.map((c) => c.slug).includes(data.category)
+    ? data.blogpages.filter((bp) =>
+        bp.categories.map((c) => c.slug).includes(data.category)
       )
     : data.tag
-    ? data.blogpages.filter((page) => page.tags.map((t) => t.slug).includes(data.tag))
+    ? data.blogpages.filter((bp) => bp.tags.map((t) => t.slug).includes(data.tag))
     : data.blogpages;
 
   let blogCategoriesWithAll: BlogCategory[];

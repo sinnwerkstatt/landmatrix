@@ -17,7 +17,7 @@
   import ManageOverlay from "$components/Management/ManageOverlay.svelte";
   import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
 
-  export let deal: Deal = {} as Deal;
+  export let deal: Deal;
   export let dealID: number;
   export let dealVersion: number;
 

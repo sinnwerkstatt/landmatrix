@@ -32,5 +32,5 @@ export const load: PageLoad = async ({ url, fetch, parent }) => {
     .toPromise();
   const category = url.searchParams.get("category");
   const tag = url.searchParams.get("tag");
-  return { page: page, blogpages: returql?.data?.blogpages, category, tag };
+  return { page, blogpages: returql?.data?.blogpages, category, tag };
 };

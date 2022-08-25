@@ -25,5 +25,5 @@ export const load: PageLoad = async ({ params, parent }) => {
     throw redirect(301, `/investor/${investorID}/${investorVersion}`);
   }
 
-  return { investorID, investorVersion, investor: data.investor };
+  return { investor: data.investor, investorID, investorVersion };
 };

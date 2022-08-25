@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Client } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
@@ -54,7 +55,7 @@
     console.log("Investor detail: reload");
     loading.set(true);
     const ret = (
-      await $page.data.urqlClient
+      await ($page.data.urqlClient as Client)
         .query<{ investor: Investor }>(
           investor_gql_query,
           {

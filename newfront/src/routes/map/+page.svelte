@@ -105,9 +105,8 @@
             circle,
             $displayDealsCount
               ? val.length
-              : val.reduce((x, y) => {
-                  return { deal_size: x.deal_size + y.deal_size };
-                }).deal_size,
+              : val.reduce((x, y) => ({ deal_size: x.deal_size + y.deal_size }))
+                  .deal_size,
             $regions.find((r) => r.id === +key).name,
             $displayDealsCount
           );
@@ -136,9 +135,8 @@
             circle,
             $displayDealsCount
               ? val.length
-              : val.reduce((x, y) => {
-                  return { deal_size: x.deal_size + y.deal_size };
-                }).deal_size,
+              : val.reduce((x, y) => ({ deal_size: x.deal_size + y.deal_size }))
+                  .deal_size,
             $countries.find((c) => c.id === +key).name,
             $displayDealsCount
           );

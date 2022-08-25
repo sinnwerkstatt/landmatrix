@@ -13,6 +13,8 @@ export const load: PageLoad = async ({ params, parent }) => {
     .split("/")
     .map((x) => (x ? +x : undefined));
 
+  if (!versionFrom || !versionTo) throw error(500, "insufficient parameters");
+
   const vFrom = await urqlClient
     .query<{ deal: Deal }>(
       deal_gql_query,

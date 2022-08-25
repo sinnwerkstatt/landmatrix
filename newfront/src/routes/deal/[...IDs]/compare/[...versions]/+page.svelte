@@ -15,9 +15,9 @@
     dealFrom: Deal;
     dealTo: Deal;
     dealdiff: string[];
-    locationsdiff: string[];
-    datasourcesdiff: string[];
-    contractsdiff: string[];
+    locationsdiff: string[] | null;
+    datasourcesdiff: string[] | null;
+    contractsdiff: string[] | null;
   };
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));
