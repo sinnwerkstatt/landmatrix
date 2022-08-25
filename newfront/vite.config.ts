@@ -18,21 +18,5 @@ export default defineConfig({
     environment: "jsdom",
   },
   optimizeDeps: { exclude: ["@urql/svelte"] },
-  server: {
-    port: 3000,
-    host: "0.0.0.0",
-    proxy: {
-      "/accounts": "http://localhost:8000",
-      "/admin": "http://localhost:8000",
-      "/api": "http://localhost:8000",
-      "/cms": "http://localhost:8000",
-      "/graphql": "http://localhost:8000",
-      "/language": "http://localhost:8000",
-      "/legacy": "http://localhost:8000",
-      "/media": "http://localhost:8000",
-      "/static": "http://localhost:8000",
-      "/wagtailapi": "http://localhost:8000",
-      "/editor": "http://localhost:8000",
-    },
-  },
+  server: { port: 3000, host: "0.0.0.0" },
 });

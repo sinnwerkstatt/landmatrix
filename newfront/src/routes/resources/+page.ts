@@ -1,11 +1,11 @@
 import { gql } from "@urql/svelte";
 import { pageQuery } from "$lib/queries";
-import type { BlogPage } from "$lib/types/wagtail";
+import type { BlogPage, WagtailPage } from "$lib/types/wagtail";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ url, fetch, parent }) => {
   const { urqlClient } = await parent();
-  const page = await pageQuery(url, fetch);
+  const page: WagtailPage = await pageQuery(url, fetch);
   const returql = await urqlClient
     .query<{ blogpages: BlogPage[] }>(
       gql`

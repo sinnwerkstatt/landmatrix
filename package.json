@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "caddy": "caddy run"
   },
   "devDependencies": {
     "@playwright/test": "^1.22.1",

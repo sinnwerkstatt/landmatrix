@@ -4,6 +4,7 @@
 declare namespace App {
   interface Locals {
     cookie?: string;
+    locale: string;
   }
 
   // interface Platform {}

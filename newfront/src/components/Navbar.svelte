@@ -19,7 +19,6 @@
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
   import NavbarSearch from "./NavbarSearch.svelte";
 
-  let language = Cookies.get("django_language") ?? "en";
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
   const dataLinks = [
     { name: "Map", href: "/map" },
@@ -36,7 +35,6 @@
   });
 
   async function switchLanguage(lang: string) {
-    language = lang;
     Cookies.set("django_language", lang);
     await locale.set(lang);
     await fetchBasis(lang, $page.data.urqlClient);
@@ -162,7 +160,7 @@
         <NavDropDown placement="right-0">
           <div slot="title" class="whitespace-nowrap flex items-center gap-1">
             <TranslateIcon class="h-4 w-4 inline" />
-            {languages[language]}
+            {languages[$locale]}
           </div>
 
           <ul class="border border-orange bg-white dark:bg-gray-800">
@@ -170,7 +168,7 @@
               <li class="whitespace-nowrap">
                 <a
                   class="nav-link"
-                  class:active={lcode === language}
+                  class:active={lcode === $locale}
                   on:click={() => switchLanguage(lcode)}
                 >
                   {lingo} ({lcode})

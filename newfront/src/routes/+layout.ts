@@ -1,6 +1,5 @@
 import type { Client } from "@urql/core";
 import { createClient, gql } from "@urql/svelte";
-import Cookies from "js-cookie";
 import { i18nload } from "$lib/i18n/i18n";
 import { fetchBasis } from "$lib/stores";
 import type { User } from "$lib/types/user";
@@ -43,7 +42,7 @@ async function fetchMe(urqlClient: Client) {
   if (data) return userWithLevel(data.me);
 }
 
-export const load: LayoutLoad = async ({ fetch }) => {
+export const load: LayoutLoad = async ({ fetch, data }) => {
   const urqlClient = await createClient({
     url: import.meta.env.VITE_BASE_URL + "/graphql/",
     fetch,
@@ -51,9 +50,8 @@ export const load: LayoutLoad = async ({ fetch }) => {
   });
 
   const user = await fetchMe(urqlClient);
-  const lang = Cookies.get("django_language") ?? "en";
-  await fetchBasis(lang, urqlClient);
-  await i18nload("en");
+  const lang = data?.locale ?? "en";
+  await Promise.all([fetchBasis(lang, urqlClient), i18nload(lang)]);
 
   return { urqlClient, user };
 };
