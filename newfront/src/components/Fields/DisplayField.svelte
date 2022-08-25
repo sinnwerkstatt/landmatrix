@@ -62,7 +62,6 @@
 
   $: field = {
     BooleanField: BooleanField,
-    TypedChoiceField: TypedChoiceField,
     DateField: DateField,
     DecimalField: DecimalField,
     FloatField: DecimalField,
