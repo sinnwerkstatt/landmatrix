@@ -1009,5 +1009,17 @@
   "If there's an account with the given email address, an email with password reset instructions has been sent.": "Si un compte est relié à l’adresse e-mail communiquée, un e-mail contenant les instructions pour réinitialiser votre mot de passe vous a été envoyé.",
   "\nSomeone requested that the password be reset for the following account:\n\n%(site_name)s\nUsername: %(user)s\n\nIf this was a mistake, just ignore this email and nothing will happen.\n\nTo reset your password, visit the following address:\n": "\nQuelqu'un a demandé la réinitialisation du mot de passe pour le compte suivant :\n\n%(site_name)s\nNom d'utilisateur : %(user)s\n\nS'il s’agissait d'une erreur, veuillez ignorer cet e-mail et rien ne se passera.\n\nPour réinitialiser votre mot de passe, veuillez consulter l’adresse suivante :\n",
   "Reset password": "Réinitialiser le mot de passe",
-  "Share": "Partager"
+  "Share": "Partager",
+  "Category Name": "Nom de la Catégorie",
+  "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.": "Les catégories, contrairement aux libellés, peuvent avoir une hiérarchie. Vous pouvez avoir une catégorie Jazz, qui aura pour sous-catégorie Bebop et Big Band. Optionnel.",
+  "Blog Category": "Catégorie du Blog",
+  "Blog Categories": "Catégories du Blog",
+  "Category": "Catégorie",
+  "body": "corps",
+  "Post date": "Date de publication",
+  "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date.": "Cette date peut être affichée dans l'article. Elle n'est pas utilisée pour planifier la publication de l'article.",
+  "Header image": "Image d'en-tête",
+  "Author": "Auteur",
+  "Blog page": "page de blog",
+  "Blog pages": "Pages de blog"
 }
