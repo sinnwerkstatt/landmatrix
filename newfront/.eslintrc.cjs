@@ -13,7 +13,7 @@ module.exports = {
     ecmaVersion: 2020,
   },
   globals: {
-    "google": "readonly",
+    google: "readonly",
   },
   env: {
     browser: true,

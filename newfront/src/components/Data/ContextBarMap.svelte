@@ -36,7 +36,7 @@
       ...($filters.region_id
         ? $regions.find((r) => r.id === $filters.region_id)
         : $countries.find((c) => c.id === $filters.country_id)),
-    };
+    } as CountryOrRegion;
     currentItem.observatory_page = $observatoryPages.find(
       (o) => o.id === currentItem.observatory_page_id
     );
