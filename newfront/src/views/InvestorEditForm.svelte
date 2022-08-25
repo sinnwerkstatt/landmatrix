@@ -40,7 +40,7 @@
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
 
-    const { data, error } = await $page.stuff.urqlClient
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {

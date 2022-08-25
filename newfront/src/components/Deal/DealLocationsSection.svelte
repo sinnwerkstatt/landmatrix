@@ -18,15 +18,13 @@
   };
 
   let geojson_options = {
-    style: (feature) => {
-      return {
-        weight: 2,
-        color: "#000000",
-        opacity: 1,
-        fillOpacity: 0.2,
-        ...styles[feature.properties.type],
-      };
-    },
+    style: (feature) => ({
+      weight: 2,
+      color: "#000000",
+      opacity: 1,
+      fillOpacity: 0.2,
+      ...styles[feature.properties.type],
+    }),
     onEachFeature: (feature, layer) => {
       let tooltip = "<div>";
 

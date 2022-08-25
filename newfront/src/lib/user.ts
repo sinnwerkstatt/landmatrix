@@ -71,7 +71,8 @@ export async function dispatchLogout(urqlClient: Client) {
         mutation {
           logout
         }
-      `
+      `,
+      {}
     )
     .toPromise();
   return data.logout;

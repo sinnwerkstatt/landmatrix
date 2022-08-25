@@ -109,7 +109,8 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
             involvement
           }
         }
-      `
+      `,
+      {}
     )
     .toPromise();
 
@@ -150,3 +151,5 @@ export async function fetchBasis(lang = "en", urqlClient: Client) {
   await getCountriesRegionsFormfields(urqlClient);
   await getChartDescriptions(lang, urqlClient);
 }
+
+export const loading = writable(false);

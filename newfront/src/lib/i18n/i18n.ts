@@ -1,9 +1,9 @@
 import { init, register, waitLocale } from "svelte-i18n";
 
 export const supportedLanguages = ["en", "es", "fr", "ru"];
-export async function i18nload(params: Record<string, string>): Promise<void> {
+export async function i18nload(lang: string): Promise<void> {
   // these "params" are taken from [lang] in the routes-folder
-  const { lang } = params;
+  // const { lang } = params;
 
   supportedLanguages.forEach((locale) => {
     register(locale, () => import(`./lang_${locale}.json`));

@@ -2,13 +2,12 @@
   import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
-  import { countries, observatoryPages, regions } from "$lib/stores";
+  import { countries, loading, observatoryPages, regions } from "$lib/stores";
   import type { CountryOrRegion } from "$lib/types/wagtail";
   import { sum } from "$lib/utils/data_processing";
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
@@ -17,7 +16,7 @@
   import ContextBarContainer from "./ContextBarContainer.svelte";
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),

@@ -37,8 +37,8 @@
     (!objectVersion && object.status === 4) || isActiveWithDraft
       ? false
       : object.draft_status === 4
-      ? $page.stuff.user.level === UserLevel.ADMINISTRATOR
-      : isAuthorized($page.stuff.user, object);
+      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      : isAuthorized($page.data.user, object);
 
   let isOldDraft: boolean;
   $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion;
@@ -58,8 +58,8 @@
     isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
-      ? $page.stuff.user.level === UserLevel.ADMINISTRATOR
-      : isAuthorized($page.stuff.user, object);
+      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      : isAuthorized($page.data.user, object);
   $: isDeleted = !objectVersion && object?.status === 4;
 
   $: deleteTitle = $_(
@@ -174,7 +174,7 @@
           </div>
           <div class="flex workflow-buttons">
             <div class="flex-1 text-right">
-              {#if object.draft_status === 1 && isAuthorized($page.stuff.user, object)}
+              {#if object.draft_status === 1 && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -187,7 +187,7 @@
                   {$_("Submit for review")}
                 </button>
               {/if}
-              {#if (object.draft_status === 2 || object.draft_status === 3) && isAuthorized($page.stuff.user, object)}
+              {#if (object.draft_status === 2 || object.draft_status === 3) && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -206,7 +206,7 @@
               {/if}
             </div>
             <div class="flex-1 text-center">
-              {#if object.draft_status === 2 && isAuthorized($page.stuff.user, object)}
+              {#if object.draft_status === 2 && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -221,7 +221,7 @@
               {/if}
             </div>
             <div class="flex-1 text-left">
-              {#if object.draft_status === 3 && isAuthorized($page.stuff.user, object)}
+              {#if object.draft_status === 3 && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -270,7 +270,7 @@
             {#if isEditable}
               <div class="action-button">
                 <div class="inline-block">
-                  {#if !objectVersion || $page.stuff.user.id === object.created_by?.id}
+                  {#if !objectVersion || $page.data.user.id === object.created_by?.id}
                     <a
                       class:disabled={isOldDraft}
                       href="/{otype}/edit/{object.id}/{objectVersion ?? ''}"
@@ -339,7 +339,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.stuff.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+            {#if $page.data.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
               <div class="action-button">
                 <div class="inline-block">
                   <button

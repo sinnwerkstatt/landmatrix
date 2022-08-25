@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { error } from "@sveltejs/kit";
   import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
@@ -25,6 +26,7 @@
   let filteredCountryProfiles;
   let filteredNewsPubs;
 
+  if (!page) throw error(500, "for some reason `page` is not set.");
   $: regionID = page.region?.id;
   $: countryID = page.country?.id;
 
@@ -34,7 +36,7 @@
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const { data } = await $storePage.stuff.urqlClient
+    const { data } = await $storePage.data.urqlClient
       .query(
         gql`
           query DealAggregations(

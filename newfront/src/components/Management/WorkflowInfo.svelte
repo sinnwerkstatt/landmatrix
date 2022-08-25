@@ -31,7 +31,7 @@
     .replace("[UNSET_CONFIDENTIAL] ", "");
 
   $: unread =
-    info.to_user?.username === $page.stuff.user.username &&
+    info.to_user?.username === $page.data.user.username &&
     !info.processed_by_receiver &&
     comment_wo_head.length > 0;
 

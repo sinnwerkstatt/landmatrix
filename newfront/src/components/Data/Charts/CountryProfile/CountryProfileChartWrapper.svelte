@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { browser } from "$app/env";
-  import { loading } from "$lib/data";
+  import { loading } from "$lib/stores";
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
   import FileImageIcon from "$components/icons/FileImageIcon.svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";

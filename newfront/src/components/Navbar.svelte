@@ -39,22 +39,22 @@
     language = lang;
     Cookies.set("django_language", lang);
     await locale.set(lang);
-    await fetchBasis(lang, $page.stuff.urqlClient);
+    await fetchBasis(lang, $page.data.urqlClient);
   }
 
   let username = "";
   let password = "";
   let login_failed_message = "";
 
-  $: user = $page.stuff.user;
+  $: user = $page.data.user;
 
   async function login() {
-    const res = await dispatchLogin(username, password, $page.stuff.urqlClient);
+    const res = await dispatchLogin(username, password, $page.data.urqlClient);
     if (res.status === true) await location.reload();
   }
 
   async function logout() {
-    if (await dispatchLogout($page.stuff.urqlClient)) location.reload();
+    if (await dispatchLogout($page.data.urqlClient)) location.reload();
   }
 </script>
 

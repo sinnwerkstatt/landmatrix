@@ -22,7 +22,7 @@
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
-  $: user = $page.stuff.user;
+  $: user = $page.data.user;
 
   $: produceChoices = $formfields
     ? [
@@ -52,7 +52,7 @@
   let investors: Investor[] = [];
 
   async function getInvestors() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
@@ -115,7 +115,7 @@
         {$_("Default filter")}
       </CheckboxSwitch>
 
-      {#if $page.stuff.user?.level >= UserLevel.EDITOR}
+      {#if $page.data.user?.level >= UserLevel.EDITOR}
         <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
           {$_("Public deals only")}
         </CheckboxSwitch>
