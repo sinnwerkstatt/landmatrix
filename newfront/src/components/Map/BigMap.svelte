@@ -83,7 +83,7 @@
   <slot />
 </div>
 
-<style>
+<style lang="postcss">
   :global(.leaflet-container a) {
     @apply text-orange;
   }

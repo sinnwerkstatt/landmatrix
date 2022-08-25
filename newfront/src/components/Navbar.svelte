@@ -286,7 +286,7 @@
   </div>
 </nav>
 
-<style>
+<style lang="postcss">
   :global(.nav-link) {
     @apply px-4 py-2 block text-black dark:text-white;
     @apply hover:bg-gray-200 dark:hover:bg-gray-600;

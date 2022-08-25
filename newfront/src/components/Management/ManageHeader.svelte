@@ -404,7 +404,7 @@
   title={$_("Activate")}
 />
 
-<style>
+<style lang="postcss">
   .status-field {
     @apply w-1/4 border-2 h-16 bg-zinc-300 flex items-center justify-center relative pl-5;
   }

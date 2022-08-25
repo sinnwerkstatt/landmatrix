@@ -6,7 +6,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   .n {
     @apply bg-orange w-4 inline-block absolute;
     animation: lds-facebook 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;

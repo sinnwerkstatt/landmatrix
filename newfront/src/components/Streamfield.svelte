@@ -20,7 +20,7 @@
   {/each}
 </div>
 
-<style>
+<style lang="postcss">
   :global(.streamfield ol) {
     @apply list-decimal pl-4;
   }
