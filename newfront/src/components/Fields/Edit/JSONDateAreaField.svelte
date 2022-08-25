@@ -51,7 +51,7 @@
     <tbody>
       {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td class="text-center p-1" on:click={() => updateCurrent(i)}>
+          <td class="p-1 text-center" on:click={() => updateCurrent(i)}>
             <input
               type="radio"
               bind:group={current}
@@ -81,7 +81,7 @@
 
           <td class="p-1">
             <button type="button" on:click={addEntry} name="plus_icon">
-              <PlusIcon class="w-5 h-5 text-black" />
+              <PlusIcon class="h-5 w-5 text-black" />
             </button>
             <button
               type="button"
@@ -89,7 +89,7 @@
               on:click={() => removeEntry(i)}
               name="minus_icon"
             >
-              <MinusIcon class="w-5 h-5 text-red-600" />
+              <MinusIcon class="h-5 w-5 text-red-600" />
             </button>
           </td>
         </tr>

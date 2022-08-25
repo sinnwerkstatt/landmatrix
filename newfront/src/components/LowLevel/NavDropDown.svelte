@@ -6,7 +6,7 @@
 </script>
 
 <li class="group relative {$$props.class}">
-  <div class="flex items-center cursor-default gap-2 hover:text-orange p-2">
+  <div class="flex cursor-default items-center gap-2 p-2 hover:text-orange">
     {#if title}
       {title}
       <ChevronDownIcon />
@@ -14,7 +14,7 @@
       <slot name="title" />
     {/if}
   </div>
-  <div class="hidden absolute group-hover:block group-focus:block {placement}">
+  <div class="absolute hidden group-hover:block group-focus:block {placement}">
     <slot />
   </div>
 </li>

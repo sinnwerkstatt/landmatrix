@@ -262,14 +262,14 @@
 
   {#if country}
     <section class="flex flex-wrap">
-      <div class="lg:w-1/3 pr-3">
+      <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
             class="border border-4 {hoverLocationID === loc.id
               ? 'border-orange-400'
               : 'border-white'}"
           >
-            <div class="flex flex-row justify-between items-center my-2 bg-gray-200">
+            <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
               <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
                 <h3 class="m-0">
                   {index + 1}. {$_(modelName)}
@@ -277,7 +277,7 @@
                 </h3>
               </div>
               <div class="flex-initial p-2" on:click={() => removeEntry(loc)}>
-                <TrashIcon class="w-6 h-8 text-red-600 cursor-pointer" />
+                <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
               </div>
             </div>
             {#if activeLocationID === loc.id}
@@ -327,7 +327,7 @@
             class="btn btn-primary flex items-center"
             on:click={addEntry}
           >
-            <PlusIcon class="w-5 h-6 mr-2 -ml-2" />
+            <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
             {$_("Add")}
             {$_(modelName)}
           </button>
@@ -342,7 +342,7 @@
           <div class="absolute bottom-2 left-2">
             <button
               type="button"
-              class="absolute bottom-[10px] z-10 px-2 pt-0.5 pb-1.5 rounded border-2 border-black/30 {cursorsMovable
+              class="absolute bottom-[10px] z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5 {cursorsMovable
                 ? 'bg-orange text-white'
                 : 'bg-white text-orange'}"
               on:click={onToggleMarkerMovable}

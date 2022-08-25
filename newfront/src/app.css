@@ -29,7 +29,7 @@
 
 @layer components {
   a {
-    @apply text-orange cursor-pointer hover:text-orange-200;
+    @apply cursor-pointer text-orange hover:text-orange-200;
     /*@apply hover:underline*/
   }
   a.lm-underline:hover {
@@ -47,26 +47,26 @@
   }
 
   h1 {
-    @apply text-3xl text-lm-dark my-5 font-bold;
+    @apply my-5 text-3xl font-bold text-lm-dark;
   }
 
   h2 {
-    @apply text-xl text-lm-dark my-5 font-bold;
+    @apply my-5 text-xl font-bold text-lm-dark;
   }
 
   h3 {
-    @apply text-lm-dark dark:text-gray-200 text-[22px] my-5 font-bold;
+    @apply my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
   }
   h3 a {
     @apply text-lm-dark;
   }
 
   h4 {
-    @apply text-lm-dark text-lg  my-5 font-bold;
+    @apply my-5 text-lg  font-bold text-lm-dark;
   }
 
   .btn {
-    @apply inline-block border m-0.5 px-4 py-2 shadow whitespace-nowrap transform transition;
+    @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 shadow transition;
     @apply focus:outline-none focus:ring;
   }
   .btn.disabled,
@@ -77,46 +77,46 @@
     @apply px-3 py-1;
   }
   .btn-primary {
-    @apply bg-orange text-white border-orange text-center;
-    @apply hover:bg-orange-300 hover:border-orange-300;
+    @apply border-orange bg-orange text-center text-white;
+    @apply hover:border-orange-300 hover:bg-orange-300;
     @apply active:bg-orange-700;
   }
   .btn-secondary {
-    @apply bg-white text-orange border-orange;
-    @apply hover:bg-orange-300 hover:text-white hover:border-orange-300;
+    @apply border-orange bg-white text-orange;
+    @apply hover:border-orange-300 hover:bg-orange-300 hover:text-white;
     @apply active:bg-orange-700;
     @apply dark:bg-gray-900 dark:text-orange-200;
   }
 
   .btn-white {
-    @apply border border-black px-5 py-1 text-sm text-black uppercase;
+    @apply border border-black px-5 py-1 text-sm uppercase text-black;
   }
 
   .btn-link {
-    @apply bg-none text-orange shadow-none border-none;
+    @apply border-none bg-none text-orange shadow-none;
     @apply hover:text-orange-200;
     @apply active:text-orange-500;
   }
 
   .btn-gray {
     @apply bg-gray-300 text-gray-600;
-    @apply hover:text-white hover:bg-gray-400;
+    @apply hover:bg-gray-400 hover:text-white;
   }
 
   .btn-pelorous {
-    @apply bg-pelorous-300 border-pelorous text-white;
+    @apply border-pelorous bg-pelorous-300 text-white;
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
   .btn-danger {
-    @apply border-dotted border-red-600 text-red-600 bg-transparent;
-    @apply hover:text-white hover:bg-red-400;
+    @apply border-dotted border-red-600 bg-transparent text-red-600;
+    @apply hover:bg-red-400 hover:text-white;
   }
 
   .inpt {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply border border-gray-300 py-1.5 px-3 bg-white w-full text-black;
-    @apply dark:bg-gray-600 dark:text-white dark:border-gray-500;
+    @apply w-full border border-gray-300 bg-white py-1.5 px-3 text-black;
+    @apply dark:border-gray-500 dark:bg-gray-600 dark:text-white;
   }
   textarea.inpt,
   select[multiple].inpt {
@@ -127,7 +127,7 @@
   }
 
   .inpt[readonly] {
-    @apply text-gray-500 bg-gray-100 focus:outline-none cursor-not-allowed;
+    @apply cursor-not-allowed bg-gray-100 text-gray-500 focus:outline-none;
   }
   .field-has-appendix {
     @apply flex;
@@ -139,12 +139,12 @@
 
   .field-has-appendix > :not(input) {
     height: calc(1.5em + 0.75rem + 2px);
-    @apply flex justify-center items-center border border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600;
+    @apply flex items-center justify-center border border-gray-300 bg-gray-200 py-1.5 px-3 text-gray-600;
   }
 }
 
 .richtext-image {
-  @apply w-auto h-auto max-w-[40%];
+  @apply h-auto w-auto max-w-[40%];
 }
 .richtext-image.left {
   @apply float-left mr-12;
@@ -153,14 +153,14 @@
   @apply float-right ml-12;
 }
 .richtext-image.fullwidth {
-  @apply text-center max-w-full max-h-[700px] w-auto block mx-auto;
+  @apply mx-auto block max-h-[700px] w-auto max-w-full text-center;
 }
 
 .radio-btn {
-  @apply h-4 w-4 bg-white appearance-none rounded-full border border-gray-400 checked:bg-orange checked:border-orange-200 checked:border-2 transition duration-200;
+  @apply h-4 w-4 appearance-none rounded-full border border-gray-400 bg-white transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
 }
 .checkbox-btn {
-  @apply h-4 w-4 border appearance-none border-gray-400 checked:bg-orange checked:border-2 checked:border-orange-200 transition duration-200;
+  @apply h-4 w-4 appearance-none border border-gray-400 transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
 }
 /*form-check-input*/
 

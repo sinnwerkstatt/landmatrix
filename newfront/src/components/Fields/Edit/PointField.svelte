@@ -11,7 +11,7 @@
 
 <div class="flex gap-1">
   <div class="w-full">
-    <div class="text-[12px] -mb-0.5">{$_("Latitude")}</div>
+    <div class="-mb-0.5 text-[12px]">{$_("Latitude")}</div>
     <LowLevelDecimalField
       on:input
       bind:value={value.lat}
@@ -21,7 +21,7 @@
     />
   </div>
   <div class="w-full">
-    <div class="text-[12px] -mb-0.5">{$_("Longitude")}</div>
+    <div class="-mb-0.5 text-[12px]">{$_("Longitude")}</div>
     <LowLevelDecimalField
       on:input
       bind:value={value.lng}

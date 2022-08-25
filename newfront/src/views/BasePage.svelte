@@ -6,7 +6,7 @@
   export let page: WagtailPage;
 </script>
 
-<div class="pb-12 px-2">
+<div class="px-2 pb-12">
   <PageTitle>{page.title}</PageTitle>
   <Streamfield content={page.body} />
 </div>

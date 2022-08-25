@@ -17,7 +17,7 @@
     maxlength={formfield.max_length}
   />
   <div
-    class="flex justify-center items-center border border-l-0 border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600"
+    class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 py-1.5 px-3 text-gray-600"
   >
     <LinkIcon class="h-4 w-4" />
   </div>

@@ -1,5 +1,5 @@
-<div class="w-full h-full flex items-center justify-center relative {$$props.class}">
-  <div class="lds-facebook block relative w-20 h-20 -mt-10">
+<div class="relative flex h-full w-full items-center justify-center {$$props.class}">
+  <div class="lds-facebook relative -mt-10 block h-20 w-20">
     <div class="n n1" />
     <div class="n n2" />
     <div class="n n3" />
@@ -8,7 +8,7 @@
 
 <style lang="postcss">
   .n {
-    @apply bg-orange w-4 inline-block absolute;
+    @apply absolute inline-block w-4 bg-orange;
     animation: lds-facebook 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
   }
   .n1 {

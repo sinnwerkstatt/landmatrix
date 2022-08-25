@@ -9,17 +9,17 @@
 </script>
 
 {#each limitedArticles as article}
-  <div class="flex flex-col sm:flex-row gap-4 overflow-hidden py-2 my-2 border-b">
+  <div class="my-2 flex flex-col gap-4 overflow-hidden border-b py-2 sm:flex-row">
     {#if article.header_image}
       <img
         src={article.header_image}
         alt="Header for {article.title}"
-        class="w-48 h-48"
+        class="h-48 w-48"
       />
     {/if}
 
     <div>
-      <h5 class="font-bold text-lg">
+      <h5 class="text-lg font-bold">
         <a href={article.url} class="text-orange">{article.title}</a>
       </h5>
       {@html article.excerpt}

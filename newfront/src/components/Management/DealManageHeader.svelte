@@ -212,13 +212,13 @@
   <div slot="heading">
     {$_("Deal")} #{deal.id}
     {#if deal.country}
-      <span class="whitespace-nowrap block text-base font-normal">
+      <span class="block whitespace-nowrap text-base font-normal">
         {deal.country.name}
       </span>
     {/if}
   </div>
   <div slot="visibility" class="flex-auto">
-    <div class="flex items-center gap-1 mb-2 text-lg">
+    <div class="mb-2 flex items-center gap-1 text-lg">
       {#if deal.is_public}
         <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
       {:else}
@@ -240,40 +240,40 @@
       {#if !isEditable}
         <li class="flex items-center gap-1">
           {#if !deal.confidential}
-            <CheckIcon class="h-4 w-4 mx-1" /> {$_("Not confidential")}
+            <CheckIcon class="mx-1 h-4 w-4" /> {$_("Not confidential")}
           {:else}
-            <XIcon class="h-4 w-4 mx-1" /> {$_("Confidential")}
+            <XIcon class="mx-1 h-4 w-4" /> {$_("Confidential")}
           {/if}
         </li>
       {/if}
 
       <li class="flex items-center gap-1">
         {#if deal.country}
-          <CheckIcon class="h-4 w-4 mx-1" /> {$_("Target country is set")}
+          <CheckIcon class="mx-1 h-4 w-4" /> {$_("Target country is set")}
         {:else}
-          <XIcon class="h-4 w-4 mx-1" /> {$_("Target country is NOT set")}
+          <XIcon class="mx-1 h-4 w-4" /> {$_("Target country is NOT set")}
         {/if}
       </li>
 
       <li class="flex items-center gap-1 whitespace-nowrap">
         {#if deal.datasources?.length > 0}
-          <CheckIcon class="h-4 w-4 mx-1" />
+          <CheckIcon class="mx-1 h-4 w-4" />
           {$_("At least one data source")} ({deal.datasources.length})
         {:else}
-          <XIcon class="h-4 w-4 mx-1" /> {$_("No data source")}
+          <XIcon class="mx-1 h-4 w-4" /> {$_("No data source")}
         {/if}
       </li>
 
       <li class="flex items-center gap-1">
         {#if deal.has_known_investor}
-          <CheckIcon class="h-4 w-4 mx-1" /> {$_("At least one investor")}
+          <CheckIcon class="mx-1 h-4 w-4" /> {$_("At least one investor")}
         {:else}
-          <XIcon class="h-4 w-4 mx-1" /> {$_("No known investor")}
+          <XIcon class="mx-1 h-4 w-4" /> {$_("No known investor")}
         {/if}
       </li>
     </ul>
 
-    <div class="flex items-center gap-1 font-bold mt-2">
+    <div class="mt-2 flex items-center gap-1 font-bold">
       {#if deal.fully_updated}
         <CheckCircleIcon class="h-6 w-6 text-orange" />
         <span>{$_("Fully updated")}</span>
@@ -305,7 +305,7 @@
   </div>
   <div class="mb-6">
     <label for="data-policy-checkbox" class="underline">{$_("Data policy")}</label>
-    <label class="font-bold block mt-1">
+    <label class="mt-1 block font-bold">
       <input required type="checkbox" id="data-policy-checkbox" />
       {$_("I've read and agree to the")}
       <a href="/about/data-policy/" target="_blank">{$_("Data policy")} </a>.

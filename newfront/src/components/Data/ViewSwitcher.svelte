@@ -19,10 +19,10 @@
 </script>
 
 <div
-  class="absolute mx-auto top-3 inset-x-0 text-center z-30 drop-shadow pointer-events-none"
+  class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto text-center drop-shadow"
 >
   <nav id="data-navigation">
-    <ul class="inline-flex drop-shadow bg-white text-left pointer-events-auto">
+    <ul class="pointer-events-auto inline-flex bg-white text-left drop-shadow">
       <li>
         <a
           href="/map"

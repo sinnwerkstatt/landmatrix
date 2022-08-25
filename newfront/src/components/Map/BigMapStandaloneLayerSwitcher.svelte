@@ -6,12 +6,12 @@
 </script>
 
 <div
-  class="absolute top-[10px] right-[10px] z-10 bg-white px-2 pt-1 pb-2 rounded border-2 border-black/30"
+  class="absolute top-[10px] right-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pt-1 pb-2"
   on:mouseleave={() => (shown = false)}
 >
   {#if !shown}
     <LayerGroup
-      class="h-5 w-5 inline text-orange"
+      class="inline h-5 w-5 text-orange"
       on:focus={() => (shown = true)}
       on:mouseover={() => (shown = true)}
     />

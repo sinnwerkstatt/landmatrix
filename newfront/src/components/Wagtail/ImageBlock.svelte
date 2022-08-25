@@ -36,7 +36,7 @@
     <img class="w-full max-w-full" {src} alt="" />
   {/if}
   {#if caption}
-    <div class="caption font-bold bg-[rgba(0,0,0,.75)] p-3 text-orange">
+    <div class="caption bg-[rgba(0,0,0,.75)] p-3 font-bold text-orange">
       {@html caption}
     </div>
   {/if}
@@ -44,7 +44,7 @@
 
 {#if lightboxVisible}
   <div
-    class="fixed w-screen h-screen z-[20000] inset-0 bg-gray-600 bg-opacity-90 p-2 flex justify-center items-center"
+    class="fixed inset-0 z-[20000] flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-90 p-2"
     on:click={toggleLightbox}
   >
     <img on:click|stopPropagation class="max-h-full max-w-full border" {src} alt="" />

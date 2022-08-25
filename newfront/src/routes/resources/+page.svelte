@@ -49,7 +49,7 @@
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="block px-4 py-2 whitespace-nowrap {data.category === cat.slug
+            class="block whitespace-nowrap px-4 py-2 {data.category === cat.slug
               ? 'text-white bg-orange'
               : ''}"
           >
@@ -59,15 +59,15 @@
       {/each}
     </ul>
   </div>
-  <div class="container mx-auto px-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="container mx-auto grid gap-4 px-10 md:grid-cols-2 lg:grid-cols-3">
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
-        <div class="border border-black/20 rounded">
+        <div class="rounded border border-black/20">
           {#if blogpage.header_image}
             <img loading="lazy" src={blogpage.header_image} class="rounded-t" alt="" />
           {/if}
           <div class="p-2">
-            <h5 class="text-lg font-bold mb-4">
+            <h5 class="mb-4 text-lg font-bold">
               <a href={blogpage.url} class="text-lm-dark">
                 {blogpage.title}
               </a>

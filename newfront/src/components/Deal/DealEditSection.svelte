@@ -12,7 +12,7 @@
 <section>
   <form {id}>
     {#each sections as subsection}
-      <div class="space-y-4 mt-2">
+      <div class="mt-2 space-y-4">
         <h3 class="my-0">{$_(subsection.name)}</h3>
         {#each subsection.fields as fieldname}
           <EditField {fieldname} bind:value={deal[fieldname]} />

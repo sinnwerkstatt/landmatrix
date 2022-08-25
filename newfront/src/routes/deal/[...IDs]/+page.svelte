@@ -114,22 +114,22 @@
   {#if $page.data.user?.level > UserLevel.ANYBODY}
     <DealManageHeader {deal} dealVersion={data.dealVersion} on:reload={reloadDeal} />
   {:else}
-    <div class="md:flex md:flex-row md:ju<stify-between">
+    <div class="md:ju<stify-between md:flex md:flex-row">
       <h1>
         {$_("Deal")}
         #{deal.id}
         {#if deal.country}{$_("in")} {deal.country.name}{/if}
       </h1>
-      <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
-        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+      <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
+        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
           {$_("Created")}<br />
           <DateTimeField value={deal.created_at} />
         </div>
-        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
           {$_("Last update")}<br />
           <DateTimeField value={deal.modified_at} />
         </div>
-        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
           {$_("Last full update")}<br />
           <DateTimeField value={deal.fully_updated_at} />
         </div>
@@ -137,11 +137,11 @@
     </div>
   {/if}
   <div class="flex min-h-full">
-    <nav class="p-2 flex-initial">
+    <nav class="flex-initial p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-4 border-orange {activeTab === target
+            class="border-orange py-2 pr-4 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -154,7 +154,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full mb-12">
+    <div class="mb-12 w-full flex-auto pl-4">
       {#if activeTab === "#locations"}
         <DealLocationsSection {deal} />
       {/if}

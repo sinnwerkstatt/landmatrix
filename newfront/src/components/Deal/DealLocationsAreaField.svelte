@@ -99,12 +99,12 @@
   }
 </script>
 
-<div class="grid grid-cols-10 justify-between my-3">
-  <div class="pr-2 col-span-2">
+<div class="my-3 grid grid-cols-10 justify-between">
+  <div class="col-span-2 pr-2">
     <div class="text-lg font-medium">{title}</div>
   </div>
   {#if hasAreaFeatures}
-    <table class="flex-auto col-span-8">
+    <table class="col-span-8 flex-auto">
       <thead>
         <tr>
           <th class="font-normal" />
@@ -127,7 +127,7 @@
               hiddenFeatures.includes(feat) ? "bg-gray-200" : ""
             )}
           >
-            <td class="text-center px-1" on:click={() => toggleVisibility(feat)}>
+            <td class="px-1 text-center" on:click={() => toggleVisibility(feat)}>
               {#if hiddenFeatures.includes(feat)}
                 <div title="Show">
                   <EyeSlashIcon class="h-5 w-5" />
@@ -136,7 +136,7 @@
                 <div title="Hide"><EyeIcon class="h-5 w-5" /></div>
               {/if}
             </td>
-            <td class="text-center px-1" on:click={() => updateCurrent(i)}>
+            <td class="px-1 text-center" on:click={() => updateCurrent(i)}>
               <input
                 type="radio"
                 bind:group={current}
@@ -168,7 +168,7 @@
                 type="button"
                 on:click={() => confirm($_("Delete feature?")) && removeFeature(feat)}
               >
-                <TrashIcon class="w-5 h-5 text-red-600" />
+                <TrashIcon class="h-5 w-5 text-red-600" />
               </button>
             </td>
           </tr>
@@ -178,7 +178,7 @@
   {:else}
     <button
       type="button"
-      class="btn btn-slim btn-secondary flex justify-center items-center"
+      class="btn btn-slim btn-secondary flex items-center justify-center"
       on:click={() => (showAddAreaOverlay = true)}
     >
       <PlusIcon />

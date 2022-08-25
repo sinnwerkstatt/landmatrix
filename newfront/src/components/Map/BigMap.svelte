@@ -70,9 +70,9 @@
   }
 </script>
 
-<div class="mx-auto relative {containerClass}">
+<div class="relative mx-auto {containerClass}">
   <!-- ! isolate is important to capture and contextualize leaflet's "400" z-index -->
-  <div id={mapId} class="h-full w-full isolate">
+  <div id={mapId} class="isolate h-full w-full">
     {#if !map}
       <LoadingPulse class="h-[300px]" />
     {/if}

@@ -25,7 +25,7 @@
 
 <div>
   <div
-    class="row text-white bg-gray-700 font-medium pr-4 whitespace-nowrap"
+    class="row whitespace-nowrap bg-gray-700 pr-4 font-medium text-white"
     style="--grid-columns: {nCols};"
   >
     {#each columns as col, colIndex}

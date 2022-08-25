@@ -45,7 +45,7 @@
   <form {id} class="w-full">
     {#each entries.filter(entriesFilter) as entry, index}
       <div class="{model}-entry">
-        <div class="flex flex-row justify-between items-center my-2 bg-gray-200">
+        <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
           <div
             class="flex-grow p-2"
             on:click={() => (activeEntry = activeEntry === index ? -1 : index)}
@@ -64,7 +64,7 @@
             </h3>
           </div>
           <div class="flex-initial p-2" on:click={() => removeEntry(entry)}>
-            <TrashIcon class="w-6 h-8 text-red-600 cursor-pointer" />
+            <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </div>
         </div>
         {#if activeEntry === index}
@@ -82,7 +82,7 @@
         class="btn btn-primary flex items-center"
         on:click={addEntry}
       >
-        <PlusIcon class="w-5 h-6 mr-2 -ml-2" />
+        <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
         {$_("Add")}
         {$_(modelName)}
       </button>

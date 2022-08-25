@@ -93,12 +93,12 @@
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1>{investor.name} <small>#{investor.id}</small></h1>
-      <div class="flex items-center bg-gray-50 rounded p-3 my-2 w-auto">
-        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+      <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
+        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
           {$_("Created")}<br />
           <DateTimeField value={investor.created_at} />
         </div>
-        <div class="mr-10 md:mx-5 text-xs md:text-sm text-lm-dark">
+        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
           {$_("Last update")}<br />
           <DateTimeField value={investor.modified_at} />
         </div>
@@ -107,11 +107,11 @@
   {/if}
 
   <div class="flex min-h-full">
-    <nav class="p-2 flex-initial">
+    <nav class="flex-initial p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-20 border-orange whitespace-nowrap {activeTab === target
+            class="whitespace-nowrap border-orange py-2 pr-20 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -124,7 +124,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full">
+    <div class="w-full flex-auto pl-4">
       {#if activeTab === "#general"}
         {#each ["name", "country", "classification", "homepage", "opencorporates", "comment"] as fieldname}
           <DisplayField
@@ -137,7 +137,7 @@
       {/if}
       {#if activeTab === "#involvements"}
         <h3>{$_("Involvements")} ({simple_involvements.length})</h3>
-        <table class="table-auto w-full relative mb-20">
+        <table class="relative mb-20 w-full table-auto">
           <thead class="border-b-2 ">
             <tr>
               <th>{$_("Investor ID")}</th>
@@ -203,7 +203,7 @@
             {$_("Deals (Involvements as Operating company)")} ({investor.deals.length})
           </h3>
 
-          <table class="table-auto w-full  relative">
+          <table class="relative w-full  table-auto">
             <thead class="border-b-2">
               <tr>
                 <th>{$_("Deal ID")}</th>
@@ -252,7 +252,7 @@
           <InvestorGraph {investor} showControls />
         {:else}
           <div
-            class="lg:w-3/4 xl:w-1/2 mb-3 flex text-center items-center text-zinc-600 bg-neutral-300"
+            class="mb-3 flex items-center bg-neutral-300 text-center text-zinc-600 lg:w-3/4 xl:w-1/2"
           >
             {$_(
               "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"

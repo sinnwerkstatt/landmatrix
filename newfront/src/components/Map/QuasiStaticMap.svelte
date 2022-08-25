@@ -86,14 +86,14 @@
 </script>
 
 <div
-  class="mt-6 w-full min-h-[300px] h-[30vh] relative border border-orange shadow-md cursor-pointer hover:border-orange-300"
+  class="relative mt-6 h-[30vh] min-h-[300px] w-full cursor-pointer border border-orange shadow-md hover:border-orange-300"
   on:click={onClickMap}
 >
   <div
-    class="group absolute w-full h-full z-[1000] bg-transparent flex hover:bg-orange/20 transition duration-300"
+    class="group absolute z-[1000] flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"
   >
     <span
-      class="invisible opacity-0 self-center text-center w-full z-1 text-[4rem] font-bold text-white group-hover:opacity-100  group-hover:visible hover-text transition duration-500"
+      class="z-1 hover-text invisible w-full self-center text-center text-[4rem] font-bold text-white opacity-0  transition duration-500 group-hover:visible group-hover:opacity-100"
     >
       {$_("Go to map")}
     </span>

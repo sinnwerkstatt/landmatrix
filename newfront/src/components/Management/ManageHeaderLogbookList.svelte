@@ -6,7 +6,7 @@
 </script>
 
 <div
-  class="shadow-inner bg-lm-warmgray overflow-y-scroll cursor-default h-auto px-[2px] pt-1 pb-12 max-h-[330px]"
+  class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-12 shadow-inner"
 >
   {#each workflowinfos as info}
     <div>

@@ -90,7 +90,7 @@
     ? "fixed bg-white border border-solid border-black top-12 left-0 mx-[5%] my-[5%] w-[90%] h-[70%]"
     : "relative"}
 >
-  <div class="absolute cursor-pointer right-3 top-1.5 z-[9]">
+  <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
     <button type="button" on:click={toggleFullscreen}>
       {#if isFullscreen}
         <CompressIcon />
@@ -103,7 +103,7 @@
   <div class={isFullscreen ? "h-full" : "h-96"}>
     <div
       id="investor-network"
-      class="border-2 border-solid w-full min-h-full cursor-all-scroll"
+      class="min-h-full w-full cursor-all-scroll border-2 border-solid"
     />
   </div>
 

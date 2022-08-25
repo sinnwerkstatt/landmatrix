@@ -30,7 +30,7 @@
     <h2>{$_("Produce Info Map")}</h2>
     <div>{@html $chartDescriptions?.produce_info_map}</div>
   </div>
-  <div class="w-5/6 h-5/6 mt-20">
+  <div class="mt-20 h-5/6 w-5/6">
     {#if $deals.fetching}
       <p>Loading...</p>
     {:else if $deals.error}

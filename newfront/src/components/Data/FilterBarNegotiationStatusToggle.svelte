@@ -115,7 +115,7 @@
 >
   {#each choices as nstat}
     {#if nstat.group}
-      <label class="font-bold block">
+      <label class="block font-bold">
         <input
           id={nstat.group}
           bind:checked={nstat.state}
@@ -136,7 +136,7 @@
         </label>
       {/each}
     {:else}
-      <label class="font-bold block">
+      <label class="block font-bold">
         <input
           bind:group={$filters.negotiation_status}
           type="checkbox"

@@ -31,7 +31,7 @@
 
 <ChartsContainer>
   <div
-    class="country-profile mt-20 overflow-visible flex flex-col w-[clamp(500px,90%,1000px)]"
+    class="country-profile mt-20 flex w-[clamp(500px,90%,1000px)] flex-col overflow-visible"
   >
     <IntentionsPerCategory deals={$deals?.data?.deals} />
     <LSLAByNegotiation deals={$deals?.data?.deals} />

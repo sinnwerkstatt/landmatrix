@@ -88,7 +88,7 @@
   <h2>{$_("Web of transnational deals")}</h2>
   <div>{@html $chartDescriptions?.web_of_transnational_deals}</div>
   {#if country}
-    <div class="p-4 text-sm mb-5 bg-gray-100 border border-gray-300 shadow-inner">
+    <div class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner">
       <h4 class="mt-0">{country.name}</h4>
       <!--      <div class="mx-3">-->
       <!--        <b-->
@@ -116,12 +116,12 @@
               values: { country: country.name },
             })}
           </b>
-          <table class="w-full table-striped">
+          <table class="table-striped w-full">
             <tbody>
               {#each investing_countries as icountry}
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
-                  <td class="text-right whitespace-nowrap">
+                  <td class="whitespace-nowrap text-right">
                     {icountry.count} deals<br />
                     {icountry.size} ha
                   </td>
@@ -138,12 +138,12 @@
               values: { country: country.name },
             })}
           </b>
-          <table class="w-full table-striped">
+          <table class="table-striped w-full">
             <tbody>
               {#each invested_countries as icountry}
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
-                  <td class="text-right whitespace-nowrap">
+                  <td class="whitespace-nowrap text-right">
                     {icountry.count} deals<br />
                     {icountry.size} ha
                   </td>

@@ -60,7 +60,7 @@
     "postcss": "^8.4.16",
     "postcss-load-config": "^4.0.1",
     "prettier": "^2.7.1",
-    "prettier-plugin-svelte": "^2.7.0",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "svelte": "^3.49.0",
     "svelte-chartjs": "^2.1.0",
     "svelte-check": "^2.8.1",

@@ -35,10 +35,10 @@
   }
 </script>
 
-<div class="test-login h-4/6 flex justify-center items-center">
-  <div class="w-80 bg-neutral-600 text-white rounded p-4">
+<div class="test-login flex h-4/6 items-center justify-center">
+  <div class="w-80 rounded bg-neutral-600 p-4 text-white">
     <form on:submit|preventDefault={login}>
-      <label class="block mb-4">
+      <label class="mb-4 block">
         Username
         <input
           bind:value={username}
@@ -48,7 +48,7 @@
           type="text"
         />
       </label>
-      <label class="block mb-4">
+      <label class="mb-4 block">
         Password
         <input
           bind:value={password}
@@ -61,7 +61,7 @@
       <button class="btn btn-primary" type="submit">
         {$_("Login")}
       </button>
-      <p class="mt-3 text-danger small">
+      <p class="text-danger small mt-3">
         {logged_in ? login_success_message : login_failed_message}
       </p>
     </form>

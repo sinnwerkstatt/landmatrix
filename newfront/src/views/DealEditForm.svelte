@@ -95,13 +95,13 @@
   };
 </script>
 
-<div class="container mx-auto min-h-full h-full flex flex-col">
-  <div class="md:flex md:flex-row md:justify-between border-b border-orange">
+<div class="container mx-auto flex h-full min-h-full flex-col">
+  <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1>
       {dealID ? $_("Editing Deal #") + dealID : $_("Adding new deal")}
       {#if deal.country}{$_("in")} {deal.country.name}{/if}
     </h1>
-    <div class="flex items-center my-5">
+    <div class="my-5 flex items-center">
       <button
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
@@ -130,11 +130,11 @@
     </div>
   </div>
   <div class="flex h-full overflow-y-hidden">
-    <nav class="p-2 flex-initial">
+    <nav class="flex-initial p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-4 border-orange {activeTab === target
+            class="border-orange py-2 pr-4 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -147,7 +147,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
+    <div class="w-full flex-auto overflow-y-auto pl-4 pr-2 pb-16">
       {#if activeTab === "#locations"}
         <DealLocationsEditSection
           bind:locations={deal.locations}

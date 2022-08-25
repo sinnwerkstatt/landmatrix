@@ -72,7 +72,7 @@
 
 <section>
   <h3>{$_("Version history")}</h3>
-  <table class="table-auto w-full border-b-2 relative">
+  <table class="relative w-full table-auto border-b-2">
     <thead>
       <tr>
         <th>{$_("Created")}</th>
@@ -111,13 +111,13 @@
               {$_(derive_status(version?.deal?.status, version?.deal?.draft_status))}
             </td>
           {/if}
-          <td class="text-right whitespace-nowrap">
+          <td class="whitespace-nowrap text-right">
             {#if i === deduced_position}
               {$_("Current")}
             {:else}
               <a href={version?.link}>{$_("Show")}</a>
             {/if}
-            <span class="ml-4 text-right whitespace-nowrap">
+            <span class="ml-4 whitespace-nowrap text-right">
               <input
                 bind:group={compareFrom}
                 type="radio"

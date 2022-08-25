@@ -35,12 +35,12 @@
 {#if visible}
   <div
     transition:fade={{ duration: 100 }}
-    class="fixed inset-0 w-screen h-screen max-h-screen z-10 flex justify-center items-center backdrop-blur-sm bg-[rgba(0,0,0,0.3)]"
+    class="fixed inset-0 z-10 flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
     on:click|self={close}
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border max-h-[99vh] overflow-y-auto {$$props.class ??
+      class="max-h-[99vh] w-[clamp(300px,70vw,800px)] overflow-y-auto border bg-white text-black shadow-xl {$$props.class ??
         ''}"
     >
       <form on:submit|preventDefault>

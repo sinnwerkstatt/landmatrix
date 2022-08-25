@@ -70,19 +70,19 @@
   {#if dealsArray.length > 0}
     <div>
       <DealDisplayToggle />
-      <div class="w-full text-center font-bold my-3">
+      <div class="my-3 w-full text-center font-bold">
         {totalCount}
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Negotiation status")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Negotiation status")}</h5>
         <StatusPieChart data={chartNegStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Implementation status")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Implementation status")}</h5>
         <StatusPieChart data={chartImpStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Produce")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Produce")}</h5>
         <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>

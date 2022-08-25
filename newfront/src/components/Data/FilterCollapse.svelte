@@ -10,17 +10,17 @@
 </script>
 
 <div
-  class="-mx-2 pl-1 border-b border-gray-300 bg-lm-lightgray text-lm-dark hover:cursor-pointer"
+  class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark hover:cursor-pointer"
 >
   <div
-    class="py-1.5 pr-2 relative flex justify-between"
+    class="relative flex justify-between py-1.5 pr-2"
     class:text-orange={clearable}
     class:collapsed={!expanded}
     on:click={() => (expanded = !expanded)}
   >
     <span class="pr-0">
       <ChevronDownIcon
-        class="transition-transform transition-duration-300 mr-1 h-4 w-4 inline rounded {expanded
+        class="transition-duration-300 mr-1 inline h-4 w-4 rounded transition-transform {expanded
           ? 'rotate-180'
           : ''}"
       />
@@ -33,7 +33,7 @@
   {#if expanded}
     <div
       transition:slide={{ duration: 200 }}
-      class="shadow-inner bg-lm-light -ml-[0.5em] p-2"
+      class="-ml-[0.5em] bg-lm-light p-2 shadow-inner"
     >
       <slot />
     </div>

@@ -171,10 +171,10 @@
 
 <div class="flex min-h-full w-full">
   <nav
-    class="flex flex-col min-h-full flex-shrink-0 p-2 flex-initial bg-white/80 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
+    class="flex min-h-full flex-initial flex-shrink-0 flex-col bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
   >
     <div
-      class="p-1 pb-6 font-bold text-lg flex justify-center gap-4 border-b border-gray-200"
+      class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
     >
       <button
         class={model === "deal"
@@ -228,7 +228,7 @@
         {/if}
       {/each}
     </div>
-    <div class="self-end mt-auto pt-10 w-full">
+    <div class="mt-auto w-full self-end pt-10">
       {#if activeTab}
         <FilterCollapse title={$_("Download")}>
           <ul>

@@ -90,7 +90,7 @@
 </script>
 
 <div
-  class="absolute bg-white/80 top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -99,7 +99,7 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
+    class="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden p-2"
     class:hidden={!$showFilterBar}
   >
     <div class="w-full self-start">
@@ -409,7 +409,7 @@
         </label>
       </FilterCollapse>
     </div>
-    <div class="self-end mt-auto pt-10 w-full">
+    <div class="mt-auto w-full self-end pt-10">
       <slot />
       <FilterCollapse title={$_("Download")}>
         <ul>

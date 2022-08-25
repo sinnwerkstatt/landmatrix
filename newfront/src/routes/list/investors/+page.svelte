@@ -103,15 +103,15 @@
 </script>
 
 <DataContainer>
-  <div class="h-full flex">
+  <div class="flex h-full">
     <div
-      class="flex-none h-full min-h-[3px] {$showFilterBar
+      class="h-full min-h-[3px] flex-none {$showFilterBar
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />
 
-    <div class="px-4 bg-stone-100 w-full flex flex-col">
-      <div class="h-[4rem] flex items-center pl-2 text-lg">
+    <div class="flex w-full flex-col bg-stone-100 px-4">
+      <div class="flex h-[4rem] items-center pl-2 text-lg">
         {investors?.length ?? "—"}
         {investors?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
@@ -129,7 +129,7 @@
       </Table>
     </div>
     <div
-      class="flex-none h-full min-h-[3px] {$showContextBar
+      class="h-full min-h-[3px] flex-none {$showContextBar
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />

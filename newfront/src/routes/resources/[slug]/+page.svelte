@@ -14,7 +14,7 @@
 
   <div class="container mx-auto px-10">
     <div class="meta mb-3">
-      <div class="inline-block mr-4">
+      <div class="mr-4 inline-block">
         <i class="far fa-calendar-alt" />
         {data.page.date}
       </div>
