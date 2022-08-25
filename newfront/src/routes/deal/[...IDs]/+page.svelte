@@ -73,8 +73,8 @@
   async function fetchInvestor() {
     if (!deal.operating_company?.id) return;
     const ret = (
-      await $page.data.urqlClient
-        .query<{ deal: Deal }>(
+      await ($page.data.urqlClient as Client)
+        .query<{ investor: Investor }>(
           gql`
             query ($id: Int!) {
               investor(

@@ -1,3 +1,4 @@
+import { error } from "@sveltejs/kit";
 import type { Client } from "@urql/svelte";
 import { gql } from "@urql/svelte";
 import type { User } from "$lib/types/user";
@@ -9,7 +10,7 @@ export async function dispatchLogin(
   urqlClient: Client
 ) {
   const { data } = await urqlClient
-    .mutation(
+    .mutation<{ login: { status: string; error: string; user: User } }>(
       gql`
         mutation Login($username: String!, $password: String!) {
           login(username: $username, password: $password) {
@@ -44,8 +45,11 @@ export async function dispatchLogin(
       { username, password }
     )
     .toPromise();
-  return userWithLevel(data.login);
+  const login = data?.login;
+  if (!login) throw error(500, "weird login problems");
+  return { ...login, user: userWithLevel(login.user) };
 }
+
 export function userWithLevel(user: User): User {
   if (!user) return user;
   const me = { ...user };

@@ -3,13 +3,14 @@
   import type { LeafletEvent, Map, MarkerOptions } from "leaflet";
   import { DivIcon, FeatureGroup, Marker, Popup } from "leaflet?client";
   import { groupBy } from "lodash";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
   import { countries, loading, regions } from "$lib/stores";
   import type { Location } from "$lib/types/deal";
+  import type { Country } from "$lib/types/wagtail";
   import { showContextBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
@@ -26,8 +27,6 @@
     styleCircle,
   } from "$components/Map/map_helper";
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte";
-
-  showContextBar.set(true);
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
@@ -62,9 +61,14 @@
   });
   $: loading.set($deals?.fetching ?? false);
 
-  $: country_coords = Object.fromEntries(
-    $countries.map((c) => [c.id, [c.point_lat, c.point_lon]])
-  );
+  function generateCountryCoords(countries: Country[]): {
+    [key: number]: [number, number];
+  } {
+    let ret = {};
+    countries.forEach((c) => (ret[c.id] = [c.point_lat, c.point_lon]));
+    return ret;
+  }
+  $: country_coords = generateCountryCoords($countries);
 
   function bigMapIsReady(map) {
     if (import.meta.env.SSR) return;
@@ -137,7 +141,7 @@
               ? val.length
               : val.reduce((x, y) => ({ deal_size: x.deal_size + y.deal_size }))
                   .deal_size,
-            $countries.find((c) => c.id === +key).name,
+            $countries.find((c) => c.id === +key)?.name ?? "",
             $displayDealsCount
           );
         }
@@ -240,6 +244,8 @@
   $: markersRefreshUnsubscribe = deals?.subscribe(() => refreshMarkers());
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap());
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id);
+
+  onMount(() => showContextBar.set(true));
 
   onDestroy(() => {
     markersRefreshUnsubscribe();

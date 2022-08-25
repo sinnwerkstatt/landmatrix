@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql, queryStore } from "@urql/svelte";
+  import { Client, gql, queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { data_deal_query_gql } from "$lib/deal_queries";
@@ -54,8 +54,8 @@
     if (s_filters.investor_country_id)
       filters.push({ field: "country_id", value: s_filters.investor_country_id });
 
-    const { data } = await $page.data.urqlClient
-      .query(
+    const { data } = await ($page.data.urqlClient as Client)
+      .query<{ investors: Investor[] }>(
         gql`
           query Investors($filters: [Filter]) {
             investors(limit: 0, filters: $filters) {
@@ -80,17 +80,20 @@
             }
           }
         `,
-
         { filters }
       )
       .toPromise();
+    if (!data?.investors) {
+      console.error("could not grab investors");
+      return;
+    }
 
     investors = data.investors.filter((investor, index, self) => {
       // remove duplicates
       if (self.indexOf(investor) !== index) return false;
       // filter for deals
       if (tooManyDealsHack) {
-        return investor.deals?.some((d) => dealIDs.includes(d.id));
+        return investor.deals?.some((d: Deal) => dealIDs.includes(d.id));
       }
       return true;
     });

@@ -21,7 +21,7 @@ async function getAboutPages(language = "en") {
   const indexPageId = res.items[0].id;
   const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`;
   const res_children = await (await fetch(pagesUrl)).json();
-  await aboutPages.set(res_children.items);
+  aboutPages.set(res_children.items);
 }
 
 export const observatoryPages = writable<ObservatoryPage[]>([]);
@@ -30,7 +30,7 @@ async function getObservatoryPages(language = "en") {
   console.log("getObservatoryPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
   const res = await (await fetch(url)).json();
-  await observatoryPages.set(res.items);
+  observatoryPages.set(res.items);
 }
 
 export const blogCategories = writable<BlogCategory[]>([]);
@@ -51,7 +51,7 @@ async function getBlogCategories(language = "en", urqlClient: Client) {
       { language }
     )
     .toPromise();
-  await blogCategories.set(data.blogcategories);
+  blogCategories.set(data.blogcategories);
 }
 
 type FormFields = {
@@ -114,9 +114,9 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
     )
     .toPromise();
 
-  await countries.set(data.countries);
-  await regions.set(data.regions);
-  await formfields.set(data.formfields);
+  countries.set(data.countries);
+  regions.set(data.regions);
+  formfields.set(data.formfields);
 }
 
 export const chartDescriptions = writable<{
@@ -141,15 +141,17 @@ async function getChartDescriptions(language = "en", urqlClient: Client) {
       { language }
     )
     .toPromise();
-  await chartDescriptions.set(data.chart_descriptions);
+  chartDescriptions.set(data.chart_descriptions);
 }
 
 export async function fetchBasis(lang = "en", urqlClient: Client) {
-  await getAboutPages(lang);
-  await getObservatoryPages(lang);
-  await getBlogCategories(lang, urqlClient);
-  await getCountriesRegionsFormfields(urqlClient);
-  await getChartDescriptions(lang, urqlClient);
+  await Promise.all([
+    getAboutPages(lang),
+    getObservatoryPages(lang),
+    getBlogCategories(lang, urqlClient),
+    getCountriesRegionsFormfields(urqlClient),
+    getChartDescriptions(lang, urqlClient),
+  ]);
 }
 
 export const loading = writable(false);

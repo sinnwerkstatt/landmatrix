@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { dispatchLogin } from "$lib/user";
 
@@ -9,8 +10,8 @@
   let login_failed_message = "";
   let login_success_message = $_("You are logged in.");
 
-  let logged_in;
-  let next;
+  let logged_in = false;
+  let next: string;
 
   onMount(() => {
     next = $page.url.searchParams.get("next") || "/";
@@ -23,9 +24,11 @@
   async function login() {
     const res = await dispatchLogin(username, password, $page.data.urqlClient);
     if (res.status) {
+      console.log(JSON.stringify(res.user));
       login_failed_message = "";
       logged_in = true;
-      setTimeout(() => (window.location.href = next), 100);
+      // setTimeout(() => (window.location.href = next), 100);
+      setTimeout(() => goto(next), 100);
     } else {
       login_failed_message = res.error;
     }

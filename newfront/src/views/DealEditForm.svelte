@@ -45,8 +45,12 @@
   ];
 
   async function saveDeal(hash: string) {
-    const currentForm = document.querySelector<HTMLFormElement>(activeTab);
-    console.log(currentForm);
+    const currentForm: HTMLFormElement | undefined =
+      document.querySelector<HTMLFormElement>(activeTab);
+    if (!currentForm) {
+      console.error("can not grab the form");
+      throw Error("Could not select form");
+    }
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
       return;
