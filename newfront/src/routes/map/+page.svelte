@@ -1,6 +1,6 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte";
-  import type { LeafletEvent, Map, MarkerOptions } from "leaflet";
+  import type { LeafletEvent, Map } from "leaflet";
   import { DivIcon, FeatureGroup, Marker, Popup } from "leaflet?client";
   import { groupBy } from "lodash";
   import { onDestroy, onMount } from "svelte";
@@ -9,7 +9,7 @@
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
   import { countries, loading, regions } from "$lib/stores";
-  import type { Location } from "$lib/types/deal";
+  import type { Deal, Location } from "$lib/types/deal";
   import type { Country } from "$lib/types/wagtail";
   import { showContextBar } from "$components/Data";
   import DataContainer from "$components/Data/DataContainer.svelte";
@@ -28,6 +28,19 @@
   } from "$components/Map/map_helper";
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte";
 
+  interface MyMarker extends Marker {
+    deal: Deal;
+    region_id: number;
+    country_id: number;
+    deal_size: number;
+    loc: Location;
+    deal_id: number;
+  }
+  interface CountryWCoords extends Country {
+    point_lat: number;
+    point_lon: number;
+  }
+
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
     COUNTRY_CLUSTERS: 3,
@@ -44,7 +57,7 @@
   };
 
   let bigmap: Map;
-  let markers: Marker[] = [];
+  let markers: MyMarker[] = [];
 
   let current_zoom: number;
 
@@ -61,19 +74,20 @@
   });
   $: loading.set($deals?.fetching ?? false);
 
-  function generateCountryCoords(countries: Country[]): {
+  function generateCountryCoords(countries: CountryWCoords[]): {
     [key: number]: [number, number];
   } {
-    let ret = {};
-    countries.forEach((c) => (ret[c.id] = [c.point_lat, c.point_lon]));
+    let ret: { [p: number]: [number, number] } = {};
+    countries.forEach((c) => (ret[c.id as number] = [c.point_lat, c.point_lon]));
     return ret;
   }
-  $: country_coords = generateCountryCoords($countries);
 
-  function bigMapIsReady(map) {
+  $: country_coords = generateCountryCoords($countries as CountryWCoords[]);
+
+  function bigMapIsReady(evt: CustomEvent<Map>) {
     if (import.meta.env.SSR) return;
     // console.log("The big map is ready.");
-    bigmap = map.detail;
+    bigmap = evt.detail;
     bigmap.on("zoomend", () => refreshMap());
     bigmap.on("moveend", () => refreshMap());
     markersFeatureGroup = new FeatureGroup();
@@ -97,11 +111,10 @@
       Object.entries(groupBy(markers, (mark) => mark.region_id)).forEach(
         ([key, val]) => {
           if (key === "undefined") return;
-          let circle = new Marker(REGION_COORDINATES[key], {
+          let circle = new Marker(REGION_COORDINATES[+key], {
             icon: new DivIcon({ className: LMCircleClass }),
-            region_id: key,
-          } as MarkerOptions);
-          circle.on("click", (e) => ($filters.region_id = +e.target.options.region_id));
+          });
+          circle.on("click", () => ($filters.region_id = +key));
 
           markersFeatureGroup.addLayer(circle);
 
@@ -109,9 +122,8 @@
             circle,
             $displayDealsCount
               ? val.length
-              : val.reduce((x, y) => ({ deal_size: x.deal_size + y.deal_size }))
-                  .deal_size,
-            $regions.find((r) => r.id === +key).name,
+              : val.map((m) => m.deal_size).reduce((x, y) => x + y, 0),
+            $regions.find((r) => r.id === +key)?.name ?? "",
             $displayDealsCount
           );
         }
@@ -125,22 +137,17 @@
         ([key, val]) => {
           // console.log("doing markers for region");
           if (key === "undefined") return;
-          let circle = new Marker(country_coords[key], {
+          let circle = new Marker(country_coords[+key], {
             icon: new DivIcon({ className: LMCircleClass }),
-            country_id: key,
           });
-          circle.on(
-            "click",
-            (e) => ($filters.country_id = +e.target.options.country_id)
-          );
+          circle.on("click", () => ($filters.country_id = +key));
           markersFeatureGroup.addLayer(circle);
 
           styleCircle(
             circle,
             $displayDealsCount
               ? val.length
-              : val.reduce((x, y) => ({ deal_size: x.deal_size + y.deal_size }))
-                  .deal_size,
+              : val.map((m) => m.deal_size).reduce((x, y) => x + y, 0),
             $countries.find((c) => c.id === +key)?.name ?? "",
             $displayDealsCount
           );
@@ -170,7 +177,14 @@
     // console.log("Refreshing map done.");
   }
 
-  let _dealLocationMarkersCache: { [key: number]: Marker[] } = {};
+  let _dealLocationMarkersCache: { [key: number]: MyMarker[] } = {};
+
+  interface LocWithPoint extends Location {
+    point: {
+      lat: number;
+      lng: number;
+    };
+  }
 
   async function refreshMarkers() {
     if (import.meta.env.SSR) return;
@@ -180,8 +194,8 @@
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
           .filter((loc: Location) => !!loc.point)
-          .map((loc: Location) => {
-            let marker = new Marker([loc.point.lat, loc.point.lng]);
+          .map((loc: LocWithPoint) => {
+            let marker = new Marker([loc.point.lat, loc.point.lng]) as MyMarker;
             marker.deal = deal;
             marker.loc = loc;
             marker.deal_id = deal.id;
@@ -201,7 +215,7 @@
   }
 
   async function createMarkerPopup(event: LeafletEvent) {
-    const marker = event.target as Marker;
+    const marker = event.target as MyMarker;
 
     const markerContainerDiv = document.createElement("div");
     new MapMarkerPopup({
@@ -256,6 +270,8 @@
 <DataContainer>
   <div class="h-full w-full">
     <BigMap
+      containerClass="min-h-full h-full"
+      on:ready={bigMapIsReady}
       options={{
         minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
         zoom: ZOOM_LEVEL.REGION_CLUSTERS,
@@ -263,9 +279,7 @@
         //gestureHandling: false,
         center: [12, 30],
       }}
-      containerClass="min-h-full h-full"
       showLayerSwitcher={false}
-      on:ready={bigMapIsReady}
     />
   </div>
 
@@ -274,19 +288,19 @@
     <FilterCollapse expanded title={$_("Displayed data")}>
       <label class="block">
         <input
-          type="radio"
           bind:group={$displayDealsCount}
-          value={true}
           class="radio-btn"
+          type="radio"
+          value={true}
         />
         {$_("Number of deal locations")}
       </label>
       <label class="block">
         <input
-          type="radio"
           bind:group={$displayDealsCount}
-          value={false}
           class="radio-btn"
+          type="radio"
+          value={false}
         />
         {$_("Area (ha)")}
       </label>
