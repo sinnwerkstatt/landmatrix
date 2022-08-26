@@ -1,6 +1,6 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  class={$$props.class ?? "h-4 w-4 inline rounded"}
+  class={$$props.class ?? "inline h-4 w-4 rounded"}
   fill="currentColor"
   viewBox="0 0 640 512"
 >

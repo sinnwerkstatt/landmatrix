@@ -38,7 +38,7 @@
         {#if sortBy === col || sortBy === `-${col}`}
           <ChevronDownIcon
             class={classNames(
-              "transition-transform transition-duration-300 h-4 w-4 inline rounded text-orange",
+              "transition-duration-300 inline h-4 w-4 rounded text-orange transition-transform",
               sortBy === `-${col}` ? "rotate-180" : ""
             )}
           />

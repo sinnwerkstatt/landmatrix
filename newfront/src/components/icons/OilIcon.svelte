@@ -1,7 +1,7 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 576 512"
-  class={$$props.class ?? "h-4 w-4 inline"}
+  class={$$props.class ?? "inline h-4 w-4"}
   fill="currentColor"
 >
   <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->

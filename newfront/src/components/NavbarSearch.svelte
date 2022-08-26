@@ -145,7 +145,7 @@
         {#each searchResult as d, i}
           <li
             class={classNames(
-              "py-1 px-1.5 !hover:text-white transition duration-100",
+              "!hover:text-white py-1 px-1.5 transition duration-100",
               d.investor ? "hover:bg-pelorous" : "hover:bg-orange"
             )}
           >

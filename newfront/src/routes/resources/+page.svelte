@@ -50,7 +50,7 @@
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
             class="block whitespace-nowrap px-4 py-2 {data.category === cat.slug
-              ? 'text-white bg-orange'
+              ? 'bg-orange text-white'
               : ''}"
           >
             {$_(cat.name)}
