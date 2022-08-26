@@ -99,7 +99,7 @@ class Management(View):
     @staticmethod
     def filters(request):
         # TODO should admins see all?
-        user_groups = list(request.user.groups.values_list("name", flat=True))
+        # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
         if hasattr(request.user, "userregionalinfo"):
             if country := request.user.userregionalinfo.country:
@@ -108,55 +108,123 @@ class Management(View):
                 region_or_country |= Q(country__region=region)
 
         return {
-            "todo_feedback": (
-                Q(
-                    workflowinfos__draft_status_before=F(
-                        "workflowinfos__draft_status_after"
+            "todo_feedback": {
+                "staff": False,
+                "q": (
+                    Q(
+                        workflowinfos__draft_status_before=F(
+                            "workflowinfos__draft_status_after"
+                        )
+                    )
+                    | (
+                        Q(workflowinfos__draft_status_before=None)
+                        & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                | (
-                    Q(workflowinfos__draft_status_before=None)
-                    & Q(workflowinfos__draft_status_after=None)
-                )
-            )
-            & Q(workflowinfos__to_user_id=request.user.id),
-            "todo_improvement": Q(draft_status=1)
-            & Q(workflowinfos__draft_status_before=2)
-            & Q(workflowinfos__draft_status_after=1)
-            & Q(workflowinfos__to_user_id=request.user.id),
-            "todo_review": region_or_country
-            & Q(draft_status=2)
-            & ~Q(current_draft=None),
-            "todo_activation": region_or_country
-            & Q(draft_status=3)
-            & ~Q(current_draft=None),
-            "requested_feedback": (
-                Q(
-                    workflowinfos__draft_status_before=F(
-                        "workflowinfos__draft_status_after"
+                & Q(workflowinfos__to_user_id=request.user.id),
+            },
+            "todo_improvement": {
+                "staff": False,
+                "q": Q(workflowinfos__draft_status_before__in=[2, 3])
+                & Q(workflowinfos__draft_status_after=1)
+                & Q(workflowinfos__to_user_id=request.user.id)
+                & Q(workflowinfos__processed_by_receiver=False),
+            },
+            "todo_review": {
+                "staff": True,
+                "q": region_or_country & Q(draft_status=2) & ~Q(current_draft=None),
+            },
+            "todo_activation": {
+                "staff": True,
+                "q": region_or_country & Q(draft_status=3) & ~Q(current_draft=None),
+            },
+            "requested_feedback": {
+                "staff": False,
+                "q": (
+                    Q(
+                        workflowinfos__draft_status_before=F(
+                            "workflowinfos__draft_status_after"
+                        )
+                    )
+                    | (
+                        Q(workflowinfos__draft_status_before=None)
+                        & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                | (
-                    Q(workflowinfos__draft_status_before=None)
-                    & Q(workflowinfos__draft_status_after=None)
-                )
-            )
-            & Q(workflowinfos__from_user_id=request.user.id),
-            "requested_improvement": Q(workflowinfos__draft_status_before=2)
-            & Q(workflowinfos__draft_status_after=1)
-            & Q(workflowinfos__from_user_id=request.user.id),
-            "my_drafts": Q(current_draft__created_by_id=request.user.id)
-            & Q(draft_status=1),
-            "created_by_me": Q(current_draft__created_by_id=request.user.id),
-            "reviewed_by_me": Q(workflowinfos__draft_status_before=2)
-            & Q(workflowinfos__draft_status_after=3)
-            & Q(workflowinfos__from_user_id=request.user.id),
-            "activated_by_me": Q(workflowinfos__draft_status_before=3)
-            & Q(workflowinfos__from_user_id=request.user.id),
-            "all_items": Q(),
-            "all_drafts": ~Q(current_draft=None),
-            "all_deleted": Q(status=4),
+                & Q(workflowinfos__from_user_id=request.user.id),
+            },
+            "requested_improvement": {
+                "staff": True,
+                "q": ~Q(current_draft=None)
+                & Q(workflowinfos__deal_version_id=F("current_draft_id"))
+                & Q(workflowinfos__draft_status_before__in=[2, 3])
+                & Q(workflowinfos__draft_status_after=1)
+                & Q(workflowinfos__from_user_id=request.user.id),
+            },
+            "my_drafts": {
+                "staff": False,
+                "q": Q(current_draft__created_by_id=request.user.id)
+                & ~Q(draft_status=None),
+            },
+            "created_by_me": {
+                "staff": False,
+                "q": Q(current_draft__created_by_id=request.user.id),
+            },
+            "reviewed_by_me": {
+                "staff": True,
+                "q": Q(workflowinfos__draft_status_before=2)
+                & Q(workflowinfos__draft_status_after=3)
+                & Q(workflowinfos__from_user_id=request.user.id),
+            },
+            "activated_by_me": {
+                "staff": True,
+                "q": Q(workflowinfos__draft_status_before=3)
+                & Q(workflowinfos__from_user_id=request.user.id),
+            },
+            "all_items": {"staff": True, "q": Q()},
+            "all_drafts": {"staff": True, "q": ~Q(current_draft=None)},
+            "all_deleted": {"staff": True, "q": Q(status=4)},
         }
+
+    def get(self, request, *args, **kwargs):
+        filters = self.filters(request)
+
+        action = request.GET.get("action")
+        if action == "counts":
+            return JsonResponse(
+                {
+                    metric: Deal.objects.filter(filters[metric]["q"]).count()
+                    for metric in filters.keys()
+                    if request.user.is_staff or not filters[metric]["staff"]
+                }
+            )
+        elif action in filters.keys():
+            ret = [
+                self._deal_dict(deal)
+                for deal in Deal.objects.filter(filters[action]["q"]).distinct()
+            ]
+        else:
+            return HttpResponseBadRequest("unknown request")
+
+        if rformat := request.GET.get("format"):
+            for x in ret:
+                x["country"] = x.get("country", {}).get("name")
+                x["created_by"] = x.get("created_by", {}).get("username")
+                x["modified_by"] = x.get("modified_by", {}).get("username")
+                del x["workflowinfos"]
+            if rformat == "csv":
+                response = HttpResponse(self._csv_writer(ret), content_type="text/csv")
+                response["Content-Disposition"] = f'attachment; filename="{action}.csv"'
+                return response
+            if rformat == "xlsx":
+                response = HttpResponse(content_type="application/ms-excel")
+                response[
+                    "Content-Disposition"
+                ] = f'attachment; filename="{action}.xlsx"'
+                self._xlsx_writer(ret, response)
+                return response
+
+        return JsonResponse({"deals": ret})
 
     def _deal_dict(self, deal: Deal):
         deal_dict = {
@@ -170,6 +238,7 @@ class Management(View):
                     "to_user": self.users_map.get(w.to_user_id),
                     "draft_status_before": w.draft_status_before,
                     "draft_status_after": w.draft_status_after,
+                    "deal_version_id": w.deal_version_id,
                     "timestamp": w.timestamp,
                     "comment": w.comment,
                     "processed_by_receiver": w.processed_by_receiver,
@@ -224,41 +293,3 @@ class Management(View):
         ws.append(list(data[0].keys()))
         [ws.append(list(item.values())) for item in data]
         wb.save(response)
-
-    def get(self, request, *args, **kwargs):
-        filters = self.filters(request)
-
-        action = request.GET.get("action")
-        if action == "counts":
-            return JsonResponse(
-                {
-                    metric: Deal.objects.filter(filters[metric]).count()
-                    for metric in filters.keys()
-                }
-            )
-        elif action in filters.keys():
-            ret = [
-                self._deal_dict(deal) for deal in Deal.objects.filter(filters[action])
-            ]
-        else:
-            return HttpResponseBadRequest("unknown request")
-
-        if rformat := request.GET.get("format"):
-            for x in ret:
-                x["country"] = x.get("country", {}).get("name")
-                x["created_by"] = x.get("created_by", {}).get("username")
-                x["modified_by"] = x.get("modified_by", {}).get("username")
-                del x["workflowinfos"]
-            if rformat == "csv":
-                response = HttpResponse(self._csv_writer(ret), content_type="text/csv")
-                response["Content-Disposition"] = f'attachment; filename="{action}.csv"'
-                return response
-            if rformat == "xlsx":
-                response = HttpResponse(content_type="application/ms-excel")
-                response[
-                    "Content-Disposition"
-                ] = f'attachment; filename="{action}.xlsx"'
-                self._xlsx_writer(ret, response)
-                return response
-
-        return JsonResponse({"deals": ret})

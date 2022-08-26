@@ -103,7 +103,7 @@
             {$_("Go to active version")}
           </a>
         {/if}
-        {#if hasNewerDraft}
+        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.level > UserLevel.REPORTER)}
           <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
             {$_("Go to current draft")}
           </a>

@@ -3,12 +3,13 @@ from typing import List, Union
 from ariadne.graphql import GraphQLError
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.graphql.resolvers.user_utils import get_user_role, send_comment_to_user
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
-from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
+from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS, WorkflowInfo
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
@@ -111,12 +112,15 @@ def change_object_status(
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
         # if there was a request for improvement workflowinfo, email the requester
-        old_wfi = obj.workflowinfos.last()
+        old_wfi: WorkflowInfo = obj.workflowinfos.last()
         if (
-            old_wfi.draft_status_before == 2
+            old_wfi
+            and old_wfi.draft_status_before in [2, 3]
             and old_wfi.draft_status_after == 1
             and old_wfi.to_user == user
         ):
+            old_wfi.processed_by_received = True
+            old_wfi.save()
             send_comment_to_user(obj, "", user, old_wfi.from_user_id, obj_version_id)
 
     elif transition == "TO_ACTIVATION":
@@ -145,6 +149,13 @@ def change_object_status(
 
         obj = Object.deserialize_from_version(obj_version)
         obj_version.save()
+        # close remaining open feedback requests
+        obj.workflowinfos.filter(
+            Q(draft_status_before__in=[2, 3])
+            & Q(draft_status_after=1)
+            # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+            & (Q(from_user=user) | Q(to_user=user))
+        ).update(processed_by_receiver=True)
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("not authorized")
@@ -155,7 +166,17 @@ def change_object_status(
         obj_version.created_by_id = to_user_id
         obj_version.save()
 
-        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
+        Object.objects.filter(id=obj_id).update(
+            draft_status=draft_status, current_draft=obj_version
+        )
+        # close remaining open feedback requests
+        obj.workflowinfos.filter(
+            Q(draft_status_before__in=[2, 3])
+            & Q(draft_status_after=1)
+            # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+            & (Q(from_user=user) | Q(to_user=user))
+        ).update(processed_by_receiver=True)
+
     else:
         raise GraphQLError(f"unknown transition {transition}")
 

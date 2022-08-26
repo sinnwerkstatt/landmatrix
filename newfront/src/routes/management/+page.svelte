@@ -4,7 +4,6 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { publicOnly } from "$lib/filters";
   import { formfields, loading } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import { UserLevel } from "$lib/types/user";
@@ -12,10 +11,12 @@
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import Table from "$components/table/Table.svelte";
+  import RequestedImprovementView from "./RequestedImprovementView.svelte";
+  import TodoFeedbackView from "./TodoFeedbackView.svelte";
 
   interface Tab {
-    name: string;
     id: string;
+    name: string;
     staff?: boolean;
     count?: number;
   }
@@ -30,21 +31,20 @@
   $: navTabs = [
     {
       name: "Todo",
-      expanded: true,
       items: [
-        { name: "Feedback for me", id: "todo_feedback" },
-        { name: "Improvement requests for me", id: "todo_improvement" },
-        { name: "Review", id: "todo_review", staff: true },
-        { name: "Activation", id: "todo_activation", staff: true },
+        { id: "todo_feedback", name: "Feedback for me" },
+        { id: "todo_improvement", name: "Improvement requests for me" },
+        { id: "todo_review", name: "Review", staff: true },
+        { id: "todo_activation", name: "Activation", staff: true },
       ],
     },
     {
       name: "My requests",
       items: [
-        { name: "Feedback by me", id: "requested_feedback" },
+        { id: "requested_feedback", name: "Feedback by me" },
         {
-          name: "Improvements requested by me",
           id: "requested_improvement",
+          name: "Improvements requested by me",
           staff: true,
         },
       ],
@@ -52,18 +52,18 @@
     {
       name: "My data",
       items: [
-        { name: "My drafts", id: "my_drafts" },
-        { name: "Created by me", id: "created_by_me" },
-        { name: "Reviewed by me", id: "reviewed_by_me", staff: true },
-        { name: "Activated by me", id: "activated_by_me", staff: true },
+        { id: "my_drafts", name: "My drafts" },
+        { id: "created_by_me", name: "Created by me" },
+        { id: "reviewed_by_me", name: "Reviewed by me", staff: true },
+        { id: "activated_by_me", name: "Activated by me", staff: true },
       ],
     },
     {
       name: "Data overview",
       items: [
-        { name: "All deals", id: "all_items", staff: true },
-        { name: "All non active", id: "all_drafts", staff: true },
-        { name: "All deleted", id: "all_deleted", staff: true },
+        { id: "all_items", name: "All deals", staff: true },
+        { id: "all_drafts", name: "All non active", staff: true },
+        { id: "all_deleted", name: "All deleted", staff: true },
       ],
     },
   ];
@@ -80,7 +80,7 @@
           "country",
           "deal_size",
           "created_at",
-          // "created_by",
+          "created_by",
           // "modified_at",
           // "modified_by",
           // "fully_updated_at",
@@ -125,7 +125,11 @@
     const x = await fetch(`/api/management?action=${acTab.id}`, {
       signal: controller.signal,
     });
-    if (x.ok) deals = (await x.json()).deals;
+    if (x.ok) {
+      deals = (await x.json()).deals;
+      acTab.count = deals.length;
+      navTabs = navTabs;
+    }
 
     loading.set(false);
   }
@@ -163,11 +167,11 @@
   function trackDownload(format) {
     // TODO implement this? ${format}
   }
-
-  $: dataDownloadURL = `/api/legacy_export/?subset=${
-    $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&format=`;
 </script>
+
+<svelte:head>
+  <title>{$_("Management | Land Matrix")}</title>
+</svelte:head>
 
 <div class="flex min-h-full w-full">
   <nav
@@ -196,10 +200,13 @@
       </button>
     </div>
     <div class="w-full self-start">
-      {#each navTabs as { name, items, expanded }}
+      {#each navTabs as { name, items }}
         {@const aggCount = items.map((i) => i.count ?? 0).reduce((a, b) => a + b, 0)}
         {#if user.level > UserLevel.EDITOR || !items.every((i) => i.staff)}
-          <FilterCollapse title="{$_(name)} ({aggCount})" {expanded}>
+          <FilterCollapse
+            title="{$_(name)} (Σ {aggCount})"
+            expanded={items.some((i) => i.count > 0)}
+          >
             <ul>
               {#each items.filter((i) => user.level > UserLevel.EDITOR || !i.staff) as item}
                 <li
@@ -260,23 +267,29 @@
   </nav>
 
   <div class="px-6 py-4">
-    <Table
-      items={deals}
-      columns={tableHeaders}
-      {spans}
-      {labels}
-      rowClasses="flex items-center"
-    >
-      <DisplayField
-        slot="field"
-        let:fieldName
-        let:obj
-        wrapperClasses="p-1"
-        valueClasses=""
-        fieldname={fieldName}
-        value={obj[fieldName]}
-        objectVersion={obj.draft_id}
-      />
-    </Table>
+    {#if activeTab?.id === "todo_feedback"}
+      <TodoFeedbackView {deals} />
+    {:else if activeTab?.id === "requested_improvement"}
+      <RequestedImprovementView {deals} />
+    {:else}
+      <Table
+        items={deals}
+        columns={tableHeaders}
+        {spans}
+        {labels}
+        rowClasses="flex items-center"
+      >
+        <DisplayField
+          slot="field"
+          let:fieldName
+          let:obj
+          wrapperClasses="p-1"
+          valueClasses=""
+          fieldname={fieldName}
+          value={obj[fieldName]}
+          objectVersion={obj.draft_id}
+        />
+      </Table>
+    {/if}
   </div>
 </div>
