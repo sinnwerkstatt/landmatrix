@@ -9,8 +9,11 @@
   import { UserLevel } from "$lib/types/user";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
+  import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte";
   import DownloadIcon from "$components/icons/DownloadIcon.svelte";
   import Table from "$components/table/Table.svelte";
+  import FilterOverlay from "./FilterOverlay.svelte";
+  import RequestedFeedbackView from "./RequestedFeedbackView.svelte";
   import RequestedImprovementView from "./RequestedImprovementView.svelte";
   import TodoFeedbackView from "./TodoFeedbackView.svelte";
 
@@ -24,7 +27,7 @@
   const user = $page.data.user;
 
   let model: "deal" | "investor" = "deal";
-  let activeTab;
+  let activeTab: Tab;
   let deals: Deal[] = [];
 
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[];
@@ -167,13 +170,14 @@
   function trackDownload(format) {
     // TODO implement this? ${format}
   }
+  let showFilterOverlay = false;
 </script>
 
 <svelte:head>
   <title>{$_("Management | Land Matrix")}</title>
 </svelte:head>
 
-<div class="flex min-h-full w-full">
+<div class="relative flex min-h-full w-full">
   <nav
     class="flex min-h-full flex-initial flex-shrink-0 flex-col bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
   >
@@ -205,7 +209,7 @@
         {#if user.level > UserLevel.EDITOR || !items.every((i) => i.staff)}
           <FilterCollapse
             title="{$_(name)} (Σ {aggCount})"
-            expanded={items.some((i) => i.count > 0)}
+            expanded={items.some((i) => i?.count && i.count > 0)}
           >
             <ul>
               {#each items.filter((i) => user.level > UserLevel.EDITOR || !i.staff) as item}
@@ -266,9 +270,20 @@
     </div>
   </nav>
 
+  <button
+    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
+    type="button"
+    on:click={() => (showFilterOverlay = true)}
+  >
+    <AdjustmentsIcon
+      class="h-8 w-8 text-white transition-colors group-hover:text-orange"
+    />
+  </button>
   <div class="px-6 py-4">
     {#if activeTab?.id === "todo_feedback"}
       <TodoFeedbackView {deals} />
+    {:else if activeTab?.id === "requested_feedback"}
+      <RequestedFeedbackView {deals} />
     {:else if activeTab?.id === "requested_improvement"}
       <RequestedImprovementView {deals} />
     {:else}
@@ -293,3 +308,5 @@
     {/if}
   </div>
 </div>
+
+<FilterOverlay bind:visible={showFilterOverlay} />

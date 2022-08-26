@@ -8,31 +8,28 @@
   import StatusField from "$components/Fields/Display/StatusField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import StarIcon from "$components/icons/StarIcon.svelte";
-  import CountryFilter from "./CountryFilter.svelte";
 
   export let deals: Deal[];
 
-  $: dealsWInfo = deals
-    .map((d) => {
-      const wfis = d.workflowinfos as DealWorkflowInfo[];
-      let relevantWFI = wfis.find(
-        (wfi) =>
-          [2, 3].includes(wfi.draft_status_before) &&
-          wfi.draft_status_after === 1 &&
-          wfi.from_user?.id === $page.data.user.id
-      );
+  $: dealsWInfo = deals.map((d) => {
+    const wfis = d.workflowinfos as DealWorkflowInfo[];
+    let relevantWFI = wfis.find(
+      (wfi) =>
+        wfi.draft_status_before === wfi.draft_status_after &&
+        wfi.from_user?.id === $page.data.user.id
+    );
 
-      const openReq =
-        d.draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
+    // const openReq =
+    //   d.draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
 
-      return { ...d, relevantWFI, openReq };
-    })
-    .sort((a, b) => {
-      if (a.openReq && !b.openReq) return -1;
-      else if (b.openReq && !a.openReq) return 1;
-      if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0;
-      return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp);
-    });
+    return { ...d, relevantWFI };
+  });
+  // .sort((a, b) => {
+  //   if (a.openReq && !b.openReq) return -1;
+  //   else if (b.openReq && !a.openReq) return 1;
+  //   if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0;
+  //   return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp);
+  // });
 </script>
 
 <table>
@@ -41,10 +38,7 @@
       <th class="px-3 py-1" />
       <th class="px-3 py-1">Date of request</th>
       <th class="px-3 py-1">{$formfields.deal["id"].label}</th>
-      <th class="whitespace-nowrap px-3 py-1">
-        <CountryFilter {deals} />
-        {$formfields.deal["country"].label}</th
-      >
+      <th class="px-3 py-1">{$formfields.deal["country"].label}</th>
       <th class="px-3 py-1">{$formfields.deal["deal_size"].label}</th>
       <th class="px-3 py-1">Status</th>
 

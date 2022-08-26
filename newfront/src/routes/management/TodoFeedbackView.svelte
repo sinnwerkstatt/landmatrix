@@ -1,8 +1,7 @@
 <script lang="ts">
-  // TODO: LEFT OFF HERE
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { formfields } from "$lib/stores.js";
+  import { formfields } from "$lib/stores";
   import type { Deal, DealWorkflowInfo } from "$lib/types/deal";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte";
@@ -12,27 +11,25 @@
 
   export let deals: Deal[];
 
-  $: dealsWInfo = deals
-    .map((d) => {
-      const wfis = d.workflowinfos as DealWorkflowInfo[];
-      let improveWFI = wfis.find(
-        (wfi) =>
-          [2, 3].includes(wfi.draft_status_before) &&
-          wfi.draft_status_after === 1 &&
-          wfi.from_user?.id === $page.data.user.id
-      );
+  $: dealsWInfo = deals.map((d) => {
+    const wfis = d.workflowinfos as DealWorkflowInfo[];
+    let relevantWFI = wfis.find(
+      (wfi) =>
+        wfi.draft_status_before === wfi.draft_status_after &&
+        wfi.to_user?.id === $page.data.user.id
+    );
 
-      const openReq =
-        d.draft_id === improveWFI?.deal_version_id && d.draft_status === 1;
+    // const openReq =
+    //   d.draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
 
-      return { ...d, improveWFI, openReq };
-    })
-    .sort((a, b) => {
-      if (a.openReq && !b.openReq) return -1;
-      else if (b.openReq && !a.openReq) return 1;
-      if (!b.improveWFI?.timestamp || !a.improveWFI?.timestamp) return 0;
-      return new Date(b.improveWFI.timestamp) - new Date(a.improveWFI.timestamp);
-    });
+    return { ...d, relevantWFI };
+  });
+  // .sort((a, b) => {
+  //   if (a.openReq && !b.openReq) return -1;
+  //   else if (b.openReq && !a.openReq) return 1;
+  //   if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0;
+  //   return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp);
+  // });
 </script>
 
 <table>
@@ -65,7 +62,10 @@
           {/if}
         </td>
         <td class="px-3 py-1">
-          <DateTimeField value={deal.improveWFI?.timestamp} format="YYYY-MM-DD HH:mm" />
+          <DateTimeField
+            value={deal.relevantWFI?.timestamp}
+            format="YYYY-MM-DD HH:mm"
+          />
         </td>
         <td class="px-3 py-1">
           <DisplayField
@@ -96,13 +96,13 @@
           <StatusField status={deal.status} draft_status={deal.draft_status} />
         </td>
         <td class="px-3 py-1">
-          <ForeignKeyField value={deal.improveWFI?.from_user} formfield={{}} />
+          <ForeignKeyField value={deal.relevantWFI?.from_user} formfield={{}} />
         </td>
         <td class="px-3 py-1">
-          <ForeignKeyField value={deal.improveWFI?.to_user} formfield={{}} />
+          <ForeignKeyField value={deal.relevantWFI?.to_user} formfield={{}} />
         </td>
         <td class="px-3 py-1">
-          {deal.improveWFI?.comment}
+          {deal.relevantWFI?.comment}
         </td>
       </tr>
     {/each}

@@ -7,7 +7,7 @@
   import { loading } from "$lib/stores";
   import { Role } from "$lib/types/investor";
   import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user.js";
+  import { UserLevel } from "$lib/types/user";
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
