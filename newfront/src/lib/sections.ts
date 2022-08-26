@@ -7,7 +7,12 @@ export const dealSections: { [key: string]: Section[] } = {
   general_info: [
     {
       name: "Land area",
-      fields: ["intended_size", "contracsize", "production_size", "land_area_comment"],
+      fields: [
+        "intended_size",
+        "contract_size",
+        "production_size",
+        "land_area_comment",
+      ],
     },
     {
       name: "Intention of investment",
