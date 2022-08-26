@@ -76,7 +76,7 @@
         console.log(change_deal_status);
         if (transition === "ACTIVATE") {
           await goto(`/deal/${change_deal_status.dealId}/`);
-        } else if (dealVersion !== change_deal_status.dealVersion)
+        } else if (dealVersion !== change_deal_status?.dealVersion)
           await goto(
             `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`
           );

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { error } from "@sveltejs/kit";
+  import { Client, gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -45,12 +46,10 @@
   ];
 
   async function saveDeal(hash: string) {
-    const currentForm: HTMLFormElement | undefined =
+    const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab);
-    if (!currentForm) {
-      console.error("can not grab the form");
-      throw Error("Could not select form");
-    }
+    if (!currentForm) throw error(500, "can not grab the form");
+
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
       return;
@@ -60,8 +59,8 @@
     deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
     deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
 
-    const { data } = await $page.data.urqlClient
-      .mutation(
+    const ret = await ($page.data.urqlClient as Client)
+      .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
             deal_edit(id: $id, version: $version, payload: $payload) {
@@ -77,7 +76,9 @@
         }
       )
       .toPromise();
-    const { deal_edit } = data;
+    const deal_edit = ret.data?.deal_edit;
+    if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`);
+
     originalDeal = JSON.stringify(deal);
     savingInProgress = false;
 

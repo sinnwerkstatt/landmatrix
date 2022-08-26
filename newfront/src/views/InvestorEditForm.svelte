@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { error } from "@sveltejs/kit";
+  import { Client, gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -29,8 +30,10 @@
   ];
 
   async function saveInvestor(hash: string) {
-    const currentForm = document.querySelector<HTMLFormElement>(activeTab);
-    console.log(currentForm);
+    const currentForm: HTMLFormElement | null =
+      document.querySelector<HTMLFormElement>(activeTab);
+    if (!currentForm) throw error(500, "can not grab the form");
+
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
       return;
@@ -40,7 +43,7 @@
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
 
-    const { data, error } = await $page.data.urqlClient
+    const ret = await ($page.data.urqlClient as Client)
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
@@ -64,11 +67,9 @@
         }
       )
       .toPromise();
-    if (!data) {
-      console.error("Problem with edit", error);
-      return;
-    }
-    const { investor_edit } = data;
+    const investor_edit = ret.data?.investor_edit;
+    if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`);
+
     originalInvestor = JSON.stringify(investor);
     savingInProgress = false;
 
@@ -111,7 +112,10 @@
           {$_("Close")}
         </button>
       {:else}
-        <button class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+        <button
+          class="btn btn-gray btn-sm mx-2"
+          on:click={() => goto(`/investor/${investorID}/${investorVersion ?? ""}`)}
+        >
           {$_("Cancel")}
         </button>
       {/if}

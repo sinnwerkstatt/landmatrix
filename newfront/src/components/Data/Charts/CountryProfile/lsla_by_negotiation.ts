@@ -29,7 +29,6 @@ export class LSLAData {
 export class LSLAByNegotiation {
   private readonly width = 1230;
   private readonly height = 500;
-  private readonly margin = { top: 30, right: 0, bottom: 10, left: 300 };
 
   do_the_graph(selector: string, data: LSLAData[]): void {
     const elem = document.querySelector(selector);
@@ -72,20 +71,20 @@ export class LSLAByNegotiation {
       .text($_("Intended size").toString());
 
     const y = scaleBand()
-      .domain(range(data.length))
+      .domain(range(data.length).map((x) => x.toString()))
       .rangeRound([24, this.height])
       .padding(0.1);
 
     const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`;
 
     const x1 = scaleLinear()
-      .domain([0, max(data, (d) => d.amount)])
+      .domain([0, max(data, (d) => d.amount) ?? 0])
       .range([300, 600]);
     const x2 = scaleLinear()
-      .domain([0, max(data, (d) => d.contract_size)])
+      .domain([0, max(data, (d) => d.contract_size) ?? 0])
       .range([610, 910]);
     const x3 = scaleLinear()
-      .domain([0, max(data, (d) => d.intended_size)])
+      .domain([0, max(data, (d) => d.intended_size) ?? 0])
       .range([920, 1220]);
     // const svg_data = svg.selectAll("g").data(data).enter();
     const bar_amount = svg
@@ -101,7 +100,7 @@ export class LSLAByNegotiation {
       .append("rect")
       .attr("fill", "#f6f7f7")
       .attr("x", x1(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", 300)
       .attr("height", y.bandwidth());
 
@@ -109,14 +108,14 @@ export class LSLAByNegotiation {
       .append("rect")
       .attr("fill", (d) => (d.bold ? "#812819" : "#d3b7ac"))
       .attr("x", x1(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", (d) => x1(d.amount) - x1(0))
       .attr("height", y.bandwidth());
 
     bar_amount
       .append("text")
       .attr("x", (d) => x1(d.amount))
-      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .attr("y", (d, i) => (y(i.toString()) ?? 0) + y.bandwidth() / 2)
       .text((d) => d.amount)
       .attr("dy", "0.35em")
       .attr("dx", function (d) {
@@ -133,7 +132,7 @@ export class LSLAByNegotiation {
     bar_amount
       .append("text")
       .attr("x", (d) => x1(d.amount))
-      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .attr("y", (d, i) => (y(i.toString()) ?? 0) + y.bandwidth() / 2)
       .text((d) => d.name)
       .style("font-weight", (d) => (d.bold ? "bold" : "normal"))
       .attr("fill", "black")
@@ -157,21 +156,21 @@ export class LSLAByNegotiation {
       .append("rect")
       .attr("fill", "#f6f7f7")
       .attr("x", x2(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", 300)
       .attr("height", y.bandwidth());
     bar_size
       .attr("fill", (d) => (d.bold ? "#f68d1f" : "#f8d6ab"))
       .append("rect")
       .attr("x", x2(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", (d) => x2(d.contract_size) - x2(0))
       .attr("height", y.bandwidth());
 
     bar_size
       .append("text")
       .attr("x", (d) => x2(d.contract_size))
-      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .attr("y", (d, i) => (y(i.toString()) ?? 0) + y.bandwidth() / 2)
       .text((d) => format(d.contract_size))
       .attr("dy", "0.35em")
       .attr("dx", function (d) {
@@ -189,21 +188,21 @@ export class LSLAByNegotiation {
       .append("rect")
       .attr("fill", "#f6f7f7")
       .attr("x", x3(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", 300)
       .attr("height", y.bandwidth());
     bar_size
       .attr("fill", (d) => (d.bold ? "#f68d1f" : "#f8d6ab"))
       .append("rect")
       .attr("x", x3(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", (d) => x3(d.intended_size) - x3(0))
       .attr("height", y.bandwidth());
 
     bar_size
       .append("text")
       .attr("x", (d) => x3(d.intended_size))
-      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .attr("y", (d, i) => (y(i.toString()) ?? 0) + y.bandwidth() / 2)
       .text((d) => format(d.intended_size))
       .attr("dy", "0.35em")
       .attr("dx", function (d) {

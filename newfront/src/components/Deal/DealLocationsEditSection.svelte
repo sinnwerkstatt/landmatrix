@@ -21,7 +21,7 @@
   export let model = "location";
   export let modelName = "Location";
   export let locations: Location[] = [];
-  export let country: Country;
+  export let country: Country | undefined;
 
   let currentHoverFeature: Feature | null = null;
   let hiddenFeatures: Feature[] = [];

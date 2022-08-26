@@ -139,4 +139,4 @@ export const contextLayers: ContextLayer[] = import.meta.env.SSR
       },
     ];
 
-export const visibleContextLayers = writable<ContextLayer[]>([]);
+export const visibleContextLayers = writable<string[]>([]);

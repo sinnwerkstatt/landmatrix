@@ -1,3 +1,5 @@
+import { error } from "@sveltejs/kit";
+import type { LoadEvent } from "@sveltejs/kit";
 import type { Client } from "@urql/core";
 import { gql } from "@urql/svelte";
 import { writable } from "svelte/store";
@@ -14,22 +16,28 @@ const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`;
 
 export const aboutPages = writable<WagtailPage[]>([]);
 
-async function getAboutPages(language = "en") {
+async function getAboutPages(language = "en", fetch: LoadEvent["fetch"]) {
   console.log("getAboutPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.AboutIndexPage`;
-  const res = await (await fetch(url)).json();
+  const res = await (
+    await fetch(url, { headers: { Accept: "application/json" } })
+  ).json();
   const indexPageId = res.items[0].id;
   const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`;
-  const res_children = await (await fetch(pagesUrl)).json();
+  const res_children = await (
+    await fetch(pagesUrl, { headers: { Accept: "application/json" } })
+  ).json();
   aboutPages.set(res_children.items);
 }
 
 export const observatoryPages = writable<ObservatoryPage[]>([]);
 
-async function getObservatoryPages(language = "en") {
+async function getObservatoryPages(language = "en", fetch: LoadEvent["fetch"]) {
   console.log("getObservatoryPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
-  const res = await (await fetch(url)).json();
+  const res = await (
+    await fetch(url, { headers: { Accept: "application/json" } })
+  ).json();
   observatoryPages.set(res.items);
 }
 
@@ -144,14 +152,22 @@ async function getChartDescriptions(language = "en", urqlClient: Client) {
   chartDescriptions.set(data.chart_descriptions);
 }
 
-export async function fetchBasis(lang = "en", urqlClient: Client) {
-  await Promise.all([
-    getAboutPages(lang),
-    getObservatoryPages(lang),
-    getBlogCategories(lang, urqlClient),
-    getCountriesRegionsFormfields(urqlClient),
-    getChartDescriptions(lang, urqlClient),
-  ]);
+export async function fetchBasis(
+  lang = "en",
+  fetch: LoadEvent["fetch"],
+  urqlClient: Client
+) {
+  try {
+    await Promise.all([
+      getAboutPages(lang, fetch),
+      getObservatoryPages(lang, fetch),
+      getBlogCategories(lang, urqlClient),
+      getCountriesRegionsFormfields(urqlClient),
+      getChartDescriptions(lang, urqlClient),
+    ]);
+  } catch (e) {
+    throw error(500, "Backend server problems");
+  }
 }
 
 export const loading = writable(false);

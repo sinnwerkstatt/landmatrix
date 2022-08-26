@@ -43,7 +43,7 @@
 
   $: $filters && grabTransnationalDeals();
   $: browser && redrawSpider(transnational_deals, $filters.country_id);
-  onMount(() => showContextBar.set(false));
+  onMount(() => showContextBar.set(true));
 </script>
 
 <svelte:head>
