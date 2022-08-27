@@ -10,7 +10,7 @@
   } from "$lib/stores";
   import { UserLevel } from "$lib/types/user";
   import type { ObservatoryPage } from "$lib/types/wagtail";
-  import { dispatchLogin, dispatchLogout } from "$lib/user";
+  import { dispatchLogout } from "$lib/user";
   import TranslateIcon from "$components/icons/TranslateIcon.svelte";
   import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
   import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
@@ -37,19 +37,10 @@
   async function switchLanguage(lang: string) {
     Cookies.set("django_language", lang);
     await locale.set(lang);
-    await fetchBasis(lang, $page.data.urqlClient);
+    await fetchBasis(lang, fetch, $page.data.urqlClient);
   }
-
-  let username = "";
-  let password = "";
-  let login_failed_message = "";
 
   $: user = $page.data.user;
-
-  async function login() {
-    const res = await dispatchLogin(username, password, $page.data.urqlClient);
-    if (res.status === true) await location.reload();
-  }
 
   async function logout() {
     if (await dispatchLogout($page.data.urqlClient)) location.reload();
@@ -166,13 +157,14 @@
           <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each Object.entries(languages) as [lcode, lingo]}
               <li class="whitespace-nowrap">
-                <a
-                  class="nav-link"
+                <button
+                  type="button"
+                  class="nav-link w-full"
                   class:active={lcode === $locale}
                   on:click={() => switchLanguage(lcode)}
                 >
                   {lingo} ({lcode})
-                </a>
+                </button>
               </li>
             {/each}
           </ul>
@@ -229,57 +221,27 @@
                   <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
                 </li>
                 <li>
-                  <a class="nav-link" on:click|preventDefault={logout}>
+                  <button
+                    type="button"
+                    class="nav-link w-full text-left"
+                    on:click|preventDefault={logout}
+                  >
                     {$_("Logout")}
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
           </NavDropDown>
         {:else}
-          <NavDropDown placement="right-0">
-            <div slot="title" class="whitespace-nowrap" title="Login/Register">
-              <UserRegular class="mx-1 inline h-4 w-4" />
-            </div>
-            <div
-              class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+          <li>
+            <a
+              class="nav-link hover:bg-gray-100 hover:text-orange-500"
+              href="/account/login/"
+              title="Login/Register"
             >
-              <form on:submit|preventDefault={login} class="space-y-2 px-4 pt-3">
-                <input
-                  autocomplete="username"
-                  class="inpt"
-                  id="username"
-                  placeholder="Username"
-                  type="text"
-                  bind:value={username}
-                />
-                <input
-                  autocomplete="current-password"
-                  class="inpt"
-                  id="password"
-                  placeholder="Password"
-                  type="password"
-                  bind:value={password}
-                />
-                <button class="btn btn-secondary" type="submit">
-                  {$_("Login")}
-                </button>
-                <p class="text-danger small mt-3">{login_failed_message}</p>
-              </form>
-              <ul>
-                <li class="whitespace-nowrap">
-                  <a class="nav-link" href="/account/register/">
-                    {$_("New around here? Sign up")}
-                  </a>
-                </li>
-                <li class="whitespace-nowrap">
-                  <a class="nav-link" href="/account/password_reset/">
-                    {$_("Forgot password?")}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </NavDropDown>
+              <UserRegular class="h-5 w-5" />
+            </a>
+          </li>
         {/if}
       </ul>
     </div>
@@ -289,7 +251,7 @@
 <style lang="postcss">
   :global(.nav-link) {
     @apply block px-4 py-2 text-black dark:text-white;
-    @apply hover:bg-gray-200 dark:hover:bg-gray-600;
+    @apply hover:bg-gray-200 hover:text-orange dark:hover:bg-gray-600;
     @apply active:bg-orange active:text-white;
   }
 

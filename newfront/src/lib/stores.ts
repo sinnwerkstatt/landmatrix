@@ -168,7 +168,7 @@ export async function fetchBasis(
       getChartDescriptions(lang, urqlClient),
     ]);
   } catch (e) {
-    throw error(500, "Backend server problems");
+    throw error(500, `Backend server problems ${e}`);
   }
 }
 

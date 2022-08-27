@@ -34,8 +34,9 @@
   }
 </script>
 
-<div class="test-login flex h-4/6 items-center justify-center">
-  <div class="w-80 rounded bg-neutral-600 p-4 text-white">
+<div class="test-login flex h-5/6 items-center justify-center">
+  <div class="w-[540px] border border-neutral-600 p-4 text-black">
+    <h1 class="mb-10">{$_("Login")}</h1>
     <form on:submit|preventDefault={login}>
       <label class="mb-4 block">
         Username
@@ -45,6 +46,7 @@
           class="inpt"
           placeholder="Username"
           type="text"
+          autofocus
         />
       </label>
       <label class="mb-4 block">
@@ -57,12 +59,17 @@
           type="password"
         />
       </label>
-      <button class="btn btn-primary" type="submit">
+      <button class="btn btn-primary w-full" type="submit">
         {$_("Login")}
       </button>
-      <p class="text-danger small mt-3">
+      <p class="mt-3">
         {logged_in ? login_success_message : login_failed_message}
       </p>
     </form>
+    <div class="mt-12 text-right">
+      <a href="/account/register/">
+        {$_("New around here? Sign up")}
+      </a>
+    </div>
   </div>
 </div>
