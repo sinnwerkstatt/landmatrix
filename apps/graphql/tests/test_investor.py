@@ -1,5 +1,3 @@
-from typing import List, Dict
-
 import pytest
 from django.contrib.auth import get_user_model
 from ariadne.graphql import GraphQLError
@@ -18,7 +16,7 @@ from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
-payload: Dict[str, any] = {
+payload: dict[str, any] = {
     # "investors": [],
     "name": "Sinnwerkstatt GmbH",
     "classification": "NON_PROFIT",
@@ -27,7 +25,7 @@ payload: Dict[str, any] = {
 
 
 @pytest.fixture()
-def investor_draft(db) -> List[int]:
+def investor_draft(db) -> list[int]:
     payload["country"] = Country.objects.get(id=276)
     # new draft
     return object_edit(

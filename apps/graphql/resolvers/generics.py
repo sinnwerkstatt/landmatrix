@@ -1,4 +1,6 @@
-from typing import List, Union
+from __future__ import annotations
+
+from typing import Literal
 
 from ariadne.graphql import GraphQLError
 from django.contrib.auth import get_user_model
@@ -18,17 +20,16 @@ from apps.landmatrix.models.investor import (
 )
 from apps.utils import ecma262
 
-# OType = Union[Literal["deal"], Literal["investor"]]
-OType = str
+OType = Literal["deal", "investor"]
 User = get_user_model()
 
 
 def add_workflow_info(
     otype: OType,
-    obj: Union[Deal, Investor],
-    obj_version: Union[DealVersion, InvestorVersion] = None,
+    obj: Deal | Investor,
+    obj_version: DealVersion | InvestorVersion = None,
     **kwargs,
-) -> Union[DealWorkflowInfo, InvestorWorkflowInfo]:
+) -> DealWorkflowInfo | InvestorWorkflowInfo:
     if otype == "deal":
         return DealWorkflowInfo.objects.create(
             deal=obj, deal_version=obj_version, **kwargs
@@ -85,7 +86,7 @@ def change_object_status(
     comment: str = None,
     to_user_id: int = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
-) -> List[int]:
+) -> list[int]:
     role = get_user_role(user)
     if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
         raise GraphQLError("not allowed")
@@ -202,7 +203,7 @@ def object_edit(
     obj_id: int,
     obj_version_id: int = None,
     payload: dict = None,
-) -> List[int]:
+) -> list[int]:
     role = get_user_role(user)
     if not role:
         raise GraphQLError("not authorized")
