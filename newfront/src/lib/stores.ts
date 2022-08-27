@@ -1,8 +1,10 @@
-import { error } from "@sveltejs/kit";
 import type { LoadEvent } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import type { Client } from "@urql/core";
 import { gql } from "@urql/svelte";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import type { Writable } from "svelte/store";
+import type { User } from "$lib/types/user";
 import type {
   BlogCategory,
   Country,
@@ -168,6 +170,32 @@ export async function fetchBasis(
   } catch (e) {
     throw error(500, "Backend server problems");
   }
+}
+
+/// client stores - MAKE SURE THESE DON'T GET CALLED FROM SSR-FUNCTIONS!
+export const users = writable<User[]>([]);
+
+export async function getUsers(urqlClient: Client): Promise<Writable<User[]>> {
+  if (get(users).length > 0) return users;
+  const ret = await urqlClient
+    .query<{ users: User[] }>(
+      gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
+      {}
+    )
+    .toPromise();
+  if (!ret.data?.users) throw error(500, "could not fetch users");
+  await users.set(
+    ret.data.users.sort((a, b) => a.full_name.localeCompare(b.full_name))
+  );
+  return users;
 }
 
 export const loading = writable(false);

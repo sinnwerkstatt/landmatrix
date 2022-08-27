@@ -1,50 +1,31 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import Select from "svelte-select";
   import VirtualList from "svelte-tiny-virtual-list";
-  import { writable } from "svelte/store";
+  import type { Writable } from "svelte/store";
   import { page } from "$app/stores";
+  import { getUsers } from "$lib/stores";
   import type { User } from "$lib/types/user";
 
   export let value: User | number;
 
-  let users = writable<User[]>(undefined);
+  let users: Writable<User[]>;
 
-  async function fetchUsers() {
-    if ($users !== undefined) return;
-    const { data } = await $page.data.urqlClient
-      .query<{ users: User[] }>(
-        gql`
-          {
-            users {
-              id
-              full_name
-              username
-            }
-          }
-        `,
-        {}
-      )
-      .toPromise();
-    await users.set(
-      [...data.users].sort((a, b) => a.full_name.localeCompare(b.full_name))
-    );
-
-    if (typeof value === "number") value = data.users.find((u) => u.id === value);
-  }
-  onMount(fetchUsers);
+  onMount(async () => {
+    users = await getUsers($page.data.urqlClient);
+    if (typeof value === "number") value = $users.find((u) => u.id === value);
+  });
 </script>
 
 <Select
   {...$$props}
-  items={$users}
+  {VirtualList}
   bind:value
-  placeholder={$_("User")}
-  optionIdentifier="id"
   getOptionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
   getSelectionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
+  items={$users}
+  optionIdentifier="id"
+  placeholder={$_("User")}
   showChevron
-  {VirtualList}
 />

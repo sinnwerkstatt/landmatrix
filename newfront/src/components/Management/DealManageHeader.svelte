@@ -73,7 +73,6 @@
       )
       .toPromise()
       .then(async ({ data: { change_deal_status } }) => {
-        console.log(change_deal_status);
         if (transition === "ACTIVATE") {
           await goto(`/deal/${change_deal_status.dealId}/`);
         } else if (dealVersion !== change_deal_status?.dealVersion)

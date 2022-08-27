@@ -166,8 +166,9 @@
 
 .svelte-select,
 .svelte-select + .list {
-  /*height: calc(1.5em + 0.75rem);*/
+  --height: 38px;
   --border-radius: 0;
+  --border: 1px solid rgb(209 213 219);
   --input-font-size: 1rem;
   /*--selected-item-color: var(--color-orange-600);*/
   --item-is-active-bg: var(--color-lm-orange);

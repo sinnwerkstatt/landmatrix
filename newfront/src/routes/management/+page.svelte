@@ -15,6 +15,7 @@
   import FilterOverlay from "./FilterOverlay.svelte";
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte";
   import RequestedImprovementView from "./RequestedImprovementView.svelte";
+  import { managementFilters } from "./state.js";
   import TodoFeedbackView from "./TodoFeedbackView.svelte";
 
   interface Tab {
@@ -143,7 +144,6 @@
     const x = await fetch(`/api/management?action=counts`);
     if (x.ok) {
       const counts = await x.json();
-      console.log(counts);
       navTabs.forEach((navTab) =>
         navTab.items.forEach((i) => {
           if (counts?.[i.id]) i.count = counts[i.id];
@@ -158,7 +158,6 @@
 
     navTabs.some((navTab) => {
       const hash = $page.url.hash || "#todo_feedback";
-      console.log(hash);
       const item = navTab.items.find((i) => "#" + i.id === hash);
       if (item) {
         selectTab(item);
@@ -171,6 +170,12 @@
     // TODO implement this? ${format}
   }
   let showFilterOverlay = false;
+
+  $: filteredDeals = deals.filter((d) => {
+    if ($managementFilters.country?.id)
+      return d.country?.id === $managementFilters.country.id;
+    return true;
+  });
 </script>
 
 <svelte:head>
@@ -271,7 +276,7 @@
   </nav>
 
   <button
-    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
+    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
     type="button"
     on:click={() => (showFilterOverlay = true)}
   >
@@ -281,14 +286,14 @@
   </button>
   <div class="px-6 py-4">
     {#if activeTab?.id === "todo_feedback"}
-      <TodoFeedbackView {deals} />
+      <TodoFeedbackView deals={filteredDeals} />
     {:else if activeTab?.id === "requested_feedback"}
-      <RequestedFeedbackView {deals} />
+      <RequestedFeedbackView deals={filteredDeals} />
     {:else if activeTab?.id === "requested_improvement"}
-      <RequestedImprovementView {deals} />
+      <RequestedImprovementView deals={filteredDeals} />
     {:else}
       <Table
-        items={deals}
+        items={filteredDeals}
         columns={tableHeaders}
         {spans}
         {labels}
@@ -309,4 +314,4 @@
   </div>
 </div>
 
-<FilterOverlay bind:visible={showFilterOverlay} />
+<FilterOverlay bind:visible={showFilterOverlay} {deals} />
