@@ -3,18 +3,19 @@
   import { page } from "$app/stores";
   import { formfields } from "$lib/stores";
   import type { Deal, DealWorkflowInfo } from "$lib/types/deal";
+  import type { Investor } from "$lib/types/investor";
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
   import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte";
   import StatusField from "$components/Fields/Display/StatusField.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
   import StarIcon from "$components/icons/StarIcon.svelte";
-  import CountryFilter from "./CountryFilter.svelte";
 
-  export let deals: Deal[];
+  export let objects: Array<Deal | Investor>;
+  export let model: "deal" | "investor" = "deal";
 
-  $: dealsWInfo = deals
-    .map((d) => {
-      const wfis = d.workflowinfos as DealWorkflowInfo[];
+  $: objectsWInfo = objects
+    .map((obj) => {
+      const wfis = obj.workflowinfos as DealWorkflowInfo[];
       let relevantWFI = wfis.find(
         (wfi) =>
           [2, 3].includes(wfi.draft_status_before) &&
@@ -22,10 +23,10 @@
           wfi.from_user?.id === $page.data.user.id
       );
 
-      const openReq =
-        d.draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
-
-      return { ...d, relevantWFI, openReq };
+      // const openReq =
+      //  obj.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
+      const openReq = true;
+      return { ...obj, relevantWFI, openReq };
     })
     .sort((a, b) => {
       if (a.openReq && !b.openReq) return -1;
@@ -40,12 +41,11 @@
     <tr>
       <th class="px-3 py-1" />
       <th class="px-3 py-1">Date of request</th>
-      <th class="px-3 py-1">{$formfields.deal["id"].label}</th>
-      <th class="whitespace-nowrap px-3 py-1">
-        <CountryFilter {deals} />
-        {$formfields.deal["country"].label}</th
-      >
-      <th class="px-3 py-1">{$formfields.deal["deal_size"].label}</th>
+      <th class="px-3 py-1">{$formfields[model]["id"].label}</th>
+      <th class="px-3 py-1"> {$formfields[model]["country"].label}</th>
+      {#if model === "deal"}
+        <th class="px-3 py-1">{$formfields[model]["deal_size"].label}</th>
+      {/if}
       <th class="px-3 py-1">Status</th>
 
       <th class="px-3 py-1">From user</th>
@@ -58,28 +58,26 @@
     </tr>
   </thead>
   <tbody>
-    {#each dealsWInfo as deal}
-      <tr class:font-bold={deal.openReq}>
+    {#each objectsWInfo as obj}
+      <tr class:font-bold={obj.openReq}>
         <td>
-          {#if deal.openReq}
+          {#if obj.openReq}
             <div title={$_("Open request")}>
               <StarIcon />
             </div>
           {/if}
         </td>
         <td class="px-3 py-1">
-          <DateTimeField
-            value={deal.relevantWFI?.timestamp}
-            format="YYYY-MM-DD HH:mm"
-          />
+          <DateTimeField value={obj.relevantWFI?.timestamp} format="YYYY-MM-DD HH:mm" />
         </td>
         <td class="px-3 py-1">
           <DisplayField
             wrapperClasses="p-1"
             valueClasses=""
             fieldname="id"
-            value={deal.id}
-            objectVersion={deal.draft_id}
+            value={obj.id}
+            objectVersion={obj.current_draft_id}
+            {model}
           />
         </td>
         <td class="px-3 py-1">
@@ -87,28 +85,32 @@
             wrapperClasses="p-1"
             valueClasses=""
             fieldname="country"
-            value={deal.country}
+            value={obj.country}
+            {model}
           />
         </td>
+        {#if model === "deal"}
+          <td class="px-3 py-1">
+            <DisplayField
+              wrapperClasses="p-1"
+              valueClasses=""
+              fieldname="deal_size"
+              value={obj.deal_size}
+              {model}
+            />
+          </td>
+        {/if}
         <td class="px-3 py-1">
-          <DisplayField
-            wrapperClasses="p-1"
-            valueClasses=""
-            fieldname="deal_size"
-            value={deal.deal_size}
-          />
+          <StatusField status={obj.status} draft_status={obj.draft_status} />
         </td>
         <td class="px-3 py-1">
-          <StatusField status={deal.status} draft_status={deal.draft_status} />
+          <ForeignKeyField value={obj.relevantWFI?.from_user} formfield={{}} />
         </td>
         <td class="px-3 py-1">
-          <ForeignKeyField value={deal.relevantWFI?.from_user} formfield={{}} />
+          <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />
         </td>
         <td class="px-3 py-1">
-          <ForeignKeyField value={deal.relevantWFI?.to_user} formfield={{}} />
-        </td>
-        <td class="px-3 py-1">
-          {deal.relevantWFI?.comment}
+          {obj.relevantWFI?.comment}
         </td>
       </tr>
     {/each}

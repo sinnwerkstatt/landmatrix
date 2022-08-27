@@ -2,10 +2,12 @@
   import cn from "classnames";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import { browser } from "$app/env";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { formfields, loading } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
+  import type { Investor } from "$lib/types/investor";
   import { UserLevel } from "$lib/types/user";
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -15,7 +17,7 @@
   import FilterOverlay from "./FilterOverlay.svelte";
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte";
   import RequestedImprovementView from "./RequestedImprovementView.svelte";
-  import { managementFilters } from "./state.js";
+  import { managementFilters } from "./state";
   import TodoFeedbackView from "./TodoFeedbackView.svelte";
 
   interface Tab {
@@ -29,7 +31,7 @@
 
   let model: "deal" | "investor" = "deal";
   let activeTab: Tab;
-  let deals: Deal[] = [];
+  let objects: Array<Deal | Investor> = [];
 
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[];
   $: navTabs = [
@@ -65,7 +67,7 @@
     {
       name: "Data overview",
       items: [
-        { id: "all_items", name: "All deals", staff: true },
+        { id: "all_items", name: "All objects", staff: true },
         { id: "all_drafts", name: "All non active", staff: true },
         { id: "all_deleted", name: "All deleted", staff: true },
       ],
@@ -96,10 +98,11 @@
           "name",
           "country",
           "created_at",
-          "current_draft.modified_at",
+          "created_by",
+          // "current_draft.modified_at",
           "workflowinfos",
-          "combined_status",
-          "deals",
+          // "combined_status",
+          // "deals",
         ];
 
   const allColumnsWithSpan = {
@@ -113,49 +116,54 @@
     workflowinfos: 5,
     combined_status: 2,
   };
-  $: labels = tableHeaders.map((col) => $formfields.deal[col].label);
+  $: labels = tableHeaders.map((col) => $formfields?.[model]?.[col]?.label);
   $: spans = Object.entries(allColumnsWithSpan)
     .filter(([col, _]) => tableHeaders.includes(col))
     .map(([_, colSpan]) => colSpan);
 
   let controller: AbortController;
 
-  async function fetchDeals(acTab: Tab) {
+  async function getCounts(model) {
+    if (!browser) return;
+    const x = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=counts`
+    );
+    if (x.ok) {
+      const counts = await x.json();
+      navTabs.forEach((navTab) =>
+        navTab.items.forEach((i) => (i.count = counts?.[i.id] ?? 0))
+      );
+      navTabs = navTabs;
+    }
+  }
+
+  async function fetchObjects(acTab: Tab, model: "deal" | "investor") {
     if (!acTab) return;
     if (controller) controller.abort();
 
     loading.set(true);
     controller = new AbortController();
-    const x = await fetch(`/api/management?action=${acTab.id}`, {
-      signal: controller.signal,
-    });
+    const x = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${
+        acTab.id
+      }`,
+      {
+        signal: controller.signal,
+      }
+    );
     if (x.ok) {
-      deals = (await x.json()).deals;
-      acTab.count = deals.length;
+      objects = (await x.json()).objects;
+      acTab.count = objects.length;
       navTabs = navTabs;
     }
 
     loading.set(false);
   }
 
-  $: fetchDeals(activeTab);
-
-  async function getCounts() {
-    const x = await fetch(`/api/management?action=counts`);
-    if (x.ok) {
-      const counts = await x.json();
-      navTabs.forEach((navTab) =>
-        navTab.items.forEach((i) => {
-          if (counts?.[i.id]) i.count = counts[i.id];
-        })
-      );
-      navTabs = navTabs;
-    }
-  }
+  $: getCounts(model);
+  $: fetchObjects(activeTab, model);
 
   onMount(() => {
-    getCounts();
-
     navTabs.some((navTab) => {
       const hash = $page.url.hash || "#todo_feedback";
       const item = navTab.items.find((i) => "#" + i.id === hash);
@@ -169,9 +177,10 @@
   function trackDownload(format) {
     // TODO implement this? ${format}
   }
+
   let showFilterOverlay = false;
 
-  $: filteredDeals = deals.filter((d) => {
+  $: filteredObjects = objects.filter((d) => {
     if ($managementFilters.country?.id)
       return d.country?.id === $managementFilters.country.id;
     return true;
@@ -193,8 +202,8 @@
         class={model === "deal"
           ? "border-b border-solid border-black text-black"
           : "text-gray-500 hover:text-gray-600"}
-        type="button"
         on:click={() => (model = "deal")}
+        type="button"
       >
         {$_("Deals")}
       </button>
@@ -202,8 +211,8 @@
         class={model === "investor"
           ? "border-b border-solid border-black text-black"
           : "text-gray-500 hover:text-gray-600"}
-        type="button"
         on:click={() => (model = "investor")}
+        type="button"
       >
         {$_("Investors")}
       </button>
@@ -212,10 +221,7 @@
       {#each navTabs as { name, items }}
         {@const aggCount = items.map((i) => i.count ?? 0).reduce((a, b) => a + b, 0)}
         {#if user.level > UserLevel.EDITOR || !items.every((i) => i.staff)}
-          <FilterCollapse
-            title="{$_(name)} (Σ {aggCount})"
-            expanded={items.some((i) => i?.count && i.count > 0)}
-          >
+          <FilterCollapse title="{$_(name)} (Σ {aggCount})" expanded>
             <ul>
               {#each items.filter((i) => user.level > UserLevel.EDITOR || !i.staff) as item}
                 <li
@@ -226,12 +232,14 @@
                   )}
                 >
                   <button
-                    class={activeTab === item
-                      ? model === "deal"
-                        ? "text-orange"
-                        : "text-pelorous"
-                      : "text-gray-600"}
-                    class:text-black={activeTab === item}
+                    class={cn(
+                      "w-full text-left",
+                      activeTab === item
+                        ? model === "deal"
+                          ? "font-bold text-orange"
+                          : "font-bold text-pelorous"
+                        : "text-gray-600"
+                    )}
                     on:click={() => selectTab(item)}
                   >
                     {item.name}
@@ -277,8 +285,8 @@
 
   <button
     class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
-    type="button"
     on:click={() => (showFilterOverlay = true)}
+    type="button"
   >
     <AdjustmentsIcon
       class="h-8 w-8 text-white transition-colors group-hover:text-orange"
@@ -286,14 +294,14 @@
   </button>
   <div class="px-6 py-4">
     {#if activeTab?.id === "todo_feedback"}
-      <TodoFeedbackView deals={filteredDeals} />
+      <TodoFeedbackView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_feedback"}
-      <RequestedFeedbackView deals={filteredDeals} />
+      <RequestedFeedbackView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_improvement"}
-      <RequestedImprovementView deals={filteredDeals} />
+      <RequestedImprovementView objects={filteredObjects} {model} />
     {:else}
       <Table
-        items={filteredDeals}
+        items={filteredObjects}
         columns={tableHeaders}
         {spans}
         {labels}
@@ -307,11 +315,12 @@
           valueClasses=""
           fieldname={fieldName}
           value={obj[fieldName]}
-          objectVersion={obj.draft_id}
+          objectVersion={obj.current_draft_id}
+          {model}
         />
       </Table>
     {/if}
   </div>
 </div>
 
-<FilterOverlay bind:visible={showFilterOverlay} {deals} />
+<FilterOverlay bind:visible={showFilterOverlay} {objects} {model} />

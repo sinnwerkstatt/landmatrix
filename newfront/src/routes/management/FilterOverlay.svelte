@@ -7,17 +7,19 @@
   import { page } from "$app/stores";
   import { countries, getUsers } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
+  import type { Investor } from "$lib/types/investor";
   import type { User } from "$lib/types/user";
   import Overlay from "$components/Overlay.svelte";
   import { managementFilters } from "./state";
 
   export let visible;
-  export let deals: Deal[] = [];
+  export let objects: Array<Deal | Investor> = [];
+  export let model: "deal" | "investor" = "deal";
 
   let users: Writable<User[]>;
 
-  $: dealsCountryIDs = deals?.map((d) => d.country?.id);
-  $: relCountries = $countries.filter((c) => dealsCountryIDs.includes(c.id));
+  $: objectsCountryIDs = objects?.map((d) => d.country?.id);
+  $: relCountries = $countries.filter((c) => objectsCountryIDs.includes(c.id));
 
   onMount(async () => {
     users = await getUsers($page.data.urqlClient);
@@ -42,23 +44,25 @@
         />
       </div>
     </div>
-    <div class="flex items-center">
-      <div class="w-3/12 font-bold">{$_("Deal size")}</div>
-      <div class="flex w-9/12 gap-1">
-        <input
-          bind:value={$managementFilters.dealSizeFrom}
-          class="inpt"
-          placeholder="From size"
-          type="number"
-        />
-        <input
-          bind:value={$managementFilters.dealSizeTo}
-          class="inpt"
-          placeholder="To size"
-          type="number"
-        />
+    {#if model === "deal"}
+      <div class="flex items-center">
+        <div class="w-3/12 font-bold">{$_("Deal size")}</div>
+        <div class="flex w-9/12 gap-1">
+          <input
+            bind:value={$managementFilters.dealSizeFrom}
+            class="inpt"
+            placeholder="From size"
+            type="number"
+          />
+          <input
+            bind:value={$managementFilters.dealSizeTo}
+            class="inpt"
+            placeholder="To size"
+            type="number"
+          />
+        </div>
       </div>
-    </div>
+    {/if}
 
     <div class="flex items-center">
       <div class="w-3/12 font-bold">{$_("Creation")}</div>

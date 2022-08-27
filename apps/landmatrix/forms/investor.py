@@ -15,7 +15,7 @@ class InvestorForm(JSONFormOutputMixin, ModelForm):
             "old_id",
             "is_actually_unknown",
             "status",
-            "created_at",
+            # "created_at",
         ]
 
     attributes = {"country": {"class": "CountryForeignKey"}}
