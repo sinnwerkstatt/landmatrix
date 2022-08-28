@@ -73,7 +73,6 @@ INSTALLED_APPS = [
     "apps.wagtailcms",
     # plumbing
     "impersonate",
-    "celery",
     "ariadne_django",
     "corsheaders",
 ]
@@ -172,11 +171,6 @@ IMPERSONATE = {
     "ALLOW_SUPERUSER": True,
     "REDIRECT_FIELD_NAME": "next",
 }
-
-# CELERY SETTINGS
-BROKER_URL = "redis://localhost:6379/0"
-CELERY_REDIS_BACKEND = BROKER_URL
-CELERY_NAME = "landmatrix"
 
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 
