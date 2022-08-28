@@ -14,16 +14,16 @@
     versionTo: number;
     investorFrom: Investor;
     investorTo: Investor;
-    investordiff: string[];
-    datasourcesdiff: string[] | null;
-    involvementsdiff: string[] | null;
+    investordiff: Set<string>;
+    datasourcesdiff: Set<string> | null;
+    involvementsdiff: Set<string> | null;
   };
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));
   }
 
   function anyFieldFromSubSection(subsec) {
-    return subsec.fields.some((f) => data.investordiff.includes(f));
+    return subsec.fields.some((f) => data.investordiff.has(f));
   }
 
   const labels = {
@@ -93,7 +93,7 @@
               </th>
             </tr>
             {#each subsec.fields as field}
-              {#if data.investordiff.includes(field)}
+              {#if data.investordiff.has(field)}
                 <tr class="odd:bg-gray-100">
                   <th class="whitespace-nowrap py-2 pl-8">
                     {$formfields.investor[field].label}

@@ -14,16 +14,16 @@
     versionTo: number;
     dealFrom: Deal;
     dealTo: Deal;
-    dealdiff: string[];
-    locationsdiff: string[] | null;
-    datasourcesdiff: string[] | null;
-    contractsdiff: string[] | null;
+    dealdiff: Set<string>;
+    locationsdiff: Set<string> | null;
+    datasourcesdiff: Set<string> | null;
+    contractsdiff: Set<string> | null;
   };
   function anyFieldFromSection(subsections) {
     return subsections.some((subsec) => anyFieldFromSubSection(subsec));
   }
   function anyFieldFromSubSection(subsec) {
-    return subsec.fields.some((f) => data.dealdiff.includes(f));
+    return subsec.fields.some((f) => data.dealdiff.has(f));
   }
 
   const labels = {
@@ -92,7 +92,7 @@
               </th>
             </tr>
             {#each subsec.fields as field}
-              {#if data.dealdiff.includes(field)}
+              {#if data.dealdiff.has(field)}
                 <tr class="odd:bg-gray-100">
                   <th class="whitespace-nowrap py-2 pl-8">
                     {$formfields.deal[field].label}

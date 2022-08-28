@@ -99,8 +99,7 @@
 <div class="container mx-auto flex h-full min-h-full flex-col">
   <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1>
-      {dealID ? $_("Editing Deal #") + dealID : $_("Adding new deal")}
-      {#if deal.country}{$_("in")} {deal.country.name}{/if}
+      {dealID ? $_("Editing deal #") + dealID : $_("Adding new deal")}
     </h1>
     <div class="my-5 flex items-center">
       <button

@@ -118,7 +118,6 @@
       <h1>
         {$_("Deal")}
         #{deal.id}
-        {#if deal.country}{$_("in")} {deal.country.name}{/if}
       </h1>
       <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
