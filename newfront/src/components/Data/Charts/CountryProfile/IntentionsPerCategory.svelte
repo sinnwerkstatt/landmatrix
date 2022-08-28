@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import {
     flat_intention_of_investment_map,
     implementation_status_choices,

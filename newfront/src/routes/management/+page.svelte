@@ -2,7 +2,7 @@
   import cn from "classnames";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { formfields, loading } from "$lib/stores";

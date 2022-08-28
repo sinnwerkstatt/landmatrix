@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { classification_choices } from "$lib/choices";
   import type { Deal } from "$lib/types/deal";
   import { a_download, fileName } from "../utils";

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import Overlay from "$components/Overlay.svelte";
 
   async function getMessages() {

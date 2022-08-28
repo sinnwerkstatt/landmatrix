@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { loading } from "$lib/stores";
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
   import FileImageIcon from "$components/icons/FileImageIcon.svelte";

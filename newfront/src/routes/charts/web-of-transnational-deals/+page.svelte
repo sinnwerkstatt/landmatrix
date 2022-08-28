@@ -2,7 +2,7 @@
   import { Client, gql } from "@urql/svelte";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import { LandMatrixRadialSpider } from "$lib/data/charts/d3_hierarchical_edge_bundling";
   import type { EdgeBundlingData } from "$lib/data/charts/d3_hierarchical_edge_bundling";

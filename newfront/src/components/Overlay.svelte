@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { fade, slide } from "svelte/transition";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
 
   const dispatch = createEventDispatcher();
 
