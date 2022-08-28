@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('wagtailforms', '0004_add_verbose_name_plural'),
         ('landmatrix', '0001_squashed_0057_auto_20220617_2213'),
         ('wagtailcore', '0041_group_collection_permissions_verbose_name_plural'),
         ('wagtailcore', '0032_add_bulk_delete_page_permission'),
