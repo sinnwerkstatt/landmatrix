@@ -9,10 +9,12 @@ type Mutation {
     password: String!
     token: String!
   ): RegisterPayload
+  register_confirm(activation_key:String!): RegisterPayload
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
-  password_reset(email: String!): Boolean!
+  password_reset(email: String!, token: String!): Boolean!
   password_reset_confirm(
+    uidb64: String!
     token: String!
     new_password1: String
     new_password2: String!
@@ -102,5 +104,5 @@ type LoginPayload {
 
 type RegisterPayload {
   ok: Boolean!
-  message: String
+  code: String
 }
