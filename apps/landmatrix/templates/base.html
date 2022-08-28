@@ -1,17 +1,56 @@
-{% load static i18n  %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LAND MATRIX Base</title>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block page_title %}{% endblock %} - Land Matrix</title>
 
-<body>
-<div class="wrap">
-  <div class="container">
-    {% block content %}{% endblock %}
-  </div>
-</div>
+    {% block css %}
+    <link rel="icon" href="/static/favicon.ico" />
+    {% endblock %}
+    <style>
+      label {
+        display: block;
+        margin-top: 1rem;
+        margin-bottom: 0.25rem;
+      }
 
-</body>
+      input {
+        height: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      style="
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: sans-serif;
+      "
+    >
+      <div>
+        <a href="/">
+          <img style="height: 60px" src="/static/lm-logo.png" alt="logo" />
+        </a>
+      </div>
+    </div>
+
+    {% block content_wrapper %}
+    <div
+      style="
+        height: calc(100vh - 240px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: sans-serif;
+      "
+    >
+      <div>{% block content %}{% endblock %}</div>
+    </div>
+    {% endblock %}
+  </body>
 </html>
