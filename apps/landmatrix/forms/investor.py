@@ -15,13 +15,14 @@ class InvestorForm(JSONFormOutputMixin, ModelForm):
             "old_id",
             "is_actually_unknown",
             "status",
-            # "created_at",
+            "created_at",
         ]
 
     attributes = {"country": {"class": "CountryForeignKey"}}
     extra_display_fields = {
         "id": {"label": "ID", "class": "AutoField"},
         "deals": {"class": "LengthField", "label": _("Deals")},
+        "created_at": {"class": "DateTimeField", "label": _("Created at")},
         "workflowinfos": {
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),

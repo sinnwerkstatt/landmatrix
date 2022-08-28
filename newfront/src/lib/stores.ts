@@ -48,7 +48,7 @@ export const blogCategories = writable<BlogCategory[]>([]);
 async function getBlogCategories(language = "en", urqlClient: Client) {
   console.log("getBlogCategories", { language });
   const { data } = await urqlClient
-    .query(
+    .query<{ blogcategories: BlogCategory[] }>(
       gql`
         query ($language: String) {
           blogcategories(language: $language) {
@@ -61,7 +61,7 @@ async function getBlogCategories(language = "en", urqlClient: Client) {
       { language }
     )
     .toPromise();
-  blogCategories.set(data.blogcategories);
+  if (data?.blogcategories) blogCategories.set(data.blogcategories);
 }
 
 type FormFields = {
