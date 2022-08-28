@@ -161,7 +161,7 @@
       {#if activeTab === "#contracts"}
         <SubmodelEditSection
           model="contract"
-          modelName="Contract"
+          modelName={$_("Contract")}
           bind:entries={deal.contracts}
           id="contracts"
         />
@@ -179,7 +179,7 @@
       {#if activeTab === "#data_sources"}
         <SubmodelEditSection
           model="datasource"
-          modelName="Data source"
+          modelName={$_("Data source")}
           bind:entries={deal.datasources}
           id="data_sources"
         />

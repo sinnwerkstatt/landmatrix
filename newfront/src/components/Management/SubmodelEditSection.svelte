@@ -33,7 +33,7 @@
 
   function removeEntry(entry: Contract | DataSource) {
     if (!isEmptySubmodel(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+      const areYouSure = confirm(`${$_("Remove")} ${modelName} ${entry.id}?`);
       if (!areYouSure) return;
     }
 
@@ -51,7 +51,7 @@
             on:click={() => (activeEntry = activeEntry === index ? -1 : index)}
           >
             <h3 class="m-0">
-              {index + 1}. {$_(modelName)}
+              {index + 1}. {modelName}
               <small class="text-sm text-gray-500">
                 {#if model === "involvement"}
                   {#if entry?.investor?.id}
@@ -84,7 +84,7 @@
       >
         <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
         {$_("Add")}
-        {$_(modelName)}
+        {modelName}
       </button>
     </div>
   </form>

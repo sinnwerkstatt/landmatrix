@@ -5,11 +5,21 @@ import {
   IntentionOfInvestment,
   IntentionOfInvestmentGroup,
   NatureOfDeal,
-  NegotiationStatus,
   NegotiationStatusGroup,
   OtherIoI,
 } from "$lib/types/deal";
 import { Classification } from "$lib/types/investor";
+
+export const getImplementationStatusChoices = (
+  $t: (t: string) => string
+): { [key in ImplementationStatus]: string } => {
+  return {
+    [ImplementationStatus.PROJECT_NOT_STARTED]: $t("Project not started"),
+    [ImplementationStatus.STARTUP_PHASE]: $t("Startup phase (no production)"),
+    [ImplementationStatus.IN_OPERATION]: $t("In operation (production)"),
+    [ImplementationStatus.PROJECT_ABANDONED]: $t("Project abandoned"),
+  };
+};
 
 export const implementation_status_choices: { [key in ImplementationStatus]: string } =
   {
@@ -19,14 +29,19 @@ export const implementation_status_choices: { [key in ImplementationStatus]: str
     [ImplementationStatus.PROJECT_ABANDONED]: "Project abandoned",
   };
 
-export const nature_of_deal_choices: { [key in NatureOfDeal]: string } = {
-  [NatureOfDeal.OUTRIGHT_PURCHASE]: "Outright purchase",
-  [NatureOfDeal.LEASE]: "Lease",
-  [NatureOfDeal.CONCESSION]: "Concession",
-  [NatureOfDeal.EXPLOITATION_PERMIT]:
-    "Exploitation permit / license / concession (for mineral resources)",
-  [NatureOfDeal.PURE_CONTRACT_FARMING]: "Pure contract farming",
-  [NatureOfDeal.OTHER]: "Other",
+export const getNatureOfDealChoices = (
+  $t: (t: string) => string
+): { [key in NatureOfDeal]: string } => {
+  return {
+    [NatureOfDeal.OUTRIGHT_PURCHASE]: $t("Outright purchase"),
+    [NatureOfDeal.LEASE]: $t("Lease"),
+    [NatureOfDeal.CONCESSION]: $t("Concession"),
+    [NatureOfDeal.EXPLOITATION_PERMIT]: $t(
+      "Exploitation permit / license / concession (for mineral resources)"
+    ),
+    [NatureOfDeal.PURE_CONTRACT_FARMING]: $t("Pure contract farming"),
+    [NatureOfDeal.OTHER]: $t("Other"),
+  };
 };
 
 export const negotiation_status_group_choices: {

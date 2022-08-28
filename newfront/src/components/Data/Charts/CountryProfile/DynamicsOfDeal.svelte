@@ -29,7 +29,7 @@
     });
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: $_(classification_choices[k] || "Unknown").toString(),
+      name: $_(classification_choices[k]) || $_("Unknown"),
       value: v,
     }));
 

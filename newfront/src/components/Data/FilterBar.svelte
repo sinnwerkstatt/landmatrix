@@ -6,9 +6,9 @@
   import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
   import {
-    implementation_status_choices,
+    getImplementationStatusChoices,
+    getNatureOfDealChoices,
     intention_of_investment_choices,
-    nature_of_deal_choices,
   } from "$lib/choices";
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters";
   import { countries, formfields, regions } from "$lib/stores";
@@ -195,7 +195,7 @@
         clearable={$filters.nature_of_deal.length > 0}
         on:click={() => ($filters.nature_of_deal = [])}
       >
-        {#each Object.entries(nature_of_deal_choices) as [isval, isname]}
+        {#each Object.entries(getNatureOfDealChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               type="checkbox"
@@ -203,7 +203,7 @@
               value={isval}
               class="checkbox-btn"
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>
@@ -291,7 +291,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(implementation_status_choices) as [isval, isname]}
+        {#each Object.entries(getImplementationStatusChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -299,7 +299,7 @@
               type="checkbox"
               value={isval}
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>

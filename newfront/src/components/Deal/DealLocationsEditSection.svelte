@@ -18,11 +18,8 @@
   import BigMap from "$components/Map/BigMap.svelte";
   import DealLocationsAreaField from "./DealLocationsAreaField.svelte";
 
-  export let model = "location";
-  export let modelName = "Location";
   export let locations: Location[] = [];
   export let country: Country | undefined;
-
   let currentHoverFeature: Feature | null = null;
   let hiddenFeatures: Feature[] = [];
   let hoverLocationID: string | null = null;
@@ -137,7 +134,7 @@
   function removeEntry(entry: Location) {
     // TODO: fix isEmptySubmodel not returning true because of entry.point = {}
     if (!isEmptySubmodel(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${$_(modelName)} ${entry.id}?`);
+      const areYouSure = confirm(`${$_("Remove")} ${$_("Location")} ${entry.id}?`);
       if (!areYouSure) {
         return;
       }
@@ -272,7 +269,7 @@
             <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
               <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
                 <h3 class="m-0">
-                  {index + 1}. {$_(modelName)}
+                  {index + 1}. {$_("Location")}
                   <small class="text-sm text-gray-500">#{loc.id}</small>
                 </h3>
               </div>
@@ -285,7 +282,7 @@
                 <EditField
                   fieldname="level_of_accuracy"
                   bind:value={loc["level_of_accuracy"]}
-                  {model}
+                  model="location"
                   wrapperClasses="flex flex-col"
                   labelClasses="mb-1"
                   valueClasses="mb-3"
@@ -311,7 +308,7 @@
                   <EditField
                     {fieldname}
                     bind:value={loc[fieldname]}
-                    {model}
+                    model="location"
                     wrapperClasses="flex flex-col"
                     labelClasses="mb-2"
                     valueClasses="mb-4"
@@ -329,7 +326,7 @@
           >
             <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
             {$_("Add")}
-            {$_(modelName)}
+            {$_("Location")}
           </button>
         </div>
       </div>

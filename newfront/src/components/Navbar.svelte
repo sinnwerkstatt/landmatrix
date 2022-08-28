@@ -115,6 +115,7 @@
             {#each $blogCategories as cat}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/resources/?category={cat.slug}">
+                  <!-- TODO: discuss replacing this somehow? comes from DB though -->
                   {$_(cat.name)}
                 </a>
               </li>

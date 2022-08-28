@@ -20,6 +20,7 @@
     dSet.data.reduce((sum, value) => sum + value)
   );
   let i18nData: ChartData<"pie", number[], string>;
+  // TODO Marcus: refactor $_(label) up to the source
   $: i18nData = { ...data, labels: data.labels?.map((label) => $_(label)) };
 
   const options: ChartOptions<"pie"> = {

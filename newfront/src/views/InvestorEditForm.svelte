@@ -163,7 +163,7 @@
         <SubmodelEditSection
           id="parent_companies"
           model="involvement"
-          modelName="Parent company"
+          modelName={$_("Parent company")}
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "PARENT"}
           newEntryExtras={{ role: "PARENT" }}
@@ -173,7 +173,7 @@
         <SubmodelEditSection
           id="tertiary_investors"
           model="involvement"
-          modelName="Tertiary investor/lender"
+          modelName={$_("Tertiary investor/lender")}
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "LENDER"}
           newEntryExtras={{ role: "LENDER" }}
@@ -191,7 +191,7 @@
       {#if activeTab === "#data_sources"}
         <SubmodelEditSection
           model="datasource"
-          modelName="Data source"
+          modelName={$_("Data source")}
           bind:entries={investor.datasources}
           id="data_sources"
         />

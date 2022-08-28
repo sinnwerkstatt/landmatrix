@@ -53,6 +53,7 @@
               ? 'bg-orange text-white'
               : ''}"
           >
+            <!-- TODO: discuss replacing this somehow? comes from DB though -->
             {$_(cat.name)}
           </a>
         </li>
