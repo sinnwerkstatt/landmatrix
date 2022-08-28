@@ -122,7 +122,7 @@
   select[multiple].inpt {
     height: unset;
   }
-  .inpt:invalid {
+  .inpt:not(:placeholder-shown):not(:focus):invalid {
     @apply border-2 border-red-600 text-red-700;
   }
 
