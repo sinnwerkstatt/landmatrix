@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Web of transnational deals | Land Matrix")}</title>
+  <title>{$_("Web of transnational deals")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>

@@ -127,7 +127,7 @@
             {#each $aboutPages as { title, meta }}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/about/{meta.slug}/">
-                  {$_(title)}
+                  {title}
                 </a>
               </li>
             {/each}

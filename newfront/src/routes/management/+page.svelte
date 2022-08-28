@@ -36,40 +36,40 @@
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[];
   $: navTabs = [
     {
-      name: "Todo",
+      name: $_("Todo"),
       items: [
-        { id: "todo_feedback", name: "Feedback for me" },
-        { id: "todo_improvement", name: "Improvement requests for me" },
-        { id: "todo_review", name: "Review", staff: true },
-        { id: "todo_activation", name: "Activation", staff: true },
+        { id: "todo_feedback", name: $_("Feedback for me") },
+        { id: "todo_improvement", name: $_("Improvement requests for me") },
+        { id: "todo_review", name: $_("Review"), staff: true },
+        { id: "todo_activation", name: $_("Activation"), staff: true },
       ],
     },
     {
-      name: "My requests",
+      name: $_("My requests"),
       items: [
-        { id: "requested_feedback", name: "Feedback by me" },
+        { id: "requested_feedback", name: $_("Feedback by me") },
         {
           id: "requested_improvement",
-          name: "Improvements requested by me",
+          name: $_("Improvements requested by me"),
           staff: true,
         },
       ],
     },
     {
-      name: "My data",
+      name: $_("My data"),
       items: [
-        { id: "my_drafts", name: "My drafts" },
-        { id: "created_by_me", name: "Created by me" },
-        { id: "reviewed_by_me", name: "Reviewed by me", staff: true },
-        { id: "activated_by_me", name: "Activated by me", staff: true },
+        { id: "my_drafts", name: $_("My drafts") },
+        { id: "created_by_me", name: $_("Created by me") },
+        { id: "reviewed_by_me", name: $_("Reviewed by me"), staff: true },
+        { id: "activated_by_me", name: $_("Activated by me"), staff: true },
       ],
     },
     {
-      name: "Data overview",
+      name: $_("Data overview"),
       items: [
-        { id: "all_items", name: "All objects", staff: true },
-        { id: "all_drafts", name: "All non active", staff: true },
-        { id: "all_deleted", name: "All deleted", staff: true },
+        { id: "all_items", name: $_("All objects"), staff: true },
+        { id: "all_drafts", name: $_("All non active"), staff: true },
+        { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
     },
   ];
@@ -188,7 +188,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Management | Land Matrix")}</title>
+  <title>{$_("Management")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <div class="relative flex min-h-full w-full">
@@ -221,7 +221,7 @@
       {#each navTabs as { name, items }}
         {@const aggCount = items.map((i) => i.count ?? 0).reduce((a, b) => a + b, 0)}
         {#if user.level > UserLevel.EDITOR || !items.every((i) => i.staff)}
-          <FilterCollapse title="{$_(name)} (Σ {aggCount})" expanded>
+          <FilterCollapse title="{name} (Σ {aggCount})" expanded>
             <ul>
               {#each items.filter((i) => user.level > UserLevel.EDITOR || !i.staff) as item}
                 <li
@@ -263,7 +263,7 @@
                 rel="external"
               >
                 <DownloadIcon />
-                {$_("All attributes (xlsx)")}
+                {$_("All attributes")} (xlsx)
               </a>
             </li>
             <li>
@@ -274,7 +274,7 @@
               >
                 <i class="fas fa-file-download" />
                 <DownloadIcon />
-                {$_("All attributes (csv)")}
+                {$_("All attributes")} (csv)
               </a>
             </li>
           </ul>

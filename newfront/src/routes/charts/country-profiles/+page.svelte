@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Country profile graphs | Land Matrix")}</title>
+  <title>{$_("Country profile graphs")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>

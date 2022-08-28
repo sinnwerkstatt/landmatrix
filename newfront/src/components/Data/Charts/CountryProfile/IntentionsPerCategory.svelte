@@ -42,7 +42,7 @@
     };
   }
 
-  $: if (browser && deals.length > 0) {
+  $: if (browser && deals?.length > 0) {
     let datanodes: Set<string> = new Set();
     let datalinks: { [key: string]: number } = {};
     let i_status_counter: { [key: string]: number } = {};

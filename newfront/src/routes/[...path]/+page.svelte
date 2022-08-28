@@ -1,7 +1,7 @@
 <script lang="ts">
   import BasePage from "$views/BasePage.svelte";
   import ObservatoryPage from "$views/ObservatoryPage.svelte";
-  import { locale } from "svelte-i18n";
+  import { _, locale } from "svelte-i18n";
   import { page } from "$app/stores";
   import { pageQuery } from "$lib/queries";
   import { loading } from "$lib/stores";
@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.page.title}</title>
+  <title>{data.page.title} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 {#if wagtailPage}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { dealSections, subsections } from "$lib/sections";
+  import { getDealSections, subsections } from "$lib/sections";
   import { formfields } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -26,7 +26,7 @@
     return subsec.fields.some((f) => data.dealdiff.has(f));
   }
 
-  const labels = {
+  $: labels = {
     general_info: $_("General info"),
     employment: $_("Employment"),
     investor_info: $_("Investor info"),
@@ -48,12 +48,13 @@
     }
     return dFrom[field][jfield] !== dTo[field][jfield];
   }
+  $: dealSections = getDealSections($_);
 </script>
 
 <svelte:head>
   <title>
-    {$_("Comparing Deal")}
-    #{data.dealID} @{data.versionFrom} - @{data.versionTo}
+    {$_("Comparing deal #{dealID}", { value: { dealID: data.dealID } })}
+    @{data.versionFrom} - @{data.versionTo}
   </title>
 </svelte:head>
 

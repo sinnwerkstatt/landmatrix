@@ -77,12 +77,12 @@ export const countries = writable<Country[]>([]);
 export const regions = writable<Region[]>([]);
 export const formfields = writable<FormFields>(undefined);
 
-async function getCountriesRegionsFormfields(urqlClient: Client) {
+async function getCountriesRegionsFormfields(language = "en", urqlClient: Client) {
   console.log("getCountriesRegionsFormfields");
   const { data } = await urqlClient
     .query(
       gql`
-        query {
+        query ($language: String!) {
           countries {
             id
             name
@@ -110,7 +110,7 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
             point_lon_max
             observatory_page_id
           }
-          formfields {
+          formfields(language: $language) {
             deal
             location
             contract
@@ -120,7 +120,7 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
           }
         }
       `,
-      {}
+      { language }
     )
     .toPromise();
 
@@ -164,7 +164,7 @@ export async function fetchBasis(
       getAboutPages(lang, fetch),
       getObservatoryPages(lang, fetch),
       getBlogCategories(lang, urqlClient),
-      getCountriesRegionsFormfields(urqlClient),
+      getCountriesRegionsFormfields(lang, urqlClient),
       getChartDescriptions(lang, urqlClient),
     ]);
   } catch (e) {

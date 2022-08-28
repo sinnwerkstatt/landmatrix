@@ -16,7 +16,7 @@ class JSONFormOutputMixin:
         for name, field in self.fields.items():
             assert isinstance(field, fields.Field)
             field_json = {
-                "label": field.label,
+                "label": gettext(field.label),
                 "class": field.__class__.__name__,
                 "required": field.required,
             }

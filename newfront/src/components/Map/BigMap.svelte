@@ -6,10 +6,11 @@
   import { Icon, Map } from "leaflet?client";
   import { nanoid } from "nanoid";
   import { createEventDispatcher, onMount } from "svelte";
+  import { _ } from "svelte-i18n";
   import LoadingPulse from "$components/LoadingPulse.svelte";
   import {
-    baseLayers,
-    contextLayers,
+    getBaseLayers,
+    getContextLayers,
     visibleContextLayers,
     visibleLayer,
   } from "$components/Map/layers";
@@ -25,6 +26,7 @@
   let map: Map;
 
   if (!import.meta.env.SSR) {
+    // noinspection TypeScriptUnresolvedVariable
     delete Icon.Default.prototype._getIconUrl;
     Icon.Default.mergeOptions({
       iconRetinaUrl: "/images/marker-icon-2x.png",
@@ -33,6 +35,9 @@
       shadowSize: [0, 0],
     });
   }
+
+  $: contextLayers = getContextLayers($_);
+  $: baseLayers = getBaseLayers($_);
 
   onMount(async () => {
     // onDestroy sometimes triggers after onMount on loading a new map
@@ -57,14 +62,14 @@
 
   $: if (map && $visibleLayer) {
     baseLayers.forEach((l) => {
-      if (l.name === $visibleLayer) l.layer.addTo(map);
+      if (l.id === $visibleLayer) l.layer.addTo(map);
       else l.layer.remove();
     });
   }
 
   $: if (map && $visibleContextLayers) {
     contextLayers.forEach((l) => {
-      if ($visibleContextLayers.includes(l.name)) l.layer.addTo(map);
+      if ($visibleContextLayers.includes(l.id)) l.layer.addTo(map);
       else l.layer.remove();
     });
   }

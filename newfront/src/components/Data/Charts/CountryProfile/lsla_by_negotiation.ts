@@ -4,10 +4,27 @@
 import { max, range, scaleBand, scaleLinear, select } from "d3";
 import { t } from "svelte-i18n";
 import { get } from "svelte/store";
-import { flat_negotiation_status_map } from "$lib/choices";
-import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/deal";
+import { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/deal";
 
-const $_ = get(t);
+const getFlatNegStatusMap = (
+  $t: (t: string) => string
+): { [key in NegotiationStatus | NegotiationStatusGroup]: string } => {
+  return {
+    [NegotiationStatus.EXPRESSION_OF_INTEREST]: $t("Expression of interest"),
+    [NegotiationStatus.UNDER_NEGOTIATION]: $t("Under negotiation"),
+    [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: $t("Memorandum of understanding"),
+    [NegotiationStatus.ORAL_AGREEMENT]: $t("Oral agreement"),
+    [NegotiationStatus.CONTRACT_SIGNED]: $t("Contract signed"),
+    [NegotiationStatus.CHANGE_OF_OWNERSHIP]: $t("Change of ownership"),
+    [NegotiationStatus.NEGOTIATIONS_FAILED]: $t("Negotiations failed"),
+    [NegotiationStatus.CONTRACT_CANCELED]: $t("Contract canceled"),
+
+    [NegotiationStatusGroup.INTENDED]: $t("Intended"),
+    [NegotiationStatusGroup.CONCLUDED]: $t("Concluded"),
+    [NegotiationStatusGroup.FAILED]: $t("Failed"),
+    [NegotiationStatusGroup.CONTRACT_EXPIRED]: $t("Contract expired"),
+  };
+};
 
 export class LSLAData {
   public name: string;
@@ -16,7 +33,7 @@ export class LSLAData {
   public intended_size = 0;
   public bold?: boolean;
   constructor(name: NegotiationStatus | NegotiationStatusGroup, bold = false) {
-    this.name = $_(flat_negotiation_status_map[name]);
+    this.name = getFlatNegStatusMap(get(t))[name];
     this.bold = bold;
   }
   add(contract_size: number, intended_size: number): void {
@@ -29,7 +46,11 @@ export class LSLAData {
 export class LSLAByNegotiation {
   private readonly width = 1230;
   private readonly height = 500;
+  public $t: (t: string) => string;
 
+  constructor() {
+    this.$t = get(t);
+  }
   do_the_graph(selector: string, data: LSLAData[]): void {
     const elem = document.querySelector(selector);
     if (elem) elem.innerHTML = "";
@@ -56,19 +77,19 @@ export class LSLAByNegotiation {
       .attr("x", "300")
       .attr("y", "20")
       .style("font-size", "20px")
-      .text($_("Number of deals").toString());
+      .text(this.$t("Number of deals").toString());
     svg
       .append("text")
       .attr("x", "610")
       .attr("y", "20")
       .style("font-size", "20px")
-      .text($_("Size under contract").toString());
+      .text(this.$t("Size under contract").toString());
     svg
       .append("text")
       .attr("x", "920")
       .attr("y", "20")
       .style("font-size", "20px")
-      .text($_("Intended size").toString());
+      .text(this.$t("Intended size").toString());
 
     const y = scaleBand()
       .domain(range(data.length).map((x) => x.toString()))

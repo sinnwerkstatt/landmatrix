@@ -47,7 +47,7 @@
       ]
     : [];
 
-  $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
+  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions];
 
   let investors: Investor[] = [];
 
@@ -135,7 +135,7 @@
               value={reg.id}
               on:change={() => ($filters.country_id = undefined)}
             />
-            {$_(reg.name)}
+            {reg.name}
           </label>
         {/each}
       </FilterCollapse>
@@ -416,14 +416,14 @@
           <li>
             <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
               <DownloadIcon />
-              {$_("All attributes (xlsx)")}
+              {$_("All attributes")} (xlsx)
             </a>
           </li>
           <li>
             <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
               <i class="fas fa-file-download" />
               <DownloadIcon />
-              {$_("All attributes (csv)")}
+              {$_("All attributes")} (csv)
             </a>
           </li>
           <li>

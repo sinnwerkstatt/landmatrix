@@ -24,7 +24,7 @@
           ? 'rotate-180'
           : ''}"
       />
-      {$_(title)}
+      {title}
     </span>
     {#if clearable}
       <ClearFilter on:click />

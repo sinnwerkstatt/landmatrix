@@ -1,6 +1,7 @@
 <script>
   import LayerGroup from "$components/icons/LayerGroup.svelte";
-  import { visibleLayer, baseLayers } from "./layers";
+  import { _ } from "svelte-i18n";
+  import { visibleLayer, getBaseLayers } from "./layers";
 
   let shown;
 </script>
@@ -17,13 +18,13 @@
     />
   {:else}
     <ul>
-      {#each baseLayers as layer}
+      {#each getBaseLayers($_) as layer}
         <li class="p-1">
-          {#if layer.name === $visibleLayer}
+          {#if layer.id === $visibleLayer}
             <div>{layer.name}</div>
           {:else}
             <button
-              on:click|preventDefault={() => visibleLayer.set(layer.name)}
+              on:click|preventDefault={() => visibleLayer.set(layer.id)}
               class="text-orange"
             >
               {layer.name}

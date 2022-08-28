@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { deal_gql_query } from "$lib/deal_queries";
-  import { dealSections } from "$lib/sections";
+  import { getDealSections } from "$lib/sections";
   import { loading } from "$lib/stores";
   import type { Deal } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
@@ -102,6 +102,7 @@
     investor = ret.investor;
   }
   onMount(fetchInvestor);
+  $: dealSections = getDealSections($_);
 </script>
 
 <svelte:head>

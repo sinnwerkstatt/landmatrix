@@ -29,24 +29,6 @@ export const nature_of_deal_choices: { [key in NatureOfDeal]: string } = {
   [NatureOfDeal.OTHER]: "Other",
 };
 
-export const flat_negotiation_status_map: {
-  [key in NegotiationStatus | NegotiationStatusGroup]: string;
-} = {
-  [NegotiationStatus.EXPRESSION_OF_INTEREST]: "Expression of interest",
-  [NegotiationStatus.UNDER_NEGOTIATION]: "Under negotiation",
-  [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: "Memorandum of understanding",
-  [NegotiationStatus.ORAL_AGREEMENT]: "Oral agreement",
-  [NegotiationStatus.CONTRACT_SIGNED]: "Contract signed",
-  [NegotiationStatus.CHANGE_OF_OWNERSHIP]: "Change of ownership",
-  [NegotiationStatus.NEGOTIATIONS_FAILED]: "Negotiations failed",
-  [NegotiationStatus.CONTRACT_CANCELED]: "Contract canceled",
-
-  [NegotiationStatusGroup.INTENDED]: "Intended",
-  [NegotiationStatusGroup.CONCLUDED]: "Concluded",
-  [NegotiationStatusGroup.FAILED]: "Failed",
-  [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
-};
-
 export const negotiation_status_group_choices: {
   [key in NegotiationStatusGroup]: string;
 } = {

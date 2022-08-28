@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { dealSections } from "$lib/sections";
+  import { getDealSections } from "$lib/sections";
   import type {
     Contract,
     DataSource,
@@ -94,6 +94,7 @@
     else if (!dealID) await goto("/");
     else await goto(`/deal/${dealID}/${dealVersion ?? ""}`);
   };
+  $: dealSections = getDealSections($_);
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">

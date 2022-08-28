@@ -12,7 +12,7 @@
   let title = $_("LSLA by negotiation status");
   let svg = new LSLAByNegotiation();
 
-  $: if (browser && deals.length > 0) {
+  $: if (browser && deals?.length > 0) {
     const filter_negstat = $filters.negotiation_status;
     const selected_neg_stat =
       filter_negstat.length > 0

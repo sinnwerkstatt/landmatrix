@@ -47,8 +47,8 @@
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Area (ha)")}</th>
         <th class="font-normal">{$_("Choices")}</th>
-        <th class="font-normal">{$_("Yield(tons)")}</th>
-        <th class="font-normal">{$_("Export(%)")}</th>
+        <th class="font-normal">{$_("Yield (tons)")}</th>
+        <th class="font-normal">{$_("Export (%)")}</th>
         <th />
       </tr>
     </thead>

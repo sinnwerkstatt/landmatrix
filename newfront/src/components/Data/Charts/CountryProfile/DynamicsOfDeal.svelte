@@ -16,7 +16,7 @@
   let multideals = 0;
   let payload: DynamicsDataPoint[] = [];
 
-  $: if (browser && deals.length > 0) {
+  $: if (browser && deals?.length > 0) {
     let pots: { [key: string]: number } = {};
     deals.forEach((d) => {
       if (d.top_investors.length > 1) multideals += 1;

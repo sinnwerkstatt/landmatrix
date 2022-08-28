@@ -46,9 +46,9 @@
   $: tabs = [
     { target: "#general", name: $_("General info") },
     { target: "#involvements", name: $_("Involvements") },
-    { target: "#network_graph", name: $_("Network Graph") },
+    { target: "#network_graph", name: $_("Network graph") },
     { target: "#data_sources", name: $_("Data sources") },
-    { target: "#history", name: $_("Version History") },
+    { target: "#history", name: $_("Version history") },
   ];
 
   async function reloadInvestor() {
@@ -77,6 +77,7 @@
   };
 
   onMount(reloadInvestor);
+  $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`;
 </script>
 
 <svelte:head>
@@ -251,11 +252,10 @@
         {#if !data.investorVersion}
           <InvestorGraph {investor} showControls />
         {:else}
-          <div
-            class="mb-3 flex items-center bg-neutral-300 text-center text-zinc-600 lg:w-3/4 xl:w-1/2"
-          >
-            {$_(
-              "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+          <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
+            {@html $_(
+              "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",
+              { values: { liveLink } }
             )}
           </div>
         {/if}

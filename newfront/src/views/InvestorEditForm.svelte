@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { investorSections } from "$lib/sections";
+  import { getInvestorSections } from "$lib/sections";
   import type { DataSource } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
@@ -143,9 +143,9 @@
       {#if activeTab === "#general"}
         <section>
           <form id="general">
-            {#each investorSections.general_info as subsection}
+            {#each getInvestorSections($_).general_info as subsection}
               <div class="mt-2 space-y-4">
-                <h3 class="my-0">{$_(subsection.name)}</h3>
+                <h3 class="my-0">{subsection.name}</h3>
                 {#each subsection.fields as fieldname}
                   <EditField
                     model="investor"

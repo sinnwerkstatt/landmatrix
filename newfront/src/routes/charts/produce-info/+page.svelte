@@ -22,7 +22,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Produce Info Map") | $_("Land Matrix")}</title>
+  <title>{$_("Produce Info Map")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>

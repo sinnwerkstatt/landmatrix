@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { investorSections, subsections } from "$lib/sections";
+  import { getInvestorSections, subsections } from "$lib/sections";
   import { formfields } from "$lib/stores";
   import type { Investor } from "$lib/types/investor";
   import DisplayField from "$components/Fields/DisplayField.svelte";
@@ -26,18 +26,7 @@
     return subsec.fields.some((f) => data.investordiff.has(f));
   }
 
-  const labels = {
-    general_info: $_("General info"),
-    employment: $_("Employment"),
-    investor_info: $_("Investor info"),
-    local_communities: $_("Local communities / indigenous peoples"),
-    former_use: $_("Former use"),
-    produce_info: $_("Produce info"),
-    water: $_("Water"),
-    gender_related_info: $_("Gender-related info"),
-    overall_comment: $_("Overall comment"),
-    meta: $_("Meta"),
-  };
+  $: labels = { general_info: $_("General info") };
 
   function hasDifference(dFrom, dTo, field, jfield) {
     if (!dFrom || !dTo) return true;
@@ -53,8 +42,8 @@
 
 <svelte:head>
   <title>
-    {$_("Comparing Investor")}
-    #{data.investorID} @{data.versionFrom} - @{data.versionTo}
+    {$_("Comparing investor #{investorID}", { value: { investorID: data.investorID } })}
+    @{data.versionFrom} - @{data.versionTo}
   </title>
 </svelte:head>
 
@@ -78,7 +67,7 @@
   </thead>
 
   <tbody>
-    {#each Object.entries(investorSections) as [label, section]}
+    {#each Object.entries(getInvestorSections($_)) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
           <th colspan="3" class="bg-gray-500 py-4">

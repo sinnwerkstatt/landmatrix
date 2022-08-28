@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Dynamics Overview | Land Matrix")}</title>
+  <title>{$_("Dynamics overview")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>

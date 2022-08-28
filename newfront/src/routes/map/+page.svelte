@@ -16,11 +16,11 @@
   import FilterCollapse from "$components/Data/FilterCollapse.svelte";
   import BigMap from "$components/Map/BigMap.svelte";
   import {
-    baseLayers,
-    contextLayers,
+    getContextLayers,
     visibleContextLayers,
     visibleLayer,
   } from "$components/Map/layers";
+  import { getBaseLayers } from "$components/Map/layers.js";
   import {
     displayDealsCount,
     LMCircleClass,
@@ -306,34 +306,34 @@
       </label>
     </FilterCollapse>
     <FilterCollapse expanded title={$_("Base layer")}>
-      {#each baseLayers as layer}
+      {#each getBaseLayers($_) as layer}
         <label class="block">
           <input
             type="radio"
             bind:group={$visibleLayer}
-            value={layer.name}
+            value={layer.id}
             class="radio-btn"
           />
-          {$_(layer.name)}
+          {layer.name}
         </label>
       {/each}
     </FilterCollapse>
 
     <FilterCollapse title={$_("Context layers")}>
-      {#each contextLayers as layer}
+      {#each getContextLayers($_) as layer}
         <label class="block">
           <input
             type="checkbox"
             bind:group={$visibleContextLayers}
-            value={layer.name}
+            value={layer.id}
             class="checkbox-btn"
           />
-          {$_(layer.name)}
-          {#if $visibleContextLayers.includes(layer.name)}
+          {layer.name}
+          {#if $visibleContextLayers.includes(layer.id)}
             <img
               alt="Legend for {layer.name}"
               src={layer.legendUrlFunction()}
-              class="context-layer-legend-image"
+              class="mt-2 mb-4 ml-4 border"
             />
           {/if}
         </label>
