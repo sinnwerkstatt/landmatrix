@@ -3,12 +3,17 @@
   import { browser } from "$app/environment";
   import {
     flat_intention_of_investment_map,
-    implementation_status_choices,
+    getImplementationStatusChoices,
   } from "$lib/choices";
   import type { Deal } from "$lib/types/deal";
   import { a_download, fileName } from "../utils";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
-  import { LamaSankey, sankey_links_to_csv_cross } from "./intentions_per_category";
+  import {
+    LamaSankey,
+    MySankeyLink,
+    sankey_links_to_csv_cross,
+  } from "./intentions_per_category";
+  import type { MySankeyNode } from "./intentions_per_category";
 
   const title = $_(
     "Number of intentions per category of production according to implementation status"
@@ -16,9 +21,9 @@
 
   export let deals: Deal[] = [];
 
-  let sankey_links = [];
+  let sankey_links: MySankeyLink[] = [];
   let sankey = new LamaSankey();
-  let sankey_legend_numbers;
+  let sankey_legend_numbers: { x: number; y: number; z: number };
 
   const downloadJSON = async () => {
     let data =
@@ -42,6 +47,8 @@
     };
   }
 
+  $: implementation_status_choices = getImplementationStatusChoices($_);
+
   $: if (browser && deals?.length > 0) {
     let datanodes: Set<string> = new Set();
     let datalinks: { [key: string]: number } = {};
@@ -58,20 +65,18 @@
         datalinks[`${i_stat},${ivi}`] = datalinks[`${i_stat},${ivi}`] + 1 || 1;
       });
     });
-    const nodes = [...datanodes].map((n) => {
+    const nodes: MySankeyNode[] = [...datanodes].map((n) => {
       const istatus = implementation_status_choices[n] || n === "S_UNKNOWN";
       const deal_count = istatus ? i_status_counter[n] : 0;
-      const name = $_(
-        (n === "S_UNKNOWN" && "Status unknown") ||
-          (n === "I_UNKNOWN" && "Intention unknown") ||
-          implementation_status_choices[n] ||
-          flat_intention_of_investment_map[n]
-      );
-
+      const name =
+        (n === "S_UNKNOWN" && $_("Status unknown")) ||
+        (n === "I_UNKNOWN" && $_("Intention unknown")) ||
+        implementation_status_choices[n] ||
+        flat_intention_of_investment_map[n];
       return { id: n, istatus, deal_count, name };
     });
-    const links = Object.entries(datalinks).map(([k, v]) => {
-      let [source, target] = k.split(",");
+    const links: MySankeyLink[] = Object.entries(datalinks).map(([k, v]) => {
+      const [source, target] = k.split(",");
       return { source, target, value: v };
     });
     sankey_links = JSON.parse(JSON.stringify(links));
