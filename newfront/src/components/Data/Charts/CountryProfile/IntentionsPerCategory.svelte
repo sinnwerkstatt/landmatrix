@@ -8,12 +8,8 @@
   import type { Deal } from "$lib/types/deal";
   import { a_download, fileName } from "../utils";
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte";
-  import {
-    LamaSankey,
-    MySankeyLink,
-    sankey_links_to_csv_cross,
-  } from "./intentions_per_category";
-  import type { MySankeyNode } from "./intentions_per_category";
+  import { LamaSankey, sankey_links_to_csv_cross } from "./intentions_per_category";
+  import type { MySankeyLink, MySankeyNode } from "./intentions_per_category";
 
   const title = $_(
     "Number of intentions per category of production according to implementation status"
