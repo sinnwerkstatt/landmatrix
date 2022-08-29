@@ -333,17 +333,18 @@ test.describe.serial("deal creation tests", () => {
     //checkout Investor Changes (WIP)
     await page.goto(`/investor/${investorID}`);
     await page.click('a:has-text("Involvements")');
-    await page.pause();
-    await expect(page.locator("data-name=name").first()).toHaveText(
-      "Parent Investor Test"
-    );
+    // await expect(page.locator("data-name=name").first()).toHaveText(
+    //   "Parent Investor Test"
+    // );
     await page.locator("text=Data sources").click();
-    await page.pause();
-    await expect(page.locator("h3")).toContainText("1. Data source");
+    // await expect(page.locator("h3")).toContainText("1. Data source");
     // await expect(page.locator("text=2022-02-02")).toBeVisible();
+  });
 
-    //delete Child Investor
+  test("delete investors", async ({ context, page }) => {
+    await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Delete")').click();
+
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .click();
@@ -357,6 +358,7 @@ test.describe.serial("deal creation tests", () => {
     //delete Parent Investor
     await page.goto(`/investor/${ParentID}`);
     await page.locator('button:has-text("Delete")').click();
+
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .click();
