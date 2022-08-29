@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
+  import type { FormField } from "$components/Fields/fields"
 
-  export let value: string;
-  export let formfield: FormField;
+  export let value: string
+  export let formfield: FormField
   // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
   // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
 </script>

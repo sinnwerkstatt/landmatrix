@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { slide } from "svelte/transition";
-  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
-  import ClearFilter from "$components/icons/ClearFilter.svelte";
+  import { _ } from "svelte-i18n"
+  import { slide } from "svelte/transition"
 
-  export let title: string;
-  export let clearable = false;
-  export let expanded = false;
+  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
+  import ClearFilter from "$components/icons/ClearFilter.svelte"
+
+  export let title: string
+  export let clearable = false
+  export let expanded = false
 </script>
 
 <div

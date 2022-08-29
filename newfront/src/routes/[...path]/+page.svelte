@@ -1,36 +1,39 @@
 <script lang="ts">
-  import BasePage from "$views/BasePage.svelte";
-  import ObservatoryPage from "$views/ObservatoryPage.svelte";
-  import { _, locale } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { pageQuery } from "$lib/queries";
-  import { loading } from "$lib/stores";
-  import type { WagtailPage } from "$lib/types/wagtail";
+  import { _, locale } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { pageQuery } from "$lib/queries"
+  import { loading } from "$lib/stores"
+  import type { WagtailPage } from "$lib/types/wagtail"
+
+  import BasePage from "$views/BasePage.svelte"
+  import ObservatoryPage from "$views/ObservatoryPage.svelte"
 
   // import type { PageData } from "./$types";
   // export let data: PageData;
   export let data: {
-    page: WagtailPage;
-  };
+    page: WagtailPage
+  }
 
   $: wagtailPage = {
     WagtailRootPage: BasePage,
     WagtailPage: BasePage,
     ObservatoryPage: ObservatoryPage,
-  }[data.page.meta?.type.split(".")[1]];
+  }[data.page.meta?.type.split(".")[1]]
 
-  let loadedLocale = $locale;
+  let loadedLocale = $locale
 
   async function reloadOnLocale(newLocale) {
     if (newLocale != loadedLocale) {
-      loading.set(true);
-      data = { ...data, page: await pageQuery($page.url, fetch) };
-      loadedLocale = newLocale;
-      loading.set(false);
+      loading.set(true)
+      data = { ...data, page: await pageQuery($page.url, fetch) }
+      loadedLocale = newLocale
+      loading.set(false)
     }
   }
 
-  $: reloadOnLocale($locale);
+  $: reloadOnLocale($locale)
 </script>
 
 <svelte:head>

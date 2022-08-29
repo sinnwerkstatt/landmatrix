@@ -1,7 +1,7 @@
 export type Section = {
-  name: string;
-  fields: string[];
-};
+  name: string
+  fields: string[]
+}
 
 export const getDealSections = ($_: (t: string) => string) => ({
   general_info: [
@@ -164,7 +164,7 @@ export const getDealSections = ($_: (t: string) => string) => ({
     },
     {
       name: $_(
-        "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)"
+        "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
       ),
       fields: ["presence_of_organizations"],
     },
@@ -241,7 +241,7 @@ export const getDealSections = ($_: (t: string) => string) => ({
     },
     {
       name: $_(
-        "How much do investors pay for water and the use of water infrastructure?"
+        "How much do investors pay for water and the use of water infrastructure?",
       ),
       fields: ["how_much_do_investors_pay_comment"],
     },
@@ -278,7 +278,7 @@ export const getDealSections = ($_: (t: string) => string) => ({
       fields: ["confidential", "confidential_comment"],
     },
   ],
-});
+})
 
 export const subsections = {
   location: [
@@ -315,7 +315,7 @@ export const subsections = {
     "parent_relation",
     "comment",
   ],
-};
+}
 
 export const getInvestorSections = ($_: (t: string) => string) => ({
   general_info: [
@@ -331,7 +331,7 @@ export const getInvestorSections = ($_: (t: string) => string) => ({
       ],
     },
   ],
-});
+})
 
 // export const investorSubsections = {
 //   parent_companies: [

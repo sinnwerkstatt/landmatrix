@@ -1,19 +1,23 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
-  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
-  import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
-  import { data_deal_query_gql } from "$lib/deal_queries";
-  import { filters, publicOnly } from "$lib/filters";
-  import { countries, loading, observatoryPages, regions } from "$lib/stores";
-  import type { CountryOrRegion } from "$lib/types/wagtail";
-  import { sum } from "$lib/utils/data_processing";
-  import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
-  import { displayDealsCount } from "$components/Map/map_helper";
-  import StatusPieChart from "$components/StatusPieChart.svelte";
-  import ContextBarContainer from "./ContextBarContainer.svelte";
+  import { queryStore } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
+  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
+  import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
+  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { filters, publicOnly } from "$lib/filters"
+  import { countries, loading, observatoryPages, regions } from "$lib/stores"
+  import type { CountryOrRegion } from "$lib/types/wagtail"
+  import { sum } from "$lib/utils/data_processing"
+
+  import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+  import { displayDealsCount } from "$components/Map/map_helper"
+  import StatusPieChart from "$components/StatusPieChart.svelte"
+
+  import ContextBarContainer from "./ContextBarContainer.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -22,36 +26,36 @@
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
-  });
-  $: loading.set($deals?.fetching ?? false);
+  })
+  $: loading.set($deals?.fetching ?? false)
 
-  let currentItem: CountryOrRegion;
+  let currentItem: CountryOrRegion
   $: if (!$filters.region_id && !$filters.country_id) {
     currentItem = {
       name: "Global",
-      observatory_page: $observatoryPages.find((o) => !o.country && !o.region),
-    };
+      observatory_page: $observatoryPages.find(o => !o.country && !o.region),
+    }
   } else {
     currentItem = {
       ...($filters.region_id
-        ? $regions.find((r) => r.id === $filters.region_id)
-        : $countries.find((c) => c.id === $filters.country_id)),
-    } as CountryOrRegion;
+        ? $regions.find(r => r.id === $filters.region_id)
+        : $countries.find(c => c.id === $filters.country_id)),
+    } as CountryOrRegion
     currentItem.observatory_page = $observatoryPages.find(
-      (o) => o.id === currentItem.observatory_page_id
-    );
+      o => o.id === currentItem.observatory_page_id,
+    )
   }
-  $: unit = $displayDealsCount ? "deals" : "ha";
-  $: sortBy = $displayDealsCount ? "count" : "size";
-  $: dealsArray = $deals?.data?.deals ?? [];
+  $: unit = $displayDealsCount ? "deals" : "ha"
+  $: sortBy = $displayDealsCount ? "count" : "size"
+  $: dealsArray = $deals?.data?.deals ?? []
 
-  $: chartNegStat = createNegotiationStatusChartData(dealsArray, sortBy);
-  $: chartImpStat = createImplementationStatusChartData(dealsArray, sortBy);
-  $: chartProd = createProduceGroupChartData(dealsArray, sortBy);
+  $: chartNegStat = createNegotiationStatusChartData(dealsArray, sortBy)
+  $: chartImpStat = createImplementationStatusChartData(dealsArray, sortBy)
+  $: chartProd = createProduceGroupChartData(dealsArray, sortBy)
 
   $: totalCount = $displayDealsCount
     ? `${Math.round(dealsArray.length).toLocaleString("fr")}`
-    : `${Math.round(sum(dealsArray, "deal_size")).toLocaleString("fr")} ha`;
+    : `${Math.round(sum(dealsArray, "deal_size")).toLocaleString("fr")} ha`
 </script>
 
 <ContextBarContainer>

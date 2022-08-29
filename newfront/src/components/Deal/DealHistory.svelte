@@ -1,54 +1,57 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import type { Deal, DealVersion } from "$lib/types/deal";
-  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte";
-  import CircleIcon from "$components/icons/CircleIcon.svelte";
+  import dayjs from "dayjs"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  export let deal: Deal;
-  export let dealID: number;
-  export let dealVersion: number;
+  import { page } from "$app/stores"
 
-  let compareFrom;
-  let compareTo;
+  import type { Deal, DealVersion } from "$lib/types/deal"
+
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
+  import CircleIcon from "$components/icons/CircleIcon.svelte"
+
+  export let deal: Deal
+  export let dealID: number
+  export let dealVersion: number
+
+  let compareFrom
+  let compareTo
 
   onMount(() => {
     if (deal.versions?.length >= 2) {
-      compareTo = deal.versions[0].id;
-      compareFrom = deal.versions[1].id;
+      compareTo = deal.versions[0].id
+      compareFrom = deal.versions[1].id
     }
-  });
+  })
 
   function calcVersionList(versions: DealVersion[]) {
-    versions = JSON.parse(JSON.stringify(versions));
+    versions = JSON.parse(JSON.stringify(versions))
     if (!$page.data.user.is_authenticated) {
-      versions = versions.filter((v) => !(v.deal.confidential || v.deal.draft_status));
+      versions = versions.filter(v => !(v.deal.confidential || v.deal.draft_status))
     }
-    let currentActive = false;
-    return versions.map((v) => {
+    let currentActive = false
+    return versions.map(v => {
       if (!v.deal.draft_status && !currentActive) {
-        v.link = `/deal/${dealID}`;
-        currentActive = true;
-      } else v.link = `/deal/${dealID}/${v.id}`;
-      return v;
-    });
+        v.link = `/deal/${dealID}`
+        currentActive = true
+      } else v.link = `/deal/${dealID}/${v.id}`
+      return v
+    })
   }
-  $: enriched_versions = calcVersionList(deal.versions ?? []);
+  $: enriched_versions = calcVersionList(deal.versions ?? [])
 
   function calcDeducedPosition(versions) {
-    if (versions.length === 0) return 0;
+    if (versions.length === 0) return 0
     if (dealVersion) {
-      return versions.findIndex((v) => +v.id === +dealVersion);
+      return versions.findIndex(v => +v.id === +dealVersion)
     }
     for (const [i, v] of versions.entries()) {
-      if (v.deal.draft_status === null) return i;
+      if (v.deal.draft_status === null) return i
     }
-    return versions.length - 1;
+    return versions.length - 1
   }
 
-  $: deduced_position = calcDeducedPosition(deal?.versions);
+  $: deduced_position = calcDeducedPosition(deal?.versions)
 
   const status_map = {
     1: "Draft",
@@ -57,16 +60,16 @@
     4: "Deleted",
     5: "Rejected", // legacy
     6: "To Delete", // legacy
-  };
+  }
   const draft_status_map = {
     1: "Draft",
     2: "Review",
     3: "Activation",
     4: "Rejected", // legacy
     5: "Deleted",
-  };
+  }
   function derive_status(status, draft_status) {
-    return draft_status ? draft_status_map[draft_status] : status_map[status];
+    return draft_status ? draft_status_map[draft_status] : status_map[status]
   }
 </script>
 

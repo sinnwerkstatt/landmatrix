@@ -1,47 +1,50 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit";
-  import { Client, gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { getInvestorSections } from "$lib/sections";
-  import type { DataSource } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import { removeEmptyEntries } from "$lib/utils/data_processing";
-  import EditField from "$components/Fields/EditField.svelte";
-  import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
+  import { error } from "@sveltejs/kit"
+  import { Client, gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  export let investor: Investor;
-  export let investorID: number;
-  export let investorVersion: number;
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  let originalInvestor = JSON.stringify(investor);
-  let savingInProgress = false;
-  let showReallyQuitOverlay = false;
-  $: activeTab = $page.url.hash || "#general";
-  $: formChanged = JSON.stringify(investor) !== originalInvestor;
+  import { getInvestorSections } from "$lib/sections"
+  import type { DataSource } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import { removeEmptyEntries } from "$lib/utils/data_processing"
+
+  import EditField from "$components/Fields/EditField.svelte"
+  import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte"
+
+  export let investor: Investor
+  export let investorID: number
+  export let investorVersion: number
+
+  let originalInvestor = JSON.stringify(investor)
+  let savingInProgress = false
+  let showReallyQuitOverlay = false
+  $: activeTab = $page.url.hash || "#general"
+  $: formChanged = JSON.stringify(investor) !== originalInvestor
   $: tabs = [
     { target: "#general", name: $_("General info") },
     { target: "#parent_companies", name: $_("Parent companies") },
     { target: "#tertiary_investors", name: $_("Tertiary investors/lenders") },
     { target: "#data_sources", name: $_("Data sources") },
-  ];
+  ]
 
   async function saveInvestor(hash: string) {
     const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>(activeTab);
-    if (!currentForm) throw error(500, "can not grab the form");
+      document.querySelector<HTMLFormElement>(activeTab)
+    if (!currentForm) throw error(500, "can not grab the form")
 
     if (!currentForm.checkValidity()) {
-      currentForm.reportValidity();
-      return;
+      currentForm.reportValidity()
+      return
     }
-    savingInProgress = true;
+    savingInProgress = true
     // investor.locations = removeEmptyEntries<Location>(investor.locations);
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
-    investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
+    investor.datasources = removeEmptyEntries<DataSource>(investor.datasources)
 
     const ret = await ($page.data.urqlClient as Client)
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
@@ -64,29 +67,29 @@
             ventures: undefined,
             involvements: undefined,
           },
-        }
+        },
       )
-      .toPromise();
-    const investor_edit = ret.data?.investor_edit;
-    if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`);
+      .toPromise()
+    const investor_edit = ret.data?.investor_edit
+    if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`)
 
-    originalInvestor = JSON.stringify(investor);
-    savingInProgress = false;
+    originalInvestor = JSON.stringify(investor)
+    savingInProgress = false
 
     if (location.hash !== hash || +investorVersion !== +investor_edit.investorVersion) {
       await goto(
         `/investor/edit/${investor_edit.investorId}/${investor_edit.investorVersion}${
           hash ?? ""
-        }`
-      );
+        }`,
+      )
     }
   }
 
   const onClickClose = async (force: boolean) => {
-    if (formChanged && !force) showReallyQuitOverlay = true;
-    else if (!investorID) await goto("/");
-    else await goto(`/investor/${investorID}/${investorVersion ?? ""}`);
-  };
+    if (formChanged && !force) showReallyQuitOverlay = true
+    else if (!investorID) await goto("/")
+    else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
+  }
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
@@ -165,7 +168,7 @@
           model="involvement"
           modelName={$_("Parent company")}
           bind:entries={investor.investors}
-          entriesFilter={(i) => i.role === "PARENT"}
+          entriesFilter={i => i.role === "PARENT"}
           newEntryExtras={{ role: "PARENT" }}
         />
       {/if}
@@ -175,7 +178,7 @@
           model="involvement"
           modelName={$_("Tertiary investor/lender")}
           bind:entries={investor.investors}
-          entriesFilter={(i) => i.role === "LENDER"}
+          entriesFilter={i => i.role === "LENDER"}
           newEntryExtras={{ role: "LENDER" }}
           fields={[
             "investor",

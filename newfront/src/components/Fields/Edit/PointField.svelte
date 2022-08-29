@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
 
   type LatLng = {
-    lat?: number;
-    lng?: number;
-  };
-  export let value: LatLng = {};
+    lat?: number
+    lng?: number
+  }
+  export let value: LatLng = {}
 </script>
 
 <div class="flex gap-1">

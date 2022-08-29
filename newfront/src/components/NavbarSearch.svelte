@@ -1,20 +1,23 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import classNames from "classnames";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import SearchIcon from "./icons/SearchIcon.svelte";
-  import NavDropDown from "./LowLevel/NavDropDown.svelte";
+  import { gql } from "@urql/svelte"
+  import classNames from "classnames"
+  import { _ } from "svelte-i18n"
 
-  $: user = $page.data.user;
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  let search = "";
-  let selectedSearchIndex = 0;
-  let deals: Deal[] = [];
-  let investors: Investor[] = [];
+  import type { Deal } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+
+  import SearchIcon from "./icons/SearchIcon.svelte"
+  import NavDropDown from "./LowLevel/NavDropDown.svelte"
+
+  $: user = $page.data.user
+
+  let search = ""
+  let selectedSearchIndex = 0
+  let deals: Deal[] = []
+  let investors: Investor[] = []
 
   async function getDeals() {
     const { data } = await $page.data.urqlClient
@@ -33,10 +36,10 @@
         `,
         {
           subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-        }
+        },
       )
-      .toPromise();
-    deals = data.deals;
+      .toPromise()
+    deals = data.deals
   }
 
   async function getInvestors() {
@@ -50,41 +53,41 @@
             }
           }
         `,
-        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" }
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
-      .toPromise();
-    investors = data.investors;
+      .toPromise()
+    investors = data.investors
   }
 
-  getDeals();
-  getInvestors();
+  getDeals()
+  getInvestors()
 
   $: searchResult =
     search.length >= 2
       ? [
           ...deals
-            .filter((d) => d.id.toString().includes(search))
-            .map((d) => {
-              let name = `#${d.id}`;
-              if (d.country) name += ` in ${d.country?.name}`;
-              return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` };
+            .filter(d => d.id.toString().includes(search))
+            .map(d => {
+              let name = `#${d.id}`
+              if (d.country) name += ` in ${d.country?.name}`
+              return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` }
             }),
           ...investors
             .filter(
-              (i) =>
+              i =>
                 i.id.toString().includes(search) ||
-                i.name.toLowerCase().includes(search.toLowerCase())
+                i.name.toLowerCase().includes(search.toLowerCase()),
             )
-            .map((i) => {
+            .map(i => {
               return {
                 id: i.id,
                 name: `${i.name} #${i.id}`,
                 url: `/investor/${i.id}/`,
                 investor: true,
-              };
+              }
             }),
         ]
-      : [];
+      : []
   // watch: {
   //   search(newS, oldS) {
   //     if (newS.length !== oldS.length) this.selectedSearchIndex = 0;
@@ -92,28 +95,28 @@
   // },
   // methods: {
   function focusSearch() {
-    setTimeout(() => document.getElementById("search").focus(), 100);
+    setTimeout(() => document.getElementById("search").focus(), 100)
   }
   function searchKeyboardEvent(e) {
     if (["ArrowDown", "ArrowUp"].includes(e.code)) {
-      e.preventDefault();
+      e.preventDefault()
 
       if (e.code === "ArrowDown") {
-        selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length;
+        selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
       } else {
-        if (selectedSearchIndex === 0) selectedSearchIndex = searchResult.length - 1;
-        else selectedSearchIndex = (selectedSearchIndex - 1) % searchResult.length;
+        if (selectedSearchIndex === 0) selectedSearchIndex = searchResult.length - 1
+        else selectedSearchIndex = (selectedSearchIndex - 1) % searchResult.length
       }
 
-      let liel = searchResult[selectedSearchIndex];
-      let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop;
-      document.getElementById("ulle").scrollTop = offset - 100;
+      let liel = searchResult[selectedSearchIndex]
+      let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop
+      document.getElementById("ulle").scrollTop = offset - 100
     }
 
     if (e.code === "Enter") {
-      goto(searchResult[selectedSearchIndex].url);
-      e.preventDefault();
-      document.getElementById("searchDropdown").click();
+      goto(searchResult[selectedSearchIndex].url)
+      e.preventDefault()
+      document.getElementById("searchDropdown").click()
     }
   }
   // },
@@ -146,7 +149,7 @@
           <li
             class={classNames(
               "!hover:text-white py-1 px-1.5 transition duration-100",
-              d.investor ? "hover:bg-pelorous" : "hover:bg-orange"
+              d.investor ? "hover:bg-pelorous" : "hover:bg-orange",
             )}
           >
             <a

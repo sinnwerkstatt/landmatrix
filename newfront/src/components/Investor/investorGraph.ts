@@ -1,18 +1,19 @@
-import cytoscape from "cytoscape";
-import type { Core as Graph } from "cytoscape";
-import type { CytoscapeOptions, ElementDefinition, NodeSingular } from "cytoscape";
-import cyCoseBilkent from "cytoscape-cose-bilkent";
-import type { LayoutOptions } from "cytoscape-cose-bilkent";
-import cyPopper from "cytoscape-popper";
-import tippy from "tippy.js";
-import type { Instance as TippyInstance } from "tippy.js";
-import { classification_choices } from "$lib/choices";
-import type { Deal } from "$lib/types/deal";
-import type { Investor, Involvement } from "$lib/types/investor";
-import type { Classification } from "$lib/types/investor";
+import cytoscape from "cytoscape"
+import type { Core as Graph } from "cytoscape"
+import type { CytoscapeOptions, ElementDefinition, NodeSingular } from "cytoscape"
+import cyCoseBilkent from "cytoscape-cose-bilkent"
+import type { LayoutOptions } from "cytoscape-cose-bilkent"
+import cyPopper from "cytoscape-popper"
+import tippy from "tippy.js"
+import type { Instance as TippyInstance } from "tippy.js"
 
-cytoscape.use(cyCoseBilkent);
-cytoscape.use(cyPopper);
+import { classification_choices } from "$lib/choices"
+import type { Deal } from "$lib/types/deal"
+import type { Investor, Involvement } from "$lib/types/investor"
+import type { Classification } from "$lib/types/investor"
+
+cytoscape.use(cyCoseBilkent)
+cytoscape.use(cyPopper)
 
 export const CY_OPTIONS: CytoscapeOptions = {
   minZoom: 0.3,
@@ -27,11 +28,11 @@ export const CY_OPTIONS: CytoscapeOptions = {
     {
       selector: "node",
       style: {
-        "background-color": (el) => {
-          return el.data("bgColor");
+        "background-color": el => {
+          return el.data("bgColor")
         },
         label: (el: NodeSingular) => {
-          return el.data("name");
+          return el.data("name")
         },
         "text-valign": "center",
         "font-size": "9pt",
@@ -46,80 +47,80 @@ export const CY_OPTIONS: CytoscapeOptions = {
         width: 1,
         "line-color": "data(edge_color)",
         "target-arrow-color": "data(edge_color)",
-        "target-arrow-shape": (el) => {
-          return el.data("target_arrow_shape") || "none";
+        "target-arrow-shape": el => {
+          return el.data("target_arrow_shape") || "none"
         },
         "curve-style": "bezier",
       },
     },
   ],
-};
+}
 
 export const createGraph = (elements: ElementDefinition[]) =>
   cytoscape({
     container: document.getElementById("investor-network"),
     elements: elements,
     ...CY_OPTIONS,
-  });
+  })
 
 const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
-  const ref = ele.popperRef(); // used only for positioning
+  const ref = ele.popperRef() // used only for positioning
   if (ref) {
     // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
     // https://github.com/atomiks/tippyjs/issues/661
-    const dummyDomEle = document.createElement("div");
+    const dummyDomEle = document.createElement("div")
 
     ele.tippy = tippy(dummyDomEle, {
       trigger: "manual", // call show() and hide() yourself
       getReferenceClientRect: ref.getBoundingClientRect,
       animation: false,
       content: () => {
-        const tipEl = document.createElement("div");
-        tipEl.classList.add("g-tooltip");
+        const tipEl = document.createElement("div")
+        tipEl.classList.add("g-tooltip")
         if (ele.data().dealNode) {
           // tooltip content of deal node
-          tipEl.classList.add("deal");
-          tipEl.innerHTML = `Deal ${ele.data().name}`;
+          tipEl.classList.add("deal")
+          tipEl.innerHTML = `Deal ${ele.data().name}`
         } else {
           // tooltip content of investor node
-          tipEl.classList.add("investor");
+          tipEl.classList.add("investor")
           let content = `<span class="name">${ele.data().name} (#${
             ele.data().id
-          })</span>`;
+          })</span>`
           if ("country" in ele.data() && ele.data().country)
-            content += ` ${ele.data().country.name}, `;
+            content += ` ${ele.data().country.name}, `
           if (
             "classification" in ele.data() &&
             classification_choices[ele.data().classification as Classification]
           )
             content +=
-              classification_choices[ele.data().classification as Classification];
-          tipEl.innerHTML = content;
+              classification_choices[ele.data().classification as Classification]
+          tipEl.innerHTML = content
         }
-        return tipEl;
+        return tipEl
       },
-    });
+    })
   }
-};
+}
 export const registerTippy = (cyGraph: Graph) => {
   cyGraph.ready(() => {
     cyGraph.nodes().forEach(function (ele) {
-      makePopper(ele);
-    });
-    cyGraph.nodes().unbind("mouseover");
-    cyGraph.nodes().bind("mouseover", (event) => event.target.tippy.show());
-    cyGraph.nodes().unbind("mouseout");
-    cyGraph.nodes().bind("mouseout", (event) => event.target.tippy.hide());
-  });
-};
+      makePopper(ele)
+    })
+    cyGraph.nodes().unbind("mouseover")
+    cyGraph.nodes().bind("mouseover", event => event.target.tippy.show())
+    cyGraph.nodes().unbind("mouseout")
+    cyGraph.nodes().bind("mouseout", event => event.target.tippy.hide())
+  })
+}
 
 export const createGraphElements = (
   investor: Investor,
   elements: ElementDefinition[],
   showDeals: boolean,
-  depth: number
+  depth: number,
 ) => {
-  if (depth <= 0) return elements;
+  if (depth <= 0) return elements
 
   if (elements.length === 0) {
     elements.push({
@@ -133,7 +134,7 @@ export const createGraphElements = (
         bgColor: "#44b7b6",
         rootNode: true,
       },
-    });
+    })
   }
 
   if (showDeals) {
@@ -147,7 +148,7 @@ export const createGraphElements = (
           bgColor: "#fc941f",
           dealNode: true,
         },
-      };
+      }
       const deal_edge = {
         data: {
           id: `${investor.id}_D${deal.id}`,
@@ -155,11 +156,11 @@ export const createGraphElements = (
           target: "D" + deal.id,
           edge_color: "#fc941f",
         },
-      };
+      }
 
-      elements.push(deal_node);
-      elements.push(deal_edge);
-    });
+      elements.push(deal_node)
+      elements.push(deal_edge)
+    })
   }
   if (investor.involvements && investor.involvements.length) {
     investor.involvements.forEach((involvement: Involvement) => {
@@ -184,7 +185,7 @@ export const createGraphElements = (
             comment: involvement.comment,
           },
         },
-      };
+      }
       const investor_edge = {
         data: {
           id: `${investor.id}_${involvement.investor.id}`,
@@ -194,14 +195,14 @@ export const createGraphElements = (
             : { source: involvement.investor.id, target: investor.id }),
           target_arrow_shape: "triangle",
         },
-      };
+      }
 
-      elements.push(investor_node);
-      elements.push(investor_edge);
+      elements.push(investor_node)
+      elements.push(investor_edge)
 
-      createGraphElements(involvement.investor, elements, showDeals, depth - 1);
-    });
+      createGraphElements(involvement.investor, elements, showDeals, depth - 1)
+    })
   }
 
-  return elements;
-};
+  return elements
+}

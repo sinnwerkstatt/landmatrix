@@ -1,9 +1,9 @@
-import type { Contract, DataSource, Deal } from "$lib/types/deal";
+import type { Contract, DataSource, Deal } from "$lib/types/deal"
 
 export function sum(items: Deal[], prop: keyof Deal): number {
   return items.reduce(function (a, b) {
-    return a + (b[prop] as number);
-  }, 0);
+    return a + (b[prop] as number)
+  }, 0)
 }
 
 export function custom_is_null(field: unknown): boolean {
@@ -12,22 +12,22 @@ export function custom_is_null(field: unknown): boolean {
     field === null ||
     field === "" ||
     (Array.isArray(field) && field.length === 0)
-  );
+  )
 }
 
 function sieveSubmodel(entry: Contract | DataSource | Location) {
   return Object.entries(entry).filter(([k, v]) =>
-    k === "id" ? false : !custom_is_null(v)
-  );
+    k === "id" ? false : !custom_is_null(v),
+  )
 }
 
 export function isEmptySubmodel(entry: Contract | DataSource | Location): boolean {
-  const fieldsWithValues = sieveSubmodel(entry);
-  return fieldsWithValues.length === 0;
+  const fieldsWithValues = sieveSubmodel(entry)
+  return fieldsWithValues.length === 0
 }
 export function removeEmptyEntries<T extends Contract | DataSource | Location>(
-  objectlist: T[]
+  objectlist: T[],
 ): T[] {
   // this function throws out any entries that have only an ID field and otherwise empty values.
-  return objectlist.filter((con) => sieveSubmodel(con).some((x) => !!x));
+  return objectlist.filter(con => sieveSubmodel(con).some(x => !!x))
 }

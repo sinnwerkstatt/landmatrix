@@ -1,37 +1,40 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { formfields } from "$lib/stores";
-  import DecimalField from "$components/Fields/Edit/DecimalField.svelte";
-  import TextField from "$components/Fields/Edit/TextField.svelte";
-  import type { FormField } from "$components/Fields/fields";
-  import BooleanField from "./Edit/BooleanField.svelte";
-  import CharField from "./Edit/CharField.svelte";
-  import CountryForeignKey from "./Edit/CountryForeignKey.svelte";
-  import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte";
-  import DateField from "./Edit/DateField.svelte";
-  import EmailField from "./Edit/EmailField.svelte";
-  import FileField from "./Edit/FileField.svelte";
-  import InvestorForeignKey from "./Edit/InvestorForeignKey.svelte";
-  import JSONActorsField from "./Edit/JSONActorsField.svelte";
-  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
-  import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
-  import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
-  import JSONExportsField from "./Edit/JSONExportsField.svelte";
-  import JSONJobsField from "./Edit/JSONJobsField.svelte";
-  import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
-  import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
-  import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
-  import URLField from "./Edit/URLField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let fieldname: string;
-  export let value;
-  export let model = "deal";
+  import { formfields } from "$lib/stores"
 
-  export let showLabel = true;
-  export let wrapperClasses = "mb-3 leading-5 flex flex-col xl:flex-row";
-  export let labelClasses = "font-medium text-lg mb-1 w-full xl:w-1/3";
-  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-2/3";
-  export let disabled = false;
+  import DecimalField from "$components/Fields/Edit/DecimalField.svelte"
+  import TextField from "$components/Fields/Edit/TextField.svelte"
+  import type { FormField } from "$components/Fields/fields"
+
+  import BooleanField from "./Edit/BooleanField.svelte"
+  import CharField from "./Edit/CharField.svelte"
+  import CountryForeignKey from "./Edit/CountryForeignKey.svelte"
+  import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte"
+  import DateField from "./Edit/DateField.svelte"
+  import EmailField from "./Edit/EmailField.svelte"
+  import FileField from "./Edit/FileField.svelte"
+  import InvestorForeignKey from "./Edit/InvestorForeignKey.svelte"
+  import JSONActorsField from "./Edit/JSONActorsField.svelte"
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte"
+  import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte"
+  import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte"
+  import JSONExportsField from "./Edit/JSONExportsField.svelte"
+  import JSONJobsField from "./Edit/JSONJobsField.svelte"
+  import JSONLeaseField from "./Edit/JSONLeaseField.svelte"
+  import SimpleArrayField from "./Edit/SimpleArrayField.svelte"
+  import TypedChoiceField from "./Edit/TypedChoiceField.svelte"
+  import URLField from "./Edit/URLField.svelte"
+
+  export let fieldname: string
+  export let value
+  export let model = "deal"
+
+  export let showLabel = true
+  export let wrapperClasses = "mb-3 leading-5 flex flex-col xl:flex-row"
+  export let labelClasses = "font-medium text-lg mb-1 w-full xl:w-1/3"
+  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-2/3"
+  export let disabled = false
 
   //   fileNotPublic: { type: Boolean, default: false },
   //   visible: { type: Boolean, default: true },
@@ -49,8 +52,8 @@
   //       return true;
   //     },
 
-  let formfield: FormField;
-  $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
+  let formfield: FormField
+  $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 
   $: field = {
     CountryForeignKey: CountryForeignKey,
@@ -71,7 +74,7 @@
     SimpleArrayField: SimpleArrayField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
-  }[formfield.class];
+  }[formfield.class]
 </script>
 
 <div class={wrapperClasses}>

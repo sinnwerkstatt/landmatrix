@@ -1,14 +1,17 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { data_deal_query_gql } from "$lib/deal_queries";
-  import { filters, publicOnly } from "$lib/filters";
-  import { chartDescriptions } from "$lib/stores";
-  import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
-  import DynamicsOverview from "$components/Data/Charts/DynamicsOverview.svelte";
-  import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
-  import { displayDealsCount } from "$components/Map/map_helper";
+  import { queryStore } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { filters, publicOnly } from "$lib/filters"
+  import { chartDescriptions } from "$lib/stores"
+
+  import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
+  import DynamicsOverview from "$components/Data/Charts/DynamicsOverview.svelte"
+  import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+  import { displayDealsCount } from "$components/Map/map_helper"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -17,7 +20,7 @@
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
-  });
+  })
 </script>
 
 <svelte:head>

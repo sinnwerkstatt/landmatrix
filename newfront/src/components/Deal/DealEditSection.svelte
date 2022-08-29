@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { Section } from "$lib/sections";
-  import type { Deal } from "$lib/types/deal";
-  import EditField from "$components/Fields/EditField.svelte";
+  import type { Section } from "$lib/sections"
+  import type { Deal } from "$lib/types/deal"
 
-  export let deal: Deal;
-  export let sections: Section[] = [];
-  export let id: string;
+  import EditField from "$components/Fields/EditField.svelte"
+
+  export let deal: Deal
+  export let sections: Section[] = []
+  export let id: string
 </script>
 
 <section>

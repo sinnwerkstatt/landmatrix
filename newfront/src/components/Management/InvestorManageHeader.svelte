@@ -1,22 +1,26 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import type { Investor } from "$lib/types/investor";
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import ManageHeader from "./ManageHeader.svelte";
+  import { gql } from "@urql/svelte"
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  export let investor: Investor;
-  export let investorVersion: number | undefined;
+  import type { Investor } from "$lib/types/investor"
 
-  let showSendToReviewOverlay = false;
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+
+  import ManageHeader from "./ManageHeader.svelte"
+
+  const dispatch = createEventDispatcher()
+
+  export let investor: Investor
+  export let investorVersion: number | undefined
+
+  let showSendToReviewOverlay = false
   async function sendToReview({ detail: { comment } }) {
-    await changeStatus({ detail: { transition: "TO_REVIEW", comment } });
-    showSendToReviewOverlay = false;
+    await changeStatus({ detail: { transition: "TO_REVIEW", comment } })
+    showSendToReviewOverlay = false
   }
 
   function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
@@ -48,19 +52,19 @@
           transition,
           comment,
           to_user_id: toUser?.id,
-        }
+        },
       )
       .toPromise()
       .then(async ({ data: { change_investor_status } }) => {
         if (transition === "ACTIVATE") {
-          await goto(`/investor/${change_investor_status.investorId}/`);
+          await goto(`/investor/${change_investor_status.investorId}/`)
         } else if (investorVersion !== change_investor_status.investorVersion)
           await goto(
-            `/investor/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`
-          );
-        else dispatch("reload");
+            `/investor/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`,
+          )
+        else dispatch("reload")
       })
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error))
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
@@ -84,11 +88,11 @@
           version: investorVersion ?? null,
           comment: comment,
           to_user_id: sendToUser?.id,
-        }
+        },
       )
       .toPromise()
       .then(() => dispatch("reload"))
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error))
   }
 
   function deleteInvestor({ detail: { comment } }) {
@@ -99,15 +103,15 @@
             investor_delete(id: $id, version: $version, comment: $comment)
           }
         `,
-        { id: investor.id, version: investorVersion, comment }
+        { id: investor.id, version: investorVersion, comment },
       )
       .toPromise()
-      .then(async (dat) => {
+      .then(async dat => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to investor list
-        console.log(dat);
-        if (investorVersion) await goto(`/investor/${investor.id}`);
-        dispatch("reload");
-      });
+        console.log(dat)
+        if (investorVersion) await goto(`/investor/${investor.id}`)
+        dispatch("reload")
+      })
   }
 </script>
 
@@ -121,7 +125,8 @@
   on:sendToReview={() => (showSendToReviewOverlay = true)}
 >
   <div slot="heading">
-    {investor.name} <small>#{investor.id}</small>
+    {investor.name}
+    <small>#{investor.id}</small>
   </div>
 </ManageHeader>
 
@@ -136,7 +141,8 @@
     <label class="mt-1 block font-bold">
       <input required type="checkbox" id="data-policy-checkbox" />
       {$_("I've read and agree to the")}
-      <a href="/about/data-policy/" target="_blank">{$_("Data policy")} </a>.
+      <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
+      .
     </label>
   </div>
 </ManageOverlay>

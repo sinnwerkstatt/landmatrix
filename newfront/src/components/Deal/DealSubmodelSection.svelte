@@ -1,17 +1,19 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { isEmpty } from "$lib/helpers";
-  import { subsections } from "$lib/sections";
-  import type { Contract, DataSource, Location } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let model: string;
-  export let modelName: string;
-  export let entries: Array<Contract | DataSource | Location> = [];
+  import { isEmpty } from "$lib/helpers"
+  import { subsections } from "$lib/sections"
+  import type { Contract, DataSource, Location } from "$lib/types/deal"
 
-  $: fields = subsections[model];
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full";
+  export let model: string
+  export let modelName: string
+  export let entries: Array<Contract | DataSource | Location> = []
+
+  $: fields = subsections[model]
+
+  let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full"
 </script>
 
 {#if entries.length > 0}

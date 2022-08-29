@@ -1,40 +1,43 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit";
-  import { gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { afterNavigate } from "$app/navigation";
-  import { page as storePage } from "$app/stores";
-  import { filters, FilterValues } from "$lib/filters";
-  import { NegotiationStatus } from "$lib/types/deal";
-  import type { ObservatoryPage } from "$lib/types/wagtail";
-  import LoadingPulse from "$components/LoadingPulse.svelte";
-  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte";
-  import MapDataCharts from "$components/MapDataCharts.svelte";
-  import PageTitle from "$components/PageTitle.svelte";
-  import StatusPieChart from "$components/StatusPieChart.svelte";
-  import Streamfield from "$components/Streamfield.svelte";
-  import ArticleList from "$components/Wagtail/ArticleList.svelte";
-  import Twitter from "$components/Wagtail/Twitter.svelte";
+  import { error } from "@sveltejs/kit"
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  export let page: ObservatoryPage;
+  import { afterNavigate } from "$app/navigation"
+  import { page as storePage } from "$app/stores"
 
-  let readMore = false;
-  let totalSize = "";
-  let totalCount = "";
-  let chartDatSize;
-  let chartDatCount;
-  let filteredCountryProfiles;
-  let filteredNewsPubs;
+  import { filters, FilterValues } from "$lib/filters"
+  import { NegotiationStatus } from "$lib/types/deal"
+  import type { ObservatoryPage } from "$lib/types/wagtail"
 
-  if (!page) throw error(500, "for some reason `page` is not set.");
-  $: regionID = page.region?.id;
-  $: countryID = page.country?.id;
+  import LoadingPulse from "$components/LoadingPulse.svelte"
+  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte"
+  import MapDataCharts from "$components/MapDataCharts.svelte"
+  import PageTitle from "$components/PageTitle.svelte"
+  import StatusPieChart from "$components/StatusPieChart.svelte"
+  import Streamfield from "$components/Streamfield.svelte"
+  import ArticleList from "$components/Wagtail/ArticleList.svelte"
+  import Twitter from "$components/Wagtail/Twitter.svelte"
+
+  export let page: ObservatoryPage
+
+  let readMore = false
+  let totalSize = ""
+  let totalCount = ""
+  let chartDatSize
+  let chartDatCount
+  let filteredCountryProfiles
+  let filteredNewsPubs
+
+  if (!page) throw error(500, "for some reason `page` is not set.")
+  $: regionID = page.region?.id
+  $: countryID = page.country?.id
 
   async function getAggregations() {
-    let filters = new FilterValues().default();
-    filters.negotiation_status = [];
-    filters.region_id = regionID;
-    filters.country_id = countryID;
+    let filters = new FilterValues().default()
+    filters.negotiation_status = []
+    filters.region_id = regionID
+    filters.country_id = countryID
 
     const { data } = await $storePage.data.urqlClient
       .query(
@@ -57,95 +60,95 @@
           fields: ["current_negotiation_status"],
           filters: filters.toGQLFilterArray(),
           subset: "PUBLIC",
-        }
+        },
       )
-      .toPromise();
-    const curNegStat = data.deal_aggregations.current_negotiation_status;
+      .toPromise()
+    const curNegStat = data.deal_aggregations.current_negotiation_status
     // const curNegStat = page.current_negotiation_status_metrics
     totalCount = curNegStat
-      .map((ns) => ns.count)
+      .map(ns => ns.count)
       .reduce((a, b) => +a + +b, 0)
-      .toLocaleString("fr");
+      .toLocaleString("fr")
 
     totalSize = curNegStat
-      .map((ns) => ns.size)
+      .map(ns => ns.size)
       .reduce((a, b) => +a + +b, 0)
-      .toLocaleString("fr");
+      .toLocaleString("fr")
 
     let negStatBuckets = [
       { color: "rgba(252,148,31,0.4)", label: $_("Intended"), count: 0, size: 0 },
       { color: "rgba(252,148,31,1)", label: $_("Concluded"), count: 0, size: 0 },
       { color: "rgba(125,74,15,1)", label: $_("Failed"), count: 0, size: 0 },
       { color: "rgb(44,28,5)", label: $_("Contract expired"), count: 0, size: 0 },
-    ];
+    ]
 
     for (let agg of curNegStat) {
       switch (agg.value) {
         case NegotiationStatus.EXPRESSION_OF_INTEREST:
         case NegotiationStatus.UNDER_NEGOTIATION:
         case NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING:
-          negStatBuckets[0].count += agg.count;
-          negStatBuckets[0].size += +agg.size;
-          break;
+          negStatBuckets[0].count += agg.count
+          negStatBuckets[0].size += +agg.size
+          break
         case NegotiationStatus.ORAL_AGREEMENT:
         case NegotiationStatus.CONTRACT_SIGNED:
         case NegotiationStatus.CHANGE_OF_OWNERSHIP:
-          negStatBuckets[1].count += agg.count;
-          negStatBuckets[1].size += +agg.size;
-          break;
+          negStatBuckets[1].count += agg.count
+          negStatBuckets[1].size += +agg.size
+          break
         case NegotiationStatus.NEGOTIATIONS_FAILED:
         case NegotiationStatus.CONTRACT_CANCELED:
-          negStatBuckets[2].count += agg.count;
-          negStatBuckets[2].size += +agg.size;
-          break;
+          negStatBuckets[2].count += agg.count
+          negStatBuckets[2].size += +agg.size
+          break
         case NegotiationStatus.CONTRACT_EXPIRED:
-          negStatBuckets[3].count += agg.count;
-          negStatBuckets[3].size += +agg.size;
-          break;
+          negStatBuckets[3].count += agg.count
+          negStatBuckets[3].size += +agg.size
+          break
         default:
-          console.warn({ agg });
+          console.warn({ agg })
       }
     }
     chartDatSize = {
-      labels: negStatBuckets.map((n) => n.label),
+      labels: negStatBuckets.map(n => n.label),
       datasets: [
         {
-          data: negStatBuckets.map((n) => n["size"]),
-          backgroundColor: negStatBuckets.map((n) => n.color),
+          data: negStatBuckets.map(n => n["size"]),
+          backgroundColor: negStatBuckets.map(n => n.color),
         },
       ],
-    };
+    }
     chartDatCount = {
-      labels: negStatBuckets.map((n) => n.label),
+      labels: negStatBuckets.map(n => n.label),
       datasets: [
         {
-          data: negStatBuckets.map((n) => n["count"]),
-          backgroundColor: negStatBuckets.map((n) => n.color),
+          data: negStatBuckets.map(n => n["count"]),
+          backgroundColor: negStatBuckets.map(n => n.color),
         },
       ],
-    };
+    }
   }
 
   afterNavigate(() => {
-    readMore = false;
-    getAggregations();
-  });
-  $: filteredCountryProfiles = page.related_blogpages.filter((p) =>
-    p.categories.find((c) => c.slug && c.slug === "country-profile")
-  );
-  $: filteredNewsPubs = page.related_blogpages.filter((p) =>
-    p.categories.find((c) => c.slug && (c.slug === "news" || c.slug === "publications"))
-  );
+    readMore = false
+    getAggregations()
+  })
+  $: filteredCountryProfiles = page.related_blogpages.filter(p =>
+    p.categories.find(c => c.slug && c.slug === "country-profile"),
+  )
+  $: filteredNewsPubs = page.related_blogpages.filter(p =>
+    p.categories.find(c => c.slug && (c.slug === "news" || c.slug === "publications")),
+  )
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
-      $filters.region_id = regionID;
-      $filters.country_id = undefined;
+      $filters.region_id = regionID
+      $filters.country_id = undefined
     } else if (page.country) {
-      $filters.region_id = undefined;
-      $filters.country_id = countryID;
+      $filters.region_id = undefined
+      $filters.country_id = countryID
     }
-  };
+  }
 </script>
 
 <PageTitle>{$_(page.title)}</PageTitle>
@@ -208,12 +211,12 @@
   <div>
     <p>
       {$_(
-        "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+        "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are.",
       )}
     </p>
     <p>
       {$_(
-        "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
+        "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved",
       )}
       <a href="/contribute">{$_("here")}</a>
       .

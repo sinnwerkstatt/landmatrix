@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { Deal, Location } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let deal: Deal;
-  export let location: Location;
+  import type { Deal, Location } from "$lib/types/deal"
+
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+
+  export let deal: Deal
+  export let location: Location
 </script>
 
 <h3>{$_("Deal")} #{deal.id}</h3>

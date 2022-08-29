@@ -1,49 +1,48 @@
 <script lang="ts">
-  import Cookies from "js-cookie";
-  import { _, locale } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import {
-    aboutPages,
-    blogCategories,
-    fetchBasis,
-    observatoryPages,
-  } from "$lib/stores";
-  import { UserLevel } from "$lib/types/user";
-  import type { ObservatoryPage } from "$lib/types/wagtail";
-  import { dispatchLogout } from "$lib/user";
-  import TranslateIcon from "$components/icons/TranslateIcon.svelte";
-  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
-  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
-  import UserRegular from "$components/icons/UserRegular.svelte";
-  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
-  import NavDropDown from "./LowLevel/NavDropDown.svelte";
-  import NavbarSearch from "./NavbarSearch.svelte";
+  import Cookies from "js-cookie"
+  import { _, locale } from "svelte-i18n"
 
-  const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
+  import { page } from "$app/stores"
+
+  import { aboutPages, blogCategories, fetchBasis, observatoryPages } from "$lib/stores"
+  import { UserLevel } from "$lib/types/user"
+  import type { ObservatoryPage } from "$lib/types/wagtail"
+  import { dispatchLogout } from "$lib/user"
+
+  import TranslateIcon from "$components/icons/TranslateIcon.svelte"
+  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte"
+  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte"
+  import UserRegular from "$components/icons/UserRegular.svelte"
+  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte"
+
+  import NavDropDown from "./LowLevel/NavDropDown.svelte"
+  import NavbarSearch from "./NavbarSearch.svelte"
+
+  const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" }
   const dataLinks = [
     { name: "Map", href: "/map" },
     { name: "Deals", href: "/list/deals" },
     { name: "Investors", href: "/list/investors" },
     { name: "Charts", href: "/charts" },
-  ];
+  ]
 
-  let observatoriesGroups = { global: [], regions: [], countries: [] };
+  let observatoriesGroups = { global: [], regions: [], countries: [] }
   $observatoryPages.forEach((op: ObservatoryPage) => {
-    if (op.country) observatoriesGroups.countries.push(op);
-    else if (op.region) observatoriesGroups.regions.push(op);
-    else observatoriesGroups.global.push(op);
-  });
+    if (op.country) observatoriesGroups.countries.push(op)
+    else if (op.region) observatoriesGroups.regions.push(op)
+    else observatoriesGroups.global.push(op)
+  })
 
   async function switchLanguage(lang: string) {
-    Cookies.set("django_language", lang);
-    await locale.set(lang);
-    await fetchBasis(lang, fetch, $page.data.urqlClient);
+    Cookies.set("django_language", lang)
+    await locale.set(lang)
+    await fetchBasis(lang, fetch, $page.data.urqlClient)
   }
 
-  $: user = $page.data.user;
+  $: user = $page.data.user
 
   async function logout() {
-    if (await dispatchLogout($page.data.urqlClient)) location.reload();
+    if (await dispatchLogout($page.data.urqlClient)) location.reload()
   }
 </script>
 

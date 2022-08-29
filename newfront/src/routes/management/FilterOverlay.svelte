@@ -1,29 +1,33 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import type { Writable } from "svelte/store";
-  import { page } from "$app/stores";
-  import { countries, getUsers } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import type { User } from "$lib/types/user";
-  import Overlay from "$components/Overlay.svelte";
-  import { managementFilters } from "./state";
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
+  import type { Writable } from "svelte/store"
 
-  export let visible;
-  export let objects: Array<Deal | Investor> = [];
-  export let model: "deal" | "investor" = "deal";
+  import { page } from "$app/stores"
 
-  let users: Writable<User[]>;
+  import { countries, getUsers } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import type { User } from "$lib/types/user"
 
-  $: objectsCountryIDs = objects?.map((d) => d.country?.id);
-  $: relCountries = $countries.filter((c) => objectsCountryIDs.includes(c.id));
+  import Overlay from "$components/Overlay.svelte"
+
+  import { managementFilters } from "./state"
+
+  export let visible
+  export let objects: Array<Deal | Investor> = []
+  export let model: "deal" | "investor" = "deal"
+
+  let users: Writable<User[]>
+
+  $: objectsCountryIDs = objects?.map(d => d.country?.id)
+  $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
 
   onMount(async () => {
-    users = await getUsers($page.data.urqlClient);
-  });
+    users = await getUsers($page.data.urqlClient)
+  })
 </script>
 
 <Overlay bind:visible closeButtonText={$_("Close")} title={$_("Filters")}>
@@ -34,8 +38,8 @@
         <Select
           {VirtualList}
           bind:value={$managementFilters.country}
-          getOptionLabel={(o) => `${o.name} (#${o.id})`}
-          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          getOptionLabel={o => `${o.name} (#${o.id})`}
+          getSelectionLabel={o => `${o.name} (#${o.id})`}
           items={relCountries}
           labelIdentifier="name"
           optionIdentifier="id"
@@ -85,8 +89,8 @@
           <Select
             {VirtualList}
             bind:value={$managementFilters.createdBy}
-            getOptionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
-            getSelectionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
+            getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
+            getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
             items={$users}
             optionIdentifier="id"
             placeholder={$_("User")}
@@ -119,8 +123,8 @@
         <Select
           {VirtualList}
           bind:value={$managementFilters.modifiedBy}
-          getOptionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
-          getSelectionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
+          getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
+          getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           items={$users}
           optionIdentifier="id"
           placeholder={$_("User")}

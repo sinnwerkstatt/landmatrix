@@ -1,4 +1,4 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
+const defaultTheme = require("tailwindcss/defaultTheme")
 
 const config = {
   content: ["./src/**/*.{html,js,svelte,ts}"],
@@ -50,22 +50,22 @@ const config = {
     function ({ addBase, theme }) {
       function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
-          const value = colorObj[colorKey];
+          const value = colorObj[colorKey]
 
           const newVars =
             typeof value === "string"
               ? { [`--color${colorGroup}-${colorKey}`]: value }
-              : extractColorVars(value, `-${colorKey}`);
+              : extractColorVars(value, `-${colorKey}`)
 
-          return { ...vars, ...newVars };
-        }, {});
+          return { ...vars, ...newVars }
+        }, {})
       }
 
       addBase({
         ":root": extractColorVars(theme("colors")),
-      });
+      })
     },
   ],
-};
+}
 
-module.exports = config;
+module.exports = config

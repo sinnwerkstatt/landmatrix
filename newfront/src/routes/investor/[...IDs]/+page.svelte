@@ -1,47 +1,50 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { investor_gql_query } from "$lib/investor_queries";
-  import { loading } from "$lib/stores";
-  import { Role } from "$lib/types/investor";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
-  import InvestorHistory from "$components/Investor/InvestorHistory.svelte";
-  import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte";
+  import type { Client } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { investor_gql_query } from "$lib/investor_queries"
+  import { loading } from "$lib/stores"
+  import { Role } from "$lib/types/investor"
+  import type { Investor } from "$lib/types/investor"
+  import { UserLevel } from "$lib/types/user"
+
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
+  import InvestorHistory from "$components/Investor/InvestorHistory.svelte"
+  import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte"
 
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;
   export let data: {
-    investor: Investor;
-    investorID: number;
-    investorVersion: number | undefined;
-  };
+    investor: Investor
+    investorID: number
+    investorVersion: number | undefined
+  }
 
-  let investor: Investor = data.investor;
-  $: investor = data.investor;
+  let investor: Investor = data.investor
+  $: investor = data.investor
 
   $: simple_involvements = [
-    ...investor.investors.map((i) => ({
+    ...investor.investors.map(i => ({
       ...i,
       role:
         i.role === Role.PARENT ? $_("Parent company") : $_("Tertiary investor/lender"),
     })),
-    ...investor.ventures.map((i) => ({
+    ...investor.ventures.map(i => ({
       ...i,
       investor: i.venture,
       role:
         i.role === Role.PARENT ? $_("Subsidiary company") : $_("Beneficiary company"),
     })),
-  ];
+  ]
 
-  $: activeTab = $page.url.hash || "#general";
+  $: activeTab = $page.url.hash || "#general"
 
   $: tabs = [
     { target: "#general", name: $_("General info") },
@@ -49,11 +52,11 @@
     { target: "#network_graph", name: $_("Network graph") },
     { target: "#data_sources", name: $_("Data sources") },
     { target: "#history", name: $_("Version history") },
-  ];
+  ]
 
   async function reloadInvestor() {
-    console.log("Investor detail: reload");
-    loading.set(true);
+    console.log("Investor detail: reload")
+    loading.set(true)
     const ret = (
       await ($page.data.urqlClient as Client)
         .query<{ investor: Investor }>(
@@ -64,20 +67,16 @@
             includeDeals: true,
             depth: 5, // max depth
           },
-          { requestPolicy: "network-only" }
+          { requestPolicy: "network-only" },
         )
         .toPromise()
-    ).data;
-    investor = ret.investor;
-    loading.set(false);
+    ).data
+    investor = ret.investor
+    loading.set(false)
   }
 
-  const download_link = function (format: string): string {
-    return `/api/legacy_export/?investor_id=${data.investorID}&subset=UNFILTERED&format=${format}`;
-  };
-
-  onMount(reloadInvestor);
-  $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`;
+  onMount(reloadInvestor)
+  $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
 </script>
 
 <svelte:head>
@@ -93,14 +92,19 @@
     />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
-      <h1>{investor.name} <small>#{investor.id}</small></h1>
+      <h1>
+        {investor.name}
+        <small>#{investor.id}</small>
+      </h1>
       <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-          {$_("Created")}<br />
+          {$_("Created")}
+          <br />
           <DateTimeField value={investor.created_at} />
         </div>
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-          {$_("Last update")}<br />
+          {$_("Last update")}
+          <br />
           <DateTimeField value={investor.modified_at} />
         </div>
       </div>
@@ -255,7 +259,7 @@
           <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
             {@html $_(
               "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",
-              { values: { liveLink } }
+              { values: { liveLink } },
             )}
           </div>
         {/if}

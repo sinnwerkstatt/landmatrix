@@ -1,5 +1,5 @@
-import { User } from "$lib/types/user";
-import { Country } from "$lib/types/wagtail";
+import { User } from "$lib/types/user"
+import { Country } from "$lib/types/wagtail"
 
 export enum Transition {
   TO_REVIEW,
@@ -9,36 +9,36 @@ export enum Transition {
 }
 
 interface Obj {
-  id: number;
-  status: number;
-  draft_status: number | null;
-  versions: ObjVersion[];
-  workflowinfos?: WorkflowInfo[];
-  created_at?: Date;
-  created_by?: User;
-  modified_at?: Date;
-  modified_by?: User;
-  country?: Country;
-  country_id?: number;
+  id: number
+  status: number
+  draft_status: number | null
+  versions: ObjVersion[]
+  workflowinfos?: WorkflowInfo[]
+  created_at?: Date
+  created_by?: User
+  modified_at?: Date
+  modified_by?: User
+  country?: Country
+  country_id?: number
 }
 
 interface ObjVersion {
-  id: number;
-  created_at: Date;
-  created_by: User;
-  modified_at: Date;
-  modified_by: User;
-  object_id: Int;
+  id: number
+  created_at: Date
+  created_by: User
+  modified_at: Date
+  modified_by: User
+  object_id: Int
 }
 
 interface WorkflowInfo {
-  id: number;
-  from_user: User;
-  to_user?: User;
-  draft_status_before: number;
-  draft_status_after: number;
-  timestamp: string;
-  comment: string;
-  processed_by_receiver: boolean;
-  __typename?: string;
+  id: number
+  from_user: User
+  to_user?: User
+  draft_status_before: number
+  draft_status_after: number
+  timestamp: string
+  comment: string
+  processed_by_receiver: boolean
+  __typename?: string
 }

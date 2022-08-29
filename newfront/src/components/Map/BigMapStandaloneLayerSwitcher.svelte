@@ -1,9 +1,9 @@
 <script>
-  import LayerGroup from "$components/icons/LayerGroup.svelte";
-  import { _ } from "svelte-i18n";
-  import { visibleLayer, getBaseLayers } from "./layers";
+  import LayerGroup from "$components/icons/LayerGroup.svelte"
+  import { _ } from "svelte-i18n"
+  import { visibleLayer, getBaseLayers } from "./layers"
 
-  let shown;
+  let shown
 </script>
 
 <div

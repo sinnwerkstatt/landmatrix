@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  export let value: string;
-  export let accept: string;
+  import { page } from "$app/stores"
+
+  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
+
+  export let value: string
+  export let accept: string
   // "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint," +
   // " text/plain, application/pdf, image/*";
 
   function removeFile() {
-    if (confirm($_("Do you really want to remove this file?")) === true) value = "";
+    if (confirm($_("Do you really want to remove this file?")) === true) value = ""
   }
 
   function uploadFile({ target: { files = [] } }) {
-    if (!files.length) return;
-    let fr = new FileReader();
+    if (!files.length) return
+    let fr = new FileReader()
     fr.onload = async () => {
       const { data } = await $page.data.urqlClient
         .mutation<{ upload_datasource_file: string }>(
@@ -24,12 +26,12 @@
               upload_datasource_file(filename: $filename, payload: $payload)
             }
           `,
-          { filename: files[0].name, payload: fr.result }
+          { filename: files[0].name, payload: fr.result },
         )
-        .toPromise();
-      value = data.upload_datasource_file;
-    };
-    fr.readAsDataURL(files[0]);
+        .toPromise()
+      value = data.upload_datasource_file
+    }
+    fr.readAsDataURL(files[0])
   }
 </script>
 

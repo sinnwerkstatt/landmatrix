@@ -1,42 +1,44 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
-  import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import type { FormField } from "../fields";
-  import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
-  import TypedChoicesField from "./TypedChoicesField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField"
+  import MinusIcon from "$components/icons/MinusIcon.svelte"
+  import PlusIcon from "$components/icons/PlusIcon.svelte"
+
+  import type { FormField } from "../fields"
+  import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
+  import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
+  import TypedChoicesField from "./TypedChoicesField.svelte"
 
   interface JSONExportsField {
-    date?: string;
-    area?: number;
-    choices?: string;
-    yield?: number;
-    export?: number;
-    current?: boolean;
+    date?: string
+    area?: number
+    choices?: string
+    yield?: number
+    export?: number
+    current?: boolean
   }
 
-  export let formfield: FormField;
-  export let value: Array<JSONExportsField> | null;
+  export let formfield: FormField
+  export let value: Array<JSONExportsField> | null
 
-  let valueCopy = createValueCopy(value);
+  let valueCopy = createValueCopy(value)
   $: value = syncValue(
-    (val) => !!(val.date || val.area || val.choices || val.yield || val.export),
-    valueCopy
-  );
+    val => !!(val.date || val.area || val.choices || val.yield || val.export),
+    valueCopy,
+  )
 
   function addEntry() {
-    valueCopy = [...valueCopy, {}];
+    valueCopy = [...valueCopy, {}]
   }
 
   function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i !== index);
+    valueCopy = valueCopy.filter((val, i) => i !== index)
   }
 
-  const anySelectedAsCurrent = (values) => values.some((val) => val.current);
+  const anySelectedAsCurrent = values => values.some(val => val.current)
   const isCurrentRequired = (values): boolean =>
-    values.length > 0 && !anySelectedAsCurrent(values);
+    values.length > 0 && !anySelectedAsCurrent(values)
 </script>
 
 <div class="json_date_area_field whitespace-nowrap">

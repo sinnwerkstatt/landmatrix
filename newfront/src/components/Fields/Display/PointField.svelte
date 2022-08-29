@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let value: { lat: number; lng: number };
+  export let value: { lat: number; lng: number }
 </script>
 
 <div class="point_field">

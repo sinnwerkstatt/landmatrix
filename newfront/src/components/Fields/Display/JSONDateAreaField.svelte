@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
+  import { _ } from "svelte-i18n"
+
+  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
 
   type JSONDateAreaFieldType = {
-    area: string;
-    date: string;
-    current?: boolean;
-  };
+    area: string
+    date: string
+    current?: boolean
+  }
 
-  export let value: JSONDateAreaFieldType[] = [];
+  export let value: JSONDateAreaFieldType[] = []
 </script>
 
 <div class="jsondatearea_field whitespace-nowrap">

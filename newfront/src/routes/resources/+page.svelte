@@ -1,35 +1,37 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { blogCategories } from "$lib/stores";
-  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail";
-  import TagIcon from "$components/icons/TagIcon.svelte";
-  import PageTitle from "$components/PageTitle.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { blogCategories } from "$lib/stores"
+  import type { BlogCategory, BlogPage, WagtailPage } from "$lib/types/wagtail"
+
+  import TagIcon from "$components/icons/TagIcon.svelte"
+  import PageTitle from "$components/PageTitle.svelte"
 
   // import { PageData } from "./$types";
   //
   // export let data: PageData;
 
   export let data: {
-    page: WagtailPage;
-    blogpages: BlogPage[];
-    category: string | null;
-    tag: string | null;
-  };
+    page: WagtailPage
+    blogpages: BlogPage[]
+    category: string | null
+    tag: string | null
+  }
 
-  let filteredBlogpages: BlogPage[];
+  let filteredBlogpages: BlogPage[]
   $: filteredBlogpages = data.category
-    ? data.blogpages.filter((bp) =>
-        bp.categories.map((c) => c.slug).includes(data.category)
+    ? data.blogpages.filter(bp =>
+        bp.categories.map(c => c.slug).includes(data.category),
       )
     : data.tag
-    ? data.blogpages.filter((bp) => bp.tags.map((t) => t.slug).includes(data.tag))
-    : data.blogpages;
+    ? data.blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
+    : data.blogpages
 
-  let blogCategoriesWithAll: BlogCategory[];
+  let blogCategoriesWithAll: BlogCategory[]
   $: blogCategoriesWithAll = [
     { id: -1, slug: null, name: "All categories" },
     ...$blogCategories,
-  ];
+  ]
 </script>
 
 <div>

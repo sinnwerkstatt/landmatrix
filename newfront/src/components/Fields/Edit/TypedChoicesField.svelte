@@ -1,19 +1,20 @@
 <script lang="ts">
-  import Select from "svelte-select";
-  import type { FormField } from "../fields";
+  import Select from "svelte-select"
 
-  export let formfield: FormField;
-  export let value: string;
-  export let required: boolean;
+  import type { FormField } from "../fields"
 
-  let valueCopy = JSON.parse(JSON.stringify(value ?? []));
+  export let formfield: FormField
+  export let value: string
+  export let required: boolean
 
-  $: value = formatValue(valueCopy);
+  let valueCopy = JSON.parse(JSON.stringify(value ?? []))
 
-  const formatValue = (valueCopy) => {
-    const mapped = (valueCopy ?? []).map((item) => item.value);
-    return mapped.length > 0 ? mapped : null;
-  };
+  $: value = formatValue(valueCopy)
+
+  const formatValue = valueCopy => {
+    const mapped = (valueCopy ?? []).map(item => item.value)
+    return mapped.length > 0 ? mapped : null
+  }
 </script>
 
 <div class="typed_choices_field">

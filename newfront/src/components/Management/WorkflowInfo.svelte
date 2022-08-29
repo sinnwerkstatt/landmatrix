@@ -1,10 +1,12 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import type { WorkflowInfo as WFInfo } from "$lib/types/generics";
+  import dayjs from "dayjs"
+  import { _ } from "svelte-i18n"
 
-  export let info: WFInfo;
+  import { page } from "$app/stores"
+
+  import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
+
+  export let info: WFInfo
   const status_map = {
     1: "Draft",
     2: "Active", //"Live",
@@ -12,28 +14,28 @@
     4: "Deleted",
     5: "Rejected", // legacy
     6: "To Delete", // legacy
-  };
+  }
   const draft_status_map = {
     1: "Draft",
     2: "Review",
     3: "Activation",
     4: "Rejected", // legacy
     5: "Deleted",
-  };
+  }
   $: confidential_status_change = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "set_confidential"
     : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
     ? "unset_confidential"
-    : false;
+    : false
 
   $: comment_wo_head = info.comment
     ?.replace("[SET_CONFIDENTIAL]", "")
-    .replace("[UNSET_CONFIDENTIAL] ", "");
+    .replace("[UNSET_CONFIDENTIAL] ", "")
 
   $: unread =
     info.to_user?.username === $page.data.user.username &&
     !info.processed_by_receiver &&
-    comment_wo_head.length > 0;
+    comment_wo_head.length > 0
 
   async function processInfo() {
     // let res = await this.$apollo.mutate({
@@ -52,13 +54,14 @@
 
 <div class="mx-1 mb-2 bg-neutral-200 text-sm shadow-md p-1{unread ? '!font-bold' : ''}">
   <div class="meta">
-    <span class="font-semibold">{dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}</span
-    >
+    <span class="font-semibold">
+      {dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}
+    </span>
     <span class="from-to">
       {$_("From")}
       {info.from_user.username}
       {#if info.to_user}
-        <span> {$_("to")} {info.to_user.username} </span>
+        <span>{$_("to")} {info.to_user.username}</span>
       {/if}
     </span>
   </div>

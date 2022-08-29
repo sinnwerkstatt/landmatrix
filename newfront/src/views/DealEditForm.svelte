@@ -1,32 +1,30 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit";
-  import { Client, gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { getDealSections } from "$lib/sections";
-  import type {
-    Contract,
-    DataSource,
-    Deal,
-    Location as LamaLoc,
-  } from "$lib/types/deal";
-  import { removeEmptyEntries } from "$lib/utils/data_processing";
-  import DealEditSection from "$components/Deal/DealEditSection.svelte";
-  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
-  import LoadingSpinner from "$components/icons/LoadingSpinner.svelte";
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte";
+  import { error } from "@sveltejs/kit"
+  import { Client, gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  export let deal: Deal;
-  export let dealID: number;
-  export let dealVersion: number;
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  let originalDeal = JSON.stringify(deal);
-  let savingInProgress = false;
-  let showReallyQuitOverlay = false;
-  $: activeTab = $page.url.hash || "#locations";
-  $: formChanged = JSON.stringify(deal) !== originalDeal;
+  import { getDealSections } from "$lib/sections"
+  import type { Contract, DataSource, Deal, Location as LamaLoc } from "$lib/types/deal"
+  import { removeEmptyEntries } from "$lib/utils/data_processing"
+
+  import DealEditSection from "$components/Deal/DealEditSection.svelte"
+  import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte"
+  import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+  import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte"
+
+  export let deal: Deal
+  export let dealID: number
+  export let dealVersion: number
+
+  let originalDeal = JSON.stringify(deal)
+  let savingInProgress = false
+  let showReallyQuitOverlay = false
+  $: activeTab = $page.url.hash || "#locations"
+  $: formChanged = JSON.stringify(deal) !== originalDeal
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
     { target: "#general", name: $_("General info") },
@@ -43,21 +41,21 @@
     { target: "#water", name: $_("Water") },
     { target: "#gender_related_info", name: $_("Gender-related info") },
     { target: "#overall_comment", name: $_("Overall comment") },
-  ];
+  ]
 
   async function saveDeal(hash: string) {
     const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>(activeTab);
-    if (!currentForm) throw error(500, "can not grab the form");
+      document.querySelector<HTMLFormElement>(activeTab)
+    if (!currentForm) throw error(500, "can not grab the form")
 
     if (!currentForm.checkValidity()) {
-      currentForm.reportValidity();
-      return;
+      currentForm.reportValidity()
+      return
     }
-    savingInProgress = true;
-    deal.locations = removeEmptyEntries<LamaLoc>(deal.locations);
-    deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
-    deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
+    savingInProgress = true
+    deal.locations = removeEmptyEntries<LamaLoc>(deal.locations)
+    deal.contracts = removeEmptyEntries<Contract>(deal.contracts)
+    deal.datasources = removeEmptyEntries<DataSource>(deal.datasources)
 
     const ret = await ($page.data.urqlClient as Client)
       .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
@@ -73,28 +71,26 @@
           id: dealID ? +dealID : -1,
           version: dealVersion ? +dealVersion : null,
           payload: { ...deal, versions: null, comments: null, workflowinfos: null },
-        }
+        },
       )
-      .toPromise();
-    const deal_edit = ret.data?.deal_edit;
-    if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`);
+      .toPromise()
+    const deal_edit = ret.data?.deal_edit
+    if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`)
 
-    originalDeal = JSON.stringify(deal);
-    savingInProgress = false;
+    originalDeal = JSON.stringify(deal)
+    savingInProgress = false
 
     if (location.hash !== hash || +dealVersion !== +deal_edit.dealVersion) {
-      await goto(
-        `/deal/edit/${deal_edit.dealId}/${deal_edit.dealVersion}${hash ?? ""}`
-      );
+      await goto(`/deal/edit/${deal_edit.dealId}/${deal_edit.dealVersion}${hash ?? ""}`)
     }
   }
 
   const onClickClose = async (force: boolean) => {
-    if (formChanged && !force) showReallyQuitOverlay = true;
-    else if (!dealID) await goto("/");
-    else await goto(`/deal/${dealID}/${dealVersion ?? ""}`);
-  };
-  $: dealSections = getDealSections($_);
+    if (formChanged && !force) showReallyQuitOverlay = true
+    else if (!dealID) await goto("/")
+    else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+  }
+  $: dealSections = getDealSections($_)
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">

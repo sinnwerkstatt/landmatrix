@@ -1,34 +1,34 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { fade, slide } from "svelte/transition";
-  import { browser } from "$app/environment";
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
+  import { fade, slide } from "svelte/transition"
+  import { browser } from "$app/environment"
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
-  export let visible = false;
-  export let hideable = true;
-  export let title = null;
+  export let visible = false
+  export let hideable = true
+  export let title = null
 
-  export let showSubmit = false;
-  export let submitDisabled = false;
+  export let showSubmit = false
+  export let submitDisabled = false
 
-  export let closeButtonText = $_("Cancel");
+  export let closeButtonText = $_("Cancel")
 
   function close() {
     if (hideable) {
-      dispatch("close");
-      visible = false;
+      dispatch("close")
+      visible = false
     }
   }
 
   function escape_key(e) {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") close()
   }
 
   $: if (browser) {
-    if (visible) document.addEventListener("keydown", escape_key);
-    else document.removeEventListener("keydown", escape_key);
+    if (visible) document.addEventListener("keydown", escape_key)
+    else document.removeEventListener("keydown", escape_key)
   }
 </script>
 

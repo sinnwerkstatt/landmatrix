@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import PageTitle from "$components/PageTitle.svelte";
+  import { Client, gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  let ret = undefined;
+  import { page } from "$app/stores"
+
+  import PageTitle from "$components/PageTitle.svelte"
+
+  let ret = undefined
   async function register_confirm() {
     ret = await ($page.data.urqlClient as Client)
       .mutation<{ register_confirm: { ok: boolean; code: string } }>(
@@ -17,14 +19,14 @@
             }
           }
         `,
-        { activation_key: $page.params.activation_key }
+        { activation_key: $page.params.activation_key },
       )
-      .toPromise();
+      .toPromise()
   }
 
   onMount(() => {
-    register_confirm();
-  });
+    register_confirm()
+  })
 </script>
 
 {#if ret}

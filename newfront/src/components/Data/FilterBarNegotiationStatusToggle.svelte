@@ -1,26 +1,28 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { filters } from "$lib/filters";
-  import { NegotiationStatus } from "$lib/types/deal";
-  import FilterCollapse from "./FilterCollapse.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { filters } from "$lib/filters"
+  import { NegotiationStatus } from "$lib/types/deal"
+
+  import FilterCollapse from "./FilterCollapse.svelte"
 
   interface Choice {
-    value?: NegotiationStatus;
-    name?: string;
+    value?: NegotiationStatus
+    name?: string
   }
   interface GroupChoice extends Choice {
-    group: string;
-    state: boolean;
-    options: { value: NegotiationStatus; name: string }[];
+    group: string
+    state: boolean
+    options: { value: NegotiationStatus; name: string }[]
   }
 
   function isSuperset(set: Set<string>, subset: Set<string>): boolean {
-    for (let elem of subset) if (!set.has(elem)) return false;
-    return true;
+    for (let elem of subset) if (!set.has(elem)) return false
+    return true
   }
   function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
-    for (let elem of setB) if (setA.has(elem)) return true;
-    return false;
+    for (let elem of setB) if (setA.has(elem)) return true
+    return false
   }
 
   // const choices: Array<Choice | GroupChoice> = [
@@ -64,7 +66,7 @@
       ],
     },
     { value: NegotiationStatus.CONTRACT_EXPIRED, name: $_("Contract expired") },
-  ];
+  ]
 
   //   watch: {
   //     "$store.state.signalNegstat"() {
@@ -85,31 +87,31 @@
     // const fieldmap: { [key: string]: string[] } = {
     //   Concluded: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
     // };
-    const fields = choice.options.map((o) => o.value);
+    const fields = choice.options.map(o => o.value)
 
     if (choice.state) {
-      $filters.negotiation_status = [...$filters.negotiation_status, ...fields];
+      $filters.negotiation_status = [...$filters.negotiation_status, ...fields]
     } else {
       $filters.negotiation_status = $filters.negotiation_status.filter(
-        (s: NegotiationStatus) => !fields.includes(s)
-      );
+        (s: NegotiationStatus) => !fields.includes(s),
+      )
     }
   }
   async function toggleSingle(choice: GroupChoice) {
-    const cur_set: Set<string> = new Set($filters.negotiation_status);
-    const exp_set: Set<string> = new Set(choice.options.map((o) => o.value));
-    const checkbox = document.getElementById(choice.group) as HTMLInputElement;
+    const cur_set: Set<string> = new Set($filters.negotiation_status)
+    const exp_set: Set<string> = new Set(choice.options.map(o => o.value))
+    const checkbox = document.getElementById(choice.group) as HTMLInputElement
 
     if (isSuperset(cur_set, exp_set)) {
-      checkbox.indeterminate = false;
+      checkbox.indeterminate = false
       // choice.state = true;
-      checkbox.checked = true;
+      checkbox.checked = true
     } else if (hasIntersection(cur_set, exp_set)) {
-      checkbox.indeterminate = true;
+      checkbox.indeterminate = true
     } else {
-      checkbox.indeterminate = false;
+      checkbox.indeterminate = false
       // choice.state = false;
-      checkbox.checked = false;
+      checkbox.checked = false
     }
   }
 </script>

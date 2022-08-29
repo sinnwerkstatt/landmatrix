@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type { WorkflowInfo as WFInfo } from "$lib/types/generics";
-  import type { FormField } from "$components/Fields/fields";
-  import ManageHeaderLogbookList from "$components/Management/ManageHeaderLogbookList.svelte";
-  import WorkflowInfo from "$components/Management/WorkflowInfo.svelte";
+  import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
-  export let value: object;
-  export let formfield: FormField;
-  export let model: "deal" | "investor" = "deal";
+  import type { FormField } from "$components/Fields/fields"
+  import ManageHeaderLogbookList from "$components/Management/ManageHeaderLogbookList.svelte"
+  import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
-  let showMoreInfos = false;
-  let moreInfos: WFInfo[] = [];
+  export let value: object
+  export let formfield: FormField
+  export let model: "deal" | "investor" = "deal"
+
+  let showMoreInfos = false
+  let moreInfos: WFInfo[] = []
   // export default Vue.extend({
   //   props: {
   //     formfield: { type: Object, required: true },

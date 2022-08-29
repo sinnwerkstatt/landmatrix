@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { FormField } from "$components/Fields/fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: number;
+  import type { FormField } from "$components/Fields/fields"
+
+  export let formfield: FormField
+  export let value: number
 </script>
 
 <div

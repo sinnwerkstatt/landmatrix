@@ -1,24 +1,28 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { browser } from "$app/environment";
-  import { loading } from "$lib/stores";
-  import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
-  import FileImageIcon from "$components/icons/FileImageIcon.svelte";
-  import LoadingPulse from "$components/LoadingPulse.svelte";
-  import { chart_download, fileName } from "../utils";
+  import { createEventDispatcher } from "svelte"
 
-  export let title: string;
-  export let svgID: string;
+  import { browser } from "$app/environment"
 
-  const dispatch = createEventDispatcher();
-  $: isChrome = browser && /Google Inc/.test(navigator.vendor);
+  import { loading } from "$lib/stores"
+
+  import FileCodeIcon from "$components/icons/FileCodeIcon.svelte"
+  import FileImageIcon from "$components/icons/FileImageIcon.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
+
+  import { chart_download, fileName } from "../utils"
+
+  export let title: string
+  export let svgID: string
+
+  const dispatch = createEventDispatcher()
+  $: isChrome = browser && /Google Inc/.test(navigator.vendor)
 
   function downloadImage(filetype: string) {
     chart_download(
       document.getElementById(svgID),
       `image/${filetype}`,
-      fileName(title, `.${filetype}`)
-    );
+      fileName(title, `.${filetype}`),
+    )
   }
 </script>
 

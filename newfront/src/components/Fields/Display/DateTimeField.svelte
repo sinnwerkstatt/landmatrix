@@ -1,8 +1,8 @@
 <script lang="ts">
-  import dayjs from "dayjs";
+  import dayjs from "dayjs"
 
-  export let value: string;
-  export let format = "YYYY-MM-DD";
+  export let value: string
+  export let format = "YYYY-MM-DD"
 
   // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
   // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️

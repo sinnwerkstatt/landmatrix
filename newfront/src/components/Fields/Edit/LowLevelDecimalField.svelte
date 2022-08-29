@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
+  import { _ } from "svelte-i18n"
 
-  export let value: number;
-  export let name: string;
-  export let unit = "";
-  export let required = false;
-  export let max: number;
-  export let min = 0;
-  export let decimals = 2;
+  export let value: number
+  export let name: string
+  export let unit = ""
+  export let required = false
+  export let max: number
+  export let min = 0
+  export let decimals = 2
 
-  $: step = 1 / 10 ** decimals;
+  $: step = 1 / 10 ** decimals
 
   // Nice to have: on up/down-arrow: change the number where the cursor is on..
   // methods: {
@@ -23,7 +23,7 @@
   //   },
   // },
 
-  $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "" : "123.45";
+  $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "" : "123.45"
 
   // },
   // watch: {

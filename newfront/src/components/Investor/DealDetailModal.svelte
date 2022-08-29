@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { afterUpdate, beforeUpdate } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { Deal } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import Overlay from "../Overlay.svelte";
+  import { afterUpdate, beforeUpdate } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  export let visible: boolean;
-  export let deal: Deal;
+  import type { Deal } from "$lib/types/deal"
+
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+
+  import Overlay from "../Overlay.svelte"
+
+  export let visible: boolean
+  export let deal: Deal
 
   const fields = [
     "country",
@@ -15,8 +18,8 @@
     "negotiation_status",
     "intended_size",
     "contract_size",
-  ];
-  const createTitle = (deal) => `${deal.name} (${deal.id})`;
+  ]
+  const createTitle = deal => `${deal.name} (${deal.id})`
 </script>
 
 <Overlay {visible} on:close title={createTitle(deal)}>

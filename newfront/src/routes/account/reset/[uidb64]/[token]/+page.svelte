@@ -1,16 +1,18 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte";
-  import { gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import PageTitle from "$components/PageTitle.svelte";
+  import type { Client } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  let new_password1 = "";
-  let new_password2 = "";
-  let form_submitted = false;
+  import { page } from "$app/stores"
+
+  import PageTitle from "$components/PageTitle.svelte"
+
+  let new_password1 = ""
+  let new_password2 = ""
+  let form_submitted = false
 
   function submit() {
-    ($page.data.urqlClient as Client)
+    ;($page.data.urqlClient as Client)
       .mutation<{ password_reset_confirm: boolean }>(
         gql`
           mutation ($uidb64: String!, $token: String!, $np1: String!, $np2: String!) {
@@ -27,12 +29,12 @@
           token: $page.params.token,
           np1: new_password1,
           np2: new_password2,
-        }
+        },
       )
       .toPromise()
       .then(({ data }) => {
-        if (data?.password_reset_confirm) form_submitted = true;
-      });
+        if (data?.password_reset_confirm) form_submitted = true
+      })
   }
 </script>
 

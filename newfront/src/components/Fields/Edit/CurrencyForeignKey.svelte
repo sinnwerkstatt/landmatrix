@@ -1,20 +1,22 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import { page } from "$app/stores";
-  import type { FormField } from "$components/Fields/fields";
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
 
-  export let value: number;
-  export let formfield: FormField;
+  import { page } from "$app/stores"
+
+  import type { FormField } from "$components/Fields/fields"
+
+  export let value: number
+  export let formfield: FormField
 
   type Currency = {
-    id: number;
-    code: string;
-    name: string;
-  };
+    id: number
+    code: string
+    name: string
+  }
 
-  let currencies: Currency[] = [];
+  let currencies: Currency[] = []
 
   async function getCurrencies() {
     const { data } = await $page.data.urqlClient
@@ -27,13 +29,13 @@
               name
             }
           }
-        `
+        `,
       )
-      .toPromise();
-    currencies = data.currencies;
+      .toPromise()
+    currencies = data.currencies
   }
 
-  getCurrencies();
+  getCurrencies()
 </script>
 
 <div class="currency_foreignkey_field">
@@ -45,8 +47,8 @@
       placeholder={$_("Currency")}
       optionIdentifier="id"
       labelIdentifier="name"
-      getOptionLabel={(o) => `${o.name} (${o.code})`}
-      getSelectionLabel={(o) => `${o.name} (${o.code})`}
+      getOptionLabel={o => `${o.name} (${o.code})`}
+      getSelectionLabel={o => `${o.name} (${o.code})`}
       showChevron
       inputAttributes={{ name: formfield.name }}
     />

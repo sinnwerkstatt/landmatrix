@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit";
-  import { Client, gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { filters, FilterValues } from "$lib/filters";
-  import { chartDescriptions, countries } from "$lib/stores";
+  import { error } from "@sveltejs/kit"
+  import { Client, gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  $: country =
-    $filters.country_id && $countries.find((c) => c.id === $filters.country_id);
+  import { page } from "$app/stores"
+
+  import { filters, FilterValues } from "$lib/filters"
+  import { chartDescriptions, countries } from "$lib/stores"
+
+  $: country = $filters.country_id && $countries.find(c => c.id === $filters.country_id)
 
   // let global_rankings;
   // let country_investments_and_rankings: {
@@ -18,25 +19,25 @@
   // };
 
   interface CountryStat {
-    country_id: number;
-    count: number;
-    size: string;
-    country_name?: string;
+    country_id: number
+    count: number
+    size: string
+    country_name?: string
   }
-  let investing_countries: CountryStat[] = [];
-  let invested_countries: CountryStat[] = [];
+  let investing_countries: CountryStat[] = []
+  let invested_countries: CountryStat[] = []
 
   async function _grabInvestmentsAndRankings(
     countryID: number | undefined,
-    fltrs: FilterValues
+    fltrs: FilterValues,
   ) {
-    if (!countryID) return;
+    if (!countryID) return
     const ret = await ($page.data.urqlClient as Client)
       .query<{
         country_investments_and_rankings: {
-          investing: CountryStat[];
-          invested: CountryStat[];
-        };
+          investing: CountryStat[]
+          invested: CountryStat[]
+        }
       }>(
         gql`
           query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
@@ -47,26 +48,26 @@
           id: countryID,
           filters: fltrs
             .toGQLFilterArray()
-            .filter((f) => f.field !== "country_id" && f.field !== "country.region_id"),
-        }
+            .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
+        },
       )
-      .toPromise();
+      .toPromise()
     if (!ret.data?.country_investments_and_rankings)
-      throw error(502, `problems fetching data: ${ret.error}`);
+      throw error(502, `problems fetching data: ${ret.error}`)
 
-    let countryInvestmentsAndRankings = ret.data.country_investments_and_rankings;
-    console.log(countryInvestmentsAndRankings);
-    investing_countries = countryInvestmentsAndRankings.investing.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id)?.name,
+    let countryInvestmentsAndRankings = ret.data.country_investments_and_rankings
+    console.log(countryInvestmentsAndRankings)
+    investing_countries = countryInvestmentsAndRankings.investing.map(x => ({
+      country_name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
-    }));
-    invested_countries = countryInvestmentsAndRankings.invested.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id)?.name,
+    }))
+    invested_countries = countryInvestmentsAndRankings.invested.map(x => ({
+      country_name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
-    }));
+    }))
   }
 
-  $: _grabInvestmentsAndRankings($filters.country_id, $filters);
+  $: _grabInvestmentsAndRankings($filters.country_id, $filters)
 
   //     apollo: {
   //     global_rankings: {
@@ -141,7 +142,8 @@
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
                   <td class="whitespace-nowrap text-right">
-                    {icountry.count} deals<br />
+                    {icountry.count} deals
+                    <br />
                     {icountry.size} ha
                   </td>
                 </tr>
@@ -163,7 +165,8 @@
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
                   <td class="whitespace-nowrap text-right">
-                    {icountry.count} deals<br />
+                    {icountry.count} deals
+                    <br />
                     {icountry.size} ha
                   </td>
                 </tr>

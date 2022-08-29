@@ -1,19 +1,22 @@
 <script lang="ts">
-  import { Client, gql, queryStore } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { data_deal_query_gql } from "$lib/deal_queries";
-  import { filters, FilterValues, publicOnly } from "$lib/filters";
-  import { formfields } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { GQLFilter } from "$lib/types/filters";
-  import type { Investor } from "$lib/types/investor";
-  import { showContextBar, showFilterBar } from "$components/Data";
-  import DataContainer from "$components/Data/DataContainer.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import Table from "$components/table/Table.svelte";
+  import { Client, gql, queryStore } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  showContextBar.set(false);
+  import { page } from "$app/stores"
+
+  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { filters, FilterValues, publicOnly } from "$lib/filters"
+  import { formfields } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import type { GQLFilter } from "$lib/types/filters"
+  import type { Investor } from "$lib/types/investor"
+
+  import { showContextBar, showFilterBar } from "$components/Data"
+  import DataContainer from "$components/Data/DataContainer.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import Table from "$components/table/Table.svelte"
+
+  showContextBar.set(false)
 
   const allColumnsWithSpan = {
     modified_at: 2,
@@ -22,11 +25,11 @@
     country: 3,
     classification: 4,
     deals: 1,
-  };
+  }
 
-  $: columns = Object.keys(allColumnsWithSpan);
-  $: labels = columns.map((col) => $formfields.investor[col].label);
-  $: spans = Object.entries(allColumnsWithSpan).map(([_, colSpan]) => colSpan);
+  $: columns = Object.keys(allColumnsWithSpan)
+  $: labels = columns.map(col => $formfields.investor[col].label)
+  $: spans = Object.entries(allColumnsWithSpan).map(([_, colSpan]) => colSpan)
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -35,24 +38,24 @@
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
-  });
+  })
 
-  let investors: Investor[] = [];
+  let investors: Investor[] = []
 
   async function getInvestors(s_deals: Deal[], s_filters: FilterValues) {
     if (!$deals) {
-      investors = [];
-      return;
+      investors = []
+      return
     }
-    const dealIDs = s_deals.map((d) => d.id);
-    const tooManyDealsHack = s_deals.length > 2500;
+    const dealIDs = s_deals.map(d => d.id)
+    const tooManyDealsHack = s_deals.length > 2500
     const filters: GQLFilter[] = tooManyDealsHack
       ? []
-      : [{ field: "child_deals.id", operation: "IN", value: dealIDs }];
-    if (s_filters.investor) filters.push({ field: "id", value: s_filters.investor.id });
+      : [{ field: "child_deals.id", operation: "IN", value: dealIDs }]
+    if (s_filters.investor) filters.push({ field: "id", value: s_filters.investor.id })
 
     if (s_filters.investor_country_id)
-      filters.push({ field: "country_id", value: s_filters.investor_country_id });
+      filters.push({ field: "country_id", value: s_filters.investor_country_id })
 
     const { data } = await ($page.data.urqlClient as Client)
       .query<{ investors: Investor[] }>(
@@ -80,26 +83,26 @@
             }
           }
         `,
-        { filters }
+        { filters },
       )
-      .toPromise();
+      .toPromise()
     if (!data?.investors) {
-      console.error("could not grab investors");
-      return;
+      console.error("could not grab investors")
+      return
     }
 
     investors = data.investors.filter((investor, index, self) => {
       // remove duplicates
-      if (self.indexOf(investor) !== index) return false;
+      if (self.indexOf(investor) !== index) return false
       // filter for deals
       if (tooManyDealsHack) {
-        return investor.deals?.some((d: Deal) => dealIDs.includes(d.id));
+        return investor.deals?.some((d: Deal) => dealIDs.includes(d.id))
       }
-      return true;
-    });
+      return true
+    })
   }
 
-  $: getInvestors($deals?.data?.deals ?? [], $filters);
+  $: getInvestors($deals?.data?.deals ?? [], $filters)
 </script>
 
 <DataContainer>

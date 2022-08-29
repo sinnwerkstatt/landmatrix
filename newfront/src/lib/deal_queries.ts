@@ -1,4 +1,4 @@
-import { gql } from "@urql/svelte";
+import { gql } from "@urql/svelte"
 
 export const data_deal_query_gql = gql`
   query ($subset: Subset, $filters: [Filter]) {
@@ -35,7 +35,7 @@ export const data_deal_query_gql = gql`
       }
     }
   }
-`;
+`
 
 export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int) {
@@ -272,4 +272,4 @@ export const deal_gql_query = gql`
       draft_status
     }
   }
-`;
+`

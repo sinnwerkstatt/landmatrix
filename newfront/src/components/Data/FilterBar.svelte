@@ -1,28 +1,32 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { page } from "$app/stores";
+  import { gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
+
+  import { page } from "$app/stores"
+
   import {
     getImplementationStatusChoices,
     getNatureOfDealChoices,
     intention_of_investment_choices,
-  } from "$lib/choices";
-  import { filters, isDefaultFilter, publicOnly } from "$lib/filters";
-  import { countries, formfields, regions } from "$lib/stores";
-  import { ProduceGroup } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import { showFilterBar } from "$components/Data";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
-  import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte";
-  import FilterCollapse from "./FilterCollapse.svelte";
-  import Wimpel from "./Wimpel.svelte";
+  } from "$lib/choices"
+  import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
+  import { countries, formfields, regions } from "$lib/stores"
+  import { ProduceGroup } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import { UserLevel } from "$lib/types/user"
 
-  $: user = $page.data.user;
+  import { showFilterBar } from "$components/Data"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
+
+  import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
+  import FilterCollapse from "./FilterCollapse.svelte"
+  import Wimpel from "./Wimpel.svelte"
+
+  $: user = $page.data.user
 
   $: produceChoices = $formfields
     ? [
@@ -45,11 +49,11 @@
           group: $_("Mineral resources"),
         })),
       ]
-    : [];
+    : []
 
-  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions];
+  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
 
-  let investors: Investor[] = [];
+  let investors: Investor[] = []
 
   async function getInvestors() {
     const { data } = await $page.data.urqlClient
@@ -62,30 +66,29 @@
             }
           }
         `,
-        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" }
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
-      .toPromise();
-    investors = data.investors;
+      .toPromise()
+    investors = data.investors
   }
 
   onMount(() => {
-    getInvestors();
-  });
+    getInvestors()
+  })
 
-  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray());
+  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray())
   $: dataDownloadURL = `/api/legacy_export/?filters=${jsonFilters}&subset=${
     $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&format=`;
+  }&format=`
 
   function trackDownload(format) {
-    let name = "Global";
+    let name = "Global"
     if ($filters.country_id)
-      name = $countries.find((c) => c.id === $filters.country_id).name;
-    if ($filters.region_id)
-      name = $regions.find((r) => r.id === $filters.region_id).name;
+      name = $countries.find(c => c.id === $filters.country_id).name
+    if ($filters.region_id) name = $regions.find(r => r.id === $filters.region_id).name
 
     // noinspection TypeScriptUnresolvedVariable
-    window._paq.push(["trackEvent", "Downloads", format, name]);
+    window._paq.push(["trackEvent", "Downloads", format, name])
   }
 </script>
 
@@ -107,7 +110,7 @@
       <CheckboxSwitch
         class="text-base"
         checked={$isDefaultFilter}
-        on:change={(val) =>
+        on:change={val =>
           val.target.checked
             ? filters.set($filters.empty().default())
             : filters.set($filters.empty())}
@@ -146,14 +149,14 @@
         on:click={() => ($filters.country_id = null)}
       >
         <Select
-          items={$countries.filter((c) => c.deals && c.deals.length > 0)}
-          value={$countries.find((c) => c.id === $filters.country_id)}
-          on:change={(e) => ($filters.country_id = e.detail?.id)}
+          items={$countries.filter(c => c.deals && c.deals.length > 0)}
+          value={$countries.find(c => c.id === $filters.country_id)}
+          on:change={e => ($filters.country_id = e.detail?.id)}
           placeholder={$_("Country")}
           optionIdentifier="id"
           labelIdentifier="name"
-          getOptionLabel={(o) => `${o.name} (#${o.id})`}
-          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          getOptionLabel={o => `${o.name} (#${o.id})`}
+          getSelectionLabel={o => `${o.name} (#${o.id})`}
           showChevron
           {VirtualList}
         />
@@ -221,16 +224,16 @@
           placeholder={$_("Investor")}
           optionIdentifier="id"
           labelIdentifier="name"
-          getOptionLabel={(o) => `${o.name} (#${o.id})`}
-          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          getOptionLabel={o => `${o.name} (#${o.id})`}
+          getSelectionLabel={o => `${o.name} (#${o.id})`}
           showChevron
           {VirtualList}
         />
         {$_("Country of registration")}
         <Select
           items={$countries}
-          value={$countries.find((c) => c.id === $filters.investor_country_id)}
-          on:change={(e) => ($filters.investor_country_id = e.detail?.id)}
+          value={$countries.find(c => c.id === $filters.investor_country_id)}
+          on:change={e => ($filters.investor_country_id = e.detail?.id)}
           placeholder={$_("Country of registration")}
           labelIdentifier="name"
           optionIdentifier="id"
@@ -346,7 +349,7 @@
           items={produceChoices}
           isMulti
           showChevron
-          groupBy={(i) => i.group}
+          groupBy={i => i.group}
         />
       </FilterCollapse>
 

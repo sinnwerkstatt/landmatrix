@@ -1,101 +1,103 @@
 <script lang="ts">
-  import classNames from "classnames";
-  import type { GeoJSON } from "geojson";
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { AreaFeature, AreaType, Location } from "$lib/types/deal";
+  import classNames from "classnames"
+  import type { GeoJSON } from "geojson"
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import type { AreaFeature, AreaType, Location } from "$lib/types/deal"
   import {
     getFeatures,
     setCurrentProperty,
     setFeatures,
     setTypeProperty,
-  } from "$lib/utils/dealLocationAreaFeatures";
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte";
-  import EyeIcon from "$components/icons/EyeIcon.svelte";
-  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
-  import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import TrashIcon from "$components/icons/TrashIcon.svelte";
-  import Overlay from "$components/Overlay.svelte";
+  } from "$lib/utils/dealLocationAreaFeatures"
 
-  const dispatch = createEventDispatcher();
+  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
+  import EyeIcon from "$components/icons/EyeIcon.svelte"
+  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
+  import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import TrashIcon from "$components/icons/TrashIcon.svelte"
+  import Overlay from "$components/Overlay.svelte"
 
-  export let areaType: AreaType;
-  export let activeLocationID: string;
-  export let locations: Location[];
-  export let currentHoverFeature: AreaFeature | null;
-  export let hiddenFeatures: AreaFeature[];
+  const dispatch = createEventDispatcher()
 
-  let showAddAreaOverlay = false;
-  let toAddFiles;
+  export let areaType: AreaType
+  export let activeLocationID: string
+  export let locations: Location[]
+  export let currentHoverFeature: AreaFeature | null
+  export let hiddenFeatures: AreaFeature[]
+
+  let showAddAreaOverlay = false
+  let toAddFiles
 
   $: title = {
     production_area: $_("Production areas"),
     contract_area: $_("Contract areas"),
     intended_area: $_("Intended areas"),
-  }[areaType];
+  }[areaType]
 
-  $: activeLocation = locations.find((location) => location.id === activeLocationID);
-  $: areaFeatures = getFeatures(areaType, activeLocation);
-  $: hasAreaFeatures = areaFeatures.length > 0;
-  $: current = areaFeatures.findIndex((feature) => feature.properties.current);
+  $: activeLocation = locations.find(location => location.id === activeLocationID)
+  $: areaFeatures = getFeatures(areaType, activeLocation)
+  $: hasAreaFeatures = areaFeatures.length > 0
+  $: current = areaFeatures.findIndex(feature => feature.properties.current)
 
   function setAreaFeatures(location: Location, features: AreaFeature[]): void {
-    setFeatures(areaType, location, features);
+    setFeatures(areaType, location, features)
 
     // signal update
-    locations = locations;
-    dispatch("change");
+    locations = locations
+    dispatch("change")
   }
 
   function uploadFiles(): void {
-    const reader = new FileReader();
+    const reader = new FileReader()
 
-    reader.addEventListener("load", (event) => {
-      const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string);
+    reader.addEventListener("load", event => {
+      const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string)
 
       switch (geoJsonObject.type) {
         case "Feature":
           setAreaFeatures(activeLocation, [
             ...areaFeatures,
             setTypeProperty(areaType)(geoJsonObject),
-          ]);
-          break;
+          ])
+          break
         case "FeatureCollection":
           if (geoJsonObject.features.length !== 1) {
-            window.alert("Please upload 1 area feature at a time.");
-            return;
+            window.alert("Please upload 1 area feature at a time.")
+            return
           }
           setAreaFeatures(activeLocation, [
             ...areaFeatures,
             ...geoJsonObject.features.map(setTypeProperty(areaType)),
-          ]);
-          break;
+          ])
+          break
         default:
-          window.alert("Unsupported GeoJsonType");
-          return;
+          window.alert("Unsupported GeoJsonType")
+          return
       }
 
-      showAddAreaOverlay = false;
-    });
+      showAddAreaOverlay = false
+    })
 
-    reader.readAsText(toAddFiles[0]);
+    reader.readAsText(toAddFiles[0])
   }
 
   function toggleVisibility(feature: AreaFeature): void {
     hiddenFeatures = hiddenFeatures.includes(feature)
-      ? hiddenFeatures.filter((f) => f !== feature)
-      : [...hiddenFeatures, feature];
+      ? hiddenFeatures.filter(f => f !== feature)
+      : [...hiddenFeatures, feature]
   }
 
   function removeFeature(feature: AreaFeature): void {
     setAreaFeatures(
       activeLocation,
-      areaFeatures.filter((f) => f !== feature)
-    );
+      areaFeatures.filter(f => f !== feature),
+    )
   }
 
   function updateCurrent(index: number): void {
-    setAreaFeatures(activeLocation, areaFeatures.map(setCurrentProperty(index)));
+    setAreaFeatures(activeLocation, areaFeatures.map(setCurrentProperty(index)))
   }
 </script>
 
@@ -124,7 +126,7 @@
             class={classNames(
               "px-1",
               feat === currentHoverFeature ? "border border-4 border-orange-400" : "",
-              hiddenFeatures.includes(feat) ? "bg-gray-200" : ""
+              hiddenFeatures.includes(feat) ? "bg-gray-200" : "",
             )}
           >
             <td class="px-1 text-center" on:click={() => toggleVisibility(feat)}>

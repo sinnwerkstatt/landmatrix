@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let checked = false;
-  export let title = "";
+  export let checked = false
+  export let title = ""
 </script>
 
 <label class="mb-1 flex cursor-pointer items-center gap-1 {$$props.class}" {title}>

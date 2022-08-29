@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import LinkIcon from "$components/icons/LinkIcon.svelte";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: string;
+  import LinkIcon from "$components/icons/LinkIcon.svelte"
+
+  import type { FormField } from "../fields"
+
+  export let formfield: FormField
+  export let value: string
 </script>
 
 <div class="url_field flex">

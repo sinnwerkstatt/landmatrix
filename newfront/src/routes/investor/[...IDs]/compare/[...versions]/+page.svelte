@@ -1,42 +1,42 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { getInvestorSections, subsections } from "$lib/sections";
-  import { formfields } from "$lib/stores";
-  import type { Investor } from "$lib/types/investor";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { getInvestorSections, subsections } from "$lib/sections"
+  import { formfields } from "$lib/stores"
+  import type { Investor } from "$lib/types/investor"
+
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;
   export let data: {
-    investorID: number;
-    versionFrom: number;
-    versionTo: number;
-    investorFrom: Investor;
-    investorTo: Investor;
-    investordiff: Set<string>;
-    datasourcesdiff: Set<string> | null;
-    involvementsdiff: Set<string> | null;
-  };
+    investorID: number
+    versionFrom: number
+    versionTo: number
+    investorFrom: Investor
+    investorTo: Investor
+    investordiff: Set<string>
+    datasourcesdiff: Set<string> | null
+    involvementsdiff: Set<string> | null
+  }
   function anyFieldFromSection(subsections) {
-    return subsections.some((subsec) => anyFieldFromSubSection(subsec));
+    return subsections.some(subsec => anyFieldFromSubSection(subsec))
   }
 
   function anyFieldFromSubSection(subsec) {
-    return subsec.fields.some((f) => data.investordiff.has(f));
+    return subsec.fields.some(f => data.investordiff.has(f))
   }
 
-  $: labels = { general_info: $_("General info") };
+  $: labels = { general_info: $_("General info") }
 
   function hasDifference(dFrom, dTo, field, jfield) {
-    if (!dFrom || !dTo) return true;
-    if (!dFrom[field] || !dTo[field]) return true;
+    if (!dFrom || !dTo) return true
+    if (!dFrom[field] || !dTo[field]) return true
     if (typeof dFrom[field][jfield] == "object") {
-      return (
-        JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
-      );
+      return JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
     }
-    return dFrom[field][jfield] !== dTo[field][jfield];
+    return dFrom[field][jfield] !== dTo[field][jfield]
   }
 </script>
 
@@ -51,17 +51,19 @@
   <thead>
     <tr class="text-2xl">
       <th class="pl-1">
-        <a href="/investor/{data.investorID}">{$_("Investor")} #{data.investorID} </a>
+        <a href="/investor/{data.investorID}">{$_("Investor")} #{data.investorID}</a>
       </th>
       <th class="px-4">
-        <a href="/investor/{data.investorID}/{data.versionFrom}"
-          >{$_("Version")} {data.versionFrom}</a
-        >
+        <a href="/investor/{data.investorID}/{data.versionFrom}">
+          {$_("Version")}
+          {data.versionFrom}
+        </a>
       </th>
       <th>
-        <a href="/investor/{data.investorID}/{data.versionTo}"
-          >{$_("Version")} {data.versionTo}</a
-        >
+        <a href="/investor/{data.investorID}/{data.versionTo}">
+          {$_("Version")}
+          {data.versionTo}
+        </a>
       </th>
     </tr>
   </thead>

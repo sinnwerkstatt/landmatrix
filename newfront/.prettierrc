@@ -1,10 +1,20 @@
 {
   "printWidth": 88,
+  "semi": false,
+  "trailingComma": "all",
+  "arrowParens": "avoid",
+  "htmlWhitespaceSensitivity": "ignore",
   "svelteStrictMode": false,
   "svelteAllowShorthand": true,
   "svelteIndentScriptAndStyle": true,
-  "importOrder": ["^\\$app/(.*)$", "^\\$lib(.*)$", "^\\$components/(.*)$", "^[./]"],
+  "importOrder": [
+    "^\\$app/(.*)$",
+    "^\\$lib(.*)$",
+    "^\\$views/(.*)$",
+    "^\\$components/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
   "importOrderCaseInsensitive": true,
-  "importOrderSortSpecifiers": true,
-  "bracketSameLine": false
+  "importOrderSortSpecifiers": true
 }

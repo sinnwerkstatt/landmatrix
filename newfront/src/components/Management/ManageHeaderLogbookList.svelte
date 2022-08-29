@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { WorkflowInfo as WFInfo } from "$lib/types/generics";
-  import WorkflowInfo from "./WorkflowInfo.svelte";
+  import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
-  export let workflowinfos: WFInfo[] = [];
+  import WorkflowInfo from "./WorkflowInfo.svelte"
+
+  export let workflowinfos: WFInfo[] = []
 </script>
 
 <div

@@ -1,5 +1,6 @@
-import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics";
-import type { DataSource, Deal } from "./deal";
+import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"
+
+import type { DataSource, Deal } from "./deal"
 
 export enum Role {
   PARENT = "PARENT",
@@ -26,40 +27,40 @@ export enum Classification {
 }
 
 export interface Investor extends Obj {
-  name: string;
-  classification: Classification;
-  homepage: string;
-  opencorporates: string;
-  datasources: DataSource[];
-  comment: string;
-  involvements: Involvement[];
-  investors: Involvement[];
-  ventures: Involvement[];
-  versions: InvestorVersion[];
-  workflowinfos: InvestorWorkflowInfo[];
-  deals: Deal[];
-  [key: string]: unknown;
+  name: string
+  classification: Classification
+  homepage: string
+  opencorporates: string
+  datasources: DataSource[]
+  comment: string
+  involvements: Involvement[]
+  investors: Involvement[]
+  ventures: Involvement[]
+  versions: InvestorVersion[]
+  workflowinfos: InvestorWorkflowInfo[]
+  deals: Deal[]
+  [key: string]: unknown
 }
 
 export interface InvestorVersion extends ObjVersion {
-  investor: Investor;
+  investor: Investor
 }
 
 export type Involvement = {
-  id: number;
-  role: Role;
-  investment_type?: [string];
-  investor: Investor;
-  venture?: Investor;
-  percentage?: number;
-  loans_amount?: number;
-  loans_currency?: unknown;
-  loans_date?: string;
-  parent_relation?: string;
-  comment?: string;
-  involvement_type?: string;
-};
+  id: number
+  role: Role
+  investment_type?: [string]
+  investor: Investor
+  venture?: Investor
+  percentage?: number
+  loans_amount?: number
+  loans_currency?: unknown
+  loans_date?: string
+  parent_relation?: string
+  comment?: string
+  involvement_type?: string
+}
 
 export interface InvestorWorkflowInfo extends WorkflowInfo {
-  investor: Investor;
+  investor: Investor
 }

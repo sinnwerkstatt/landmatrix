@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: Array<string | number> | null = [];
+  import type { FormField } from "../fields"
 
-  const onSelect = async (x) => {
+  export let formfield: FormField
+  export let value: Array<string | number> | null = []
+
+  const onSelect = async x => {
     const opts = Array.from(x.target.options)
-      .filter((o) => o.selected)
-      .map((o) => o.value);
-    value = opts.length === 0 ? null : opts;
-  };
+      .filter(o => o.selected)
+      .map(o => o.value)
+    value = opts.length === 0 ? null : opts
+  }
 </script>
 
 <div class="simplearray_field">
@@ -32,7 +33,7 @@
     <div class="flex flex-col">
       <textarea
         value={value ? value.join("\n") : ""}
-        on:input={(x) => (value = x.target.value ? x.target.value.split("\n") : null)}
+        on:input={x => (value = x.target.value ? x.target.value.split("\n") : null)}
         class="inpt"
         rows="5"
         name={formfield.name}

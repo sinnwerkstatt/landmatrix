@@ -1,51 +1,53 @@
 <script lang="ts">
-  import type { MapOptions } from "leaflet";
-  import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-  import { GestureHandling } from "leaflet-gesture-handling?client";
-  import "leaflet/dist/leaflet.css";
-  import { Icon, Map } from "leaflet?client";
-  import { nanoid } from "nanoid";
-  import { createEventDispatcher, onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import LoadingPulse from "$components/LoadingPulse.svelte";
+  import type { MapOptions } from "leaflet"
+  import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
+  import { GestureHandling } from "leaflet-gesture-handling?client"
+  import "leaflet/dist/leaflet.css"
+  import { Icon, Map } from "leaflet?client"
+  import { nanoid } from "nanoid"
+  import { createEventDispatcher, onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import LoadingPulse from "$components/LoadingPulse.svelte"
   import {
     getBaseLayers,
     getContextLayers,
     visibleContextLayers,
     visibleLayer,
-  } from "$components/Map/layers";
-  import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte";
+  } from "$components/Map/layers"
 
-  export let options: MapOptions = {};
-  export let containerClass = "";
-  export let showLayerSwitcher = true;
+  import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte"
 
-  const dispatch = createEventDispatcher<{ ready: Map }>();
+  export let options: MapOptions = {}
+  export let containerClass = ""
+  export let showLayerSwitcher = true
 
-  let mapId = "bigMap-" + nanoid();
-  let map: Map;
+  const dispatch = createEventDispatcher<{ ready: Map }>()
+
+  let mapId = "bigMap-" + nanoid()
+  let map: Map
 
   if (!import.meta.env.SSR) {
     // noinspection TypeScriptUnresolvedVariable
-    delete Icon.Default.prototype._getIconUrl;
+    delete Icon.Default.prototype._getIconUrl
     Icon.Default.mergeOptions({
       iconRetinaUrl: "/images/marker-icon-2x.png",
       iconUrl: "/images/marker-icon.png",
       shadowUrl: "/images/marker-shadow.png",
       shadowSize: [0, 0],
-    });
+    })
   }
 
-  $: contextLayers = getContextLayers($_);
-  $: baseLayers = getBaseLayers($_);
+  $: contextLayers = getContextLayers($_)
+  $: baseLayers = getBaseLayers($_)
 
   onMount(async () => {
     // onDestroy sometimes triggers after onMount on loading a new map
     // clean up by removing layers from old map
-    baseLayers.forEach((l) => l.layer.remove());
-    contextLayers.forEach((l) => l.layer.remove());
+    baseLayers.forEach(l => l.layer.remove())
+    contextLayers.forEach(l => l.layer.remove())
 
-    Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+    Map.addInitHook("addHandler", "gestureHandling", GestureHandling)
 
     // create new Map in div with mapId
     map = new Map(mapId, {
@@ -55,23 +57,23 @@
       zoomControl: true,
       gestureHandling: true,
       ...options,
-    });
+    })
 
-    map.whenReady(() => dispatch("ready", map));
-  });
+    map.whenReady(() => dispatch("ready", map))
+  })
 
   $: if (map && $visibleLayer) {
-    baseLayers.forEach((l) => {
-      if (l.id === $visibleLayer) l.layer.addTo(map);
-      else l.layer.remove();
-    });
+    baseLayers.forEach(l => {
+      if (l.id === $visibleLayer) l.layer.addTo(map)
+      else l.layer.remove()
+    })
   }
 
   $: if (map && $visibleContextLayers) {
-    contextLayers.forEach((l) => {
-      if ($visibleContextLayers.includes(l.id)) l.layer.addTo(map);
-      else l.layer.remove();
-    });
+    contextLayers.forEach(l => {
+      if ($visibleContextLayers.includes(l.id)) l.layer.addTo(map)
+      else l.layer.remove()
+    })
   }
 </script>
 

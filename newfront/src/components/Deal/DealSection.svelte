@@ -1,19 +1,21 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { isEmpty } from "$lib/helpers";
-  import type { Section } from "$lib/sections";
-  import type { Deal } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let deal: Deal;
-  export let sections: Section[] = [];
+  import { isEmpty } from "$lib/helpers"
+  import type { Section } from "$lib/sections"
+  import type { Deal } from "$lib/types/deal"
+
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+
+  export let deal: Deal
+  export let sections: Section[] = []
 
   function sectionFieldsWithValues(subsection: Section) {
-    return subsection.fields.filter((field) => !isEmpty(deal[field]));
+    return subsection.fields.filter(field => !isEmpty(deal[field]))
   }
   $: subsectionsWithAtLeastOneField = sections.filter(
-    (section) => sectionFieldsWithValues(section).length > 0
-  );
+    section => sectionFieldsWithValues(section).length > 0,
+  )
 </script>
 
 <section>

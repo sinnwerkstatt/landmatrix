@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import AtIcon from "$components/icons/AtIcon.svelte";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: string;
+  import AtIcon from "$components/icons/AtIcon.svelte"
+
+  import type { FormField } from "../fields"
+
+  export let formfield: FormField
+  export let value: string
 </script>
 
 <div class="email_field flex">

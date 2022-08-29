@@ -1,31 +1,34 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { formfields } from "$lib/stores";
-  import type { Deal, DealWorkflowInfo } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
-  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte";
-  import StatusField from "$components/Fields/Display/StatusField.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import StarIcon from "$components/icons/StarIcon.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let objects: Array<Deal | Investor>;
-  export let model: "deal" | "investor" = "deal";
+  import { page } from "$app/stores"
 
-  $: objectsWInfo = objects.map((obj) => {
-    const wfis = obj.workflowinfos as DealWorkflowInfo[];
+  import { formfields } from "$lib/stores"
+  import type { Deal, DealWorkflowInfo } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
+  import StatusField from "$components/Fields/Display/StatusField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import StarIcon from "$components/icons/StarIcon.svelte"
+
+  export let objects: Array<Deal | Investor>
+  export let model: "deal" | "investor" = "deal"
+
+  $: objectsWInfo = objects.map(obj => {
+    const wfis = obj.workflowinfos as DealWorkflowInfo[]
     let relevantWFI = wfis.find(
-      (wfi) =>
+      wfi =>
         wfi.draft_status_before === wfi.draft_status_after &&
-        wfi.from_user?.id === $page.data.user.id
-    );
+        wfi.from_user?.id === $page.data.user.id,
+    )
 
     // const openReq =
     //   d.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
 
-    return { ...obj, relevantWFI };
-  });
+    return { ...obj, relevantWFI }
+  })
   // .sort((a, b) => {
   //   if (a.openReq && !b.openReq) return -1;
   //   else if (b.openReq && !a.openReq) return 1;

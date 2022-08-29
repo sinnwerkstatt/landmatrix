@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte";
-  import { gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import HCaptcha from "$components/HCaptcha.svelte";
-  import PageTitle from "$components/PageTitle.svelte";
+  import type { Client } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import HCaptcha from "$components/HCaptcha.svelte"
+  import PageTitle from "$components/PageTitle.svelte"
 
   let user = {
     username: "",
@@ -15,18 +17,18 @@
     information: "",
     password: "",
     password_confirm: "",
-  };
-  let token = "";
-  let disabled = true;
-  let register_failed_message = "";
-  let registration_successful = false;
+  }
+  let token = ""
+  let disabled = true
+  let register_failed_message = ""
+  let registration_successful = false
   let VITE_HCAPTCHA_SITEKEY =
-    import.meta.env.VITE_HCAPTCHA_SITEKEY || "10000000-ffff-ffff-ffff-000000000001";
+    import.meta.env.VITE_HCAPTCHA_SITEKEY || "10000000-ffff-ffff-ffff-000000000001"
 
   function captchaVerified(e: CustomEvent<{ token: string }>) {
-    token = e.detail.token;
-    disabled = false;
-    console.log(token);
+    token = e.detail.token
+    disabled = false
+    console.log(token)
   }
 
   async function register() {
@@ -58,13 +60,13 @@
             }
           }
         `,
-        { ...user, token }
+        { ...user, token },
       )
-      .toPromise();
+      .toPromise()
     if (ret.data?.register?.ok) {
-      registration_successful = true;
+      registration_successful = true
     } else {
-      register_failed_message = ret.data?.register?.code || ret.error.toString();
+      register_failed_message = ret.data?.register?.code || ret.error.toString()
     }
   }
 </script>
@@ -73,12 +75,12 @@
 {#if registration_successful}
   <div class="mb-4 flex h-full w-full items-center justify-center">
     {$_(
-      "Registration successful. You can now close this window and check your emails."
+      "Registration successful. You can now close this window and check your emails.",
     )}
   </div>
 {:else}
   {$_(
-    "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
+    "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org.",
   )}
 
   <form class="my-6 grid gap-4 md:grid-cols-2" on:submit|preventDefault={register}>
@@ -140,7 +142,7 @@
         bind:value={user.information}
         class="inpt"
         placeholder={$_(
-          "Write something about yourself and your company. This won't be published."
+          "Write something about yourself and your company. This won't be published.",
         )}
         type="text"
       />

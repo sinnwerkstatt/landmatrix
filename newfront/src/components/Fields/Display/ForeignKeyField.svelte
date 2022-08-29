@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { countries } from "$lib/stores";
-  import type { FormField } from "$components/Fields/fields";
+  import { countries } from "$lib/stores"
+
+  import type { FormField } from "$components/Fields/fields"
 
   type ForeignKey = {
-    id: number;
-    name?: string;
-    username?: string;
-  };
-  export let formfield: FormField;
-  export let value: ForeignKey;
+    id: number
+    name?: string
+    username?: string
+  }
+  export let formfield: FormField
+  export let value: ForeignKey
 </script>
 
 <div class="foreignkey_field">
@@ -19,7 +20,7 @@
       {value.name} (#{value.id})
     </a>
   {:else if formfield.related_model === "Country"}
-    {$countries.find((c) => c.id === value.id).name}
+    {$countries.find(c => c.id === value.id).name}
   {:else}
     {value.username ?? value.name ?? value.id}
   {/if}

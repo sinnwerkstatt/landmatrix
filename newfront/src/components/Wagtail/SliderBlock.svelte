@@ -1,7 +1,7 @@
 <script lang="ts">
-  import ImageBlock from "$components/Wagtail/ImageBlock.svelte";
+  import ImageBlock from "$components/Wagtail/ImageBlock.svelte"
 
-  export let value;
+  export let value
   // export default Vue.extend({
   //   props: {
   //     value: { type: Object, required: true },

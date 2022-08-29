@@ -1,15 +1,18 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { data_deal_query_gql } from "$lib/deal_queries";
-  import { filters, publicOnly } from "$lib/filters";
-  import { formfields, loading } from "$lib/stores";
-  import { showContextBar, showFilterBar } from "$components/Data";
-  import DataContainer from "$components/Data/DataContainer.svelte";
-  import FilterCollapse from "$components/Data/FilterCollapse.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import Table from "$components/table/Table.svelte";
+  import { queryStore } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { filters, publicOnly } from "$lib/filters"
+  import { formfields, loading } from "$lib/stores"
+
+  import { showContextBar, showFilterBar } from "$components/Data"
+  import DataContainer from "$components/Data/DataContainer.svelte"
+  import FilterCollapse from "$components/Data/FilterCollapse.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import Table from "$components/table/Table.svelte"
 
   let activeColumns = [
     "fully_updated_at",
@@ -17,7 +20,7 @@
     "country",
     "current_intention_of_investment",
     "operating_company",
-  ];
+  ]
 
   const allColumnsWithSpan = {
     fully_updated_at: 2,
@@ -30,14 +33,14 @@
     current_implementation_status: 4,
     intended_size: 2,
     operating_company: 4,
-  };
+  }
 
-  $: labels = activeColumns.map((col) => $formfields.deal[col].label);
+  $: labels = activeColumns.map(col => $formfields.deal[col].label)
   $: spans = Object.entries(allColumnsWithSpan)
     .filter(([col, _]) => activeColumns.includes(col))
-    .map(([_, colSpan]) => colSpan);
+    .map(([_, colSpan]) => colSpan)
 
-  showContextBar.set(false);
+  showContextBar.set(false)
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -46,8 +49,8 @@
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
-  });
-  $: loading.set($deals?.fetching ?? false);
+  })
+  $: loading.set($deals?.fetching ?? false)
 </script>
 
 <DataContainer>

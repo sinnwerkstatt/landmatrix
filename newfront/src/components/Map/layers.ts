@@ -1,7 +1,7 @@
-import { TileLayer } from "leaflet?client";
-import { writable } from "svelte/store";
+import { TileLayer } from "leaflet?client"
+import { writable } from "svelte/store"
 
-const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo";
+const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo"
 
 function SDILegend(layer: string, folder = "lm"): string {
   return (
@@ -12,21 +12,21 @@ function SDILegend(layer: string, folder = "lm"): string {
     "width=25&height=25&" +
     "legend_options=forceLabels%3A1%3BfontAntiAliasing%3A1%3BfontName%3ANimbus+Sans+L+Regular%3B&" +
     `layer=${layer}`
-  );
+  )
 }
 
 export interface BaseLayer {
-  id: string;
-  name: string;
-  layer: TileLayer;
+  id: string
+  name: string
+  layer: TileLayer
 }
 
 export interface ContextLayer extends BaseLayer {
-  legendUrlFunction: () => string;
+  legendUrlFunction: () => string
 }
 
 export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
-  if (import.meta.env.SSR) return [];
+  if (import.meta.env.SSR) return []
   return [
     {
       id: "satellite",
@@ -35,7 +35,7 @@ export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
         `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
         {
           attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
-        }
+        },
       ),
     },
     {
@@ -46,16 +46,16 @@ export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
         {
           attribution:
             'Maps &copy; <a href="https://www.thunderforest.com">Thunderforest</a>, Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-        }
+        },
       ),
     },
-  ];
-};
+  ]
+}
 
-export const visibleLayer = writable("map");
+export const visibleLayer = writable("map")
 
 export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
-  if (import.meta.env.SSR) return [];
+  if (import.meta.env.SSR) return []
   return [
     {
       id: "land_cover",
@@ -69,7 +69,7 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("globcover_2009", "lo");
+        return SDILegend("globcover_2009", "lo")
       },
     },
     {
@@ -84,7 +84,7 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("gl_cropland", "lo");
+        return SDILegend("gl_cropland", "lo")
       },
     },
     {
@@ -99,7 +99,7 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://data.globalforestwatch.org/datasets/f82b539b9b2f495e853670ddc3f0ce68_2" target="_blank">Global Forest Watch, October 2019</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("ind_oil_palm_concessions");
+        return SDILegend("ind_oil_palm_concessions")
       },
     },
     {
@@ -114,7 +114,7 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("ph_key_biodiversity_areas");
+        return SDILegend("ph_key_biodiversity_areas")
       },
     },
     {
@@ -129,7 +129,7 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, October 2019</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("ph_protected_areas");
+        return SDILegend("ph_protected_areas")
       },
     },
     {
@@ -144,10 +144,10 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
           'Source: <a href="https://www.bmb.gov.ph" target="_blank">Biodiversity Management Bureau, Department of Environment and Natural Ressources, Philippines, December 2020</a>',
       }),
       legendUrlFunction(): string {
-        return SDILegend("ph_icca_areas_2020");
+        return SDILegend("ph_icca_areas_2020")
       },
     },
-  ];
-};
+  ]
+}
 
-export const visibleContextLayers = writable<string[]>([]);
+export const visibleContextLayers = writable<string[]>([])

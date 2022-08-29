@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { BlogPage } from "$lib/types/wagtail";
-  import ArticleList from "$components/Wagtail/ArticleList.svelte";
+  import type { BlogPage } from "$lib/types/wagtail"
 
-  export let value: { articles: BlogPage[] };
+  import ArticleList from "$components/Wagtail/ArticleList.svelte"
+
+  export let value: { articles: BlogPage[] }
 </script>
 
 <div data-block="resources_teasers">

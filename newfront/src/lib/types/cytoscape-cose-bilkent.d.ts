@@ -1,59 +1,59 @@
 declare module "cytoscape-cose-bilkent" {
-  import cy from "cytoscape";
-  const coseBilkent: cy.Ext;
+  import cy from "cytoscape"
+  const coseBilkent: cy.Ext
 
   export interface LayoutOptions extends cy.LayoutOptions {
-    name: "cose-bilkent";
+    name: "cose-bilkent"
     // Called on `layoutready`
-    ready: () => void;
+    ready: () => void
     // Called on `layoutstop`
-    stop: () => void;
+    stop: () => void
     // 'draft', 'default' or 'proof"
     // - 'draft' fast cooling rate
     // - 'default' moderate cooling rate
     // - "proof" slow cooling rate
-    quality: "default" | "draft" | "proof";
+    quality: "default" | "draft" | "proof"
     // Whether to include labels in node dimensions. Useful for avoiding label overlap
-    nodeDimensionsIncludeLabels: boolean;
+    nodeDimensionsIncludeLabels: boolean
     // number of ticks per frame; higher is faster but more jerky
-    refresh: number;
+    refresh: number
     // Whether to fit the network view after when done
-    fit: boolean;
+    fit: boolean
     // Padding on fit
-    padding: number;
+    padding: number
     // Whether to enable incremental mode
-    randomize: boolean;
+    randomize: boolean
     // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: number;
+    nodeRepulsion: number
     // Ideal (intra-graph) edge length
-    idealEdgeLength: number;
+    idealEdgeLength: number
     // Divisor to compute edge forces
-    edgeElasticity: number;
+    edgeElasticity: number
     // Nesting factor (multiplier) to compute ideal edge length for inter-graph edges
-    nestingFactor: number;
+    nestingFactor: number
     // Gravity force (constant)
-    gravity: number;
+    gravity: number
     // Maximum number of iterations to perform
-    numIter: number;
+    numIter: number
     // Whether to tile disconnected nodes
-    tile: boolean;
+    tile: boolean
     // Type of layout animation. The option set is {'during', 'end', false}
-    animate: "during" | "end" | false;
+    animate: "during" | "end" | false
     // Duration for animate:end
-    animationDuration: number;
+    animationDuration: number
     // Amount of vertical space to put between degree zero nodes during tiling (can also be a function)
-    tilingPaddingVertical: number;
+    tilingPaddingVertical: number
     // Amount of horizontal space to put between degree zero nodes during tiling (can also be a function)
-    tilingPaddingHorizontal: number;
+    tilingPaddingHorizontal: number
     // Gravity range (constant) for compounds
-    gravityRangeCompound: number;
+    gravityRangeCompound: number
     // Gravity force (constant) for compounds
-    gravityCompound: number;
+    gravityCompound: number
     // Gravity range (constant)
-    gravityRange: number;
+    gravityRange: number
     // Initial cooling factor for incremental layout
-    initialEnergyOnIncremental: number;
+    initialEnergyOnIncremental: number
   }
 
-  export default coseBilkent;
+  export default coseBilkent
 }

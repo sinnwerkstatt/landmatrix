@@ -1,42 +1,41 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { browser } from "$app/environment";
-  import Overlay from "$components/Overlay.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { browser } from "$app/environment"
+
+  import Overlay from "$components/Overlay.svelte"
 
   async function getMessages() {
-    if (!browser) return [];
+    if (!browser) return []
     if (
       document.referrer?.startsWith(
-        window.location.protocol + "//" + window.location.hostname
+        window.location.protocol + "//" + window.location.hostname,
       )
     )
-      return [];
-    const res = await fetch(`/api/newdeal_legacy/messages/`);
-    if (res.ok) return (await res.json()).messages;
-    else throw new Error(await res.text());
+      return []
+    const res = await fetch(`/api/newdeal_legacy/messages/`)
+    if (res.ok) return (await res.json()).messages
+    else throw new Error(await res.text())
   }
 
-  let messages = getMessages();
+  let messages = getMessages()
 
   let acknowledgedMessages: number[] = JSON.parse(
-    (browser && sessionStorage.getItem("acknowledgedMessages")) || "[]"
-  );
-  const ackMsg = (id) => {
-    acknowledgedMessages.push(id);
-    sessionStorage.setItem(
-      "acknowledgedMessages",
-      JSON.stringify(acknowledgedMessages)
-    );
-  };
+    (browser && sessionStorage.getItem("acknowledgedMessages")) || "[]",
+  )
+  const ackMsg = id => {
+    acknowledgedMessages.push(id)
+    sessionStorage.setItem("acknowledgedMessages", JSON.stringify(acknowledgedMessages))
+  }
   const levelClasses = {
     error: "border-red-600 border-2",
     warning: "border-orange border-2",
     info: "border-orange border",
-  };
+  }
 </script>
 
 {#await messages then msgs}
-  {#each msgs.filter((m) => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id)) as msg}
+  {#each msgs.filter(m => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id)) as msg}
     <Overlay
       visible
       title={msg.title}

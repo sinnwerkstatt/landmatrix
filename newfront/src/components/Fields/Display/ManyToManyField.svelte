@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { FormField } from "$components/Fields/fields";
+  import type { FormField } from "$components/Fields/fields"
 
   type ForeignKey = {
-    id: number;
-    name?: string;
-    username?: string;
-  };
+    id: number
+    name?: string
+    username?: string
+  }
 
-  export let formfield: FormField;
-  export let value: ForeignKey;
+  export let formfield: FormField
+  export let value: ForeignKey
 </script>
 
 <div class="manytomany_field">

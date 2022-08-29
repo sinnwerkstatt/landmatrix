@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { browser } from "$app/environment";
-  import { page } from "$app/stores";
-  import { LandMatrixRadialSpider } from "$lib/data/charts/d3_hierarchical_edge_bundling";
-  import type { EdgeBundlingData } from "$lib/data/charts/d3_hierarchical_edge_bundling";
-  import { filters } from "$lib/filters";
-  import { showContextBar } from "$components/Data";
-  import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte";
-  import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte";
-  import LoadingPulse from "$components/LoadingPulse.svelte";
+  import { Client, gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  let transnational_deals: EdgeBundlingData | undefined = undefined;
+  import { browser } from "$app/environment"
+  import { page } from "$app/stores"
+
+  import { LandMatrixRadialSpider } from "$lib/data/charts/d3_hierarchical_edge_bundling"
+  import type { EdgeBundlingData } from "$lib/data/charts/d3_hierarchical_edge_bundling"
+  import { filters } from "$lib/filters"
+
+  import { showContextBar } from "$components/Data"
+  import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
+  import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
+
+  let transnational_deals: EdgeBundlingData | undefined = undefined
 
   function redrawSpider(deals, country_id): void {
     LandMatrixRadialSpider(
       deals,
       "#svg-container > svg",
       country_id,
-      (country) => ($filters.country_id = +country)
-    );
+      country => ($filters.country_id = +country),
+    )
   }
 
   const grabTransnationalDeals = async () => {
@@ -34,16 +37,16 @@
         {
           filters: $filters
             .toGQLFilterArray()
-            .filter((f) => f.field !== "country_id" && f.field !== "country.region_id"),
-        }
+            .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
+        },
       )
-      .toPromise();
-    transnational_deals = data?.transnational_deals;
-  };
+      .toPromise()
+    transnational_deals = data?.transnational_deals
+  }
 
-  $: $filters && grabTransnationalDeals();
-  $: browser && redrawSpider(transnational_deals, $filters.country_id);
-  onMount(() => showContextBar.set(true));
+  $: $filters && grabTransnationalDeals()
+  $: browser && redrawSpider(transnational_deals, $filters.country_id)
+  onMount(() => showContextBar.set(true))
 </script>
 
 <svelte:head>

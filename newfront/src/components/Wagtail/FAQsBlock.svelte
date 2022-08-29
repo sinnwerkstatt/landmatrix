@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { slide } from "svelte/transition";
-  import { browser } from "$app/environment";
+  import { slide } from "svelte/transition"
 
-  export let value;
+  import { browser } from "$app/environment"
 
-  let locationHash = browser ? location.hash : undefined;
+  export let value
+
+  let locationHash = browser ? location.hash : undefined
 
   function updateHash(slug) {
-    if (!browser) return;
-    let newslug;
-    if (location.hash === slug) newslug = "";
-    else newslug = slug;
-    locationHash = newslug;
-    location.hash = newslug;
+    if (!browser) return
+    let newslug
+    if (location.hash === slug) newslug = ""
+    else newslug = slug
+    locationHash = newslug
+    location.hash = newslug
   }
 </script>
 

@@ -1,47 +1,49 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
-  import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import type { FormField } from "../fields";
-  import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField"
+  import MinusIcon from "$components/icons/MinusIcon.svelte"
+  import PlusIcon from "$components/icons/PlusIcon.svelte"
+
+  import type { FormField } from "../fields"
+  import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
+  import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
 
   interface JSONLeaseField {
-    date?: string;
-    area?: number;
-    farmers?: number;
-    households?: number;
-    current?: boolean;
+    date?: string
+    area?: number
+    farmers?: number
+    households?: number
+    current?: boolean
   }
 
-  export let formfield: FormField;
-  export let value: Array<JSONLeaseField> | null;
+  export let formfield: FormField
+  export let value: Array<JSONLeaseField> | null
 
-  let valueCopy = createValueCopy(value);
-  let current = valueCopy.map((val) => val.current).indexOf(true) ?? -1;
+  let valueCopy = createValueCopy(value)
+  let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
   $: value = syncValue(
-    (val) => !!(val.date || val.area || val.farmers || val.households),
-    valueCopy
-  );
+    val => !!(val.date || val.area || val.farmers || val.households),
+    valueCopy,
+  )
 
   function updateCurrent(index) {
-    valueCopy = valueCopy.map((val) => ({ ...val, current: undefined }));
-    valueCopy[index].current = true;
-    valueCopy = valueCopy;
+    valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
+    valueCopy[index].current = true
+    valueCopy = valueCopy
   }
 
   function addEntry() {
-    valueCopy = [...valueCopy, {}];
+    valueCopy = [...valueCopy, {}]
   }
 
   function removeEntry(index) {
     if (current === index) {
-      current = -1;
+      current = -1
     } else if (current > index) {
-      current--;
+      current--
     }
-    valueCopy = valueCopy.filter((val, i) => i !== index);
+    valueCopy = valueCopy.filter((val, i) => i !== index)
   }
 </script>
 

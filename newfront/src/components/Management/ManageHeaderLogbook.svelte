@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { Obj } from "$lib/types/generics";
-  import type { User } from "$lib/types/user";
-  import UserSelect from "$components/Management/UserSelect.svelte";
-  import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte";
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
-  export let object: Obj;
+  import type { Obj } from "$lib/types/generics"
+  import type { User } from "$lib/types/user"
 
-  let comment = "";
-  let sendToUser: User;
-  let logbookForm;
+  import UserSelect from "$components/Management/UserSelect.svelte"
+
+  import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte"
+
+  const dispatch = createEventDispatcher()
+  export let object: Obj
+
+  let comment = ""
+  let sendToUser: User
+  let logbookForm
 
   function addComment() {
     if (!logbookForm.checkValidity()) {
-      logbookForm.reportValidity();
-      return;
+      logbookForm.reportValidity()
+      return
     }
 
-    dispatch("addComment", { comment, sendToUser });
-    comment = "";
+    dispatch("addComment", { comment, sendToUser })
+    comment = ""
   }
 </script>
 

@@ -1,34 +1,36 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import HCaptcha from "$components/HCaptcha.svelte";
-  import PageTitle from "$components/PageTitle.svelte";
+  import { Client, gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  let email = "";
-  let form_submitted = false;
+  import { page } from "$app/stores"
+
+  import HCaptcha from "$components/HCaptcha.svelte"
+  import PageTitle from "$components/PageTitle.svelte"
+
+  let email = ""
+  let form_submitted = false
 
   function submit() {
-    ($page.data.urqlClient as Client)
+    ;($page.data.urqlClient as Client)
       .mutation(
         gql`
           mutation ($email: String!, $token: String!) {
             password_reset(email: $email, token: $token)
           }
         `,
-        { email, token }
+        { email, token },
       )
       .toPromise()
       .then(({ data }) => {
-        if (data.password_reset) form_submitted = true;
-      });
+        if (data.password_reset) form_submitted = true
+      })
   }
-  let token: string;
-  let disabled = true;
+  let token: string
+  let disabled = true
   function captchaVerified(e: CustomEvent<{ token: string }>) {
-    token = e.detail.token;
-    disabled = false;
-    console.log(token);
+    token = e.detail.token
+    disabled = false
+    console.log(token)
   }
 </script>
 
@@ -36,7 +38,7 @@
 {#if form_submitted}
   <div class="text-center">
     {$_(
-      "If your email-address is registered with Land Matrix you should receive an email shortly."
+      "If your email-address is registered with Land Matrix you should receive an email shortly.",
     )}
   </div>
 {:else}

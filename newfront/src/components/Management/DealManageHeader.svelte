@@ -1,40 +1,44 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { isAuthorized } from "$lib/helpers";
-  import type { Deal } from "$lib/types/deal";
-  import type { User } from "$lib/types/user";
-  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte";
-  import CheckIcon from "$components/icons/CheckIcon.svelte";
-  import EyeIcon from "$components/icons/EyeIcon.svelte";
-  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
-  import XIcon from "$components/icons/XIcon.svelte";
-  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import ManageHeader from "./ManageHeader.svelte";
+  import { gql } from "@urql/svelte"
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  export let deal: Deal;
-  export let dealVersion: number;
+  import { isAuthorized } from "$lib/helpers"
+  import type { Deal } from "$lib/types/deal"
+  import type { User } from "$lib/types/user"
 
-  let fully_updated = false;
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
+  import CheckIcon from "$components/icons/CheckIcon.svelte"
+  import EyeIcon from "$components/icons/EyeIcon.svelte"
+  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
+  import MinusIcon from "$components/icons/MinusIcon.svelte"
+  import XIcon from "$components/icons/XIcon.svelte"
+  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+
+  import ManageHeader from "./ManageHeader.svelte"
+
+  const dispatch = createEventDispatcher()
+
+  export let deal: Deal
+  export let dealVersion: number
+
+  let fully_updated = false
 
   $: isEditable =
     !dealVersion && deal.status === 4
       ? false
       : !dealVersion && !!deal.draft_status
       ? false
-      : isAuthorized($page.data.user, deal);
+      : isAuthorized($page.data.user, deal)
 
-  let showSendToReviewOverlay = false;
+  let showSendToReviewOverlay = false
   async function sendToReview({ detail: { comment } }) {
-    await changeStatus({ detail: { transition: "TO_REVIEW", comment } });
-    showSendToReviewOverlay = false;
+    await changeStatus({ detail: { transition: "TO_REVIEW", comment } })
+    showSendToReviewOverlay = false
   }
 
   function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
@@ -69,19 +73,19 @@
           comment,
           to_user_id: toUser?.id,
           fully_updated,
-        }
+        },
       )
       .toPromise()
       .then(async ({ data: { change_deal_status } }) => {
         if (transition === "ACTIVATE") {
-          await goto(`/deal/${change_deal_status.dealId}/`);
+          await goto(`/deal/${change_deal_status.dealId}/`)
         } else if (dealVersion !== change_deal_status?.dealVersion)
           await goto(
-            `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`
-          );
-        else dispatch("reload");
+            `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`,
+          )
+        else dispatch("reload")
       })
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error))
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
@@ -105,11 +109,11 @@
           version: dealVersion ?? null,
           comment: comment,
           to_user_id: sendToUser?.id,
-        }
+        },
       )
       .toPromise()
       .then(() => dispatch("reload"))
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error))
   }
 
   async function deleteDeal({ detail: { comment } }) {
@@ -120,18 +124,18 @@
             deal_delete(id: $id, version: $version, comment: $comment)
           }
         `,
-        { id: deal.id, version: dealVersion, comment }
+        { id: deal.id, version: dealVersion, comment },
       )
       .toPromise()
-      .then(async (dat) => {
+      .then(async dat => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
-        console.log(dat);
-        if (dealVersion) await goto(`/deal/${deal.id}`);
-        dispatch("reload");
-      });
+        console.log(dat)
+        if (dealVersion) await goto(`/deal/${deal.id}`)
+        dispatch("reload")
+      })
   }
 
-  let showCopyOverlay = false;
+  let showCopyOverlay = false
   async function copyDeal() {
     $page.data.urqlClient
       .mutation(
@@ -143,34 +147,34 @@
             }
           }
         `,
-        { id: deal.id }
+        { id: deal.id },
       )
       .toPromise()
       .then(({ data: { object_copy } }) => {
-        window.open(`/deal/${object_copy.objId}/${object_copy.objVersion}`, "_blank");
-      });
-    showCopyOverlay = false;
+        window.open(`/deal/${object_copy.objId}/${object_copy.objVersion}`, "_blank")
+      })
+    showCopyOverlay = false
   }
 
-  let showConfidentialOverlay = false;
+  let showConfidentialOverlay = false
   async function toggleConfidential(data: {
-    force: boolean;
-    comment;
-    string;
-    to_user: User;
+    force: boolean
+    comment
+    string
+    to_user: User
   }) {
-    if (!isEditable) return;
+    if (!isEditable) return
 
     if (data.force) {
       if (deal.confidential) {
-        setConfidential(false);
-        showConfidentialOverlay = false;
+        setConfidential(false)
+        showConfidentialOverlay = false
       } else {
-        setConfidential(true, data.comment);
-        showConfidentialOverlay = false;
+        setConfidential(true, data.comment)
+        showConfidentialOverlay = false
       }
     } else {
-      showConfidentialOverlay = true;
+      showConfidentialOverlay = true
     }
   }
 
@@ -192,10 +196,10 @@
             )
           }
         `,
-        { id: deal.id, version: dealVersion, confidential, comment }
+        { id: deal.id, version: dealVersion, confidential, comment },
       )
       .toPromise()
-      .then(() => dispatch("reload"));
+      .then(() => dispatch("reload"))
   }
 </script>
 
@@ -294,7 +298,7 @@
     <div class="underline">{$_("Full update")}</div>
     <p class="mb-1">
       {$_(
-        'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.'
+        'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.',
       )}
     </p>
     <label class="my-1">
@@ -307,7 +311,8 @@
     <label class="mt-1 block font-bold">
       <input required type="checkbox" id="data-policy-checkbox" />
       {$_("I've read and agree to the")}
-      <a href="/about/data-policy/" target="_blank">{$_("Data policy")} </a>.
+      <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
+      .
     </label>
   </div>
 </ManageOverlay>
@@ -319,7 +324,7 @@
 >
   <p>
     {$_(
-      "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
+      "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates.",
     )}
   </p>
   <div class="font-medium">{$_("Do you really want to copy this deal?")}</div>
@@ -335,11 +340,11 @@
   <p>
     {#if deal.confidential}
       {$_(
-        "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
+        "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'.",
       )}
     {:else}
       {$_(
-        "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
+        "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'.",
       )}
     {/if}
   </p>

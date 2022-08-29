@@ -1,27 +1,29 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { page } from "$app/stores";
-  import EditField from "$components/Fields/EditField.svelte";
-  import type { FormField } from "$components/Fields/fields";
+  import { gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
 
-  export let value: Investor;
-  export let formfield: FormField;
+  import { page } from "$app/stores"
+
+  import EditField from "$components/Fields/EditField.svelte"
+  import type { FormField } from "$components/Fields/fields"
+
+  export let value: Investor
+  export let formfield: FormField
 
   type Investor = {
-    id?: number;
-    name: string;
-  };
+    id?: number
+    name: string
+  }
 
-  let investors: Investor[] = [];
+  let investors: Investor[] = []
 
   async function getInvestors() {
     const { data } = await $page.data.urqlClient
       .query<{
-        investors: Investor[];
+        investors: Investor[]
       }>(
         gql`
           query {
@@ -35,29 +37,29 @@
               name
             }
           }
-        `
+        `,
       )
-      .toPromise();
-    investors = [...data.investors];
+      .toPromise()
+    investors = [...data.investors]
   }
 
   onMount(() => {
-    getInvestors();
-  });
+    getInvestors()
+  })
 
-  let newInvestor: Investor = {} as Investor;
-  let newInvestorForm: HTMLFormElement;
-  let showNewInvestorForm = false;
+  let newInvestor: Investor = {} as Investor
+  let newInvestorForm: HTMLFormElement
+  let showNewInvestorForm = false
 
   function initCreateNewInvestor({ detail }) {
-    newInvestor = { name: detail };
-    showNewInvestorForm = true;
+    newInvestor = { name: detail }
+    showNewInvestorForm = true
   }
 
   async function addNewInvestor() {
     if (!newInvestorForm.checkValidity()) {
-      newInvestorForm.reportValidity();
-      return;
+      newInvestorForm.reportValidity()
+      return
     }
     const { data } = await $page.data.urqlClient
       .mutation(
@@ -69,16 +71,16 @@
             }
           }
         `,
-        { payload: newInvestor }
+        { payload: newInvestor },
       )
-      .toPromise();
+      .toPromise()
 
-    let newI = { id: data.investor_edit.investorId, name: newInvestor.name };
-    investors.push(newI);
+    let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
+    investors.push(newI)
     // dispatch("input", newI);
-    value = newI;
-    newInvestor = {} as Investor;
-    showNewInvestorForm = false;
+    value = newI
+    newInvestor = {} as Investor
+    showNewInvestorForm = false
   }
 </script>
 
@@ -94,10 +96,10 @@
       labelIdentifier="name"
       getOptionLabel={(o, ftxt) =>
         o.isCreator ? `Create "${ftxt}"` : `${o.name} (#${o.id})`}
-      getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+      getSelectionLabel={o => `${o.name} (#${o.id})`}
       showChevron
       isCreatable
-      createItem={(ftxt) => ({ name: ftxt, id: "new" })}
+      createItem={ftxt => ({ name: ftxt, id: "new" })}
       on:itemCreated={initCreateNewInvestor}
       inputAttributes={{ name: formfield.name }}
       {VirtualList}
@@ -106,8 +108,9 @@
   {#if !showNewInvestorForm && value}
     <div class="container p-2">
       <a href="/investor/{value.id}" class="investor-link">
-        {$_("Show details for investor")} #{value.id} {value.name}</a
-      >
+        {$_("Show details for investor")} #{value.id}
+        {value.name}
+      </a>
     </div>
   {/if}
   {#if showNewInvestorForm}

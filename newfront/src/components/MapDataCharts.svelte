@@ -1,5 +1,5 @@
 <script>
-  import { _ } from "svelte-i18n";
+  import { _ } from "svelte-i18n"
 </script>
 
 <div class="map-data-charts my-8 flex gap-8" on:click>
@@ -23,7 +23,7 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Explore the map for information about land deals from global down to regional and country level."
+          "Explore the map for information about land deals from global down to regional and country level.",
         )}
       </div>
     </div>
@@ -49,7 +49,7 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+          "Search and filter the dataset through pre-configured entry points or drill down to single deals.",
         )}
       </div>
     </div>
@@ -74,7 +74,7 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+          "Generate your own infographics using a wide selection of charts to illustrate information about deals.",
         )}
       </div>
     </div>

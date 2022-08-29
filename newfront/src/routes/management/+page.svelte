@@ -1,39 +1,43 @@
 <script lang="ts">
-  import cn from "classnames";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { browser } from "$app/environment";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { formfields, loading } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import FilterCollapse from "$components/Data/FilterCollapse.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import Table from "$components/table/Table.svelte";
-  import FilterOverlay from "./FilterOverlay.svelte";
-  import RequestedFeedbackView from "./RequestedFeedbackView.svelte";
-  import RequestedImprovementView from "./RequestedImprovementView.svelte";
-  import { managementFilters } from "./state";
-  import TodoFeedbackView from "./TodoFeedbackView.svelte";
+  import cn from "classnames"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import { browser } from "$app/environment"
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
+
+  import { formfields, loading } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import { UserLevel } from "$lib/types/user"
+
+  import FilterCollapse from "$components/Data/FilterCollapse.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import Table from "$components/table/Table.svelte"
+
+  import FilterOverlay from "./FilterOverlay.svelte"
+  import RequestedFeedbackView from "./RequestedFeedbackView.svelte"
+  import RequestedImprovementView from "./RequestedImprovementView.svelte"
+  import { managementFilters } from "./state"
+  import TodoFeedbackView from "./TodoFeedbackView.svelte"
 
   interface Tab {
-    id: string;
-    name: string;
-    staff?: boolean;
-    count?: number;
+    id: string
+    name: string
+    staff?: boolean
+    count?: number
   }
 
-  const user = $page.data.user;
+  const user = $page.data.user
 
-  let model: "deal" | "investor" = "deal";
-  let activeTab: Tab;
-  let objects: Array<Deal | Investor> = [];
+  let model: "deal" | "investor" = "deal"
+  let activeTab: Tab
+  let objects: Array<Deal | Investor> = []
 
-  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[];
+  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[]
   $: navTabs = [
     {
       name: $_("Todo"),
@@ -72,12 +76,12 @@
         { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
     },
-  ];
+  ]
 
   const selectTab = (tab: Tab) => {
-    goto("#" + tab.id);
-    activeTab = tab;
-  };
+    goto("#" + tab.id)
+    activeTab = tab
+  }
 
   $: tableHeaders =
     model === "deal"
@@ -103,7 +107,7 @@
           "workflowinfos",
           // "combined_status",
           // "deals",
-        ];
+        ]
 
   const allColumnsWithSpan = {
     id: 1,
@@ -115,76 +119,76 @@
     fully_updated_at: 2,
     workflowinfos: 5,
     combined_status: 2,
-  };
-  $: labels = tableHeaders.map((col) => $formfields?.[model]?.[col]?.label);
+  }
+  $: labels = tableHeaders.map(col => $formfields?.[model]?.[col]?.label)
   $: spans = Object.entries(allColumnsWithSpan)
     .filter(([col, _]) => tableHeaders.includes(col))
-    .map(([_, colSpan]) => colSpan);
+    .map(([_, colSpan]) => colSpan)
 
-  let controller: AbortController;
+  let controller: AbortController
 
   async function getCounts(model) {
-    if (!browser) return;
+    if (!browser) return
     const x = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=counts`
-    );
+      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=counts`,
+    )
     if (x.ok) {
-      const counts = await x.json();
-      navTabs.forEach((navTab) =>
-        navTab.items.forEach((i) => (i.count = counts?.[i.id] ?? 0))
-      );
-      navTabs = navTabs;
+      const counts = await x.json()
+      navTabs.forEach(navTab =>
+        navTab.items.forEach(i => (i.count = counts?.[i.id] ?? 0)),
+      )
+      navTabs = navTabs
     }
   }
 
   async function fetchObjects(acTab: Tab, model: "deal" | "investor") {
-    if (!acTab) return;
-    if (controller) controller.abort();
+    if (!acTab) return
+    if (controller) controller.abort()
 
-    loading.set(true);
-    controller = new AbortController();
+    loading.set(true)
+    controller = new AbortController()
     const x = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${
         acTab.id
       }`,
       {
         signal: controller.signal,
-      }
-    );
+      },
+    )
     if (x.ok) {
-      objects = (await x.json()).objects;
-      acTab.count = objects.length;
-      navTabs = navTabs;
+      objects = (await x.json()).objects
+      acTab.count = objects.length
+      navTabs = navTabs
     }
 
-    loading.set(false);
+    loading.set(false)
   }
 
-  $: getCounts(model);
-  $: fetchObjects(activeTab, model);
+  $: getCounts(model)
+  $: fetchObjects(activeTab, model)
 
   onMount(() => {
-    navTabs.some((navTab) => {
-      const hash = $page.url.hash || "#todo_feedback";
-      const item = navTab.items.find((i) => "#" + i.id === hash);
+    navTabs.some(navTab => {
+      const hash = $page.url.hash || "#todo_feedback"
+      const item = navTab.items.find(i => "#" + i.id === hash)
       if (item) {
-        selectTab(item);
-        return true;
+        selectTab(item)
+        return true
       }
-    });
-  });
+    })
+  })
 
   function trackDownload(format) {
     // TODO implement this? ${format}
   }
 
-  let showFilterOverlay = false;
+  let showFilterOverlay = false
 
-  $: filteredObjects = objects.filter((d) => {
+  $: filteredObjects = objects.filter(d => {
     if ($managementFilters.country?.id)
-      return d.country?.id === $managementFilters.country.id;
-    return true;
-  });
+      return d.country?.id === $managementFilters.country.id
+    return true
+  })
 </script>
 
 <svelte:head>
@@ -219,16 +223,16 @@
     </div>
     <div class="w-full self-start">
       {#each navTabs as { name, items }}
-        {@const aggCount = items.map((i) => i.count ?? 0).reduce((a, b) => a + b, 0)}
-        {#if user.level > UserLevel.EDITOR || !items.every((i) => i.staff)}
+        {@const aggCount = items.map(i => i.count ?? 0).reduce((a, b) => a + b, 0)}
+        {#if user.level > UserLevel.EDITOR || !items.every(i => i.staff)}
           <FilterCollapse title="{name} (Σ {aggCount})" expanded>
             <ul>
-              {#each items.filter((i) => user.level > UserLevel.EDITOR || !i.staff) as item}
+              {#each items.filter(i => user.level > UserLevel.EDITOR || !i.staff) as item}
                 <li
                   class={cn(
                     "py-2 pr-4",
                     model === "deal" ? "border-orange" : "border-pelorous",
-                    activeTab === item ? "border-r-4" : "border-r"
+                    activeTab === item ? "border-r-4" : "border-r",
                   )}
                 >
                   <button
@@ -238,7 +242,7 @@
                         ? model === "deal"
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
-                        : "text-gray-600"
+                        : "text-gray-600",
                     )}
                     on:click={() => selectTab(item)}
                   >

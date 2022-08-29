@@ -1,39 +1,42 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { formfields } from "$lib/stores";
-  import type { Deal, DealWorkflowInfo } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
-  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte";
-  import StatusField from "$components/Fields/Display/StatusField.svelte";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import StarIcon from "$components/icons/StarIcon.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let objects: Array<Deal | Investor>;
-  export let model: "deal" | "investor" = "deal";
+  import { page } from "$app/stores"
+
+  import { formfields } from "$lib/stores"
+  import type { Deal, DealWorkflowInfo } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
+  import StatusField from "$components/Fields/Display/StatusField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import StarIcon from "$components/icons/StarIcon.svelte"
+
+  export let objects: Array<Deal | Investor>
+  export let model: "deal" | "investor" = "deal"
 
   $: objectsWInfo = objects
-    .map((obj) => {
-      const wfis = obj.workflowinfos as DealWorkflowInfo[];
+    .map(obj => {
+      const wfis = obj.workflowinfos as DealWorkflowInfo[]
       let relevantWFI = wfis.find(
-        (wfi) =>
+        wfi =>
           [2, 3].includes(wfi.draft_status_before) &&
           wfi.draft_status_after === 1 &&
-          wfi.from_user?.id === $page.data.user.id
-      );
+          wfi.from_user?.id === $page.data.user.id,
+      )
 
       // const openReq =
       //  obj.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
-      const openReq = true;
-      return { ...obj, relevantWFI, openReq };
+      const openReq = true
+      return { ...obj, relevantWFI, openReq }
     })
     .sort((a, b) => {
-      if (a.openReq && !b.openReq) return -1;
-      else if (b.openReq && !a.openReq) return 1;
-      if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0;
-      return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp);
-    });
+      if (a.openReq && !b.openReq) return -1
+      else if (b.openReq && !a.openReq) return 1
+      if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0
+      return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp)
+    })
 </script>
 
 <table>
@@ -42,7 +45,7 @@
       <th class="px-3 py-1" />
       <th class="px-3 py-1">Date of request</th>
       <th class="px-3 py-1">{$formfields[model]["id"].label}</th>
-      <th class="px-3 py-1"> {$formfields[model]["country"].label}</th>
+      <th class="px-3 py-1">{$formfields[model]["country"].label}</th>
       {#if model === "deal"}
         <th class="px-3 py-1">{$formfields[model]["deal_size"].label}</th>
       {/if}

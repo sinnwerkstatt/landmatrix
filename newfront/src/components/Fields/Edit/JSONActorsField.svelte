@@ -1,26 +1,28 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
-  import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
+
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField"
+  import MinusIcon from "$components/icons/MinusIcon.svelte"
+  import PlusIcon from "$components/icons/PlusIcon.svelte"
+
+  import type { FormField } from "../fields"
 
   interface JSONActorsField {
-    name?: string;
-    role?: string;
+    name?: string
+    role?: string
   }
 
-  export let formfield: FormField;
-  export let value: Array<JSONActorsField> | null;
+  export let formfield: FormField
+  export let value: Array<JSONActorsField> | null
 
-  let valueCopy = createValueCopy(value);
-  $: value = syncValue((val) => !!(val.name || val.role), valueCopy);
+  let valueCopy = createValueCopy(value)
+  $: value = syncValue(val => !!(val.name || val.role), valueCopy)
 
   function addEntry() {
-    valueCopy = [...valueCopy, {}];
+    valueCopy = [...valueCopy, {}]
   }
   function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i !== index);
+    valueCopy = valueCopy.filter((val, i) => i !== index)
   }
 </script>
 

@@ -1,66 +1,70 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { isAuthorized } from "$lib/helpers";
-  import type { Obj, ObjVersion } from "$lib/types/generics";
-  import { UserLevel } from "$lib/types/user";
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte";
-  import ManageHeaderLogbook from "./ManageHeaderLogbook.svelte";
+  import dayjs from "dayjs"
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  export let object: Obj;
-  export let objectVersion: number;
-  export let otype: "deal" | "investor" = "deal";
+  import { isAuthorized } from "$lib/helpers"
+  import type { Obj, ObjVersion } from "$lib/types/generics"
+  import { UserLevel } from "$lib/types/user"
 
-  let showToDraftOverlay = false;
-  let showDeleteOverlay = false;
-  let showSendToActivationOverlay = false;
-  let showActivateOverlay = false;
-  let showNewDraftOverlay = false;
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
 
-  let lastVersion: ObjVersion;
-  $: lastVersion = object.versions[0];
+  import ManageHeaderLogbook from "./ManageHeaderLogbook.svelte"
 
-  let hasActive: boolean;
-  $: hasActive = !!object.status;
+  const dispatch = createEventDispatcher()
 
-  let isActiveWithDraft: boolean;
-  $: isActiveWithDraft = !objectVersion && !!object.draft_status;
+  export let object: Obj
+  export let objectVersion: number
+  export let otype: "deal" | "investor" = "deal"
 
-  let isEditable: boolean;
+  let showToDraftOverlay = false
+  let showDeleteOverlay = false
+  let showSendToActivationOverlay = false
+  let showActivateOverlay = false
+  let showNewDraftOverlay = false
+
+  let lastVersion: ObjVersion
+  $: lastVersion = object.versions[0]
+
+  let hasActive: boolean
+  $: hasActive = !!object.status
+
+  let isActiveWithDraft: boolean
+  $: isActiveWithDraft = !objectVersion && !!object.draft_status
+
+  let isEditable: boolean
   $: isEditable =
     (!objectVersion && object.status === 4) || isActiveWithDraft
       ? false
       : object.draft_status === 4
       ? $page.data.user.level === UserLevel.ADMINISTRATOR
-      : isAuthorized($page.data.user, object);
+      : isAuthorized($page.data.user, object)
 
-  let isOldDraft: boolean;
-  $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion;
+  let isOldDraft: boolean
+  $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion
 
-  let isDraftWithActive: boolean;
+  let isDraftWithActive: boolean
   $: isDraftWithActive =
     objectVersion && [2, 3].includes(object.status)
       ? true
-      : isOldDraft && [2, 3].includes(lastVersion?.[otype]?.status);
+      : isOldDraft && [2, 3].includes(lastVersion?.[otype]?.status)
 
-  let hasNewerDraft: boolean;
+  let hasNewerDraft: boolean
   $: hasNewerDraft = isActiveWithDraft
     ? true
-    : isOldDraft && !!lastVersion?.[otype]?.draft_status;
+    : isOldDraft && !!lastVersion?.[otype]?.draft_status
 
   $: isDeletable =
     isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
       ? $page.data.user.level === UserLevel.ADMINISTRATOR
-      : isAuthorized($page.data.user, object);
-  $: isDeleted = !objectVersion && object?.status === 4;
+      : isAuthorized($page.data.user, object)
+  $: isDeleted = !objectVersion && object?.status === 4
 
   $: deleteTitle = $_(
     objectVersion
@@ -73,24 +77,24 @@
         : "Reactivate investor"
       : otype === "deal"
       ? "Delete deal"
-      : "Delete investor"
-  );
+      : "Delete investor",
+  )
 
   function doDelete({ detail: { comment } }): void {
-    dispatch("delete", { comment });
-    showDeleteOverlay = false;
+    dispatch("delete", { comment })
+    showDeleteOverlay = false
   }
   function sendToDraft({ detail: { comment, toUser } }): void {
-    dispatch("changeStatus", { transition: "TO_DRAFT", comment, toUser });
-    showToDraftOverlay = false;
+    dispatch("changeStatus", { transition: "TO_DRAFT", comment, toUser })
+    showToDraftOverlay = false
   }
   function sendToActivation({ detail: { comment } }) {
-    dispatch("changeStatus", { transition: "TO_ACTIVATION", comment });
-    showSendToActivationOverlay = false;
+    dispatch("changeStatus", { transition: "TO_ACTIVATION", comment })
+    showSendToActivationOverlay = false
   }
   function activate({ detail: { comment } }) {
-    dispatch("changeStatus", { transition: "ACTIVATE", comment });
-    showActivateOverlay = false;
+    dispatch("changeStatus", { transition: "ACTIVATE", comment })
+    showActivateOverlay = false
   }
 </script>
 
@@ -120,16 +124,19 @@
         </div>
         <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
           <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-            {$_("Created")}<br />
+            {$_("Created")}
+            <br />
             <DateTimeField value={object.created_at} />
           </div>
           <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-            {$_("Last update")}<br />
+            {$_("Last update")}
+            <br />
             <DateTimeField value={object.modified_at} />
           </div>
           {#if object.fully_updated_at}
             <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-              {$_("Last full update")}<br />
+              {$_("Last full update")}
+              <br />
               <DateTimeField value={object.fully_updated_at} />
             </div>
           {/if}
@@ -193,10 +200,10 @@
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
                     ? $_(
-                        "Send a request of improvent and create a new draft version of the deal"
+                        "Send a request of improvent and create a new draft version of the deal",
                       )
                     : $_(
-                        "Send a request of improvent and create a new draft version of the investor"
+                        "Send a request of improvent and create a new draft version of the investor",
                       )}
                   class="btn btn-primary"
                   on:click={() => (showToDraftOverlay = true)}
@@ -227,7 +234,7 @@
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={hasActive
                     ? $_(
-                        "Activates submitted version replacing currently active version"
+                        "Activates submitted version replacing currently active version",
                       )
                     : otype === "deal"
                     ? $_("Sets the deal active")
@@ -370,7 +377,7 @@
   on:submit={() => goto(`/${otype}/edit/${object.id}/${objectVersion ?? ""}`)}
 >
   {$_(
-    "You are not the author of this version. Therefore, a new version will be created if you proceed."
+    "You are not the author of this version. Therefore, a new version will be created if you proceed.",
   )}
 </ManageOverlay>
 

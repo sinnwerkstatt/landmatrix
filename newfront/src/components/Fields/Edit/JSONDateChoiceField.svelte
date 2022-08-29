@@ -1,35 +1,36 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { createValueCopy, syncValue } from "$components/Fields/JSONField";
-  import MinusIcon from "$components/icons/MinusIcon.svelte";
-  import PlusIcon from "$components/icons/PlusIcon.svelte";
-  import type { FormField } from "../fields";
-  import LowLevelDateYearField from "./LowLevelDateYearField.svelte";
-  import TypedChoiceField from "./TypedChoiceField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { createValueCopy, syncValue } from "$components/Fields/JSONField"
+  import MinusIcon from "$components/icons/MinusIcon.svelte"
+  import PlusIcon from "$components/icons/PlusIcon.svelte"
+
+  import type { FormField } from "../fields"
+  import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
+  import TypedChoiceField from "./TypedChoiceField.svelte"
 
   interface JSONDateChoiceField {
-    date?: string;
-    choice?: string;
-    current?: boolean;
+    date?: string
+    choice?: string
+    current?: boolean
   }
 
-  export let formfield: FormField;
-  export let value: Array<JSONDateChoiceField> | null;
+  export let formfield: FormField
+  export let value: Array<JSONDateChoiceField> | null
 
-  let valueCopy = createValueCopy(value);
-  $: value = syncValue((val) => !!(val.date || val.choice), valueCopy);
+  let valueCopy = createValueCopy(value)
+  $: value = syncValue(val => !!(val.date || val.choice), valueCopy)
 
   function addEntry() {
-    valueCopy = [...valueCopy, {}];
+    valueCopy = [...valueCopy, {}]
   }
 
   function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i !== index);
+    valueCopy = valueCopy.filter((val, i) => i !== index)
   }
 
-  const anySelectedAsCurrent = (values) => values.some((val) => val.current);
-  const isCurrentRequired = (values) =>
-    values.length > 0 && !anySelectedAsCurrent(values);
+  const anySelectedAsCurrent = values => values.some(val => val.current)
+  const isCurrentRequired = values => values.length > 0 && !anySelectedAsCurrent(values)
 </script>
 
 <div class="json_date_choice_field whitespace-nowrap">

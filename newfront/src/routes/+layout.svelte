@@ -1,9 +1,10 @@
 <script lang="ts">
-  import Footer from "$components/Footer.svelte";
-  import Messages from "$components/Messages.svelte";
-  import Navbar from "$components/Navbar.svelte";
-  import NavigationLoader from "$components/NavigationLoader.svelte";
-  import "../app.css";
+  import Footer from "$components/Footer.svelte"
+  import Messages from "$components/Messages.svelte"
+  import Navbar from "$components/Navbar.svelte"
+  import NavigationLoader from "$components/NavigationLoader.svelte"
+
+  import "../app.css"
 </script>
 
 <Messages />

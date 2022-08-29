@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { showContextBar } from "./index";
-  import Wimpel from "./Wimpel.svelte";
+  import { showContextBar } from "./index"
+  import Wimpel from "./Wimpel.svelte"
 </script>
 
 <div

@@ -1,29 +1,31 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { getDealSections, subsections } from "$lib/sections";
-  import { formfields } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { _ } from "svelte-i18n"
+
+  import { getDealSections, subsections } from "$lib/sections"
+  import { formfields } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;
   export let data: {
-    dealID: number;
-    versionFrom: number;
-    versionTo: number;
-    dealFrom: Deal;
-    dealTo: Deal;
-    dealdiff: Set<string>;
-    locationsdiff: Set<string> | null;
-    datasourcesdiff: Set<string> | null;
-    contractsdiff: Set<string> | null;
-  };
+    dealID: number
+    versionFrom: number
+    versionTo: number
+    dealFrom: Deal
+    dealTo: Deal
+    dealdiff: Set<string>
+    locationsdiff: Set<string> | null
+    datasourcesdiff: Set<string> | null
+    contractsdiff: Set<string> | null
+  }
   function anyFieldFromSection(subsections) {
-    return subsections.some((subsec) => anyFieldFromSubSection(subsec));
+    return subsections.some(subsec => anyFieldFromSubSection(subsec))
   }
   function anyFieldFromSubSection(subsec) {
-    return subsec.fields.some((f) => data.dealdiff.has(f));
+    return subsec.fields.some(f => data.dealdiff.has(f))
   }
 
   $: labels = {
@@ -37,18 +39,16 @@
     gender_related_info: $_("Gender-related info"),
     overall_comment: $_("Overall comment"),
     meta: $_("Meta"),
-  };
+  }
 
   function hasDifference(dFrom, dTo, field, jfield) {
-    if (!dFrom[field] || !dTo[field]) return true;
+    if (!dFrom[field] || !dTo[field]) return true
     if (typeof dFrom[field][jfield] == "object") {
-      return (
-        JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
-      );
+      return JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
     }
-    return dFrom[field][jfield] !== dTo[field][jfield];
+    return dFrom[field][jfield] !== dTo[field][jfield]
   }
-  $: dealSections = getDealSections($_);
+  $: dealSections = getDealSections($_)
 </script>
 
 <svelte:head>
@@ -62,18 +62,20 @@
   <thead>
     <tr class="text-2xl">
       <th class="pl-1">
-        <a href="/deal/{data.dealID}">{$_("Deal")} #{data.dealID} </a>
+        <a href="/deal/{data.dealID}">{$_("Deal")} #{data.dealID}</a>
       </th>
       <th class="px-4">
-        <a href="/deal/{data.dealID}/{data.versionFrom}"
-          >{$_("Version")} {data.versionFrom}</a
-        >
+        <a href="/deal/{data.dealID}/{data.versionFrom}">
+          {$_("Version")}
+          {data.versionFrom}
+        </a>
       </th>
       <th>
-        <a href="/deal/{data.dealID}/{data.versionTo}"
-          >{$_("Version")} {data.versionTo}</a
-        ></th
-      >
+        <a href="/deal/{data.dealID}/{data.versionTo}">
+          {$_("Version")}
+          {data.versionTo}
+        </a>
+      </th>
     </tr>
   </thead>
 

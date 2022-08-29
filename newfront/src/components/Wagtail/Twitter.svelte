@@ -1,10 +1,11 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import type { TwitterFeed } from "$lib/types/wagtail";
+  import dayjs from "dayjs"
 
-  export let twitterFeed: TwitterFeed;
+  import type { TwitterFeed } from "$lib/types/wagtail"
 
-  $: timeline = twitterFeed?.timeline || [];
+  export let twitterFeed: TwitterFeed
+
+  $: timeline = twitterFeed?.timeline || []
 </script>
 
 <div class="twitter-timeline">

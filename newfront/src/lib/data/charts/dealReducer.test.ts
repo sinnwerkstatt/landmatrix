@@ -1,10 +1,10 @@
-import { createBucketMap } from "$lib/data/buckets";
-import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention";
-import { implementationStatusReducer } from "$lib/data/charts/implementationStatus";
-import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup";
-import { negotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup";
-import { produceGroupReducer } from "$lib/data/charts/produceGroup";
-import type { Deal } from "$lib/types/deal";
+import { createBucketMap } from "$lib/data/buckets"
+import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
+import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
+import { negotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup"
+import { produceGroupReducer } from "$lib/data/charts/produceGroup"
+import type { Deal } from "$lib/types/deal"
 import {
   AgricultureIoI,
   ForestryIoI,
@@ -14,7 +14,7 @@ import {
   NegotiationStatusGroup,
   OtherIoI,
   ProduceGroup,
-} from "$lib/types/deal";
+} from "$lib/types/deal"
 
 describe("Intention of Investment Group", () => {
   test("Multiple intentions of same group per deal are counted as 1", () => {
@@ -36,20 +36,20 @@ describe("Intention of Investment Group", () => {
         ],
         deal_size: 100,
       },
-    ] as Deal[];
+    ] as Deal[]
 
     const bucketMap = deals.reduce(
       intentionOfInvestmentGroupReducer,
-      createBucketMap(Object.values(IoIGroup))
-    );
+      createBucketMap(Object.values(IoIGroup)),
+    )
 
     expect(bucketMap).toEqual({
       [IoIGroup.FORESTRY]: { count: 1, size: 500 },
       [IoIGroup.AGRICULTURE]: { count: 2, size: 600 },
       [IoIGroup.OTHER]: { count: 1, size: 100 },
-    });
-  });
-});
+    })
+  })
+})
 
 describe("Agriculture Intention of Investment", () => {
   test("Only count agriculture intentions", () => {
@@ -70,12 +70,12 @@ describe("Agriculture Intention of Investment", () => {
         ],
         deal_size: 100,
       },
-    ] as Deal[];
+    ] as Deal[]
 
     const bucketMap = deals.reduce(
       agricultureIntentionReducer,
-      createBucketMap(Object.values(AgricultureIoI))
-    );
+      createBucketMap(Object.values(AgricultureIoI)),
+    )
 
     expect(bucketMap).toEqual({
       [AgricultureIoI.BIOFUELS]: { count: 2, size: 600 },
@@ -84,9 +84,9 @@ describe("Agriculture Intention of Investment", () => {
       [AgricultureIoI.LIVESTOCK]: { count: 0, size: 0 },
       [AgricultureIoI.NON_FOOD_AGRICULTURE]: { count: 0, size: 0 },
       [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: { count: 0, size: 0 },
-    });
-  });
-});
+    })
+  })
+})
 
 describe("Produce Group", () => {
   test("Count non empty existing fields", () => {
@@ -101,20 +101,20 @@ describe("Produce Group", () => {
         current_mineral_resources: [],
         deal_size: 100,
       },
-    ] as Deal[];
+    ] as Deal[]
 
     const bucketMap = deals.reduce(
       produceGroupReducer,
-      createBucketMap(Object.values(ProduceGroup))
-    );
+      createBucketMap(Object.values(ProduceGroup)),
+    )
 
     expect(bucketMap).toEqual({
       [ProduceGroup.ANIMALS]: { count: 2, size: 600 },
       [ProduceGroup.CROPS]: { count: 1, size: 500 },
       [ProduceGroup.MINERAL_RESOURCES]: { count: 0, size: 0 },
-    });
-  });
-});
+    })
+  })
+})
 
 describe("Negotiation Status Group", () => {
   test("Existing negotiation status is mapped to group", () => {
@@ -131,21 +131,21 @@ describe("Negotiation Status Group", () => {
         current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] as Deal[];
+    ] as Deal[]
 
     const bucketMap = deals.reduce(
       negotiationStatusGroupReducer,
-      createBucketMap(Object.values(NegotiationStatusGroup))
-    );
+      createBucketMap(Object.values(NegotiationStatusGroup)),
+    )
 
     expect(bucketMap).toEqual({
       [NegotiationStatusGroup.CONCLUDED]: { count: 1, size: 500 },
       [NegotiationStatusGroup.CONTRACT_EXPIRED]: { count: 1, size: 100 },
       [NegotiationStatusGroup.INTENDED]: { count: 0, size: 0 },
       [NegotiationStatusGroup.FAILED]: { count: 0, size: 0 },
-    });
-  });
-});
+    })
+  })
+})
 
 describe("Implementation Status", () => {
   test("Existing implementation stati are counted", () => {
@@ -162,18 +162,18 @@ describe("Implementation Status", () => {
         current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] as Deal[];
+    ] as Deal[]
 
     const bucketMap = deals.reduce(
       implementationStatusReducer,
-      createBucketMap(Object.values(ImplementationStatus))
-    );
+      createBucketMap(Object.values(ImplementationStatus)),
+    )
 
     expect(bucketMap).toEqual({
       [ImplementationStatus.PROJECT_NOT_STARTED]: { count: 0, size: 0 },
       [ImplementationStatus.STARTUP_PHASE]: { count: 0, size: 0 },
       [ImplementationStatus.IN_OPERATION]: { count: 1, size: 500 },
       [ImplementationStatus.PROJECT_ABANDONED]: { count: 1, size: 100 },
-    });
-  });
-});
+    })
+  })
+})

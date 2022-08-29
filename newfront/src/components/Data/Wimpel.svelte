@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let showing = true;
-  export let flipped = false;
+  export let showing = true
+  export let flipped = false
 </script>
 
 <span

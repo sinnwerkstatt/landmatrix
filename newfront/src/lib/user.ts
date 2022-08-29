@@ -1,13 +1,14 @@
-import { error } from "@sveltejs/kit";
-import type { Client } from "@urql/svelte";
-import { gql } from "@urql/svelte";
-import type { User } from "$lib/types/user";
-import { UserLevel } from "$lib/types/user";
+import { error } from "@sveltejs/kit"
+import type { Client } from "@urql/svelte"
+import { gql } from "@urql/svelte"
+
+import type { User } from "$lib/types/user"
+import { UserLevel } from "$lib/types/user"
 
 export async function dispatchLogin(
   username: string,
   password: string,
-  urqlClient: Client
+  urqlClient: Client,
 ) {
   const { data } = await urqlClient
     .mutation<{ login: { status: string; error: string; user: User } }>(
@@ -42,31 +43,31 @@ export async function dispatchLogin(
           }
         }
       `,
-      { username, password }
+      { username, password },
     )
-    .toPromise();
-  const login = data?.login;
-  if (!login) throw error(500, "weird login problems");
-  return { ...login, user: userWithLevel(login.user) };
+    .toPromise()
+  const login = data?.login
+  if (!login) throw error(500, "weird login problems")
+  return { ...login, user: userWithLevel(login.user) }
 }
 
 export function userWithLevel(user: User): User {
-  if (!user) return user;
-  const me = { ...user };
+  if (!user) return user
+  const me = { ...user }
   const levelmap: { [key: string]: UserLevel } = {
     Administrators: UserLevel.ADMINISTRATOR,
     Editors: UserLevel.EDITOR,
     Reporters: UserLevel.REPORTER,
-  };
+  }
 
-  let level = UserLevel.ANYBODY;
+  let level = UserLevel.ANYBODY
   if (me.groups)
-    me.groups?.forEach((g) => {
-      level = Math.max(UserLevel.ANYBODY, levelmap[g.name]);
-    });
-  me.level = level;
+    me.groups?.forEach(g => {
+      level = Math.max(UserLevel.ANYBODY, levelmap[g.name])
+    })
+  me.level = level
 
-  return me;
+  return me
 }
 export async function dispatchLogout(urqlClient: Client) {
   const { data } = await urqlClient
@@ -76,8 +77,8 @@ export async function dispatchLogout(urqlClient: Client) {
           logout
         }
       `,
-      {}
+      {},
     )
-    .toPromise();
-  return data.logout;
+    .toPromise()
+  return data.logout
 }

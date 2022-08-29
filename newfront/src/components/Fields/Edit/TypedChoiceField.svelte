@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { FormField } from "../fields";
+  import type { FormField } from "../fields"
 
-  export let formfield: FormField;
-  export let value: string;
-  export let required: boolean;
+  export let formfield: FormField
+  export let value: string
+  export let required: boolean
 </script>
 
 <div class="typed_choice_field">

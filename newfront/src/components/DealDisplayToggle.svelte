@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { displayDealsCount } from "$components/Map/map_helper";
+  import { _ } from "svelte-i18n"
 
-  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "bg-white";
-  $: displaySize = !$displayDealsCount ? "bg-orange text-white" : "bg-white";
+  import { displayDealsCount } from "$components/Map/map_helper"
+
+  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "bg-white"
+  $: displaySize = !$displayDealsCount ? "bg-orange text-white" : "bg-white"
 </script>
 
 <div class="mt-8 flex justify-center text-center">

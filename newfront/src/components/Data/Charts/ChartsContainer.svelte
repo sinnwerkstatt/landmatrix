@@ -1,8 +1,8 @@
 <script lang="ts">
-  import ContextBarContainer from "../ContextBarContainer.svelte";
-  import FilterBar from "../FilterBar.svelte";
-  import { showContextBar, showFilterBar } from "../index";
-  import ViewSwitcher from "../ViewSwitcher.svelte";
+  import ContextBarContainer from "../ContextBarContainer.svelte"
+  import FilterBar from "../FilterBar.svelte"
+  import { showContextBar, showFilterBar } from "../index"
+  import ViewSwitcher from "../ViewSwitcher.svelte"
 </script>
 
 <div class="relative h-full w-full p-0">

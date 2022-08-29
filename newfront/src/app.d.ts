@@ -3,8 +3,8 @@
 // and what to do when importing types
 declare namespace App {
   interface Locals {
-    cookie?: string;
-    locale: string;
+    cookie?: string
+    locale: string
   }
 
   // interface Platform {}

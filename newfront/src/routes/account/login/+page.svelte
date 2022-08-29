@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { dispatchLogin } from "$lib/user";
-  import PageTitle from "$components/PageTitle.svelte";
+  import { _ } from "svelte-i18n"
 
-  let username = "";
-  let password = "";
-  let login_failed_message = "";
+  import { page } from "$app/stores"
 
-  let logged_in = false;
-  let next = $page.url.searchParams.get("next") || "/";
+  import { dispatchLogin } from "$lib/user"
+
+  import PageTitle from "$components/PageTitle.svelte"
+
+  let username = ""
+  let password = ""
+  let login_failed_message = ""
+
+  let logged_in = false
+  let next = $page.url.searchParams.get("next") || "/"
 
   async function login() {
-    const res = await dispatchLogin(username, password, $page.data.urqlClient);
+    const res = await dispatchLogin(username, password, $page.data.urqlClient)
     if (res.status) {
-      login_failed_message = "";
-      logged_in = true;
-      await setTimeout(() => (window.location.href = next), 100);
+      login_failed_message = ""
+      logged_in = true
+      await setTimeout(() => (window.location.href = next), 100)
       // can't do this, because it's hard to populate "user" back to layout:
       // setTimeout(() => goto(next), 100);
     } else {
-      login_failed_message = res.error;
+      login_failed_message = res.error
     }
   }
 </script>
@@ -44,7 +47,6 @@
       class="inpt"
       placeholder={$_("Username")}
       type="text"
-      autofocus
     />
   </label>
   <label class="mb-6 block">

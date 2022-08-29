@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import NavDropDown from "$components/LowLevel/NavDropDown.svelte";
+  import { _ } from "svelte-i18n"
 
-  const label = { deals: $_("Deals"), investors: $_("Investors") };
+  import { page } from "$app/stores"
+
+  import NavDropDown from "$components/LowLevel/NavDropDown.svelte"
+
+  const label = { deals: $_("Deals"), investors: $_("Investors") }
   const chartEntries = [
     {
       title: $_("Web of transnational deals"),
@@ -12,10 +14,10 @@
     { title: $_("Dynamics overview"), route: "/charts/dynamics-overview" },
     { title: $_("Produce info map"), route: "/charts/produce-info" },
     { title: $_("Country profiles"), route: "/charts/country-profiles" },
-  ];
+  ]
 
-  console.log($page.url.pathname);
-  $: dataItemName = {};
+  console.log($page.url.pathname)
+  $: dataItemName = {}
 </script>
 
 <div

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
+  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  export let title = "";
-  export let placement = "";
+  export let title = ""
+  export let placement = ""
 </script>
 
 <li class="group relative {$$props.class}">

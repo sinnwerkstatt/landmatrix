@@ -1,9 +1,9 @@
 <script lang="ts">
   export let value: {
-    url?: string;
-    value: string;
-    fa_icon: string;
-  };
+    url?: string
+    value: string
+    fa_icon: string
+  }
 </script>
 
 <h3 data-block="heading">
@@ -13,6 +13,7 @@
       {value.value}
     </a>
   {:else}
-    <i class="fa fa-{value.fa_icon}" /> {value.value}
+    <i class="fa fa-{value.fa_icon}" />
+    {value.value}
   {/if}
 </h3>

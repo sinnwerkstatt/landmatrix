@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { WagtailStreamfieldBlock } from "$lib/types/wagtail";
-  import { blockMap } from "$components/Wagtail/blocks";
+  import type { WagtailStreamfieldBlock } from "$lib/types/wagtail"
+
+  import { blockMap } from "$components/Wagtail/blocks"
 
   export let value: {
-    left_column: WagtailStreamfieldBlock[];
-    middle_column: WagtailStreamfieldBlock[];
-    right_column: WagtailStreamfieldBlock[];
-  };
+    left_column: WagtailStreamfieldBlock[]
+    middle_column: WagtailStreamfieldBlock[]
+    right_column: WagtailStreamfieldBlock[]
+  }
 </script>
 
 <div data-block="columns_3" class="mb-8 grid gap-4 lg:grid-cols-3">

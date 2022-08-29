@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { Investor } from "$lib/types/investor";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
-  import Overlay from "$components/Overlay.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let visible: boolean;
-  export let investor: Investor;
+  import type { Investor } from "$lib/types/investor"
 
-  const fields = ["classification", "country", "homepage", "comment"];
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import Overlay from "$components/Overlay.svelte"
+
+  export let visible: boolean
+  export let investor: Investor
+
+  const fields = ["classification", "country", "homepage", "comment"]
   // const involvementFields = [
   //   "role",
   //   "investment_type",
@@ -18,7 +20,7 @@
   //   "parent_relation",
   //   "comment",
   // ];
-  const createTitle = (investor) => `${investor.name} (${investor.id})`;
+  const createTitle = investor => `${investor.name} (${investor.id})`
 </script>
 
 <Overlay {visible} on:close title={createTitle(investor)}>

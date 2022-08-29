@@ -1,4 +1,4 @@
-import { gql } from "@urql/svelte";
+import { gql } from "@urql/svelte"
 
 export const investor_gql_query = gql`
   query Investor($id: Int!, $version: Int, $depth: Int, $includeDeals: Boolean!) {
@@ -119,4 +119,4 @@ export const investor_gql_query = gql`
       }
     }
   }
-`;
+`

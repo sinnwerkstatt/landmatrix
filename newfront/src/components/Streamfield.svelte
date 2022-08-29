@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { WagtailStreamfield } from "$lib/types/wagtail";
-  import { blockMap } from "$components/Wagtail/blocks";
+  import type { WagtailStreamfield } from "$lib/types/wagtail"
 
-  export let content: WagtailStreamfield = [];
+  import { blockMap } from "$components/Wagtail/blocks"
+
+  export let content: WagtailStreamfield = []
 </script>
 
 <div class="streamfield container mx-auto px-10 pt-6 pb-0 {$$props.class ?? ''}">

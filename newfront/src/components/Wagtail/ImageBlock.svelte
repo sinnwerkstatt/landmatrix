@@ -1,24 +1,24 @@
 <script lang="ts">
-  import type { BlockImage } from "$lib/types/custom";
+  import type { BlockImage } from "$lib/types/custom"
 
-  export let value: BlockImage;
+  export let value: BlockImage
 
-  $: link = value.image ? value.url : null;
-  $: src = value.image ? value.image.url : value.url;
-  $: caption = value.image ? value.caption : null;
-  $: externalLink = value.image ? value.external : false;
+  $: link = value.image ? value.url : null
+  $: src = value.image ? value.image.url : value.url
+  $: caption = value.image ? value.caption : null
+  $: externalLink = value.image ? value.external : false
 
   function escape_key(e) {
-    if (e.key === "Escape") toggleLightbox();
+    if (e.key === "Escape") toggleLightbox()
   }
-  let lightboxVisible = false;
+  let lightboxVisible = false
   function toggleLightbox() {
     if (lightboxVisible) {
-      lightboxVisible = false;
-      document.removeEventListener("keydown", escape_key);
+      lightboxVisible = false
+      document.removeEventListener("keydown", escape_key)
     } else {
-      lightboxVisible = true;
-      document.addEventListener("keydown", escape_key);
+      lightboxVisible = true
+      document.addEventListener("keydown", escape_key)
     }
   }
 </script>

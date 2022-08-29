@@ -1,26 +1,28 @@
 <script lang="ts">
-  import classNames from "classnames";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { sortFn } from "$lib/utils";
-  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte";
+  import classNames from "classnames"
+  import VirtualList from "svelte-tiny-virtual-list"
 
-  export let columns: string[];
-  export let labels: string[] | null = null;
-  export let spans: number[] | null = null;
-  export let items: Array<{ [key: string]: unknown }> = [];
-  export let sortBy: string | null = null;
+  import { sortFn } from "$lib/utils"
 
-  export let rowClasses = "";
+  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items;
+  export let columns: string[]
+  export let labels: string[] | null = null
+  export let spans: number[] | null = null
+  export let items: Array<{ [key: string]: unknown }> = []
+  export let sortBy: string | null = null
 
-  $: labels = labels ?? columns;
-  $: spans = spans ?? columns.map((col) => 1);
-  $: nCols = spans.reduce((sum, value) => sum + value);
+  export let rowClasses = ""
 
-  const onTableHeadClick = (col) => {
-    sortBy = sortBy === col ? `-${col}` : col;
-  };
+  $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items
+
+  $: labels = labels ?? columns
+  $: spans = spans ?? columns.map(col => 1)
+  $: nCols = spans.reduce((sum, value) => sum + value)
+
+  const onTableHeadClick = col => {
+    sortBy = sortBy === col ? `-${col}` : col
+  }
 </script>
 
 <div>
@@ -39,7 +41,7 @@
           <ChevronDownIcon
             class={classNames(
               "transition-duration-300 inline h-4 w-4 rounded text-orange transition-transform",
-              sortBy === `-${col}` ? "rotate-180" : ""
+              sortBy === `-${col}` ? "rotate-180" : "",
             )}
           />
         {/if}

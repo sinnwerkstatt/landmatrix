@@ -1,29 +1,31 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { User } from "$lib/types/user";
-  import UserSelect from "$components/Management/UserSelect.svelte";
-  import Overlay from "$components/Overlay.svelte";
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
+  import type { User } from "$lib/types/user"
 
-  export let visible = false;
-  export let hideable = true;
-  export let title = $_("Submit");
+  import UserSelect from "$components/Management/UserSelect.svelte"
+  import Overlay from "$components/Overlay.svelte"
 
-  export let commentInput = false;
-  export let commentRequired = false;
+  const dispatch = createEventDispatcher()
 
-  let comment = "";
+  export let visible = false
+  export let hideable = true
+  export let title = $_("Submit")
 
-  export let assignToUserInput = false;
-  export let toUser: User | null = null;
-  export let showSubmit = true;
+  export let commentInput = false
+  export let commentRequired = false
+
+  let comment = ""
+
+  export let assignToUserInput = false
+  export let toUser: User | null = null
+  export let showSubmit = true
 
   const onSubmit = async () => {
-    dispatch("submit", { comment, toUser });
-    comment = "";
-  };
+    dispatch("submit", { comment, toUser })
+    comment = ""
+  }
 </script>
 
 <Overlay

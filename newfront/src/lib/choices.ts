@@ -7,19 +7,19 @@ import {
   NatureOfDeal,
   NegotiationStatusGroup,
   OtherIoI,
-} from "$lib/types/deal";
-import { Classification } from "$lib/types/investor";
+} from "$lib/types/deal"
+import { Classification } from "$lib/types/investor"
 
 export const getImplementationStatusChoices = (
-  $t: (t: string) => string
+  $t: (t: string) => string,
 ): { [key in ImplementationStatus]: string } => {
   return {
     [ImplementationStatus.PROJECT_NOT_STARTED]: $t("Project not started"),
     [ImplementationStatus.STARTUP_PHASE]: $t("Startup phase (no production)"),
     [ImplementationStatus.IN_OPERATION]: $t("In operation (production)"),
     [ImplementationStatus.PROJECT_ABANDONED]: $t("Project abandoned"),
-  };
-};
+  }
+}
 
 export const implementation_status_choices: { [key in ImplementationStatus]: string } =
   {
@@ -27,34 +27,34 @@ export const implementation_status_choices: { [key in ImplementationStatus]: str
     [ImplementationStatus.STARTUP_PHASE]: "Startup phase (no production)",
     [ImplementationStatus.IN_OPERATION]: "In operation (production)",
     [ImplementationStatus.PROJECT_ABANDONED]: "Project abandoned",
-  };
+  }
 
 export const getNatureOfDealChoices = (
-  $t: (t: string) => string
+  $t: (t: string) => string,
 ): { [key in NatureOfDeal]: string } => {
   return {
     [NatureOfDeal.OUTRIGHT_PURCHASE]: $t("Outright purchase"),
     [NatureOfDeal.LEASE]: $t("Lease"),
     [NatureOfDeal.CONCESSION]: $t("Concession"),
     [NatureOfDeal.EXPLOITATION_PERMIT]: $t(
-      "Exploitation permit / license / concession (for mineral resources)"
+      "Exploitation permit / license / concession (for mineral resources)",
     ),
     [NatureOfDeal.PURE_CONTRACT_FARMING]: $t("Pure contract farming"),
     [NatureOfDeal.OTHER]: $t("Other"),
-  };
-};
+  }
+}
 
 export const negotiation_status_group_choices: {
-  [key in NegotiationStatusGroup]: string;
+  [key in NegotiationStatusGroup]: string
 } = {
   [NegotiationStatusGroup.INTENDED]: "Intended",
   [NegotiationStatusGroup.CONCLUDED]: "Concluded",
   [NegotiationStatusGroup.FAILED]: "Failed",
   [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
-};
+}
 
 export const agriculture_investment_choices: {
-  [key in AgricultureIoI]: string;
+  [key in AgricultureIoI]: string
 } = {
   [AgricultureIoI.BIOFUELS]: "Biofuels",
   [AgricultureIoI.FOOD_CROPS]: "Food crops",
@@ -62,16 +62,16 @@ export const agriculture_investment_choices: {
   [AgricultureIoI.LIVESTOCK]: "Livestock",
   [AgricultureIoI.NON_FOOD_AGRICULTURE]: "Non-food agricultural commodities",
   [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: "Agriculture unspecified",
-};
+}
 
 export const forestry_investment_choices: {
-  [key in ForestryIoI]: string;
+  [key in ForestryIoI]: string
 } = {
   [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation",
   [ForestryIoI.FOREST_LOGGING]: "Forest logging / management",
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
   [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
-};
+}
 
 export const other_intention_choices: { [key in OtherIoI]: string } = {
   [OtherIoI.MINING]: "Mining",
@@ -82,29 +82,29 @@ export const other_intention_choices: { [key in OtherIoI]: string } = {
   [OtherIoI.LAND_SPECULATION]: "Land speculation",
   [OtherIoI.RENEWABLE_ENERGY]: "Renewable energy",
   [OtherIoI.OTHER]: "Other",
-};
+}
 
 export const intention_of_investment_group_choices: {
-  [key in IntentionOfInvestmentGroup]: string;
+  [key in IntentionOfInvestmentGroup]: string
 } = {
   [IntentionOfInvestmentGroup.AGRICULTURE]: "Agriculture",
   [IntentionOfInvestmentGroup.FORESTRY]: "Forestry",
   [IntentionOfInvestmentGroup.OTHER]: "Other",
-};
+}
 
 export const intention_of_investment_choices = {
   Agriculture: agriculture_investment_choices,
   Forestry: forestry_investment_choices,
   Other: other_intention_choices,
-};
+}
 
 export const flat_intention_of_investment_map: {
-  [key in IntentionOfInvestment]: string;
+  [key in IntentionOfInvestment]: string
 } = {
   ...agriculture_investment_choices,
   ...forestry_investment_choices,
   ...other_intention_choices,
-};
+}
 
 export const classification_choices: { [key in Classification]: string } = {
   [Classification.GOVERNMENT]: "Government",
@@ -126,7 +126,7 @@ export const classification_choices: { [key in Classification]: string } = {
   [Classification.NON_PROFIT]:
     "Non - Profit organization (e.g. Church, University etc.)",
   [Classification.OTHER]: "Other (please specify in comment field)",
-};
+}
 
 export const status_map = {
   1: "Draft",
@@ -135,11 +135,11 @@ export const status_map = {
   4: "Deleted",
   5: "Rejected", // legacy
   6: "To Delete", // legacy
-};
+}
 export const draft_status_map = {
   1: "Draft",
   2: "Review",
   3: "Activation",
   4: "Rejected", // legacy
   5: "Deleted",
-};
+}

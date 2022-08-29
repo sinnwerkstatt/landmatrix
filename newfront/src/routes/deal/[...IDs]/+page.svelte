@@ -1,32 +1,35 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { deal_gql_query } from "$lib/deal_queries";
-  import { getDealSections } from "$lib/sections";
-  import { loading } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import { UserLevel } from "$lib/types/user";
-  import DealHistory from "$components/Deal/DealHistory.svelte";
-  import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte";
-  import DealSection from "$components/Deal/DealSection.svelte";
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte";
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import InvestorGraph from "$components/Investor/InvestorGraph.svelte";
-  import DealManageHeader from "$components/Management/DealManageHeader.svelte";
+  import { Client, gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/stores"
+
+  import { deal_gql_query } from "$lib/deal_queries"
+  import { getDealSections } from "$lib/sections"
+  import { loading } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import { UserLevel } from "$lib/types/user"
+
+  import DealHistory from "$components/Deal/DealHistory.svelte"
+  import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte"
+  import DealSection from "$components/Deal/DealSection.svelte"
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
+  import DealManageHeader from "$components/Management/DealManageHeader.svelte"
 
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;
-  export let data: { deal: Deal; dealID: number; dealVersion: number };
+  export let data: { deal: Deal; dealID: number; dealVersion: number }
 
-  let deal: Deal = data.deal;
-  $: deal = data.deal;
+  let deal: Deal = data.deal
+  $: deal = data.deal
 
-  $: activeTab = $page.url.hash || "#locations";
+  $: activeTab = $page.url.hash || "#locations"
 
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
@@ -47,31 +50,31 @@
     { target: "#blank1", name: null },
     { target: "#history", name: $_("Deal history") },
     { target: "#actions", name: $_("Actions") },
-  ];
+  ]
 
   async function reloadDeal() {
-    console.log("Deal detail: reload");
-    loading.set(true);
+    console.log("Deal detail: reload")
+    loading.set(true)
     const ret = (
       await ($page.data.urqlClient as Client)
         .query<{ deal: Deal }>(
           deal_gql_query,
           { id: data.dealID, version: data.dealVersion },
-          { requestPolicy: "network-only" }
+          { requestPolicy: "network-only" },
         )
         .toPromise()
-    ).data;
-    deal = ret.deal;
-    loading.set(false);
+    ).data
+    deal = ret.deal
+    loading.set(false)
   }
 
   const download_link = function (format: string): string {
-    return `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`;
-  };
+    return `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
+  }
 
-  let investor: Investor;
+  let investor: Investor
   async function fetchInvestor() {
-    if (!deal.operating_company?.id) return;
+    if (!deal.operating_company?.id) return
     const ret = (
       await ($page.data.urqlClient as Client)
         .query<{ investor: Investor }>(
@@ -95,14 +98,14 @@
               }
             }
           `,
-          { id: deal?.operating_company?.id }
+          { id: deal?.operating_company?.id },
         )
         .toPromise()
-    ).data;
-    investor = ret.investor;
+    ).data
+    investor = ret.investor
   }
-  onMount(fetchInvestor);
-  $: dealSections = getDealSections($_);
+  onMount(fetchInvestor)
+  $: dealSections = getDealSections($_)
 </script>
 
 <svelte:head>
@@ -122,15 +125,18 @@
       </h1>
       <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-          {$_("Created")}<br />
+          {$_("Created")}
+          <br />
           <DateTimeField value={deal.created_at} />
         </div>
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-          {$_("Last update")}<br />
+          {$_("Last update")}
+          <br />
           <DateTimeField value={deal.modified_at} />
         </div>
         <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
-          {$_("Last full update")}<br />
+          {$_("Last full update")}
+          <br />
           <DateTimeField value={deal.fully_updated_at} />
         </div>
       </div>
@@ -216,7 +222,8 @@
           <a target="_blank" href={download_link("xlsx")}>
             <DownloadIcon />
             {$_("Excel document")}
-          </a><br />
+          </a>
+          <br />
           <a target="_blank" href={download_link("csv")}>
             <DownloadIcon />
             {$_("CSV file")}

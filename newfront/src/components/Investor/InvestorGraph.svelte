@@ -1,72 +1,74 @@
 <script lang="ts">
-  import cn from "classnames";
-  import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape";
-  import { onMount, tick } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { Investor } from "$lib/types/investor";
-  import CompressIcon from "$components/icons/CompressIcon.svelte";
-  import ExpandIcon from "$components/icons/ExpandIcon.svelte";
-  import DealDetailModal from "$components/Investor/DealDetailModal.svelte";
-  import InvestorDetailModal from "$components/Investor/InvestorDetailModal.svelte";
+  import cn from "classnames"
+  import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
+  import { onMount, tick } from "svelte"
+  import { _ } from "svelte-i18n"
+
+  import type { Investor } from "$lib/types/investor"
+
+  import CompressIcon from "$components/icons/CompressIcon.svelte"
+  import ExpandIcon from "$components/icons/ExpandIcon.svelte"
+  import DealDetailModal from "$components/Investor/DealDetailModal.svelte"
+  import InvestorDetailModal from "$components/Investor/InvestorDetailModal.svelte"
   import {
     createGraph,
     createGraphElements,
     registerTippy,
-  } from "$components/Investor/investorGraph";
+  } from "$components/Investor/investorGraph"
 
-  export let investor: Investor;
-  export let showDealsOnLoad = true;
-  export let initDepth = 1;
-  export let showControls = false;
+  export let investor: Investor
+  export let showDealsOnLoad = true
+  export let initDepth = 1
+  export let showControls = false
 
-  const MAX_DEPTH = 5;
-  let depth = initDepth;
+  const MAX_DEPTH = 5
+  let depth = initDepth
 
-  let modalData = {};
-  let isFullscreen = false;
-  let showInvestorModal = false;
-  let showDealModal = false;
-  let showDeals = showDealsOnLoad;
+  let modalData = {}
+  let isFullscreen = false
+  let showInvestorModal = false
+  let showDealModal = false
+  let showDeals = showDealsOnLoad
 
-  let cyGraph: Graph;
+  let cyGraph: Graph
   const drawGraph = () => {
-    cyGraph = createGraph(elements);
-    registerTippy(cyGraph);
-    registerModal(cyGraph);
-  };
+    cyGraph = createGraph(elements)
+    registerTippy(cyGraph)
+    registerModal(cyGraph)
+  }
 
-  let elements: ElementDefinition[] = [];
+  let elements: ElementDefinition[] = []
   $: {
     if (investor) {
-      elements = createGraphElements(investor, [], showDeals, depth);
+      elements = createGraphElements(investor, [], showDeals, depth)
       if (cyGraph) {
-        drawGraph();
+        drawGraph()
       }
     }
   }
 
-  const registerModal = (cyGraph) => {
+  const registerModal = cyGraph => {
     cyGraph.ready(() => {
-      cyGraph.nodes().on("tap", showNodeModal);
-      cyGraph.nodes().on("cxttap", showNodeModal);
-    });
-  };
+      cyGraph.nodes().on("tap", showNodeModal)
+      cyGraph.nodes().on("cxttap", showNodeModal)
+    })
+  }
 
-  const showNodeModal: EventHandler = (e) => {
-    e.preventDefault();
-    modalData = e.target.data();
+  const showNodeModal: EventHandler = e => {
+    e.preventDefault()
+    modalData = e.target.data()
 
-    if (modalData.dealNode) showDealModal = true;
-    else showInvestorModal = true;
-  };
+    if (modalData.dealNode) showDealModal = true
+    else showInvestorModal = true
+  }
 
   const toggleFullscreen = async () => {
-    isFullscreen = !isFullscreen;
-    await tick();
-    drawGraph();
-  };
+    isFullscreen = !isFullscreen
+    await tick()
+    drawGraph()
+  }
 
-  onMount(drawGraph);
+  onMount(drawGraph)
 </script>
 
 <InvestorDetailModal
@@ -127,9 +129,9 @@
         </div>
 
         <div>
-          <label for="investor-deals" class="pr-3"
-            ><strong>{$_("Show deals")}</strong></label
-          >
+          <label for="investor-deals" class="pr-3">
+            <strong>{$_("Show deals")}</strong>
+          </label>
           <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
         </div>
       </div>
@@ -141,27 +143,30 @@
           <span
             class={cn(
               "relative mr-1 inline-block h-1.5 w-5",
-              "border-t-2 border-t-orange"
+              "border-t-2 border-t-orange",
             )}
-          />{$_("Is operating company of")}
+          />
+          {$_("Is operating company of")}
         </li>
         <li>
           <span
             class={cn(
               "relative mr-3 inline-block h-0 w-0",
               "border-y-8 border-r-[12px] border-[#f78e8f] border-y-transparent",
-              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#f78e8f]"
+              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#f78e8f]",
             )}
-          />{$_("Is parent company of")}
+          />
+          {$_("Is parent company of")}
         </li>
         <li>
           <span
             class={cn(
               "relative mr-3 inline-block h-0 w-0",
               "border-y-8 border-r-[12px] border-[#72b0fd] border-y-transparent",
-              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#72b0fd]"
+              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#72b0fd]",
             )}
-          />{$_("Is tertiary investor/lender of")}
+          />
+          {$_("Is tertiary investor/lender of")}
         </li>
       </ul>
     </div>
