@@ -29,7 +29,7 @@
   <form bind:this={logbookForm} class="mx-1">
     <textarea bind:value={comment} required rows="2" class="w-full" />
 
-    <div class="my-2 ml-1 lg:flex items-center">
+    <div class="my-2 ml-1 items-center lg:flex">
       <span class="lg:w-1/5">{$_("Send to")}:</span>
       <div class="flex-grow">
         <UserSelect bind:value={sendToUser} />

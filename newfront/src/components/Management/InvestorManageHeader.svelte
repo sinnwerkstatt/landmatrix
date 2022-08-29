@@ -20,7 +20,7 @@
   }
 
   function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation (
@@ -52,7 +52,6 @@
       )
       .toPromise()
       .then(async ({ data: { change_investor_status } }) => {
-        console.log(change_investor_status);
         if (transition === "ACTIVATE") {
           await goto(`/investor/${change_investor_status.investorId}/`);
         } else if (investorVersion !== change_investor_status.investorVersion)
@@ -65,7 +64,7 @@
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String!, $to_user_id: Int) {
@@ -93,7 +92,7 @@
   }
 
   function deleteInvestor({ detail: { comment } }) {
-    $page.stuff.urqlClient
+    $page.data.urqlClient
       .mutation(
         gql`
           mutation ($id: Int!, $version: Int, $comment: String) {
@@ -134,7 +133,7 @@
 >
   <div class="mb-6">
     <label for="data-policy-checkbox" class="underline">{$_("Data policy")}</label>
-    <label class="font-bold block mt-1">
+    <label class="mt-1 block font-bold">
       <input required type="checkbox" id="data-policy-checkbox" />
       {$_("I've read and agree to the")}
       <a href="/about/data-policy/" target="_blank">{$_("Data policy")} </a>.

@@ -19,7 +19,7 @@
   let investors: Investor[] = [];
 
   async function getInvestors() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{
         investors: Investor[];
       }>(
@@ -59,7 +59,7 @@
       newInvestorForm.reportValidity();
       return;
     }
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .mutation(
         gql`
           mutation ($payload: Payload) {

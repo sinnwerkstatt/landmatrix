@@ -12,5 +12,5 @@ urlpatterns = [
     path("legacy_export/", data_download),
     path("newdeal_legacy/messages/", messages_json),
     path("data.geojson", gis_export),
-    path("management", Management.as_view()),
+    path("management/", Management.as_view()),
 ]

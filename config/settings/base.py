@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "wagtail_modeltranslation.migrate",
     # wagtail
     "wagtail.contrib.modeladmin",
-    "wagtail.contrib.forms",  # TODO delete this after squashing migrations
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
     "wagtail.embeds",
@@ -73,7 +72,6 @@ INSTALLED_APPS = [
     "apps.wagtailcms",
     # plumbing
     "impersonate",
-    "celery",
     "ariadne_django",
     "corsheaders",
 ]
@@ -100,7 +98,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR("templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -173,14 +170,8 @@ IMPERSONATE = {
     "REDIRECT_FIELD_NAME": "next",
 }
 
-# CELERY SETTINGS
-BROKER_URL = "redis://localhost:6379/0"
-CELERY_REDIS_BACKEND = BROKER_URL
-CELERY_NAME = "landmatrix"
-
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 
-# django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])

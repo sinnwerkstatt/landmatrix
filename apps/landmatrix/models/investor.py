@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import re
-from typing import Set
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -253,7 +254,7 @@ class Investor(models.Model):
 
     def get_parent_companies(
         self, top_investors_only=False, _seen_investors=None
-    ) -> Set["Investor"]:
+    ) -> set["Investor"]:
         """
         Get list of the highest parent companies
         (all right-hand side parent companies of the network visualisation)

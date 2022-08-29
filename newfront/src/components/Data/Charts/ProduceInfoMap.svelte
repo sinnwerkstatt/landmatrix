@@ -182,6 +182,6 @@
   onMount(() => buildTreeChart(treeData));
 </script>
 
-<div id="produce-info" class="w-full h-full">
+<div id="produce-info" class="h-full w-full">
   <svg />
 </div>

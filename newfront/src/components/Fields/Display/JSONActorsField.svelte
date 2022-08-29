@@ -25,7 +25,7 @@
     <li>
       <span>{val.name}</span>
       {#if val.role}
-        <span class="font-light text-sm">
+        <span class="text-sm font-light">
           ({mapChoices(val.role, formfield.choices)})
         </span>
       {/if}

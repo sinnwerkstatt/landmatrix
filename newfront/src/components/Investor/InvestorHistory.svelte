@@ -21,7 +21,7 @@
 
   function calcVersionList(versions: InvestorVersion[]) {
     versions = JSON.parse(JSON.stringify(versions));
-    if (!$page.stuff.user.is_authenticated) {
+    if (!$page.data.user.is_authenticated) {
       versions = versions.filter(
         (v) => !(v.investor.confidential || v.investor.draft_status)
       );
@@ -72,12 +72,12 @@
 
 <section>
   <h3>{$_("Version history")}</h3>
-  <table class="table-auto w-full border-b-2 relative">
+  <table class="relative w-full table-auto border-b-2">
     <thead>
       <tr>
         <th>{$_("Created")}</th>
-        {#if $page.stuff.user.is_authenticated} <th>{$_("User")}</th> {/if}
-        {#if $page.stuff.user.is_authenticated} <th>{$_("Status")}</th> {/if}
+        {#if $page.data.user.is_authenticated} <th>{$_("User")}</th> {/if}
+        {#if $page.data.user.is_authenticated} <th>{$_("Status")}</th> {/if}
         <th class="text-right">
           {$_("Show")} /
           <a
@@ -93,13 +93,13 @@
       {#each enriched_versions as version, i}
         <tr class="odd:bg-gray-100">
           <td>{dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}</td>
-          {#if $page.stuff.user.is_authenticated}
+          {#if $page.data.user.is_authenticated}
             <td>
               {version.created_by && version.created_by.full_name}
             </td>
           {/if}
 
-          {#if $page.stuff.user.is_authenticated}
+          {#if $page.data.user.is_authenticated}
             <td>
               {$_(
                 derive_status(
@@ -109,13 +109,13 @@
               )}
             </td>
           {/if}
-          <td class="text-right whitespace-nowrap">
+          <td class="whitespace-nowrap text-right">
             {#if i === deduced_position}
               {$_("Current")}
             {:else}
               <a href={version?.link}>{$_("Show")}</a>
             {/if}
-            <span class="ml-4 text-right whitespace-nowrap">
+            <span class="ml-4 whitespace-nowrap text-right">
               <input
                 bind:group={compareFrom}
                 type="radio"
@@ -137,9 +137,9 @@
     <tfoot>
       <tr>
         <td />
-        {#if $page.stuff.user.is_authenticated} <td /> {/if}
+        {#if $page.data.user.is_authenticated} <td /> {/if}
         <td />
-        {#if $page.stuff.user.is_authenticated} <td /> {/if}
+        {#if $page.data.user.is_authenticated} <td /> {/if}
         {#if compareFrom && compareTo}
           <td>
             <a

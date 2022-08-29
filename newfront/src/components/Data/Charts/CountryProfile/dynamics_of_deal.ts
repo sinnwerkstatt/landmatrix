@@ -28,12 +28,12 @@ export class DynamicsOfDeal {
       .append("g");
 
     const y = scaleBand()
-      .domain(range(data.length))
+      .domain(range(data.length).map((x) => x.toString()))
       .rangeRound([this.margin.top, this.height - this.margin.bottom])
       .padding(0.1);
 
     const x = scaleLinear()
-      .domain([0, max(data, (d) => d.value)])
+      .domain([0, max(data, (d) => d.value) ?? 0])
       .range([this.margin.left, this.width - this.margin.right]);
 
     const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`;
@@ -44,14 +44,14 @@ export class DynamicsOfDeal {
       .attr("fill", "#fc941f")
       .append("rect")
       .attr("x", x(0))
-      .attr("y", (d, i) => y(i))
+      .attr("y", (d, i) => y(i.toString()) ?? 0)
       .attr("width", (d) => x(d.value) - x(0) || 0)
       .attr("height", y.bandwidth());
 
     bar
       .append("text")
       .attr("x", (d) => x(d.value))
-      .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+      .attr("y", (d, i) => (y(i.toString()) ?? 0) + y.bandwidth() / 2)
       .text((d) => format(d.value))
       .attr("dy", "0.35em")
       .attr("dx", function (d) {
@@ -69,7 +69,7 @@ export class DynamicsOfDeal {
       .attr("transform", `translate(${this.margin.left},0)`)
       .call(
         axisLeft(y)
-          .tickFormat((i) => data[i].name)
+          .tickFormat((i) => data[+i].name)
           .tickSizeOuter(0)
       )
       .attr("font-size", "1rem");

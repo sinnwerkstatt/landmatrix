@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import json
-from typing import Optional
 
 from django.conf import settings
 from django.core import serializers
@@ -968,7 +969,7 @@ class Deal(AbstractDealBase):
             and "FOREST_LOGGING" in self.current_intention_of_investment
         )
 
-    def _calculate_transnational(self) -> Optional[bool]:
+    def _calculate_transnational(self) -> bool | None:
         if not self.country_id:
             # unknown if we have no target country
             return None

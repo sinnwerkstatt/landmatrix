@@ -15,7 +15,7 @@
 </script>
 
 {#if entries.length > 0}
-  <section class="flex flex-wrap h-full">
+  <section class="flex h-full flex-wrap">
     <div class={wrapperClasses}>
       {#each entries as entry, index}
         <div class="{model}-entry">

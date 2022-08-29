@@ -4,7 +4,7 @@
   import TwitterIcon from "$components/icons/TwitterIcon.svelte";
 </script>
 
-<footer class="px-4 py-1.5 relative bg-lm-dark text-sm text-white">
+<footer class="relative bg-lm-dark px-4 py-1.5 text-sm text-white">
   <div class="text-center">
     <p class="mb-0">
       &copy; {new Date().getFullYear()} The Land Matrix |
@@ -20,7 +20,7 @@
       <TwitterIcon />
     </a>
     <a
-      class="ml-2 hover:text-orange-light"
+      class="hover:text-orange-light ml-2"
       target="_blank"
       href="https://www.facebook.com/LandMatrix"
     >

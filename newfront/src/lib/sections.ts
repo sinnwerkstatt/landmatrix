@@ -3,30 +3,35 @@ export type Section = {
   fields: string[];
 };
 
-export const dealSections: { [key: string]: Section[] } = {
+export const getDealSections = ($_: (t: string) => string) => ({
   general_info: [
     {
-      name: "Land area",
-      fields: ["intended_size", "contracsize", "production_size", "land_area_comment"],
+      name: $_("Land area"),
+      fields: [
+        "intended_size",
+        "contract_size",
+        "production_size",
+        "land_area_comment",
+      ],
     },
     {
-      name: "Intention of investment",
+      name: $_("Intention of investment"),
       fields: ["intention_of_investment", "intention_of_investment_comment"],
     },
     {
-      name: "Nature of the deal",
+      name: $_("Nature of the deal"),
       fields: ["nature_of_deal", "nature_of_deal_comment"],
     },
     {
-      name: "Negotiation status",
+      name: $_("Negotiation status"),
       fields: ["negotiation_status", "negotiation_status_comment"],
     },
     {
-      name: "Implementation status",
+      name: $_("Implementation status"),
       fields: ["implementation_status", "implementation_status_comment"],
     },
     {
-      name: "Purchase price",
+      name: $_("Purchase price"),
       fields: [
         "purchase_price",
         "purchase_price_currency",
@@ -36,7 +41,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Leasing fees",
+      name: $_("Leasing fees"),
       fields: [
         "annual_leasing_fee",
         "annual_leasing_fee_currency",
@@ -46,7 +51,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Contract farming",
+      name: $_("Contract farming"),
       fields: [
         "contract_farming",
         "on_the_lease_state",
@@ -59,7 +64,7 @@ export const dealSections: { [key: string]: Section[] } = {
   ],
   employment: [
     {
-      name: "Number of total jobs created",
+      name: $_("Number of total jobs created"),
       fields: [
         "total_jobs_created",
         "total_jobs_planned",
@@ -70,7 +75,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Number of jobs for foreigners created",
+      name: $_("Number of jobs for foreigners created"),
       fields: [
         "foreign_jobs_created",
         "foreign_jobs_planned",
@@ -81,7 +86,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Number of domestic jobs created",
+      name: $_("Number of domestic jobs created"),
       fields: [
         "domestic_jobs_created",
         "domestic_jobs_planned",
@@ -94,7 +99,7 @@ export const dealSections: { [key: string]: Section[] } = {
   ],
   investor_info: [
     {
-      name: "Operating company",
+      name: $_("Operating company"),
       fields: [
         "operating_company",
         "involved_actors",
@@ -105,7 +110,7 @@ export const dealSections: { [key: string]: Section[] } = {
   ],
   local_communities: [
     {
-      name: "Names of communities / indigenous peoples affected",
+      name: $_("Names of communities / indigenous peoples affected"),
       fields: [
         "name_of_community",
         "name_of_indigenous_people",
@@ -113,23 +118,23 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Recognition status of community land tenure",
+      name: $_("Recognition status of community land tenure"),
       fields: ["recognition_status", "recognition_status_comment"],
     },
     {
-      name: "Consultation of local community",
+      name: $_("Consultation of local community"),
       fields: ["community_consultation", "community_consultation_comment"],
     },
     {
-      name: "How did the community react?",
+      name: $_("How did the community react?"),
       fields: ["community_reaction", "community_reaction_comment"],
     },
     {
-      name: "Presence of land conflicts",
+      name: $_("Presence of land conflicts"),
       fields: ["land_conflicts", "land_conflicts_comment"],
     },
     {
-      name: "Displacement of people",
+      name: $_("Displacement of people"),
       fields: [
         "displacement_of_people",
         "displaced_people",
@@ -142,43 +147,45 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Negative impacts for local communities",
+      name: $_("Negative impacts for local communities"),
       fields: ["negative_impacts", "negative_impacts_comment"],
     },
     {
-      name: "Promised or received compensation",
+      name: $_("Promised or received compensation"),
       fields: ["promised_compensation", "received_compensation"],
     },
     {
-      name: "Promised benefits for local communities",
+      name: $_("Promised benefits for local communities"),
       fields: ["promised_benefits", "promised_benefits_comment"],
     },
     {
-      name: "Materialized benefits for local communities",
+      name: $_("Materialized benefits for local communities"),
       fields: ["materialized_benefits", "materialized_benefits_comment"],
     },
     {
-      name: "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
+      name: $_(
+        "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)"
+      ),
       fields: ["presence_of_organizations"],
     },
   ],
   former_use: [
     {
-      name: "Former land owner (not by constitution)",
+      name: $_("Former land owner (not by constitution)"),
       fields: ["former_land_owner", "former_land_owner_comment"],
     },
     {
-      name: "Former land use",
+      name: $_("Former land use"),
       fields: ["former_land_use", "former_land_use_comment"],
     },
     {
-      name: "Former land cover",
+      name: $_("Former land cover"),
       fields: ["former_land_cover", "former_land_cover_comment"],
     },
   ],
   produce_info: [
     {
-      name: "Detailed crop, animal and mineral information",
+      name: $_("Detailed crop, animal and mineral information"),
       fields: [
         "crops",
         "crops_comment",
@@ -189,7 +196,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Detailed contract farming crop and animal information",
+      name: $_("Detailed contract farming crop and animal information"),
       fields: [
         "contract_farming_crops",
         "contract_farming_crops_comment",
@@ -198,7 +205,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "Use of produce",
+      name: $_("Use of produce"),
       fields: [
         "has_domestic_use",
         "domestic_use",
@@ -214,7 +221,7 @@ export const dealSections: { [key: string]: Section[] } = {
       ],
     },
     {
-      name: "In country processing of produce",
+      name: $_("In country processing of produce"),
       fields: [
         "in_country_processing",
         "in_country_processing_comment",
@@ -225,19 +232,21 @@ export const dealSections: { [key: string]: Section[] } = {
   ],
   water: [
     {
-      name: "Water extraction envisaged",
+      name: $_("Water extraction envisaged"),
       fields: ["water_extraction_envisaged", "water_extraction_envisaged_comment"],
     },
     {
-      name: "Source of water extraction",
+      name: $_("Source of water extraction"),
       fields: ["source_of_water_extraction", "source_of_water_extraction_comment"],
     },
     {
-      name: "How much do investors pay for water and the use of water infrastructure?",
+      name: $_(
+        "How much do investors pay for water and the use of water infrastructure?"
+      ),
       fields: ["how_much_do_investors_pay_comment"],
     },
     {
-      name: "How much water is extracted?",
+      name: $_("How much water is extracted?"),
       fields: [
         "water_extraction_amount",
         "water_extraction_amount_comment",
@@ -249,27 +258,27 @@ export const dealSections: { [key: string]: Section[] } = {
   ],
   gender_related_info: [
     {
-      name: "Any gender-specific information about the investment and its impacts",
+      name: $_("Any gender-specific information about the investment and its impacts"),
       fields: ["gender_related_information"],
     },
   ],
   overall_comment: [
     {
-      name: "Overall comment",
+      name: $_("Overall comment"),
       fields: ["overall_comment"],
     },
   ],
   meta: [
     {
-      name: "Fully updated",
+      name: $_("Fully updated"),
       fields: ["fully_updated"],
     },
     {
-      name: "Confidential",
+      name: $_("Confidential"),
       fields: ["confidential", "confidential_comment"],
     },
   ],
-};
+});
 
 export const subsections = {
   location: [
@@ -308,10 +317,10 @@ export const subsections = {
   ],
 };
 
-export const investorSections: { [key: string]: Section[] } = {
+export const getInvestorSections = ($_: (t: string) => string) => ({
   general_info: [
     {
-      name: "General Info",
+      name: $_("General Info"),
       fields: [
         "name",
         "country",
@@ -322,26 +331,26 @@ export const investorSections: { [key: string]: Section[] } = {
       ],
     },
   ],
-};
+});
 
-export const investorSubsections = {
-  parent_companies: [
-    "investor",
-    "investment_type",
-    "percentage",
-    "loans_amount",
-    "loans_currency",
-    "loans_date",
-    "comment",
-  ],
-  tertiary_investors: [
-    "investor",
-    "investment_type",
-    "ownership_share",
-    "loan_amount",
-    "loan_currency",
-    "loan_date",
-    "parent_relation",
-    "comment",
-  ],
-};
+// export const investorSubsections = {
+//   parent_companies: [
+//     "investor",
+//     "investment_type",
+//     "percentage",
+//     "loans_amount",
+//     "loans_currency",
+//     "loans_date",
+//     "comment",
+//   ],
+//   tertiary_investors: [
+//     "investor",
+//     "investment_type",
+//     "ownership_share",
+//     "loan_amount",
+//     "loan_currency",
+//     "loan_date",
+//     "parent_relation",
+//     "comment",
+//   ],
+// };

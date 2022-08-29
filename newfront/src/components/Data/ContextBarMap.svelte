@@ -2,13 +2,12 @@
   import { queryStore } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { loading } from "$lib/data";
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus";
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup";
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup";
   import { data_deal_query_gql } from "$lib/deal_queries";
   import { filters, publicOnly } from "$lib/filters";
-  import { countries, observatoryPages, regions } from "$lib/stores";
+  import { countries, loading, observatoryPages, regions } from "$lib/stores";
   import type { CountryOrRegion } from "$lib/types/wagtail";
   import { sum } from "$lib/utils/data_processing";
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
@@ -17,7 +16,7 @@
   import ContextBarContainer from "./ContextBarContainer.svelte";
 
   $: deals = queryStore({
-    client: $page.stuff.urqlClient,
+    client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {
       filters: $filters.toGQLFilterArray(),
@@ -37,7 +36,7 @@
       ...($filters.region_id
         ? $regions.find((r) => r.id === $filters.region_id)
         : $countries.find((c) => c.id === $filters.country_id)),
-    };
+    } as CountryOrRegion;
     currentItem.observatory_page = $observatoryPages.find(
       (o) => o.id === currentItem.observatory_page_id
     );
@@ -71,19 +70,19 @@
   {#if dealsArray.length > 0}
     <div>
       <DealDisplayToggle />
-      <div class="w-full text-center font-bold my-3">
+      <div class="my-3 w-full text-center font-bold">
         {totalCount}
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Negotiation status")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Negotiation status")}</h5>
         <StatusPieChart data={chartNegStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Implementation status")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Implementation status")}</h5>
         <StatusPieChart data={chartImpStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Produce")}</h5>
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Produce")}</h5>
         <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>

@@ -6,7 +6,7 @@
   <a href="/map" class="square">
     <div>
       <h3>{$_("Map")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="72"
@@ -32,7 +32,7 @@
   <a href="/list/deals" class="square">
     <div>
       <h3>{$_("Data")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="96"
@@ -57,7 +57,7 @@
   <a href="/charts" class="square">
     <div>
       <h3>{$_("Charts")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="96"
@@ -81,8 +81,8 @@
   </a>
 </div>
 
-<style>
+<style lang="postcss">
   .square {
-    @apply block bg-lm-light text-center p-4 text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
+    @apply block bg-lm-light p-4 text-center text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
   }
 </style>

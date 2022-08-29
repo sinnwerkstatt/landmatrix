@@ -1,0 +1,9 @@
+:9000
+
+@backend {
+	path_regexp ^/(accounts|admin|api|cms|graphql|language|legacy|media|static|wagtailapi)
+}
+
+reverse_proxy @backend localhost:8000
+
+reverse_proxy localhost:3000

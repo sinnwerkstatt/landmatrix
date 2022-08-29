@@ -6,18 +6,18 @@
   $: displaySize = !$displayDealsCount ? "bg-orange text-white" : "bg-white";
 </script>
 
-<div class="text-center flex justify-center mt-8">
+<div class="mt-8 flex justify-center text-center">
   <button
     type="button"
     on:click={() => displayDealsCount.set(true)}
-    class="font-bold hover:underline my-2 py-2 px-3 transform duration-100 border {displayDeals}"
+    class="my-2 transform border py-2 px-3 font-bold duration-100 hover:underline {displayDeals}"
   >
     {$_("No. of deals")}
   </button>
   <button
     type="button"
     on:click={() => displayDealsCount.set(false)}
-    class="font-bold hover:underline my-2 py-2 px-3 transform duration-100 border {displaySize}"
+    class="my-2 transform border py-2 px-3 font-bold duration-100 hover:underline {displaySize}"
   >
     {$_("Deal size")}
   </button>

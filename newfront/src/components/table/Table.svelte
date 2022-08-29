@@ -25,7 +25,7 @@
 
 <div>
   <div
-    class="row text-white bg-gray-700 font-medium pr-4 whitespace-nowrap"
+    class="row whitespace-nowrap bg-gray-700 pr-4 font-medium text-white"
     style="--grid-columns: {nCols};"
   >
     {#each columns as col, colIndex}
@@ -38,7 +38,7 @@
         {#if sortBy === col || sortBy === `-${col}`}
           <ChevronDownIcon
             class={classNames(
-              "transition-transform transition-duration-300 h-4 w-4 inline rounded text-orange",
+              "transition-duration-300 inline h-4 w-4 rounded text-orange transition-transform",
               sortBy === `-${col}` ? "rotate-180" : ""
             )}
           />

@@ -29,7 +29,7 @@ __pycache__/
 /frontend/dist/*
 !/frontend/dist/.gitkeep
 
-/templates/vuebase.html
+/apps/landmatrix/templates/vuebase.html
 
 # IDEs
 .idea/

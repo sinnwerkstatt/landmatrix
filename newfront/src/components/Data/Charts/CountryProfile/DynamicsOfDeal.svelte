@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { classification_choices } from "$lib/choices";
   import type { Deal } from "$lib/types/deal";
   import { a_download, fileName } from "../utils";
@@ -16,7 +16,7 @@
   let multideals = 0;
   let payload: DynamicsDataPoint[] = [];
 
-  $: if (browser && deals.length > 0) {
+  $: if (browser && deals?.length > 0) {
     let pots: { [key: string]: number } = {};
     deals.forEach((d) => {
       if (d.top_investors.length > 1) multideals += 1;
@@ -29,7 +29,7 @@
     });
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: $_(classification_choices[k] || "Unknown").toString(),
+      name: $_(classification_choices[k]) || $_("Unknown"),
       value: v,
     }));
 

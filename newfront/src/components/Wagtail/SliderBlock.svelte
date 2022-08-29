@@ -21,7 +21,7 @@
   // });
 </script>
 
-<div data-block="slider" class="siema w-full mx-auto max-w-[600px] max-h-[800px]">
+<div data-block="slider" class="siema mx-auto max-h-[800px] w-full max-w-[600px]">
   {#each value.images as image}
     <ImageBlock value={image} />
   {/each}

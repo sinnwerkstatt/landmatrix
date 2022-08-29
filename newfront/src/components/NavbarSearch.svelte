@@ -9,16 +9,15 @@
   import SearchIcon from "./icons/SearchIcon.svelte";
   import NavDropDown from "./LowLevel/NavDropDown.svelte";
 
-  $: user = $page.stuff.user;
+  $: user = $page.data.user;
 
   let search = "";
-  let showSearch = false;
   let selectedSearchIndex = 0;
   let deals: Deal[] = [];
   let investors: Investor[] = [];
 
   async function getDeals() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ deals: Deal[] }>(
         gql`
           query SDeals($subset: Subset) {
@@ -41,7 +40,7 @@
   }
 
   async function getInvestors() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
@@ -122,11 +121,11 @@
 
 <NavDropDown placement="right-0">
   <div slot="title">
-    <SearchIcon class="h-5 w-5 mr-2" />
+    <SearchIcon class="mr-2 h-5 w-5" />
   </div>
-  <div class="border border-orange bg-white dark:bg-gray-800 py-2 px-4">
+  <div class="border border-orange bg-white py-2 px-4 dark:bg-gray-800">
     <form>
-      <label for="search" class="whitespace-nowrap flex flex-col">
+      <label for="search" class="flex flex-col whitespace-nowrap">
         {$_("Search deals and investors")}
         <input
           id="search"
@@ -141,12 +140,12 @@
     {#if searchResult.length > 0}
       <ul
         id="ulle"
-        class="relative max-h-[55vh] overflow-y-auto mt-4 pt-2 border-t-orange"
+        class="relative mt-4 max-h-[55vh] overflow-y-auto border-t-orange pt-2"
       >
         {#each searchResult as d, i}
           <li
             class={classNames(
-              "py-1 px-1.5 !hover:text-white transition duration-100",
+              "!hover:text-white py-1 px-1.5 transition duration-100",
               d.investor ? "hover:bg-pelorous" : "hover:bg-orange"
             )}
           >

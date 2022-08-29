@@ -1,7 +1,6 @@
 <script lang="ts">
-  import Cookies from "js-cookie";
   import { _ } from "svelte-i18n";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import Overlay from "$components/Overlay.svelte";
 
   async function getMessages() {
@@ -16,17 +15,18 @@
     if (res.ok) return (await res.json()).messages;
     else throw new Error(await res.text());
   }
+
   let messages = getMessages();
 
   let acknowledgedMessages: number[] = JSON.parse(
-    Cookies.get("acknowledgedMessages") || "[]"
+    (browser && sessionStorage.getItem("acknowledgedMessages")) || "[]"
   );
   const ackMsg = (id) => {
     acknowledgedMessages.push(id);
-    Cookies.set("acknowledgedMessages", JSON.stringify(acknowledgedMessages), {
-      sameSite: "lax",
-      expires: 365,
-    });
+    sessionStorage.setItem(
+      "acknowledgedMessages",
+      JSON.stringify(acknowledgedMessages)
+    );
   };
   const levelClasses = {
     error: "border-red-600 border-2",

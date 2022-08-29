@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
 
   export let value;
 
@@ -19,7 +19,7 @@
 <div data-block="faqs_block" class="border border-gray-400">
   {#each value.faqs as faq}
     <div
-      class="bg-gray-50 border-b border-gray-400 dark:bg-gray-600 cursor-pointer"
+      class="cursor-pointer border-b border-gray-400 bg-gray-50 dark:bg-gray-600"
       on:click={() => updateHash(`#${faq.slug}`)}
     >
       <div class="py-4 px-6">
@@ -34,7 +34,7 @@
         <div
           transition:slide
           id="collapse-{faq.slug}"
-          class="bg-white dark:bg-gray-600 border-t border-gray-400 p-4"
+          class="border-t border-gray-400 bg-white p-4 dark:bg-gray-600"
         >
           <div class="card-body">{@html faq.answer}</div>
         </div>

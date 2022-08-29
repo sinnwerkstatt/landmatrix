@@ -20,7 +20,6 @@
   import ManyToManyField from "$components/Fields/Display/ManyToManyField.svelte";
   import OCIDField from "$components/Fields/Display/OCIDField.svelte";
   import PointField from "$components/Fields/Display/PointField.svelte";
-  import StatusField from "$components/Fields/Display/StatusField.svelte";
   import TextField from "$components/Fields/Display/TextField.svelte";
   import TypedChoiceField from "$components/Fields/Display/TypedChoiceField.svelte";
   import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte";
@@ -62,7 +61,6 @@
 
   $: field = {
     BooleanField: BooleanField,
-    TypedChoiceField: TypedChoiceField,
     DateField: DateField,
     DecimalField: DecimalField,
     FloatField: DecimalField,
@@ -78,7 +76,6 @@
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
     PointField: PointField,
-    StatusField: StatusField,
     WorkflowInfosField: WorkflowInfosField,
   }[formfield.class];
 </script>
@@ -94,6 +91,8 @@
       <AutoField {value} {model} {formfield} {targetBlank} {objectVersion} />
     {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
       <ArrayField {value} {formfield} />
+    {:else if formfield.class === "TypedChoiceField"}
+      <TypedChoiceField {value} {formfield} />
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
       <TextField {value} {formfield} />
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}

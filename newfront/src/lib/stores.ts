@@ -1,6 +1,10 @@
+import type { LoadEvent } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import type { Client } from "@urql/core";
 import { gql } from "@urql/svelte";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import type { Writable } from "svelte/store";
+import type { User } from "$lib/types/user";
 import type {
   BlogCategory,
   Country,
@@ -14,25 +18,30 @@ const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`;
 
 export const aboutPages = writable<WagtailPage[]>([]);
 
-async function getAboutPages(language = "en") {
+async function getAboutPages(language = "en", fetch: LoadEvent["fetch"]) {
   console.log("getAboutPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.AboutIndexPage`;
-  const res = await (await fetch(url)).json();
+  const res = await (
+    await fetch(url, { headers: { Accept: "application/json" } })
+  ).json();
   if (res.items && res.items.length) {
     const indexPageId = res.items[0].id;
     const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`;
-    const res_children = await (await fetch(pagesUrl)).json();
-    await aboutPages.set(res_children.items);
+    const res_children = await (
+      await fetch(pagesUrl, { headers: { Accept: "application/json" } })
+    ).json();
+    aboutPages.set(res_children.items);
   }
 }
-
 export const observatoryPages = writable<ObservatoryPage[]>([]);
 
-async function getObservatoryPages(language = "en") {
+async function getObservatoryPages(language = "en", fetch: LoadEvent["fetch"]) {
   console.log("getObservatoryPages", { language });
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
-  const res = await (await fetch(url)).json();
-  await observatoryPages.set(res.items);
+  const res = await (
+    await fetch(url, { headers: { Accept: "application/json" } })
+  ).json();
+  observatoryPages.set(res.items);
 }
 
 export const blogCategories = writable<BlogCategory[]>([]);
@@ -40,7 +49,7 @@ export const blogCategories = writable<BlogCategory[]>([]);
 async function getBlogCategories(language = "en", urqlClient: Client) {
   console.log("getBlogCategories", { language });
   const { data } = await urqlClient
-    .query(
+    .query<{ blogcategories: BlogCategory[] }>(
       gql`
         query ($language: String) {
           blogcategories(language: $language) {
@@ -53,7 +62,7 @@ async function getBlogCategories(language = "en", urqlClient: Client) {
       { language }
     )
     .toPromise();
-  await blogCategories.set(data.blogcategories);
+  if (data?.blogcategories) blogCategories.set(data.blogcategories);
 }
 
 type FormFields = {
@@ -69,12 +78,12 @@ export const countries = writable<Country[]>([]);
 export const regions = writable<Region[]>([]);
 export const formfields = writable<FormFields>(undefined);
 
-async function getCountriesRegionsFormfields(urqlClient: Client) {
+async function getCountriesRegionsFormfields(language = "en", urqlClient: Client) {
   console.log("getCountriesRegionsFormfields");
   const { data } = await urqlClient
     .query(
       gql`
-        query {
+        query ($language: String!) {
           countries {
             id
             name
@@ -102,7 +111,7 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
             point_lon_max
             observatory_page_id
           }
-          formfields {
+          formfields(language: $language) {
             deal
             location
             contract
@@ -111,13 +120,14 @@ async function getCountriesRegionsFormfields(urqlClient: Client) {
             involvement
           }
         }
-      `
+      `,
+      { language }
     )
     .toPromise();
 
-  await countries.set(data.countries);
-  await regions.set(data.regions);
-  await formfields.set(data.formfields);
+  countries.set(data.countries);
+  regions.set(data.regions);
+  formfields.set(data.formfields);
 }
 
 export const chartDescriptions = writable<{
@@ -142,13 +152,51 @@ async function getChartDescriptions(language = "en", urqlClient: Client) {
       { language }
     )
     .toPromise();
-  await chartDescriptions.set(data.chart_descriptions);
+  chartDescriptions.set(data.chart_descriptions);
 }
 
-export async function fetchBasis(lang = "en", urqlClient: Client) {
-  await getAboutPages(lang);
-  await getObservatoryPages(lang);
-  await getBlogCategories(lang, urqlClient);
-  await getCountriesRegionsFormfields(urqlClient);
-  await getChartDescriptions(lang, urqlClient);
+export async function fetchBasis(
+  lang = "en",
+  fetch: LoadEvent["fetch"],
+  urqlClient: Client
+) {
+  try {
+    await Promise.all([
+      getAboutPages(lang, fetch),
+      getObservatoryPages(lang, fetch),
+      getBlogCategories(lang, urqlClient),
+      getCountriesRegionsFormfields(lang, urqlClient),
+      getChartDescriptions(lang, urqlClient),
+    ]);
+  } catch (e) {
+    throw error(500, `Backend server problems ${e}`);
+  }
 }
+
+/// client stores - MAKE SURE THESE DON'T GET CALLED FROM SSR-FUNCTIONS!
+export const users = writable<User[]>([]);
+
+export async function getUsers(urqlClient: Client): Promise<Writable<User[]>> {
+  if (get(users).length > 0) return users;
+  const ret = await urqlClient
+    .query<{ users: User[] }>(
+      gql`
+        {
+          users {
+            id
+            full_name
+            username
+          }
+        }
+      `,
+      {}
+    )
+    .toPromise();
+  if (!ret.data?.users) throw error(500, "could not fetch users");
+  await users.set(
+    ret.data.users.sort((a, b) => a.full_name.localeCompare(b.full_name))
+  );
+  return users;
+}
+
+export const loading = writable(false);

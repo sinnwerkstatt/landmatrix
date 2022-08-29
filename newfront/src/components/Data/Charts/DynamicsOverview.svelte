@@ -26,19 +26,19 @@
 <div>
   <div class="grid grid-cols-2 grid-rows-2 gap-4">
     <div>
-      <h2>{$_("Intention of Investment")}</h2>
+      <h2>{$_("Intention of investment")}</h2>
       <StatusPieChart data={chartIoI} {unit} />
     </div>
     <div>
-      <h2>{$_("Investment in Agriculture")}</h2>
+      <h2>{$_("Investment in agriculture")}</h2>
       <StatusPieChart data={chartIoIAgriculture} {unit} />
     </div>
     <div>
-      <h2>{$_("Implementation Status")}</h2>
+      <h2>{$_("Implementation status")}</h2>
       <StatusPieChart data={chartImpStat} {unit} />
     </div>
     <div>
-      <h2>{$_("Negotiation Status")}</h2>
+      <h2>{$_("Negotiation status")}</h2>
       <StatusPieChart data={chartNegStat} {unit} />
     </div>
   </div>

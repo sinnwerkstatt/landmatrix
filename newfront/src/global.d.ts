@@ -21,6 +21,11 @@ declare module "chart.js?client" {
   export = chartjs;
 }
 
+declare module "@googlemaps/js-api-loader?client" {
+  import * as L from "@googlemaps/js-api-loader";
+  export = L;
+}
+
 // fallback
 declare module "*?client";
 declare module "*?server";

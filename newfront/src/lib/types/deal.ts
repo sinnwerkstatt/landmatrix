@@ -227,6 +227,7 @@ export interface DealVersion extends ObjVersion {
 
 export interface DealWorkflowInfo extends WorkflowInfo {
   deal: Deal;
+  deal_version_id: number;
 }
 //
 // interface DealAggregation {

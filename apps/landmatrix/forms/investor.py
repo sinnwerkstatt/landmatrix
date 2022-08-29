@@ -22,6 +22,7 @@ class InvestorForm(JSONFormOutputMixin, ModelForm):
     extra_display_fields = {
         "id": {"label": "ID", "class": "AutoField"},
         "deals": {"class": "LengthField", "label": _("Deals")},
+        "created_at": {"class": "DateTimeField", "label": _("Created at")},
         "workflowinfos": {
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),

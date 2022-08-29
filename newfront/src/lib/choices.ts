@@ -5,11 +5,21 @@ import {
   IntentionOfInvestment,
   IntentionOfInvestmentGroup,
   NatureOfDeal,
-  NegotiationStatus,
   NegotiationStatusGroup,
   OtherIoI,
 } from "$lib/types/deal";
 import { Classification } from "$lib/types/investor";
+
+export const getImplementationStatusChoices = (
+  $t: (t: string) => string
+): { [key in ImplementationStatus]: string } => {
+  return {
+    [ImplementationStatus.PROJECT_NOT_STARTED]: $t("Project not started"),
+    [ImplementationStatus.STARTUP_PHASE]: $t("Startup phase (no production)"),
+    [ImplementationStatus.IN_OPERATION]: $t("In operation (production)"),
+    [ImplementationStatus.PROJECT_ABANDONED]: $t("Project abandoned"),
+  };
+};
 
 export const implementation_status_choices: { [key in ImplementationStatus]: string } =
   {
@@ -19,32 +29,19 @@ export const implementation_status_choices: { [key in ImplementationStatus]: str
     [ImplementationStatus.PROJECT_ABANDONED]: "Project abandoned",
   };
 
-export const nature_of_deal_choices: { [key in NatureOfDeal]: string } = {
-  [NatureOfDeal.OUTRIGHT_PURCHASE]: "Outright purchase",
-  [NatureOfDeal.LEASE]: "Lease",
-  [NatureOfDeal.CONCESSION]: "Concession",
-  [NatureOfDeal.EXPLOITATION_PERMIT]:
-    "Exploitation permit / license / concession (for mineral resources)",
-  [NatureOfDeal.PURE_CONTRACT_FARMING]: "Pure contract farming",
-  [NatureOfDeal.OTHER]: "Other",
-};
-
-export const flat_negotiation_status_map: {
-  [key in NegotiationStatus | NegotiationStatusGroup]: string;
-} = {
-  [NegotiationStatus.EXPRESSION_OF_INTEREST]: "Expression of interest",
-  [NegotiationStatus.UNDER_NEGOTIATION]: "Under negotiation",
-  [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: "Memorandum of understanding",
-  [NegotiationStatus.ORAL_AGREEMENT]: "Oral agreement",
-  [NegotiationStatus.CONTRACT_SIGNED]: "Contract signed",
-  [NegotiationStatus.CHANGE_OF_OWNERSHIP]: "Change of ownership",
-  [NegotiationStatus.NEGOTIATIONS_FAILED]: "Negotiations failed",
-  [NegotiationStatus.CONTRACT_CANCELED]: "Contract canceled",
-
-  [NegotiationStatusGroup.INTENDED]: "Intended",
-  [NegotiationStatusGroup.CONCLUDED]: "Concluded",
-  [NegotiationStatusGroup.FAILED]: "Failed",
-  [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
+export const getNatureOfDealChoices = (
+  $t: (t: string) => string
+): { [key in NatureOfDeal]: string } => {
+  return {
+    [NatureOfDeal.OUTRIGHT_PURCHASE]: $t("Outright purchase"),
+    [NatureOfDeal.LEASE]: $t("Lease"),
+    [NatureOfDeal.CONCESSION]: $t("Concession"),
+    [NatureOfDeal.EXPLOITATION_PERMIT]: $t(
+      "Exploitation permit / license / concession (for mineral resources)"
+    ),
+    [NatureOfDeal.PURE_CONTRACT_FARMING]: $t("Pure contract farming"),
+    [NatureOfDeal.OTHER]: $t("Other"),
+  };
 };
 
 export const negotiation_status_group_choices: {
@@ -145,20 +142,4 @@ export const draft_status_map = {
   3: "Activation",
   4: "Rejected", // legacy
   5: "Deleted",
-};
-
-export const combined_status_fn = (
-  status: number,
-  draft_status: number | null,
-  toString = false
-): string => {
-  if (status === 4) return toString ? "Deleted" : "DELETED";
-  if (draft_status === 1) return toString ? "Draft" : "DRAFT";
-  if (draft_status === 2) return toString ? "Submitted for review" : "REVIEW";
-  if (draft_status === 3) return toString ? "Submitted for activation" : "ACTIVATION";
-  if (draft_status === 4) return toString ? "Rejected" : "REJECTED";
-  if (draft_status === 5) return toString ? "To Delete" : "TO_DELETE";
-  if ([2, 3].includes(status) && draft_status === null)
-    return toString ? "Active" : "ACTIVE";
-  throw Error(`Invalid status ${status} ${draft_status}`);
 };

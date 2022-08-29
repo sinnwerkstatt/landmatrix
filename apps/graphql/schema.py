@@ -55,14 +55,17 @@ from apps.graphql.resolvers.misc import (
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
-    resolve_login,
-    resolve_logout,
     resolve_users,
     user_regional_info_type,
     user_type,
+)
+from apps.graphql.resolvers.user_auth import (
+    resolve_login,
+    resolve_logout,
     resolve_register,
     resolve_password_reset,
     resolve_password_reset_confirm,
+    resolve_register_confirm,
 )
 from apps.graphql.scalars import geopoint_scalar, datetime_scalar
 
@@ -98,6 +101,7 @@ query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("register", resolve_register)
+mutation.set_field("register_confirm", resolve_register_confirm)
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 mutation.set_field("password_reset", resolve_password_reset)

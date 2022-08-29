@@ -6,9 +6,9 @@
   import VirtualList from "svelte-tiny-virtual-list";
   import { page } from "$app/stores";
   import {
-    implementation_status_choices,
+    getImplementationStatusChoices,
+    getNatureOfDealChoices,
     intention_of_investment_choices,
-    nature_of_deal_choices,
   } from "$lib/choices";
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters";
   import { countries, formfields, regions } from "$lib/stores";
@@ -22,7 +22,7 @@
   import FilterCollapse from "./FilterCollapse.svelte";
   import Wimpel from "./Wimpel.svelte";
 
-  $: user = $page.stuff.user;
+  $: user = $page.data.user;
 
   $: produceChoices = $formfields
     ? [
@@ -47,12 +47,12 @@
       ]
     : [];
 
-  $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
+  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions];
 
   let investors: Investor[] = [];
 
   async function getInvestors() {
-    const { data } = await $page.stuff.urqlClient
+    const { data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
@@ -90,7 +90,7 @@
 </script>
 
 <div
-  class="absolute bg-white/80 top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -99,7 +99,7 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
+    class="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden p-2"
     class:hidden={!$showFilterBar}
   >
     <div class="w-full self-start">
@@ -115,7 +115,7 @@
         {$_("Default filter")}
       </CheckboxSwitch>
 
-      {#if $page.stuff.user?.level >= UserLevel.EDITOR}
+      {#if $page.data.user?.level >= UserLevel.EDITOR}
         <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
           {$_("Public deals only")}
         </CheckboxSwitch>
@@ -135,7 +135,7 @@
               value={reg.id}
               on:change={() => ($filters.country_id = undefined)}
             />
-            {$_(reg.name)}
+            {reg.name}
           </label>
         {/each}
       </FilterCollapse>
@@ -195,7 +195,7 @@
         clearable={$filters.nature_of_deal.length > 0}
         on:click={() => ($filters.nature_of_deal = [])}
       >
-        {#each Object.entries(nature_of_deal_choices) as [isval, isname]}
+        {#each Object.entries(getNatureOfDealChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               type="checkbox"
@@ -203,7 +203,7 @@
               value={isval}
               class="checkbox-btn"
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>
@@ -291,7 +291,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(implementation_status_choices) as [isval, isname]}
+        {#each Object.entries(getImplementationStatusChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -299,7 +299,7 @@
               type="checkbox"
               value={isval}
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>
@@ -409,21 +409,21 @@
         </label>
       </FilterCollapse>
     </div>
-    <div class="self-end mt-auto pt-10 w-full">
+    <div class="mt-auto w-full self-end pt-10">
       <slot />
       <FilterCollapse title={$_("Download")}>
         <ul>
           <li>
             <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
               <DownloadIcon />
-              {$_("All attributes (xlsx)")}
+              {$_("All attributes")} (xlsx)
             </a>
           </li>
           <li>
             <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
               <i class="fas fa-file-download" />
               <DownloadIcon />
-              {$_("All attributes (csv)")}
+              {$_("All attributes")} (csv)
             </a>
           </li>
           <li>

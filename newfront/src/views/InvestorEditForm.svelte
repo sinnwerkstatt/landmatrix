@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { error } from "@sveltejs/kit";
+  import { Client, gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { investorSections } from "$lib/sections";
+  import { getInvestorSections } from "$lib/sections";
   import type { DataSource } from "$lib/types/deal";
   import type { Investor } from "$lib/types/investor";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
@@ -29,8 +30,10 @@
   ];
 
   async function saveInvestor(hash: string) {
-    const currentForm = document.querySelector<HTMLFormElement>(activeTab);
-    console.log(currentForm);
+    const currentForm: HTMLFormElement | null =
+      document.querySelector<HTMLFormElement>(activeTab);
+    if (!currentForm) throw error(500, "can not grab the form");
+
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
       return;
@@ -40,7 +43,7 @@
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources);
 
-    const { data, error } = await $page.stuff.urqlClient
+    const ret = await ($page.data.urqlClient as Client)
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
@@ -64,11 +67,9 @@
         }
       )
       .toPromise();
-    if (!data) {
-      console.error("Problem with edit", error);
-      return;
-    }
-    const { investor_edit } = data;
+    const investor_edit = ret.data?.investor_edit;
+    if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`);
+
     originalInvestor = JSON.stringify(investor);
     savingInProgress = false;
 
@@ -88,12 +89,12 @@
   };
 </script>
 
-<div class="container mx-auto min-h-full h-full flex flex-col">
-  <div class="md:flex md:flex-row md:justify-between border-b border-orange">
+<div class="container mx-auto flex h-full min-h-full flex-col">
+  <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1>
       {investorID ? $_("Editing Investor #") + investorID : $_("Adding new investor")}
     </h1>
-    <div class="flex items-center my-5">
+    <div class="my-5 flex items-center">
       <button
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
@@ -111,18 +112,21 @@
           {$_("Close")}
         </button>
       {:else}
-        <button class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+        <button
+          class="btn btn-gray btn-sm mx-2"
+          on:click={() => goto(`/investor/${investorID}/${investorVersion ?? ""}`)}
+        >
           {$_("Cancel")}
         </button>
       {/if}
     </div>
   </div>
   <div class="flex h-full overflow-y-hidden">
-    <nav class="p-2 flex-initial">
+    <nav class="flex-initial p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-4 border-orange {activeTab === target
+            class="border-orange py-2 pr-4 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -135,13 +139,13 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
+    <div class="w-full flex-auto overflow-y-auto pl-4 pr-2 pb-16">
       {#if activeTab === "#general"}
         <section>
           <form id="general">
-            {#each investorSections.general_info as subsection}
-              <div class="space-y-4 mt-2">
-                <h3 class="my-0">{$_(subsection.name)}</h3>
+            {#each getInvestorSections($_).general_info as subsection}
+              <div class="mt-2 space-y-4">
+                <h3 class="my-0">{subsection.name}</h3>
                 {#each subsection.fields as fieldname}
                   <EditField
                     model="investor"
@@ -159,7 +163,7 @@
         <SubmodelEditSection
           id="parent_companies"
           model="involvement"
-          modelName="Parent company"
+          modelName={$_("Parent company")}
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "PARENT"}
           newEntryExtras={{ role: "PARENT" }}
@@ -169,7 +173,7 @@
         <SubmodelEditSection
           id="tertiary_investors"
           model="involvement"
-          modelName="Tertiary investor/lender"
+          modelName={$_("Tertiary investor/lender")}
           bind:entries={investor.investors}
           entriesFilter={(i) => i.role === "LENDER"}
           newEntryExtras={{ role: "LENDER" }}
@@ -187,7 +191,7 @@
       {#if activeTab === "#data_sources"}
         <SubmodelEditSection
           model="datasource"
-          modelName="Data source"
+          modelName={$_("Data source")}
           bind:entries={investor.datasources}
           id="data_sources"
         />

@@ -1,10 +1,16 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte";
+  import { error } from "@sveltejs/kit";
+  import { Client, gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { dealSections } from "$lib/sections";
-  import type { Contract, DataSource, Deal, Location } from "$lib/types/deal";
+  import { getDealSections } from "$lib/sections";
+  import type {
+    Contract,
+    DataSource,
+    Deal,
+    Location as LamaLoc,
+  } from "$lib/types/deal";
   import { removeEmptyEntries } from "$lib/utils/data_processing";
   import DealEditSection from "$components/Deal/DealEditSection.svelte";
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte";
@@ -40,19 +46,21 @@
   ];
 
   async function saveDeal(hash: string) {
-    const currentForm = document.querySelector<HTMLFormElement>(activeTab);
-    console.log(currentForm);
+    const currentForm: HTMLFormElement | null =
+      document.querySelector<HTMLFormElement>(activeTab);
+    if (!currentForm) throw error(500, "can not grab the form");
+
     if (!currentForm.checkValidity()) {
       currentForm.reportValidity();
       return;
     }
     savingInProgress = true;
-    deal.locations = removeEmptyEntries<Location>(deal.locations);
+    deal.locations = removeEmptyEntries<LamaLoc>(deal.locations);
     deal.contracts = removeEmptyEntries<Contract>(deal.contracts);
     deal.datasources = removeEmptyEntries<DataSource>(deal.datasources);
 
-    const { data } = await $page.stuff.urqlClient
-      .mutation(
+    const ret = await ($page.data.urqlClient as Client)
+      .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
             deal_edit(id: $id, version: $version, payload: $payload) {
@@ -68,7 +76,9 @@
         }
       )
       .toPromise();
-    const { deal_edit } = data;
+    const deal_edit = ret.data?.deal_edit;
+    if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`);
+
     originalDeal = JSON.stringify(deal);
     savingInProgress = false;
 
@@ -84,15 +94,15 @@
     else if (!dealID) await goto("/");
     else await goto(`/deal/${dealID}/${dealVersion ?? ""}`);
   };
+  $: dealSections = getDealSections($_);
 </script>
 
-<div class="container mx-auto min-h-full h-full flex flex-col">
-  <div class="md:flex md:flex-row md:justify-between border-b border-orange">
+<div class="container mx-auto flex h-full min-h-full flex-col">
+  <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1>
-      {dealID ? $_("Editing Deal #") + dealID : $_("Adding new deal")}
-      {#if deal.country}{$_("in")} {deal.country.name}{/if}
+      {dealID ? $_("Editing deal #") + dealID : $_("Adding new deal")}
     </h1>
-    <div class="flex items-center my-5">
+    <div class="my-5 flex items-center">
       <button
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
@@ -110,7 +120,10 @@
           {$_("Close")}
         </button>
       {:else}
-        <button class="btn btn-gray btn-sm mx-2" on:click={() => goto(-1)}>
+        <button
+          class="btn btn-gray btn-sm mx-2"
+          on:click={() => goto(`/deal/${dealID}/${dealVersion ?? ""}`)}
+        >
           {$_("Cancel")}
         </button>
       {/if}
@@ -118,11 +131,11 @@
     </div>
   </div>
   <div class="flex h-full overflow-y-hidden">
-    <nav class="p-2 flex-initial">
+    <nav class="flex-initial p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="py-2 pr-4 border-orange {activeTab === target
+            class="border-orange py-2 pr-4 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
@@ -135,7 +148,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="pl-4 flex-auto w-full overflow-y-auto pr-2 pb-16">
+    <div class="w-full flex-auto overflow-y-auto pl-4 pr-2 pb-16">
       {#if activeTab === "#locations"}
         <DealLocationsEditSection
           bind:locations={deal.locations}
@@ -148,7 +161,7 @@
       {#if activeTab === "#contracts"}
         <SubmodelEditSection
           model="contract"
-          modelName="Contract"
+          modelName={$_("Contract")}
           bind:entries={deal.contracts}
           id="contracts"
         />
@@ -166,7 +179,7 @@
       {#if activeTab === "#data_sources"}
         <SubmodelEditSection
           model="datasource"
-          modelName="Data source"
+          modelName={$_("Data source")}
           bind:entries={deal.datasources}
           id="data_sources"
         />

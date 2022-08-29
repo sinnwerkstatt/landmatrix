@@ -41,7 +41,7 @@
       {commentRequired
         ? $_("Please provide a comment explaining your request")
         : $_("Additional comment")}
-      <textarea class="mt-1 inpt" bind:value={comment} required={commentRequired} />
+      <textarea class="inpt mt-1" bind:value={comment} required={commentRequired} />
     </label>
   {/if}
   {#if assignToUserInput}

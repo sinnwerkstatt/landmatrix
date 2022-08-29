@@ -6,8 +6,8 @@
   export let value = "";
   export let countryCode = "";
 
-  let autocomplete;
-  let inputField;
+  let autocomplete: google.maps.places.Autocomplete;
+  let inputField: HTMLInputElement;
 
   const dispatch = createEventDispatcher();
 
@@ -20,6 +20,7 @@
         libraries: ["places"],
       });
     loader.load().then((google) => {
+      // noinspection TypeScriptUnresolvedVariable,TypeScriptUnresolvedFunction
       autocomplete = new google.maps.places.Autocomplete(inputField, {
         fields: ["geometry"],
         strictBounds: true,

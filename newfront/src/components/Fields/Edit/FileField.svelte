@@ -17,7 +17,7 @@
     if (!files.length) return;
     let fr = new FileReader();
     fr.onload = async () => {
-      const { data } = await $page.stuff.urqlClient
+      const { data } = await $page.data.urqlClient
         .mutation<{ upload_datasource_file: string }>(
           gql`
             mutation ($filename: String!, $payload: String!) {
@@ -53,5 +53,5 @@
   {:else}
     <input type="file" on:change={uploadFile} {accept} />
   {/if}
-  <small class="text-gray-500 block pt-2">{$_("Maximum file size: 10MB")}</small>
+  <small class="block pt-2 text-gray-500">{$_("Maximum file size: 10MB")}</small>
 </div>

@@ -5,7 +5,7 @@
   export let content: WagtailStreamfield = [];
 </script>
 
-<div class="container mx-auto px-10 pt-6 pb-0 streamfield {$$props.class ?? ''}">
+<div class="streamfield container mx-auto px-10 pt-6 pb-0 {$$props.class ?? ''}">
   {#each content as { type, value }}
     {#if blockMap[type]}
       <svelte:component this={blockMap[type]} bind:value />
@@ -20,12 +20,12 @@
   {/each}
 </div>
 
-<style>
+<style lang="postcss">
   :global(.streamfield ol) {
     @apply list-decimal pl-4;
   }
   :global(.streamfield ul) {
-    @apply list-disc pl-4 mb-4;
+    @apply mb-4 list-disc pl-4;
   }
   :global(.streamfield h2) {
     @apply text-3xl font-bold;

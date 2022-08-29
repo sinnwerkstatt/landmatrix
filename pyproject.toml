@@ -4,7 +4,7 @@ version = "0.1.0"
 license = "AGPL-3.0+"
 authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
 readme = 'README.md'
-description = "LandMatrix"
+description = "Land Matrix"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -16,17 +16,10 @@ django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"
 django-modeltranslation = "*"
-django-registration = "*"
 
 wagtail-font-awesome-svg = "*"
 wagtail-modeltranslation = ">=0.11rc3"
 wagtail-orderable = "*"
-
-# TODO celery - still need? - what about caching? redis? memcached?
-celery = "*"
-redis = "*"
-django-redis = "*"
-python-memcached = "*"
 
 ariadne = ">=0.14"
 ariadne_django = "*"
@@ -94,7 +87,7 @@ force_grid_wrap = 0
 use_parentheses = false
 line_length = 88
 known_first_party = 'apps'
-known_django = 'celery,django,django_registration,wagtail'
+known_django = 'django,wagtail'
 default_section = 'THIRDPARTY'
 sections = 'FUTURE,STDLIB,THIRDPARTY,DJANGO,FIRSTPARTY,LOCALFOLDER'
 no_lines_before = 'LOCALFOLDER,DJANGO'

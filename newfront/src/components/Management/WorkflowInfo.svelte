@@ -31,7 +31,7 @@
     .replace("[UNSET_CONFIDENTIAL] ", "");
 
   $: unread =
-    info.to_user?.username === $page.stuff.user.username &&
+    info.to_user?.username === $page.data.user.username &&
     !info.processed_by_receiver &&
     comment_wo_head.length > 0;
 
@@ -50,7 +50,7 @@
   }
 </script>
 
-<div class="text-sm mb-2 mx-1 bg-neutral-200 shadow-md p-1{unread ? '!font-bold' : ''}">
+<div class="mx-1 mb-2 bg-neutral-200 text-sm shadow-md p-1{unread ? '!font-bold' : ''}">
   <div class="meta">
     <span class="font-semibold">{dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}</span
     >
@@ -67,13 +67,13 @@
     <div class="status-change">
       {#if info.draft_status_before}
         <div
-          class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2"
+          class="status my-1 inline-block bg-pelorous py-1 px-2 leading-4 text-white"
         >
           {draft_status_map[info.draft_status_before]}
         </div>
         →
       {/if}
-      <div class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2">
+      <div class="status my-1 inline-block bg-pelorous py-1 px-2 leading-4 text-white">
         {draft_status_map[info.draft_status_after] || status_map[2]}
       </div>
     </div>
@@ -81,18 +81,18 @@
   {#if confidential_status_change}
     <div class="status-change">
       <div
-        class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2 {confidential_status_change}"
+        class="status my-1 inline-block bg-pelorous py-1 px-2 leading-4 text-white {confidential_status_change}"
       >
         {$_("Confidential")}
       </div>
     </div>
   {/if}
   {#if comment_wo_head}
-    <div class="py-1 px-2 whitespace-pre-line bg-neutral-200 relative">
+    <div class="relative whitespace-pre-line bg-neutral-200 py-1 px-2">
       {comment_wo_head}
       {#if unread}
         <button
-          class="absolute top-1 right-4 border-0 opacity-70 hover:opacity-100 bg-inherit	 transition-opacity"
+          class="absolute top-1 right-4 border-0 bg-inherit opacity-70 transition-opacity	 hover:opacity-100"
           on:click|preventDefault={processInfo}
         >
           <i class="fas fa-check-circle fa-lg orange" />

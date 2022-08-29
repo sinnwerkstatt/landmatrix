@@ -5,19 +5,22 @@
  */
 import { drag, select } from "d3";
 import { sankey, sankeyLinkHorizontal } from "d3-sankey";
-import type { SankeyGraph } from "d3-sankey";
+import type { SankeyGraph, SankeyLink, SankeyNode } from "d3-sankey";
+
+interface NodeExtra {
+  deal_count: number;
+}
+interface LinkExtra {
+  placeholder?: string;
+}
+export type MySankeyNode = SankeyNode<NodeExtra, LinkExtra>;
+export type MySankeyLink = SankeyLink<NodeExtra, LinkExtra>;
 
 export class LamaSankey {
   private readonly width = 700;
   private readonly height = 700;
 
-  do_the_sank(
-    selector: string,
-    data: SankeyGraph<
-      { [key: string]: string | number | boolean },
-      { [key: string]: string | number }
-    >
-  ): void {
+  do_the_sank(selector: string, data: SankeyGraph<NodeExtra, LinkExtra>): void {
     const elem = document.querySelector(selector);
     if (elem) elem.innerHTML = "";
 
@@ -115,7 +118,7 @@ export class LamaSankey {
       // d.x0 = d.x0 + event.dx;
       // let xTranslate = d.x0 - curRect.attr("X");
       d.y0 = d.y0 + event.dy;
-      const yTranslate = d.y0 - curRect.attr("y");
+      const yTranslate = d.y0 - +curRect.attr("y");
       select(this).attr("transform", `translate(0,${yTranslate})`);
       d3sankey.update(graph);
       links.attr("d", sankeyLinkHorizontal());
@@ -123,21 +126,15 @@ export class LamaSankey {
   }
 }
 
-type SankeyLink = {
-  source: string;
-  target: string;
-  value: number;
-};
-
-export function sankey_links_to_csv_cross(json: SankeyLink[]): string {
+export function sankey_links_to_csv_cross(sankeylinks: MySankeyLink[]): string {
   const x = new Set() as Set<string>;
   const y = new Set() as Set<string>;
   const cross: { [key: string]: { [key: string]: number } } = {};
-  json.forEach((entry) => {
-    x.add(entry.source);
-    y.add(entry.target);
-    if (!cross[entry.source]) cross[entry.source] = {};
-    cross[entry.source][entry.target] = entry.value;
+  sankeylinks.forEach((entry) => {
+    x.add(entry.source.toString());
+    y.add(entry.target.toString());
+    if (!cross[entry.source.toString()]) cross[entry.source.toString()] = {};
+    cross[entry.source.toString()][entry.target.toString()] = entry.value;
   });
   const y_list = [...y];
   let ret = "," + y_list.join(",") + "\n";

@@ -87,10 +87,10 @@
 
 <div
   class={isFullscreen
-    ? "fixed bg-white border border-solid border-black top-12 left-0 mx-[5%] my-[5%] w-[90%] h-[70%]"
+    ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
     : "relative"}
 >
-  <div class="absolute cursor-pointer right-3 top-1.5 z-[9]">
+  <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
     <button type="button" on:click={toggleFullscreen}>
       {#if isFullscreen}
         <CompressIcon />
@@ -103,7 +103,7 @@
   <div class={isFullscreen ? "h-full" : "h-96"}>
     <div
       id="investor-network"
-      class="border-2 border-solid w-full min-h-full cursor-all-scroll"
+      class="min-h-full w-full cursor-all-scroll border-2 border-solid"
     />
   </div>
 
@@ -140,7 +140,7 @@
         <li>
           <span
             class={cn(
-              "inline-block relative w-5 h-1.5 mr-1",
+              "relative mr-1 inline-block h-1.5 w-5",
               "border-t-2 border-t-orange"
             )}
           />{$_("Is operating company of")}
@@ -148,18 +148,18 @@
         <li>
           <span
             class={cn(
-              "inline-block relative w-0 h-0 mr-3",
-              "border-y-transparent border-y-8 border-r-[12px] border-[#f78e8f]",
-              "after:absolute after:w-3 after:left-2 after:border-t-2 after:border-[#f78e8f]"
+              "relative mr-3 inline-block h-0 w-0",
+              "border-y-8 border-r-[12px] border-[#f78e8f] border-y-transparent",
+              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#f78e8f]"
             )}
           />{$_("Is parent company of")}
         </li>
         <li>
           <span
             class={cn(
-              "inline-block relative w-0 h-0 mr-3",
-              "border-y-transparent border-y-8 border-r-[12px] border-[#72b0fd]",
-              "after:absolute after:w-3 after:left-2 after:border-t-2 after:border-[#72b0fd]"
+              "relative mr-3 inline-block h-0 w-0",
+              "border-y-8 border-r-[12px] border-[#72b0fd] border-y-transparent",
+              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#72b0fd]"
             )}
           />{$_("Is tertiary investor/lender of")}
         </li>

@@ -24,40 +24,46 @@
   }
 
   // const choices: Array<Choice | GroupChoice> = [
-  const choices = [
+  $: choices = [
     {
-      group: "Intended",
+      group: $_("Intended"),
       state: undefined,
       options: [
         {
           value: NegotiationStatus.EXPRESSION_OF_INTEREST,
-          name: "Expression of interest",
+          name: $_("Expression of interest"),
         },
-        { value: NegotiationStatus.UNDER_NEGOTIATION, name: "Under negotiation" },
+        { value: NegotiationStatus.UNDER_NEGOTIATION, name: $_("Under negotiation") },
         {
           value: NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING,
-          name: "Memorandum of understanding",
+          name: $_("Memorandum of understanding"),
         },
       ],
     },
     {
-      group: "Concluded",
+      group: $_("Concluded"),
       state: undefined,
       options: [
-        { value: NegotiationStatus.ORAL_AGREEMENT, name: "Oral agreement" },
-        { value: NegotiationStatus.CONTRACT_SIGNED, name: "Contract signed" },
-        { value: NegotiationStatus.CHANGE_OF_OWNERSHIP, name: "Change of ownership" },
+        { value: NegotiationStatus.ORAL_AGREEMENT, name: $_("Oral agreement") },
+        { value: NegotiationStatus.CONTRACT_SIGNED, name: $_("Contract signed") },
+        {
+          value: NegotiationStatus.CHANGE_OF_OWNERSHIP,
+          name: $_("Change of ownership"),
+        },
       ],
     },
     {
-      group: "Failed",
+      group: $_("Failed"),
       state: undefined,
       options: [
-        { value: NegotiationStatus.NEGOTIATIONS_FAILED, name: "Negotiations failed" },
-        { value: NegotiationStatus.CONTRACT_CANCELED, name: "Contract cancelled" },
+        {
+          value: NegotiationStatus.NEGOTIATIONS_FAILED,
+          name: $_("Negotiations failed"),
+        },
+        { value: NegotiationStatus.CONTRACT_CANCELED, name: $_("Contract cancelled") },
       ],
     },
-    { value: NegotiationStatus.CONTRACT_EXPIRED, name: "Contract expired" },
+    { value: NegotiationStatus.CONTRACT_EXPIRED, name: $_("Contract expired") },
   ];
 
   //   watch: {
@@ -115,14 +121,14 @@
 >
   {#each choices as nstat}
     {#if nstat.group}
-      <label class="font-bold block">
+      <label class="block font-bold">
         <input
           id={nstat.group}
           bind:checked={nstat.state}
           type="checkbox"
           on:change={() => toggleGroup(nstat)}
         />
-        {$_(nstat.group)}
+        {nstat.group}
       </label>
       {#each nstat.options as nstatop}
         <label class="block pl-4">
@@ -132,17 +138,17 @@
             value={nstatop.value}
             on:change={() => toggleSingle(nstat)}
           />
-          {$_(nstatop.name)}
+          {nstatop.name}
         </label>
       {/each}
     {:else}
-      <label class="font-bold block">
+      <label class="block font-bold">
         <input
           bind:group={$filters.negotiation_status}
           type="checkbox"
           value={nstat.value}
         />
-        {$_(nstat.name)}
+        {nstat.name}
       </label>
     {/if}
   {/each}

@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from __future__ import annotations
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,7 +12,7 @@ from apps.landmatrix.models.investor import Investor
 User = get_user_model()
 
 
-def get_user_role(user: User) -> Optional[str]:
+def get_user_role(user: User) -> str | None:
     roles = get_user_roles(user)
     return roles[0].upper() if roles else None
 
@@ -38,7 +38,7 @@ def get_user_roc_and_role(user: User) -> dict:
     return output
 
 
-def has_authorization_for_country(user: User, country: Union[Country, int]) -> bool:
+def has_authorization_for_country(user: User, country: Country | int) -> bool:
     if isinstance(country, int):
         country = Country.objects.get(id=country)
 
@@ -59,7 +59,7 @@ def has_authorization_for_country(user: User, country: Union[Country, int]) -> b
 
 
 def send_comment_to_user(
-    obj: Union[Deal, Investor],
+    obj: Deal | Investor,
     comment: str,
     from_user: User,
     to_user_id: int,

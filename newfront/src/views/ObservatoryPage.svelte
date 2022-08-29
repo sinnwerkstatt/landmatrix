@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { error } from "@sveltejs/kit";
   import { gql } from "@urql/svelte";
   import { _ } from "svelte-i18n";
   import { afterNavigate } from "$app/navigation";
@@ -25,6 +26,7 @@
   let filteredCountryProfiles;
   let filteredNewsPubs;
 
+  if (!page) throw error(500, "for some reason `page` is not set.");
   $: regionID = page.region?.id;
   $: countryID = page.country?.id;
 
@@ -34,7 +36,7 @@
     filters.region_id = regionID;
     filters.country_id = countryID;
 
-    const { data } = await $storePage.stuff.urqlClient
+    const { data } = await $storePage.data.urqlClient
       .query(
         gql`
           query DealAggregations(
@@ -171,13 +173,13 @@
   {/if}
 </div>
 
-<div class="charts bg-lm-light mt-0 mb-8 p-0 pb-6">
-  <div class="mx-auto w-[clamp(20rem,75%,56rem)] min-h-[300px]">
+<div class="charts mt-0 mb-8 bg-lm-light p-0 pb-6">
+  <div class="mx-auto min-h-[300px] w-[clamp(20rem,75%,56rem)]">
     {#if totalSize === ""}
       <LoadingPulse class="h-[300px]" />
     {:else}
       <h3>{$_("We currently have information about:")}</h3>
-      <div class="grid md:grid-cols-2 font-bold">
+      <div class="grid font-bold md:grid-cols-2">
         <div class="text-center">
           <div class="text-orange">{$_("Size")}</div>
           <div class="mb-2">{totalSize} ha</div>
@@ -201,7 +203,7 @@
   <MapDataCharts on:click={setGlobalLocationFilter} />
 </div>
 
-<div class="mx-auto container w-[clamp(20rem,75%,56rem)] my-8">
+<div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">
   <h3>{$_("Country profiles")}</h3>
   <div>
     <p>
@@ -221,13 +223,13 @@
   <ArticleList articles={filteredCountryProfiles} />
 </div>
 
-<div class="mx-auto container w-[clamp(20rem,75%,56rem)] my-8">
+<div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">
   <h3>{$_("News & publications")}</h3>
   <ArticleList articles={filteredNewsPubs} />
 </div>
 
 {#if page.twitter_feed}
-  <div class="mx-auto container w-[clamp(20rem,75%,56rem)] mb-8">
+  <div class="container mx-auto mb-8 w-[clamp(20rem,75%,56rem)]">
     <h3>{$_("Latest tweets")}</h3>
     <Twitter twitterFeed={page.twitter_feed} />
   </div>

@@ -1,6 +1,6 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  class={$$props.class ?? "h-4 w-4 inline"}
+  class={$$props.class ?? "inline h-4 w-4"}
   fill="currentColor"
   viewBox="0 0 512 512"
   on:mouseover

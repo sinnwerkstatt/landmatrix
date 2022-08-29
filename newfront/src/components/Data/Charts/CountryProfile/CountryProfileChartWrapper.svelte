@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { browser } from "$app/env";
-  import { loading } from "$lib/data";
+  import { browser } from "$app/environment";
+  import { loading } from "$lib/stores";
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte";
   import FileImageIcon from "$components/icons/FileImageIcon.svelte";
   import LoadingPulse from "$components/LoadingPulse.svelte";
@@ -22,12 +22,12 @@
   }
 </script>
 
-<div class="drop-shadow mx-4 my-12 p-1 flex flex-col flex-nowrap bg-orange-50">
+<div class="mx-4 my-12 flex flex-col flex-nowrap bg-orange-50 p-1 drop-shadow">
   <slot name="heading">
     <h2>{title}</h2>
   </slot>
   <div
-    class="max-w-full bg-white flex justify-center items-center flex-auto	svg-wrapper"
+    class="svg-wrapper flex max-w-full flex-auto items-center justify-center	bg-white"
   >
     {#if $loading}
       <div class="absolute">
@@ -36,8 +36,8 @@
     {/if}
     <slot />
   </div>
-  <div class="bg-[#2d2d2d] text-lm-light text-sm">
-    <button on:click={() => downloadImage("svg")} class="pb-1 px-3">
+  <div class="bg-[#2d2d2d] text-sm text-lm-light">
+    <button on:click={() => downloadImage("svg")} class="px-3 pb-1">
       <FileImageIcon />
       SVG
     </button>
@@ -46,7 +46,7 @@
       title={isChrome ? "" : "At the moment, downloading PNG does not work in Firefox."}
     >
       <button
-        class="pb-1 px-3"
+        class="px-3 pb-1"
         class:use-chrome={!isChrome}
         on:click={() => downloadImage("png")}
       >
@@ -62,7 +62,7 @@
         : "At the moment, downloading WebP does not work in Firefox."}
     >
       <button
-        class="pb-1 px-3"
+        class="px-3 pb-1"
         class:use-chrome={!isChrome}
         on:click={() => downloadImage("webp")}
       >
@@ -71,11 +71,11 @@
     </span>
 
     <span style="margin: 2rem 0">|</span>
-    <button class="pb-1 px-3" on:click={() => dispatch("downloadJSON")}>
+    <button class="px-3 pb-1" on:click={() => dispatch("downloadJSON")}>
       <FileCodeIcon />
       JSON
     </button>
-    <button class="pb-1 px-3" on:click={() => dispatch("downloadCSV")}>
+    <button class="px-3 pb-1" on:click={() => dispatch("downloadCSV")}>
       <FileCodeIcon />
       CSV
     </button>

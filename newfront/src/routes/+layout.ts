@@ -1,0 +1,57 @@
+import type { Client } from "@urql/core";
+import { createClient, gql } from "@urql/svelte";
+import { i18nload } from "$lib/i18n/i18n";
+import { fetchBasis } from "$lib/stores";
+import type { User } from "$lib/types/user";
+import { userWithLevel } from "$lib/user";
+import type { LayoutLoad } from "./$types";
+
+async function fetchMe(urqlClient: Client) {
+  const { data } = await urqlClient
+    .query<{ me: User }>(
+      gql`
+        query {
+          me {
+            id
+            full_name
+            username
+            initials
+            is_authenticated
+            is_impersonate
+            role
+            userregionalinfo {
+              country {
+                id
+                name
+              }
+              region {
+                id
+                name
+              }
+            }
+            groups {
+              id
+              name
+            }
+          }
+        }
+      `,
+      {}
+    )
+    .toPromise();
+  if (data) return userWithLevel(data.me);
+}
+
+export const load: LayoutLoad = async ({ fetch, data }) => {
+  const urqlClient = await createClient({
+    url: import.meta.env.VITE_BASE_URL + "/graphql/",
+    fetch,
+    fetchOptions: () => ({ credentials: "include" }),
+  });
+
+  const user = await fetchMe(urqlClient);
+  const lang = data?.locale ?? "en";
+  await Promise.all([fetchBasis(lang, fetch, urqlClient), i18nload(lang)]);
+
+  return { urqlClient, user };
+};

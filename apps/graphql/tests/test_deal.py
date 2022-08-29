@@ -1,5 +1,3 @@
-from typing import List, Dict
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -16,7 +14,7 @@ from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
-payload: Dict[str, any] = {
+payload: dict[str, any] = {
     "locations": [
         {
             "id": 1,
@@ -31,7 +29,7 @@ payload: Dict[str, any] = {
 
 
 @pytest.fixture()
-def deal_draft(db) -> List[int]:
+def deal_draft(db) -> list[int]:
     payload["country"] = Country.objects.get(id=450)
     # new draft
     return object_edit(
