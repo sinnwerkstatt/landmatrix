@@ -61,11 +61,18 @@ class InvestorVersion(Version):
             }
             for inv in edict["investors"]:
                 iid = inv["investor"]
-                inv["investor"] = {
-                    "id": iid,
-                    "name": imap[iid]["name"],
-                    "country": {"id": imap[iid]["country_id"]},
-                }
+                try:
+                    inv["investor"] = {
+                        "id": iid,
+                        "name": imap[iid]["name"],
+                        "country": {"id": imap[iid]["country_id"]},
+                    }
+                except KeyError:
+                    inv["investor"] = {
+                        "id": iid,
+                        "name": "DELETED INVESTOR",
+                        "country":  None,
+                    }
         return edict
 
     def to_dict(self):

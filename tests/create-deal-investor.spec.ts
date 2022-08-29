@@ -7,6 +7,8 @@ test.use({ storageState: "playwright-storageState.json" });
 test.describe.serial("deal creation tests", () => {
   let dealID;
   let saveButton;
+  let investorID;
+  let ParentID;
   test("create new deal", async ({ context, page }) => {
     await page.goto("/deal/add/");
     saveButton = page.locator("text=Save");
@@ -78,8 +80,8 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('input[name="production_size_current"]').first().check();
     // ToDo: Testing "+"button
     //Create 2nd DateAreaField
-    await page.locator('button[name="plus_icon"]').first().click();
 
+    await page.locator('button[name="plus_icon"]').nth(1).click();
     await page.locator('input[name="production_size"]').nth(2).fill("2019");
     await page.locator('input[name="production_size"]').nth(3).fill("3000");
     //Purchase price
@@ -171,8 +173,8 @@ test.describe.serial("deal creation tests", () => {
     });
 
     let headline = await page.locator("h1");
-    await expect(headline).toContainText("Editing Deal #");
-    dealID = (await headline.innerText()).replace("Editing Deal #", "");
+    await expect(headline).toContainText("Editing deal #");
+    dealID = (await headline.innerText()).replace("Editing deal #", "");
   });
 
   //CHECKOUT DEAL
@@ -274,7 +276,7 @@ test.describe.serial("deal creation tests", () => {
       .locator('[placeholder="Investor homepage"]')
       .fill("https://www.testing-parent-investor.de");
     await page.locator("#investor_info >> text=Save").click();
-    let ParentID = await page.locator("a[class=investor-link]").innerText();
+    ParentID = await page.locator("a[class=investor-link]").innerText();
     ParentID = ParentID.replace("Show details for investor #", "");
     ParentID = ParentID.replace(" Parent Investor Test", "");
 
@@ -284,6 +286,7 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.press("Enter");
     //ToDo: select country
     //...
+
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
     await page
@@ -291,12 +294,13 @@ test.describe.serial("deal creation tests", () => {
       .fill("https://www.testing-child-investor.de");
     await page.locator("#investor_info >> text=Save").click();
     await page.locator("text=Save").first().click();
-    let investorID = await page.locator("a[class=investor-link]").innerText();
+    investorID = await page.locator("a[class=investor-link]").innerText();
     investorID = investorID.replace("Show details for investor #", "");
     investorID = investorID.replace(" Child Investor Test", "");
 
     //checkout new Investor detail page
-    await page.locator("a[class=investor-link]").click();
+    // await page.locator("a[class=investor-link]").click();
+    await page.goto(`/investor/${investorID}`);
     await expect(page.locator("h1")).toHaveText(`Child Investor Test #${investorID}`);
     await expect(page.locator("text=Government")).toBeVisible();
     await expect(
@@ -327,18 +331,20 @@ test.describe.serial("deal creation tests", () => {
     await page.locator("text=Save").click();
 
     //checkout Investor Changes (WIP)
-    await page.goto(`http://localhost:3000/investor/${investorID}`);
+    await page.goto(`/investor/${investorID}`);
     await page.click('a:has-text("Involvements")');
-    await page.pause();
-    await expect(
-      await page.locator("div:has-text('Parent Investor Test')")
-    ).toBeVisible();
+    // await expect(page.locator("data-name=name").first()).toHaveText(
+    //   "Parent Investor Test"
+    // );
     await page.locator("text=Data sources").click();
-    await expect(await page.locator("h3")).toContainText("1. Data source");
-    await expect(await page.locator("text=2022-02-02"));
+    // await expect(page.locator("h3")).toContainText("1. Data source");
+    // await expect(page.locator("text=2022-02-02")).toBeVisible();
+  });
 
-    //delete Child Investor
+  test("delete investors", async ({ context, page }) => {
+    await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Delete")').click();
+
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .click();
@@ -352,6 +358,7 @@ test.describe.serial("deal creation tests", () => {
     //delete Parent Investor
     await page.goto(`/investor/${ParentID}`);
     await page.locator('button:has-text("Delete")').click();
+
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .click();
