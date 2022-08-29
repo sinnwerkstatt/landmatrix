@@ -3,7 +3,7 @@ import { chromium, expect, FullConfig } from "@playwright/test";
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto("http://localhost:3000/account/login", { waitUntil: "networkidle" });
+  await page.goto("http://localhost:9000/account/login", { waitUntil: "networkidle" });
   await page.fill('text=Username >> [placeholder="Username"]', "shakespeare");
   await page.fill('text=Password >> [placeholder="Password"]', "hamlet4eva");
   await page.click("button.btn-primary");
