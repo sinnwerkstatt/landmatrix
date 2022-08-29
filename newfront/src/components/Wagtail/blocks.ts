@@ -8,6 +8,7 @@ import ImageBlock from "$components/Wagtail/ImageBlock.svelte";
 import ParagraphBlock from "$components/Wagtail/ParagraphBlock.svelte";
 import RawHTMLBlock from "$components/Wagtail/RawHTMLBlock.svelte";
 import ResourcesTeasersBlock from "$components/Wagtail/ResourcesTeasersBlock.svelte";
+import SectionDividerBlock from "$components/Wagtail/SectionDividerBlock.svelte";
 import SliderBlock from "$components/Wagtail/SliderBlock.svelte";
 import TitleBlock from "$components/Wagtail/TitleBlock.svelte";
 
@@ -25,4 +26,5 @@ export const blockMap = {
   resources_teasers: ResourcesTeasersBlock,
   slider: SliderBlock,
   title: TitleBlock,
+  section_divider: SectionDividerBlock,
 };
