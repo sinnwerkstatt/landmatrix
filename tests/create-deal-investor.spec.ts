@@ -332,13 +332,14 @@ test.describe.serial("deal creation tests", () => {
 
     //checkout Investor Changes (WIP)
     await page.goto(`/investor/${investorID}`);
-    await page.click('a:has-text("Involvements")');
-    // await expect(page.locator("data-name=name").first()).toHaveText(
-    //   "Parent Investor Test"
-    // );
     await page.locator("text=Data sources").click();
     // await expect(page.locator("h3")).toContainText("1. Data source");
-    // await expect(page.locator("text=2022-02-02")).toBeVisible();
+    // await expect(page.locator("data-name='publication_title'")).toContainText(
+    //   "Publication Test"
+    // );
+    await page.click('a:has-text("Involvements")');
+    //await page.locator(`text=${ParentID}`).click();
+    // await expect(page.locator("h1")).toHaveText(`Parent Investor Test #${ParentID}`);
   });
 
   test("delete investors", async ({ context, page }) => {
@@ -369,11 +370,7 @@ test.describe.serial("deal creation tests", () => {
       page.waitForNavigation(),
       page.locator('button:has-text("Delete investor version")').click(),
     ]);
+    //ToDo: Fix Delete Deal
+    //await page.goto(`/deal/${dealID}`);
   });
-
-  //ToDo: needs fixing:
-  // test("delete new deal", async ({ context, page }) => {
-  //    await page.goto(`deal/${dealID}`);
-  //   await page.pause();
-  // });
 });
