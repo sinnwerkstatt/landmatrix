@@ -134,10 +134,10 @@
     )
     if (x.ok) {
       const counts = await x.json()
-      navTabs.forEach(navTab =>
-        navTab.items.forEach(i => (i.count = counts?.[i.id] ?? 0)),
-      )
-      navTabs = navTabs
+      navTabs = navTabs.map(navTab => ({
+        ...navTab,
+        items: navTab.items.map(item => ({ ...item, count: counts?.[item.id] ?? 0 })),
+      }))
     }
   }
 
@@ -158,7 +158,7 @@
     if (x.ok) {
       objects = (await x.json()).objects
       acTab.count = objects.length
-      navTabs = navTabs
+      navTabs = [...navTabs]
     }
 
     loading.set(false)

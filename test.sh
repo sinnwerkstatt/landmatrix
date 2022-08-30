@@ -1,17 +1,22 @@
 #!/bin/bash
 
+# 1. this assumes a fresh empty database
+# 2. `poetry run doit initial_setup`
+# 3. create test user:
 poetry run ./manage.py shell << E=O=F
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 User = get_user_model()
 if not User.objects.filter(username='shakespeare').exists():
  will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
- admins, _ = Group.objects.get_or_create(name='Administrators')
- will.groups.set([admins])
+ admins, _ = Group.objects.get_or_create(name="Administrators")
+ cms_editors, _ = Group.objects.get_or_create(name="CMS Global (Editors)")
+ will.groups.set([admins,cms_editors])
  will.save()
 E=O=F
 
-echo "Waiting django to launch on 8000..."
+# 4. Start Django
+echo "Waiting for Django to launch on 8000..."
 poetry run ./manage.py runserver &
 RUNSERVER_PID=$!
 while ! nc -z localhost 8000; do
@@ -19,6 +24,16 @@ while ! nc -z localhost 8000; do
 done
 echo "Django launched"
 
+# 5. Start svelte vite
+echo "Waiting for Svelte to launch on 3000..."
+cd newfront
+npm install
+npm run build
+npm run preview &
+RUNSERVER_PID=$!
+while ! nc -z localhost 3000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
 
 npx playwright test
 
