@@ -19,7 +19,7 @@
     if (!files.length) return
     let fr = new FileReader()
     fr.onload = async () => {
-      const { data } = await $page.data.urqlClient
+      const res = await $page.data.urqlClient
         .mutation<{ upload_datasource_file: string }>(
           gql`
             mutation ($filename: String!, $payload: String!) {
@@ -29,7 +29,8 @@
           { filename: files[0].name, payload: fr.result },
         )
         .toPromise()
-      value = data.upload_datasource_file
+      if (res.error) alert(`Error uploading file: ${files[0].name}`)
+      else value = res.data.upload_datasource_file
     }
     fr.readAsDataURL(files[0])
   }
