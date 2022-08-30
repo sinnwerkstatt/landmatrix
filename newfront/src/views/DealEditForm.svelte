@@ -112,7 +112,11 @@
         {/if}
       </button>
       {#if dealID}
-        <button class="btn btn-secondary mx-2" on:click={() => onClickClose(false)}>
+        <button
+          class="btn btn-secondary mx-2"
+          disabled={savingInProgress}
+          on:click={() => onClickClose(false)}
+        >
           {$_("Close")}
         </button>
       {:else}
