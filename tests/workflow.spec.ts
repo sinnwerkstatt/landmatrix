@@ -1,80 +1,49 @@
-import { test as base, expect, Page } from "@playwright/test";
+import { extractDealAndVersionId, test } from "./fixtures";
+import { expect } from "@playwright/test";
 
-interface RoleFixtures {
-  adminPage: Page;
-  reporterPage: Page;
-  editorPage: Page;
-}
+test.describe("Roles", () => {
+  let adminDealId: number;
+  let editorDealId: number;
+  let reporterDealId: number;
 
-const test = base.extend<RoleFixtures>({
-  adminPage: async ({ browser }, use) => {
-    const context = await browser.newContext({
-      storageState: "tests/storageState/admin.json",
-    });
-    const page = await context.newPage();
-    await use(page);
-    await page.close();
-  },
-  editorPage: async ({ browser }, use) => {
-    const context = await browser.newContext({
-      storageState: "tests/storageState/editor.json",
-    });
-    const page = await context.newPage();
-    await use(page);
-    await page.close();
-  },
-  reporterPage: async ({ browser }, use) => {
-    const context = await browser.newContext({
-      storageState: "tests/storageState/reporter.json",
-    });
-    const page = await context.newPage();
-    await use(page);
-    await page.close();
-  },
-});
+  test.beforeAll(async ({ reporter, admin, editor }) => {
+    adminDealId = await admin.createDeal();
+    editorDealId = await editor.createDeal();
+    reporterDealId = await reporter.createDeal();
+  });
 
-const extractDealAndVersionId = (url: string): [dealId: number, versionId: number] => {
-  const pathname = new URL(url).pathname;
-  return pathname.split("/").slice(-2).map(parseInt) as [number, number];
-};
+  test.afterAll(async ({ admin }) => {
+    await admin.deleteDeal(adminDealId);
+    await admin.deleteDeal(editorDealId);
+    await admin.deleteDeal(reporterDealId);
+  });
 
-const createTestDeal = async (page: Page) => {
-  await page.goto("/deal/add");
+  test("Reporter access", async ({ reporter }) => {
+    const reporterPage = await reporter.newPage();
 
-  // Need to add location in order to be able to save
-  await page.fill('[placeholder="Country"]', "Albania");
-  await page.keyboard.press("Enter");
-
-  await page.click('button:has-text("Save")');
-  await page.click('button:has-text("Close")');
-  const [dealId, versionId] = extractDealAndVersionId(page.url());
-
-  return dealId;
-};
-
-const deleteTestDeal = async (page: Page, dealId: number) => {
-  await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
-
-  if (await page.locator('button:has-text("Delete")').isVisible()) {
-    await page.click('button:has-text("Delete")');
-    await page.waitForLoadState();
-
-    await page.fill(
-      "text=Please provide a comment explaining your request >> textarea",
-      "It was just a test."
-    );
-    await page.click('button:has-text("Delete deal")');
-  }
-};
-
-test.describe.parallel("Reporter", () => {
-  test("Can create, edit and delete own drafts", async ({ reporterPage }) => {
-    const dealId = await createTestDeal(reporterPage);
-
+    await reporterPage.goto(`/deal/${reporterDealId}`);
     await expect(
-      reporterPage.locator(".status-field.active"),
-      "Deal is in draft status."
-    ).toHaveText("Draft");
+      reporterPage.locator(`text=Deal #${reporterDealId}`),
+      "Reporter can see reporter draft."
+    ).toBeVisible();
+
+    await reporterPage.goto(`/deal/${editorDealId}`);
+    await expect(
+      reporterPage.locator("text=404: Deal not found"),
+      "Reporter cannot see editor draft."
+    ).toBeVisible();
+
+    await reporterPage.goto(`/deal/${adminDealId}`);
+    await expect(
+      reporterPage.locator("text=404: Deal not found"),
+      "Reporter cannot see admin draft."
+    ).toBeVisible();
+  });
+
+  test("Reporter actions", async ({ reporter }) => {
+    const reporterPage = await reporter.newPage();
+    await reporterPage.goto(`/deal/${reporterDealId}`);
+
     await expect(
       reporterPage.locator('a:has-text("Edit")'),
       "Reporter can edit own draft."
@@ -83,17 +52,10 @@ test.describe.parallel("Reporter", () => {
       reporterPage.locator('button:has-text("Delete")'),
       "Reporter can delete own draft."
     ).toBeVisible();
-
-    await deleteTestDeal(reporterPage, dealId);
-
     await expect(
-      reporterPage.locator("text=500: Deal not found"),
-      "Deal is deleted."
+      reporterPage.locator('button:has-text("Submit for review")'),
+      "Reporter can submit own draft for review."
     ).toBeVisible();
-  });
-
-  test("Can submit deal for review", async ({ reporterPage, adminPage }) => {
-    const dealId = await createTestDeal(reporterPage);
 
     await reporterPage.click('button:has-text("Submit for review")');
     await reporterPage.waitForLoadState();
@@ -104,19 +66,194 @@ test.describe.parallel("Reporter", () => {
     await reporterPage.click('button:has-text("Submit for review") >> nth=1');
 
     await expect(
-      reporterPage.locator(".status-field.active"),
-      "Deal is in submitted for review status."
-    ).toHaveText("Submitted for review");
-    await expect(
       reporterPage.locator('a:has-text("Edit")'),
-      "Reporter cannot edit submitted draft."
+      "Reporter cannot edit draft (submitted for review)."
     ).not.toBeVisible();
     await expect(
       reporterPage.locator('button:has-text("Delete")'),
-      "Reporter cannot delete submitted draft."
+      "Reporter cannot delete draft (submitted for review)."
     ).not.toBeVisible();
+    await expect(
+      reporterPage.locator('button:has-text("Request Improvement")'),
+      "Editor cannot request improvement on draft (submitted for review)."
+    ).not.toBeVisible();
+    await expect(
+      reporterPage.locator('button:has-text("Submit for activation")'),
+      "Editor cannot submit draft (submitted for review) for activation."
+    ).not.toBeVisible();
+  });
 
-    await deleteTestDeal(adminPage, dealId);
+  test("Editor access", async ({ editor }) => {
+    const editorPage = await editor.newPage();
+
+    await editorPage.goto(`/deal/${reporterDealId}`);
+    await expect(
+      editorPage.locator(`text=Deal #${reporterDealId}`),
+      "Editor can see reporter draft."
+    ).toBeVisible();
+
+    await editorPage.goto(`/deal/${editorDealId}`);
+    await expect(
+      editorPage.locator(`text=Deal #${editorDealId}`),
+      "Editor can see editor draft."
+    ).toBeVisible();
+
+    await editorPage.goto(`/deal/${adminDealId}`);
+    await expect(
+      editorPage.locator(`text=Deal #${adminDealId}`),
+      "Editor can see admin draft."
+    ).toBeVisible();
+  });
+
+  test("Editor actions", async ({ editor }) => {
+    const editorPage = await editor.newPage();
+    await editorPage.goto(`/deal/${editorDealId}`);
+
+    await expect(
+      editorPage.locator('a:has-text("Edit")'),
+      "Editor can edit own draft."
+    ).toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Delete")'),
+      "Editor can delete own draft."
+    ).toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Submit for review")'),
+      "Editor can submit own draft for review."
+    ).toBeVisible();
+
+    await editorPage.click('button:has-text("Submit for review")');
+    await editorPage.waitForLoadState();
+
+    await editorPage.check(
+      'text=I\'ve read and agree to the Data policy >> input[type="checkbox"]'
+    );
+    await editorPage.click('button:has-text("Submit for review") >> nth=1');
+
+    await expect(
+      editorPage.locator('a:has-text("Edit")'),
+      "Editor can create new version of draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Delete")'),
+      "Editor can delete draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Request Improvement")'),
+      "Editor can request improvement on draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Submit for activation")'),
+      "Editor can submit draft (submitted for review) for activation."
+    ).toBeVisible();
+
+    await editorPage.click('button:has-text("Submit for activation")');
+    await editorPage.waitForLoadState();
+    await editorPage.click('button:has-text("Submit for activation") >> nth=1');
+
+    await expect(
+      editorPage.locator('a:has-text("Edit")'),
+      "Editor cannot create new version of draft (submitted for activation)."
+    ).not.toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Delete")'),
+      "Editor cannot delete draft (submitted for activation)."
+    ).not.toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Request Improvement")'),
+      "Editor cannot request improvement of draft (submitted for activation)."
+    ).not.toBeVisible();
+    await expect(
+      editorPage.locator('button:has-text("Activate")'),
+      "Editor cannot activate draft (submitted for activation)."
+    ).not.toBeVisible();
+  });
+
+  test("Admin access", async ({ admin }) => {
+    const adminPage = await admin.newPage();
+
+    await adminPage.goto(`/deal/${reporterDealId}`);
+    await expect(
+      adminPage.locator(`text=Deal #${reporterDealId}`),
+      "Admin can see reporter draft."
+    ).toBeVisible();
+
+    await adminPage.goto(`/deal/${editorDealId}`);
+    await expect(
+      adminPage.locator(`text=Deal #${editorDealId}`),
+      "Admin can see editor draft."
+    ).toBeVisible();
+
+    await adminPage.goto(`/deal/${adminDealId}`);
+    await expect(
+      adminPage.locator(`text=Deal #${adminDealId}`),
+      "Admin can see admin draft."
+    ).toBeVisible();
+  });
+
+  test("Admin actions", async ({ admin }) => {
+    const adminPage = await admin.newPage();
+    await adminPage.goto(`/deal/${adminDealId}`);
+
+    await expect(
+      adminPage.locator('a:has-text("Edit")'),
+      "Admin can edit own draft."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Delete")'),
+      "Admin can delete own draft."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Submit for review")'),
+      "Admin can submit own draft for review."
+    ).toBeVisible();
+
+    await adminPage.click('button:has-text("Submit for review")');
+    await adminPage.waitForLoadState();
+
+    await adminPage.check(
+      'text=I\'ve read and agree to the Data policy >> input[type="checkbox"]'
+    );
+    await adminPage.click('button:has-text("Submit for review") >> nth=1');
+
+    await expect(
+      adminPage.locator('a:has-text("Edit")'),
+      "Admin can create new version of draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Delete")'),
+      "Admin can delete draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Request Improvement")'),
+      "Admin can request improvement on draft (submitted for review)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Submit for activation")'),
+      "Admin can submit draft (submitted for review) for activation."
+    ).toBeVisible();
+
+    await adminPage.click('button:has-text("Submit for activation")');
+    await adminPage.waitForLoadState();
+    await adminPage.click('button:has-text("Submit for activation") >> nth=1');
+
+    await adminPage.pause();
+    await expect(
+      adminPage.locator('a:has-text("Edit")'),
+      "Admin can create new version of draft (submitted for activation)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Delete")'),
+      "Admin can delete draft (submitted for activation)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Request Improvement")'),
+      "Admin can request improvement of draft (submitted for activation)."
+    ).toBeVisible();
+    await expect(
+      adminPage.locator('button:has-text("Activate")'),
+      "Admin can activate draft (submitted for activation)."
+    ).toBeVisible();
   });
 });
 
@@ -125,12 +262,19 @@ test.describe.serial("Workflow", async () => {
   let copyDealId: number;
   let _: number;
 
-  test("Reporter creates new deal draft and submits it for review", async ({
-    reporterPage: page,
-  }) => {
-    await createTestDeal(page);
+  test.afterAll(async ({ admin }) => {
+    for (const id of [dealId, copyDealId]) {
+      await admin.deleteDeal(id);
+    }
+  });
 
-    [dealId, _] = extractDealAndVersionId(page.url());
+  test("Reporter creates new deal draft and submits it for review", async ({
+    reporter,
+  }) => {
+    dealId = await reporter.createDeal();
+
+    const page = await reporter.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await expect(
       page.locator(".status-field.active"),
@@ -151,15 +295,16 @@ test.describe.serial("Workflow", async () => {
     ).toHaveText("Submitted for review");
   });
 
-  test("Editor requests improvement", async ({ editorPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Editor requests improvement", async ({ editor }) => {
+    const page = await editor.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Request improvement")');
     await page.waitForLoadState();
 
     await page.fill(
       "text=Please provide a comment explaining your request >> textarea",
-      "Data source and investor missing."
+      "Location, data source and investor missing."
     );
     await page.click('button:has-text("Request improvement") >> nth=1');
 
@@ -169,11 +314,15 @@ test.describe.serial("Workflow", async () => {
     ).toHaveText("Draft");
   });
 
-  test("Reporter improves draft and submits again", async ({ reporterPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Reporter improves draft and submits again", async ({ reporter }) => {
+    const page = await reporter.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('a:has-text("Edit")');
     await page.waitForNavigation();
+
+    await page.fill('input[placeholder="Country"]', "Albania");
+    await page.keyboard.press("Enter");
 
     // switch to investor tab
     await page.click("text=Investor info");
@@ -208,9 +357,10 @@ test.describe.serial("Workflow", async () => {
   });
 
   test("Editor accepts improvement by submitting for activation", async ({
-    editorPage: page,
+    editor,
   }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+    const page = await editor.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Submit for activation")');
     await page.waitForLoadState();
@@ -222,8 +372,9 @@ test.describe.serial("Workflow", async () => {
     ).toHaveText("Submitted for activation");
   });
 
-  test("Admin activates deal", async ({ adminPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Admin activates deal", async ({ admin }) => {
+    const page = await admin.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Activate")');
     await page.waitForLoadState();
@@ -241,8 +392,9 @@ test.describe.serial("Workflow", async () => {
     ).toBeVisible();
   });
 
-  test("Admin deletes deal", async ({ adminPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Admin deletes deal", async ({ admin }) => {
+    const page = await admin.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Delete")');
     await page.waitForLoadState();
@@ -263,13 +415,14 @@ test.describe.serial("Workflow", async () => {
     await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
 
     await expect(
-      page.locator(`text=Deal #${dealId}`),
+      page.locator("text=404: Deal not found"),
       "Deal is not publicly visible."
-    ).not.toBeVisible();
+    ).toBeVisible();
   });
 
-  test("Admin undeletes deal", async ({ adminPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Admin undeletes deal", async ({ admin }) => {
+    const page = await admin.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Undelete")');
     await page.waitForLoadState();
@@ -286,8 +439,9 @@ test.describe.serial("Workflow", async () => {
     ).toBeVisible();
   });
 
-  test("Admin copies deal", async ({ adminPage: page }) => {
-    await page.goto(`/deal/${dealId}`, { waitUntil: "networkidle" });
+  test("Admin copies deal", async ({ admin }) => {
+    const page = await admin.newPage();
+    await page.goto(`/deal/${dealId}`);
 
     await page.click('button:has-text("Copy deal")');
     await page.waitForLoadState();
@@ -308,11 +462,5 @@ test.describe.serial("Workflow", async () => {
     ).toHaveText("Draft");
 
     await newPage.close();
-  });
-
-  test.afterAll(async ({ adminPage: page }) => {
-    for (const id of [dealId, copyDealId]) {
-      await deleteTestDeal(page, id);
-    }
   });
 });
