@@ -1,11 +1,16 @@
 <script lang="ts">
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
 
   import { filters } from "$lib/filters"
   import type { Deal } from "$lib/types/deal"
-  import { NEGOTIATION_STATUS_GROUP_MAP, NegotiationStatus } from "$lib/types/deal"
+  import {
+    NEGOTIATION_STATUS_GROUP_MAP,
+    NegotiationStatus,
+    NegotiationStatusGroup,
+  } from "$lib/types/deal"
 
   import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte"
   import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation"
@@ -15,6 +20,7 @@
   let title = $_("LSLA by negotiation status")
   let svg = new LSLAByNegotiation()
 
+  let pots: { [key: string]: LSLAData } = {}
   $: if (browser && deals?.length > 0) {
     const filter_negstat = $filters.negotiation_status
     const selected_neg_stat =
@@ -31,7 +37,6 @@
             NegotiationStatus.CONTRACT_CANCELED,
             NegotiationStatus.CONTRACT_EXPIRED,
           ]
-    let pots: { [key: string]: LSLAData } = {}
     if (selected_neg_stat.includes(NegotiationStatus.EXPRESSION_OF_INTEREST))
       pots.EXPRESSION_OF_INTEREST = new LSLAData(
         NegotiationStatus.EXPRESSION_OF_INTEREST,
@@ -47,7 +52,7 @@
       selected_neg_stat.includes(NegotiationStatus.UNDER_NEGOTIATION) &&
       selected_neg_stat.includes(NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING)
     )
-      pots.INTENDED = new LSLAData("INTENDED", true)
+      pots.INTENDED = new LSLAData(NegotiationStatusGroup.INTENDED, true)
     if (selected_neg_stat.includes(NegotiationStatus.ORAL_AGREEMENT))
       pots.ORAL_AGREEMENT = new LSLAData(NegotiationStatus.ORAL_AGREEMENT)
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED))
@@ -59,7 +64,7 @@
       selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED) &&
       selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP)
     )
-      pots.CONCLUDED = new LSLAData("CONCLUDED", true)
+      pots.CONCLUDED = new LSLAData(NegotiationStatusGroup.CONCLUDED, true)
     if (selected_neg_stat.includes(NegotiationStatus.NEGOTIATIONS_FAILED))
       pots.NEGOTIATIONS_FAILED = new LSLAData(NegotiationStatus.NEGOTIATIONS_FAILED)
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_CANCELED))
@@ -68,7 +73,7 @@
       selected_neg_stat.includes(NegotiationStatus.NEGOTIATIONS_FAILED) &&
       selected_neg_stat.includes(NegotiationStatus.CONTRACT_CANCELED)
     )
-      pots.FAILED = new LSLAData("FAILED", true)
+      pots.FAILED = new LSLAData(NegotiationStatusGroup.FAILED, true)
     if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_EXPIRED))
       pots.CONTRACT_EXPIRED = new LSLAData(NegotiationStatus.CONTRACT_EXPIRED, true)
 
@@ -85,6 +90,8 @@
 
     svg.do_the_graph("#lslabyneg", Object.values(pots))
   }
+
+  onMount(() => svg.do_the_graph("#lslabyneg", Object.values(pots)))
 
   function downloadJSON() {
     // let data =

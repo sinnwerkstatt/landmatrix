@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
@@ -38,6 +39,8 @@
 
     svg.do_the_graph("#dynamicsofdeal", payload)
   }
+
+  onMount(() => svg.do_the_graph("#dynamicsofdeal", payload))
 
   function downloadJSON() {
     let data =

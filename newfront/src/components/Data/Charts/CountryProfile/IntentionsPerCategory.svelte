@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
@@ -36,7 +37,7 @@
     a_download(data, fileName(title, ".csv"))
   }
 
-  $: if (deals?.length > 0) {
+  $: if (deals.length > 0) {
     sankey_legend_numbers = {
       x: deals.filter(d => d.current_intention_of_investment?.length > 1).length,
       y: deals
@@ -47,6 +48,9 @@
   }
 
   $: implementation_status_choices = getImplementationStatusChoices($_)
+
+  let nodes: MySankeyNode[] = []
+  let links: MySankeyLink[] = []
 
   $: if (browser && deals?.length > 0) {
     let datanodes: Set<string> = new Set()
@@ -64,7 +68,7 @@
         datalinks[`${i_stat},${ivi}`] = datalinks[`${i_stat},${ivi}`] + 1 || 1
       })
     })
-    const nodes: MySankeyNode[] = [...datanodes].map(n => {
+    nodes = [...datanodes].map(n => {
       const istatus = implementation_status_choices[n] || n === "S_UNKNOWN"
       const deal_count = istatus ? i_status_counter[n] : 0
       const name =
@@ -74,13 +78,15 @@
         flat_intention_of_investment_map[n]
       return { id: n, istatus, deal_count, name }
     })
-    const links: MySankeyLink[] = Object.entries(datalinks).map(([k, v]) => {
+    links = Object.entries(datalinks).map(([k, v]) => {
       const [source, target] = k.split(",")
       return { source, target, value: v }
     })
     sankey_links = JSON.parse(JSON.stringify(links))
-    if (sankey) sankey.do_the_sank("#sankey", { nodes, links })
+    sankey.do_the_sank("#sankey", { nodes, links })
   }
+
+  onMount(() => sankey.do_the_sank("#sankey", { nodes, links }))
 </script>
 
 <CountryProfileChartWrapper
