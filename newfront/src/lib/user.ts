@@ -63,10 +63,10 @@ export function userWithLevel(user: User): User {
   let level = UserLevel.ANYBODY
   if (me.groups)
     me.groups?.forEach(g => {
+      if (!levelmap[g.name]) return
       level = Math.max(UserLevel.ANYBODY, levelmap[g.name])
     })
   me.level = level
-
   return me
 }
 export async function dispatchLogout(urqlClient: Client) {
