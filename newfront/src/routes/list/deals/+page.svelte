@@ -14,7 +14,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/table/Table.svelte"
 
-  let activeColumns = [
+  let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
     "fully_updated_at",
     "id",
     "country",
