@@ -37,6 +37,7 @@ unicodecsv = "*"
 doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
+tzdata = "*"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
