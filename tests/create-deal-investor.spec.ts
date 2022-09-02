@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { TIMEOUT } from "dns";
 import { log } from "util";
 
-test.use({ storageState: "playwright-storageState.json" });
+test.use({ storageState: "tests/storageState/admin.json" });
 
 test.describe.serial("deal creation tests", () => {
   let dealID;

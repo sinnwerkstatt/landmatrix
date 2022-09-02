@@ -1,19 +1,40 @@
-import { chromium, expect, FullConfig } from "@playwright/test";
+import { chromium, FullConfig } from "@playwright/test";
+
+// https://playwright.dev/docs/test-auth#multiple-signed-in-roles
+const USERS = [
+  {
+    role: "admin",
+    username: "shakespeare",
+    password: "hamlet4eva",
+  },
+  {
+    role: "editor",
+    username: "test_editor",
+    password: "love2edit",
+  },
+  {
+    role: "reporter",
+    username: "test_reporter",
+    password: "love2report",
+  },
+];
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
-  const page = await browser.newPage();
-  await page.goto("http://localhost:9000/account/login", { waitUntil: "networkidle" });
-  await page.fill('text=Username >> [placeholder="Username"]', "shakespeare");
-  await page.fill('text=Password >> [placeholder="Password"]', "hamlet4eva");
-  await page.click("button.btn-primary");
-  await page.waitForLoadState("networkidle");
 
-  const wrap = page.locator(".text-green-500");
-  await expect(wrap).toHaveText(/Login successful./);
+  for (const user of USERS) {
+    const page = await browser.newPage();
+    await page.goto("localhost:9000/account/login", {
+      waitUntil: "networkidle",
+    });
 
-  //Save signed-in state to 'playwright-storageState.json'.
-  await page.context().storageState({ path: "playwright-storageState.json" });
+    await page.fill('text=Username >> [placeholder="Username"]', user.username);
+    await page.fill('text=Password >> [placeholder="Password"]', user.password);
+    await page.click('button:has-text("Login")');
+    await page.locator("text=Login successful.").waitFor();
+    await page.context().storageState({ path: `tests/storageState/${user.role}.json` });
+  }
+
   await browser.close();
 }
 
