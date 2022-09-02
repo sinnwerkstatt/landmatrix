@@ -71,7 +71,7 @@ class InvestorVersion(Version):
                     inv["investor"] = {
                         "id": iid,
                         "name": "DELETED INVESTOR",
-                        "country":  None,
+                        "country": None,
                     }
         return edict
 
