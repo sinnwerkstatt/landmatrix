@@ -11,13 +11,10 @@ test.describe.serial("deal creation tests", () => {
   let ParentID;
   test("create new deal", async ({ context, page }) => {
     await page.goto("/deal/add/");
-    saveButton = page.locator("text=Save");
+    saveButton = page.locator("text=Save").nth(0);
 
     //LOCATION
     await page.locator('[placeholder="Country"]').fill("Albania");
-    // await page.locator("text=Add Location").click();
-    // await page.locator('[placeholder="Location"]').click();
-    // await page.locator('[placeholder="Location"]').fill("Belsh");
 
     //GENERAL
     await page.locator("text=General info").click();
@@ -46,14 +43,10 @@ test.describe.serial("deal creation tests", () => {
       await decimalField.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
 
-    //DateAreaField
-    //Radiobutton
-
     //Area
     await page.locator(`[name=production_size]`).nth(1).fill("2000");
     //Datefield
     let datefield = await page.locator(`[name=production_size]`).first();
-
     await datefield.fill("01.02.2018");
     await expect(
       await datefield.evaluate(
@@ -66,26 +59,22 @@ test.describe.serial("deal creation tests", () => {
         (x: HTMLInputElement) => !x.validity.valid && x.validity.customError
       )
     ).toBeTruthy();
-
     await datefield.fill("2018");
     await expect(
       await datefield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
-
     await datefield.fill("2018-02-01");
     await expect(
       await datefield.evaluate((x: HTMLInputElement) => x.validity.valid)
     ).toBeTruthy();
-
     await page.locator('input[name="production_size_current"]').first().check();
-    // ToDo: Testing "+"button
-    //Create 2nd DateAreaField
 
+    //Create 2nd DateAreaField
     await page.locator('button[name="plus_icon"]').nth(1).click();
     await page.locator('input[name="production_size"]').nth(2).fill("2019");
     await page.locator('input[name="production_size"]').nth(3).fill("3000");
-    //Purchase price
-    // await page.locator('input [placeholder="\\31 23\\.45"]').nth(4).click();
+    //ToDo: Purchase price
+    //await page.locator('input["name=purchase_price"]').fill("2345.60");
     //ChoiceField Charfield
     let choiceField_Charfield = await page.locator(
       'select[name="purchase_price_type"]'
@@ -100,23 +89,13 @@ test.describe.serial("deal creation tests", () => {
     let choiceField = await page.locator(
       'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
     );
-
-    await choiceField.fill("USD");
-
     //ChoiceField
-    // let choiceField = await page.locator(
-    //   'text=Purchase price Purchase price Purchase price currency Purchase price area type N >> [placeholder="Currency"]'
-    // );
-    //
-    // await choiceField.fill("USD");
-    // await page.locator("text=US Dollar (USD)").nth(1).click();
-    //
-    // await expect(
-    //   await choiceField.evaluate((x: HTMLInputElement) => x.validity.valid)
-    // ).toBeTruthy();
+    await choiceField.fill("USD");
+    await expect(
+      await choiceField.evaluate((x: HTMLInputElement) => x.validity.valid)
+    ).toBeTruthy();
 
-    //Create 2nd DateAreaFarmersHouseholdField
-
+    //Create 2nd FarmersHouseholdField
     // Check input[name="contract_farming"] >> nth=1
     let radiobutton = await page.locator('input[name="contract_farming"]').nth(1);
     await radiobutton.check();
@@ -130,21 +109,6 @@ test.describe.serial("deal creation tests", () => {
     await leaseField.nth(3).fill("10");
     await page.locator('input[name="on_the_lease_current"]').first().check();
 
-    //INVESTOR INFO
-    //Charfield
-    await page.locator("text=Investor info").click();
-    let charfield = await page.locator('input[name="project_name"]');
-    await charfield.fill(
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata123456789"
-    );
-    await charfield.evaluate((x: HTMLInputElement) => console.log(x.validity));
-    await expect(charfield).toHaveValue(
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata"
-    );
-    await expect(
-      await charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
-    ).toBeTruthy();
-
     //ADD CONTRACT
     await page.locator("text=Contracts").click();
     await page.locator("text=Add Contract").click();
@@ -156,22 +120,37 @@ test.describe.serial("deal creation tests", () => {
     await Promise.all([page.waitForNavigation(), saveButton.click()]);
     await expect((await page.locator("text=2. Contract").count()) === 0).toBeTruthy();
 
-    //await page.locator("text=/1. Contract/ >> svg").first().click();
-    //ToDo: Expect alert, but not showing in chromium-browser, playwright-docu: https://playwright.dev/docs/dialogs
+    //INVESTOR INFO
+    //Charfield
+    await page.locator("text=Investor info").click();
+    let charfield = await page.locator('input[name="project_name"]');
+    await charfield.fill(
+      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata123456789"
+    );
+    await charfield.evaluate((x: HTMLInputElement) => console.log(x.validity));
+    //check max-length
+    await expect(charfield).toHaveValue(
+      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata"
+    );
+    await expect(
+      await charfield.evaluate((x: HTMLInputElement) => x.validity.valid)
+    ).toBeTruthy();
 
-    //ToDo: ADD FILE
-    // https://playwright.dev/docs/input#upload-files
-    //...
+    //DATA SOURCES FILE UPLOAD
+    await page.locator("text=Data sources").click();
+    await page.locator("text=Add Data source").click();
+    const upload = await page.locator('input[type="file"]');
+    let [fileChooser1] = await Promise.all([
+      page.waitForEvent("filechooser"),
+      upload.click(),
+    ]);
+    await fileChooser1.setFiles("tests/testFile.pdf");
+    await page.locator('input[type="file"]').setInputFiles("tests/testFile.pdf");
+    await saveButton.click();
+    await expect(page.locator("button:has-text('Remove this file')")).toBeVisible();
 
-    //await Promise.all([page.waitForNavigation(), saveButton.click()]);
-
-    // await expect(saveButton).toBeDisabled();
-
-    //ToDo: needs fixing: wait for navigation line 156 not working, l175 returns innertext from before and after clicking the save-button
-    await page.evaluate(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
+    //get DealID
+    await page.waitForSelector("h1");
     let headline = await page.locator("h1");
     await expect(headline).toContainText("Editing deal #");
     dealID = (await headline.innerText()).replace("Editing deal #", "");
@@ -192,11 +171,12 @@ test.describe.serial("deal creation tests", () => {
     const currentIntention = await page.locator("text=2 000").first();
     await expect(currentIntention).toContainText("[2018-02-01, current] 2 000 ha");
     await expect(currentIntention).toHaveClass("font-bold");
-    // console.log(await currentIntention.count());
-
     await expect(page.locator('div[data-name="contract_farming"]')).toContainText("No");
     await page.goto(`deal/${dealID}/#contracts`);
     await expect(page.locator('div[data-name="number"]')).toContainText("1234");
+
+    await page.locator("text=Data sources").click();
+    await expect(page.locator("h3:has-text('1. Data source')")).toBeVisible();
   });
 
   //EDIT DEAL
@@ -342,7 +322,9 @@ test.describe.serial("deal creation tests", () => {
     // await expect(page.locator("h1")).toHaveText(`Parent Investor Test #${ParentID}`);
   });
 
-  test("delete investors", async ({ context, page }) => {
+  //delete investors
+  test.afterAll(async ({ context, page }) => {
+    //test("delete all", async ({ context, page }) => {
     await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Delete")').click();
 
@@ -370,7 +352,10 @@ test.describe.serial("deal creation tests", () => {
       page.waitForNavigation(),
       page.locator('button:has-text("Delete investor version")').click(),
     ]);
+    //test redirekt after investor has been deleted
+
     //ToDo: Fix Delete Deal
-    //await page.goto(`/deal/${dealID}`);
+    //     await page.goto(`/deal/${dealID}`);
+    // await page.pause();
   });
 });
