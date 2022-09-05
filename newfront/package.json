@@ -19,7 +19,7 @@
     "@googlemaps/js-api-loader": "^1.14.3",
     "@hcaptcha/types": "^1.0.2",
     "@sveltejs/adapter-node": "^1.0.0-next.87",
-    "@sveltejs/kit": "^1.0.0-next.447",
+    "@sveltejs/kit": "^1.0.0-next.469",
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/svelte": "^3.2.1",
