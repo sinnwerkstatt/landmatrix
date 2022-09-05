@@ -10,7 +10,7 @@
 <Messages />
 <NavigationLoader />
 <Navbar />
-<div class="h-[calc(100vh-58px-32px)] overflow-x-hidden">
+<div class="h-[calc(100vh-58px-32px)] overflow-x-auto">
   <slot />
 </div>
 <Footer />
