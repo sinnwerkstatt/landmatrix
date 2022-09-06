@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "sameSite": "Lax",
+      "name": "csrftoken",
+      "value": "IwDk8llsftzXv9DMD2Rkw5QPVukHqEV1uNvWiA39FuIg0JGUoqSi0oOvHd1acNXs",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1693572112.994675,
+      "httpOnly": false,
+      "secure": false
+    },
+    {
+      "sameSite": "Lax",
+      "name": "sessionid",
+      "value": "954n3g1ggdndhm8fb4tqp2zio09jrbfu",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1663332112.994848,
+      "httpOnly": true,
+      "secure": false
+    }
+  ],
+  "origins": []
+}
