@@ -33,8 +33,5 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
   event.locals.locale = lang
 
-  const nonSSRPaths = ["/deal/edit", "/deal/add", "/map", "/list"]
-  const ssr = !nonSSRPaths.find(p => event.url.pathname.startsWith(p))
-
-  return resolve(event, { ssr })
+  return resolve(event)
 }

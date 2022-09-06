@@ -8,8 +8,8 @@ description = "Land Matrix"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Django = "<4"
-wagtail = "<2.16"
+Django = "*"
+wagtail = "*"
 psycopg2-binary = "*"
 
 django-cors-headers = "*"
@@ -18,10 +18,10 @@ django-impersonate = "*"
 django-modeltranslation = "*"
 
 wagtail-font-awesome-svg = "*"
-wagtail-modeltranslation = ">=0.11rc3"
+wagtail-modeltranslation = "*"
 wagtail-orderable = "*"
 
-ariadne = ">=0.14"
+ariadne = "*"
 ariadne_django = "*"
 fastjsonschema = "*"
 geojson-rewind = "*"
@@ -37,6 +37,7 @@ unicodecsv = "*"
 doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
+tzdata = "*"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
@@ -58,7 +59,7 @@ tqdm = "^4.64.0"
 
 [tool.black]
 line-length = 88
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py38', 'py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
 /(

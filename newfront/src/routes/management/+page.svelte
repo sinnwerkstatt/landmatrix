@@ -223,9 +223,8 @@
     </div>
     <div class="w-full self-start">
       {#each navTabs as { name, items }}
-        {@const aggCount = items.map(i => i.count ?? 0).reduce((a, b) => a + b, 0)}
         {#if user.level > UserLevel.EDITOR || !items.every(i => i.staff)}
-          <FilterCollapse title="{name} (Σ {aggCount})" expanded>
+          <FilterCollapse title={name} expanded>
             <ul>
               {#each items.filter(i => user.level > UserLevel.EDITOR || !i.staff) as item}
                 <li

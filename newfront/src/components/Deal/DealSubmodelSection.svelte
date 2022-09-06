@@ -16,7 +16,7 @@
   let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full"
 </script>
 
-{#if entries.length > 0}
+{#if entries?.length > 0}
   <section class="flex h-full flex-wrap">
     <div class={wrapperClasses}>
       {#each entries as entry, index}

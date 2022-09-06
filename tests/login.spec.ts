@@ -5,7 +5,7 @@ test("happy path", async ({ page }) => {
   await page.fill('text=Username >> [placeholder="Username"]', "shakespeare");
   await page.fill('text=Password >> [placeholder="Password"]', "hamlet4eva");
 
-  await page.click("button.btn-primary");
+  await page.click('button:has-text("Login")');
   await page.waitForLoadState("networkidle");
 
   const wrap = page.locator(".text-green-500");
@@ -18,7 +18,7 @@ test("unhappy path", async ({ page }) => {
   await page.fill('text=Username >> [placeholder="Username"]', "shakespeare");
   await page.fill('text=Password >> [placeholder="Password"]', "wrong-password");
 
-  await page.click("button.btn-primary");
+  await page.click('button:has-text("Login")');
   await page.waitForLoadState("networkidle");
 
   const wrap = page.locator(".text-red-500");

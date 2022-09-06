@@ -36,4 +36,4 @@ __pycache__/
 .vscode/
 
 node_modules/
-playwright-storageState.json
+tests/storageState

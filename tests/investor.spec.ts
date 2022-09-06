@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.use({ storageState: "playwright-storageState.json" });
+test.use({ storageState: "tests/storageState/admin.json" });
 
 test.describe.serial("investor creation tests", () => {
   let parentID;

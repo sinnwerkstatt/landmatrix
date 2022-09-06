@@ -5,6 +5,8 @@ import type { Deal } from "$lib/types/deal"
 
 import type { PageLoad } from "./$types"
 
+export const ssr = false
+
 export const load: PageLoad = async ({ params, parent }) => {
   const { user, urqlClient } = await parent()
   if (!user) throw error(403, "Permission denied")

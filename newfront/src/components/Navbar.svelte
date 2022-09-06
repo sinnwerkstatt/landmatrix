@@ -236,7 +236,7 @@
           <li>
             <a
               class="nav-link hover:bg-gray-100 hover:text-orange-500"
-              href="/account/login/"
+              href="/account/login/?next={$page.url.pathname}"
               title="Login/Register"
             >
               <UserRegular class="h-5 w-5" />

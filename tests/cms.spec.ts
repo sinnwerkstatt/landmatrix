@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.use({ storageState: "playwright-storageState.json" });
+test.use({ storageState: "tests/storageState/admin.json" });
 
 test.describe.serial("basic cms tests", () => {
   async function publishNewPage(page) {
