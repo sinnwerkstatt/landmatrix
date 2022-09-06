@@ -14,7 +14,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/table/Table.svelte"
 
-  let activeColumns = [
+  let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
     "fully_updated_at",
     "id",
     "country",
@@ -56,33 +56,41 @@
 <DataContainer>
   <div class="flex h-full">
     <div
-      class="h-full min-h-[3px] flex-none {$showFilterBar
+      class="min-h-[3px] flex-none {$showFilterBar
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />
 
-    <div class="flex w-full flex-col bg-stone-100 px-4">
-      <div class="flex h-[4rem] items-center pl-2 text-lg">
-        {$deals?.data?.deals?.length ?? "—"}
-        {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
-      </div>
+    <div
+      class={$showFilterBar && $showContextBar
+        ? "w-3/5 flex-1"
+        : $showFilterBar || $showContextBar
+        ? "w-4/5 flex-1"
+        : "w-full flex-1"}
+    >
+      <div class="flex h-full flex-col bg-stone-100 px-6 pb-6">
+        <div class="flex h-[4rem] items-center pl-2 text-lg">
+          {$deals?.data?.deals?.length ?? "—"}
+          {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
+        </div>
 
-      <Table
-        sortBy="-fully_updated_at"
-        items={$deals?.data?.deals ?? []}
-        columns={activeColumns}
-        {spans}
-        {labels}
-      >
-        <DisplayField
-          slot="field"
-          let:fieldName
-          let:obj
-          wrapperClasses="p-1"
-          fieldname={fieldName}
-          value={obj[fieldName]}
-        />
-      </Table>
+        <Table
+          sortBy="-fully_updated_at"
+          items={$deals?.data?.deals ?? []}
+          columns={activeColumns}
+          {spans}
+          {labels}
+        >
+          <DisplayField
+            slot="field"
+            let:fieldName
+            let:obj
+            wrapperClasses="p-1"
+            fieldname={fieldName}
+            value={obj[fieldName]}
+          />
+        </Table>
+      </div>
     </div>
     <div
       class="h-full min-h-[3px] flex-none {$showContextBar
