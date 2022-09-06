@@ -77,12 +77,13 @@
     const deal_edit = ret.data?.deal_edit
     if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`)
 
-    originalDeal = JSON.stringify(deal)
-    savingInProgress = false
-
     if (location.hash !== hash || +dealVersion !== +deal_edit.dealVersion) {
       await goto(`/deal/edit/${deal_edit.dealId}/${deal_edit.dealVersion}${hash ?? ""}`)
     }
+
+    // update original deal only after route change
+    originalDeal = JSON.stringify(deal)
+    savingInProgress = false
   }
 
   const onClickClose = async (force: boolean) => {
