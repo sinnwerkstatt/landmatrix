@@ -48,6 +48,7 @@
     items={targetCountries}
     {value}
     on:select={onSelect}
+    on:clear={onSelect}
     placeholder={$_("Country")}
     optionIdentifier="id"
     labelIdentifier="name"
