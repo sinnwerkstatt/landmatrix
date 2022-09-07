@@ -16,7 +16,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   import FilterOverlay from "./FilterOverlay.svelte"
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte"

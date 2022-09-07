@@ -14,7 +14,7 @@
   import { showContextBar, showFilterBar } from "$components/Data"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   showContextBar.set(false)
 

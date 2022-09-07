@@ -12,7 +12,7 @@
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
     "fully_updated_at",
