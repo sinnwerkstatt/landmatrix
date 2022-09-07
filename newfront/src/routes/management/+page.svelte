@@ -291,7 +291,7 @@
     {:else if activeTab?.id === "requested_improvement"}
       <RequestedImprovementView objects={filteredObjects} {model} />
     {:else}
-      <Table items={filteredObjects} {columns} {spans} {labels} rowClasses="p-1">
+      <Table items={filteredObjects} {columns} {spans} {labels}>
         <DisplayField
           slot="field"
           let:fieldName

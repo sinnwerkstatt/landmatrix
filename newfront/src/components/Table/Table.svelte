@@ -1,5 +1,5 @@
 <script lang="ts">
-  import classNames from "classnames"
+  import cn from "classnames"
   import { onMount } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
 
@@ -15,7 +15,7 @@
 
   export let rowHeightInPx = 90
   export let headerHeightInPx = 40
-  export let colWidthInPx = 70
+  export let colWidthInPx = 75
 
   export let rowClasses = ""
 
@@ -52,7 +52,7 @@
     <div
       slot="item"
       class="row {index === 0
-        ? 'whitespace-nowrap bg-gray-700 pr-4 font-medium text-white'
+        ? 'items-center whitespace-nowrap bg-gray-700 pr-4 font-medium text-white'
         : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200'} {rowClasses}"
       let:index
       let:style
@@ -66,14 +66,24 @@
             on:click={() => onTableHeadClick(col)}
           >
             {labels[colIndex]}
-            {#if sortBy === col || sortBy === `-${col}`}
+
+            <span class="relative pl-1">
               <ChevronDownIcon
-                class={classNames(
-                  "transition-duration-300 inline h-4 w-4 rounded text-orange transition-transform",
-                  sortBy === `-${col}` ? "rotate-180" : "",
+                class={cn(
+                  "absolute top-0 inline",
+                  "rotate-180",
+                  "h-4 w-4 rounded",
+                  sortBy == `-${col}` ? "text-orange" : "text-gray-400",
                 )}
               />
-            {/if}
+              <ChevronDownIcon
+                class={cn(
+                  "absolute top-2 inline",
+                  "h-4 w-4 rounded",
+                  sortBy == col ? "text-orange" : "text-gray-400",
+                )}
+              />
+            </span>
           </div>
         {/each}
       {:else}
