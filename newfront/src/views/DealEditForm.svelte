@@ -3,7 +3,7 @@
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
+  import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getDealSections } from "$lib/sections"
@@ -42,6 +42,15 @@
     { target: "#gender_related_info", name: $_("Gender-related info") },
     { target: "#overall_comment", name: $_("Overall comment") },
   ]
+
+  beforeNavigate(({ type, cancel }) => {
+    // browser navigation buttons
+    if (type === "popstate")
+      if (formChanged && !showReallyQuitOverlay) {
+        showReallyQuitOverlay = true
+        cancel()
+      }
+  })
 
   async function saveDeal(hash: string) {
     const currentForm: HTMLFormElement | null =
@@ -88,8 +97,11 @@
 
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true
-    else if (!dealID) await goto("/")
-    else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+    else {
+      await invalidateAll() // discard changes
+      if (!dealID) await goto("/")
+      else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+    }
   }
   $: dealSections = getDealSections($_)
 </script>
