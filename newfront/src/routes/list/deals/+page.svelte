@@ -56,7 +56,7 @@
 <DataContainer>
   <div class="flex h-full">
     <div
-      class="min-h-[3px] flex-none {$showFilterBar
+      class="h-full min-h-[3px] flex-none {$showFilterBar
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />
