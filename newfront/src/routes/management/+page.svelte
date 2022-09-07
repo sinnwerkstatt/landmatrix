@@ -86,7 +86,7 @@
   const dealColumns = {
     id: 1,
     country: 2,
-    deal_size: 1,
+    deal_size: 2,
     created_at: 2,
     created_by: 2,
     modified_at: 2,
@@ -98,11 +98,11 @@
 
   const investorColumns = {
     id: 1,
-    name: 2,
-    country: 3,
+    name: 3,
+    country: 4,
     deals: 1,
     created_at: 2,
-    created_by: 2,
+    created_by: 3,
     workflowinfos: 5,
     // combined_status: 1,
   }
@@ -182,9 +182,9 @@
   <title>{$_("Management")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="relative flex min-h-full w-full">
+<div class="relative flex h-full w-full bg-stone-100">
   <nav
-    class="flex min-h-full flex-initial flex-shrink-0 flex-col bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
+    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] xl:basis-1/6"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
@@ -283,7 +283,7 @@
     />
   </button>
 
-  <div class="mt-[50px] w-4/5 flex-1 px-6 py-4">
+  <div class="mt-[60px] w-1 grow px-6 pb-6">
     {#if activeTab?.id === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_feedback"}

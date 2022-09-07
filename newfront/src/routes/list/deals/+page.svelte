@@ -31,7 +31,7 @@
     current_negotiation_status: 4,
     current_contract_size: 3,
     current_implementation_status: 4,
-    intended_size: 2,
+    intended_size: 3,
     operating_company: 4,
   }
 
@@ -61,36 +61,28 @@
         : 'w-0'}"
     />
 
-    <div
-      class={$showFilterBar && $showContextBar
-        ? "w-3/5 flex-1"
-        : $showFilterBar || $showContextBar
-        ? "w-4/5 flex-1"
-        : "w-full flex-1"}
-    >
-      <div class="flex h-full flex-col bg-stone-100 px-6 pb-6">
-        <div class="flex h-[4rem] items-center pl-2 text-lg">
-          {$deals?.data?.deals?.length ?? "—"}
-          {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
-        </div>
-
-        <Table
-          sortBy="-fully_updated_at"
-          items={$deals?.data?.deals ?? []}
-          columns={activeColumns}
-          {spans}
-          {labels}
-        >
-          <DisplayField
-            slot="field"
-            let:fieldName
-            let:obj
-            wrapperClasses="p-1"
-            fieldname={fieldName}
-            value={obj[fieldName]}
-          />
-        </Table>
+    <div class="flex h-full w-1 grow flex-col bg-stone-100 px-6 pb-6">
+      <div class="flex h-20 items-center text-lg">
+        {$deals?.data?.deals?.length ?? "—"}
+        {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
+
+      <Table
+        sortBy="-fully_updated_at"
+        items={$deals?.data?.deals ?? []}
+        columns={activeColumns}
+        {spans}
+        {labels}
+      >
+        <DisplayField
+          slot="field"
+          let:fieldName
+          let:obj
+          wrapperClasses="p-1"
+          fieldname={fieldName}
+          value={obj[fieldName]}
+        />
+      </Table>
     </div>
     <div
       class="h-full min-h-[3px] flex-none {$showContextBar
