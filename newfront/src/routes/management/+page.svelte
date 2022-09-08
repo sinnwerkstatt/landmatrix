@@ -16,7 +16,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   import FilterOverlay from "./FilterOverlay.svelte"
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte"
@@ -83,47 +83,34 @@
     activeTab = tab
   }
 
-  $: tableHeaders =
-    model === "deal"
-      ? [
-          "id",
-          "country",
-          "deal_size",
-          "created_at",
-          "created_by",
-          // "modified_at",
-          // "modified_by",
-          // "fully_updated_at",
-          "workflowinfos",
-          // "combined_status",
-        ]
-      : [
-          "id",
-          "name",
-          "country",
-          "created_at",
-          "created_by",
-          // "current_draft.modified_at",
-          "workflowinfos",
-          // "combined_status",
-          // "deals",
-        ]
-
-  const allColumnsWithSpan = {
+  const dealColumns = {
     id: 1,
-    name: 3,
-    country: 3,
+    country: 2,
     deal_size: 2,
     created_at: 2,
-    created_by: 3,
+    created_by: 2,
+    modified_at: 2,
+    modified_by: 2,
     fully_updated_at: 2,
     workflowinfos: 5,
-    combined_status: 2,
+    // combined_status: 1,
   }
-  $: labels = tableHeaders.map(col => $formfields?.[model]?.[col]?.label)
-  $: spans = Object.entries(allColumnsWithSpan)
-    .filter(([col, _]) => tableHeaders.includes(col))
-    .map(([_, colSpan]) => colSpan)
+
+  const investorColumns = {
+    id: 1,
+    name: 3,
+    country: 4,
+    deals: 1,
+    created_at: 2,
+    created_by: 3,
+    workflowinfos: 5,
+    // combined_status: 1,
+  }
+
+  $: columnsWithSpan = model === "deal" ? dealColumns : investorColumns
+  $: columns = Object.keys(columnsWithSpan)
+  $: labels = columns.map(col => $formfields?.[model]?.[col]?.label)
+  $: spans = Object.entries(columnsWithSpan).map(([_, colSpan]) => colSpan)
 
   let controller: AbortController
 
@@ -195,9 +182,9 @@
   <title>{$_("Management")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="relative flex min-h-full w-full">
+<div class="relative flex h-full w-full bg-stone-100">
   <nav
-    class="flex min-h-full flex-initial flex-shrink-0 flex-col bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
+    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] xl:basis-1/6"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
@@ -295,7 +282,8 @@
       class="h-8 w-8 text-white transition-colors group-hover:text-orange"
     />
   </button>
-  <div class="px-6 py-4">
+
+  <div class="mt-[60px] w-1 grow px-6 pb-6">
     {#if activeTab?.id === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_feedback"}
@@ -303,18 +291,12 @@
     {:else if activeTab?.id === "requested_improvement"}
       <RequestedImprovementView objects={filteredObjects} {model} />
     {:else}
-      <Table
-        items={filteredObjects}
-        columns={tableHeaders}
-        {spans}
-        {labels}
-        rowClasses="flex items-center"
-      >
+      <Table items={filteredObjects} {columns} {spans} {labels}>
         <DisplayField
           slot="field"
           let:fieldName
           let:obj
-          wrapperClasses="p-1"
+          wrapperClasses=""
           valueClasses=""
           fieldname={fieldName}
           value={obj[fieldName]}

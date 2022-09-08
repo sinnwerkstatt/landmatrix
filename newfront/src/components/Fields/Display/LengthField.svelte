@@ -7,7 +7,7 @@
     username?: string
   }
 
-  export let value: ForeignKey[]
+  export let value: ForeignKey[] = []
   export let formfield: FormField
 
   let displayDeals = false

@@ -12,9 +12,9 @@
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
-  let activeColumns = [
+  let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
     "fully_updated_at",
     "id",
     "country",
@@ -31,7 +31,7 @@
     current_negotiation_status: 4,
     current_contract_size: 3,
     current_implementation_status: 4,
-    intended_size: 2,
+    intended_size: 3,
     operating_company: 4,
   }
 
@@ -61,8 +61,8 @@
         : 'w-0'}"
     />
 
-    <div class="flex w-full flex-col bg-stone-100 px-4">
-      <div class="flex h-[4rem] items-center pl-2 text-lg">
+    <div class="flex h-full w-1 grow flex-col bg-stone-100 px-6 pb-6">
+      <div class="flex h-20 items-center text-lg">
         {$deals?.data?.deals?.length ?? "—"}
         {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
