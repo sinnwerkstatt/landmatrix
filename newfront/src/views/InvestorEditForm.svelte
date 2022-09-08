@@ -3,7 +3,7 @@
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
+  import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getInvestorSections } from "$lib/sections"
@@ -31,6 +31,15 @@
     { target: "#tertiary_investors", name: $_("Tertiary investors/lenders") },
     { target: "#data_sources", name: $_("Data sources") },
   ]
+
+  beforeNavigate(({ type, cancel }) => {
+    // browser navigation buttons
+    if (type === "popstate")
+      if (formChanged && !showReallyQuitOverlay) {
+        showReallyQuitOverlay = true
+        cancel()
+      }
+  })
 
   async function saveInvestor(hash: string) {
     const currentForm: HTMLFormElement | null =
@@ -73,9 +82,6 @@
     const investor_edit = ret.data?.investor_edit
     if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`)
 
-    originalInvestor = JSON.stringify(investor)
-    savingInProgress = false
-
     if (location.hash !== hash || +investorVersion !== +investor_edit.investorVersion) {
       await goto(
         `/investor/edit/${investor_edit.investorId}/${investor_edit.investorVersion}${
@@ -83,12 +89,18 @@
         }`,
       )
     }
+
+    originalInvestor = JSON.stringify(investor)
+    savingInProgress = false
   }
 
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true
-    else if (!investorID) await goto("/")
-    else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
+    else {
+      await invalidateAll()
+      if (!investorID) await goto("/")
+      else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
+    }
   }
 </script>
 

@@ -3,7 +3,7 @@
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
+  import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getDealSections } from "$lib/sections"
@@ -43,6 +43,15 @@
     { target: "#overall_comment", name: $_("Overall comment") },
   ]
 
+  beforeNavigate(({ type, cancel }) => {
+    // browser navigation buttons
+    if (type === "popstate")
+      if (formChanged && !showReallyQuitOverlay) {
+        showReallyQuitOverlay = true
+        cancel()
+      }
+  })
+
   async function saveDeal(hash: string) {
     const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab)
@@ -77,18 +86,22 @@
     const deal_edit = ret.data?.deal_edit
     if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`)
 
-    originalDeal = JSON.stringify(deal)
-    savingInProgress = false
-
     if (location.hash !== hash || +dealVersion !== +deal_edit.dealVersion) {
       await goto(`/deal/edit/${deal_edit.dealId}/${deal_edit.dealVersion}${hash ?? ""}`)
     }
+
+    // update original deal only after route change
+    originalDeal = JSON.stringify(deal)
+    savingInProgress = false
   }
 
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true
-    else if (!dealID) await goto("/")
-    else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+    else {
+      await invalidateAll() // discard changes
+      if (!dealID) await goto("/")
+      else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+    }
   }
   $: dealSections = getDealSections($_)
 </script>
