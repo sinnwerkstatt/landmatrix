@@ -20,8 +20,8 @@ const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`
 
 export const aboutPages = writable<WagtailPage[]>([])
 
-async function getAboutPages(language = "en", fetch: LoadEvent["fetch"]) {
-  console.log("getAboutPages", { language })
+async function getAboutPages(fetch: LoadEvent["fetch"]) {
+  // console.log("getAboutPages", { language })
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.AboutIndexPage`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
@@ -37,8 +37,8 @@ async function getAboutPages(language = "en", fetch: LoadEvent["fetch"]) {
 }
 export const observatoryPages = writable<ObservatoryPage[]>([])
 
-async function getObservatoryPages(language = "en", fetch: LoadEvent["fetch"]) {
-  console.log("getObservatoryPages", { language })
+async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
+  // console.log("getObservatoryPages", { language })
   const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
@@ -49,7 +49,7 @@ async function getObservatoryPages(language = "en", fetch: LoadEvent["fetch"]) {
 export const blogCategories = writable<BlogCategory[]>([])
 
 async function getBlogCategories(language = "en", urqlClient: Client) {
-  console.log("getBlogCategories", { language })
+  // console.log("getBlogCategories", { language })
   const { data } = await urqlClient
     .query<{ blogcategories: BlogCategory[] }>(
       gql`
@@ -81,7 +81,7 @@ export const regions = writable<Region[]>([])
 export const formfields = writable<FormFields>(undefined)
 
 async function getCountriesRegionsFormfields(language = "en", urqlClient: Client) {
-  console.log("getCountriesRegionsFormfields")
+  // console.log("getCountriesRegionsFormfields")
   const { data } = await urqlClient
     .query(
       gql`
@@ -139,7 +139,7 @@ export const chartDescriptions = writable<{
 }>(undefined)
 
 async function getChartDescriptions(language = "en", urqlClient: Client) {
-  console.log("getChartDescriptions", { language })
+  // console.log("getChartDescriptions", { language })
   const { data } = await urqlClient
     .query(
       gql`
@@ -164,8 +164,8 @@ export async function fetchBasis(
 ) {
   try {
     await Promise.all([
-      getAboutPages(lang, fetch),
-      getObservatoryPages(lang, fetch),
+      getAboutPages(fetch),
+      getObservatoryPages(fetch),
       getBlogCategories(lang, urqlClient),
       getCountriesRegionsFormfields(lang, urqlClient),
       getChartDescriptions(lang, urqlClient),

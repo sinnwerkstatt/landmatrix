@@ -257,6 +257,7 @@
               </a>
             </li>
             <li>
+              <!-- todo: probably remove rel="external" in favor of data-sveltekit-reload -->
               <a
                 href="/api/management?format=csv&action={activeTab.id}"
                 on:click={() => trackDownload("csv")}
