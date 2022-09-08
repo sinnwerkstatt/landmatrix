@@ -19,6 +19,9 @@
     "id",
     "country",
     "current_intention_of_investment",
+    "current_negotiation_status",
+    "current_implementation_status",
+    "deal_size",
     "operating_company",
   ]
 
